@@ -191,36 +191,27 @@
                         @click="addStaticData()"
                       />
                     </el-col>
-                    <div v-for="(customStaticValue, index) in this.customStaticValues">
+                    <div v-for="(customStaticValue,index) in this.customStaticValues">
                       <el-input
                         name="name"
                         v-model="customStaticValue.uuid"
                         v-show="false"
                         autocomplete="off"
                       />
-                      <el-col :span="9">
+                        <el-col :span="9">
                         <el-input
                           name="name"
                           v-model="customStaticValue.names"
                           autocomplete="off"
                           placeholder="名称"
                         />
-                      </el-col>
-                      <el-col :span="9" style="margin-left: 20px">
-                        <el-input
-                          name="value"
-                          v-model="customStaticValue.values"
-                          autocomplete="off"
-                          placeholder="值"
-                        />
-                      </el-col>
-                      <el-col :span="2">
-                        <el-button
-                          type="primary"
-                          class="oper-btn delete"
-                          @click="deleteStaticData(index)"
-                        />
-                      </el-col>
+                        </el-col>
+                        <el-col :span="9" style="margin-left: 20px">
+                          <el-input name="value" v-model="customStaticValue.values" autocomplete="off" placeholder="值"/>
+                        </el-col>
+                        <el-col :span="2">
+                          <el-button type="primary" class="oper-btn delete" @click="deleteStaticData(index)" />
+                        </el-col>
                     </div>
                   </div>
                 </el-tab-pane>
@@ -437,22 +428,22 @@ export default{
       this.displayParamData();
     }
   },
-  methods: {
-    displayParamData() {
+  methods:{
+    displayParamData(){
       let that = this;
       $.post(
         this.analysisUrl + "/paramController/findByUuid",
         { ammParamUuid: this.operationObj.paramUuid },
         function (e) {
           that.updateParamObj = e.data;
-          var data = e.data; //参数基本信息
+          var data = e.data;//参数基本信息
           if (data != null && data != "") {
             that.form.paramName = data.paramName;
             that.form.dataType = data.dataType;
             that.changeValue(data.dataType);
             that.form.inputType = data.inputType;
             that.changeInputType(data.inputType);
-            if (data.inputType == "textinp") {
+            if(data.inputType == "textinp"){
               that.form.dataLength = data.dataLength;
             }
             that.form.example = data.example;
@@ -563,26 +554,23 @@ export default{
     //   return "格式：SELECT A,B,C FROM 模式.D\n" +
     //           "A:子项真实值，B:子项显示值，C：父项真实值，将使用【A】字段与【C】字段进行父子节点关系匹配，若字段过多（或者存在【*】），则默认只使用前三列进行匹配"
     // },
-    changeInputType(inputTypeValue) {
-      if (inputTypeValue != "") {
-        if (inputTypeValue == "timeinp") {
-          //日期选择器
+    changeInputType(inputTypeValue){
+      if(inputTypeValue != ""){
+        if(inputTypeValue == "timeinp"){//日期选择器
           this.isShowElement.timeIntervalShow = true;
           this.isShowElement.formalTypeShow = false;
           this.isShowElement.alternateValueShow = false;
           this.isShowElement.dataLengthInterValShow = false;
           this.isShowElement.SQLdtreeShow = false;
           this.isShowElement.dateFormatTag = true;
-        } else if (inputTypeValue == "lineinp") {
-          //下拉列表
+        }else if(inputTypeValue == "lineinp"){//下拉列表
           this.isShowElement.timeIntervalShow = false;
           this.isShowElement.formalTypeShow = true;
           this.isShowElement.alternateValueShow = true;
           this.isShowElement.dataLengthInterValShow = false;
           this.isShowElement.SQLdtreeShow = false;
           this.isShowElement.dateFormatTag = false;
-        } else if (inputTypeValue == "treeinp") {
-          //下拉树
+        }else if(inputTypeValue=="treeinp"){//下拉树
           this.isShowElement.timeIntervalShow = false;
           this.isShowElement.formalTypeShow = true;
           this.isShowElement.alternateValueShow = false;
@@ -590,8 +578,7 @@ export default{
           this.isShowElement.SQLdtreeShow = true;
           this.tabsigns = 1;
           this.isShowElement.dateFormatTag = false;
-        } else {
-          //文本
+        }else{//文本
           this.isShowElement.timeIntervalShow = false;
           this.isShowElement.formalTypeShow = false;
           this.isShowElement.alternateValueShow = false;
@@ -601,15 +588,15 @@ export default{
         }
       }
     },
-    changeValue(dataTypeValue) {
+    changeValue(dataTypeValue){
       this.inputTypes = [];
       this.form.inputType = "";
-      for (var i = 0; i < this.inputTypeValueStr.length; i++) {
+      for(var i=0;i < this.inputTypeValueStr.length;i++){
         if (dataTypeValue == "" || dataTypeValue == null) {
           this.inputTypes = [];
-        } else {
+        }else{
           var typesz = this.map_data_input[dataTypeValue].type;
-          if (typesz.indexOf(this.inputTypeValueStr[i].codeValue) > -1) {
+          if(typesz.indexOf(this.inputTypeValueStr[i].codeValue) > -1){
             this.inputTypes.push(this.inputTypeValueStr[i]);
           }
         }
@@ -630,30 +617,30 @@ export default{
         this.tabsigns = 0;
       }
     },
-    addStaticData() {
+    addStaticData(){
       this.customStaticValues.push({ names: "", values: "", uuid: getUuid() });
     },
-    deleteStaticData(index) {
+    deleteStaticData(index){
       this.customStaticValues.splice(index, 1);
     },
-    okBtn() {
+    okBtn(){
       this.$refs['ruleForm'].validate((valid) => {
         if (valid) {
-          if (this.operationObj.operationType == 1) {
+      if(this.operationObj.operationType == 1){
             this.saveParam();
           } else {
             this.updateParam();
-          }
+      }
         } else {
           console.log("error submit!!");
           return false;
-        }
+      }
       });
     },
     /**
      * 保存参数
      */
-    saveParam() {
+    saveParam(){
       let that = this;
       var paramName = this.form.paramName;
       var dataType = this.form.dataType;
@@ -704,19 +691,18 @@ export default{
       if (this.isShowElement.formalTypeShow) {
         dataParam["paramChoice.choiceType"] = this.form.formalType;
       }
-      if (this.isShowElement.SQLdtreeShow) {
+      if(this.isShowElement.SQLdtreeShow){
         dataParam["paramChoice.optionsSql"] = this.form.paramChoice.optionsSql;
       }
-      if (this.isShowElement.alternateValueShow) {
-        if (this.activeName === "SQL") {
-          dataParam["paramChoice.optionsSql"] =
-            this.form.paramChoice.optionsSqlLine;
+      if(this.isShowElement.alternateValueShow){
+        if(this.activeName === "SQL"){
+          dataParam["paramChoice.optionsSql"] = this.form.paramChoice.optionsSqlLine;
         }
         if (this.activeName === "custom") {
           var names = [];
           var value = [];
           this.customStaticValues.push(this.defaultExistsCustomStaticValues);
-          for (let i = 0; i < this.customStaticValues.length; i++) {
+          for(let i = 0; i < this.customStaticValues.length;i++){
             names.push(this.customStaticValues[i].names);
             value.push(this.customStaticValues[i].values);
           }
@@ -726,19 +712,16 @@ export default{
       }
       $.ajax({
         url: this.analysisUrl + "/paramController/addParam",
-        method: "POST",
-        cache: false,
-        dataType: "json",
-        data: dataParam,
-        async: false,
-        success: function (data, textStatus, jqXHR) {
-          if (data.code == 0) {
+        method:"POST",
+        cache:false,
+        dataType:"json",
+        data:dataParam,
+        async:false,
+        success: function(data, textStatus, jqXHR){
+          if(data.code == 0){
             that.$emit("refshParamList");
-          } else {
-            that.$message({
-              type: "error",
-              message: "程序发生异常，请联系管理员!",
-            });
+          }else{
+            that.$message({ type: 'error', message: '程序发生异常，请联系管理员!' });
           }
         },
         error: function () {
@@ -752,7 +735,7 @@ export default{
     /**
      *修改参数
      */
-    updateParam() {
+    updateParam(){
       let that = this;
       var paramName = this.form.paramName;
       var dataType = this.form.dataType;
@@ -806,20 +789,19 @@ export default{
       if (this.isShowElement.formalTypeShow) {
         dataParam["paramChoice.choiceType"] = this.form.formalType;
       }
-      if (this.isShowElement.SQLdtreeShow) {
+      if(this.isShowElement.SQLdtreeShow){
         dataParam["paramChoice.optionsSql"] = this.form.paramChoice.optionsSql;
       }
-      if (this.isShowElement.alternateValueShow) {
-        if (this.activeName === "SQL") {
-          dataParam["paramChoice.optionsSql"] =
-            this.form.paramChoice.optionsSqlLine;
+      if(this.isShowElement.alternateValueShow){
+        if(this.activeName === "SQL"){
+          dataParam["paramChoice.optionsSql"] = this.form.paramChoice.optionsSqlLine;
         }
         if (this.activeName === "custom") {
           var names = [];
           var value = [];
           var uuids = [];
           this.customStaticValues.push(this.defaultExistsCustomStaticValues);
-          for (let i = 0; i < this.customStaticValues.length; i++) {
+          for(let i = 0; i < this.customStaticValues.length;i++){
             names.push(this.customStaticValues[i].names);
             value.push(this.customStaticValues[i].values);
             uuids.push(this.customStaticValues[i].uuid);
@@ -832,27 +814,21 @@ export default{
       }
       $.ajax({
         url: this.analysisUrl + "/paramController/editParam",
-        method: "POST",
-        cache: false,
-        dataType: "json",
-        data: dataParam,
-        async: false,
-        success: function (data, textStatus, jqXHR) {
-          if (data.code == 0) {
+        method:"POST",
+        cache:false,
+        dataType:"json",
+        data:dataParam,
+        async:false,
+        success: function(data, textStatus, jqXHR){
+          if(data.code == 0){
             that.$emit("refshParamList");
-          } else {
-            that.$message({
-              type: "error",
-              message: "程序发生异常，请联系管理员!",
-            });
+          }else{
+            that.$message({ type: 'error', message: '程序发生异常，请联系管理员!' });
           }
         },
-        error: function () {
-          that.$message({
-            type: "error",
-            message: "程序发生异常，请联系管理员!",
-          });
-        },
+        error : function() {
+          that.$message({ type: 'error', message: '程序发生异常，请联系管理员!' });
+        }
       });
     },
     /**
@@ -874,7 +850,7 @@ export default{
      * 查看sql规则
      * @param type 1列表 2树
      */
-    viewSqlRule(type) {
+    viewSqlRule(type){
       this.SQLRuleDialog = true;
       this.SQLRuleText = this.getSqlRule(type);
     },
@@ -882,7 +858,7 @@ export default{
      * 获取sql规则
      * @param type 1列表 2树
      */
-    getSqlRule(type) {
+    getSqlRule(type){
       let sqlRule = "";
       switch (type) {
         case 1:

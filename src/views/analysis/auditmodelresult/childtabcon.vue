@@ -1680,7 +1680,7 @@ export default {
                     }
                     this.rowData = rowData;
                   }
-                  for (let i = 0; i < col.length; i++) {
+                  for(let i = 0;i<col.length;i++){
                     let colType0 = this.result.columnType[i];
                     colType0 = colType0 ? "": colType0.toUpperCase();
                     switch (colType0) {
@@ -1689,7 +1689,7 @@ export default {
                       case "INTEGER":
                       case "FLOAT":
                       case "DOUBLE":
-                        col[i].filter = 'agNumberColumnFilter'
+                      col[i].filter = 'agNumberColumnFilter'
                         break;
                       case "DATE":
                       case "TIMESTAMP":
@@ -1698,7 +1698,6 @@ export default {
                       default:
                         col[i].filter = 'agTextColumnFilter'
                         break;
-
                     }
                     // if (this.result.columnType[i] == 'varchar'){
                     //   col[i].filter = 'agTextColumnFilter'
@@ -1710,10 +1709,7 @@ export default {
                   }
                   this.columnDefs = col;
                   this.afterResult = true;
-                  if (
-                    typeof this.gridApi !== "undefined" &&
-                    this.gridApi !== null
-                  ) {
+                  if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
                     this.gridApi.closeToolPanel();
                   }
                 });
@@ -1738,7 +1734,6 @@ export default {
         this.getIntoModelResultDetail(nextValue);
       }
     },
-
     doRotating(rowData) {
       //旋转
       if (rowData.length == 0) return;
