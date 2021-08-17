@@ -21,7 +21,7 @@
         </el-table>
         <div class="divBtn" style="float:right;padding:20px 0 0 0">
             <el-button v-if="this.editTag!=1" type="primary" class="oper-btn add" size="mini" @click="saveCodeData"></el-button>
-            <el-button v-if="this.editTag!=1" type="primary" class="oper-btn again-2" size="mini" @click="resetForm"></el-button>
+            <el-button v-if="this.editTag!=1" type="primary" class="oper-btn reset" size="mini" @click="resetForm"></el-button>
             <el-button v-if="this.editTag!=1" type="primary" class="oper-btn edit" size="mini" :disabled="handleSelectionChange.length !== 1" @click="editCodeData"></el-button>
             <el-button v-if="this.editTag!=1" type="primary" class="oper-btn delete" size="mini" :disabled="handleSelectionChange.length === 0" @click="delCodeData"></el-button>
             <!-- <el-button type="primary" size="mini" @click="returnList">返回</el-button> -->

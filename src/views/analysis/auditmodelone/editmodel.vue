@@ -201,8 +201,8 @@
             <div @click="clickModelInfo()"><span :class="changeBtn.one === true?'self-made-btn-a':'self-made-btn'"  class="rightButtonClassa">基础信息</span></div>
             <div @click="clickUseParam()"><span :class="changeBtn.two === true?'self-made-btn-a':'self-made-btn'" class="rightButtonClassa">已用参数</span></div>
             <div @click="clickResultConfig()"><span :class="changeBtn.three === true?'self-made-btn-a':'self-made-btn'" class="rightButtonClassa">结果展现</span></div>
-            <el-button type="primary" size="small" class="oper-btn save-none" style="position: absolute;bottom: 95px;left: 9px;width: 24px" @click="save"></el-button>
-            <el-button type="primary" size="small" class="oper-btn cancel-none" style="position: absolute;bottom: 35px;left: -1px;width: 24px;" @click="closeWinfrom"></el-button>
+            <el-button type="primary" size="small" class="oper-btn save-none" style="position: absolute;bottom: 95px;left: 9px;width: 24px" @click="save" />
+            <el-button type="primary" size="small" class="oper-btn cancel-none" style="position: absolute;bottom: 35px;left: -1px;width: 24px;" @click="closeWinfrom" />
           </div>
           <el-form-item label="模型sql" prop="sqlValue" class="display">
             <el-input v-model="form.sqlValue" type="textarea"/>

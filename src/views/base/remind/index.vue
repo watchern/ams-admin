@@ -9,7 +9,7 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" size="mini" class="oper-btn processing-1" :disabled="readButStatus" @click="updateCode()" />
+        <el-button type="primary" size="mini" class="oper-btn mark-read btn-width-md" :disabled="readButStatus" @click="updateCode()" />
       </el-col>
     </el-row>
     <el-table

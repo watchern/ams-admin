@@ -20,7 +20,7 @@
           :disabled="modelRunResultBtnIson.exportBtn"
           type="primary"
           @click="exportExcel"
-          class="oper-btn export-2"
+          class="oper-btn export"
         ></el-button>
         <el-button
           :disabled="modelRunResultBtnIson.chartDisplayBtn"
@@ -35,12 +35,13 @@
           @click="handleResult"
           class="oper-btn processing"
         ></el-button>
+      <!-- @查询关联@ -->
         <el-button
-          class="oper-btn link"
+          class="oper-btn linkdetail"
           :disabled="modelRunResultBtnIson.modelDetailAssBtn"
           type="primary"
           @click="openModelDetail"
-        ></el-button>
+        />
       </div>
     </el-row>
     <ag-grid-vue
@@ -82,7 +83,7 @@
             <el-button
               type="primary"
               @click="modelResultExport"
-              class="oper-btn export-2"
+              class="oper-btn export"
             ></el-button>
           </downloadExcel>
           <el-button
@@ -218,6 +219,9 @@ import {
 import {getTransMap} from "@/api/data/transCode.js";
 import mtEditor from 'ams-datamax'
 // import 'iview/dist/styles/iview.css'
+
+//引入时间格式化方法
+import dayjs from 'dayjs';
 
 export default {
   name: "childTabCon",
@@ -478,7 +482,8 @@ export default {
         const blob = new Blob([res.data], {type: "application/vnd.ms-excel"});
         link.style.display = "none";
         link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "模型运行结果表.xlsx");
+        //模型运行结果表日期使用当前日期
+        link.setAttribute("download", "模型运行结果表"+"("+dayjs(new Date()).format('YYYY年MM月DD日hhmmss')+")"+".xls");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

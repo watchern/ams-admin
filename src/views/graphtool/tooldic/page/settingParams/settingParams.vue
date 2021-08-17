@@ -219,7 +219,7 @@
                                 }
                             }else{//ztreeType === 'paramZtree'
                                 // 如果不是函数节点，不做任何操作
-                                if (treeNodes[0].type !== 'paramNode') {
+                                if (treeNodes[0].type !== 'param') {
                                     return false
                                 }
                             }

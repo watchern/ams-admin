@@ -58,7 +58,7 @@
               :disabled="buttonIson.deleteBtn"
               type="primary"
               @click="deleteRunTaskRel"
-              class="oper-btn delete-3"
+              class="oper-btn delete-projectrel"
             ></el-button>
           </el-row>
         </div>
@@ -256,7 +256,7 @@ import personTree from "@/components/publicpersontree/index";
 import { getDictList } from '@/utils'
 import { save, update, del, personList, projectList, toTreeData, getProjectById } from '@TCB/api/tcbaudit/problem'
 import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
-import ProblemPopover from '@TCB/components/ProblemPopover'
+import ProblemPopover from '@TCB/components/ProblemPopover/index'
 export default {
   components: { Pagination, QueryField, runimmediatelycon, personTree, flowItem, ProblemPopover },
   props: {

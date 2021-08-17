@@ -19,71 +19,63 @@
               <!-- <el-button
                       type="primary"
                       @click="modelResultOpenDialog"
-                      :disabled="buttonIson.AssociatedBtn"
-                      class="oper-btn link-2"
-              ></el-button> -->
+                      :disabled="buttonIson.disableAssociatedBtn"
+                      class="oper-btn allocation"
+              /> -->
+            <el-button
+              type="primary"
+              :disabled="buttonIson.disableCancelExecBtn"
+              class="oper-btn cancel-exec btn-width-md"
+              @click="runRelTaskPause"
+            />
             <!-- 分配到项目 -->
             <el-button
               type="primary"
-              :disabled="buttonIson.puseBtn"
-              class="oper-btn pause-2 btn-width-md"
-              @click="runRelTaskPause"
-            />
-            <el-button
-              type="primary"
               @click="openProjectDialog"
-              :disabled="buttonIson.AssociatedBtn"
-              class="btn-width-md oper-btn link-2"
-            ></el-button>
-            <!--<el-dropdown>
+              :disabled="buttonIson.disableAssociatedBtn"
+              class="btn-width-md oper-btn allocation"
+            />
+            <!--  @移除分配项目@ -->
+            <el-button
+                type="primary"
+                @click="removeRelationProject()"
+                :disabled="buttonIson.disassociateBtn"
+                class="oper-btn disassociate btn-width-max"
+                title="移除分配项目" />
 
+            <!--<el-dropdown>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="openProjectDialog">分配项目</el-dropdown-item>
                 <el-dropdown-item @click.native="modelResultOpenDialog">结果分配</el-dropdown-item>
-                <el-dropdown-item @click.native="RemoverelationProject">移除分配项目</el-dropdown-item>
+                <el-dropdown-item @click.native="removeRelationProject">移除分配项目</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>-->
-<!--            <el-button-->
-<!--              type="primary"-->
-<!--              @click="openProjectDialog"-->
-<!--              :disabled="buttonIson.AssociatedBtn"-->
-<!--              class="oper-btn link-2"-->
-<!--              title="分配项目"-->
-<!--            ></el-button>-->
-<!--            <el-button-->
-<!--              type="primary"-->
-<!--              @click="modelResultOpenDialog()"-->
-<!--              :disabled="buttonIson.resultShareBtn"-->
-<!--              class="oper-btn share"-->
-<!--              title="结果分配"-->
-<!--            ></el-button>-->
-<!--            &lt;!&ndash; relationProject('4534532', '项目5') &ndash;&gt;-->
-<!--            <el-button-->
-<!--              type="primary"-->
-<!--              @click="RemoverelationProject()"-->
-<!--              :disabled="buttonIson.DisassociateBtn"-->
-<!--              class="oper-btn move"-->
-<!--              title="移除分配项目"-->
-<!--            ></el-button>-->
-            <el-button
+        <!-- 暂时注掉拆分结果-->
+      <!--   <el-button
               type="primary"
-              :disabled="buttonIson.resultSplitBtn"
-              class="oper-btn split-2"
+              :disabled="buttonIson.disableSplitBtn"
+              class="oper-btn split"
               @click="openResultSplitDialog"
-              style="margin-left: 10px"
-            ></el-button>
+              style="margin-left: 10px"/>-->
+        <!-- 结果分享  -->
+            <!--        <el-button
+          type="primary"
+          @click="modelResultOpenDialog()"
+          :disabled="buttonIson.disableShareBtn"
+          class="oper-btn allocation btn-width-md"
+        />-->
             <el-button
               type="primary"
               @click="exportExcel"
-              :disabled="buttonIson.exportBtn"
-              class="oper-btn export-4"
-            ></el-button>
+              :disabled="buttonIson.disableExportBtn"
+              class="oper-btn export"
+            />
             <el-button
-              :disabled="buttonIson.deleteBtn"
+              :disabled="buttonIson.disableDeleteBtn"
               type="primary"
               @click="deleteRunTaskRel"
-              class="oper-btn delete-2"
-            ></el-button>
+              class="oper-btn delete-result btn-width-md"
+            />
           </el-row>
         </div>
         <el-table
@@ -100,66 +92,22 @@
           height="calc(100% - 90px)"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column
-            label="模型名称"
-            width="300px"
-            prop="model.modelName"
-          >
+          <el-table-column label="模型名称" width="300px" prop="model.modelName" >
             <template slot-scope="scope">
-              <a
-                type="text"
-                style="color: #409eff"
-                @click="
-                  getResultTables(
-                    scope.row.runResultTables,
-                    scope.row.model.modelName,
-                    scope.row.model.modelUuid,
-                    scope.row.runStatus,
-                    resultSpiltObjects
-                  )
-                "
-                >{{ scope.row.model.modelName }}</a
-              >
+              <a type="text" style="color: #409eff"
+                @click="getResultTables(scope.row.runResultTables,scope.row.model.modelName,scope.row.model.modelUuid,scope.row.runStatus,resultSpiltObjects)">{{ scope.row.model.modelName }}</a>
             </template>
           </el-table-column>
-          <el-table-column
-            label="运行状态"
-            width="100px"
-            align="center"
-            prop="runStatus"
-            :formatter="readStatusFormatter"
-            ><template slot-scope="scope">
-              <i
-                :title="readStatusFormatter(scope.row.runStatus)"
-                :class="runStatusIconFormatter(scope.row.runStatus)"
-                :style="runStatusStyleFormatter(scope.row.runStatus)"
-                style="cursor: pointer;"
-              ></i> </template
-          ></el-table-column>
-          <el-table-column
-            label="运行人"
-            width="100px"
-            align="center"
-            prop="runTask.runUserName"
-          />
-          <el-table-column
-            label="运行类型"
-            width="100px"
-            align="center"
-            prop="runTask.runType"
-            :formatter="runTypeFormate"
-          />
-          <el-table-column
-            label="执行进度"
-            prop="executeProgress"
-            align="center"
-            width="200px"
-          >
+          <el-table-column label="运行状态" width="100px" align="center" prop="runStatus" :formatter="readStatusFormatter">
             <template slot-scope="scope">
-              <el-progress
-                :percentage="executeProgressFormate(scope.row.executeProgress)"
-                :color="customColorMethod(scope.row.executeProgress)"
-              />
+              <i :title="readStatusFormatter(scope.row.runStatus)"
+                :class="runStatusIconFormatter(scope.row.runStatus)"
+                :style="runStatusStyleFormatter(scope.row.runStatus)" style="cursor: pointer;"/> </template></el-table-column>
+          <el-table-column label="运行人" width="100px" align="center" prop="runTask.runUserName"/>
+          <el-table-column label="运行类型" width="100px" align="center" prop="runTask.runType" :formatter="runTypeFormate" />
+          <el-table-column label="执行进度" prop="executeProgress" align="center" width="200px">
+            <template slot-scope="scope">
+              <el-progress :percentage="executeProgressFormate(scope.row.executeProgress)" :color="customColorMethod(scope.row.executeProgress)" />
             </template>
           </el-table-column>
           <el-table-column
@@ -203,9 +151,7 @@
             width="200px"
           >
             <template slot-scope="scope">
-              <el-link type="primary" @click="selectSql(scope.row)">{{
-                settingInfoSqlFormatter(scope.row)
-              }}</el-link>
+              <el-link type="primary" @click="selectSql(scope.row)">{{settingInfoSqlFormatter(scope.row) }}</el-link>
             </template>
           </el-table-column>
           <el-table-column
@@ -221,9 +167,7 @@
             width="200px"
           >
             <template slot-scope="scope">
-              <el-link type="primary" @click="selectrunMessage(scope.row)">{{
-                runMessageFormatter(scope.row)
-              }}</el-link>
+              <el-link type="primary" @click="selectrunMessage(scope.row)">{{runMessageFormatter(scope.row)}}</el-link>
             </template>
           </el-table-column>
           <el-table-column
@@ -247,12 +191,7 @@
           >
             <template slot-scope="scope">
               <div>
-                <a
-                  v-if="scope.row.runStatus == 4"
-                  @click="reRunReParam(scope.row)"
-                  style="color: #409eff"
-                  >重新运行</a
-                >
+                <a v-if="scope.row.runStatus == 4" @click="reRunReParam(scope.row)" style="color: #409eff">重新运行</a>
               </div>
             </template>
           </el-table-column>
@@ -316,9 +255,7 @@
           </div>
           <span slot="footer" class="dialog-footer">
             <el-button @click="resultSplitDialogIsSee = false">取 消</el-button>
-            <el-button type="primary" @click="ResultSplitDialogDetermine"
-              >确 定</el-button
-            >
+            <el-button type="primary" @click="ResultSplitDialogDetermine">确 定</el-button>
           </span>
         </el-dialog>
         <el-dialog
@@ -410,6 +347,9 @@ import AV from "leancloud-storage";
 import userProject from "@/views/base/userproject/index";
 import { getParamSettingArr } from "@/api/analysis/auditparam";
 import personTree from "@/components/publicpersontree/index";
+
+//引入时间格式化方法
+import dayjs from 'dayjs';
 export default {
   components: {
     Pagination,
@@ -447,14 +387,14 @@ export default {
       success1: false, // 用来测试open2方法里的deleteRunResultShare方法返回值是否为true，如果为true则success为true
       selected1: [], // 存储表格中选中的数据
       buttonIson: {
-        AssociatedBtn: true,
+        disableAssociatedBtn: true,
         // 取消执行按钮
-        puseBtn: true,
-        DisassociateBtn: true,
-        deleteBtn: true,
-        resultSplitBtn: true,
-        resultShareBtn: true,
-        exportBtn: false,
+        disableCancelExecBtn: true,
+        disableDisassociateBtn: true,
+        disableDeleteBtn: true,
+        disableSplitBtn: true,
+        disableShareBtn: true,
+        disableExportBtn: false
       },
       sqlInfoDialog: false,
       runMessageInfoDialog: false,
@@ -527,7 +467,8 @@ export default {
         const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
         link.style.display = "none";
         link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "模型运行结果表.xls");
+        //模型运行结果表日期使用当前日期
+        link.setAttribute("download", "模型运行结果表"+"("+dayjs(new Date()).format('YYYY年MM月DD日hhmmss')+")"+".xls");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -654,17 +595,25 @@ export default {
      * 运行状态图标颜色
      */
     runStatusStyleFormatter(status) {
-      if (status == 1) {
-        return "color:blue";
-      } else if (status == 2) {
-        return "el-icon-loading";
-      } else if (status == 3) {
-        return "color:green";
-      } else if(status == 5){
-        return "color:#ff0000";
-      } else {
-        return "color:red";
+      var style = "";
+      switch (status) {
+        case 1:
+          style = "color:blue";
+          break;
+        case 2:
+          style = "el-icon-loading";
+          break;
+        case 3:
+          style = "color:green"
+          break;
+        case 5:
+          style = "color:#ff0000"
+          break;
+        default:
+          style = "color:red"
+          break;
       }
+      return style;
     },
     /**
      * 查询列表方法
@@ -700,40 +649,19 @@ export default {
      * 当多选框改变时触发
      */
     handleSelectionChange(val) {
-      if (val.length <= 0) {
-        this.buttonIson.AssociatedBtn = true;
-        this.buttonIson.puseBtn = true;
-        this.buttonIson.DisassociateBtn = true;
-        this.buttonIson.deleteBtn = true;
-        this.buttonIson.resultSplitBtn = true;
-        this.buttonIson.resultShareBtn = true;
-        this.buttonIson.exportBtn = false;
-      } else if (val.length == 1) {
-        this.buttonIson.AssociatedBtn = false;
-        this.buttonIson.DisassociateBtn = false;
-        this.buttonIson.deleteBtn = false;
-        this.buttonIson.resultSplitBtn = true;
-        this.buttonIson.resultShareBtn = false;
-        this.buttonIson.exportBtn = false;
+      this.buttonIson.disableAssociatedBtn = val.length == 0;
+      this.buttonIson.disableDisassociateBtn = val.length == 0;
+      this.buttonIson.disableDeleteBtn = val.length == 0;
+      this.buttonIson.disableSplitBtn = val.length <= 1;
+      this.buttonIson.disableShareBtn = val.length == 0;
+      this.buttonIson.disableExportBtn = val.length > 0;
+      // 筛选状态为执行中的
+      this.buttonIson.disableCancelExecBtn = false;
+      if (val.length >= 1) {
         // 选中的模型执行状态都为执行中按钮可用
-        this.buttonIson.puseBtn = false;
         val.forEach((r) => {
           if (r.runStatus !== 2) {
-            this.buttonIson.puseBtn = true
-          }
-        })
-      } else if (val.length > 1) {
-        this.buttonIson.AssociatedBtn = false;
-        this.buttonIson.DisassociateBtn = false;
-        this.buttonIson.deleteBtn = false;
-        this.buttonIson.resultSplitBtn = false;
-        this.buttonIson.resultShareBtn = false;
-        this.buttonIson.exportBtn = false;
-        // 选中的模型执行状态都为执行中按钮可用
-        this.buttonIson.puseBtn = false;
-        val.forEach((r) => {
-          if (r.runStatus !== 2) {
-            this.buttonIson.puseBtn = true
+            this.buttonIson.disableCancelExecBtn = true
           }
         })
       }
@@ -1078,7 +1006,7 @@ export default {
     /**
      * 移除项目分配
      */
-    RemoverelationProject() {
+    removeRelationProject() {
       var ids = [];
       for (var i = 0; i < this.selected1.length; i++) {
         ids.push(this.selected1[i].runTaskRelUuid);

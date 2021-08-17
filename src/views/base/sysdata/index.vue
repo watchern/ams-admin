@@ -136,7 +136,7 @@
       </el-form>
       <el-button type="primary" class="oper-btn delete" size="mini" :disabled="selectionSecond.length === 0" @click="deleteDataSecond()" style="float:right;margin:0 15px 0 10px"></el-button>
       <el-button type="primary" class="oper-btn edit" size="mini" :disabled="selectionSecond.length !== 1" @click="updateDataSecond()" style="float:right"></el-button>
-      <el-button type="primary" class="oper-btn again-2" size="mini" @click="resetTempSecond()" style="float:right"></el-button>
+      <el-button type="primary" class="oper-btn reset" size="mini" @click="resetTempSecond()" style="float:right"></el-button>
       <el-button type="primary" class="oper-btn add" size="mini" @click="addSecondCode()" style="float:right"></el-button>
 
       <el-table
@@ -293,7 +293,7 @@ export default {
     },
     numberIndex() {
       var data = this.tempSecond.codeIndex
-      const codeIndex = new RegExp('^[0-9]$').test(data)
+      const codeIndex = new RegExp('^[0-9]+$').test(data)
       if (!codeIndex) {
         this.$notify.error({
           title: '错误',

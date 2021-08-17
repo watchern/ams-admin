@@ -53,7 +53,7 @@
             @drag="drag"
             @dragend="dragend(menu)"
             draggable="true"
-          ></div>
+          />
           <!--    @drag="drag" @dragend="dragend(menu)"      -->
         </div>
       </div>
@@ -70,7 +70,7 @@
             <el-dropdown>
               <el-button
                 type="primary"
-                class="oper-btn link-2 btn-width-md"
+                class="oper-btn allocation btn-width-md"
                 :disabled="modelRunResultBtnIson.associatedBtn"
               ></el-button>
               <el-dropdown-menu slot="dropdown">
@@ -86,21 +86,21 @@
               :disabled="false"
               type="primary"
               @click="queryConditionSetting"
-              class="oper-btn search"
+              class="oper-btn setting-detail"
               style="margin-left: 10px"
-            ></el-button>
+            />
             <el-button
               :disabled="false"
               type="primary"
               @click="reSet"
-              class="oper-btn again-3"
-            ></el-button>
+              class="oper-btn reset"
+            />
             <el-button
               :disabled="modelRunResultBtnIson.exportBtn"
               type="primary"
               @click="exportExcel"
-              class="oper-btn export-2"
-            ></el-button>
+              class="oper-btn export"
+            />
             <!-- addDetailRel('qwer1', '项目11') -->
             <el-button
               v-if="yancheng"
@@ -169,7 +169,7 @@
                 <el-button
                   type="primary"
                   @click="modelResultExport"
-                  class="oper-btn export-2"
+                  class="oper-btn export"
                   title="导出"
                 ></el-button>
               </downloadExcel>
@@ -219,7 +219,7 @@
                   <el-button
                     type="primary"
                     @click="modelResultExport"
-                    class="oper-btn export-2"
+                    class="oper-btn export"
                     title="导出"
                   ></el-button>
                 </downloadExcel>
@@ -235,9 +235,9 @@
                 <el-dropdown>
                   <el-button
                     type="primary"
-                    class="oper-btn link-2 btn-width-md"
+                    class="oper-btn allocation btn-width-md"
                     :disabled="modelRunResultBtnIson.associatedBtn"
-                  ></el-button>
+                  />
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item @click.native="openProjectDialog"
                       >分配项目</el-dropdown-item
@@ -251,20 +251,20 @@
                   :disabled="false"
                   type="primary"
                   @click="queryConditionSetting"
-                  class="oper-btn search"
+                  class="oper-btn setting-detail"
                   style="margin-left: 10px"
                 ></el-button>
                 <el-button
                   :disabled="false"
                   type="primary"
                   @click="reSet"
-                  class="oper-btn again-3"
+                  class="oper-btn reset"
                 ></el-button>
                 <el-button
                   :disabled="modelRunResultBtnIson.exportBtn"
                   type="primary"
                   @click="exportExcel"
-                  class="oper-btn export-2"
+                  class="oper-btn export"
                 ></el-button>
                 <!-- addDetailRel('qwer1', '项目11') -->
                 <el-button
@@ -286,7 +286,7 @@
               style="height: calc(100% - 19px)"
               class="table ag-theme-balham"
               :column-defs="computedColumnDefs"
-              :row-data="computedRowData"
+              :rowData="computedRowData"
               rowMultiSelectWithClick="true"
               :enable-col-resize="true"
               :get-row-style="this.renderTableView"
@@ -299,7 +299,7 @@
               :modules="modules"
               :locale-text="localeText"
               :frameworkComponents="frc"
-              :context = "componentParent"
+              :context="componentParent"
             />
             <!-- :sideBar="true"
             :modules="modules"-->
@@ -580,6 +580,9 @@ let DragPos = { x: null, y: null, w: 1, h: 1, i: null };
 import { randomString4Len } from "@/api/analysis/common";
 import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
 import flowItem2 from "ams-clue-vue/src/components/yctodowork/flowItem2";
+
+//引入时间格式化方法
+import dayjs from "dayjs";
 export default {
   name: "childTabCon",
   // 注册draggable组件
@@ -599,13 +602,12 @@ export default {
 
   computed: {
     computedRowData() {
+      console.log(this.rowData);
       return this.rotateConfig != null ? this.rotateRowData : this.rowData;
     },
     computedColumnDefs() {
-      return this.rotateConfig != null
-        ? this.rotateColumnDefs
-        : this.columnDefs;
-    },
+          return this.rotateConfig!=null ? this.rotateColumnDefs : this.columnDefs;
+    }
   },
   watch: {
     modelDetailModelResultDialogIsShow(value) {
@@ -641,12 +643,12 @@ export default {
     return {
       //工作流相关
       submitData: {
-        versionUuid: "tlLuwUhC",
-        busTableName: "", //表名
-        busDatabaseName: "warehouse", //数据库名
-        busDatabaseType: "", //
-        status: "1", //预警数据状态
-        busdatas: [],
+          versionUuid: 'tlLuwUhC',
+          busTableName: '',  //表名
+          busDatabaseName: 'warehouse',  //数据库名
+          busDatabaseType: '',  //
+          status: '1',  //预警数据状态
+          busdatas: []
       },
       // 判断是否走工作流
       yancheng: false,
@@ -679,6 +681,7 @@ export default {
       dialogVisible: false,
       // 定义ag-grid列
       columnDefs: [],
+      gridOptions: {},
       // aggrid需要显示的数据
       rowData: [],
       rotateRowData: [], //行转列的数据
@@ -763,164 +766,155 @@ export default {
       // height123: document.getElementById("dataShow"),
       ifopen: 0,
       defaultColDef: {
-        flex: 1,
-        minWidth: 150,
+        flex:1,
         resizable: true,
         enableValue: true,
         enableRowGroup: true,
         enablePivot: true,
         sortable: true,
         filter: true,
+        floatingFilter: true, //列头过滤器 启动
       },
       sideBar: {
         toolPanels: [
           {
-            id: "columns",
-            labelDefault: "Columns",
-            labelKey: "columns",
-            iconKey: "columns",
-            toolPanel: "agColumnsToolPanel",
+            id: 'columns',
+            labelDefault: 'Columns',
+            labelKey: 'columns',
+            iconKey: 'columns',
+            toolPanel: 'agColumnsToolPanel',
           },
           {
-            id: "filters",
-            labelDefault: "Filters",
-            labelKey: "filters",
-            iconKey: "filter",
-            toolPanel: "agFiltersToolPanel",
+            id: 'filters',
+            labelDefault: 'Filters',
+            labelKey: 'filters',
+            iconKey: 'filter',
+            toolPanel: 'agFiltersToolPanel'
           },
         ],
-        position: 'right',
-        defaultToolPanel: 'filters'
+        position: "right",
+        defaultToolPanel: "filters",
       },
       modules: AllModules,
-      localeText:{
-  // for filter panel
-  page: '页',
-  more: '更多',
-  to: '到',
-  /* of: 'daOf', */
-  next: '下一页',
-  last: '最后',
-  first: '第一',
-  previous: '以前的',
-  loadingOoo: '加载中...',
-  // Row:"行",
-  rowGroups: '行分组',
-  // for set filter
-  selectAll: '全部选择',
-  searchOoo: '搜索...',
-  blanks: '空',
-  Column: '列',
-  labels: '标签',
-  // for number filter and text filter
-  filterOoo: '过滤',
-  applyFilter: '过滤中...',
-  equals: '等于',
-  notEqual: '不等于',
-  // for number filter
-  lessThan: '少于',
-  greaterThan: '多于',
-  lessThanOrEqual: '小于等于',
-  greaterThanOrEqual: '大于等于',
-  inRange: '在范围内',
-  // for text filter
-  contains: '包含',
-  notContains: '不包含',
-  startsWith: '开始',
-  endsWith: '结束',
-  // filter conditions
-  andCondition: '并且',
-  orCondition: '或者',
-  // the header of the default group column
-  // group: '分组',
-  // tool panel
-  columns: '列',
-  filters: '过滤器',
-  rowGroupColumns: '行分组',
-  rowGroupColumnsEmptyMessage: '拖拽设置行分组',
-  valueColumns: '列值',
-  pivotMode: '透视模式',
-  groups: '行列组',
-  values: '值',
-  pivots: '列标签',
-  valueColumnsEmptyMessage: '拖拽进行聚合',
-  pivotColumnsEmptyMessage: '拖拽设置列标签',
-  toolPanelButton: '工具按钮',
-  // other
-  noRowsToShow: '暂时没有要展示的数据',
-  // enterprise menu
-  pinColumn: '列位置调整',
-  valueAggregation: '聚合值',
-  autosizeThiscolumn: '自动调整此列大小',
-  autosizeAllColumns: '自动调整所有列的大小',
-  groupBy: '分组',
-  ungroupBy: '取消分组',
-  resetColumns: '重置列',
-  expandAll: '展开所有',
-  collapseAll: '关闭所有',
-  toolPanel: '工具',
-  export: '导出',
-  csvExport: 'CSV 导出',
-  excelExport: 'Excel 导出(.xlsx)',
-  excelXmlExport: 'Excel 导出(.xml)',
-  // enterprise menu pinning
-  PinColumn:"固定",
-  pinLeft: '居左',
-  pinRight: '居右',
-  noPin: '默认',
-  // enterprise menu aggregation and status bar
-  sum: '合计',
-  min: '最小值',
-  max: '最大值',
-  /* none: 'laNone', */
-  count: '计数',
-  average: '平均值',
-  avg : '平均值',
-  // standard menu
-  copy: '复制',
-  copyWithHeaders: '携表头复制',
-  ctrlC: 'ctrl-C',
-  paste: '粘贴',
-  ctrlV: 'ctrl-V'
-},
-      frc: {'ag-cell': AgCell},
+      localeText: {
+        // for filter panel
+        page: "页",
+        more: "更多",
+        to: "到",
+        /* of: 'daOf', */
+        next: "下一页",
+        last: "最后",
+        first: "第一",
+        previous: "以前的",
+        loadingOoo: "加载中...",
+        // Row:"行",
+        rowGroups: "行分组",
+        // for set filter
+        selectAll: "全部选择",
+        searchOoo: "搜索...",
+        blanks: "空",
+        Column: "列",
+        labels: "标签",
+        // for number filter and text filter
+        filterOoo: "过滤",
+        applyFilter: "过滤中...",
+        equals: "等于",
+        notEqual: "不等于",
+        // for number filter
+        lessThan: "少于",
+        greaterThan: "多于",
+        lessThanOrEqual: "小于等于",
+        greaterThanOrEqual: "大于等于",
+        inRange: "在范围内",
+        // for text filter
+        contains: "包含",
+        notContains: "不包含",
+        startsWith: "开始",
+        endsWith: "结束",
+        // filter conditions
+        andCondition: "并且",
+        orCondition: "或者",
+        numberFilter:"数字筛选器",
+        textFilter:"文本筛选器",
+        dateFilter:"时间筛选器",
+        // the header of the default group column
+        // group: '分组',
+        // tool panel
+        columns: "列",
+        filters: "过滤器",
+        rowGroupColumns: "行分组",
+        rowGroupColumnsEmptyMessage: "拖拽设置行分组",
+        valueColumns: "列值",
+        pivotMode: "透视模式",
+        groups: "行列组",
+        values: "值",
+        pivots: "列标签",
+        valueColumnsEmptyMessage: "拖拽进行聚合",
+        pivotColumnsEmptyMessage: "拖拽设置列标签",
+        toolPanelButton: "工具按钮",
+        // other
+        noRowsToShow: "暂时没有要展示的数据",
+        // enterprise menu
+        pinColumn: "列位置调整",
+        valueAggregation: "聚合值",
+        autosizeThiscolumn: "自动调整此列大小",
+        autosizeAllColumns: "自动调整所有列的大小",
+        groupBy: "分组",
+        ungroupBy: "取消分组",
+        resetColumns: "重置列",
+        expandAll: "展开所有",
+        collapseAll: "关闭所有",
+        toolPanel: "工具",
+        export: "导出",
+        csvExport: "CSV 导出",
+        excelExport: "Excel 导出(.xlsx)",
+        excelXmlExport: "Excel 导出(.xml)",
+        // enterprise menu pinning
+        PinColumn: "固定",
+        pinLeft: "居左",
+        pinRight: "居右",
+        noPin: "默认",
+        // enterprise menu aggregation and status bar
+        sum: "合计",
+        min: "最小值",
+        max: "最大值",
+        /* none: 'laNone', */
+        count: "计数",
+        average: "平均值",
+        avg: "平均值",
+        // standard menu
+        copy: "复制",
+        copyWithHeaders: "携表头复制",
+        ctrlC: "ctrl-C",
+        paste: "粘贴",
+        ctrlV: "ctrl-V",
+      },
+      frc: { "ag-cell": AgCell },
       componentParent: null,
       rotateConfig: null,
       rotateConfigs: [
         {
           /*  ,财报结构（趋势）分析 示例  */
-          modelIds: [
-            "fa2f16c00e335049a0088580362e15db",
-            "3acc159b6110564da7698b460eab774f",
-          ] /*  通过UUID匹配的的模型进行行列转置 */,
-          mainField: "科目名称" /*  转置的主列 */,
-          colNamesField: "期间值" /*  以此列值为转置后列头的列 */,
-          titleDisplayRules: (thisTitle, colNamesFieldValue) => {
-            /*  转置后的显示规则 */
-            if (
-              thisTitle == "占比" ||
-              thisTitle == "环比" ||
-              thisTitle == "同比"
-            )
-              return colNamesFieldValue + thisTitle;
-            else if (thisTitle == "期末额") return colNamesFieldValue;
+              modelIds: ["fa2f16c00e335049a0088580362e15db","3acc159b6110564da7698b460eab774f"],  /*  通过UUID匹配的的模型进行行列转置 */
+              mainField:"科目名称",               /*  转置的主列 */
+              colNamesField: "期间值",     /*  以此列值为转置后列头的列 */
+              titleDisplayRules: (thisTitle, colNamesFieldValue)=>{       /*  转置后的显示规则 */
+                  if(thisTitle=='占比'||thisTitle=='环比'||thisTitle=='同比') return colNamesFieldValue+thisTitle;
+                  else if(thisTitle=='期末额') return colNamesFieldValue;
             else return thisTitle;
-          },
-        },
-        {
+              }
+          },{
           /*  ,财报结构（趋势）分析 示例  */
-          modelIds: [
-            "6f0d96ff5b633543eb59736592c92418",
-          ] /*  通过UUID匹配的的模型进行行列转置 */,
-          mainField: "指标名称,指标模块,计算公式" /*  转置的主列 */,
-          colNamesField: "月份" /*  以此列值为转置后列头的列 */,
-          titleDisplayRules: (thisTitle, colNamesFieldValue) => {
-            /*  转置后的显示规则 */
-            if (thisTitle == "计算值") return colNamesFieldValue;
+              modelIds: ["6f0d96ff5b633543eb59736592c92418"],  /*  通过UUID匹配的的模型进行行列转置 */
+              mainField:"指标名称,指标模块,计算公式",               /*  转置的主列 */
+              colNamesField: "月份",     /*  以此列值为转置后列头的列 */
+              titleDisplayRules: (thisTitle, colNamesFieldValue)=>{       /*  转置后的显示规则 */
+                  if(thisTitle=='计算值') return colNamesFieldValue;
             else return thisTitle;
-          },
-        },
-      ],
+              }
+          }
+
+      ]
     };
   },
   mounted() {
@@ -1015,7 +1009,15 @@ export default {
         const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
         link.style.display = "none";
         link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "模型运行结果表.xls");
+        //模型运行结果表日期使用当前日期
+        link.setAttribute(
+          "download",
+          "模型运行结果表" +
+            "(" +
+            dayjs(new Date()).format("YYYY年MM月DD日hhmmss") +
+            ")" +
+            ".xls"
+        );
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -1255,7 +1257,11 @@ export default {
             //获取关联对象
             let modelDetailRelation = this.modelObj.modelDetailRelation[i];
             //循环模型关联详细配置
-            for (let j = 0; j < modelDetailRelation.modelDetailConfig.length; j++) {
+            for (
+              let j = 0;
+              j < modelDetailRelation.modelDetailConfig.length;
+              j++
+            ) {
               let modelDetailConfig = modelDetailRelation.modelDetailConfig[j];
               //确保数据不是undefined或null
               if (modelDetailConfig.resultColumn) {
@@ -1278,16 +1284,25 @@ export default {
         //循环阈值对象  取出阈值对象里面的列名  用于下遍历处理的时候 作为判断条件
         if (this.modelUuid !== undefined) {
           for (var i = 0; i < modelThresholdValues.length; i++) {
-            if (modelThresholdValues[i].thresholdValue.thresholdValueType == 2) {
-              if ( renderColumns.indexOf(modelThresholdValues[i].modelResultColumnName) == -1) {
-                renderColumns.push(modelThresholdValues[i].modelResultColumnName);
-                }
+            if (
+              modelThresholdValues[i].thresholdValue.thresholdValueType == 2
+            ) {
+              if (
+                renderColumns.indexOf(
+                  modelThresholdValues[i].modelResultColumnName
+                ) == -1
+              ) {
+                renderColumns.push(
+                  modelThresholdValues[i].modelResultColumnName
+                );
+              }
               if (typeof modelThresholdValues[i].colorInfo === "string") {
                 modelThresholdValues[i].colorInfo = JSON.parse(
                   modelThresholdValues[i].colorInfo
                 );
               }
-              renderObject[modelThresholdValues[i].modelResultColumnName] = modelThresholdValues[i];
+              renderObject[modelThresholdValues[i].modelResultColumnName] =
+                modelThresholdValues[i];
             }
           }
         }
@@ -1320,14 +1335,25 @@ export default {
             for (var i = 1; i < columnInfo.length; i++) {
               //number,varchar,time,float
               var type = "";
-              if (columnInfo[i].columnType.toUpperCase().indexOf("VARCHAR") != -1) {
+              if (
+                columnInfo[i].columnType.toUpperCase().indexOf("VARCHAR") != -1
+              ) {
                 type = "varchar";
-              } else if (columnInfo[i].columnType.toUpperCase().indexOf("NUMBER") !=-1 || columnInfo[i].columnType.toUpperCase().indexOf("INT") != -1) {
+              } else if (
+                columnInfo[i].columnType.toUpperCase().indexOf("NUMBER") !=
+                  -1 ||
+                columnInfo[i].columnType.toUpperCase().indexOf("INT") != -1
+              ) {
                 type = "number";
-              } else if (columnInfo[i].columnType.toUpperCase().indexOf("TIMESTAMP") != -1 ||
-                columnInfo[i].columnType.toUpperCase().indexOf("DATE") != -1) {
+              } else if (
+                columnInfo[i].columnType.toUpperCase().indexOf("TIMESTAMP") !=
+                  -1 ||
+                columnInfo[i].columnType.toUpperCase().indexOf("DATE") != -1
+              ) {
                 type = "time";
-              } else if (columnInfo[i].columnType.toUpperCase().indexOf("FLOAT") != -1) {
+              } else if (
+                columnInfo[i].columnType.toUpperCase().indexOf("FLOAT") != -1
+              ) {
                 type = "float";
               }
               columnType.push(type);
@@ -1349,7 +1375,11 @@ export default {
               if (this.settingInfo != undefined) {
                 for (var i = 0; i < colNames.length; i++) {
                   var rowColom = {};
-                  if (renderColumns.indexOf(colNames[i].toUpperCase()) != -1 || modelResultDetailCol.indexOf(colNames[i].toUpperCase()) !=-1) {
+                  if (
+                    renderColumns.indexOf(colNames[i].toUpperCase()) != -1 ||
+                    modelResultDetailCol.indexOf(colNames[i].toUpperCase()) !=
+                      -1
+                  ) {
                     var thresholdValueRel =
                       renderObject[colNames[i].toUpperCase()];
                     if (onlyFlag == false) {
@@ -1357,7 +1387,7 @@ export default {
                         headerName: colNames[i],
                         field: colNames[i],
                         params: { thresholdValueRel, modelResultDetailCol },
-                        cellRenderer: "ag-cell",
+                        cellRenderer: 'ag-cell',
                         checkboxSelection: true,
                       };
                       onlyFlag = true;
@@ -1366,7 +1396,7 @@ export default {
                         headerName: colNames[i],
                         field: colNames[i],
                         params: { thresholdValueRel, modelResultDetailCol },
-                        cellRenderer: "ag-cell",
+                        cellRenderer: 'ag-cell',
                       };
                     }
                   } else {
@@ -1388,8 +1418,16 @@ export default {
                 }
               } else {
                 for (var i = 0; i < colNames.length; i++) {
-                  loop: for (var j = 0;j < this.modelOutputColumn.length;j++) {
-                    if (this.modelOutputColumn[j].outputColumnName.toLowerCase() == colNames[i]) {
+                  loop: for (
+                    var j = 0;
+                    j < this.modelOutputColumn.length;
+                    j++
+                  ) {
+                    if (
+                      this.modelOutputColumn[
+                        j
+                      ].outputColumnName.toLowerCase() == colNames[i]
+                    ) {
                       if (this.modelOutputColumn[j].isShow == 1) {
                         var rowColom = {};
                         if (
@@ -1405,11 +1443,8 @@ export default {
                             rowColom = {
                               headerName: this.modelOutputColumn[j].columnAlias,
                               field: colNames[i],
-                              params: {
-                                thresholdValueRel,
-                                modelResultDetailCol,
-                              },
-                              cellRenderer: "ag-cell",
+                              params: {thresholdValueRel, modelResultDetailCol},
+                        cellRenderer: 'ag-cell',
                               checkboxSelection: true,
                             };
                             onlyFlag = true;
@@ -1417,11 +1452,8 @@ export default {
                             rowColom = {
                               headerName: this.modelOutputColumn[j].columnAlias,
                               field: colNames[i],
-                              params: {
-                                thresholdValueRel,
-                                modelResultDetailCol,
-                              },
-                              cellRenderer: "ag-cell",
+                              params: {thresholdValueRel, modelResultDetailCol},
+                        cellRenderer: 'ag-cell',
                             };
                           }
                         } else {
@@ -1473,14 +1505,15 @@ export default {
                 for (var j = 0; j < colNames.length; j++) {
                   for (var k = 0; k < this.modelOutputColumn.length; k++) {
                     if (
-                      this.modelOutputColumn[k].outputColumnName.toLowerCase() == colNames[j]
+                      this.modelOutputColumn[
+                        k
+                      ].outputColumnName.toLowerCase() == colNames[j]
                     ) {
                       if (this.modelOutputColumn[k].dataCoding != undefined) {
                         var a = da[i][colNames[j]];
-                        da[i][colNames[j]] =
-                          this.dataCoding[this.modelOutputColumn[k].dataCoding][
-                            a
-                          ];
+                        da[i][colNames[j]] = this.dataCoding[
+                          this.modelOutputColumn[k].dataCoding
+                        ][a];
                       }
                     }
                   }
@@ -1499,46 +1532,44 @@ export default {
         // if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
         //   this.gridApi.closeToolPanel()
         // }
-        // let _this = this;
-        // setTimeout(function () {
-        //   for (let i = 0; i < col.length; i++) {
-        //     let str = _this.queryData.columnList[i].columnType;
-        //     if (
-        //       str.toUpperCase().indexOf("VARCHAR") != -1 ||
-        //       str.toUpperCase().indexOf("CHAR") != -1
-        //     ) {
-        //       col[i].filter = "agTextColumnFilter";
-        //     } else if (
-        //       str.toUpperCase().indexOf("NUMBER") != -1 ||
-        //       str.toUpperCase().indexOf("INT") != -1 ||
-        //       str.toUpperCase().indexOf("DATE") != -1 ||
-        //       str.toUpperCase().indexOf("FLOAT") != -1 ||
-        //       str.toUpperCase().indexOf("DOUBLE") != -1
-        //     ) {
-        //       col[i].filter = "agNumberColumnFilter";
-        //     } else {
-        //       col[i].filter = "agTextColumnFilter";
         let _this = this
         setTimeout(function () {
-          for(let i = 0;i<col.length;i++){
+          for (let i = 0; i < col.length; i++) {
             var colType0 = _this.result.columnType[i];
-            colType0 = colType0 ? "": colType0.toUpperCase();
-            switch (colType0) {
-              case "NUMBER":
-              case "INT":
-              case "INTEGER":
-              case "FLOAT":
-              case "DOUBLE":
-                col[i].filter = 'agNumberColumnFilter';
-                break;
-              case "DATE":
-              case "TIMESTAMP":
-                col[i].filter = 'agDateColumnFilter';
-                break;
-              default:
-                col[i].filter = 'agTextColumnFilter';
-                break;
-            }
+            colType0 = colType0 ? "" : colType0.toUpperCase();
+            col[i].filter = "agMultiColumnFilter";
+            col[i].filterParams = {
+              filters: [
+                {
+                  filter: "agNumberColumnFilter",
+                  display: "subMenu",
+                },
+                {
+                  filter: "agTextColumnFilter",
+                  display: "subMenu",
+                },
+                {
+                  filter: "agDateColumnFilter",
+                  display: "subMenu",
+                },
+              ],
+            };
+            // switch (colType0) {
+            //   case "NUMBER":
+            //   case "INT":
+            //   case "INTEGER":
+            //   case "FLOAT":
+            //   case "DOUBLE":
+            //     col[i].filter = "agNumberColumnFilter";
+            //     break;
+            //   case "DATE":
+            //   case "TIMESTAMP":
+            //     col[i].filter = "agDateColumnFilter";
+            //     break;
+            //   default:
+            //     col[i].filter = "agTextColumnFilter";
+            //     break;
+            // }
           }
           _this.columnDefs = col;
           _this.rowData = da;
@@ -1610,22 +1641,37 @@ export default {
                 this.modelResultColumnNames = this.nextValue.columnNames;
                 selectModel(this.modelId).then((resp) => {
                   this.modelDetailRelation = resp.data.modelDetailRelation;
-                  modelThresholdValuesTab = resp.data.modelThresholdValues
+                  modelThresholdValuesTab = resp.data.modelThresholdValues;
                   // 表格渲染规则赋值
-                  this.modelThresholdValuesTabView = resp.data.modelThresholdValues
+                  this.modelThresholdValuesTabView =
+                    resp.data.modelThresholdValues;
                   //循环阈值对象  取出阈值对象里面的列名  用于下边遍历处理的时候 作为判断条件
                   if (this.preLength == this.myIndex + 1) {
                     for (var i = 0; i < modelThresholdValuesTab.length; i++) {
-                      if (modelThresholdValuesTab[i].thresholdValue.thresholdValueType == 2) {
-                        if (renderColumns.indexOf(modelThresholdValuesTab[i].modelResultColumnName) == -1) {
-                          renderColumns.push(modelThresholdValuesTab[i].modelResultColumnName);
+                      if (
+                        modelThresholdValuesTab[i].thresholdValue
+                          .thresholdValueType == 2
+                      ) {
+                        if (
+                          renderColumns.indexOf(
+                            modelThresholdValuesTab[i].modelResultColumnName
+                          ) == -1
+                        ) {
+                          renderColumns.push(
+                            modelThresholdValuesTab[i].modelResultColumnName
+                          );
                         }
-                        if (typeof modelThresholdValuesTab[i].colorInfo === "string") {
+                        if (
+                          typeof modelThresholdValuesTab[i].colorInfo ===
+                          "string"
+                        ) {
                           modelThresholdValuesTab[i].colorInfo = JSON.parse(
                             modelThresholdValuesTab[i].colorInfo
                           );
                         }
-                        renderObject[modelThresholdValuesTab[i].modelResultColumnName] = modelThresholdValuesTab[i];
+                        renderObject[
+                          modelThresholdValuesTab[i].modelResultColumnName
+                        ] = modelThresholdValuesTab[i];
                       }
                     }
                   }
@@ -1668,10 +1714,19 @@ export default {
                   for (var j = 0; j < this.nextValue.columnNames.length; j++) {
                     var rowColom = {};
                     for (var n = 0; n < modelOutputColumn.length; n++) {
-                      if (modelOutputColumn[n].outputColumnName ==this.nextValue.columnNames[j]) {
+                      if (
+                        modelOutputColumn[n].outputColumnName ==
+                        this.nextValue.columnNames[j]
+                      ) {
                         if (modelOutputColumn[n].isShow == 1) {
                           if (
-                            renderColumns.indexOf(this.nextValue.columnNames[j].toUpperCase()) != -1 || modelResultDetailCol.indexOf(this.nextValue.columnNames[j].toUpperCase()) != -1) {
+                            renderColumns.indexOf(
+                              this.nextValue.columnNames[j].toUpperCase()
+                            ) != -1 ||
+                            modelResultDetailCol.indexOf(
+                              this.nextValue.columnNames[j].toUpperCase()
+                            ) != -1
+                          ) {
                             var thresholdValueRel =
                               renderObject[
                                 this.nextValue.columnNames[j].toUpperCase()
@@ -1680,11 +1735,8 @@ export default {
                               headerName: modelOutputColumn[n].columnAlias,
                               field: this.nextValue.columnNames[j],
                               width: "180",
-                              params: {
-                                thresholdValueRel,
-                                modelResultDetailCol,
-                              },
-                              cellRenderer: "ag-cell",
+                              params: {thresholdValueRel, modelResultDetailCol},
+                              cellRenderer: 'ag-cell',
                             };
                           } else {
                             rowColom = {
@@ -1713,7 +1765,10 @@ export default {
                           j++
                         ) {
                           for (var k = 0; k < modelOutputColumn.length; k++) {
-                            if (modelOutputColumn[k].outputColumnName ==this.nextValue.columnNames[j]) {
+                            if (
+                              modelOutputColumn[k].outputColumnName ==
+                              this.nextValue.columnNames[j]
+                            ) {
                               if (
                                 modelOutputColumn[k].dataCoding != undefined
                               ) {
@@ -1736,44 +1791,47 @@ export default {
                     }
                     this.rowData = rowData;
                   }
-                  // let _this = this
-                  // for (let i = 0; i < col.length; i++) {
-                  //   // console.log(_this.queryData.columnList[i]||0)
-                  //     col[i].filter = "agTextColumnFilter";
-                  for (let i = 0; i < col.length; i++) {
+                  for(let i = 0;i<col.length;i++){
                     let colType0 = this.result.columnType[i];
-                    colType0 = colType0 ? "": colType0.toUpperCase();
-                    switch (colType0) {
-                      case "NUMBER":
-                      case "INT":
-                      case "INTEGER":
-                      case "FLOAT":
-                      case "DOUBLE":
-                        col[i].filter = 'agNumberColumnFilter'
-                        break;
-                      case "DATE":
-                      case "TIMESTAMP":
-                        col[i].filter = 'agDateColumnFilter'
-                        break;
-                      default:
-                        col[i].filter = 'agTextColumnFilter'
-                        break;
-
-                    }
-                    // if (this.result.columnType[i] == 'varchar'){
-                    //   col[i].filter = 'agTextColumnFilter'
-                    // } else if (this.result.columnType[i] == 'number' || this.result.columnType[i] == 'time' || this.result.columnType[i] == 'float') {
+                    // colType0 = colType0 ? "": colType0.toUpperCase();
+                    // switch (colType0) {
+                    //   case "NUMBER":
+                    //   case "INT":
+                    //   case "INTEGER":
+                    //   case "FLOAT":
+                    //   case "DOUBLE":
                     //   col[i].filter = 'agNumberColumnFilter'
-                    // } else {
-                    //   col[i].filter = 'agTextColumnFilter'
+                    //     break;
+                    //   case "DATE":
+                    //   case "TIMESTAMP":
+                    //     col[i].filter = 'agDateColumnFilter'
+                    //     break;
+                    //   default:
+                    //     col[i].filter = 'agTextColumnFilter'
+                    //     break;
                     // }
+                    colType0 = colType0 ? "" : colType0.toUpperCase();
+                    col[i].filter = "agMultiColumnFilter";
+                    col[i].filterParams = {
+                      filters: [
+                        {
+                          filter: "agNumberColumnFilter",
+                          display: "subMenu",
+                        },
+                        {
+                          filter: "agTextColumnFilter",
+                          display: "subMenu",
+                        },
+                        {
+                          filter: "agDateColumnFilter",
+                          display: "subMenu",
+                        },
+                      ],
+                    };
                   }
                   this.columnDefs = col;
                   this.afterResult = true;
-                  if (
-                    typeof this.gridApi !== "undefined" &&
-                    this.gridApi !== null
-                  ) {
+                  if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
                     this.gridApi.closeToolPanel();
                   }
                 });
@@ -1798,7 +1856,6 @@ export default {
         this.getIntoModelResultDetail(nextValue);
       }
     },
-
     doRotating(rowData) {
       //旋转
       if (rowData.length == 0) return;
@@ -1908,7 +1965,6 @@ export default {
                 var rowColom = {
                   headerName: this.nextValue.columnNames[j],
                   field: this.nextValue.columnNames[j],
-                  width: "180",
                 };
                 var key = this.nextValue.columnNames[j];
                 var value = this.nextValue.result[j];
@@ -1920,37 +1976,27 @@ export default {
             for (var k = 0; k < this.nextValue.result.length; k++) {
               rowData.push(this.nextValue.result[k]);
             }
-            // let _this = this
-            // for (let i = 0; i < col.length; i++) {
-            //     // console.log(_this.queryData.columnList[i]||1)
-            //     col[i].filter = "agTextColumnFilter";
-            for(let i = 0;i<col.length;i++){
+            for (let i = 0; i < col.length; i++) {
 
               var colType0 = this.result.columnType[i];
-              colType0 = colType0 ? "": colType0.toUpperCase();
-              switch (colType0) {
-                case "NUMBER":
-                case "INT":
-                case "INTEGER":
-                case "FLOAT":
-                case "DOUBLE":
-                  col[i].filter = 'agNumberColumnFilter';
-                  break;
-                case "DATE":
-                case "TIMESTAMP":
-                  col[i].filter = 'agDateColumnFilter';
-                  break;
-                default:
-                  col[i].filter = 'agTextColumnFilter';
-                  break;
-              }
-              // if (this.result.columnType[i] == 'varchar'){
-              //   col[i].filter = 'agTextColumnFilter'
-              // } else if (this.result.columnType[i] == 'number' || this.result.columnType[i] == 'time' || this.result.columnType[i] == 'float') {
-              //   col[i].filter = 'agNumberColumnFilter'
-              // } else {
-              //   col[i].filter = 'agTextColumnFilter'
-              // }
+              colType0 = colType0 ? "" : colType0.toUpperCase();
+              col[i].filter = "agMultiColumnFilter";
+              col[i].filterParams = {
+                filters: [
+                  {
+                    filter: "agNumberColumnFilter",
+                    display: "subMenu",
+                  },
+                  {
+                    filter: "agTextColumnFilter",
+                    display: "subMenu",
+                  },
+                  {
+                    filter: "agDateColumnFilter",
+                    display: "subMenu",
+                  },
+                ],
+              };
             }
             this.columnDefs = col;
             this.afterResult = true;
@@ -2003,10 +2049,10 @@ export default {
     /**
      * 渲染表格，将颜色渲染上去
      */
-    renderTableView(params){
+    renderTableView(params) {
       // 规则赋值
       var modelThresholdValues = [];
-      if (typeof this.settingInfo != 'undefined') {
+      if (typeof this.settingInfo != "undefined") {
         modelThresholdValues.push(
           JSON.parse(this.settingInfo).thresholdValueRel
         );
@@ -2014,8 +2060,8 @@ export default {
         // 模型结果查看
         modelThresholdValues = this.modelObj.modelThresholdValues;
         // 模型直接点击运行
-        if (typeof this.modelObj.modelThresholdValues === 'undefined')
-        modelThresholdValues = this.modelThresholdValuesTabView
+        if (typeof this.modelObj.modelThresholdValues === "undefined")
+          modelThresholdValues = this.modelThresholdValuesTabView;
       }
       var thresholdValueRel = {};
       this.isLoading = false;

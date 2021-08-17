@@ -49,15 +49,15 @@
         <el-form-item label="规则描述" prop="ruleDesc">
           <el-input v-model="temp.ruleDesc" type="textarea" />
         </el-form-item>
-        <el-form-item label="转码方式" prop="ruleType" v-if="false">
+        <el-form-item label="转码方式" prop="ruleType">
           <el-radio v-model="temp.ruleType" :label="1">SQL语句</el-radio>
           <el-radio v-model="temp.ruleType" :label="2">手动输入</el-radio>
         </el-form-item>
-        <!-- <el-form-item v-if="temp.ruleType === 1" label="转码规则" prop="sqlContent" placeholder="请输入SQL">
+         <el-form-item v-if="temp.ruleType === 1" label="转码规则" prop="sqlContent" placeholder="请输入SQL">
           <el-link v-if="temp.ruleType === 1" size="mini" type="primary" @click="exSql()">执行SQL</el-link>
           <el-input v-model="temp.sqlContent" type="textarea" />
-        </el-form-item> -->
-        <!-- <el-table v-if="temp.ruleType === 1" :data="sqlRule">
+        </el-form-item>
+         <el-table v-if="temp.ruleType === 1" :data="sqlRule">
           <el-table-column prop="codeValue" label="真实值">
             <template slot-scope="scope">
               <el-select ref="codeValue" v-model="scope.row.codeValue" placeholder="请选择真实值">
@@ -82,7 +82,7 @@
               </el-select>
             </template>
           </el-table-column>
-        </el-table> -->
+        </el-table>
         <!-- 执行预览弹窗 -->
         <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px">
           <el-row>
@@ -107,7 +107,7 @@
         <el-link size="mini" type="primary">导入</el-link>
         <span style="font-size:2px;color:red">(请选择xls或者xlsx格式,导入第一列为真实值,第二列为转码值)</span>
       </el-upload>
-      <el-table v-if="temp.ruleType === 2" :data="transColRelsData" height="220">
+      <el-table v-if="temp.ruleType === 2" :data="transColRelsData" height="calc(100% - 260px)">
         <el-table-column prop="codeValue" label="真实值" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-input v-if="scope.row.start !='0' || scope.row.start == undefined" v-model="scope.row.codeValue" style="width:90%;" />
@@ -302,8 +302,7 @@ export default {
       this.temp = {
         transRuleUuid: undefined,
         ruleName: '',
-        // ruleType: 1,
-        ruleType: 2,
+        ruleType: 1,
         ruleDesc: '',
         codeValue: '',
         transValue: '',
@@ -527,3 +526,11 @@ export default {
   }
 }
 </script>
+<style scoped>
+>>>.el-dialog{
+  height: 70vh!important;
+}
+>>>.el-dialog__body{
+  height: calc(100% - 100px);
+}
+</style>
