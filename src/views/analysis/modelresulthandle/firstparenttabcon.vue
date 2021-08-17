@@ -256,7 +256,7 @@ import personTree from "@/components/publicpersontree/index";
 import { getDictList } from '@/utils'
 import { save, update, del, personList, projectList, toTreeData, getProjectById } from '@TCB/api/tcbaudit/problem'
 import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
-import ProblemPopover from '@TCB/components/ProblemPopover'
+import ProblemPopover from '@TCB/components/ProblemPopover/index'
 export default {
   components: { Pagination, QueryField, runimmediatelycon, personTree, flowItem, ProblemPopover },
   props: {
@@ -396,7 +396,7 @@ export default {
       this.resetTemp()
       this.temp.projectUuid = this.projectId
       this.dialogFormVisible = true
-      this.$refs.problempopover.getPreLoadProjectList()
+      // this.$refs.problempopover.getPreLoadProjectList()
     },
     //工作流相关    
     closeFlowItem(val) {
