@@ -834,10 +834,6 @@ export default {
                   if (choiceType === '1') { // 单选
                     obj.paramValue = this.paramListValueList[i]
                   } else {
-                    // for (let j = 0; j < this.paramListValueList[i].length; j++) { // 多值，以'','',……形式展现
-                    //   obj.paramValue += "'" + this.paramListValueList[i][j] + "',"
-                    // }
-                    // obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
                     obj.paramValue = this.paramListValueList[i].join(',')
                   }
                   filterArr.push(obj)
@@ -906,9 +902,9 @@ export default {
           
           // 获取参数查询条件（下拉树）
         if(this.paramTreeValueList.length > 0) {
-          for(var i = 0; i< this.paramTreeValueList.length;i++){
-             if( typeof this.paramTreeValueList[i] !== 'undefined'){
-               paramInfoObj = paramInfoArr[i]
+          for(var treenum = 0; treenum< this.paramTreeValueList.length;treenum++){
+             if( typeof this.paramTreeValueList[treenum] !== 'undefined'){
+               paramInfoObj = paramInfoArr[treenum]
               let moduleParamId = paramInfoObj.dataId// 母参数ID
               let allowedNull = typeof paramInfoObj.dataAllowedNull !== 'undefined' ? paramInfoObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
               let choiceType = paramInfoObj.dataChoiceType// 当前参数是多选还是单选：0：多选，1、单选
@@ -919,7 +915,7 @@ export default {
               }
               if (allowedNull === 1) { // 允许为空
                 obj.allowedNull = '1'
-                if (this.paramTreeValueList[i].length === 0) { // 未选择值
+                if (this.paramTreeValueList[treenum].length === 0) { // 未选择值
                   hasAllowedNullParam = true
                   for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
                     if (arr[w].moduleParamId === moduleParamId) {
@@ -928,23 +924,19 @@ export default {
                   }
                 } else {
                   if (choiceType === '1') { // 单选
-                    obj.paramValue = this.paramTreeValueList[i]
+                    obj.paramValue = this.paramTreeValueList[treenum]
                   } else { // 多选
-                    obj.paramValue = this.paramTreeValueList[i].join(',')
+                    obj.paramValue = this.paramTreeValueList[treenum].join(',')
                   }
                   
                 }
                 filterArr.push(obj)
               } else { // 不允许为空
-                if (this.paramTreeValueList[i].length !== 0) {
+                if (this.paramTreeValueList[treenum].length !== 0) {
                   if (choiceType === '1') { // 单选
-                    obj.paramValue = this.paramTreeValueList[i]
+                    obj.paramValue = this.paramTreeValueList[treenum]
                   } else {
-                    // for (let j = 0; j < this.paramListValueList[i].length; j++) { // 多值，以'','',……形式展现
-                    //   obj.paramValue += "'" + this.paramListValueList[i][j] + "',"
-                    // }
-                    // obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
-                    obj.paramValue = this.paramTreeValueList[i].join(',')
+                    obj.paramValue = this.paramTreeValueList[treenum].join(',')
                   }
                   filterArr.push(obj)
                 } else {
