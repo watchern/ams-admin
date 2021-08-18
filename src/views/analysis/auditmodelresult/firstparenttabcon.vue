@@ -358,6 +358,9 @@ export default {
     personTree,
     userProject,
   },
+  props:[
+    "modelTitle"
+  ],
   data() {
     return {
       tableKey: "errorUuid",
@@ -468,7 +471,7 @@ export default {
         link.style.display = "none";
         link.href = URL.createObjectURL(blob);
         //模型运行结果表日期使用当前日期
-        link.setAttribute("download", "模型运行结果表"+"("+dayjs(new Date()).format('YYYY年MM月DD日hhmmss')+")"+".xls");
+        link.setAttribute("download",+this.modelTitle +"("+dayjs(new Date()).format('YYYY年MM月DD日hhmmss')+")"+".xls");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

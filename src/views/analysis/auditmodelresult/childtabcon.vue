@@ -1012,7 +1012,7 @@ export default {
         //模型运行结果表日期使用当前日期
         link.setAttribute(
           "download",
-          "模型运行结果表" +
+          this.modelTitle +
             "(" +
             dayjs(new Date()).format("YYYY年MM月DD日hhmmss") +
             ")" +
