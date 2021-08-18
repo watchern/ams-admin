@@ -77,8 +77,8 @@ export default {
     remove(data, parentNode) {
       this.$refs.dataTree.remove(data, parentNode)
     },
-    refresh() {
-      this.$refs.dataTree.refresh()
+    refresh(query) {
+      this.$refs.dataTree.refresh(query)
     }
   }
 }

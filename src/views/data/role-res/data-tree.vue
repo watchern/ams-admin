@@ -127,6 +127,7 @@ export default {
       treeLoading: false,
       //需要打开的节点
       openlist: ["ROOT"],
+      clickId:''
     };
   },
   computed: {},
@@ -147,6 +148,7 @@ export default {
       return this.$refs.tree1;
     },
     nodeClick(data, node, tree) {
+      console.log(node,tree)
       this.$emit("node-click", data, node, tree);
     },
     nodeExpand() {},
@@ -190,10 +192,42 @@ export default {
         // debugger;
       }
     },
-    refresh() {
+    refresh(query) {
       this.treeLoading = true;
       //为防止数据更新的延迟导致的bug在此添加缓冲
-      setTimeout(this.rep(), 500);
+      getResELTree({
+        dataUserId: this.dataUserId,
+        sceneCode: this.sceneCode,
+        type: this.treeType,
+      }).then((resp) => {
+        this.treeLoading = false;
+        this.treeData1 = resp.data;
+        //默认展开所有文件夹
+        this.openlist = ["ROOT"];
+        this.inputopenlist(this.treeData1);
+        if(query){
+          this.clickId = query
+          for(let i = 0;i<resp.data.length;i++){
+            this.findchild(resp.data[i])
+          }
+        }else{
+          return
+        }
+      });
+    },
+    findchild(list){
+      if(list.id==this.clickId){
+        this.$emit("node-click", list, 'pro', '');
+        return
+      }else{
+        if(list.children.length!=0){
+          for(let i =0;i<list.children.length;i++){
+            this.findchild(list.children[i])
+          }
+        }else{
+          return
+        }
+      }
     },
     rep() {
       getResELTree({
