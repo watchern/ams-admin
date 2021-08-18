@@ -138,6 +138,7 @@ export default {
   },
   created() {
     this.dataTypeRules = this.CommonUtil.DataTypeRules;
+    this.dataTypeRules = _.DataTypeRules;
     this.initTable(this.tableId);
   },
   watch: {

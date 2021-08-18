@@ -877,115 +877,116 @@ export async function saveModelGraph(){
         message = '未将结果表标记为最终结果表'
     }else {
         let newNodeData = { ...{}, ...graph.nodeData }
-        if(newNodeData[resultTableNodeId].nodeInfo.optType === "datasource"){//只将原表标记成了最终结果表
+        if (newNodeData[resultTableNodeId].nodeInfo.optType === "datasource") {//只将原表标记成了最终结果表
             modelSql += "/*原表【" + newNodeData[resultTableNodeId].nodeInfo.nodeName + "】的查询SQL语句*/\n" + newNodeData[resultTableNodeId].nodeInfo.nodeSql + "\n";
-        }else{
+        } else {
             // 以模型最终结果表节点为最末级节点，向上寻找所有的节点
             let lineNodeIdArr = getPreNodes(resultTableNodeId, [resultTableNodeId])
             var dataParam = {
                 'openType': graph.openType,
                 'nodeIdList': lineNodeIdArr.join(","),
                 'nodeData': JSON.stringify(graph.nodeData),
-                "noData":true
+                "noData": true
             }
             console.log('情况2')
             const response = await executeNodeSql(dataParam)
-            if(response.data != null){
+            if (response.data != null) {
                 //改变当前图形节点的信息
                 nodeCallBack(lineNodeIdArr, response.data.nodeData)
-                if(response.data.isError){
+                if (response.data.isError) {
                     isError = true
                     message = '模型设计校验图形未通过：存在运行出错的节点'
-                }else{
-                    newNodeData = { ...{}, ...graph.nodeData }//二次赋值是因为此时的【graph.nodeData】部分值发生了改变
+                } else {
+                    newNodeData = {...{}, ...graph.nodeData}//二次赋值是因为此时的【graph.nodeData】部分值发生了改变
                     let dropViewSql = ''//删除视图的SQL语句
                     let dropTableSql = ''//删除表的SQL语句
                     let selectSql = ''
                     let tableName = ''
                     for (let i = 0; i < lineNodeIdArr.length; i++) {
                         let curNodeInfo = newNodeData[lineNodeIdArr[i]].nodeInfo
-                        if(curNodeInfo.optType === 'datasource'){
-                            if(curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2){
+                        if (curNodeInfo.optType === 'datasource') {
+                            if (curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2) {
                                 selectSql = curNodeInfo.nodeSql
-                                if(newNodeData[lineNodeIdArr[i]].hasParam && newNodeData[lineNodeIdArr[i]].paramsSetting){
-                                    selectSql += " WHERE " +  newNodeData[lineNodeIdArr[i]].paramsSetting.sql;//参数部分的SQL语句（where条件部分）
+                                if (newNodeData[lineNodeIdArr[i]].hasParam && newNodeData[lineNodeIdArr[i]].paramsSetting) {
+                                    selectSql += " WHERE " + newNodeData[lineNodeIdArr[i]].paramsSetting.sql;//参数部分的SQL语句（where条件部分）
                                     let arr = newNodeData[lineNodeIdArr[i]].paramsSetting.arr
-                                    for(let t=0; t<arr.length; t++){
+                                    for (let t = 0; t < arr.length; t++) {
                                         modelParamIdArr.push(arr[t].copyParamId);
-                                        paramArr.push({ ...{}, ...arr[t] });//此处深层扩展赋值，是为了当改变paramArr中得值时不影响paramsSetting得值
+                                        paramArr.push({...{}, ...arr[t]});//此处深层扩展赋值，是为了当改变paramArr中得值时不影响paramsSetting得值
                                     }
                                 }
                                 modelSql += "/*原表【" + curNodeInfo.nodeName + "】的查询SQL语句*/\n" + selectSql + "\n";
                             }
                         }
-                        if(curNodeInfo.optType === 'newNullNode'){
+                        if (curNodeInfo.optType === 'newNullNode') {
                             //先获取该结果表的前置节点ID集合
                             let parentIds = newNodeData[lineNodeIdArr[i]].parentIds;
                             //如果该节点的前置节点ID在当前的节点ID集合批次中（因结果表的前置节点有且只有一个，所以可直接使用parentIds[0]）
-                            if(parentIds.length > 0 && $.inArray(parentIds[0],lineNodeIdArr) > -1) {
+                            if (parentIds.length > 0 && $.inArray(parentIds[0], lineNodeIdArr) > -1) {
                                 //获取前置节点的节点信息
                                 let preNodeInfo = newNodeData[parentIds[0]].nodeInfo
                                 //获取前置节点的输出列信息集合
                                 let preColumnsInfo = graph.nodeData[parentIds[0]].columnsInfo
                                 //循环获取输出列
                                 let selectColArr = []
-                                for(var k=0; k<preColumnsInfo.length; k++){
-                                    if(preColumnsInfo[k].isOutputColumn === 1){//如果是输出列，则拼接输出列的字符串
+                                for (var k = 0; k < preColumnsInfo.length; k++) {
+                                    if (preColumnsInfo[k].isOutputColumn === 1) {//如果是输出列，则拼接输出列的字符串
                                         selectColArr.push(preColumnsInfo[k].newColumnName)
                                     }
                                 }
-                                if(preNodeInfo.optType === "layering"){//如果是前置节点是数据分层节点，则当前结果表的临时表名称需按照下标取值
+                                if (preNodeInfo.optType === "layering") {//如果是前置节点是数据分层节点，则当前结果表的临时表名称需按照下标取值
                                     let index = curNodeInfo.index;//获取当前结果表的下标
                                     //获取数据分层节点的结果表数组
                                     let resultTableNameArr = preNodeInfo.resultTableNameArr;
                                     //若数组不为空
-                                    if(resultTableNameArr.length > index){
+                                    if (resultTableNameArr.length > index) {
                                         selectSql = preNodeInfo.nodeSqlArr[index]
                                         tableName = resultTableNameArr[index]
                                     }
-                                }else if(preNodeInfo.optType === "sql"){
+                                } else if (preNodeInfo.optType === "sql") {
                                     selectSql = preNodeInfo.resultSql
                                     tableName = preNodeInfo.resultTableName
-                                }else{//其他类型的操作节点都一样，直接取前置节点的临时表名称
+                                } else {//其他类型的操作节点都一样，直接取前置节点的临时表名称
                                     selectSql = preNodeInfo.nodeSql
                                     tableName = preNodeInfo.resultTableName
                                 }
                                 //组织SQL语句
-                                if(curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2){//如果结果表是辅助结果表或最终结果表
+                                if (curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2) {//如果结果表是辅助结果表或最终结果表
                                     dropTableSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果表的SQL语句*/\n DROP TABLE " + tableName + "\n"
-                                    if(graphIndexVue.dbType === "db2"){//不能移动位置
+                                    if (graphIndexVue.dbType === "db2") {//不能移动位置
                                         modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE TABLE " + tableName + " AS (" + selectSql + ") definition only\n";
                                         //此句只适用于业务库是DB2数据库（目的是为了实现CREATE TABLE xx AS SELECT……的数据插入）
                                         modelSql += "/*节点【" + preNodeInfo.nodeName + "】的结果表插入数据的SQL语句*/\n INSERT INTO " + tableName + " " + selectSql + ";\n";
-                                    }else{
+                                    } else {
                                         modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE TABLE " + tableName + " AS " + selectSql + "\n";
                                     }
-                                    selectSql = `SELECT ${selectColArr.join(",")} FROM ${tableName}`
-                                    if(newNodeData[parentIds[0]].hasParam && newNodeData[parentIds[0]].paramsSetting){
+                                    selectSql = `SELECT ${selectColArr.join(",")}
+                                                 FROM ${tableName}`
+                                    if (newNodeData[parentIds[0]].hasParam && newNodeData[parentIds[0]].paramsSetting) {
                                         //此处处理不同操作节点SELECT语句附带的参数条件
                                         let dealParam = {
                                             "sql": selectSql,
                                             "replaceParamSql": newNodeData[parentIds[0]].paramsSetting.sql,
-                                            "optType":preNodeInfo.optType
+                                            "optType": preNodeInfo.optType
                                         }
                                         const dealSqlResponse = await dealReplaceParamSql(dealParam)
-                                        if(dealSqlResponse.data == null || dealSqlResponse.data.isError){
+                                        if (dealSqlResponse.data == null || dealSqlResponse.data.isError) {
                                             isError = true
                                             message = '未正确获取模型语句'
                                             break
-                                        }else{
+                                        } else {
                                             selectSql = dealSqlResponse.data.dealSql
                                         }
                                         let arr = newNodeData[parentIds[0]].paramsSetting.arr
-                                        for(let t=0; t<arr.length; t++){
+                                        for (let t = 0; t < arr.length; t++) {
                                             modelParamIdArr.push(arr[t].copyParamId);
-                                            paramArr.push({ ...{}, ...arr[t] });//此处深层扩展赋值，是为了当改变paramArr中得值时不影响paramsSetting得值
+                                            paramArr.push({...{}, ...arr[t]});//此处深层扩展赋值，是为了当改变paramArr中得值时不影响paramsSetting得值
                                         }
                                     }
                                     modelSql += "/*节点【" + preNodeInfo.nodeName + "】的查询结果表的SQL语句*/\n " + selectSql + "\n"
-                                }else{
+                                } else {
                                     dropViewSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果视图的SQL语句*/\n DROP VIEW " + tableName + "\n"
-                                    if(graphIndexVue.dbType === "db2") {
+                                    if (graphIndexVue.dbType === "db2") {
                                         modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE VIEW " + tableName + " AS SELECT * FROM (" + selectSql + ") SORT_TEMP\n";//不能移动位置
                                     } else {
                                         modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE VIEW " + tableName + " AS " + selectSql + "\n";//不能移动位置
@@ -994,46 +995,46 @@ export async function saveModelGraph(){
                             }
                         }
 
-                    }
-                    //重新生成每个节点中参数的ID
-                    // for(var n=0; n<modelParamIdArr.length; n++){
-                    //     var curCopyParamId = modelParamIdArr[n];//原参数ID
-                    //     var newCopyParamId = new UUIDGenerator().id;//新生成的参数ID
-                    //     //开始替换ID
-                    //     modelSql = modelSql.replace(curCopyParamId,newCopyParamId);//替换modelSql中的参数ID
-                    //     modelParamIdArr.splice(n,1,newCopyParamId);//替换modelParamIdArr中的参数ID
-                    //     for(var m=0; m<paramArr.length; m++){
-                    //         if(curCopyParamId === paramArr[m].copyParamId){
-                    //             paramArr[m].copyParamId = newCopyParamId;//替换paramArr中的参数ID
-                    //             paramArr[m].id = paramArr[m].id.replace(curCopyParamId,newCopyParamId);
-                    //             break;
-                    //         }
-                    //     }
-                    //     var keys = Object.keys(newNodeData);
-                    //     if(keys && keys.length > 0){
-                    //         for(var c=0; c<keys.length; c++){//替换newGraph中各个节点的参数ID
-                    //             if(typeof newNodeData[keys[c]].paramsSetting !== "undefined"){
-                    //                 var curArr = newNodeData[keys[c]].paramsSetting.arr;
-                    //                 var curSql = newNodeData[keys[c]].paramsSetting.sql;
-                    //                 newNodeData[keys[c]].paramsSetting.sql = curSql.replace(curCopyParamId,newCopyParamId);
-                    //                 if(typeof curArr !== "undefined" && curArr.length > 0){
-                    //                     for(var a=0; a<curArr.length; a++){
-                    //                         if(curCopyParamId === curArr[a].copyParamId){
-                    //                             curArr[a].copyParamId = newCopyParamId;
-                    //                             curArr[a].id = curArr[a].id.replace(curCopyParamId,newCopyParamId);
-                    //                             break;
-                    //                         }
-                    //                     }
-                    //                 }
-                    //             }
-                    //         }
-                    //     }
-                    //     //替换ID结束
-                    // }
-                    modelSql = dropViewSql + dropTableSql + modelSql
+                }
+                //重新生成每个节点中参数的ID
+                // for(var n=0; n<modelParamIdArr.length; n++){
+                //     var curCopyParamId = modelParamIdArr[n];//原参数ID
+                //     var newCopyParamId = new UUIDGenerator().id;//新生成的参数ID
+                //     //开始替换ID
+                //     modelSql = modelSql.replace(curCopyParamId,newCopyParamId);//替换modelSql中的参数ID
+                //     modelParamIdArr.splice(n,1,newCopyParamId);//替换modelParamIdArr中的参数ID
+                //     for(var m=0; m<paramArr.length; m++){
+                //         if(curCopyParamId === paramArr[m].copyParamId){
+                //             paramArr[m].copyParamId = newCopyParamId;//替换paramArr中的参数ID
+                //             paramArr[m].id = paramArr[m].id.replace(curCopyParamId,newCopyParamId);
+                //             break;
+                //         }
+                //     }
+                //     var keys = Object.keys(newNodeData);
+                //     if(keys && keys.length > 0){
+                //         for(var c=0; c<keys.length; c++){//替换newGraph中各个节点的参数ID
+                //             if(typeof newNodeData[keys[c]].paramsSetting !== "undefined"){
+                //                 var curArr = newNodeData[keys[c]].paramsSetting.arr;
+                //                 var curSql = newNodeData[keys[c]].paramsSetting.sql;
+                //                 newNodeData[keys[c]].paramsSetting.sql = curSql.replace(curCopyParamId,newCopyParamId);
+                //                 if(typeof curArr !== "undefined" && curArr.length > 0){
+                //                     for(var a=0; a<curArr.length; a++){
+                //                         if(curCopyParamId === curArr[a].copyParamId){
+                //                             curArr[a].copyParamId = newCopyParamId;
+                //                             curArr[a].id = curArr[a].id.replace(curCopyParamId,newCopyParamId);
+                //                             break;
+                //                         }
+                //                     }
+                //                 }
+                //             }
+                //         }
+                //     }
+                //     //替换ID结束
+                // }
+                modelSql = dropViewSql + dropTableSql + modelSql
                 }
 
-            }else{
+            } else {
                 isError = true
                 message = '模型设计校验图形的请求失败'
             }
