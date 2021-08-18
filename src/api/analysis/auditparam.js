@@ -2224,8 +2224,6 @@ export function getParamsSetting() {
   if ($selectParam && $selectParam.length > 0) {
     for (let i = 0; i < $selectParam.length; i++) {
       // $('.selectParam').each(function(i, v) {
-        console.log('--$selectParam---');
-        console.log($selectParam[i].parentNode);
       let index = Number($selectParam[i].parentNode.getAttribute("index"))
       let moduleParamId = settingVue.setParamArr[index].dataId// 母参ID
       let selectParamXs = xmSelect.get('#selectParam' + moduleParamId, true)

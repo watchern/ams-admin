@@ -602,6 +602,7 @@ export default {
       }
     },
     clickUseParam(){
+      // 刷新参数列表
       this.$refs.apple.refreshTable()
       if (this.modifying == true && this.useParamDraw == true){
         this.modifying = false

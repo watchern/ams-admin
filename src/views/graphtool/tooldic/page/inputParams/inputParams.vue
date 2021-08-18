@@ -21,7 +21,16 @@
                             </el-select>
                             <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.value" class="textParam"></el-input>
                             <el-date-picker ref="paramOption" :index="ind"  v-if="paramInfo.inputType === 'timeinp'" :title="paramInfo.title" type="date" placeholder="选择日期" v-model="paramInfo.value" style="width: 100%;" value-format="yyyy-MM-dd"></el-date-picker>
-                            <div ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title" :nodeId="nodeParamInfo.nodeId" class="xm-select-demo"></div>
+                            <!-- <div ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title" :nodeId="nodeParamInfo.nodeId" class="xm-select-demo"></div> -->
+                            <!-- 树类型参数 -->
+                            <el-cascader
+                                v-model="paramTreeValueList[ind]"
+                                v-if="paramInfo.inputType === 'treeinp'"
+                                style="width:100%"
+                                :props="{ label:'name',  multiple: paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0', emitPath: false}"
+                                :options="paramInfo.data"
+                                multiple
+                                clearable />
                         </el-col>
                         <el-col :span="2" v-show="paramInfo.allowedNull">
                             <div style="color: red;display: inline-block;font-weight: bold;font-size: 20px;">*</div>
