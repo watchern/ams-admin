@@ -645,7 +645,7 @@ export default {
     uploadtempInfo: {
       handler(newTemp, oldemp) {
         // this.$emit('update:tab-show', newName)
-        console.log("==================newTemp");
+        // console.log(*************newTemp");
         if (typeof newTemp.colMetas != "undefined"){
           newTemp.colMetas.forEach((item) => {
             // if (!item.dataLengthText) {
