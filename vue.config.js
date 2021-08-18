@@ -223,10 +223,11 @@ module.exports = {
         minRatio: 0.8, // 只有压缩率小于这个值的资源才会被处理
         deleteOriginalAssets: false // 删除原文件
         // deleteOriginalAssets: process.env.NODE_ENV !== 'development' // 删除原文件
-      }),
-      new ProvidePlugin({
-        _: 'lodash'
       })
+      // ,
+      // new ProvidePlugin({
+      //   _: 'lodash'
+      // })
       // ,
       // new UglifyJsPlugin({
       //     uglifyOptions: {
