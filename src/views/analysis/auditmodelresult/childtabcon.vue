@@ -226,12 +226,18 @@
               </el-row>
             </div>
             <div v-if="myFlag">
+              <el-row>
               <div
                 align="right"
                 :style="
                   ifopen != 0 ? 'position: absolute;top: -29px;right: 0;' : ''
                 "
               >
+                <el-col :span="14">
+                  <el-input readonly="ture" value="设置查询条件后此处显示条件内容" v-if="nowSql == 'undefined'"></el-input>
+                  <el-input readonly="ture" :value="nowSql" v-if="nowSql != 'undefined'"></el-input>
+                </el-col >
+                <el-col :span="10" >
                 <el-dropdown>
                   <el-button
                     type="primary"
@@ -251,8 +257,8 @@
                   :disabled="false"
                   type="primary"
                   @click="queryConditionSetting"
-                  class="oper-btn setting-detail"
-                  style="margin-left: 10px"
+                  class="oper-btn setting-detail btn-width-md"
+                  style="margin-left: 10px;margin-top:5px;"
                 ></el-button>
                 <el-button
                   :disabled="false"
@@ -275,7 +281,9 @@
                   class="oper-btn tjsh"
                   >提交审核</el-button
                 >
+                </el-col>
               </div>
+              </el-row>
             </div>
             <!-- useType == 'modelRunResult' && this.modelUuid !== undefined
                   ? this.renderTable
@@ -2021,6 +2029,7 @@ export default {
     // 点击查询按钮触发事件
     queryCondition() {
       this.$refs.myquerybuilder.selectSql();
+
       this.dialogVisible = false;
     },
     // 查询完以后，子组件触发父组件的事件
@@ -2037,6 +2046,7 @@ export default {
      * 点击查询条件设置按钮触发
      */
     queryConditionSetting() {
+      console.log('走这里');
       this.dialogVisible = true;
     },
     /**
