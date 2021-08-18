@@ -40,7 +40,7 @@
                 type="primary"
                 @click="removeRelationProject()"
                 :disabled="buttonIson.disassociateBtn"
-                class="oper-btn disassociate btn-width-max"
+                class="oper-btn disallocation btn-width-max"
                 title="移除分配项目" />
 
             <!--<el-dropdown>
