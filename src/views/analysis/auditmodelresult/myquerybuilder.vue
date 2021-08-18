@@ -80,7 +80,8 @@ export default {
         operators = ["=", "<>", "like", "not like"];
       } else if (
         columnObj.columnType.toUpperCase().indexOf("INT") != -1 ||
-        columnObj.columnType.toUpperCase().indexOf("NUMBER") != -1
+        columnObj.columnType.toUpperCase().indexOf("NUMBER") != -1||
+        columnObj.columnType.toUpperCase().indexOf("DECIMAL") != -1
       ) {
         operators = ["=", "<>", "<", "<=", ">", ">="];
       }
