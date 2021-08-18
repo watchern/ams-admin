@@ -1328,6 +1328,7 @@ export default {
                           //如果有汉化字段则用中文加汉化字段
                           let columnName =
                             item.colName + "(" + item.chnName + ")";
+                            // item.chnName
                           nodeList.push({
                             id: treeNode.name + "_" + this,
                             name: columnName,
@@ -1346,6 +1347,8 @@ export default {
                     }
                   });
                 }
+              }else{
+
               }
             },
           },
@@ -1395,6 +1398,12 @@ export default {
               // for(let i=0;i<response.data.length;i++){
               //   if(response.data[i].nameCn&&(response.data[i].type=='view'|| response.data[i].type=='table')){
               //     response.data[i].name = response.data[i].name+'('+response.data[i].nameCn+')'
+              //   }
+              // }
+              // for(let i=0;i<response.data.length;i++){
+              //   if(response.data[i].nameCn&&(response.data[i].type=='view'|| response.data[i].type=='table')){
+              //     response.data[i].english = response.data[i].name
+              //     response.data[i].name = response.data[i].nameCn
               //   }
               // }
               indexJs.replaceNodeType(response.data);

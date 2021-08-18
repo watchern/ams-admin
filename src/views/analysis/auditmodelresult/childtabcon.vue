@@ -277,7 +277,7 @@
               style="height: calc(100% - 19px)"
               class="table ag-theme-balham"
               :column-defs="computedColumnDefs"
-              :row-data="computedRowData"
+              :rowData="computedRowData"
               rowMultiSelectWithClick="true"
               :enable-col-resize="true"
               :get-row-style="this.renderTableView"
@@ -573,7 +573,7 @@ import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
 import flowItem2 from "ams-clue-vue/src/components/yctodowork/flowItem2";
 
 //引入时间格式化方法
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 export default {
   name: "childTabCon",
   // 注册draggable组件
@@ -671,6 +671,7 @@ export default {
       dialogVisible: false,
       // 定义ag-grid列
       columnDefs: [],
+      gridOptions: {},
       // aggrid需要显示的数据
       rowData: [],
       rotateRowData:[],  //行转列的数据
@@ -756,13 +757,13 @@ export default {
       ifopen: 0,
       defaultColDef: {
         flex: 1,
-        minWidth: 150,
         resizable: true,
         enableValue: true,
         enableRowGroup: true,
         enablePivot: true,
         sortable: true,
         filter: true,
+        floatingFilter: true, //列头过滤器 启动
       },
       sideBar :{
         toolPanels: [
@@ -810,8 +811,8 @@ export default {
   equals: '等于',
   notEqual: '不等于',
   // for number filter
-  lessThan: '少于',
-  greaterThan: '多于',
+  lessThan: '小于',
+  greaterThan: '大于',
   lessThanOrEqual: '小于等于',
   greaterThanOrEqual: '大于等于',
   inRange: '在范围内',
@@ -821,8 +822,11 @@ export default {
   startsWith: '开始',
   endsWith: '结束',
   // filter conditions
-  andCondition: '并且',
-  orCondition: '或者',
+        andCondition: "并且",
+        orCondition: "或者",
+        numberFilter:"数字筛选器",
+        textFilter:"文本筛选器",
+        dateFilter:"时间筛选器",
   // the header of the default group column
   // group: '分组',
   // tool panel
@@ -996,7 +1000,14 @@ export default {
         link.style.display = "none";
         link.href = URL.createObjectURL(blob);
         //模型运行结果表日期使用当前日期
-        link.setAttribute("download", "模型运行结果表"+"("+dayjs(new Date()).format('YYYY年MM月DD日hhmmss')+")"+".xls");
+        link.setAttribute(
+          "download",
+          "模型运行结果表" +
+            "(" +
+            dayjs(new Date()).format("YYYY年MM月DD日hhmmss") +
+            ")" +
+            ".xls"
+        );
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -1510,22 +1521,39 @@ export default {
           for(let i = 0;i<col.length;i++){
             var colType0 = _this.result.columnType[i];
             colType0 = colType0 ? "": colType0.toUpperCase();
-            switch (colType0) {
-              case "NUMBER":
-              case "INT":
-              case "INTEGER":
-              case "FLOAT":
-              case "DOUBLE":
-                col[i].filter = 'agNumberColumnFilter';
-                break;
-              case "DATE":
-              case "TIMESTAMP":
-                col[i].filter = 'agDateColumnFilter';
-                break;
-              default:
-                col[i].filter = 'agTextColumnFilter';
-                break;
-            }
+            col[i].filter = "agMultiColumnFilter";
+            col[i].filterParams = {
+              filters: [
+                {
+                  filter: "agNumberColumnFilter",
+                  display: "subMenu",
+                },
+                {
+                  filter: "agTextColumnFilter",
+                  display: "subMenu",
+                },
+                {
+                  filter: "agDateColumnFilter",
+                  display: "subMenu",
+                },
+              ],
+            };
+            // switch (colType0) {
+            //   case "NUMBER":
+            //   case "INT":
+            //   case "INTEGER":
+            //   case "FLOAT":
+            //   case "DOUBLE":
+            //     col[i].filter = "agNumberColumnFilter";
+            //     break;
+            //   case "DATE":
+            //   case "TIMESTAMP":
+            //     col[i].filter = "agDateColumnFilter";
+            //     break;
+            //   default:
+            //     col[i].filter = "agTextColumnFilter";
+            //     break;
+            // }
           }
           _this.columnDefs = col;
           _this.rowData = da;
@@ -1597,7 +1625,7 @@ export default {
                 this.modelResultColumnNames = this.nextValue.columnNames;
                 selectModel(this.modelId).then((resp) => {
                   this.modelDetailRelation = resp.data.modelDetailRelation;
-                  modelThresholdValuesTab = resp.data.modelThresholdValues
+                  modelThresholdValuesTab = resp.data.modelThresholdValues;
                   // 表格渲染规则赋值
                   this.modelThresholdValuesTabView = resp.data.modelThresholdValues
                   //循环阈值对象  取出阈值对象里面的列名  用于下边遍历处理的时候 作为判断条件
@@ -1734,24 +1762,41 @@ export default {
                   }
                   for(let i = 0;i<col.length;i++){
                     let colType0 = this.result.columnType[i];
+                    // colType0 = colType0 ? "": colType0.toUpperCase();
+                    // switch (colType0) {
+                    //   case "NUMBER":
+                    //   case "INT":
+                    //   case "INTEGER":
+                    //   case "FLOAT":
+                    //   case "DOUBLE":
+                    //   col[i].filter = 'agNumberColumnFilter'
+                    //     break;
+                    //   case "DATE":
+                    //   case "TIMESTAMP":
+                    //     col[i].filter = 'agDateColumnFilter'
+                    //     break;
+                    //   default:
+                    //     col[i].filter = 'agTextColumnFilter'
+                    //     break;
+                    // }
                     colType0 = colType0 ? "": colType0.toUpperCase();
-                    switch (colType0) {
-                      case "NUMBER":
-                      case "INT":
-                      case "INTEGER":
-                      case "FLOAT":
-                      case "DOUBLE":
-                      col[i].filter = 'agNumberColumnFilter'
-                        break;
-                      case "DATE":
-                      case "TIMESTAMP":
-                        col[i].filter = 'agDateColumnFilter'
-                        break;
-                      default:
-                      col[i].filter = 'agTextColumnFilter'
-                        break;
-
-                    }
+                    col[i].filter = "agMultiColumnFilter";
+                    col[i].filterParams = {
+                      filters: [
+                        {
+                          filter: "agNumberColumnFilter",
+                          display: "subMenu",
+                        },
+                        {
+                          filter: "agTextColumnFilter",
+                          display: "subMenu",
+                        },
+                        {
+                          filter: "agDateColumnFilter",
+                          display: "subMenu",
+                        },
+                      ],
+                    };
                   }
                   this.columnDefs = col;
                   this.afterResult = true;
@@ -1889,7 +1934,6 @@ export default {
                 var rowColom = {
                   headerName: this.nextValue.columnNames[j],
                   field: this.nextValue.columnNames[j],
-                  width: "180",
                 };
                 var key = this.nextValue.columnNames[j];
                 var value = this.nextValue.result[j];
@@ -1905,22 +1949,23 @@ export default {
 
               var colType0 = this.result.columnType[i];
               colType0 = colType0 ? "": colType0.toUpperCase();
-              switch (colType0) {
-                case "NUMBER":
-                case "INT":
-                case "INTEGER":
-                case "FLOAT":
-                case "DOUBLE":
-                  col[i].filter = 'agNumberColumnFilter';
-                  break;
-                case "DATE":
-                case "TIMESTAMP":
-                  col[i].filter = 'agDateColumnFilter';
-                  break;
-                default:
-                  col[i].filter = 'agTextColumnFilter';
-                  break;
-              }
+              col[i].filter = "agMultiColumnFilter";
+              col[i].filterParams = {
+                filters: [
+                  {
+                    filter: "agNumberColumnFilter",
+                    display: "subMenu",
+                  },
+                  {
+                    filter: "agTextColumnFilter",
+                    display: "subMenu",
+                  },
+                  {
+                    filter: "agDateColumnFilter",
+                    display: "subMenu",
+                  },
+                ],
+              };
             }
             this.columnDefs = col;
             this.afterResult = true;
@@ -1978,7 +2023,7 @@ export default {
     renderTableView(params){
       // 规则赋值
       var modelThresholdValues = [];
-      if (typeof this.settingInfo != 'undefined') {
+      if (typeof this.settingInfo != "undefined") {
         modelThresholdValues.push(
           JSON.parse(this.settingInfo).thresholdValueRel
         );
@@ -1986,8 +2031,8 @@ export default {
         // 模型结果查看
         modelThresholdValues = this.modelObj.modelThresholdValues;
         // 模型直接点击运行
-        if (typeof this.modelObj.modelThresholdValues === 'undefined')
-        modelThresholdValues = this.modelThresholdValuesTabView
+        if (typeof this.modelObj.modelThresholdValues === "undefined")
+          modelThresholdValues = this.modelThresholdValuesTabView;
       }
       var thresholdValueRel = {};
       this.isLoading = false;

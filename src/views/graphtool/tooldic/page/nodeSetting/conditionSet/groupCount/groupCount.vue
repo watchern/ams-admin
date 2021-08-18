@@ -41,7 +41,7 @@
                 <el-table :data="columnItems" border style="width: 100%;" height="527" ref="outPutTable">
                     <el-table-column type="index" label="编号" width="60" align="center" :resizable="false"></el-table-column>
                     <el-table-column label="上一节点名称" width="200" :show-overflow-tooltip="true" prop="rtn" header-align="center" :resizable="false"></el-table-column>
-                    <el-table-column label="字段名称" width="260" :show-overflow-tooltip="true" prop="columnName" header-align="center" :resizable="false"></el-table-column>
+                    <el-table-column label="字段名称" width="260" :show-overflow-tooltip="true" prop="newColumnName" header-align="center" :resizable="false"></el-table-column>
                     <el-table-column label="输出字段名称" width="240" header-align="center" :resizable="false">
                         <template slot-scope="scope">
                             <el-input v-model="scope.row.newColumnName"></el-input>

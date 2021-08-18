@@ -9,7 +9,7 @@
             <el-col :span="8">
                 <label>筛选字段&nbsp;</label>
                 <el-select v-model="select_colms" filterable @change="setSelectColms">
-                    <el-option v-for="selectCol in selectColms" :key="selectCol.newColumnName" :label="selectCol.newColumnName" :value="selectCol.newColumnName">{{ selectCol.displayName }}</el-option>
+                    <el-option v-for="selectCol in selectColms" :key="selectCol.newColumnName" :label="selectCol.newColumnName" :value="selectCol.columnName">{{ selectCol.displayName }}</el-option>
                 </el-select>
             </el-col>
             <el-col :span="8">
@@ -147,9 +147,10 @@
                 }
                 Array.from(this.curColumnsInfo, item => {
                     const newColumnName = item.newColumnName
+                    const columnName = item.columnName
                     const displayName = `${newColumnName}(${item.columnType})`
-                    this.selectColms.push({ newColumnName, displayName })
-                    this.compareColumnArr.push({ newColumnName, displayName })
+                    this.selectColms.push({ columnName, newColumnName, displayName })
+                    this.compareColumnArr.push({columnName, newColumnName, displayName })
                 })
             },
             setSelectColms(val) {

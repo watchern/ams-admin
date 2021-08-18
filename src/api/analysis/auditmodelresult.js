@@ -183,6 +183,18 @@ export function exportRunTaskRel() {
 }
 
 /**
+ * 取消执行模型
+ * @param {*} id
+ */
+ export function pauseRunRelTask(id) {
+   return request({
+     baseURL: analysisUrl,
+     url: `/RunTaskRelController/pauseRunRelTask/${id}`,
+     method: 'get'
+   })
+ }
+
+/**
  * 运行任务重新运行
  */
 export function reRunRunTask(data, setDateTime) {
