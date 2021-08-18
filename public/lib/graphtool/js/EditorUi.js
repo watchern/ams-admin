@@ -638,10 +638,11 @@ EditorUi = function (editor, container, lightbox) {
 
 	//节点预执行，获取节点所含字段
 	graph.preExeGetFields = function (cell, treeNode) {
+		// 拖动节点时，此处获取列信息
 		var isCreateTableNodeError = false;
 		$.ajax({
 			type: "post",
-			url: "/data/tableMeta/getCols",
+			url: "/data/tableMeta/createViewAndGetCols",
 			dataType: "json",
 			async: false,
 			data: {
@@ -658,21 +659,29 @@ EditorUi = function (editor, container, lightbox) {
 					var columnsInfo = [];
 					var nodeSql = "SELECT";
 					for (var i = 0; i < e.data.length; i++) {
-						var columnName = e.data[i].colName;
+						// 列名取中文名，没有的话取原名
+						var columnName = (e.data[i].chnName===null || e.data[i].chnName=== '') ? e.data[i].colName : e.data[i].chnName;
+						// var newColumnName = e.data[i].chnName?e.data[i].chnName:columnName;
+						var newColumnName = columnName
 						columnsInfo.push({
 							"columnName": columnName,
 							"columnType": e.data[i].dataType,
 							"columnLength": e.data[i].dataLength,
 							"isOutputColumn": 1,
-							"newColumnName": columnName
+							// newColumnName作为后续节点条件显示
+							"newColumnName": newColumnName,
 						});
 						if (i === e.data.length - 1) {
-							nodeSql += columnName;
+							nodeSql += newColumnName;
 						} else {
-							nodeSql += " " + columnName + ",";
+							nodeSql += " " + newColumnName + ",";
 						}
 					}
-					nodeSql += " FROM " + treeNode.name;
+					// 更换表名为后台创建的视图(该视图是中文字段名的视图)
+					nodeSql += " FROM " + e.data[0].viewName;
+					// nodeSql += " FROM " + treeNode.name;
+					// 将创建的视图设为节点的结果表
+					graph.nodeData[cell.id].nodeInfo.resultTableName = e.data[0].viewName;
 					graph.nodeData[cell.id].nodeInfo.nodeSql = nodeSql;
 					graph.nodeData[cell.id].columnsInfo = columnsInfo;
 				}
@@ -2589,7 +2598,8 @@ var iconDrag = function (treeNode) {
 		var options = {
 			"id": cell.id,
 			"name": treeNode.name,
-			"type": treeNode.type
+			"type": treeNode.type,
+			"english":treeNode.english||''
 		};
 		initNodeData(options, true);
 		//初始化节点配置信息,end
@@ -2696,7 +2706,11 @@ var initNodeData = function (options, changeIcon) {
 	switch (options.type) {
 		case "datasource":
 			isSet = true;
+			if(options.english){
+				nodeInfo.resultTableName = options.english;
+			}else{
 			nodeInfo.resultTableName = options.name;
+			}
 			nodeInfo.nodeExcuteStatus = 3;
 			delete setting.settingId;
 			break;

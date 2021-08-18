@@ -21,7 +21,7 @@
                       @click="modelResultOpenDialog"
                       :disabled="buttonIson.disableAssociatedBtn"
                       class="oper-btn allocation"
-              ></el-button> -->
+              /> -->
             <el-button
               type="primary"
               :disabled="buttonIson.disableCancelExecBtn"
@@ -34,13 +34,13 @@
               @click="openProjectDialog"
               :disabled="buttonIson.disableAssociatedBtn"
               class="btn-width-md oper-btn allocation"
-            ></el-button>
+            />
             <!--  @移除分配项目@ -->
             <el-button
                 type="primary"
                 @click="removeRelationProject()"
                 :disabled="buttonIson.disassociateBtn"
-                class="oper-btn disassociate btn-width-max"
+                class="oper-btn disallocation btn-width-max"
                 title="移除分配项目" />
 
             <!--<el-dropdown>
@@ -55,21 +55,28 @@
         <!-- 暂时注掉拆分结果-->
 <!--            <el-button
               type="primary"
-              :disabled="buttonIson.resultSplitBtn"
+              :disabled="buttonIson.disableSplitBtn"
               class="oper-btn split"
               @click="openResultSplitDialog"
               style="margin-left: 10px"/>-->
+        <!-- 结果分享  -->
+            <!--        <el-button
+          type="primary"
+          @click="modelResultOpenDialog()"
+          :disabled="buttonIson.disableShareBtn"
+          class="oper-btn allocation btn-width-md"
+        />-->
             <el-button
               type="primary"
               @click="exportExcel"
-              :disabled="buttonIson.exportBtn"
+              :disabled="buttonIson.disableExportBtn"
               class="oper-btn export"
             />
             <el-button
-              :disabled="buttonIson.deleteBtn"
+              :disabled="buttonIson.disableDeleteBtn"
               type="primary"
               @click="deleteRunTaskRel"
-              class="oper-btn delete-result"
+              class="oper-btn delete-result btn-width-md"
             />
           </el-row>
         </div>
@@ -114,15 +121,16 @@
             width="100px"
             align="center"
             prop="runStatus"
-            :formatter="readStatusFormatter"
-            ><template slot-scope="scope">
+            :formatter="readStatusFormatter">
+            <template slot-scope="scope">
               <i
                 :title="readStatusFormatter(scope.row.runStatus)"
                 :class="runStatusIconFormatter(scope.row.runStatus)"
                 :style="runStatusStyleFormatter(scope.row.runStatus)"
                 style="cursor: pointer;"
-              ></i> </template
-          ></el-table-column>
+              />
+          </template>
+          </el-table-column>
           <el-table-column
             label="运行人"
             width="100px"
@@ -383,7 +391,8 @@ import {
   getDataAfterResultSpiltToRelateProject,
   addCoverResultRelProject,
   sendToOA,
-  deleteRunResultShareByRunTaskRelUuid
+  deleteRunResultShareByRunTaskRelUuid,
+  pauseRunRelTask
 } from "@/api/analysis/auditmodelresult";
 import { uuid2, addRunTaskAndRunTaskRel } from "@/api/analysis/auditmodel";
 import QueryField from "@/components/public/query-field/index";
@@ -436,12 +445,14 @@ export default {
       success1: false, // 用来测试open2方法里的deleteRunResultShare方法返回值是否为true，如果为true则success为true
       selected1: [], // 存储表格中选中的数据
       buttonIson: {
-        associatedBtn: true,
-        disassociateBtn: true,
-        deleteBtn: true,
-        resultSplitBtn: true,
-        resultShareBtn: true,
-        exportBtn: false,
+        disableAssociatedBtn: true,
+        // 取消执行按钮
+        disableCancelExecBtn: true,
+        disableDisassociateBtn: true,
+        disableDeleteBtn: true,
+        disableSplitBtn: true,
+        disableShareBtn: true,
+        disableExportBtn: false
       },
       sqlInfoDialog: false,
       runMessageInfoDialog: false,
@@ -642,17 +653,25 @@ export default {
      * 运行状态图标颜色
      */
     runStatusStyleFormatter(status) {
-      if (status == 1) {
-        return "color:blue";
-      } else if (status == 2) {
-        return "el-icon-loading";
-      } else if (status == 3) {
-        return "color:green";
-      } else if(status == 5){
-        return "color:#ff0000";
-      } else {
-        return "color:red";
+      var style = "";
+      switch (status) {
+        case 1:
+          style = "color:blue";
+          break;
+        case 2:
+          style = "el-icon-loading";
+          break;
+        case 3:
+          style = "color:green"
+          break;
+        case 5:
+          style = "color:#ff0000"
+          break;
+        default:
+          style = "color:red"
+          break;
       }
+      return style;
     },
     /**
      * 查询列表方法
@@ -688,20 +707,21 @@ export default {
      * 当多选框改变时触发
      */
     handleSelectionChange(val) {
-      this.buttonIson.associatedBtn = false;
-      this.buttonIson.disassociateBtn = false;
-      this.buttonIson.deleteBtn = false;
-      this.buttonIson.resultSplitBtn = false;
-      this.buttonIson.resultShareBtn = false;
-      this.buttonIson.exportBtn = false;
-      if (val.length <= 0) {
-        this.buttonIson.associatedBtn = true;
-        this.buttonIson.disassociateBtn = true;
-        this.buttonIson.deleteBtn = true;
-        this.buttonIson.resultSplitBtn = true;
-        this.buttonIson.resultShareBtn = true;
-      } else if (val.length == 1) {
-        this.buttonIson.resultSplitBtn = true;
+      this.buttonIson.disableAssociatedBtn = val.length == 0;
+      this.buttonIson.disableDisassociateBtn = val.length == 0;
+      this.buttonIson.disableDeleteBtn = val.length == 0;
+      this.buttonIson.disableSplitBtn = val.length <= 1;
+      this.buttonIson.disableShareBtn = val.length == 0;
+      this.buttonIson.disableExportBtn = val.length > 0;
+      // 筛选状态为执行中的
+      this.buttonIson.disableCancelExecBtn = false;
+      if (val.length >= 1) {
+        // 选中的模型执行状态都为执行中按钮可用
+        val.forEach((r) => {
+          if (r.runStatus !== 2) {
+            this.buttonIson.disableCancelExecBtn = true
+          }
+        })
       }
       this.share.splice(0, this.share.length);
       this.notShare.splice(0, this.notShare.length);
@@ -1065,6 +1085,30 @@ export default {
         })
       });
     },
+    /**
+     * 取消执行
+     */
+    runRelTaskPause(){
+      var ids = []
+      this.selected1.forEach((r) => { ids.push(r.runTaskRelUuid) })
+      this.$confirm('确定要取消执行选中的模型吗？', this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
+        type: 'warning'
+      }).then(() => {
+        pauseRunRelTask(ids).then(() => {
+          this.getLikeList();
+          this.$notify({
+            title: this.$t('message.title'),
+            message: "取消执行成功",
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        })
+      })
+    },
+
     /**
      * 结果共享
      */

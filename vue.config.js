@@ -1,7 +1,7 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
-
+const Timestamp = new Date().getTime();
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
@@ -224,6 +224,10 @@ module.exports = {
         deleteOriginalAssets: false // 删除原文件
         // deleteOriginalAssets: process.env.NODE_ENV !== 'development' // 删除原文件
       })
+      // ,
+      // new ProvidePlugin({
+      //   _: 'lodash'
+      // })
       // ,
       // new UglifyJsPlugin({
       //     uglifyOptions: {

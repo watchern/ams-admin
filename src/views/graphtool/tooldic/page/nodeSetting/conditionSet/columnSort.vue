@@ -5,12 +5,12 @@
             <span slot-scope="{ option }">
                 <el-row v-if="!option.showSort">{{option.label}}</el-row>
                 <el-row v-if="option.showSort">
-                    <el-col :span="14" ref="sortCol" class="transfer_sortCol" :dataValue="option.label" v-if="option.isTip" :dataKey="option.key" style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">
+                    <el-col :span="14" ref="sortCol" class="transfer_sortCol" :dataValue="option.key" v-if="option.isTip" :dataKey="option.key" style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">
                         <el-tooltip class="item" effect="dark" :content="option.label" placement="top">
                             <span>{{option.label}}</span>
                         </el-tooltip>
                     </el-col>
-                    <el-col :span="14" ref="sortCol" class="transfer_sortCol" :dataValue="option.label" v-if="!option.isTip">{{option.label}}</el-col>
+                    <el-col :span="14" ref="sortCol" class="transfer_sortCol" :dataValue="option.key" v-if="!option.isTip">{{option.label}}</el-col>
                     <el-col :span="10">
                         <el-radio v-if="option.showSort" v-model="option.sortType" label="ASC">升序</el-radio>
                         <el-radio v-if="option.showSort" v-model="option.sortType" label="DESC">降序</el-radio>
@@ -42,7 +42,8 @@
                 if (this.nodeData.isSet) {// 配置过,字段信息来自本身节点
                     this.curColumnsInfo = this.nodeData.setting.curColumnsInfo
                     this.columnDataValue = this.nodeData.setting.columnDataValue
-                    Array.from(this.curColumnsInfo, item => this.columnData.push({ 'pinyin': item.newColumnName, 'label': item.newColumnName, 'key': item.newColumnName, 'sortType': 'ASC', 'showSort': false}))
+                    console.log(this.curColumnsInfo)
+                    Array.from(this.curColumnsInfo, item => this.columnData.push({ 'pinyin': item.newColumnName, 'label': item.newColumnName, 'key': item.columnName, 'sortType': 'ASC', 'showSort': false}))
                     Array.from(this.columnDataValue, n => {
                         let index = this.columnData.findIndex(item => item.key === n)
                         if (index > -1) {
@@ -60,7 +61,7 @@
                         }
                     })
                 }else{
-                    Array.from(this.curColumnsInfo, item => this.columnData.push({ 'pinyin': item.newColumnName, 'label': item.newColumnName, 'key': item.newColumnName, 'sortType': 'ASC', 'showSort': false}))
+                    Array.from(this.curColumnsInfo, item => this.columnData.push({ 'pinyin': item.newColumnName, 'label': item.newColumnName, 'key': item.columnName, 'sortType': 'ASC', 'showSort': false}))
                 }
                 this.$nextTick( () => {
                     $(this.$refs.transferSort.$refs.rightPanel.$children[2].$el).sortable().disableSelection()

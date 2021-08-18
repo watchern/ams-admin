@@ -5,35 +5,39 @@
         v-if="openType === 'showTable' || openType === 'tableRegister'"
         label="基本信息"
         name="basicinfo"
-        ><basic-info :table-id="tableId" :open-type="openType"
-      /></el-tab-pane>
-      <el-tab-pane label="列" name="column"
-        ><column
+        >
+        <basic-info :table-id="tableId" :open-type="openType"/>
+      </el-tab-pane>
+      <el-tab-pane label="列" name="column">
+        <column
           ref="column"
           :table-id="tableId"
           :forder-id="forderId"
           :open-type="openType"
           @append-node="appendnode"
-          @table-show="tableshow"
-      /></el-tab-pane>
+          @table-show="tableshow" />
+      </el-tab-pane>
       <!-- <el-tab-pane v-if="openType === 'showTable' || openType === 'tableRegister'" label="约束" name="constraint"><constraint :table-id="tableId" /></el-tab-pane> -->
       <!-- <el-tab-pane v-if="openType === 'showTable' || openType === 'tableRegister'" label="索引" name="indexSql"><index-sql :table-id="tableId" :open-type="openType" /></el-tab-pane> -->
-      <el-tab-pane label="关联关系" name="tablerelation"
-        ><tablerelation :table-id="tableId" :open-type="openType"
-      /></el-tab-pane>
+      <el-tab-pane label="关联关系" name="tablerelation">
+        <tablerelation :table-id="tableId" :open-type="openType" />
+      </el-tab-pane>
+<!--      <el-tab-pane v-if="openType === 'showTable' || openType === 'tableRegister'" label="创建语句" name="createSql"><create-sql :table-id="tableId" :open-type="openType" /></el-tab-pane>-->
+      <el-tab-pane v-if="openType === 'showTable' || openType === 'tableRegister'" label="业务信息" name="bizInfo">
+        <biz-info :table-id="tableId" :open-type="openType" />
+      </el-tab-pane>
       <el-tab-pane
         v-if="openType === 'showTable' || openType === 'tableRegister'"
         label="创建语句"
-        name="createSql"
-        ><create-sql :table-id="tableId" :open-type="openType"
-      /></el-tab-pane>
+        name="createSql">
+        <create-sql :table-id="tableId" :open-type="openType" />
+      </el-tab-pane>
       <el-tab-pane
         v-if="openType === 'showTable' || openType === 'tableRegister'"
         label="业务信息"
-        name="bizInfo"
-        @click="change"
-        ><biz-info :table-id="tableId" :open-type="openType"
-      /></el-tab-pane>
+        name="bizInfo">
+        <biz-info :table-id="tableId" :open-type="openType" />
+        </el-tab-pane>
     </el-tabs>
   </div>
 </template>

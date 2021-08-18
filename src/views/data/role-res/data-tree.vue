@@ -103,6 +103,10 @@ export default {
   props: {
     dataUserId: String,
     sceneCode: String,
+    treeHeight:{
+      type: Number,
+      default: 55
+    },
     treeType: {
       type: String,
       default: "common", // common:正常的权限树   save:用于保存数据的文件夹树
@@ -148,7 +152,6 @@ export default {
       return this.$refs.tree1;
     },
     nodeClick(data, node, tree) {
-      console.log(node,tree)
       this.$emit("node-click", data, node, tree);
     },
     nodeExpand() {},

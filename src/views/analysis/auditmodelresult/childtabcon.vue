@@ -277,7 +277,7 @@
               style="height: calc(100% - 19px)"
               class="table ag-theme-balham"
               :column-defs="computedColumnDefs"
-              :row-data="computedRowData"
+              :rowData="computedRowData"
               rowMultiSelectWithClick="true"
               :enable-col-resize="true"
               :get-row-style="this.renderTableView"
@@ -513,7 +513,7 @@
   </div>
 </template>
 <script>
-import {AgCell} from '../../../components/public/new-ag-grid/ag-cell';
+import { AgCell } from "../../../components/public/new-ag-grid/ag-cell";
 // 引入样式文件
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-balham.css";
@@ -573,7 +573,7 @@ import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
 import flowItem2 from "ams-clue-vue/src/components/yctodowork/flowItem2";
 
 //引入时间格式化方法
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 export default {
   name: "childTabCon",
   // 注册draggable组件
@@ -671,6 +671,7 @@ export default {
       dialogVisible: false,
       // 定义ag-grid列
       columnDefs: [],
+      gridOptions: {},
       // aggrid需要显示的数据
       rowData: [],
       rotateRowData:[],  //行转列的数据
@@ -756,13 +757,13 @@ export default {
       ifopen: 0,
       defaultColDef: {
         flex: 1,
-        minWidth: 150,
         resizable: true,
         enableValue: true,
         enableRowGroup: true,
         enablePivot: true,
         sortable: true,
         filter: true,
+        floatingFilter: true, //列头过滤器 启动
       },
       sideBar :{
         toolPanels: [
@@ -810,8 +811,8 @@ export default {
   equals: '等于',
   notEqual: '不等于',
   // for number filter
-  lessThan: '少于',
-  greaterThan: '多于',
+  lessThan: '小于',
+  greaterThan: '大于',
   lessThanOrEqual: '小于等于',
   greaterThanOrEqual: '大于等于',
   inRange: '在范围内',
@@ -821,8 +822,11 @@ export default {
   startsWith: '开始',
   endsWith: '结束',
   // filter conditions
-  andCondition: '并且',
-  orCondition: '或者',
+        andCondition: "并且",
+        orCondition: "或者",
+        numberFilter:"数字筛选器",
+        textFilter:"文本筛选器",
+        dateFilter:"时间筛选器",
   // the header of the default group column
   // group: '分组',
   // tool panel
@@ -984,7 +988,7 @@ export default {
       // 获取选中的行
       const selectedRows = this.gridApi.getSelectedRows();
       // 获取选中行的id
-      selectedRows.forEach(e =>(onlyUuids.push(e.onlyuuid)));
+      selectedRows.forEach((e) => onlyUuids.push(e.onlyuuid));
       axios({
         method: "post",
         url: "/analysis/RunResultTableController/exportRunResultMainTable",
@@ -996,7 +1000,14 @@ export default {
         link.style.display = "none";
         link.href = URL.createObjectURL(blob);
         //模型运行结果表日期使用当前日期
-        link.setAttribute("download", "模型运行结果表"+"("+dayjs(new Date()).format('YYYY年MM月DD日hhmmss')+")"+".xls");
+        link.setAttribute(
+          "download",
+          "模型运行结果表" +
+            "(" +
+            dayjs(new Date()).format("YYYY年MM月DD日hhmmss") +
+            ")" +
+            ".xls"
+        );
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -1030,12 +1041,12 @@ export default {
     openProjectDialog() {
       // 验证是否已经关联项目
       var selectData = this.gridApi.getSelectedRows();
-      console.log(selectData)
-      let paramslist =[]
+      console.log(selectData);
+      let paramslist = [];
       for (let i = 0; i < selectData.length; i++) {
-        paramslist.push(selectData[i].onlyuuid)
+        paramslist.push(selectData[i].onlyuuid);
       }
-      console.log(paramslist)
+      console.log(paramslist);
       // 查询该明细是否已经分配项目，如果未分配则打开分配窗口
       getByResultDetailIds(paramslist).then((resp) => {
         if (resp.data.length === 0) {
@@ -1508,21 +1519,48 @@ export default {
         let _this = this
         setTimeout(function(){
           for(let i = 0;i<col.length;i++){
-            if (_this.result.columnType[i] == 'varchar'){
-              col[i].filter = 'agTextColumnFilter'
-            } else if (_this.result.columnType[i] == 'number' || _this.result.columnType[i] == 'time' || _this.result.columnType[i] == 'float') {
-              col[i].filter = 'agNumberColumnFilter'
-            } else {
-              col[i].filter = 'agTextColumnFilter'
-            }
+            var colType0 = _this.result.columnType[i];
+            colType0 = colType0 ? "": colType0.toUpperCase();
+            col[i].filter = "agMultiColumnFilter";
+            col[i].filterParams = {
+              filters: [
+                {
+                  filter: "agNumberColumnFilter",
+                  display: "subMenu",
+                },
+                {
+                  filter: "agTextColumnFilter",
+                  display: "subMenu",
+                },
+                {
+                  filter: "agDateColumnFilter",
+                  display: "subMenu",
+                },
+              ],
+            };
+            // switch (colType0) {
+            //   case "NUMBER":
+            //   case "INT":
+            //   case "INTEGER":
+            //   case "FLOAT":
+            //   case "DOUBLE":
+            //     col[i].filter = "agNumberColumnFilter";
+            //     break;
+            //   case "DATE":
+            //   case "TIMESTAMP":
+            //     col[i].filter = "agDateColumnFilter";
+            //     break;
+            //   default:
+            //     col[i].filter = "agTextColumnFilter";
+            //     break;
+            // }
           }
           _this.columnDefs = col;
           _this.rowData = da;
           if (typeof _this.gridApi !== "undefined" && _this.gridApi !== null) {
-            _this.gridApi.closeToolPanel()
+            _this.gridApi.closeToolPanel();
           }
-        },500)
-
+        }, 500);
       } else if (this.useType == "sqlEditor") {
         this.getIntoModelResultDetail(nextValue);
       } else if (this.useType == "modelPreview") {
@@ -1587,7 +1625,7 @@ export default {
                 this.modelResultColumnNames = this.nextValue.columnNames;
                 selectModel(this.modelId).then((resp) => {
                   this.modelDetailRelation = resp.data.modelDetailRelation;
-                  modelThresholdValuesTab = resp.data.modelThresholdValues
+                  modelThresholdValuesTab = resp.data.modelThresholdValues;
                   // 表格渲染规则赋值
                   this.modelThresholdValuesTabView = resp.data.modelThresholdValues
                   //循环阈值对象  取出阈值对象里面的列名  用于下边遍历处理的时候 作为判断条件
@@ -1723,18 +1761,47 @@ export default {
                     this.rowData = rowData;
                   }
                   for(let i = 0;i<col.length;i++){
-                    if (this.result.columnType[i] == 'varchar'){
-                      col[i].filter = 'agTextColumnFilter'
-                    } else if (this.result.columnType[i] == 'number' || this.result.columnType[i] == 'time' || this.result.columnType[i] == 'float') {
-                      col[i].filter = 'agNumberColumnFilter'
-                    } else {
-                      col[i].filter = 'agTextColumnFilter'
-                    }
+                    let colType0 = this.result.columnType[i];
+                    // colType0 = colType0 ? "": colType0.toUpperCase();
+                    // switch (colType0) {
+                    //   case "NUMBER":
+                    //   case "INT":
+                    //   case "INTEGER":
+                    //   case "FLOAT":
+                    //   case "DOUBLE":
+                    //   col[i].filter = 'agNumberColumnFilter'
+                    //     break;
+                    //   case "DATE":
+                    //   case "TIMESTAMP":
+                    //     col[i].filter = 'agDateColumnFilter'
+                    //     break;
+                    //   default:
+                    //     col[i].filter = 'agTextColumnFilter'
+                    //     break;
+                    // }
+                    colType0 = colType0 ? "": colType0.toUpperCase();
+                    col[i].filter = "agMultiColumnFilter";
+                    col[i].filterParams = {
+                      filters: [
+                        {
+                          filter: "agNumberColumnFilter",
+                          display: "subMenu",
+                        },
+                        {
+                          filter: "agTextColumnFilter",
+                          display: "subMenu",
+                        },
+                        {
+                          filter: "agDateColumnFilter",
+                          display: "subMenu",
+                        },
+                      ],
+                    };
                   }
                   this.columnDefs = col;
                   this.afterResult = true;
                   if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
-                    this.gridApi.closeToolPanel()
+                    this.gridApi.closeToolPanel();
                   }
                 });
               }
@@ -1761,20 +1828,21 @@ export default {
 
     doRotating(rowData){  //旋转
         if(rowData.length == 0) return;
-        this.rotateConfigs.forEach(conf=>{
-            conf.modelIds.forEach(mId=>{
+      this.rotateConfigs.forEach((conf) => {
+        conf.modelIds.forEach((mId) => {
                 if(this.modelId === mId) this.rotateConfig = conf;
-            })
         });
-        if(this.rotateConfig != null){   //  do rotation
+      });
+      if (this.rotateConfig != null) {
+        //  do rotation
             var mainField = this.rotateConfig.mainField;
             var colNamesField = this.rotateConfig.colNamesField;
-            console.log(this.rotateConfig)
+        console.log(this.rotateConfig);
             var tempMap = {};
             for(let i=0; i<rowData.length; i++){
                 var rd = rowData[i];
                 var key1Arr = [];
-                mainField.split(",").forEach(mf=>{
+          mainField.split(",").forEach((mf) => {
                     key1Arr.push(rd[mf]);
                 });
                 var key1 = key1Arr.join("```");
@@ -1784,22 +1852,22 @@ export default {
                 delete rd[colNamesField];
                 tempMap[key1][key2] = rd;
             }
-            Object.keys(tempMap).forEach(key1 =>{
+        Object.keys(tempMap).forEach((key1) => {
                 var rtObj = {};
                 mainField.split(",").forEach((mf,idx)=>{
                     rtObj[mf] = key1.split("```")[idx];
                 });
                 Object.keys(tempMap[key1]).forEach((key2)=>{
                     var assObj = tempMap[key1][key2];
-                    Object.keys(assObj).forEach(ao=>{
+            Object.keys(assObj).forEach((ao) => {
                         rtObj[this.rotateConfig.titleDisplayRules(ao, key2)] = assObj[ao];
-                    })
+            });
                 });
                 this.rotateRowData.push(rtObj);
             });
-            Object.keys(this.rotateRowData[0]).forEach(k=>{
+        Object.keys(this.rotateRowData[0]).forEach((k) => {
                 this.rotateColumnDefs.push({field:k, headerName:k, width:280});
-            })
+        });
         }
     },
 
@@ -1866,7 +1934,6 @@ export default {
                 var rowColom = {
                   headerName: this.nextValue.columnNames[j],
                   field: this.nextValue.columnNames[j],
-                  width: "180",
                 };
                 var key = this.nextValue.columnNames[j];
                 var value = this.nextValue.result[j];
@@ -1879,18 +1946,31 @@ export default {
               rowData.push(this.nextValue.result[k]);
             }
             for(let i = 0;i<col.length;i++){
-              if (this.result.columnType[i] == 'varchar'){
-                col[i].filter = 'agTextColumnFilter'
-              } else if (this.result.columnType[i] == 'number' || this.result.columnType[i] == 'time' || this.result.columnType[i] == 'float') {
-                col[i].filter = 'agNumberColumnFilter'
-              } else {
-                col[i].filter = 'agTextColumnFilter'
-              }
+
+              var colType0 = this.result.columnType[i];
+              colType0 = colType0 ? "": colType0.toUpperCase();
+              col[i].filter = "agMultiColumnFilter";
+              col[i].filterParams = {
+                filters: [
+                  {
+                    filter: "agNumberColumnFilter",
+                    display: "subMenu",
+                  },
+                  {
+                    filter: "agTextColumnFilter",
+                    display: "subMenu",
+                  },
+                  {
+                    filter: "agDateColumnFilter",
+                    display: "subMenu",
+                  },
+                ],
+              };
             }
             this.columnDefs = col;
             this.afterResult = true;
             if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
-              this.gridApi.closeToolPanel()
+              this.gridApi.closeToolPanel();
             }
           } else {
             this.isSee = false;
@@ -1943,7 +2023,7 @@ export default {
     renderTableView(params){
       // 规则赋值
       var modelThresholdValues = [];
-      if (typeof this.settingInfo != 'undefined') {
+      if (typeof this.settingInfo != "undefined") {
         modelThresholdValues.push(
           JSON.parse(this.settingInfo).thresholdValueRel
         );
@@ -1951,8 +2031,8 @@ export default {
         // 模型结果查看
         modelThresholdValues = this.modelObj.modelThresholdValues;
         // 模型直接点击运行
-        if (typeof this.modelObj.modelThresholdValues === 'undefined')
-        modelThresholdValues = this.modelThresholdValuesTabView
+        if (typeof this.modelObj.modelThresholdValues === "undefined")
+          modelThresholdValues = this.modelThresholdValuesTabView;
       }
       var thresholdValueRel = {};
       this.isLoading = false;
@@ -2142,7 +2222,7 @@ export default {
      * 点击详细dialog的确定按钮后触发
      */
     modelDetailCetermine(value) {
-      let replist =  []
+      let replist = [];
       $(".el-tabs__item").each(function(e){
         let repstr  = $(this).attr('id').slice(4,$(this).attr('id').length)
         replist.push(repstr)
@@ -2155,7 +2235,7 @@ export default {
         }
       }
       if(!value) {
-        value = this.modelDetailRelation[0].relationObjectUuid
+        value = this.modelDetailRelation[0].relationObjectUuid;
       }
       var selectRowData = this.gridApi.getSelectedRows();
       var relationType = null;
@@ -2285,9 +2365,8 @@ export default {
       this.tableData = this.nextValue.result;
       this.json_fields = {};
       for (var i = 0; i < this.nextValue.columnNames.length; i++) {
-        this.json_fields[
-          this.nextValue.columnNames[i]
-        ] = this.nextValue.columnNames[i];
+        this.json_fields[this.nextValue.columnNames[i]] =
+          this.nextValue.columnNames[i];
       }
       this.excelName = "模型结果导出表";
     },
@@ -2820,7 +2899,7 @@ export default {
         for (let i = 0; i < this.modelChartSetups.length; i++) {
           let modelChartSetupZ = {};
           let json = JSON.parse(this.modelChartSetups[i].chartJson);
-          console.log(this.modelChartSetups[i])
+          console.log(this.modelChartSetups[i]);
           for (let j = 0; j < this.chartConfigs.layout.length; j++) {
             if (this.chartConfigs.layout[j].i === json.layout.i) {
               modelChartSetupZ = {
@@ -2829,7 +2908,7 @@ export default {
                   layout: this.chartConfigs.layout[j],
                 }),
                 modelUuid: this.modelChartSetups[i].modelUuid,
-                chartSetupUuid:this.modelChartSetups[i].chartSetupUuid
+                chartSetupUuid: this.modelChartSetups[i].chartSetupUuid,
               };
               updateModelChartSetup(modelChartSetupZ).then((resp) => {
                 if (resp.data) {
@@ -2862,19 +2941,19 @@ export default {
           if (this.submitData.busdatas[i].状态 === 1 ) {
               this.$message.info({
                   duration: 2000,
-                  message: "预警发起的数据不能重复提交！"
-              })
+            message: "预警发起的数据不能重复提交！",
+          });
               return false;
-          }else if(this.submitData.busdatas[i].状态 === 3 ){
-              this.$message.info({
-                  duration: 2000,
-                  message: "已销号的数据不能重复提交！"
-              })
-              return false;
+          } else if (this.submitData.busdatas[i].状态 === 3) {
+            this.$message.info({
+              duration: 2000,
+              message: "已销号的数据不能重复提交！",
+            });
+            return false;
           }
       }
-      this.submitData.busTableName = this.nowtable.resultTableName  // 表名称
-      this.submitData.busDatabaseType = 'mysql'  //数据库类型
+      this.submitData.busTableName = this.nowtable.resultTableName; // 表名称
+      this.submitData.busDatabaseType = "mysql"; //数据库类型
       this.flowItem.versionUuid = this.common.randomString4Len(8);
       this.flowItem.applyTitle = this.modelTitle + this.common.getNowFormatDay();
       this.applyInfo.versionUuid = this.flowItem.versionUuid;
@@ -2884,8 +2963,8 @@ export default {
       this.applyInfo.isUpdate = false; //初始化
       this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
 
-      console.info(JSON.stringify(this.submitData))
-      console.info(JSON.stringify(this.columnDefs))
+      console.info(JSON.stringify(this.submitData));
+      console.info(JSON.stringify(this.columnDefs));
       this.dialogVisibleSubmit = true;
     },
     saveOpinion() {
@@ -2951,23 +3030,23 @@ export default {
       //流程接口调用
       this.submitData.busdatas=this.multipleSelection;
       for (var i = 0; i < this.submitData.busdatas.length; i++) {
-          if (this.submitData.busdatas[i].状态 === 1 ) {
-              this.$message.info({
-                  duration: 2000,
-                  message: "预警发起的数据不能重复提交！"
-              })
-              return false;
-          }else if(this.submitData.busdatas[i].状态 === 3 ){
-              this.$message.info({
-                  duration: 2000,
-                  message: "已销号的数据不能重复提交！"
-              })
-              return false;
-          }
+        if (this.submitData.busdatas[i].状态 === 1) {
+          this.$message.info({
+            duration: 2000,
+            message: "预警发起的数据不能重复提交！"
+          });
+          return false;
+        } else if (this.submitData.busdatas[i].状态 === 3) {
+          this.$message.info({
+            duration: 2000,
+            message: "已销号的数据不能重复提交！"
+          });
+          return false;
+        }
       }
-      this.submitData.busTableName = this.nowtable.resultTableName  // 表名称
+      this.submitData.busTableName = this.nowtable.resultTableName; // 表名称
       // this.submitData.status = this.initStatus;  //数据状态（0）
-      this.submitData.busDatabaseType = 'mysql'  //数据库类型
+      this.submitData.busDatabaseType = "mysql"; //数据库类型
       this.flowItem.versionUuid = this.common.randomString4Len(8);
       this.flowItem.applyTitle = this.modelTitle + this.common.getNowFormatDay();
       this.applyInfo.versionUuid = this.flowItem.versionUuid;
@@ -2977,8 +3056,8 @@ export default {
       this.applyInfo.isUpdate = false; //初始化
       this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
 
-      console.info(JSON.stringify(this.submitData))
-      console.info(JSON.stringify(this.columnDefs))
+      console.info(JSON.stringify(this.submitData));
+      console.info(JSON.stringify(this.columnDefs));
       this.dialogVisibleSubmitYc = true;
     },
     saveOpinionYc() {

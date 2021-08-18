@@ -223,8 +223,10 @@ import VueAxios from "vue-axios";
 import AV from "leancloud-storage";
 import { getParamSettingArr } from "@/api/analysis/auditparam";
 import personTree from "@/components/publicpersontree/index";
+import { getDictList } from '@/utils'
+import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
 export default {
-  components: { Pagination, QueryField, runimmediatelycon, personTree },
+  components: { Pagination, QueryField, runimmediatelycon, personTree, flowItem },
   data() {
     return {
       tableKey: "errorUuid",
@@ -283,6 +285,13 @@ export default {
       this.getLikeList();
     }
   },
+  watch: {
+    // 监听父组件传值projectId
+    projectId() {
+      this.getLikeList()
+      // this.getProjectPerson(this.projectId)
+    },
+  },
   methods: {
     /**
      *解析url上的参数
@@ -334,7 +343,6 @@ export default {
      * modelName是选中的模型的名字
      */
     getResultTables(val, modelName, modelUuid, runStatus, resultSpiltObjects) {
-      debugger
       if (runStatus == 3) {
         var assistTables = [];
         var mainTable = null;

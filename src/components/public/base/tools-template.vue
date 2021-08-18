@@ -610,7 +610,6 @@ export default {
      */
     getWebSocket() {
       var userId = this.$store.getters.personuuid
-      // const wsuri = 'ws://' + window.location.host+ '/websocket?' + userId + 'systemTask'// 连接地址，可加参数// 连接地址，可加参数
       const wsuri = this.AmsWebsocket.getWSBaseUrl(this.AmsModules.BASE) + userId + 'systemTask'// 连接地址，可加参数// 连接地址，可加参数
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(wsuri) // 建立与服务端的连接

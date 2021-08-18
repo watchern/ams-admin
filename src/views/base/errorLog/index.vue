@@ -114,7 +114,7 @@ export default {
           {
             headerName: '异常时间',
             field: 'logTime',
-            filter: 'agNumberColumnFilter'
+            filter: 'agDateColumnFilter'
           }
         ]
       },

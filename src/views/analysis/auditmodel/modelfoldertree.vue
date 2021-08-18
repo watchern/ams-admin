@@ -206,6 +206,7 @@ export default {
     handleNodeClick(data) {
       this.selectTreeNode = data;
       if (data.type === "model") {
+        this.$emit("refreshModels", data);
       } else {
         this.$emit("refreshModelList", data);
       }
