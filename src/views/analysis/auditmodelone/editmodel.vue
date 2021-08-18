@@ -784,14 +784,18 @@ export default {
       // 获取到参数的默认值，是个JSON，将JSON存入到数据库  以便下次反显时使用
       //拿到默认值后组织成后台数据库的格式
       if (paramDefaultValue != undefined && paramDefaultValue.length != 0) {
-        const paramData = paramDefaultValue
+        if(paramDefaultValue.paramSettingArr){
+          var paramData = paramDefaultValue.paramSettingArr
+        }else{
+          var paramData = paramDefaultValue
+        }
         let newParamData = []
         for (let i = 0; i < paramData.length; i++) {
           var obj = {
             ammParamUuid: paramData[i].copyParamId,
             resourceType: 1,
             paramValue: JSON.stringify(paramData[i]),
-            paramSort: paramData[i].sortVal,
+            paramSort: paramData[i].sort,
             moduleParamId: paramData[i].moduleParamId
           }
           newParamData.push(obj)
