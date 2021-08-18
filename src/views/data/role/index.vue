@@ -31,11 +31,11 @@
       <el-table-column label="数据角色名称" width="200px" prop="dataRoleName" />
       <el-table-column label="创建时间" width="300px" align="center" :formatter="formatCreateTime" prop="createTime" />
       <el-table-column label="授权方式" width="100px" align="center" prop="authenType" :formatter="formatAuthenType" />
-      <el-table-column label="数据筛选" style="width: 50px" align="center">
+     <!-- <el-table-column label="数据筛选" style="width: 50px" align="center">
         <template slot-scope="scope">
           <el-button type="primary" class="oper-btn preview" size="mini" @click="openFilterPanel(scope.row.dataRoleUuid)" />
         </template>
-      </el-table-column>
+      </el-table-column>-->
       <el-table-column label="数据有效期" align="center" prop="timeDuring" :formatter="formatDuring" style="width : 400px" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
