@@ -143,7 +143,6 @@ export default {
   watch: {
     // temp: {
     //   handler(newTemp, oldemp) {
-    //     // console.log("==================newTemp");
     //     newTemp.forEach((item) => {
     //       if (!item.dataLengthText) {
     //         item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision===0? ',' + item.colPrecision : '');
@@ -160,10 +159,9 @@ export default {
   },
   methods: {
     changeDataType(row){
-      debugger
       this.$emit("changeDataType", row);
-      console.log("===================child row.enableDataLength")
-      console.log(row.enableDataLength)
+      // console.log("*************child row.enableDataLength")
+      // console.log(row.enableDataLength)
       // var currDataType = this.dataTypeRules[row.dataType.toUpperCase()];
       // row.enableDataLength = currDataType ? currDataType.enableDataLength : true;
       // if (!row.enableDataLength) {
@@ -197,11 +195,9 @@ export default {
           this.temp = resp.data.colMetas;
           if (typeof this.temp != "undefined" && this.temp !== null) {
             debugger
-            this.temp.forEach((e) => {
-              e.tempIndex = ++this.tempIndex;
-              this.$emit("changeDataType", e);
-              debugger
-
+            this.temp.forEach((item) => {
+              item.tempIndex = ++this.tempIndex;
+              this.$emit("changeDataType", item);
               // if (typeof e.dataLengthText == "undefined") {
               //   debugger
               //   const dataTypeRule =  this.dataTypeRules[e.dataType.toUpperCase().trim()]
