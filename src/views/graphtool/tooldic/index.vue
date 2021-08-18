@@ -1400,12 +1400,12 @@ export default {
               //     response.data[i].name = response.data[i].name+'('+response.data[i].nameCn+')'
               //   }
               // }
-              // for(let i=0;i<response.data.length;i++){
-              //   if(response.data[i].nameCn&&(response.data[i].type=='view'|| response.data[i].type=='table')){
-              //     response.data[i].english = response.data[i].name
-              //     response.data[i].name = response.data[i].nameCn
-              //   }
-              // }
+              for(let i=0;i<response.data.length;i++){
+                if(response.data[i].nameCn&&(response.data[i].type=='view'|| response.data[i].type=='table')){
+                  response.data[i].english = response.data[i].name
+                  response.data[i].name = response.data[i].nameCn
+                }
+              }
               indexJs.replaceNodeType(response.data);
               obj.zTreeObj = $.fn.zTree.init(
                 $(obj.$refs.ztree_datasource_ref),
