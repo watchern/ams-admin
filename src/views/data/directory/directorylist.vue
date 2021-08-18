@@ -38,16 +38,16 @@
           class="oper-btn add-table btn-width-md"
           :disabled="
             clickData.type == 'table' ||
-            typeof clickData.extMap.sceneInstUuid !== 'undefined'
+            (typeof clickData.extMap !== 'undefined' && typeof clickData.extMap.sceneInstUuid !== 'undefined')
           "
-          @click="add"
+          @click="addTable"
         />
         <el-button
           type="primary"
           class="oper-btn import-table btn-width-md"
           :disabled="
             clickData.type == 'table' ||
-            typeof clickData.extMap.sceneInstUuid !== 'undefined'
+             (typeof clickData.extMap !== 'undefined' && typeof clickData.extMap.sceneInstUuid !== 'undefined')
           "
           @click="uploadTable"
         />
@@ -61,8 +61,7 @@
           type="primary"
           class="oper-btn edit"
           :disabled="selections.length !== 1"
-
-          @click="update"
+          @click="updateTable"
         />
         <el-button
           type="primary"
@@ -363,7 +362,7 @@
     >
       <template>
         <div style="height: 62vh; overflow: auto">
-          <el-button></el-button>
+          <el-button/>
           <el-row>
             <el-col>
               <column
@@ -375,6 +374,8 @@
                 @append-node="appendnode"
                 @table-show="tableshow"
                 @saveTableInfoHelp="saveTableInfoHelp"
+                @changeDataType="changeDataType"
+                @isValidColumn="isValidColumn"
               />
             </el-col>
           </el-row>
@@ -632,23 +633,74 @@ export default {
       },
       downloadLoading: false,
       dialoading: false,
+      dataTypeRules: {
+      }
     };
   },
   created() {
+    this.dataTypeRules = this.CommonUtil.DataTypeRules
     this.initDirectory();
+  },
+  watch: {
+    uploadtempInfo: {
+      handler(newTemp, oldemp) {
+        // this.$emit('update:tab-show', newName)
+        console.log("==================newTemp");
+        if (typeof newTemp.colMetas != "undefined"){
+          newTemp.colMetas.forEach((item) => {
+            // if (!item.dataLengthText) {
+            //   item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '');
+            // }
+            if (typeof item.dataLengthText == "undefined") {
+              const dataTypeRule = this.dataTypeRules[item.dataType.toUpperCase().trim()]
+              if (typeof dataTypeRule != "undefined" && typeof dataTypeRule.hasPrecision != "undefined") {
+                if (dataTypeRule.hasPrecision) {
+                  item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '')
+                } else {
+                  item.dataLengthText = item.dataLength
+                }
+              }
+            }
+          })
+        }
+      },
+      deep: true
+    }
   },
   methods: {
     changeDataType(row){
-      switch (row.dataType) {
-        case "CHAR":
-        case "VARCHAR":
-        case "DECIMAL":
-          row.enableDataLength=true;
-          break;
-        default:
-          row.enableDataLength=false;
-          break;
+      const dataTypeRule = this.dataTypeRules[row.dataType.toUpperCase().trim()];
+      row.enableDataLength = dataTypeRule && typeof dataTypeRule.enableDataLength !== "undefined" ? dataTypeRule.enableDataLength : true;
+      if (CommonUtil.isUndefined(row.dataLengthText) && row.enableDataLength) {
+        if (CommonUtil.isUndefined(dataTypeRule) && CommonUtil.isNotBlank(row.dataLength)) {
+          if (typeof dataTypeRule.hasPrecision != "undefined" && dataTypeRule.hasPrecision) {
+            row.dataLengthText = row.dataLength + (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '')
+          } else {
+            row.dataLengthText = row.dataLength
+          }
+        }
+      } else if (typeof row.dataLength !== "undefined") {
+        row.dataLength = "";
+        row.colPrecision = "";
+        row.dataLengthText = "";
       }
+    },
+
+    isValidColumn(row) {
+      var currDataType = this.dataTypeRules[row.dataType.toUpperCase().trim()];
+
+      var arr = typeof row.dataLengthText!= "undefined" ? row.dataLengthText.split(","):"";
+      row.dataLength = arr.length > 0 ? arr[0].trim() : "";
+      row.colPrecision = arr.length > 1 ? arr[1].trim() : "";
+
+      if (currDataType && currDataType["lengthRule"]) {
+        if (!new RegExp(this.dataTypeRules[currDataType.lengthRule]).test(row.dataLength)) {
+          this.$message.error(row.dataType.toUpperCase() + currDataType["ruleMsg"]);
+          return false;
+        }
+      }
+
+      return true;
     },
     initDirectory() {
       if (typeof this.dataUserId !== "undefined") {
@@ -774,16 +826,7 @@ export default {
                   this.uploadtempInfo = res.data;
                   if (this.uploadtempInfo.colMetas.length >0 ){
                     for(let i=0;i<this.uploadtempInfo.colMetas.length;i++) {
-                      switch (this.uploadtempInfo.colMetas[i].dataType.trim()) {
-                        case "CHAR":
-                        case "VARCHAR":
-                        case "DECIMAL":
-                          this.uploadtempInfo.colMetas[i].enableDataLength = true;
-                          break;
-                        default :
-                          this.uploadtempInfo.colMetas[i].enableDataLength = false;
-                      }
-
+                      this.changeDataType(this.uploadtempInfo.colMetas[i])
                     }
                   }
                 });
@@ -804,85 +847,8 @@ export default {
       // console.log(this.uploadtempInfo.colMetas);
       for (let i = 0; i < this.uploadtempInfo.colMetas.length; i++) {
         let obj = this.uploadtempInfo.colMetas[i];
-        let xx = obj.dataType.toUpperCase();
-        switch (xx) {
-          case "CHAR":
-            if (
-              1 <= obj.dataLength &&
-              obj.dataLength <= 8000 &&
-              obj.dataLength != ""
-            ) {
-            } else {
-              this.$message.error("char类型长度范围:1-8000之间数字");
-              return;
-            }
-            break;
-          case "VARCHAR2":
-            if (
-              1 <= obj.dataLength &&
-              obj.dataLength <= 8000 &&
-              obj.dataLength != ""
-            ) {
-            } else {
-              this.$message.error("varchar2类型长度范围:1-8000之间数字");
-              return;
-            }
-            break;
-          case "VARCHAR":
-            if (
-              1 <= obj.dataLength &&
-              obj.dataLength <= 8000 &&
-              obj.dataLength != ""
-            ) {
-            } else {
-              this.$message.error("varchar类型长度范围:1-8000之间数字");
-              return;
-            }
-            break;
-          case "NVARCHAR":
-            if (
-              1 <= obj.dataLength &&
-              obj.dataLength <= 4000 &&
-              obj.dataLength != ""
-            ) {
-            } else {
-              this.$message.error("nvarchar类型长度范围:1-4000之间数字");
-              return;
-            }
-            break;
-          case "NUMBER":
-            var flag1 = new RegExp("^[0-9]$");
-            var flag2 = new RegExp("^[0-9]+[,]+[0-9]$");
-            if (
-              (flag1.test(obj.dataLength) || flag2.test(obj.dataLength)) &&
-              obj.dataLength != ""
-            ) {
-            } else {
-              this.$message.error(
-                "number类型长度范围:单个数字，也可以是 数字,数字(英文逗号)"
-              );
-              return;
-            }
-            break;
-          case "DECIMAL":
-            var flag = new RegExp("^[0-9]+[,]+[0-9]$");
-            if (flag.test(obj.dataLength) && obj.dataLength != "") {
-              var strings = obj.dataLength.toString().split(",");
-              obj.dataLength = strings[0];
-              obj.colPrecision = strings[1];
-            } else {
-              this.$message.error("decimal类型长度范围:数字,数字(英文逗号)");
-              return;
-            }
-            break;
-          case "INT":
-            var flag = new RegExp("^[0-9]{1,11}$");
-            if (flag.test(obj.dataLength) && obj.dataLength != "") {
-            } else {
-              this.$message.error("int类型长度范围:最长11位长度数字");
-              return;
-            }
-            break;
+        if (!this.isValidColumn(obj)) {
+          return;
         }
       }
       this.dialoading = true;
@@ -1015,7 +981,7 @@ export default {
       this.folderFormVisible = false;
     },
     // 新增表
-    add() {
+    addTable() {
       this.openType = "addTable";
       this.tableColumnVisible = true;
       this.tabShow = "column";
@@ -1029,15 +995,11 @@ export default {
       this.uploadVisible = true;
     },
     // 表结构维护
-    update() {
+    updateTable() {
       this.openType = "updateTable";
       this.tableColumnVisible = true;
       this.tabShow = "column";
       this.tableId = this.selections[0].id;
-
-
-
-
     },
     // 表结构维护
     relationTable() {
@@ -1106,7 +1068,7 @@ export default {
     },
     // 保存新建文件夹
     createFolderSave() {
-      if (typeof this.clickData.extMap.sceneInstUuid !== "undefined") {
+      if ( typeof this.clickData.extMap !== 'undefined' && typeof this.clickData.extMap.sceneInstUuid !== 'undefined') {
         this.resourceForm.sceneInstUuid = this.clickData.extMap.sceneInstUuid;
       }
       this.resourceForm.parentFolderUuid = this.clickData.id;
