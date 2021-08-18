@@ -4,9 +4,9 @@
       <el-tab-pane
         v-if="openType === 'showTable' || openType === 'tableRegister'"
         label="基本信息"
-        name="basicinfo"
-        ><basic-info :table-id="tableId" :open-type="openType"
-      /></el-tab-pane>
+        name="basicinfo">
+        <basic-info :table-id="tableId" :open-type="openType"/>
+      </el-tab-pane>
       <el-tab-pane label="列" name="column">
         <column
           ref="column"
@@ -71,9 +71,6 @@ export default {
     this.tabShowName = this.tabShow;
   },
   methods: {
-    // change(val){
-    //   console.log(val="==============")
-    // },
     initTabs() {
       if (this.openType === "addType") {
         this.$refs.tabs.$children[0].$refs.tabs[3].style.display = "none";
@@ -85,8 +82,6 @@ export default {
     },
     tableshow(show) {
       this.$emit("table-show", show);
-      console.log("=============")
-
     },
   },
 };

@@ -35,6 +35,12 @@ import i18n from './lang' // internationalization
 import './icons' // icon
 import './permission' // permission control
 import './utils/error-log' // error log
+import CommonUtil from "@/utils/common";
+Vue.prototype.CommonUtil = CommonUtil;
+
+
+import _ from 'lodash'
+Vue.use(_);
 
 import * as filters from './filters' // global filters
 
@@ -107,6 +113,7 @@ new Vue({
   router,
   store,
   i18n,
+  _,
   render: h => h(App)
 })
 
