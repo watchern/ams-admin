@@ -148,6 +148,7 @@
           v-if="dialogStatus === 'copyTable'"
           type="primary"
           @click="copyResourceSave()"
+          @refresh-table="getListSelect"
           >保存</el-button
         >
         <el-button
@@ -633,8 +634,12 @@ export default {
       },
       downloadLoading: false,
       dialoading: false,
+<<<<<<< HEAD
+      clickid:''
+=======
       dataTypeRules: {
       }
+>>>>>>> 1a2ba63c9af8c7b67c8f069afdfe3d127a8bbea8
     };
   },
   created() {
@@ -773,6 +778,7 @@ export default {
         this.$message({ type: "info", message: "所选资源为文件夹而非数据表!" });
         return;
       } else {
+
         this.dialogStatus = "copyTable";
         this.typeLabel = "复制表名称";
         this.resourceForm.resourceName = "";
@@ -799,7 +805,8 @@ export default {
             duration: 2000,
             position: "bottom-right",
           });
-          this.$emit("refresh");
+          this.$emit("refresh",this.clickid);
+          // this.getListSelect()
         } else {
           this.$message({
             type: "info",
@@ -952,7 +959,6 @@ export default {
     },
     // 重命名资源名称
     renameResourceSave() {
-      debugger;
       var tempData = Object.assign({}, this.selections[0]);
       console.log(tempData);
       tempData.label = this.resourceForm.resourceName;
@@ -966,7 +972,7 @@ export default {
             position: "bottom-right",
           });
           // 刷新数节点
-          this.$emit("refresh");
+          this.$emit("refresh",this.clickNode);
           if (this.dialogStatus === "updateTable") {
             this.selections[0].label = tempData.label;
           }
@@ -1011,6 +1017,7 @@ export default {
     },
     // 得到分页列表
     getListSelect(query) {
+      console.log(query)
       if (query) {
         var list = this.allList.filter((obj) => {
           return obj.label.indexOf(query.label) !== -1;
@@ -1025,8 +1032,14 @@ export default {
     // 初始化列表页面
     getList(data, node, tree) {
       this.clickData = data;
+      this.clickid = data.id;
       console.log(data);
-      this.clickNode = node;
+      if(node=='pro'){
+        console.log('复制刷新')
+        node = this.clickNode
+      }else{
+        this.clickNode = node;
+      }
       this.clickFullPath = [];
       this.clickFullPath.push(data.label);
       var newNode = node.parent;
@@ -1052,6 +1065,7 @@ export default {
         this.total = getArrLength(data.children);
         this.getListSelect();
       }
+      console.log(this.temp)
     },
     createFolder() {
       if (this.clickData.extMap.folderType === "virtual") {
