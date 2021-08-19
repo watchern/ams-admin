@@ -58,7 +58,7 @@
               :disabled="buttonIson.deleteBtn"
               type="primary"
               @click="deleteRunTaskRel"
-              class="oper-btn delete-projectrel"
+              class="oper-btn delete-projectrel btn-width-max"
             ></el-button>
           </el-row>
         </div>
@@ -418,7 +418,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.common.alertMsg(1, this.textShare.operateFail());
+          this.common.alertMsg(1, "操作失败！");
           console.log(error);
         });
       this.getLikeList();
@@ -442,12 +442,12 @@ export default {
             this.flowParam = 1;
           } else {
             this.iftodowork = false;
-            this.common.alertMsg(1, this.textShare.operateFail());
+            this.common.alertMsg(1, "操作失败！");
           }
         })
         .catch((error) => {
           this.iftodowork = false;
-          this.common.alertMsg(1, this.textShare.operateFail());
+          this.common.alertMsg(1, "操作失败！");
           console.log(error);
         });
     },

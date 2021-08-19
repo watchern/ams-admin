@@ -533,7 +533,7 @@
             <el-button
               type="primary"
               v-if="!scope.row.hasParamSet"
-              class="oper-btn setting-param"
+              class="oper-btn setting-param btn-width-md"
               @click="settingParam(scope.row.nodeId, scope.$index)"
               style="line-height: normal"
             />
@@ -541,7 +541,7 @@
             <el-button
               type="primary"
               v-if="scope.row.hasParamSet"
-              class="oper-btn edit-setting-param"
+              class="oper-btn edit-setting-param btn-width-md"
               @click="settingParam(scope.row.nodeId, scope.$index)"
               style="line-height: normal"
             />

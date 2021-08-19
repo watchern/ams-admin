@@ -72,7 +72,7 @@
             <el-tab-pane label="输出字段设置" name="outPutCol">
                 <el-row style="padding-top: 10px;">
                     <el-col align="right">
-                        <el-button type="primary" class="oper-btn customfield" @click="customizeColumn('1')" title="自定义字段" tyle="line-height: normal;"/>
+                        <el-button type="primary" class="oper-btn customfield btn-width-max" @click="customizeColumn('1')" title="自定义字段" tyle="line-height: normal;"/>
                         <el-button type="primary" class="oper-btn help" @click="helpDialogVisible = true" title="说明" style="line-height: normal;"/>
                     </el-col>
                 </el-row>
