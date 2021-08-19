@@ -33,13 +33,12 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
     <el-dialog v-if="dialogFormVisible" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
-      <div style="height:65vh;overflow:auto;">
+      <div style="height:65vh;">
       <el-form
         ref="dataForm"
         :rules="rules"
         :model="temp"
         label-position="right"
-        label-width="120px"
         class="detail-form"
         style="width: 700px;"
       >
@@ -57,7 +56,7 @@
           <el-link v-if="temp.ruleType === 1" size="mini" type="primary" @click="exSql()">执行SQL</el-link>
           <el-input v-model="temp.sqlContent" type="textarea" />
         </el-form-item>
-         <el-table v-if="temp.ruleType === 1" :data="sqlRule">
+         <div v-if="temp.ruleType === 1" :data="sqlRule">
           <el-table-column prop="codeValue" label="真实值">
             <template slot-scope="scope">
               <el-select ref="codeValue" v-model="scope.row.codeValue" placeholder="请选择真实值">
@@ -82,7 +81,7 @@
               </el-select>
             </template>
           </el-table-column>
-        </el-table>
+        </div>
         <!-- 执行预览弹窗 -->
         <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px">
           <el-row>
@@ -107,7 +106,7 @@
         <el-link size="mini" type="primary">导入</el-link>
         <span style="font-size:2px;color:red">(请选择xls或者xlsx格式,导入第一列为真实值,第二列为转码值)</span>
       </el-upload>
-      <el-table v-if="temp.ruleType === 2" :data="transColRelsData" height="calc(100% - 260px)">
+      <el-table v-if="temp.ruleType === 2" :data="transColRelsData">
         <el-table-column prop="codeValue" label="真实值" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-input v-if="scope.row.start !='0' || scope.row.start == undefined" v-model="scope.row.codeValue" style="width:90%;" />
@@ -532,5 +531,6 @@ export default {
 }
 >>>.el-dialog__body{
   height: calc(100% - 100px);
+  overflow: auto;
 }
 </style>
