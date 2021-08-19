@@ -634,12 +634,8 @@ export default {
       },
       downloadLoading: false,
       dialoading: false,
-<<<<<<< HEAD
-      clickid:''
-=======
-      dataTypeRules: {
-      }
->>>>>>> 1a2ba63c9af8c7b67c8f069afdfe3d127a8bbea8
+      clickid:'',
+      dataTypeRules: {}
     };
   },
   created() {
