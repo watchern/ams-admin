@@ -20,12 +20,12 @@
     <div align="right">
       <el-row>
         <!-- @分配结果@-->
-        <el-button
+        <!-- <el-button
           type="primary"
           @click="openProjectDialog"
           :disabled="buttonIson.disableAssociatedBtn"
           class="oper-btn allocation btn-width-md"
-        />
+        /> -->
 <!--        <el-button
           type="primary"
           @click="modelResultOpenDialog()"
@@ -33,12 +33,12 @@
           class="oper-btn allocation btn-width-md"
         />-->
         <!-- 移除关联项目 -->
-        <el-button
+        <!-- <el-button
           type="primary"
           @click="removeRelationProject()"
           :disabled="buttonIson.disableDisassociateBtn"
           class="btn-width-max oper-btn disallocation"
-          />
+          /> -->
 <!--        <el-button
           type="primary"
           :disabled="buttonIson.disableSplitBtn"
@@ -55,7 +55,7 @@
           :disabled="buttonIson.disableDeleteBtn"
           type="primary"
           @click="deleteRunTaskRel"
-          class="oper-btn delete-2"
+          class="oper-btn delete"
         />
       </el-row>
     </div>

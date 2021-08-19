@@ -285,7 +285,7 @@ export default {
         this.$store.commit("aceState/setRightFooterTags", {
           type: "active",
           val: {
-            name: "审计预警",
+            name: "预警结果",
             path: "/analysis/warningresult",
           },
         });
