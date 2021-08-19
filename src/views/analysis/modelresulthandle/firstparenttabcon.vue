@@ -43,23 +43,22 @@
               :disabled="false"
               type="primary"
               size="small"
-              class="oper-btn"
+              class="oper-btn add-problem btn-width-md"
               @click="createProblem"
-            >
-            生成问题</el-button>
-            <el-button
+            />
+<!--            <el-button
               :disabled="false"
               type="primary"
               size="small"
               class="oper-btn processing"
               @click="handleResult"
-            ></el-button>
+            />-->
             <el-button
               :disabled="buttonIson.deleteBtn"
               type="primary"
               @click="deleteRunTaskRel"
               class="oper-btn delete-projectrel btn-width-max"
-            ></el-button>
+            />
           </el-row>
         </div>
         <el-table
