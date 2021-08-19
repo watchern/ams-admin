@@ -111,8 +111,8 @@
       </el-tab-pane>
       <el-tab-pane label="执行信息" name="executeInfo">
         <el-form ref="executeDataForm" :rules="rules" class="detail-form" :model="temp" :disabled="allReadOnly" >
-          <el-form-item label="执行方式" >
-            <el-select v-model="temp.executeMode" placeholder="请选择执行方式">
+          <el-form-item label="执行方式">
+            <el-select v-model="temp.executeMode" placeholder="请选择执行方式" style="width:100%">
               <el-option label="单次执行" :value="1"></el-option>
               <el-option label="多次执行" :value="2"></el-option>
               <el-option label="周期执行" :value="3"></el-option>
@@ -588,9 +588,7 @@ export default {
     'temp.modelList':function(newValue, oldValue){
       this.$nextTick(function(){
         //页签添加完成后初始化新界面的参数
-        for(var i=0;i<this.temp.modelList.length;i++){
-        // for(let model of this.temp.modelList){
-          let model = this.temp.modelList[i]
+        for(let model of this.temp.modelList){
           //是否已经创建
           let isCreated = false
           //过滤掉已经创建参数关联的模型
@@ -604,17 +602,9 @@ export default {
             continue
           }
           if(model.paramObj && model.paramObj.length > 0){
-            console.log('-----model-----');
-            console.log(model);
             this.initedParamModel.push(model)
-            // this.paramSql.push(model.sqlValue)
-            this.paramSql[i].push(model.sqlValue)
-            // this.paramArr.push(model.paramObj)
-            this.paramArr[i].push(model.paramObj)
-            console.log('--------'+ i);
-            console.log(this.paramArr[i]);
-            console.log(this.paramSql[i]);
-
+            this.paramSql.push(model.sqlValue)
+            this.paramArr.push(model.paramObj)
             this.$refs["paramDrawRef"+model.modelUuid][0].createParamNodeHtml(model.modelUuid,model.modelName+' 参数','auditwarning')
             // this.$refs["paramDrawRef"+model.modelUuid][0].initParamHtmlSS(model.sqlValue, model.paramObj, model.modelName, model.modelUuid)
           }

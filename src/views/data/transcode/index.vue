@@ -39,7 +39,6 @@
         :rules="rules"
         :model="temp"
         label-position="right"
-        label-width="120px"
         class="detail-form"
         style="width: 700px;"
       >

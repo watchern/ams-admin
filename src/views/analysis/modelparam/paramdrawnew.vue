@@ -1,6 +1,6 @@
 <template>
   <div style="overflow-y: visible;" ref="inputParamContent" class="paramadrawnew">
-    <div ref="nodeParam" style="padding-bottom:255px;overflow:auto;max-height:62vh" class="detail-form">
+    <div ref="nodeParam" style="overflow:auto;max-height:62vh" class="detail-form">
       <el-row  v-for="(paramInfo,ind) in paramInfoArr" :key="ind" style="margin: 15px;" >
         <el-col :span="7" style="line-height:36px;padding-right: 10px;">
           <el-tooltip :content="paramInfo.description" placement="bottom">
@@ -97,15 +97,19 @@ export default {
             let moduleParamId = paramsArr[k].ammParamUuid
             if (moduleParamId === this.arr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) { // 匹配复制参数的母版参数ID
               this.arr[j].allowedNull = paramsArr[k].paramChoice.allowedNull
-              if (flag==='modelPreview' ||flag==='auditwarning'){
-                if (this.arr[j].paramValue) {
-                  paramsArr[k].defaultVal = this.arr[j].paramValue
-                }
-              }else{
-                if (this.arr[j].defaultVal) {
+              // if (flag==='modelPreview' ||flag==='auditwarning'){
+              //   if (this.arr[j].paramValue) {
+              //     // paramsArr[k].defaultVal = this.arr[j].paramValue
+              //     paramsArr[k].defaultVal = this.arr[j].defaultVal
+              //   }
+              // }else{
+              //   if (this.arr[j].defaultVal) {
+              //     paramsArr[k].defaultVal = this.arr[j].defaultVal
+              //   }
+              // }
+              if (this.arr[j].defaultVal) {
                   paramsArr[k].defaultVal = this.arr[j].defaultVal
                 }
-              }
               copyParamArr.push(paramsArr[k])
               moduleParamArr.push(moduleParamId)
               break
