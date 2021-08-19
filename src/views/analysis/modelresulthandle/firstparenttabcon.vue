@@ -26,7 +26,7 @@
               :disabled="buttonIson.deleteBtn"
               type="primary"
               @click="deleteRunTaskRel"
-              class="oper-btn delete-projectrel"
+              class="oper-btn delete-projectrel btn-width-max"
             ></el-button>
           </el-row>
         </div>

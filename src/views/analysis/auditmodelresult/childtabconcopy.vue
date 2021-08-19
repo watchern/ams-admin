@@ -26,7 +26,7 @@
         style="display: none"
         :disabled="modelRunResultBtnIson.chartDisplayBtn"
         type="primary"
-        class="oper-btn chart"
+        class="oper-btn chart btn-width-md"
         />
       <el-button
         style="display: none"
@@ -42,13 +42,13 @@
         @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
         >移除关联</el-button>
       <!-- @查看设置@-->
-      <el-button :disabled="false" type="primary" @click="queryConditionSetting" class="oper-btn setting-detail" />
+      <el-button :disabled="false" type="primary" @click="queryConditionSetting" class="oper-btn setting-detail btn-width-md" />
       <!-- <el-button type="primary" @click="addDetailRel('qwer', '项目10')"
         >重置</el-button -->
       <el-button :disabled="false" type="primary" @click="reSet" class="oper-btn reset"></el-button>
       <!-- @查询关联@  -->
       <el-button
-        class="oper-btn linkdetail"
+        class="oper-btn linkdetail btn-width-md"
         :disabled="modelRunResultBtnIson.modelDetailAssBtn"
         v-if="modelDetailButtonIsShow"
         type="primary"
@@ -65,7 +65,7 @@
           class="oper-btn export"
         ></el-button>
       </downloadExcel>
-      <el-button type="primary" class="oper-btn chart"></el-button>
+      <el-button type="primary" class="oper-btn chart btn-width-md"></el-button>
     </el-row>
     <ag-grid-vue
       v-if="isSee"

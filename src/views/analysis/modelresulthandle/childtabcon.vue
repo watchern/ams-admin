@@ -25,7 +25,7 @@
         <el-button
           :disabled="modelRunResultBtnIson.chartDisplayBtn"
           type="primary"
-          class="oper-btn chart"
+          class="oper-btn chart btn-width-md"
           @click="chartShowIsSee=true"
         ></el-button>
         <el-button
@@ -37,7 +37,7 @@
         ></el-button>
       <!-- @查询关联@ -->
         <el-button
-          class="oper-btn linkdetail"
+          class="oper-btn linkdetail btn-width-md"
           :disabled="modelRunResultBtnIson.modelDetailAssBtn"
           type="primary"
           @click="openModelDetail"
@@ -88,7 +88,7 @@
           </downloadExcel>
           <el-button
             type="primary"
-            class="oper-btn chart"
+            class="oper-btn chart btn-width-md"
             @click="chartShowIsSee = true"
           ></el-button>
         </el-row>

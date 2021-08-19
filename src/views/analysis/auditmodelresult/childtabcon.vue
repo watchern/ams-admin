@@ -73,7 +73,7 @@
               :disabled="false"
               type="primary"
               @click="queryConditionSetting"
-              class="oper-btn setting-detail"
+              class="oper-btn setting-detail btn-width-md"
               style="margin-left: 10px"
             />
             <el-button

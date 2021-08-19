@@ -33,7 +33,7 @@
               type="primary"
               @click="openProjectDialog"
               :disabled="buttonIson.disableAssociatedBtn"
-              class="btn-width-md oper-btn allocation"
+              class="oper-btn allocation btn-width-md"
             />
             <!--  @移除分配项目@ -->
             <el-button

@@ -37,7 +37,7 @@
           type="primary"
           @click="removeRelationProject()"
           :disabled="buttonIson.disableDisassociateBtn"
-          class="btn-width-max oper-btn disallocation"
+          class="oper-btn disallocation btn-width-max"
           />
 <!--        <el-button
           type="primary"
