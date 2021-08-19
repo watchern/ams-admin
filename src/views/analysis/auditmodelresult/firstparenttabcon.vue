@@ -397,7 +397,7 @@ export default {
         disableDeleteBtn: true,
         disableSplitBtn: true,
         disableShareBtn: true,
-        disableExportBtn: false
+        disableExportBtn: true
       },
       sqlInfoDialog: false,
       runMessageInfoDialog: false,
@@ -471,7 +471,7 @@ export default {
         link.style.display = "none";
         link.href = URL.createObjectURL(blob);
         //模型运行结果表日期使用当前日期
-        link.setAttribute("download",+this.modelTitle +"("+dayjs(new Date()).format('YYYY年MM月DD日hhmmss')+")"+".xls");
+        link.setAttribute("download","模型执行情况表"+"("+dayjs(new Date()).format('YYYY年MM月DD日hhmmss')+")"+".xls");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -657,7 +657,23 @@ export default {
       this.buttonIson.disableDeleteBtn = val.length == 0;
       this.buttonIson.disableSplitBtn = val.length <= 1;
       this.buttonIson.disableShareBtn = val.length == 0;
-      this.buttonIson.disableExportBtn = val.length > 0;
+      //筛选状态为成功的才能被导出
+      var whichStatus = false;
+      if (val.length >0) {
+        whichStatus = true;
+        val.forEach((r) => {
+          if (r.runStatus !== 3) {
+            console.log("------------状态"+r.runStatus)
+            whichStatus = false;
+          }
+        });
+        if(whichStatus){
+          this.buttonIson.disableExportBtn = false;
+        }else{
+          this.buttonIson.disableExportBtn = true;
+        }
+      }
+
       // 筛选状态为执行中的
       this.buttonIson.disableCancelExecBtn = false;
       if (val.length >= 1) {
