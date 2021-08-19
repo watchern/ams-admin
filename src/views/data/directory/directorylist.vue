@@ -673,8 +673,8 @@ export default {
     changeDataType(row){
       const dataTypeRule = this.dataTypeRules[row.dataType.toUpperCase().trim()];
       row.enableDataLength = dataTypeRule && typeof dataTypeRule.enableDataLength !== "undefined" ? dataTypeRule.enableDataLength : true;
-      if (CommonUtil.isUndefined(row.dataLengthText) && row.enableDataLength) {
-        if (CommonUtil.isUndefined(dataTypeRule) && CommonUtil.isNotBlank(row.dataLength)) {
+      if (this.CommonUtil.isUndefined(row.dataLengthText) && row.enableDataLength) {
+        if (this.CommonUtil.isUndefined(dataTypeRule) && this.CommonUtil.isNotBlank(row.dataLength)) {
           if (typeof dataTypeRule.hasPrecision != "undefined" && dataTypeRule.hasPrecision) {
             row.dataLengthText = row.dataLength + (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '')
           } else {
