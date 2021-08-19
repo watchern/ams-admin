@@ -237,6 +237,7 @@
             v-if="uploadStep === 2"
             :data="uploadtempInfo.colMetas"
             height="500px"
+            class="detail-form"
           >
             <el-table-column
               prop="colName"
@@ -377,6 +378,7 @@
                 @saveTableInfoHelp="saveTableInfoHelp"
                 @changeDataType="changeDataType"
                 @isValidColumn="isValidColumn"
+                class="detail-form"
               />
             </el-col>
           </el-row>

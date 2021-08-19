@@ -13,7 +13,7 @@
             <el-input v-model="temp.chnName" :disabled="openType === 'showTable'" />
           </el-form-item>
           <span class="midText">列业务信息：</span>
-          <el-table :data="temp.colMetas" height="400px">
+          <el-table :data="temp.colMetas" height="400px" class="detail-form">
             <el-table-column prop="colName" label="字段名称">
               <template slot-scope="scope">
                 <el-input v-model="scope.row.colName" style="width:90%;" :disabled="openType === 'showTable'" />
