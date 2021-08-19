@@ -9,29 +9,34 @@
     </div>
     <el-row>
       <el-col align="right">
+        <!--v-show 非管理员不能进行的操作-->
         <el-button
           type="primary"
           :disabled="selections.length === 0"
           class="oper-btn delete"
           @click="delData"
+          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn copy"
           :disabled="selections.length !== 1"
           @click="copyResource"
+          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn move"
           :disabled="selections.length === 0"
           @click="movePath"
+          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn rename"
           :disabled="selections.length !== 1"
           @click="renameResource"
+          v-show="ifShow"
         />
         <el-button
           type="primary"
@@ -41,6 +46,7 @@
             (typeof clickData.extMap !== 'undefined' && typeof clickData.extMap.sceneInstUuid !== 'undefined')
           "
           @click="addTable"
+          v-show="ifShow"
         />
         <el-button
           type="primary"
@@ -50,24 +56,28 @@
              (typeof clickData.extMap !== 'undefined' && typeof clickData.extMap.sceneInstUuid !== 'undefined')
           "
           @click="uploadTable"
+          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn add-directory btn-width-max"
           :disabled="clickData.type == 'table'"
           @click="createFolder"
+          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn edit"
           :disabled="selections.length !== 1"
           @click="updateTable"
+          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn link-table  btn-width-md"
           :disabled="selections.length !== 1"
           @click="relationTable"
+          v-show="ifShow"
         />
         <el-button
           type="primary"
@@ -505,6 +515,8 @@ import {
 import { saveFolder } from "@/api/data/folder";
 import dataTree from "@/views/data/role-res/data-tree";
 import { mapState } from "vuex";
+import { getInfo } from '@TCB/api/user';
+import { getById } from '@TCB/api/tcbaudit/personalManage';
 
 export default {
   computed: {
@@ -531,6 +543,7 @@ export default {
   // eslint-disable-next-line vue/order-in-components
   data() {
     return {
+      ifShow:false, //控制部分按钮是否显示
       saveFlag: true,
       infoFlag: true,
       currentSceneUuid: "auditor",
@@ -642,6 +655,17 @@ export default {
   created() {
     this.dataTypeRules = this.CommonUtil.DataTypeRules
     this.initDirectory();
+    //获取登录用户的信息
+    getInfo().then((resp) => {
+      console.log(resp.data.id)
+      getById(resp.data.id).then((res) => {
+        const dataArray = res.data;
+        const newArray = dataArray[0].roleId;
+        if(newArray[0]==41){
+          this.ifShow = true;
+        }
+      })
+    })
   },
   watch: {
     uploadtempInfo: {
