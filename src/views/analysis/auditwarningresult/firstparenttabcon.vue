@@ -444,7 +444,7 @@ export default {
      */
     exportExcel() {
       axios({
-        method: "get",
+        method: "post",
         url: "/analysis/RunTaskRelController/exportRunTaskRelTable",
         responseType: "blob",
       }).then((res) => {
