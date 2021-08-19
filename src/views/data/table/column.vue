@@ -84,6 +84,7 @@
       <el-table-column
         label="数据长度（精度）"
         show-overflow-tooltip
+        prop="dataLength"
       >
         <template slot-scope="scope" show-overflow-tooltip>
         <!--   v-model 需要根据是否是decimal展示长度+精度 用到了双三目，有点难看 -->
@@ -191,11 +192,8 @@ export default {
           // 返回两个新的数组
           this.oldName = resp.data.displayTbName;
           this.tempTable.tableName = resp.data.displayTbName;
-          debugger
-
           this.temp = resp.data.colMetas;
           if (typeof this.temp != "undefined" && this.temp !== null) {
-            debugger
             this.temp.forEach((item) => {
               item.tempIndex = ++this.tempIndex;
               this.$emit("changeDataType", item);

@@ -679,16 +679,16 @@ export default {
             // if (!item.dataLengthText) {
             //   item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '');
             // }
-            if (typeof item.dataLengthText == "undefined") {
-              const dataTypeRule = this.dataTypeRules[item.dataType.toUpperCase().trim()]
-              if (typeof dataTypeRule != "undefined" && typeof dataTypeRule.hasPrecision != "undefined") {
-                if (dataTypeRule.hasPrecision) {
-                  item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '')
-                } else {
-                  item.dataLengthText = item.dataLength
-                }
-              }
-            }
+            // if (typeof item.dataLengthText == "undefined") {
+            //   const dataTypeRule = this.dataTypeRules[item.dataType.toUpperCase().trim()]
+            //   if (typeof dataTypeRule != "undefined" && typeof dataTypeRule.hasPrecision != "undefined") {
+            //     if (dataTypeRule.hasPrecision) {
+            //       item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '')
+            //     } else {
+            //       item.dataLengthText = item.dataLength
+            //     }
+            //   }
+            // }
           })
         }
       },
