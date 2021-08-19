@@ -25,7 +25,7 @@
       <el-table-column label="创建人" prop="createUserName" width="150px"  />
       <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" align="center"/>
       <el-table-column label="关联类型" prop="warningType" :formatter="warningTypeFormat" align="center"/>
-      <el-table-column label="关联模型/指标数量" prop="sourceCount"  />
+      <el-table-column label="关联模型" prop="sourceCount"  />
       <el-table-column label="操作" prop="isStart" align="center" >
         <template slot-scope="scope">
           <el-link
