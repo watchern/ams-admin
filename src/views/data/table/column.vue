@@ -143,21 +143,26 @@ export default {
     this.initTable(this.tableId);
   },
   watch: {
-    // temp: {
-    //   handler(newTemp, oldemp) {
-    //     newTemp.forEach((item) => {
-    //       if (!item.dataLengthText) {
-    //         item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision===0? ',' + item.colPrecision : '');
-    //       } else if (item.dataLengthText && item.dataLengthText.length > 0) {
-    //         var arr = item.dataLengthText.split(",");
-    //         item.dataLength = arr.length > 0 ? arr[0].trim() : "";
-    //         item.colPrecision = arr.length > 1 ? arr[1].trim() : "";
-    //       }
-    //       this.changeDataType(item);
-    //     })
-    //   },
-    //   deep: true
-    // }
+    temp: {
+      handler(newTemp, oldemp) {
+        if (this.CommonUtil.isNotEmpty(newTemp)) {
+          newTemp.forEach((item) => {
+            this.isValidColumn(item);
+            this.changeDataType(item);
+
+            // if (!item.dataLengthText) {
+            //   item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision===0? ',' + item.colPrecision : '');
+            // } else if (item.dataLengthText && item.dataLengthText.length > 0) {
+            //   var arr = item.dataLengthText.split(",");
+            //   item.dataLength = arr.length > 0 ? arr[0].trim() : "";
+            //   item.colPrecision = arr.length > 1 ? arr[1].trim() : "";
+            // }
+            // this.changeDataType(item);
+          })
+        }
+      },
+      deep: true
+    }
   },
   methods: {
     changeDataType(row){
@@ -383,11 +388,9 @@ export default {
       var obj = {};
       console.log(newTableObj.colMetas);
       for (let i = 0; i < newTableObj.colMetas.length; i++) {
-        if (
-          newTableObj.colMetas[i].colName != "" &&
+        if (newTableObj.colMetas[i].colName != "" &&
           newTableObj.colMetas[i].dataType != "" &&
-          newTableObj.colMetas[i].dataLength != ""
-        ) {
+          newTableObj.colMetas[i].dataLength != "") {
         } else {
           this.$message.error("请完善数据信息!");
           return;

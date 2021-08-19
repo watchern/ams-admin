@@ -138,7 +138,7 @@
       :limit.sync="pageQuery.pageSize"
       @pagination="getListSelect"
     />
-    <!-- 弹窗 -->
+    <!-- 复制表弹框 -->
     <el-dialog
       :close-on-click-modal="false"
       :title="textMap[dialogStatus]"
@@ -177,7 +177,7 @@
         >
       </span>
     </el-dialog>
-    <!-- 弹窗2 -->
+    <!-- 移动表 -->
     <el-dialog
       :visible.sync="moveTreeVisible"
       width="600px"
@@ -699,12 +699,13 @@ export default {
     changeDataType(row){
       const dataTypeRule = this.dataTypeRules[row.dataType.toUpperCase().trim()];
       row.enableDataLength = dataTypeRule && typeof dataTypeRule.enableDataLength !== "undefined" ? dataTypeRule.enableDataLength : true;
+      debugger
       if (this.CommonUtil.isUndefined(row.dataLengthText) && row.enableDataLength) {
-        if (this.CommonUtil.isUndefined(dataTypeRule) && this.CommonUtil.isNotBlank(row.dataLength)) {
+        if (this.CommonUtil.isNotUndefined(dataTypeRule) && this.CommonUtil.isNotBlank(row.dataLength)) {
           if (typeof dataTypeRule.hasPrecision != "undefined" && dataTypeRule.hasPrecision) {
-            row.dataLengthText = row.dataLength + (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '')
+            row.dataLengthText = "" + row.dataLength + (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '')
           } else {
-            row.dataLengthText = row.dataLength
+            row.dataLengthText = "" + row.dataLength
           }
         }
       } else if (typeof row.dataLength !== "undefined") {
@@ -717,9 +718,18 @@ export default {
     isValidColumn(row) {
       var currDataType = this.dataTypeRules[row.dataType.toUpperCase().trim()];
 
-      var arr = typeof row.dataLengthText!= "undefined" ? row.dataLengthText.split(","):"";
-      row.dataLength = arr.length > 0 ? arr[0].trim() : "";
-      row.colPrecision = arr.length > 1 ? arr[1].trim() : "";
+      debugger
+      var arr = this.CommonUtil.isNotBlank(row.dataLengthText) ? row.dataLengthText.split(",") : null;
+      if (this.CommonUtil.isNotEmpty(arr)) {
+        var dataLengthN = arr.length > 0 ? arr[0].trim() : "";
+        var colPrecisionN = arr.length > 1 ? arr[1].trim() : "";
+        if (dataLengthN !== row.dataLength) {
+          row.dataLength = arr.length > 0 ? arr[0].trim() : "";
+        }
+        if (colPrecisionN !== row.colPrecision) {
+          row.colPrecision = arr.length > 1 ? arr[1].trim() : "";
+        }
+      }
 
       if (currDataType && currDataType["lengthRule"]) {
         if (!new RegExp(this.dataTypeRules[currDataType.lengthRule]).test(row.dataLength)) {
