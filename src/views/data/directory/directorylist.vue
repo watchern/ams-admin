@@ -634,12 +634,9 @@ export default {
       },
       downloadLoading: false,
       dialoading: false,
-<<<<<<< HEAD
-      clickid:''
-=======
+      clickId:'',
       dataTypeRules: {
       }
->>>>>>> 1a2ba63c9af8c7b67c8f069afdfe3d127a8bbea8
     };
   },
   created() {
@@ -805,7 +802,7 @@ export default {
             duration: 2000,
             position: "bottom-right",
           });
-          this.$emit("refresh",this.clickid);
+          this.$emit("refresh",this.clickId);
           // this.getListSelect()
         } else {
           this.$message({
@@ -1032,7 +1029,7 @@ export default {
     // 初始化列表页面
     getList(data, node, tree) {
       this.clickData = data;
-      this.clickid = data.id;
+      this.clickId = data.id;
       console.log(data);
       if(node=='pro'){
         console.log('复制刷新')
