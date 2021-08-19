@@ -1,5 +1,5 @@
 <template>
-  <div class="tree-list-container all zzz">
+  <div class="tree-list-container all">
     <el-tabs
       @tab-click="handleClick"
       v-model="editableTabsValue"
@@ -346,7 +346,7 @@ export default {
     modelshoppingcart,
     personTree,
   },
-  props: ["power", "dataUserId", "sceneCode", "isAuditWarring"],
+  props: ["power", "dataUserId", "sceneCode", "isAuditWarning"],
   data() {
     return {
       isShow: false,
@@ -789,7 +789,7 @@ export default {
             otherBtn: true
           }
         }
-        if (this.isAuditWarring != true) {
+        if (this.isAuditWarning != true) {
           this.isShowShoppingCart = true;
           this.$refs.modelShoppingCartRef.setMemo(selectObj);
         }
@@ -800,7 +800,7 @@ export default {
         this.btnState.addBtnState = false;
         this.btnState.editBtnState = true;
         this.btnState.previewBtn = true;
-        if (this.isAuditWarring != true) {
+        if (this.isAuditWarning != true) {
           this.isShowShoppingCart = true;
           this.$refs.modelShoppingCartRef.setMemo(selectObj);
         }

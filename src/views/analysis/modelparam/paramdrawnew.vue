@@ -10,7 +10,7 @@
         <el-col :span="15">
           <!-- 下拉列表类型 -->
           <el-select v-model="paramListValueList[ind]" ref="selectParam"  style="width: 100%;" v-if="paramInfo.inputType === 'lineinp' " 
-              :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable>
+              :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable>
             <el-option v-for="item in paramInfo.data" :value="paramInfo.dataType == 'str' ? `'`+ item.value + `'`: item.value" :label="item.name" :key="item.value" >
               <span style="float: left"> {{ item.value }}</span>
               <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -23,6 +23,7 @@
             v-model="paramTreeValueList[ind]"
             v-if="paramInfo.inputType === 'treeinp'"
             style="width:100%"
+             ref="selectTreeParam"
             :props="{ label:'name',  multiple: paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0', emitPath: false}"
             :options="paramInfo.data"
             multiple
@@ -96,7 +97,7 @@ export default {
             let moduleParamId = paramsArr[k].ammParamUuid
             if (moduleParamId === this.arr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) { // 匹配复制参数的母版参数ID
               this.arr[j].allowedNull = paramsArr[k].paramChoice.allowedNull
-              if (flag==='modelPreview' ||flag==='auditwarring'){
+              if (flag==='modelPreview' ||flag==='auditwarning'){
                 if (this.arr[j].paramValue) {
                   paramsArr[k].defaultVal = this.arr[j].paramValue
                 }
@@ -277,11 +278,14 @@ export default {
             } else {
               // 多选
               const list = [] 
-              paramObj.defaultVal.forEach(o => {
-                if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
-                else {list.push(o) }
-               })
-              this.paramListValueList[index] = list
+              if (paramObj.defaultVal.length > 0){
+                paramObj.defaultVal.forEach(o => {
+                  if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
+                  else {list.push(o) }
+                })
+                this.paramListValueList[index] = list
+              }
+              
             }
           }
           if(typeof paramObj.paramChoice.allowedNull !== 'undefined' && paramObj.paramChoice.allowedNull != null){
@@ -382,11 +386,14 @@ export default {
             } else {
               // 多选
               const list = []
-              paramObj.defaultVal.forEach(o => {
-                if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
-                else {list.push(o) }
-              })
-              this.paramTreeValueList[index] = list
+              if (paramObj.defaultVal.length > 0){
+                paramObj.defaultVal.forEach(o => {
+                  if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
+                  else {list.push(o) }
+                })
+                this.paramTreeValueList[index] = list
+              }
+              
             }
           }
           if(dataArr.length > 0){
@@ -830,7 +837,7 @@ export default {
                 }
                 filterArr.push(obj)
               } else { // 不允许为空
-                if (this.paramListValueList[i].length !== 0) {
+                if (this.paramListValueList[i].length !== 0 ) {
                   if (choiceType === '1') { // 单选
                     obj.paramValue = this.paramListValueList[i]
                   } else {
@@ -844,6 +851,9 @@ export default {
              }
             }
           }
+          //  else{
+          //   paramNum++
+          // }
           // let selectParamDom = this.$refs.selectParam
           // if(selectParamDom && selectParamDom.length > 0){
           //   for(let n=0; n<selectParamDom.length; n++){
@@ -899,7 +909,15 @@ export default {
           //     }
           //   }
           // }
-          
+          let selectTreeParamDom = this.$refs.selectTreeParam
+          if(selectTreeParamDom && selectTreeParamDom.length > 0) {
+            for (let m = 0; m < selectTreeParamDom.length; m++) {
+              let index = selectTreeParamDom[m].getAttribute("index")
+              console.log('----index-----');
+              console.log(index);
+            }
+            
+          }
           // 获取参数查询条件（下拉树）
         if(this.paramTreeValueList.length > 0) {
           for(var treenum = 0; treenum< this.paramTreeValueList.length;treenum++){
@@ -945,8 +963,7 @@ export default {
               }
              }
           }
-
-        }
+        } 
         // let selectTreeParamDom = this.$refs.selectTreeParam
         //   if(selectTreeParamDom && selectTreeParamDom.length > 0) {
         //     for (let m = 0; m < selectTreeParamDom.length; m++) {

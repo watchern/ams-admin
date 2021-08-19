@@ -1,7 +1,7 @@
 <template>
   <div class="app-container" v-loading="isShowLoading" style="height:62vh; overflow:auto;">
     <el-dialog title="选择模型列表" :close-on-click-modal="false" :fullscreen="true" v-if='selectModelVisible' :visible.sync="selectModelVisible" :append-to-body="true" width="80%">
-      <SelectModels ref="selectModels" :isAuditWarring="true" power="warning"/>
+      <SelectModels ref="selectModels" :isAuditWarning="true" power="warning" style="height: calc(100vh - 109px)"/>
       <div slot="footer" class="dialog-footer">
         <el-button @click="selectModelVisible = false">关闭</el-button>
         <el-button type="primary" @click="selectModel">确定</el-button>
@@ -221,7 +221,10 @@
           <!--模型参数配置-->
           <el-form-item label="模型参数配置" v-show="temp.warningType == 1" >
 <!--            <paramDraw v-for="(domain, index) in temp.modelList" v-if="domain.paramObj != undefined && domain.paramObj.length > 0" :myId="domain.modelUuid" :ref="'paramDrawRef'+domain.modelUuid"/>-->
-            <paramDrawNew v-for="(domain, index) in temp.modelList" v-if="domain.paramObj != undefined && domain.paramObj.length > 0" :ref="'paramDrawRef'+domain.modelUuid" :sql="paramSql[index]" :arr="paramArr[index]"></paramDrawNew>
+            <el-row  v-for="(domain,index) in temp.modelList"  :key="index">
+             <paramDrawNew v-if="typeof  domain.paramObj !== 'undefined' && domain.paramObj.length > 0"  :ref="'paramDrawRef'+domain.modelUuid" :sql="paramSql[index]" :arr="paramArr[index]"></paramDrawNew>
+            </el-row>
+            <!-- <paramDrawNew v-for="(domain, index) in temp.modelList" v-if="domain.paramObj != undefined && domain.paramObj.length > 0" :ref="'paramDrawRef'+domain.modelUuid" :sql="paramSql[index]" :arr="paramArr[index]"></paramDrawNew> -->
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -585,7 +588,9 @@ export default {
     'temp.modelList':function(newValue, oldValue){
       this.$nextTick(function(){
         //页签添加完成后初始化新界面的参数
-        for(let model of this.temp.modelList){
+        for(var i=0;i<this.temp.modelList.length;i++){
+        // for(let model of this.temp.modelList){
+          let model = this.temp.modelList[i]
           //是否已经创建
           let isCreated = false
           //过滤掉已经创建参数关联的模型
@@ -599,10 +604,18 @@ export default {
             continue
           }
           if(model.paramObj && model.paramObj.length > 0){
+            console.log('-----model-----');
+            console.log(model);
             this.initedParamModel.push(model)
-            this.paramSql.push(model.sqlValue)
-            this.paramArr.push(model.paramObj)
-            this.$refs["paramDrawRef"+model.modelUuid][0].createParamNodeHtml(model.modelUuid,model.modelName+' 参数','auditwarring')
+            // this.paramSql.push(model.sqlValue)
+            this.paramSql[i].push(model.sqlValue)
+            // this.paramArr.push(model.paramObj)
+            this.paramArr[i].push(model.paramObj)
+            console.log('--------'+ i);
+            console.log(this.paramArr[i]);
+            console.log(this.paramSql[i]);
+
+            this.$refs["paramDrawRef"+model.modelUuid][0].createParamNodeHtml(model.modelUuid,model.modelName+' 参数','auditwarning')
             // this.$refs["paramDrawRef"+model.modelUuid][0].initParamHtmlSS(model.sqlValue, model.paramObj, model.modelName, model.modelUuid)
           }
         }

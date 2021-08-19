@@ -13,7 +13,7 @@
                             <div ref="selectParam" :index="ind" v-if="paramInfo.inputType === 'lineinp'" :id="paramInfo.id" :title="paramInfo.title" :nodeId="nodeParamInfo.nodeId" class="xm-select-demo"></div>
                             <!-- 下拉列表类型 -->
                             <el-select v-model="paramListValueList[ind]" ref="selectParam"  style="width: 100%;" v-if="paramInfo.inputType === 'lineinp' " 
-                                :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable>
+                                :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable>
                                 <el-option v-for="item in paramInfo.data" :value="paramInfo.dataType == 'str' ? `'`+ item.value + `'`: item.value" :label="item.name" :key="item.value" >
                                 <span style="float: left"> {{ item.value }}</span>
                                 <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
