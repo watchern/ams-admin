@@ -103,7 +103,6 @@
             />
             <!-- addDetailRel('qwer1', '项目11') -->
             <el-button
-              v-if="yancheng"
               :disabled="false"
               type="primary"
               @click="toSubmitYc"
@@ -274,7 +273,6 @@
                 ></el-button>
                 <!-- addDetailRel('qwer1', '项目11') -->
                 <el-button
-                  v-if="yancheng"
                   :disabled="false"
                   type="primary"
                   @click="toSubmitYc"
@@ -456,45 +454,10 @@
         {{ item.modelDetailName }}
       </li>
     </div>
-
     <el-dialog
       title="提交审核"
       v-if="dialogVisibleSubmit"
       :visible.sync="dialogVisibleSubmit"
-      :close-on-click-modal="false"
-      width="80%"
-    >
-      <div>
-        <flowItem
-          ref="flowItem"
-          :flowSet="flowSet"
-          :flowItem="flowItem"
-          :flow-param="flowParam"
-          @closeModal="closeFlowItem"
-          @delectData="delectData"
-        ></flowItem>
-      </div>
-      <span slot="footer">
-        <el-button
-          size="mini"
-          type="info"
-          class="table_header_btn"
-          @click="saveOpinion"
-          >提交</el-button
-        >
-        <el-button
-          size="mini"
-          type="info"
-          class="table_header_btn"
-          @click="dialogVisibleSubmit = false"
-          >关闭</el-button
-        >
-      </span>
-    </el-dialog>
-    <el-dialog
-      title="提交审核"
-      v-if="dialogVisibleSubmitYc"
-      :visible.sync="dialogVisibleSubmitYc"
       :close-on-click-modal="false"
       width="80%"
     >
@@ -507,7 +470,7 @@
           :columnDefs="columnDefs"
           :submitData="submitData"
           @closeModal="closeFlowItem"
-          @delectData="delectDataYc"
+          @delectData="delectData"
         ></flowItem2>
       </div>
       <span class="sess-flowitem" slot="footer">
@@ -515,14 +478,14 @@
           size="mini"
           type="primary"
           class="table_header_btn"
-          @click="saveOpinionYc"
+          @click="saveOpinion"
           >提交</el-button
         >
         <el-button
           size="mini"
           type="primary"
           class="table_header_btn"
-          @click="dialogVisibleSubmitYc = false"
+          @click="dialogVisibleSubmit = false"
           >关闭</el-button
         >
       </span>
@@ -586,8 +549,7 @@ import chartAudit from "@/api/analysis/chartauditmodel";
 let mouseXY = { x: null, y: null };
 let DragPos = { x: null, y: null, w: 1, h: 1, i: null };
 import { randomString4Len } from "@/api/analysis/common";
-import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
-import flowItem2 from "ams-clue-vue/src/components/yctodowork/flowItem2";
+import flowItem2 from "ams-clue-vue/src/components/tcFlowWork/submitWork/flowItem2";
 
 //引入时间格式化方法
 import dayjs from "dayjs";
@@ -604,7 +566,6 @@ export default {
     userProject,
     GridLayout,
     GridItem,
-    flowItem,
     flowItem2,
   },
 
@@ -659,12 +620,11 @@ export default {
           busdatas: []
       },
       // 判断是否走工作流
-      yancheng: false,
+      // yancheng: true,
       flowParam: 0,
       multipleSelection: [],
       applyInfo: {},
       dialogVisibleSubmit: false,
-      dialogVisibleSubmitYc: false,
       flowSet: {
         opinionList: false,
         opinion: false,
@@ -953,10 +913,10 @@ export default {
     });
     this.componentParent = this;
 
-    let projectStatus = this.$route.query.projectStatus;
-    if ("1" == projectStatus) {
-      this.yancheng = true;
-    }
+    // let projectStatus = this.$route.query.projectStatus;
+    // if ("1" == projectStatus) {
+    //   this.yancheng = true;
+    // }
   },
   created() {
     let _this = this;
@@ -2965,98 +2925,97 @@ export default {
         }
       }
     },
-    /**
-     * 工作流  点击提交审核按钮
-     */
-    toSubmit() {
-      if (this.multipleSelection.length == 0) {
-        alert("请至少选中一条数据");
-        return false;
-      }
-      //流程接口调用
-      this.submitData.busdatas = this.multipleSelection;
-      for (var i = 0; i < this.submitData.busdatas.length; i++) {
-        if (this.submitData.busdatas[i].状态 === 1) {
-          this.$message.info({
-            duration: 2000,
-            message: "预警发起的数据不能重复提交！",
-          });
-          return false;
-        } else if (this.submitData.busdatas[i].状态 === 3) {
-          this.$message.info({
-            duration: 2000,
-            message: "已销号的数据不能重复提交！",
-          });
-          return false;
-        }
-      }
-      this.submitData.busTableName = this.nowtable.resultTableName; // 表名称
-      this.submitData.busDatabaseType = "mysql"; //数据库类型
-      this.flowItem.versionUuid = this.common.randomString4Len(8);
-      this.flowItem.applyTitle =
-        this.modelTitle + this.common.getNowFormatDay();
-      this.applyInfo.versionUuid = this.flowItem.versionUuid;
-      this.applyInfo.status = "";
-      this.applyInfo.mstate = "";
-      this.applyInfo.fstate = "";
-      this.applyInfo.isUpdate = false; //初始化
-      this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
-
-      console.info(JSON.stringify(this.submitData));
-      console.info(JSON.stringify(this.columnDefs));
-      this.dialogVisibleSubmit = true;
-    },
-    saveOpinion() {
-      var data = {
-        versionUuid: this.flowItem.versionUuid,
-        busdatas: this.multipleSelection,
-        busTableName: this.submitData.busTableName,
-        busDatabaseName: this.submitData.busDatabaseName,
-        busDatabaseType: this.submitData.busDatabaseType,
-      };
-      this.$axios
-        .post("/ams-clue/busRelation/toSubmit", data)
-        .then((response) => {
-          if (response.data.code == "0") {
-            this.flowItem.appDataUuid = response.data.data.busRelationUuid;
-            //修改业务执行状态为0，调用监听，执行更新流程状态操作。
-            this.$store.dispatch("applyInfo/setMstate", "0");
-            this.flowParam = 1;
-          } else {
-            this.dialogVisibleSubmit = false;
-            this.common.alertMsg(1, this.textShare.operateFail());
-          }
-        })
-        .catch((error) => {
-          this.dialogVisibleSubmit = false;
-          this.common.alertMsg(1, this.textShare.operateFail());
-          console.log(error);
-        });
-    },
+    // /**
+    //  * 工作流  点击提交审核按钮
+    //  */
+    // toSubmit() {
+    //   if (this.multipleSelection.length == 0) {
+    //     alert("请至少选中一条数据");
+    //     return false;
+    //   }
+    //   //流程接口调用
+    //   this.submitData.busdatas = this.multipleSelection;
+    //   for (var i = 0; i < this.submitData.busdatas.length; i++) {
+    //     if (this.submitData.busdatas[i].状态 === 1) {
+    //       this.$message.info({
+    //         duration: 2000,
+    //         message: "预警发起的数据不能重复提交！",
+    //       });
+    //       return false;
+    //     } else if (this.submitData.busdatas[i].状态 === 3) {
+    //       this.$message.info({
+    //         duration: 2000,
+    //         message: "已销号的数据不能重复提交！",
+    //       });
+    //       return false;
+    //     }
+    //   }
+    //   this.submitData.busTableName = this.nowtable.resultTableName; // 表名称
+    //   this.submitData.busDatabaseType = "mysql"; //数据库类型
+    //   this.flowItem.versionUuid = this.common.randomString4Len(8);
+    //   this.flowItem.applyTitle =
+    //     this.modelTitle + this.common.getNowFormatDay();
+    //   this.applyInfo.versionUuid = this.flowItem.versionUuid;
+    //   this.applyInfo.status = "";
+    //   this.applyInfo.mstate = "";
+    //   this.applyInfo.fstate = "";
+    //   this.applyInfo.isUpdate = false; //初始化
+    //   this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
+    //
+    //   console.info(JSON.stringify(this.submitData));
+    //   console.info(JSON.stringify(this.columnDefs));
+    //   this.dialogVisibleSubmit = true;
+    // },
+    // saveOpinion() {
+    //   var data = {
+    //     versionUuid: this.flowItem.versionUuid,
+    //     busdatas: this.multipleSelection,
+    //     busTableName: this.submitData.busTableName,
+    //     busDatabaseName: this.submitData.busDatabaseName,
+    //     busDatabaseType: this.submitData.busDatabaseType,
+    //   };
+    //   this.$axios
+    //     .post("/ams-clue/busRelation/toSubmit", data)
+    //     .then((response) => {
+    //       if (response.data.code == "0") {
+    //         this.flowItem.appDataUuid = response.data.data.busRelationUuid;
+    //         //修改业务执行状态为0，调用监听，执行更新流程状态操作。
+    //         this.$store.dispatch("applyInfo/setMstate", "0");
+    //         this.flowParam = 1;
+    //       } else {
+    //         this.dialogVisibleSubmit = false;
+    //         this.common.alertMsg(1, "操作失败！");
+    //       }
+    //     })
+    //     .catch((error) => {
+    //       this.dialogVisibleSubmit = false;
+    //       this.common.alertMsg(1, "操作失败！");
+    //       console.log(error);
+    //     });
+    // },
+    //流程发布失败
+    // delectData(val) {
+    //   this.dialogVisibleSubmit = val;
+    //   var data = {
+    //     busRelationUuid: this.flowItem.appDataUuid,
+    //   };
+    //   this.$axios
+    //           .post("/ams-clue/busRelation/delete/rollBackData", data)
+    //           .then((response) => {
+    //             if (response.data.code == "0") {
+    //               this.flowItem.appDataUuid = response.data.data.busRelationUuid;
+    //             }
+    //           })
+    //           .catch((error) => {
+    //             this.common.alertMsg(1, "操作失败！");
+    //             console.log(error);
+    //           });
+    //   this.initData();
+    // },
 
     closeFlowItem(val) {
       this.dialogVisibleSubmit = val;
-      this.dialogVisibleSubmitYc = val;
       this.flowParam = 0;
-      this.initData();
-    },
-    //流程发布失败
-    delectData(val) {
-      this.dialogVisibleSubmit = val;
-      var data = {
-        busRelationUuid: this.flowItem.appDataUuid,
-      };
-      this.$axios
-        .post("/ams-clue/busRelation/delete/rollBackData", data)
-        .then((response) => {
-          if (response.data.code == "0") {
-            this.flowItem.appDataUuid = response.data.data.busRelationUuid;
-          }
-        })
-        .catch((error) => {
-          this.common.alertMsg(1, this.textShare.operateFail());
-          console.log(error);
-        });
       this.initData();
     },
     toSubmitYc() {
@@ -3098,16 +3057,16 @@ export default {
 
       console.info(JSON.stringify(this.submitData));
       console.info(JSON.stringify(this.columnDefs));
-      this.dialogVisibleSubmitYc = true;
+      this.dialogVisibleSubmit = true;
     },
-    saveOpinionYc() {
+    saveOpinion() {
       setTimeout(() => {
         this.$refs["flowItem2"].saveOpinion();
       }, 20);
     },
     //流程发布失败
-    delectDataYc(val) {
-      this.dialogVisibleSubmitYc = val;
+    delectData(val) {
+      this.dialogVisibleSubmit = val;
       var data = {
         busRelationUuid: this.$store.state.applyInfo.applyInfo.appDataUuid,
       };
@@ -3119,7 +3078,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.common.alertMsg(1, this.textShare.operateFail());
+          this.common.alertMsg(1, "操作失败！");
           console.log(error);
         });
       this.initData();
