@@ -53,7 +53,7 @@
         />
         <el-button
           type="primary"
-          class="oper-btn add-directory btn-width-md"
+          class="oper-btn add-directory btn-width-max"
           :disabled="clickData.type == 'table'"
           @click="createFolder"
         />
@@ -634,8 +634,9 @@ export default {
       },
       downloadLoading: false,
       dialoading: false,
-      clickid:'',
-      dataTypeRules: {}
+      clickId:'',
+      dataTypeRules: {
+      }
     };
   },
   created() {
@@ -801,7 +802,7 @@ export default {
             duration: 2000,
             position: "bottom-right",
           });
-          this.$emit("refresh",this.clickid);
+          this.$emit("refresh",this.clickId);
           // this.getListSelect()
         } else {
           this.$message({
@@ -1028,7 +1029,7 @@ export default {
     // 初始化列表页面
     getList(data, node, tree) {
       this.clickData = data;
-      this.clickid = data.id;
+      this.clickId = data.id;
       console.log(data);
       if(node=='pro'){
         console.log('复制刷新')

@@ -27,7 +27,7 @@
                             <el-button
                                 type="primary"
                                 size="small"
-                                class="oper-btn format"
+                                class="oper-btn format btn-width-max"
                                 @click="sqlFormat"
                                 style="margin-left:18px"
                             />
@@ -46,7 +46,7 @@
                             <el-button
                                 type="primary"
                                 size="small"
-                                class="oper-btn sqlcheck"
+                                class="oper-btn sqlcheck btn-width-md"
                                 @click="getColumnSqlInfo"
                             />
                             <el-dropdown style="margin-left:10px">
@@ -68,7 +68,7 @@
                                 <el-button
                                     type="primary"
                                     size="small"
-                                    class="oper-btn maintain"
+                                    class="oper-btn maintain btn-width-md"
                                 />
                                 <el-dropdown-menu slot="dropdown">
                                     <!-- <el-dropdown-item
@@ -1283,4 +1283,3 @@
       margin: 5px 0 10px 0;
     }
 </style>
-
