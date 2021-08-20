@@ -503,6 +503,7 @@ import childTabs from "@/views/analysis/auditmodelresult/childtabs";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
 import QueryField from "@/components/public/query-field/index";
 import { getArrLength } from "@/utils";
+import { getSystemRole } from "@/api/user"
 import {
   deleteDirectory,
   copyTable,
@@ -650,26 +651,35 @@ export default {
       downloadLoading: false,
       dialoading: false,
       clickId:'',
-      dataTypeRules: {
-      }
+      // dataTypeRules: {
+      // },
+      disableEditColumn: false
     };
   },
   created() {
-    this.dataTypeRules = this.CommonUtil.DataTypeRules
+    // this.dataTypeRules = this.CommonUtil.DataTypeRules
     this.initDirectory();
-    //获取登录用户的信息
+    //获取登录用户的信息来控制删除按钮是否显示
     getInfo().then((resp) => {
-      console.log(resp.data.id)
       getById(resp.data.id).then((res) => {
         const dataArray = res.data;
         const newArray = dataArray[0].roleId;
-        if(newArray[0]==41){
-          this.ifShow = true;
-        }
+        const sysRole = "系统管理员";
+        getSystemRole(sysRole).then((re) => {
+          if(newArray[0]==re.data.roleid){
+            this.ifShow = true;
+          }
+        })
       })
     })
   },
   watch: {
+    openType: {
+      handler(newOpenType) {
+        this.disableEditColumn = false
+        this.disableEditColumn = newOpenType === 'showTable' || newOpenType === 'tableRegister'
+      }
+    },
     uploadtempInfo: {
       handler(newTemp, oldemp) {
         // this.$emit('update:tab-show', newName)
@@ -697,42 +707,58 @@ export default {
   },
   methods: {
     changeDataType(row){
-      const dataTypeRule = this.dataTypeRules[row.dataType.toUpperCase().trim()];
-      row.enableDataLength = dataTypeRule && typeof dataTypeRule.enableDataLength !== "undefined" ? dataTypeRule.enableDataLength : true;
-      debugger
+      const currRule = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
+      if (!this.disableEditColumn) {
+        this.$set(row, "enableDataLength", currRule && this.CommonUtil.isNotUndefined(currRule.enableDataLength) ? currRule.enableDataLength : true);
+      } else {
+        this.$set(row, "enableDataLength", false);
+      }
+
       if (this.CommonUtil.isUndefined(row.dataLengthText) && row.enableDataLength) {
-        if (this.CommonUtil.isNotUndefined(dataTypeRule) && this.CommonUtil.isNotBlank(row.dataLength)) {
-          if (typeof dataTypeRule.hasPrecision != "undefined" && dataTypeRule.hasPrecision) {
-            row.dataLengthText = "" + row.dataLength + (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '')
-          } else {
-            row.dataLengthText = "" + row.dataLength
+        if (this.CommonUtil.isNotUndefined(currRule) && this.CommonUtil.isNotBlank(row.dataLength)) {
+          row.dataLengthText = row.dataLength ? "" + row.dataLength : "255"
+          if (this.CommonUtil.isNotUndefined(currRule.hasPrecision) && currRule.hasPrecision) {
+            row.dataLengthText += (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '0')
           }
         }
-      } else if (typeof row.dataLength !== "undefined") {
-        row.dataLength = "";
-        row.colPrecision = "";
+      } else if (this.CommonUtil.isNotUndefined(row.dataLength)) {
+        row.dataLength = null;
+        row.colPrecision = null;
         row.dataLengthText = "";
       }
     },
 
     isValidColumn(row) {
-      var currDataType = this.dataTypeRules[row.dataType.toUpperCase().trim()];
 
-      debugger
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          this._verifName().then(res => {
+            this._submit('createDatasources')
+          })
+        }
+      })
+
+
+
+      var currDataType = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
       var arr = this.CommonUtil.isNotBlank(row.dataLengthText) ? row.dataLengthText.split(",") : null;
       if (this.CommonUtil.isNotEmpty(arr)) {
         var dataLengthN = arr.length > 0 ? arr[0].trim() : "";
         var colPrecisionN = arr.length > 1 ? arr[1].trim() : "";
         if (dataLengthN !== row.dataLength) {
-          row.dataLength = arr.length > 0 ? arr[0].trim() : "";
+          row.dataLength = arr.length > 0 ? arr[0].trim() : null;
         }
         if (colPrecisionN !== row.colPrecision) {
-          row.colPrecision = arr.length > 1 ? arr[1].trim() : "";
+          row.colPrecision = arr.length > 1 ? arr[1].trim() : null;
         }
+      } else {
+        row.dataLength = null;
+        row.colPrecision = null;
+        this.$set(row, "dataLengthText", "");
       }
 
-      if (currDataType && currDataType["lengthRule"]) {
-        if (!new RegExp(this.dataTypeRules[currDataType.lengthRule]).test(row.dataLength)) {
+      if (this.CommonUtil.isNotUndefined(currDataType) && this.CommonUtil.isNotUndefined(currDataType.lengthRule)) {
+        if (!new RegExp(currDataType.lengthRule).test(row.dataLength)) {
           this.$message.error(row.dataType.toUpperCase() + currDataType["ruleMsg"]);
           return false;
         }
