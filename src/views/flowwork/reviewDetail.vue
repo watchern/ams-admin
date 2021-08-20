@@ -18,7 +18,38 @@
       max-height="300"
     >
       <el-table-column type="selection"></el-table-column>
+      <el-table-column label="模型名称" width="200px" prop="modelName">
+        <template slot-scope="scope">
+          <!-- <el-link
+                type="primary"
+                @click="selectModelDetail(scope.row.modelUuid)"
+                >{{ scope.row.modelName }}</el-link
+              > -->
+          {{ scope.row.modelName }}
+        </template>
+      </el-table-column>
+      <el-table-column label="平均运行时间" width="150px" prop="runTime" />
+      <el-table-column label="审计事项" prop="auditItemName" />
       <el-table-column
+        label="风险等级"
+        prop="riskLevelUuid"
+        align="center"
+        :formatter="riskLevelFormatter"
+      />
+      <el-table-column
+        label="模型类型"
+        prop="modelType"
+        align="center"
+        :formatter="modelTypeFormatter"
+      />
+      <el-table-column
+        label="创建时间"
+        prop="createTime"
+        align="center"
+         width="150px"
+        :formatter="dateFormatter"
+      />
+      <!-- <el-table-column
         v-for="(item, index) in columnDefs"
         :key="index"
         :prop="item.field"
@@ -26,7 +57,7 @@
       >
         <slot :row="item" :$index="index"></slot>
       </el-table-column>
-      <!-- <el-table-column
+      <el-table-column
         prop="warningStatus"
         label="预警状态"
         fixed="right"
@@ -58,35 +89,23 @@
         </template>
       </el-table-column> -->
     </el-table>
-
-    <el-dialog
-      title="选择预警状态"
-      v-if="dialogVisibleSelectStatus"
-      :visible.sync="dialogVisibleSelectStatus"
-      :close-on-click-modal="false"
-      width="60%"
-      :modal="false"
-    >
-      <div>
-        <selectStatus
-          ref="selectStatus"
-          @closeSelectStatus="closeSelectStatus"
-          @closeSelectStatusdialog="closeSelectStatusdialog"
-        ></selectStatus>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import selectStatus from "./reviewSelect";
+import { getDictList, getOneDict } from "@/utils/index";
 export default {
-  props: ["flowItem", "columnDefs", "submitData"],
-  components: {
-    selectStatus,
-  },
+  props: ["flowItem", "submitData"],
   data() {
     return {
+      columnDefs: [
+        { field: "modelName", headerName: "模型名称" },
+        { field: "runTime", headerName: "平均运行时间" },
+        { field: "auditItemName", headerName: "审计事项" },
+        { field: "riskLevelUuid", headerName: "风险等级" },
+        { field: "modelType", headerName: "模型类型" },
+        { field: "createTime", headerName: "创建时间" },
+      ],
       fileList: [],
       fileListDatas: [],
       dialogVisibleSelectStatus: false,
@@ -119,6 +138,84 @@ export default {
     //   alert("nininininiininini")
   },
   methods: {
+    /**
+     * 格式化时间字符串
+     * @param row 格式化行
+     * @param column 格式化列
+     * @returns {返回格式化后的时间字符串}
+     */
+    dateFormatter(row, column) {
+      const datetime = row.createTime;
+      if (datetime) {
+        let dateMat = new Date(datetime);
+        let year = dateMat.getFullYear();
+        let month = dateMat.getMonth() + 1;
+        let day = dateMat.getDate();
+        let hours = dateMat.getHours();
+        let minutes = dateMat.getMinutes();
+        let second = dateMat.getSeconds();
+        if (month.toString().length == 1) {
+          month = "0" + month;
+        }
+        if (day.toString().length == 1) {
+          day = "0" + day;
+        }
+        if (hours.toString().length == 1) {
+          hours = "0" + hours;
+        }
+        if (minutes.toString().length == 1) {
+          minutes = "0" + minutes;
+        }
+        if (second.toString().length == 1) {
+          second = "0" + second;
+        }
+        var d =
+          year +
+          "-" +
+          month +
+          "-" +
+          day +
+          " " +
+          hours +
+          ":" +
+          minutes +
+          ":" +
+          second;
+        return d;
+      }
+    },
+    /**
+     * 格式化模型类型
+     * @param row 格式化行
+     * @param column 格式化列
+     * @returns {返回格式化后的字符串}
+     */
+    modelTypeFormatter(row, column) {
+      const modelType = row.modelType;
+      const dicObj = getOneDict(modelType);
+      let value = "";
+      if (dicObj.length == 0) {
+        return "";
+      }
+      value = dicObj[0].codeName;
+      return value;
+    },
+    /**
+     * 格式化风险等级
+     * @param row 格式化行
+     * @param column 格式化列
+     * @returns {返回格式化后的字符串}
+     */
+    riskLevelFormatter(row, column) {
+      const riskLevel = row.riskLevelUuid;
+      let value = "";
+      const dicObj = getOneDict(riskLevel);
+      if (dicObj.length == 0) {
+        return "";
+      }
+      value = dicObj[0].codeName;
+      return value;
+    },
     //给表头添加背景色
     batchEditStatus() {
       if (this.multipleSelection.length == 0) {
