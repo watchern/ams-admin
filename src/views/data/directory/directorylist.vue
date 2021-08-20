@@ -138,7 +138,7 @@
       :limit.sync="pageQuery.pageSize"
       @pagination="getListSelect"
     />
-    <!-- 弹窗 -->
+    <!-- 复制表弹框 -->
     <el-dialog
       :close-on-click-modal="false"
       :title="textMap[dialogStatus]"
@@ -177,7 +177,7 @@
         >
       </span>
     </el-dialog>
-    <!-- 弹窗2 -->
+    <!-- 移动表 -->
     <el-dialog
       :visible.sync="moveTreeVisible"
       width="600px"
@@ -503,6 +503,7 @@ import childTabs from "@/views/analysis/auditmodelresult/childtabs";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
 import QueryField from "@/components/public/query-field/index";
 import { getArrLength } from "@/utils";
+import { getSystemRole } from "@/api/user"
 import {
   deleteDirectory,
   copyTable,
@@ -657,15 +658,17 @@ export default {
   created() {
     this.dataTypeRules = this.CommonUtil.DataTypeRules
     this.initDirectory();
-    //获取登录用户的信息
+    //获取登录用户的信息来控制删除按钮是否显示
     getInfo().then((resp) => {
-      console.log(resp.data.id)
       getById(resp.data.id).then((res) => {
         const dataArray = res.data;
         const newArray = dataArray[0].roleId;
-        if(newArray[0]==41){
-          this.ifShow = true;
-        }
+        const sysRole = "系统管理员";
+        getSystemRole(sysRole).then((re) => {
+          if(newArray[0]==re.data.roleid){
+            this.ifShow = true;
+          }
+        })
       })
     })
   },
@@ -679,16 +682,16 @@ export default {
             // if (!item.dataLengthText) {
             //   item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '');
             // }
-            if (typeof item.dataLengthText == "undefined") {
-              const dataTypeRule = this.dataTypeRules[item.dataType.toUpperCase().trim()]
-              if (typeof dataTypeRule != "undefined" && typeof dataTypeRule.hasPrecision != "undefined") {
-                if (dataTypeRule.hasPrecision) {
-                  item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '')
-                } else {
-                  item.dataLengthText = item.dataLength
-                }
-              }
-            }
+            // if (typeof item.dataLengthText == "undefined") {
+            //   const dataTypeRule = this.dataTypeRules[item.dataType.toUpperCase().trim()]
+            //   if (typeof dataTypeRule != "undefined" && typeof dataTypeRule.hasPrecision != "undefined") {
+            //     if (dataTypeRule.hasPrecision) {
+            //       item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '')
+            //     } else {
+            //       item.dataLengthText = item.dataLength
+            //     }
+            //   }
+            // }
           })
         }
       },
@@ -699,12 +702,13 @@ export default {
     changeDataType(row){
       const dataTypeRule = this.dataTypeRules[row.dataType.toUpperCase().trim()];
       row.enableDataLength = dataTypeRule && typeof dataTypeRule.enableDataLength !== "undefined" ? dataTypeRule.enableDataLength : true;
+      debugger
       if (this.CommonUtil.isUndefined(row.dataLengthText) && row.enableDataLength) {
-        if (this.CommonUtil.isUndefined(dataTypeRule) && this.CommonUtil.isNotBlank(row.dataLength)) {
+        if (this.CommonUtil.isNotUndefined(dataTypeRule) && this.CommonUtil.isNotBlank(row.dataLength)) {
           if (typeof dataTypeRule.hasPrecision != "undefined" && dataTypeRule.hasPrecision) {
-            row.dataLengthText = row.dataLength + (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '')
+            row.dataLengthText = "" + row.dataLength + (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '')
           } else {
-            row.dataLengthText = row.dataLength
+            row.dataLengthText = "" + row.dataLength
           }
         }
       } else if (typeof row.dataLength !== "undefined") {
@@ -717,9 +721,18 @@ export default {
     isValidColumn(row) {
       var currDataType = this.dataTypeRules[row.dataType.toUpperCase().trim()];
 
-      var arr = typeof row.dataLengthText!= "undefined" ? row.dataLengthText.split(","):"";
-      row.dataLength = arr.length > 0 ? arr[0].trim() : "";
-      row.colPrecision = arr.length > 1 ? arr[1].trim() : "";
+      debugger
+      var arr = this.CommonUtil.isNotBlank(row.dataLengthText) ? row.dataLengthText.split(",") : null;
+      if (this.CommonUtil.isNotEmpty(arr)) {
+        var dataLengthN = arr.length > 0 ? arr[0].trim() : "";
+        var colPrecisionN = arr.length > 1 ? arr[1].trim() : "";
+        if (dataLengthN !== row.dataLength) {
+          row.dataLength = arr.length > 0 ? arr[0].trim() : "";
+        }
+        if (colPrecisionN !== row.colPrecision) {
+          row.colPrecision = arr.length > 1 ? arr[1].trim() : "";
+        }
+      }
 
       if (currDataType && currDataType["lengthRule"]) {
         if (!new RegExp(this.dataTypeRules[currDataType.lengthRule]).test(row.dataLength)) {
