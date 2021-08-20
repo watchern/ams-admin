@@ -9,29 +9,34 @@
     </div>
     <el-row>
       <el-col align="right">
+        <!--v-show 非管理员不能进行的操作-->
         <el-button
           type="primary"
           :disabled="selections.length === 0"
           class="oper-btn delete"
           @click="delData"
+          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn copy"
           :disabled="selections.length !== 1"
           @click="copyResource"
+          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn move"
           :disabled="selections.length === 0"
           @click="movePath"
+          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn rename"
           :disabled="selections.length !== 1"
           @click="renameResource"
+          v-show="ifShow"
         />
         <el-button
           type="primary"
@@ -41,6 +46,7 @@
             (typeof clickData.extMap !== 'undefined' && typeof clickData.extMap.sceneInstUuid !== 'undefined')
           "
           @click="addTable"
+          v-show="ifShow"
         />
         <el-button
           type="primary"
@@ -50,24 +56,28 @@
              (typeof clickData.extMap !== 'undefined' && typeof clickData.extMap.sceneInstUuid !== 'undefined')
           "
           @click="uploadTable"
+          v-show="ifShow"
         />
         <el-button
           type="primary"
-          class="oper-btn add-directory btn-width-md"
+          class="oper-btn add-directory btn-width-max"
           :disabled="clickData.type == 'table'"
           @click="createFolder"
+          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn edit"
           :disabled="selections.length !== 1"
           @click="updateTable"
+          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn link-table  btn-width-md"
           :disabled="selections.length !== 1"
           @click="relationTable"
+          v-show="ifShow"
         />
         <el-button
           type="primary"
@@ -128,7 +138,7 @@
       :limit.sync="pageQuery.pageSize"
       @pagination="getListSelect"
     />
-    <!-- 弹窗 -->
+    <!-- 复制表弹框 -->
     <el-dialog
       :close-on-click-modal="false"
       :title="textMap[dialogStatus]"
@@ -167,7 +177,7 @@
         >
       </span>
     </el-dialog>
-    <!-- 弹窗2 -->
+    <!-- 移动表 -->
     <el-dialog
       :visible.sync="moveTreeVisible"
       width="600px"
@@ -237,6 +247,7 @@
             v-if="uploadStep === 2"
             :data="uploadtempInfo.colMetas"
             height="500px"
+            class="detail-form"
           >
             <el-table-column
               prop="colName"
@@ -377,6 +388,7 @@
                 @saveTableInfoHelp="saveTableInfoHelp"
                 @changeDataType="changeDataType"
                 @isValidColumn="isValidColumn"
+                class="detail-form"
               />
             </el-col>
           </el-row>
@@ -491,6 +503,7 @@ import childTabs from "@/views/analysis/auditmodelresult/childtabs";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
 import QueryField from "@/components/public/query-field/index";
 import { getArrLength } from "@/utils";
+import { getSystemRole } from "@/api/user"
 import {
   deleteDirectory,
   copyTable,
@@ -505,6 +518,8 @@ import {
 import { saveFolder } from "@/api/data/folder";
 import dataTree from "@/views/data/role-res/data-tree";
 import { mapState } from "vuex";
+import { getInfo } from '@TCB/api/user';
+import { getById } from '@TCB/api/tcbaudit/personalManage';
 
 export default {
   computed: {
@@ -531,6 +546,7 @@ export default {
   // eslint-disable-next-line vue/order-in-components
   data() {
     return {
+      ifShow:false, //控制部分按钮是否显示
       saveFlag: true,
       infoFlag: true,
       currentSceneUuid: "auditor",
@@ -634,13 +650,27 @@ export default {
       },
       downloadLoading: false,
       dialoading: false,
-      clickid:'',
-      dataTypeRules: {}
+      clickId:'',
+      dataTypeRules: {
+      }
     };
   },
   created() {
     this.dataTypeRules = this.CommonUtil.DataTypeRules
     this.initDirectory();
+    //获取登录用户的信息来控制删除按钮是否显示
+    getInfo().then((resp) => {
+      getById(resp.data.id).then((res) => {
+        const dataArray = res.data;
+        const newArray = dataArray[0].roleId;
+        const sysRole = "系统管理员";
+        getSystemRole(sysRole).then((re) => {
+          if(newArray[0]==re.data.roleid){
+            this.ifShow = true;
+          }
+        })
+      })
+    })
   },
   watch: {
     uploadtempInfo: {
@@ -652,16 +682,16 @@ export default {
             // if (!item.dataLengthText) {
             //   item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '');
             // }
-            if (typeof item.dataLengthText == "undefined") {
-              const dataTypeRule = this.dataTypeRules[item.dataType.toUpperCase().trim()]
-              if (typeof dataTypeRule != "undefined" && typeof dataTypeRule.hasPrecision != "undefined") {
-                if (dataTypeRule.hasPrecision) {
-                  item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '')
-                } else {
-                  item.dataLengthText = item.dataLength
-                }
-              }
-            }
+            // if (typeof item.dataLengthText == "undefined") {
+            //   const dataTypeRule = this.dataTypeRules[item.dataType.toUpperCase().trim()]
+            //   if (typeof dataTypeRule != "undefined" && typeof dataTypeRule.hasPrecision != "undefined") {
+            //     if (dataTypeRule.hasPrecision) {
+            //       item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '')
+            //     } else {
+            //       item.dataLengthText = item.dataLength
+            //     }
+            //   }
+            // }
           })
         }
       },
@@ -672,12 +702,13 @@ export default {
     changeDataType(row){
       const dataTypeRule = this.dataTypeRules[row.dataType.toUpperCase().trim()];
       row.enableDataLength = dataTypeRule && typeof dataTypeRule.enableDataLength !== "undefined" ? dataTypeRule.enableDataLength : true;
-      if (CommonUtil.isUndefined(row.dataLengthText) && row.enableDataLength) {
-        if (CommonUtil.isUndefined(dataTypeRule) && CommonUtil.isNotBlank(row.dataLength)) {
+      debugger
+      if (this.CommonUtil.isUndefined(row.dataLengthText) && row.enableDataLength) {
+        if (this.CommonUtil.isNotUndefined(dataTypeRule) && this.CommonUtil.isNotBlank(row.dataLength)) {
           if (typeof dataTypeRule.hasPrecision != "undefined" && dataTypeRule.hasPrecision) {
-            row.dataLengthText = row.dataLength + (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '')
+            row.dataLengthText = "" + row.dataLength + (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '')
           } else {
-            row.dataLengthText = row.dataLength
+            row.dataLengthText = "" + row.dataLength
           }
         }
       } else if (typeof row.dataLength !== "undefined") {
@@ -690,9 +721,18 @@ export default {
     isValidColumn(row) {
       var currDataType = this.dataTypeRules[row.dataType.toUpperCase().trim()];
 
-      var arr = typeof row.dataLengthText!= "undefined" ? row.dataLengthText.split(","):"";
-      row.dataLength = arr.length > 0 ? arr[0].trim() : "";
-      row.colPrecision = arr.length > 1 ? arr[1].trim() : "";
+      debugger
+      var arr = this.CommonUtil.isNotBlank(row.dataLengthText) ? row.dataLengthText.split(",") : null;
+      if (this.CommonUtil.isNotEmpty(arr)) {
+        var dataLengthN = arr.length > 0 ? arr[0].trim() : "";
+        var colPrecisionN = arr.length > 1 ? arr[1].trim() : "";
+        if (dataLengthN !== row.dataLength) {
+          row.dataLength = arr.length > 0 ? arr[0].trim() : "";
+        }
+        if (colPrecisionN !== row.colPrecision) {
+          row.colPrecision = arr.length > 1 ? arr[1].trim() : "";
+        }
+      }
 
       if (currDataType && currDataType["lengthRule"]) {
         if (!new RegExp(this.dataTypeRules[currDataType.lengthRule]).test(row.dataLength)) {
@@ -801,7 +841,7 @@ export default {
             duration: 2000,
             position: "bottom-right",
           });
-          this.$emit("refresh",this.clickid);
+          this.$emit("refresh",this.clickId);
           // this.getListSelect()
         } else {
           this.$message({
@@ -1028,7 +1068,7 @@ export default {
     // 初始化列表页面
     getList(data, node, tree) {
       this.clickData = data;
-      this.clickid = data.id;
+      this.clickId = data.id;
       console.log(data);
       if(node=='pro'){
         console.log('复制刷新')

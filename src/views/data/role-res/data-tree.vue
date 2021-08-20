@@ -131,6 +131,7 @@ export default {
       treeLoading: false,
       //需要打开的节点
       openlist: ["ROOT"],
+      //暂存的节点的id
       clickId:''
     };
   },

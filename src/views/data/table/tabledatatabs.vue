@@ -22,10 +22,9 @@
         <tablerelation :table-id="tableId" :open-type="openType" />
       </el-tab-pane>
 <!--      <el-tab-pane v-if="openType === 'showTable' || openType === 'tableRegister'" label="创建语句" name="createSql"><create-sql :table-id="tableId" :open-type="openType" /></el-tab-pane>-->
-      <el-tab-pane v-if="openType === 'showTable' || openType === 'tableRegister'" label="业务信息" name="bizInfo">
+<!--      <el-tab-pane v-if="openType === 'showTable' || openType === 'tableRegister'" label="业务信息" name="bizInfo">
         <biz-info :table-id="tableId" :open-type="openType" />
       </el-tab-pane>
-<!--
       <el-tab-pane
         v-if="openType === 'showTable' || openType === 'tableRegister'"
         label="创建语句"

@@ -43,23 +43,22 @@
               :disabled="false"
               type="primary"
               size="small"
-              class="oper-btn"
+              class="oper-btn add-problem btn-width-md"
               @click="createProblem"
-            >
-            生成问题</el-button>
-            <el-button
+            />
+<!--            <el-button
               :disabled="false"
               type="primary"
               size="small"
               class="oper-btn processing"
               @click="handleResult"
-            ></el-button>
+            />-->
             <el-button
               :disabled="buttonIson.deleteBtn"
               type="primary"
               @click="deleteRunTaskRel"
-              class="oper-btn delete-projectrel"
-            ></el-button>
+              class="oper-btn delete-projectrel btn-width-max"
+            />
           </el-row>
         </div>
         <el-table
@@ -418,7 +417,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.common.alertMsg(1, this.textShare.operateFail());
+          this.common.alertMsg(1, "操作失败！");
           console.log(error);
         });
       this.getLikeList();
@@ -442,12 +441,12 @@ export default {
             this.flowParam = 1;
           } else {
             this.iftodowork = false;
-            this.common.alertMsg(1, this.textShare.operateFail());
+            this.common.alertMsg(1, "操作失败！");
           }
         })
         .catch((error) => {
           this.iftodowork = false;
-          this.common.alertMsg(1, this.textShare.operateFail());
+          this.common.alertMsg(1, "操作失败！");
           console.log(error);
         });
     },

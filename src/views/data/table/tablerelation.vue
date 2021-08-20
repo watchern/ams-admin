@@ -37,7 +37,7 @@
       </el-table-column> -->
     </el-table>
     <!-- 如果进行关联操作 -->
-    <el-table v-if="openType !== 'showTable' && openType !== 'tableRegister'" :data="temp" max-height="500px" @selection-change="handleSelectionChange">
+    <el-table v-if="openType !== 'showTable' && openType !== 'tableRegister'" :data="temp" max-height="500px" @selection-change="handleSelectionChange" class="detail-form">
       <el-table-column type="selection" width="55" />
       <el-table-column prop="colMetaUuid" label="关联字段">
         <template slot-scope="scope">

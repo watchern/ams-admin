@@ -682,7 +682,7 @@ export default {
             sourceUuid : model.modelUuid,
             //模型版本号
             modelVersion : model.modelVersion,
-            settingInfo : JSON.stringify({sql:model.sqlValue})
+            settingInfo : JSON.stringify({sql:model.modelSql})
           }
           //没参数直接添加
           if(!model.paramObj || model.paramObj.length == 0){

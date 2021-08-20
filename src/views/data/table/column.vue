@@ -42,7 +42,7 @@
         </el-form-item> -->
       </el-form>
     </template>
-    <el-table :data="temp" @selection-change="handleSelectionChange">
+    <el-table :data="temp" @selection-change="handleSelectionChange" class="detail-form">
       <el-table-column type="selection" width="55" />
       <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
         <template slot-scope="scope" show-overflow-tooltip>
@@ -84,6 +84,7 @@
       <el-table-column
         label="数据长度（精度）"
         show-overflow-tooltip
+        prop="dataLength"
       >
         <template slot-scope="scope" show-overflow-tooltip>
         <!--   v-model 需要根据是否是decimal展示长度+精度 用到了双三目，有点难看 -->
@@ -142,21 +143,26 @@ export default {
     this.initTable(this.tableId);
   },
   watch: {
-    // temp: {
-    //   handler(newTemp, oldemp) {
-    //     newTemp.forEach((item) => {
-    //       if (!item.dataLengthText) {
-    //         item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision===0? ',' + item.colPrecision : '');
-    //       } else if (item.dataLengthText && item.dataLengthText.length > 0) {
-    //         var arr = item.dataLengthText.split(",");
-    //         item.dataLength = arr.length > 0 ? arr[0].trim() : "";
-    //         item.colPrecision = arr.length > 1 ? arr[1].trim() : "";
-    //       }
-    //       this.changeDataType(item);
-    //     })
-    //   },
-    //   deep: true
-    // }
+    temp: {
+      handler(newTemp, oldemp) {
+        if (this.CommonUtil.isNotEmpty(newTemp)) {
+          newTemp.forEach((item) => {
+            this.isValidColumn(item);
+            this.changeDataType(item);
+
+            // if (!item.dataLengthText) {
+            //   item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision===0? ',' + item.colPrecision : '');
+            // } else if (item.dataLengthText && item.dataLengthText.length > 0) {
+            //   var arr = item.dataLengthText.split(",");
+            //   item.dataLength = arr.length > 0 ? arr[0].trim() : "";
+            //   item.colPrecision = arr.length > 1 ? arr[1].trim() : "";
+            // }
+            // this.changeDataType(item);
+          })
+        }
+      },
+      deep: true
+    }
   },
   methods: {
     changeDataType(row){
@@ -191,11 +197,8 @@ export default {
           // 返回两个新的数组
           this.oldName = resp.data.displayTbName;
           this.tempTable.tableName = resp.data.displayTbName;
-          debugger
-
           this.temp = resp.data.colMetas;
           if (typeof this.temp != "undefined" && this.temp !== null) {
-            debugger
             this.temp.forEach((item) => {
               item.tempIndex = ++this.tempIndex;
               this.$emit("changeDataType", item);
@@ -385,11 +388,9 @@ export default {
       var obj = {};
       console.log(newTableObj.colMetas);
       for (let i = 0; i < newTableObj.colMetas.length; i++) {
-        if (
-          newTableObj.colMetas[i].colName != "" &&
+        if (newTableObj.colMetas[i].colName != "" &&
           newTableObj.colMetas[i].dataType != "" &&
-          newTableObj.colMetas[i].dataLength != ""
-        ) {
+          newTableObj.colMetas[i].dataLength != "") {
         } else {
           this.$message.error("请完善数据信息!");
           return;

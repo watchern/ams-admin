@@ -119,6 +119,9 @@
 .oper-btn.add-directory:after{
   content:'\e67c  新增文件夹'!important;
 }
+.oper-btn.add-problem:after{
+  content:'\e60a  生成问题'!important;
+}
 //endregion @新增相关操作 end@
 
 //region @编辑相关操作 start@
