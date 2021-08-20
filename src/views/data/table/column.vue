@@ -84,13 +84,13 @@
       <el-table-column
         label="数据长度（精度）"
         show-overflow-tooltip
-        prop="dataLength"
+        prop="dataLengthText"
       >
         <template slot-scope="scope" show-overflow-tooltip>
-        <!--   v-model 需要根据是否是decimal展示长度+精度 用到了双三目，有点难看 -->
+        <!--   v-model 需要根据是否是decimal展示长度+精度 用到了双三目，有点难看
+            @focus="clickVal(scope.row)"-->
           <el-input
             @change="isValidColumn(scope.row)"
-            @focus="clickVal(scope.row)"
             v-model="scope.row.dataLengthText"
             style="width: 90%"
             :disabled="!scope.row.enableDataLength"
@@ -120,6 +120,7 @@
 <script>
 import { getSqlType, getColsInfo } from "@/api/data/table-info";
 import { addTable, updateTable } from "@/api/data/directory";
+import {DataTypeRules} from "../../../utils/common";
 export default {
   // eslint-disable-next-line vue/require-prop-types
   props: ["tableId", "openType", "forderId"],
@@ -151,18 +152,21 @@ export default {
       }
     },
     temp: {
-      handler(newTemp, oldemp) {
-        if (this.CommonUtil.isNotEmpty(newTemp)) {
-          newTemp.forEach((item) => {
-            if (this.CommonUtil.isUndefined(item.enableDataLength)) {
-              this.changeDataType(item);
-            }
-            if (this.CommonUtil.isUndefined(item.dataLengthText)) {
-              this.isValidColumn(item);
-            }
-          })
-        }
-      }
+      // handler(newTemp, oldemp) {
+      //   debugger
+      //   if (this.CommonUtil.isNotEmpty(newTemp)) {
+      //     newTemp.forEach((row) => {
+      //       const dataTypeRule = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
+      //       if (this.CommonUtil.isUndefined(row.enableDataLength)) {
+      //
+      //
+      //         if (this.CommonUtil.isUndefined(row.dataLengthText)) {
+      //           this.isValidColumn(row);
+      //         }
+      //       }
+      //     })
+      //   }
+      // }
       // ,
       // deep: true
     }
@@ -171,12 +175,12 @@ export default {
     changeDataType(row){
       this.$emit("changeDataType", row);
     },
-    clickVal(row) {
-      console.log("===========focus row")
-      console.log(row)
-      console.log(this.openType)
-      console.log(!row.enableDataLength)
-    },
+    // clickVal(row) {
+    //   console.log("===========focus row")
+    //   console.log(row)
+    //   console.log(this.openType)
+    //   console.log(!row.enableDataLength)
+    // },
     isValidColumn(row) {
       return this.$emit("isValidColumn", row);
     },
@@ -190,6 +194,34 @@ export default {
           this.oldName = resp.data.displayTbName;
           this.tempTable.tableName = resp.data.displayTbName;
           this.temp = resp.data.colMetas;
+
+          this.temp.forEach((row) => {
+            this.$set(row, "tempIndex", ++this.tempIndex);
+            // row.tempIndex = ++this.tempIndex;
+            this.changeDataType(row);
+
+            // const dataTypeRule = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
+            // if (this.CommonUtil.isUndefined(row.enableDataLength)) {
+            //   row.enableDataLength = this.disableEditColumn ? false : (dataTypeRule && typeof dataTypeRule.enableDataLength !== "undefined" ? dataTypeRule.enableDataLength : true);
+            //   this.changeDataType(row);
+              // if (this.CommonUtil.isUndefined(row.dataLengthText) && row.enableDataLength) {
+              //   debugger
+              //   if (this.CommonUtil.isNotUndefined(dataTypeRule) && this.CommonUtil.isNotBlank(row.dataLength)) {
+              //     debugger
+              //     this.$set(row, "dataLengthText", row.dataLength ? "" + row.dataLength : "255");
+              //     // row.dataLengthText = row.dataLength ? "" + row.dataLength : "255"
+              //     if (this.CommonUtil.isNotUndefined(dataTypeRule.hasPrecision) && dataTypeRule.hasPrecision) {
+              //       row.dataLengthText += (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '0')
+              //     }
+              //   }
+              // } else if (this.CommonUtil.isNotUndefined(row.dataLength)) {
+              //   row.dataLength = "";
+              //   row.colPrecision = "";
+              //   this.$set(row, "dataLengthText", "255");
+              // }
+            // }
+          })
+
           // debugger
           // if (this.CommonUtil.isNotBlank(this.temp)) {
           //   this.temp.forEach((item) => {
@@ -268,7 +300,6 @@ export default {
       this.temp[row].isNullable = e;
     },
     saveTableInfo() {
-      debugger
       if (this.openType === "addTable") {
         this.saveTable();
       } else {
@@ -277,7 +308,6 @@ export default {
     },
     // 保存基本信息
     saveTable() {
-      debugger
       for (let index = 0; index < this.temp.length; index++) {
         //先判空
         let obj = this.temp[index]

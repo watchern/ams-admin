@@ -650,13 +650,13 @@ export default {
       downloadLoading: false,
       dialoading: false,
       clickId:'',
-      dataTypeRules: {
-      },
+      // dataTypeRules: {
+      // },
       disableEditColumn: false
     };
   },
   created() {
-    this.dataTypeRules = this.CommonUtil.DataTypeRules
+    // this.dataTypeRules = this.CommonUtil.DataTypeRules
     this.initDirectory();
     //获取登录用户的信息
     getInfo().then((resp) => {
@@ -704,40 +704,58 @@ export default {
   },
   methods: {
     changeDataType(row){
-      const dataTypeRule = this.dataTypeRules[row.dataType.toUpperCase().trim()];
-      row.enableDataLength = this.disableEditColumn ? false: ( dataTypeRule && typeof dataTypeRule.enableDataLength !== "undefined" ? dataTypeRule.enableDataLength : true);
+      const currRule = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
+      if (!this.disableEditColumn) {
+        this.$set(row, "enableDataLength", currRule && this.CommonUtil.isNotUndefined(currRule.enableDataLength) ? currRule.enableDataLength : true);
+      } else {
+        this.$set(row, "enableDataLength", false);
+      }
+
       if (this.CommonUtil.isUndefined(row.dataLengthText) && row.enableDataLength) {
-        if (this.CommonUtil.isNotUndefined(dataTypeRule) && this.CommonUtil.isNotBlank(row.dataLength)) {
-          if (this.CommonUtil.isNotUndefined(dataTypeRule.hasPrecision) && dataTypeRule.hasPrecision) {
-            row.dataLengthText = "" + row.dataLength + (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '')
-          } else {
-            row.dataLengthText = "" + row.dataLength
+        if (this.CommonUtil.isNotUndefined(currRule) && this.CommonUtil.isNotBlank(row.dataLength)) {
+          row.dataLengthText = row.dataLength ? "" + row.dataLength : "255"
+          if (this.CommonUtil.isNotUndefined(currRule.hasPrecision) && currRule.hasPrecision) {
+            row.dataLengthText += (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '0')
           }
         }
-      } else if (typeof row.dataLength !== "undefined") {
-        row.dataLength = "";
-        row.colPrecision = "";
+      } else if (this.CommonUtil.isNotUndefined(row.dataLength)) {
+        row.dataLength = null;
+        row.colPrecision = null;
         row.dataLengthText = "";
       }
     },
 
     isValidColumn(row) {
-      var currDataType = this.dataTypeRules[row.dataType.toUpperCase().trim()];
-      debugger
+
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          this._verifName().then(res => {
+            this._submit('createDatasources')
+          })
+        }
+      })
+
+
+
+      var currDataType = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
       var arr = this.CommonUtil.isNotBlank(row.dataLengthText) ? row.dataLengthText.split(",") : null;
       if (this.CommonUtil.isNotEmpty(arr)) {
         var dataLengthN = arr.length > 0 ? arr[0].trim() : "";
         var colPrecisionN = arr.length > 1 ? arr[1].trim() : "";
         if (dataLengthN !== row.dataLength) {
-          row.dataLength = arr.length > 0 ? arr[0].trim() : "";
+          row.dataLength = arr.length > 0 ? arr[0].trim() : null;
         }
         if (colPrecisionN !== row.colPrecision) {
-          row.colPrecision = arr.length > 1 ? arr[1].trim() : "";
+          row.colPrecision = arr.length > 1 ? arr[1].trim() : null;
         }
+      } else {
+        row.dataLength = null;
+        row.colPrecision = null;
+        this.$set(row, "dataLengthText", "");
       }
 
-      if (currDataType && currDataType["lengthRule"]) {
-        if (!new RegExp(this.dataTypeRules[currDataType.lengthRule]).test(row.dataLength)) {
+      if (this.CommonUtil.isNotUndefined(currDataType) && this.CommonUtil.isNotUndefined(currDataType.lengthRule)) {
+        if (!new RegExp(currDataType.lengthRule).test(row.dataLength)) {
           this.$message.error(row.dataType.toUpperCase() + currDataType["ruleMsg"]);
           return false;
         }
