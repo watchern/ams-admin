@@ -2132,3 +2132,9 @@ export default {
 </script>
 <!--引入图形化工具专用CSS样式-->
 <style scoped src="@/api/graphtool/css/index.css"></style>
+<style>
+.mloading-bar a{
+  color: #1890ff;
+  text-decoration: underline!important;
+}
+</style>

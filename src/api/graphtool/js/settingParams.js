@@ -694,7 +694,7 @@ export function getParamsSetting() {
                     let paramName = settingVue.setParamArr[index].dataName// 获取参数名称
                     let dataLength = settingVue.setParamArr[index].dataDataLength// 获取参数值长度
                     // 如果该参数有长度限制且默认值不等于设置的长度值
-                    if (typeof dataLength !== 'undefined' && settingVue.setParamArr[index].value.length !== parseInt(dataLength)) {
+                    if (typeof dataLength !== 'undefined' && settingVue.setParamArr[index].value.length > parseInt(dataLength)) {
                         returnObj.verify = false
                         returnObj.message = '参数【' + paramName + '】输入值的长度与设置的长度值【' + parseInt(dataLength) + '】不相等'
                     }
@@ -793,7 +793,7 @@ export function getParamsSettingBySave() {
                     let paramName = settingVue.setParamArr[index].dataName // 获取参数名称
                     let dataLength = settingVue.setParamArr[index].dataDataLength // 获取参数值长度
                     // 如果该参数有长度限制且默认值不等于设置的长度值
-                    if (typeof dataLength !== 'undefined' && settingVue.setParamArr[index].value.length !== parseInt(dataLength)) {
+                    if (typeof dataLength !== 'undefined' && settingVue.setParamArr[index].value.length > parseInt(dataLength)) {
                         returnObj.verify = false
                         returnObj.message = '参数【' + paramName + '】输入值的长度与设置的长度值【' + parseInt(dataLength) + '】不相等'
                     }

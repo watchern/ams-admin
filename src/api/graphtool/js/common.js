@@ -743,7 +743,8 @@ export function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
     graphIndexVue.executeTaskObj = {"init":false,"executeTask":[],"isError":false}
     $(graphIndexVue.$refs.sysInfoArea).html("")
     graphIndexVue.loading = $(graphIndexVue.$refs.graphToolDiv).mLoading({ 'text': '正在执行全部节点，请稍后……', 'hasCancel': true, 'hasTime': true, "callback" : function () {
-            //执行任务的主键
+        debugger   
+        //执行任务的主键
             const taskUuidArr = graphIndexVue.executeTaskObj.executeTask//被取消执行节点的任务UUID
             if(taskUuidArr.length === 0 && !graphIndexVue.executeTaskObj.init && !graphIndexVue.executeTaskObj.isError){
                 alertMsg('提示', '未创建完执行任务，请稍后', 'warning')
@@ -776,7 +777,7 @@ export function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
     graphIndexVue.$nextTick(() => {
         executeAllNodeSql(dataParam).then( response => {
             if (response.data == null) {
-                loadingInstance.close();
+                // loadingInstance.close();
                 graphIndexVue.$message.error('全部执行节点的请求失败')
                 // 更改执行状态图标为未执行
                 for (let i=0; i<nodeIdArr.length; i++) {

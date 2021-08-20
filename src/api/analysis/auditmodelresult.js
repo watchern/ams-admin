@@ -178,7 +178,7 @@ export function exportRunTaskRel() {
   return request({
     baseURL: analysisUrl,
     url: '/RunTaskRelController/exportRunTaskRelTable',
-    method: 'get'
+    method: 'post',
   })
 }
 
