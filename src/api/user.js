@@ -38,3 +38,11 @@ export function logout() {
     method: 'post'
   })
 }
+// 获取系统管理员
+export function getSystemRole(name) {
+  return request({
+    baseURL: baseURL,
+    url: `/sysRole/getByName/${name}`,
+    method: 'get'
+  })
+}

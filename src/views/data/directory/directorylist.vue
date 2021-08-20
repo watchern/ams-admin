@@ -503,6 +503,7 @@ import childTabs from "@/views/analysis/auditmodelresult/childtabs";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
 import QueryField from "@/components/public/query-field/index";
 import { getArrLength } from "@/utils";
+import { getSystemRole } from "@/api/user"
 import {
   deleteDirectory,
   copyTable,
@@ -657,15 +658,18 @@ export default {
   created() {
     this.dataTypeRules = this.CommonUtil.DataTypeRules
     this.initDirectory();
-    //获取登录用户的信息
+    //获取登录用户的信息来控制删除按钮是否显示
     getInfo().then((resp) => {
-      console.log(resp.data.id)
       getById(resp.data.id).then((res) => {
         const dataArray = res.data;
         const newArray = dataArray[0].roleId;
-        if(newArray[0]==41){
-          this.ifShow = true;
-        }
+        const sysRole = "系统管理员";
+        getSystemRole(sysRole).then((re) => {
+          if(newArray[0]==re.roleId){
+            this.ifShow = true;
+          }
+        })
+
       })
     })
   },
