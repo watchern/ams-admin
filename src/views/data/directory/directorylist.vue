@@ -665,11 +665,10 @@ export default {
         const newArray = dataArray[0].roleId;
         const sysRole = "系统管理员";
         getSystemRole(sysRole).then((re) => {
-          if(newArray[0]==re.roleId){
+          if(newArray[0]==re.data.roleid){
             this.ifShow = true;
           }
         })
-
       })
     })
   },
