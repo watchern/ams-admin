@@ -651,7 +651,8 @@ export default {
       dialoading: false,
       clickId:'',
       dataTypeRules: {
-      }
+      },
+      disableEditColumn: false
     };
   },
   created() {
@@ -670,6 +671,12 @@ export default {
     })
   },
   watch: {
+    openType: {
+      handler(newOpenType) {
+        this.disableEditColumn = false
+        this.disableEditColumn = newOpenType === 'showTable' || newOpenType === 'tableRegister'
+      }
+    },
     uploadtempInfo: {
       handler(newTemp, oldemp) {
         // this.$emit('update:tab-show', newName)
@@ -698,11 +705,10 @@ export default {
   methods: {
     changeDataType(row){
       const dataTypeRule = this.dataTypeRules[row.dataType.toUpperCase().trim()];
-      row.enableDataLength = dataTypeRule && typeof dataTypeRule.enableDataLength !== "undefined" ? dataTypeRule.enableDataLength : true;
-      debugger
+      row.enableDataLength = this.disableEditColumn ? false: ( dataTypeRule && typeof dataTypeRule.enableDataLength !== "undefined" ? dataTypeRule.enableDataLength : true);
       if (this.CommonUtil.isUndefined(row.dataLengthText) && row.enableDataLength) {
         if (this.CommonUtil.isNotUndefined(dataTypeRule) && this.CommonUtil.isNotBlank(row.dataLength)) {
-          if (typeof dataTypeRule.hasPrecision != "undefined" && dataTypeRule.hasPrecision) {
+          if (this.CommonUtil.isNotUndefined(dataTypeRule.hasPrecision) && dataTypeRule.hasPrecision) {
             row.dataLengthText = "" + row.dataLength + (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '')
           } else {
             row.dataLengthText = "" + row.dataLength
@@ -717,7 +723,6 @@ export default {
 
     isValidColumn(row) {
       var currDataType = this.dataTypeRules[row.dataType.toUpperCase().trim()];
-
       debugger
       var arr = this.CommonUtil.isNotBlank(row.dataLengthText) ? row.dataLengthText.split(",") : null;
       if (this.CommonUtil.isNotEmpty(arr)) {
