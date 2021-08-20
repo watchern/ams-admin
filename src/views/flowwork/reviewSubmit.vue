@@ -29,6 +29,12 @@
                 @submitFlow="submitFlow"
         ></businessDetail>
     </template>
+    <el-form>
+        <el-form-item label="发布路径">
+          <el-input v-model="treeUrlname" disabled></el-input>
+        </el-form-item>
+      </el-form>
+      <el-button type="primary" @click="showWorkTree = true">选择发布位置</el-button>
 
     <!-- 流程内容：审核意见、填写意见、选择下一步 -->
     <div class="flow_template">
@@ -112,18 +118,35 @@
         </div>
       </template>
     </div>
+    <el-dialog :visible.sync="showWorkTree" :modal="false" title="选择要发布到的位置">
+      <div>
+        <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
+      <div slot="footer" style="padding:10px 0;">
+        <el-button type="primary" @click="updatePublicModel">确定</el-button>
+        <el-button @click="showWorkTree = false">取消</el-button>
+      </div>
+      </div>
+    </el-dialog>
   </div>
+  
 </template>
 <script>
+import ModelFolderTree from "@/views/analysis/auditmodel/modelfoldertree";
   //用于知会人
   import businessDetail from "./reviewDetail";
   export default {
     props: ["flowItem", "flowSet","flowParam","columnDefs","submitData"],
     components: {
-      businessDetail,
+      businessDetail,ModelFolderTree
     },
     data() {
       return {
+        // 发布模型
+        publicModelValue: "publicModel",
+        //文件结构树相关
+        treeUrlname:"",
+        treeUrlid:"",
+        showWorkTree: false,
         //是否显示业务组件
         displayBus: false,
         //是否显示知会人
@@ -198,6 +221,16 @@
       this.init();
     },
     methods: {
+      /**
+     * 修改要发布的模型
+     */
+    updatePublicModel() {
+      const selectNode = this.$refs.modelFolderTree.getSelectNode();
+        this.showWorkTree = false
+        console.log(selectNode)
+        this.treeUrlname = selectNode.label
+        this.treeUrlid = selectNode.id
+    },
       //获取applyInfo信息
       init() {
         this.axios
@@ -326,10 +359,6 @@
     },
   };
 </script>
-<style src="../../../assets/css/tableItem.css" scoped>
-</style>
-<style src="../../../assets/css/form.css" scoped>
-</style>
 <style>
   .admin_right_main .content_form .el-input .el-input__inner{
     width: 360px;
@@ -356,5 +385,8 @@
     background-color: #409EFF !important;
     border-color: #409EFF !important;
     color: #FFF !important;
+  }
+  .title_template{
+    padding:20px 0 10px 0!important;
   }
 </style>

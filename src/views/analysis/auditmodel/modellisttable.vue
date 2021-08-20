@@ -226,7 +226,7 @@
       width="50%"
     >
     <div>
-        <review-detail
+        <review-submit
           ref="flowItem2"
           :flowSet="flowSet"
           :flowItem="flowItem"
@@ -235,26 +235,11 @@
           :submitData="submitData"
           @closeModal="closeFlowItem"
           @delectData="delectData"
-        ></review-detail>
+        ></review-submit>
       </div>
-      <el-form>
-        <el-form-item label="发布路径">
-          <el-input v-model="treeUrlname" disabled></el-input>
-        </el-form-item>
-      </el-form>
-      <el-button type="primary" @click="showWorkTree = true">选择发布位置</el-button>
       <div slot="footer">
         <el-button type="primary" @click="toSubmitTcb">确定</el-button>
         <el-button @click="treeSelectShow = false">取消</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog :visible.sync="showWorkTree" title="选择要发布到的位置">
-      <div>
-        <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
-      <div slot="footer">
-        <el-button type="primary" @click="updatePublicModel">确定</el-button>
-        <el-button @click="showWorkTree = false">取消</el-button>
-      </div>
       </div>
     </el-dialog>
     <el-dialog
@@ -358,7 +343,7 @@ import { replaceNodeParam } from "@/api/analysis/auditparam";
 import { getInfo } from '@/api/user'
 import modelshoppingcart from "@/views/analysis/auditmodel/modelshoppingcart";
 import personTree from "@/components/publicpersontree/index";
-import ReviewDetail from '../../flowwork/reviewDetail.vue';
+import ReviewSubmit from '@/views/flowwork/reviewSubmit.vue';
 export default {
   name: "ModelListTable",
   components: {
@@ -372,7 +357,7 @@ export default {
     paramDraw,
     modelshoppingcart,
     personTree,
-    ReviewDetail,
+    ReviewSubmit,
   },
   props: ["power", "dataUserId", "sceneCode", "isAuditWarring"],
   data() {
@@ -396,8 +381,6 @@ export default {
         isSecond: false,
         temp1: "",
       },
-      treeUrlname:"",
-      treeUrlid:"",
       flowParam: 0,
       // 定义数据列
       columnDefs: [
@@ -417,7 +400,6 @@ export default {
           status: '1',  //预警数据状态
           busdatas: []
       },
-      showWorkTree: false,
       isShow: false,
       tableKey: "errorUuid",
       // list列表
@@ -583,10 +565,6 @@ export default {
       if ( selection.length == 0) {
         alert("请至少选中一条数据");
         // this.common.alertMsg(2, "请选中一条数据");
-        return false;
-      }
-      if(this.treeUrlid == ""){
-        alert("请选择发布路径");
         return false;
       }
       //流程接口调用
@@ -1243,28 +1221,6 @@ export default {
           this.updateModelBasicInfo(selectObj, "撤销发布");
         })
         .catch(() => {});
-    },
-    /**
-     * 修改要发布的模型
-     */
-    updatePublicModel() {
-      const selectNode = this.$refs.modelFolderTree.getSelectNode();
-        var selectObj = this.$refs.modelListTable.selection;
-        for (let i = 0; i < selectObj.length; i++) {
-          selectObj[i].modelFolderUuid = selectNode.id;
-        }
-        this.showWorkTree = false
-        console.log(selectNode)
-        this.treeUrlname = selectNode.label
-        this.treeUrlid = selectNode.id
-      // this.$confirm("是否确定将选中的模型发布到公共模型下?", "提示", {
-      //   confirmButtonText: "确定",
-      //   cancelButtonText: "取消",
-      //   type: "warning",
-      // }).then(() => {
-        
-      //   this.updateModelBasicInfo(selectObj, "发布");
-      // });
     },
     /**
      * 修改模型基本信息
