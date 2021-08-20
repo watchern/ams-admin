@@ -680,30 +680,30 @@ export default {
         this.disableEditColumn = newOpenType === 'showTable' || newOpenType === 'tableRegister'
       }
     },
-    uploadtempInfo: {
-      handler(newTemp, oldemp) {
-        // this.$emit('update:tab-show', newName)
-        // console.log(*************newTemp");
-        if (typeof newTemp.colMetas != "undefined"){
-          newTemp.colMetas.forEach((item) => {
-            // if (!item.dataLengthText) {
-            //   item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '');
-            // }
-            // if (typeof item.dataLengthText == "undefined") {
-            //   const dataTypeRule = this.dataTypeRules[item.dataType.toUpperCase().trim()]
-            //   if (typeof dataTypeRule != "undefined" && typeof dataTypeRule.hasPrecision != "undefined") {
-            //     if (dataTypeRule.hasPrecision) {
-            //       item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '')
-            //     } else {
-            //       item.dataLengthText = item.dataLength
-            //     }
-            //   }
-            // }
-          })
-        }
-      },
-      deep: true
-    }
+    // uploadtempInfo: {
+    //   handler(newTemp, oldemp) {
+    //     // this.$emit('update:tab-show', newName)
+    //     // console.log(*************newTemp");
+    //     if (typeof newTemp.colMetas != "undefined"){
+    //       newTemp.colMetas.forEach((item) => {
+    //         // if (!item.dataLengthText) {
+    //         //   item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '');
+    //         // }
+    //         // if (typeof item.dataLengthText == "undefined") {
+    //         //   const dataTypeRule = this.dataTypeRules[item.dataType.toUpperCase().trim()]
+    //         //   if (typeof dataTypeRule != "undefined" && typeof dataTypeRule.hasPrecision != "undefined") {
+    //         //     if (dataTypeRule.hasPrecision) {
+    //         //       item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '')
+    //         //     } else {
+    //         //       item.dataLengthText = item.dataLength
+    //         //     }
+    //         //   }
+    //         // }
+    //       })
+    //     }
+    //   },
+    //   deep: true
+    // }
   },
   methods: {
     changeDataType(row){
@@ -714,7 +714,7 @@ export default {
         this.$set(row, "enableDataLength", false);
       }
 
-      if (this.CommonUtil.isUndefined(row.dataLengthText) && row.enableDataLength) {
+      if (row.enableDataLength && this.CommonUtil.isUndefined(row.dataLengthText)) {
         if (this.CommonUtil.isNotUndefined(currRule) && this.CommonUtil.isNotBlank(row.dataLength)) {
           row.dataLengthText = row.dataLength ? "" + row.dataLength : "255"
           if (this.CommonUtil.isNotUndefined(currRule.hasPrecision) && currRule.hasPrecision) {
@@ -729,17 +729,6 @@ export default {
     },
 
     isValidColumn(row) {
-
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          this._verifName().then(res => {
-            this._submit('createDatasources')
-          })
-        }
-      })
-
-
-
       var currDataType = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
       var arr = this.CommonUtil.isNotBlank(row.dataLengthText) ? row.dataLengthText.split(",") : null;
       if (this.CommonUtil.isNotEmpty(arr)) {
