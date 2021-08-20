@@ -2,7 +2,7 @@
   <div>
     <div class="table_header_default">
       <div style="float: left" class="title_template">
-        <span class="busdatas title_font">预警数据列表</span>
+        <span class="busdatas title_font"></span>
       </div>
       <!-- <div style="float: right" class="title_template">
         <el-button type="primary" size="mini" @click="batchEditStatus"
