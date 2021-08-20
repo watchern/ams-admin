@@ -707,6 +707,8 @@ export default {
   },
   methods: {
     changeDataType(row){
+      debugger
+
       const currRule = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
       if (!this.disableEditColumn) {
         this.$set(row, "enableDataLength", currRule && this.CommonUtil.isNotUndefined(currRule.enableDataLength) ? currRule.enableDataLength : true);
@@ -729,6 +731,7 @@ export default {
     },
 
     isValidColumn(row) {
+      debugger
       var currDataType = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
       var arr = this.CommonUtil.isNotBlank(row.dataLengthText) ? row.dataLengthText.split(",") : null;
       if (this.CommonUtil.isNotEmpty(arr)) {
