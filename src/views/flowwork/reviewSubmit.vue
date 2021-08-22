@@ -306,7 +306,7 @@ import ModelFolderTree from "@/views/analysis/auditmodel/modelfoldertree";
         }, 20);
       },
 
-      submitFlow(busRelationUuid) {
+      submitFlow(modelRelationUuid) {
         if (this.isAllAssignment == "checkbox") {
           this.formData.personUuId = this.checkedPerList.join(",");
         } else {
@@ -327,7 +327,7 @@ import ModelFolderTree from "@/views/analysis/auditmodel/modelfoldertree";
         //审核信息
         this.formData.remark = this.opinionform.opinion;
         //业务表主键uuid
-        this.formData.appDataUuid = busRelationUuid;
+        this.formData.appDataUuid = modelRelationUuid;
         this.formData.applyTitle = this.applyTitleform.applyTitle;
         this.formData.workEffortId = "";
         if (this.flowItem.detailUuids) {
@@ -342,7 +342,8 @@ import ModelFolderTree from "@/views/analysis/auditmodel/modelfoldertree";
                   if (response.data.code == "0") {
                     this.common.alertMsg(1, "保存成功");
                     //启动流程提交，关闭模态框。
-                    this.$emit("closeModal", false);
+                    // this.$emit("closeModal", false);
+                    this.$emit("delectData", false);
                   } else {
                     //执行失败
                     this.common.alertMsg(4, response.data.msg);

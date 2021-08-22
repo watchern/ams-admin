@@ -35,8 +35,9 @@ const modules = modulesFiles.keys().reduce((modules, modulePath) => {
 
 const store = new Vuex.Store({
   getters,
-  applyInfo,
-  modules
+  modules:{
+    applyInfo,
+  }
 })
 
 export default store

@@ -28,7 +28,7 @@
     "ams-clue-vue": "^0.1.23",
     "ams-datamax": "^1.1.0",
     "ams-etlscheduler-ui": "^1.5.6",
-    "ams-starflow-vue": "^0.1.25",
+    "ams-starflow-vue": "^0.1.26",
     "axios": "^0.21.1",
     "codemirror": "^5.58.3",
     "core-js": "^3.6.5",

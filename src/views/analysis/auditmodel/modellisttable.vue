@@ -371,7 +371,7 @@ export default {
       },
       flowItem: {
         //动态赋值
-        wftype: "cn_com_boe_as_preInvest",
+        wftype: "cn_com_icss_model_publish",
         applyUuid: "",
         detailUuids: "",
         applyTitle: "",
@@ -561,71 +561,35 @@ export default {
   },
   methods: {
     toSubmitTcb() {
-      let selection = this.$refs.modelListTable.selection
-      if ( selection.length == 0) {
-        alert("请至少选中一条数据");
-        // this.common.alertMsg(2, "请选中一条数据");
-        return false;
-      }
-      //流程接口调用
-      this.submitData.busdatas =  selection;
-      for (var i = 0; i < this.submitData.busdatas.length; i++) {
-        if (this.submitData.busdatas[i].状态 === 1) {
-          this.$message.info({
-            duration: 2000,
-            message: "预警发起的数据不能重复提交！",
-          });
-          return false;
-        } else if (this.submitData.busdatas[i].状态 === 3) {
-          this.$message.info({
-            duration: 2000,
-            message: "已销号的数据不能重复提交！",
-          });
-          return false;
-        }
-      }
-      // this.nowtable.resultTableName
-      this.submitData.busTableName = "发布审核"; // 表名称
-      // this.submitData.status = this.initStatus;  //数据状态（0）
-      this.submitData.busDatabaseType = "mysql"; //数据库类型
-      this.flowItem.versionUuid = this.common.randomString4Len(8);
-      this.flowItem.applyTitle =
-        this.modelTitle + this.common.getNowFormatDay();
-      this.applyInfo.versionUuid = this.flowItem.versionUuid;
-      this.applyInfo.status = "";
-      this.applyInfo.mstate = "";
-      this.applyInfo.fstate = "";
-      this.applyInfo.isUpdate = false; //初始化
-      this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
-
-      console.info(JSON.stringify(this.submitData));
-      console.info(JSON.stringify(this.columnDefs));
-      this.dialogVisibleSubmit = true;
+      setTimeout(() => {
+        this.$refs["flowItem2"].saveOpinion();
+      }, 20);
     },
     //工作流窗口关闭
     closeFlowItem(val) {
-      this.dialogVisibleSubmit = val;
-      this.flowParam = 0;
-      this.initData();
+      this.treeSelectShow = val;
+      // this.flowParam = 0;
+      // this.initData();
     },
     //流程发布失败
     delectData(val) {
-      this.dialogVisibleSubmit = val;
+      this.treeSelectShow = val;
       var data = {
-        busRelationUuid: this.$store.state.applyInfo.applyInfo.appDataUuid,
+        modelRelationUuid: this.$store.state.applyInfo.applyInfo.appDataUuid,
       };
+      alert(this.$store.state.applyInfo.applyInfo.appDataUuid)
       this.$axios
-        .post("/ams-clue/busRelation/delete/rollBackData", data)
+        .post("/analysis/modelPublishRelation/delete/rollBackData", data)
         .then((response) => {
           if (response.data.code == "0") {
-            this.flowItem.appDataUuid = response.data.data.busRelationUuid;
+            this.flowItem.appDataUuid = response.data.data.modelRelationUuid;
           }
         })
         .catch((error) => {
-          this.common.alertMsg(1, "操作失败！");
+          this.common.alertMsg(1, "业务数据回滚失败！");
           console.log(error);
         });
-      this.initData();
+      // this.initData();
     },
     setImportFolder() {
       let selectNode = this.$refs.modelFolderTree.getSelectNode();
