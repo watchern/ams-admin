@@ -8,7 +8,7 @@
         style="width:90%;min-width:500px; margin-left:50px;"
       >
         <el-form-item label="表名称" prop="tbName">
-          <el-input v-model="temp.tbName" readonly />
+          <el-input v-model="temp.displayTbName" readonly />
         </el-form-item>
 <!-- 2021/06/07 @黄鑫 因暂无业务需求，隐藏表物理路径 -->
 <!--        <el-form-item label="表物理路径" prop="tablePath">-->
@@ -50,6 +50,7 @@ export default {
       temp: {
         tableMetaUuid: undefined,
         tbName: '',
+        displayTbName:'',
         tablePath: '',
         fieldsNum: '',
         rowNum: '',

@@ -9,75 +9,59 @@
     </div>
     <el-row>
       <el-col align="right">
-        <!--v-show 非管理员不能进行的操作-->
         <el-button
           type="primary"
-          :disabled="selections.length === 0"
+          :disabled="!(this.ifManager && selections.length !== 0 )"
           class="oper-btn delete"
           @click="delData"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn copy"
-          :disabled="selections.length !== 1"
+          :disabled="!(this.ifManager && !(selections.length !== 1))"
           @click="copyResource"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn move"
-          :disabled="selections.length === 0"
+          :disabled="!(this.ifManager && selections.length !== 0)"
           @click="movePath"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn rename"
-          :disabled="selections.length !== 1"
+          :disabled="!(this.ifManager && !(selections.length !== 1))"
           @click="renameResource"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn add-table btn-width-md"
-          :disabled="
-            clickData.type == 'table' ||
-            (typeof clickData.extMap !== 'undefined' && typeof clickData.extMap.sceneInstUuid !== 'undefined')
-          "
+          :disabled="disControlTable"
           @click="addTable"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn import-table btn-width-md"
-          :disabled="
-            clickData.type == 'table' ||
-             (typeof clickData.extMap !== 'undefined' && typeof clickData.extMap.sceneInstUuid !== 'undefined')
-          "
+          :disabled="disControlTable"
           @click="uploadTable"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn add-directory btn-width-max"
-          :disabled="clickData.type == 'table'"
+          :disabled="!(this.ifManager  && clickData.type != 'table')"
           @click="createFolder"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn edit"
-          :disabled="selections.length !== 1"
+          :disabled="!(this.ifManager  && !(selections.length !== 1))"
           @click="updateTable"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn link-table  btn-width-md"
-          :disabled="selections.length !== 1"
+          :disabled="!(this.ifManager  && !(selections.length !== 1))"
           @click="relationTable"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
@@ -138,7 +122,7 @@
       :limit.sync="pageQuery.pageSize"
       @pagination="getListSelect"
     />
-    <!-- 弹窗 -->
+    <!-- 复制表弹框 -->
     <el-dialog
       :close-on-click-modal="false"
       :title="textMap[dialogStatus]"
@@ -177,7 +161,7 @@
         >
       </span>
     </el-dialog>
-    <!-- 弹窗2 -->
+    <!-- 移动表 -->
     <el-dialog
       :visible.sync="moveTreeVisible"
       width="600px"
@@ -518,6 +502,7 @@ import { saveFolder } from "@/api/data/folder";
 import dataTree from "@/views/data/role-res/data-tree";
 import { mapState } from "vuex";
 import { getInfo } from '@TCB/api/user';
+import { getSystemRole} from '@/api/user';
 import { getById } from '@TCB/api/tcbaudit/personalManage';
 
 export default {
@@ -545,7 +530,7 @@ export default {
   // eslint-disable-next-line vue/order-in-components
   data() {
     return {
-      ifShow:false, //控制部分按钮是否显示
+      ifManager:false, //是否为管理员
       saveFlag: true,
       infoFlag: true,
       currentSceneUuid: "auditor",
@@ -650,26 +635,35 @@ export default {
       downloadLoading: false,
       dialoading: false,
       clickId:'',
-      dataTypeRules: {
-      }
+      // 操作Table按钮禁用
+      disControlTable : true,
+      disableEditColumn: false
     };
   },
   created() {
-    this.dataTypeRules = this.CommonUtil.DataTypeRules
+    // this.dataTypeRules = this.CommonUtil.DataTypeRules
     this.initDirectory();
-    //获取登录用户的信息
+    //获取登录用户的信息来控制删除按钮是否显示
     getInfo().then((resp) => {
-      console.log(resp.data.id)
       getById(resp.data.id).then((res) => {
         const dataArray = res.data;
         const newArray = dataArray[0].roleId;
-        if(newArray[0]==41){
-          this.ifShow = true;
-        }
+        const sysRole = "系统管理员";
+        getSystemRole(sysRole).then((re) => {
+          if(newArray[0] == re.data.roleid ){
+            this.ifManager = true;
+          }
+        })
       })
     })
   },
   watch: {
+    openType: {
+      handler(newOpenType) {
+        this.disableEditColumn = false
+        this.disableEditColumn = newOpenType === 'showTable' || newOpenType === 'tableRegister'
+      }
+    },
     uploadtempInfo: {
       handler(newTemp, oldemp) {
         // this.$emit('update:tab-show', newName)
@@ -679,50 +673,80 @@ export default {
             // if (!item.dataLengthText) {
             //   item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '');
             // }
-            if (typeof item.dataLengthText == "undefined") {
-              const dataTypeRule = this.dataTypeRules[item.dataType.toUpperCase().trim()]
-              if (typeof dataTypeRule != "undefined" && typeof dataTypeRule.hasPrecision != "undefined") {
-                if (dataTypeRule.hasPrecision) {
-                  item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '')
-                } else {
-                  item.dataLengthText = item.dataLength
-                }
-              }
-            }
+            // if (typeof item.dataLengthText == "undefined") {
+            //   const dataTypeRule = this.dataTypeRules[item.dataType.toUpperCase().trim()]
+            //   if (typeof dataTypeRule != "undefined" && typeof dataTypeRule.hasPrecision != "undefined") {
+            //     if (dataTypeRule.hasPrecision) {
+            //       item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '')
+            //     } else {
+            //       item.dataLengthText = item.dataLength
+            //     }
+            //   }
+            // }
           })
         }
       },
       deep: true
+    },
+    clickData(clickData){
+      this.disControlTable = clickData.type == 'table' || (typeof clickData.extMap !== 'undefined' && typeof clickData.extMap.sceneInstUuid !== 'undefined')
+      this.disControlTable = this.ifManager ? this.disControlTable : !this.disControlTable
     }
   },
   methods: {
     changeDataType(row){
-      const dataTypeRule = this.dataTypeRules[row.dataType.toUpperCase().trim()];
-      row.enableDataLength = dataTypeRule && typeof dataTypeRule.enableDataLength !== "undefined" ? dataTypeRule.enableDataLength : true;
+      const currRule = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
+      if (!this.disableEditColumn) {
+        this.$set(row, "enableDataLength", currRule && this.CommonUtil.isNotUndefined(currRule.enableDataLength) ? currRule.enableDataLength : true);
+      } else {
+        this.$set(row, "enableDataLength", false);
+      }
+
       if (this.CommonUtil.isUndefined(row.dataLengthText) && row.enableDataLength) {
-        if (this.CommonUtil.isUndefined(dataTypeRule) && this.CommonUtil.isNotBlank(row.dataLength)) {
-          if (typeof dataTypeRule.hasPrecision != "undefined" && dataTypeRule.hasPrecision) {
-            row.dataLengthText = row.dataLength + (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '')
-          } else {
-            row.dataLengthText = row.dataLength
+        if (this.CommonUtil.isNotUndefined(currRule) && this.CommonUtil.isNotBlank(row.dataLength)) {
+          row.dataLengthText = row.dataLength ? "" + row.dataLength : "255"
+          if (this.CommonUtil.isNotUndefined(currRule.hasPrecision) && currRule.hasPrecision) {
+            row.dataLengthText += (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '0')
           }
         }
-      } else if (typeof row.dataLength !== "undefined") {
-        row.dataLength = "";
-        row.colPrecision = "";
+      } else if (this.CommonUtil.isNotUndefined(row.dataLength)) {
+        row.dataLength = null;
+        row.colPrecision = null;
         row.dataLengthText = "";
       }
     },
 
     isValidColumn(row) {
-      var currDataType = this.dataTypeRules[row.dataType.toUpperCase().trim()];
 
-      var arr = typeof row.dataLengthText!= "undefined" ? row.dataLengthText.split(","):"";
-      row.dataLength = arr.length > 0 ? arr[0].trim() : "";
-      row.colPrecision = arr.length > 1 ? arr[1].trim() : "";
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          this._verifName().then(res => {
+            this._submit('createDatasources')
+          })
+        }
+      })
 
-      if (currDataType && currDataType["lengthRule"]) {
-        if (!new RegExp(this.dataTypeRules[currDataType.lengthRule]).test(row.dataLength)) {
+
+
+      var currDataType = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
+      var arr = this.CommonUtil.isNotBlank(row.dataLengthText) ? row.dataLengthText.split(",") : null;
+      if (this.CommonUtil.isNotEmpty(arr)) {
+        var dataLengthN = arr.length > 0 ? arr[0].trim() : "";
+        var colPrecisionN = arr.length > 1 ? arr[1].trim() : "";
+        if (dataLengthN !== row.dataLength) {
+          row.dataLength = arr.length > 0 ? arr[0].trim() : null;
+        }
+        if (colPrecisionN !== row.colPrecision) {
+          row.colPrecision = arr.length > 1 ? arr[1].trim() : null;
+        }
+      } else {
+        row.dataLength = null;
+        row.colPrecision = null;
+        this.$set(row, "dataLengthText", "");
+      }
+
+      if (this.CommonUtil.isNotUndefined(currDataType) && this.CommonUtil.isNotUndefined(currDataType.lengthRule)) {
+        if (!new RegExp(currDataType.lengthRule).test(row.dataLength)) {
           this.$message.error(row.dataType.toUpperCase() + currDataType["ruleMsg"]);
           return false;
         }
@@ -1043,6 +1067,7 @@ export default {
       console.log(query)
       if (query) {
         var list = this.allList.filter((obj) => {
+          if (query.label === null) query.label=""
           return obj.label.indexOf(query.label) !== -1;
         });
         this.total = getArrLength(list);
