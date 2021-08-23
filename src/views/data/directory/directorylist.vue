@@ -1108,6 +1108,7 @@ export default {
     getListSelect(query) {
       if (query) {
         var list = this.allList.filter((obj) => {
+          if (query.label === null) query.label=""
           return obj.label.indexOf(query.label) !== -1;
         });
         this.total = getArrLength(list);

@@ -27,7 +27,8 @@
             <el-dropdown style="margin-right: 10px">
               <el-button
                 type="primary"
-                :disabled="btnState.addBtnState"
+                :disabled="btnState.addBtnState || (ifmanger=='0' && selectTreeNode == null)"
+                v-if="jinyong == '0' || selectTreeNode == null"
                 @mouseover="mouseOver"
                 @mouseleave="mouseLeave"
                 class="oper-btn add"
@@ -43,21 +44,23 @@
             </el-dropdown>
             <el-button
               type="primary"
-              :disabled="btnState.editBtnState"
+              :disabled="btnState.editBtnState || (ifmanger=='0' && selectTreeNode == null)"
+              v-if="jinyong == '0' || selectTreeNode == null"
               class="oper-btn edit"
               @click="updateModel"
             />
             <!--            <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateModel1" />-->
             <el-button
               type="primary"
-              :disabled="btnState.deleteBtnState"
+              :disabled="btnState.deleteBtnState || (ifmanger=='0' && selectTreeNode == null)"
+              v-if="jinyong == '0' || selectTreeNode == null"
               class="oper-btn delete"
               @click="deleteModel"
             />
-            <el-dropdown placement="bottom" trigger="click" class="el-dropdown">
+            <el-dropdown placement="bottom" trigger="click" class="el-dropdown" v-if="jinyong == '0' || selectTreeNode == null">
               <el-button
                 type="primary"
-                :disabled="btnState.otherBtn"
+                :disabled="btnState.otherBtn || (ifmanger=='0' && selectTreeNode == null)"
                 class="oper-btn more"
               />
               <el-dropdown-menu slot="dropdown">
@@ -341,6 +344,8 @@ import paramDraw from "@/views/analysis/modelparam/paramdraw";
 import paramDrawNew from "@/views/analysis/modelparam/paramdrawnew";
 import { replaceNodeParam } from "@/api/analysis/auditparam";
 import { getInfo } from '@/api/user'
+import { getSystemRole} from '@/api/user';
+import { getById } from '@TCB/api/tcbaudit/personalManage';
 import modelshoppingcart from "@/views/analysis/auditmodel/modelshoppingcart";
 import personTree from "@/components/publicpersontree/index";
 import ReviewSubmit from '@/views/flowwork/reviewSubmit.vue';
@@ -537,22 +542,30 @@ export default {
   },
   created() {
     this.getList()
+    //判断是否是管理员身份
     getInfo().then((resp) => {
-        if(resp.data.orgname=="总行审计部"){
-          this.ifmanger = 1
-          this.jinyong = 0
-        }else{
-          this.ifmanger = 0
-          this.jinyong = 1
-          this.btnState = {
-            addBtnState: false,
-            editBtnState: true,
-            deleteBtnState: true,
-            previewBtn: false,
-            otherBtn: true,
+      getById(resp.data.id).then((res) => {
+        const dataArray = res.data;
+        const newArray = dataArray[0].roleId;
+        const sysRole = "系统管理员";
+        getSystemRole(sysRole).then((re) => {
+          if(newArray[0] == re.data.roleid ){
+            this.ifmanger = 1
+            this.jinyong = 0
+          }else{
+            this.ifmanger = 0
+            this.jinyong = 1
+            this.btnState = {
+              addBtnState: false,
+              editBtnState: true,
+              deleteBtnState: true,
+              previewBtn: true,
+              otherBtn: false,
+            }
           }
-        }
-      });
+        })
+      })
+    })
     // this.getList({ modelFolderUuid: 1 })
   },
   mounted() {
@@ -788,6 +801,7 @@ export default {
     setSelectTreeNode(data) {
       this.selectTreeNode = data;
       console.log(data)
+      //非管理员公共模型页面按钮隐藏
       if(data.path.indexOf('gonggong') != -1 && this.ifmanger==0){
         //禁用
         this.jinyong = 1
