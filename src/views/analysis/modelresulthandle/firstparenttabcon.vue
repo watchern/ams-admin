@@ -53,12 +53,12 @@
               class="oper-btn processing"
               @click="handleResult"
             />-->
-            <el-button
-              :disabled="buttonIson.deleteBtn"
-              type="primary"
-              @click="deleteRunTaskRel"
-              class="oper-btn delete-projectrel btn-width-max"
-            />
+<!--            <el-button-->
+<!--              :disabled="buttonIson.deleteBtn"-->
+<!--              type="primary"-->
+<!--              @click="deleteRunTaskRel"-->
+<!--              class="oper-btn delete-projectrel btn-width-max"-->
+<!--            />-->
           </el-row>
         </div>
         <el-table

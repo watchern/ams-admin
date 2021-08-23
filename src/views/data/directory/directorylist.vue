@@ -11,56 +11,56 @@
       <el-col align="right">
         <el-button
           type="primary"
-          :disabled="!(this.ifManager && selections.length !== 0 )"
+          :disabled="disDeleteTable"
           class="oper-btn delete"
           @click="delData"
         />
         <el-button
           type="primary"
           class="oper-btn copy"
-          :disabled="!(this.ifManager && !(selections.length !== 1))"
+          :disabled="disCopyTable"
           @click="copyResource"
         />
         <el-button
           type="primary"
           class="oper-btn move"
-          :disabled="!(this.ifManager && selections.length !== 0)"
+          :disabled="disMoveTable"
           @click="movePath"
         />
         <el-button
           type="primary"
-          class="oper-btn rename"
-          :disabled="!(this.ifManager && !(selections.length !== 1))"
+          class="oper-btn rename btn-width-md"
+          :disabled="disRenameTable"
           @click="renameResource"
         />
         <el-button
           type="primary"
           class="oper-btn add-table btn-width-md"
-          :disabled="disControlTable"
+          :disabled="disAddTable"
           @click="addTable"
         />
         <el-button
           type="primary"
           class="oper-btn import-table btn-width-md"
-          :disabled="disControlTable"
+          :disabled="disAddTable"
           @click="uploadTable"
         />
         <el-button
           type="primary"
           class="oper-btn add-directory btn-width-max"
-          :disabled="!(this.ifManager  && clickData.type != 'table')"
+          :disabled="disAddDir"
           @click="createFolder"
         />
         <el-button
           type="primary"
           class="oper-btn edit"
-          :disabled="!(this.ifManager  && !(selections.length !== 1))"
+          :disabled="disEditTable"
           @click="updateTable"
         />
         <el-button
           type="primary"
           class="oper-btn link-table  btn-width-md"
-          :disabled="!(this.ifManager  && !(selections.length !== 1))"
+          :disabled="disLinkData"
           @click="relationTable"
         />
         <el-button
@@ -73,14 +73,14 @@
         <el-button
           type="primary"
           class="oper-btn preview"
-          :disabled="infoFlag"
+          :disabled="disPreviewData"
           @click="preview"
         />
       <!--  分享 -->
         <el-button
           type="primary"
           class="oper-btn share"
-          :disabled="selections.length === 0"
+          :disabled="disShareTable"
           @click="shareTable"
         />
       </el-col>
@@ -333,7 +333,7 @@
           <tabledatatabs
             ref="tabledatatabs"
             :table-id="tableId"
-            :forder-id="clickData.id"
+            :forder-id="currTreeNode.id"
             :open-type="openType"
             :tab-show.sync="tabShow"
             @table-show="tableshow"
@@ -364,7 +364,7 @@
               <column
                 ref="column"
                 :table-id="tableId"
-                :forder-id="clickData.id"
+                :forder-id="currTreeNode.id"
                 :open-type="openType"
                 :tab-show.sync="tabShow"
                 @append-node="appendnode"
@@ -398,7 +398,7 @@
               <tablerelation
                 ref="tablerelation"
                 :table-id="tableId"
-                :forder-id="clickData.id"
+                :forder-id="currTreeNode.id"
                 :open-type="openType"
               />
             </el-col>
@@ -531,8 +531,6 @@ export default {
   data() {
     return {
       ifManager:false, //是否为管理员
-      saveFlag: true,
-      infoFlag: true,
       currentSceneUuid: "auditor",
       directyDataUserId: this.$store.state.user.code,
       openType: "",
@@ -578,7 +576,8 @@ export default {
         orderNum: 0,
         fullPath: null,
       },
-      clickData: { id: "", type: "" },
+      // 树节点click
+      currTreeNode: { id: "", type: "" },
       clickNode: {},
       clickFullPath: [],
       allList: [],
@@ -635,27 +634,48 @@ export default {
       downloadLoading: false,
       dialoading: false,
       clickId:'',
-      // 操作Table按钮禁用
-      disControlTable : true,
-      disableEditColumn: false
+      saveFlag: true,
+      disableEditColumn: false,
+      // 禁用添加文件夹，个人空间，判断根节点有没有sceneInstUuid
+      disAddDir: true,
+      // 禁用新增表，个人场景，或者save_to_folder
+      disAddTable : true,
+      // 禁用编辑表，个人场景
+      disEditTable: true,
+      // 禁用删除表,个人空间下
+      disDeleteTable: true,
+      // 禁用重命名表, 只能重命名个人空间下，
+      disRenameTable: true,
+      // 禁用移动表, 只能移动到个人空间下
+      disMoveTable: true,
+      // 禁用导入表，个人场景，或者save_to_folder
+      disImportTable: true,
+      // 禁用复制表, fetch_table_data，复制到个人场景，或者save_to_folder
+      disCopyTable: true,
+      // 禁用预览表数据，fetch_table_data
+      disPreviewData: true,
+      // 禁用管理表，个人场景
+      disLinkData: true,
+      // 禁用分享表,个人场景
+      disShareTable: true
     };
   },
   created() {
     // this.dataTypeRules = this.CommonUtil.DataTypeRules
     this.initDirectory();
     //获取登录用户的信息来控制删除按钮是否显示
-    getInfo().then((resp) => {
-      getById(resp.data.id).then((res) => {
-        const dataArray = res.data;
-        const newArray = dataArray[0].roleId;
-        const sysRole = "系统管理员";
-        getSystemRole(sysRole).then((re) => {
-          if(newArray[0] == re.data.roleid ){
-            this.ifManager = true;
-          }
-        })
-      })
-    })
+    // getInfo().then((resp) => {
+      // getById(resp.data.id).then((res) => {
+      //   const dataArray = res.data;
+      //   const newArray = dataArray[0].roleId;
+      //   const sysRole = "系统管理员";
+      //   getSystemRole(sysRole).then((re) => {
+      //     if(newArray[0] == re.data.roleid ){
+      //       this.ifManager = true;
+      //     }
+      //   })
+      // })
+    // })
   },
   watch: {
     openType: {
@@ -664,33 +684,77 @@ export default {
         this.disableEditColumn = newOpenType === 'showTable' || newOpenType === 'tableRegister'
       }
     },
-    uploadtempInfo: {
-      handler(newTemp, oldemp) {
-        // this.$emit('update:tab-show', newName)
-        // console.log(*************newTemp");
-        if (typeof newTemp.colMetas != "undefined"){
-          newTemp.colMetas.forEach((item) => {
-            // if (!item.dataLengthText) {
-            //   item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '');
-            // }
-            // if (typeof item.dataLengthText == "undefined") {
-            //   const dataTypeRule = this.dataTypeRules[item.dataType.toUpperCase().trim()]
-            //   if (typeof dataTypeRule != "undefined" && typeof dataTypeRule.hasPrecision != "undefined") {
-            //     if (dataTypeRule.hasPrecision) {
-            //       item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '')
-            //     } else {
-            //       item.dataLengthText = item.dataLength
-            //     }
-            //   }
-            // }
-          })
+    selections: {
+      handler(newObj, oldObj) {
+        console.log("**************selections");
+        console.log(newObj);
+        console.log("**************selections");
+
+        this.disDeleteTable = newObj.length > 0 ? false : true;
+        this.disEditTable = newObj.length == 1 ? false : true;
+        this.disLinkData = newObj.length == 1 ? false : true;
+        this.disMoveTable = newObj.length > 0 ? false : true;
+        this.disPreviewData = newObj.length == 1 ? false : true;
+        this.disRenameTable = newObj.length == 1 ? false : true;
+        this.disShareTable = newObj.length > 0 ? false : true;
+        if (newObj.length > 0) {
+          for(var i; i<newObj.length; i++) {
+            // 如果全部禁用，无须校验操作权限
+            if (this.disDeleteTable && this.disEditTable && this.disLinkData && this.disMoveTable
+                && this.disPreviewData && this.disPreviewData && this.disRenameTable && this.disShareTable) {
+              break;
+            }
+            var item = newObj[i];
+            var accessType = item.extMap.accessType;
+            // 判断是否拥有预览权限
+            if (!this.disPreviewData && accessType.indexOf(this.CommonUtil.DataPrivAccessType.FETCH_TABLE_DATA.value) < 0) {
+              this.disPreviewData = false
+            }
+            var paths = item.path.split("/");
+            var isPersonalSpace = paths[0].indexOf("场景") > -1;
+            // 判断 数据权限
+            if (accessType.indexOf(this.CommonUtil.DataPrivAccessType.SAVE_TO_FOLDER.value) > 0) {
+              this.disDeleteTable = true
+              this.disEditTable = true
+              this.disLinkData = true
+              this.disMoveTable = true
+              this.disRenameTable = true
+              if (!this.disShareTable && !isPersonalSpace) {
+                this.disShareTable = true
+              }
+            } else {
+              if (!isPersonalSpace) {
+                this.disDeleteTable = true
+                this.disEditTable = true
+                this.disLinkData = true
+                this.disMoveTable = true
+                this.disRenameTable = true
+                this.disShareTable = true
+              }
+            }
+          }
+
         }
-      },
-      deep: true
+      }
     },
-    clickData(clickData){
-      this.disControlTable = clickData.type == 'table' || (typeof clickData.extMap !== 'undefined' && typeof clickData.extMap.sceneInstUuid !== 'undefined')
-      this.disControlTable = this.ifManager ? this.disControlTable : !this.disControlTable
+    currTreeNode(){
+      console.log("**************currTreeNode");
+      console.log(this.currTreeNode);
+      console.log("**************currTreeNode");
+      var type = this.currTreeNode.type;
+      // var accessType = this.currTreeNode.extMap.accessType;
+      // 个人空间，判断根节点有没有sceneInstUuid
+      this.disAddDir = type === "folder" ? false : true;
+      this.disImportTable = type === "folder" ? false : true;
+      this.disAddTable = type === "folder" ? false : true;
+      this.disCopyTable =  type === "folder" ? false : true;
+      this.disDeleteTable = this.selections.length > 0 ? this.disDeleteTable : true;
+      this.disEditTable = this.selections.length == 1 ? this.disEditTable : true;
+      this.disLinkData = this.selections.length == 1 ? this.disLinkData : true;
+      this.disMoveTable = this.selections.length > 0 ? this.disMoveTable : true;
+      this.disPreviewData = this.selections.length == 1 ? this.disPreviewData : true;
+      this.disRenameTable = this.selections.length == 1 ? this.disRenameTable : true;
+      this.disShareTable = this.selections.length > 0 ? this.disShareTable : true;
     }
   },
   methods: {
@@ -701,33 +765,12 @@ export default {
       } else {
         this.$set(row, "enableDataLength", false);
       }
-
-      if (this.CommonUtil.isUndefined(row.dataLengthText) && row.enableDataLength) {
-        if (this.CommonUtil.isNotUndefined(currRule) && this.CommonUtil.isNotBlank(row.dataLength)) {
-          row.dataLengthText = row.dataLength ? "" + row.dataLength : "255"
-          if (this.CommonUtil.isNotUndefined(currRule.hasPrecision) && currRule.hasPrecision) {
-            row.dataLengthText += (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '0')
-          }
-        }
-      } else if (this.CommonUtil.isNotUndefined(row.dataLength)) {
-        row.dataLength = null;
-        row.colPrecision = null;
-        row.dataLengthText = "";
+      if (this.CommonUtil.isNotUndefined(currRule.enableDataLength) || currRule.enableDataLength === true) {
+        this.$set(row, "dataLengthText", "");
       }
     },
-
     isValidColumn(row) {
-
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          this._verifName().then(res => {
-            this._submit('createDatasources')
-          })
-        }
-      })
-
-
-
+      debugger
       var currDataType = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
       var arr = this.CommonUtil.isNotBlank(row.dataLengthText) ? row.dataLengthText.split(",") : null;
       if (this.CommonUtil.isNotEmpty(arr)) {
@@ -870,7 +913,7 @@ export default {
     nextImport() {
       judgeName(this.uploadtemp.tbName).then((resf) => {
         if (resf.code == 0) {
-          this.uploadtemp.folderUuid = this.clickData.id;
+          this.uploadtemp.folderUuid = this.currTreeNode.id;
           this.$refs["dataForm"].validate((valid) => {
             if (valid) {
               getSqlType().then((resp) => {
@@ -1007,7 +1050,6 @@ export default {
     // 重命名资源名称
     renameResourceSave() {
       var tempData = Object.assign({}, this.selections[0]);
-      console.log(tempData);
       tempData.label = this.resourceForm.resourceName;
       renameResource(tempData).then((res) => {
         if (res.data) {
@@ -1064,9 +1106,9 @@ export default {
     },
     // 得到分页列表
     getListSelect(query) {
-      console.log(query)
       if (query) {
         var list = this.allList.filter((obj) => {
+          if (query.label === null) query.label=""
           return obj.label.indexOf(query.label) !== -1;
         });
         this.total = getArrLength(list);
@@ -1078,11 +1120,9 @@ export default {
     },
     // 初始化列表页面
     getList(data, node, tree) {
-      this.clickData = data;
+      this.currTreeNode = data;
       this.clickId = data.id;
-      console.log(data);
       if(node=='pro'){
-        console.log('复制刷新')
         node = this.clickNode
       }else{
         this.clickNode = node;
@@ -1112,10 +1152,9 @@ export default {
         this.total = getArrLength(data.children);
         this.getListSelect();
       }
-      console.log(this.temp)
     },
     createFolder() {
-      if (this.clickData.extMap.folderType === "virtual") {
+      if (this.currTreeNode.extMap.folderType === "virtual") {
         this.$message({
           type: "info",
           message: "创建失败!该文件为系统文件夹不允许创建",
@@ -1129,10 +1168,10 @@ export default {
     },
     // 保存新建文件夹
     createFolderSave() {
-      if ( typeof this.clickData.extMap !== 'undefined' && typeof this.clickData.extMap.sceneInstUuid !== 'undefined') {
-        this.resourceForm.sceneInstUuid = this.clickData.extMap.sceneInstUuid;
+      if ( typeof this.currTreeNode.extMap !== 'undefined' && typeof this.currTreeNode.extMap.sceneInstUuid !== 'undefined') {
+        this.resourceForm.sceneInstUuid = this.currTreeNode.extMap.sceneInstUuid;
       }
-      this.resourceForm.parentFolderUuid = this.clickData.id;
+      this.resourceForm.parentFolderUuid = this.currTreeNode.id;
       this.resourceForm.fullPath = this.clickFullPath.reverse().join("/");
       this.resourceForm.folderName = this.resourceForm.resourceName;
       this.resourceForm.createUserUuid = this.$store.state.user.code;
@@ -1215,7 +1254,6 @@ export default {
             verResult = false;
             break;
           }
-          console.log(persons);
           const obj = {
             tableMetaUuid: selectObj[i].id,
             seneInstUuid: persons[j].personcode,
@@ -1271,13 +1309,13 @@ export default {
         if (
           this.selections[0].extMap.accessType.indexOf("FETCH_TABLE_DATA") > -1
         ) {
-          this.infoFlag = false;
+          this.disPreviewData = false;
         } else {
-          this.infoFlag = true;
+          this.disPreviewData = true;
         }
       } else {
         this.saveFlag = true;
-        this.infoFlag = true;
+        this.disPreviewData = true;
       }
     },
     appendnode(childData, parentNode) {

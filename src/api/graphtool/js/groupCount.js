@@ -1,5 +1,5 @@
 // 可用于汇总的字段类型
-const typeArr = ['INTEGER', 'DECIMAL', 'NUMBER', 'FLOAT', 'REAL', 'DATE', 'TIMESTAMP']
+const typeArr = ['INTEGER', 'DECIMAL', 'NUMBER', 'FLOAT', 'REAL', 'DATE', 'TIMESTAMP', 'TIMESTMP']
 let groupCountVue = null// 分组汇总vue对象
 let nodeData = null
 /**
@@ -65,7 +65,7 @@ export function init() {
                         { 'name': '平均值', 'value': 'ave' }
                     ]
                     for (let c = 0; c < initCountTypeData.length; c++) {
-                        if ($.inArray(countData[m].columnType, typeArr) < 0) { // 设置不可汇总字段的数据数组（不能写到这个for循环外面）
+                        if ($.inArray(countData[m].columnType.trim(), typeArr) < 0) { // 设置不可汇总字段的数据数组（不能写到这个for循环外面）
                             switch (initCountTypeData[c].value) {
                                 case 'sum':
                                 case 'max':

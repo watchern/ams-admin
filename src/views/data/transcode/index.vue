@@ -102,10 +102,10 @@
         :multiple="false"
         :http-request="beforeUpload"
         accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-      >
-        <el-link size="mini" type="primary">导入</el-link>
-        <span style="font-size:2px;color:red">(请选择xls或者xlsx格式,导入第一列为真实值,第二列为转码值)</span>
-      </el-upload>
+      />
+<!--        <el-link size="mini" type="primary">导入</el-link>-->
+<!--        <span style="font-size:2px;color:red">(请选择xls或者xlsx格式,导入第一列为真实值,第二列为转码值)</span>-->
+
       <el-table v-if="temp.ruleType === 2" :data="transColRelsData" height="calc(100% - 260px)" class="detail-form">
         <el-table-column prop="codeValue" label="真实值" show-overflow-tooltip>
           <template slot-scope="scope">
