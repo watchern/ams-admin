@@ -15,6 +15,7 @@ export const DataTypeRules = {
     DOUBLE: {value: "DOUBLE", enableDataLength: false},
     FLOAT: {value: "FLOAT", enableDataLength: false},
     TIMESTAMP: {value: "TIMESTAMP", enableDataLength: false},
+    TIMESTMP: {value: "TIMESTMP", enableDataLength: false},
     DATE: {value: "DATE", enableDataLength: false},
     TIME: {value: "TIME", enableDataLength: false},
     CLOB: {value: "CLOB", enableDataLength: false},

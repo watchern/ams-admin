@@ -759,29 +759,16 @@ export default {
   },
   methods: {
     changeDataType(row){
-      debugger
-
       const currRule = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
       if (!this.disableEditColumn) {
         this.$set(row, "enableDataLength", currRule && this.CommonUtil.isNotUndefined(currRule.enableDataLength) ? currRule.enableDataLength : true);
       } else {
         this.$set(row, "enableDataLength", false);
       }
-
-      if (row.enableDataLength && this.CommonUtil.isUndefined(row.dataLengthText)) {
-        if (this.CommonUtil.isNotUndefined(currRule) && this.CommonUtil.isNotBlank(row.dataLength)) {
-          row.dataLengthText = row.dataLength ? "" + row.dataLength : "255"
-          if (this.CommonUtil.isNotUndefined(currRule.hasPrecision) && currRule.hasPrecision) {
-            row.dataLengthText += (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '0')
-          }
-        }
-      } else if (this.CommonUtil.isNotUndefined(row.dataLength)) {
-        row.dataLength = null;
-        row.colPrecision = null;
-        row.dataLengthText = "";
+      if (this.CommonUtil.isNotUndefined(currRule.enableDataLength) || currRule.enableDataLength === true) {
+        this.$set(row, "dataLengthText", "");
       }
     },
-
     isValidColumn(row) {
       debugger
       var currDataType = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
