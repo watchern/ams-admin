@@ -765,31 +765,28 @@ export default {
       } else {
         this.$set(row, "enableDataLength", false);
       }
-      if (this.CommonUtil.isNotUndefined(currRule.enableDataLength) || currRule.enableDataLength === true) {
+      if (this.CommonUtil.isNotUndefined(currRule.enableDataLength)) {
         this.$set(row, "dataLengthText", "");
       }
+
     },
     isValidColumn(row) {
       debugger
       var currDataType = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
-      var arr = this.CommonUtil.isNotBlank(row.dataLengthText) ? row.dataLengthText.split(",") : null;
-      if (this.CommonUtil.isNotEmpty(arr)) {
-        var dataLengthN = arr.length > 0 ? arr[0].trim() : "";
-        var colPrecisionN = arr.length > 1 ? arr[1].trim() : "";
-        if (dataLengthN !== row.dataLength) {
-          row.dataLength = arr.length > 0 ? arr[0].trim() : null;
-        }
-        if (colPrecisionN !== row.colPrecision) {
-          row.colPrecision = arr.length > 1 ? arr[1].trim() : null;
-        }
-      } else {
-        row.dataLength = null;
-        row.colPrecision = null;
-        this.$set(row, "dataLengthText", "");
-      }
+      // var arr = this.CommonUtil.isNotBlank(row.dataLengthText) ? row.dataLengthText.split(",") : null;
+      // if (this.CommonUtil.isNotEmpty(arr)) {
+      //   var dataLengthN = arr.length > 0 ? arr[0].trim() : "";
+      //   var colPrecisionN = arr.length > 1 ? arr[1].trim() : "";
+      //   if (dataLengthN !== row.dataLength) {
+      //     row.dataLength = arr.length > 0 ? new Number(arr[0].trim()) : null;
+      //   }
+      //   if (colPrecisionN !== row.colPrecision) {
+      //     row.colPrecision = arr.length > 1 ? new Number(arr[1].trim()) : null;
+      //   }
+      // }
 
       if (this.CommonUtil.isNotUndefined(currDataType) && this.CommonUtil.isNotUndefined(currDataType.lengthRule)) {
-        if (!new RegExp(currDataType.lengthRule).test(row.dataLength)) {
+        if (!new RegExp(currDataType.lengthRule).test(row.dataLengthText)) {
           this.$message.error(row.dataType.toUpperCase() + currDataType["ruleMsg"]);
           return false;
         }

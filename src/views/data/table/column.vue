@@ -80,9 +80,10 @@
           </el-select>
         </template>
       </el-table-column>
-      <!--        prop="dataLengthText"-->
+      <!--        -->
       <el-table-column
         label="数据长度（精度）"
+        prop="dataLengthText"
         show-overflow-tooltip>
         <template slot-scope="scope" show-overflow-tooltip>
         <!--   v-model 需要根据是否是decimal展示长度+精度 用到了双三目，有点难看
@@ -325,12 +326,10 @@ export default {
       oldTableObj.tbName = this.oldName;
       oldTableObj.tbComment = this.tempTable.tbComment;
       var obj = {};
-      console.log(newTableObj.colMetas);
       for (let i = 0; i < newTableObj.colMetas.length; i++) {
-        if (newTableObj.colMetas[i].colName != "" &&
-          newTableObj.colMetas[i].dataType != "" &&
-          newTableObj.colMetas[i].dataLength != "") {
-        } else {
+        newTableObj.colMetas[i].dataLength = null;
+        newTableObj.colMetas[i].colPrecision = null;
+        if (newTableObj.colMetas[i].colName === "" || newTableObj.colMetas[i].dataType === "") {
           this.$message.error("请完善数据信息!");
           return;
         }
@@ -338,7 +337,8 @@ export default {
       obj.newTableObj = newTableObj;
       obj.oldTableObj = oldTableObj;
 
-      updateTable(obj)
+      // updateTable(obj)
+      updateTable(newTableObj)
         .then((res) => {
           if (res.data.status === "500") {
             this.$message({
