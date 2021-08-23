@@ -8,7 +8,7 @@ export const DataTypeRules = {
     NUMRIC: {value: "NUMRIC", hasPrecision: true, lengthRule: "^[0-9]+[,][0-9]$", checkMsg: "类型长度范围:数字,数字(英文逗号)"},
     DECIMAL: {value: "DECIMAL", hasPrecision: true, lengthRule: "^[0-9]+[,][0-9]$", checkMsg: "类型长度范围:数字,数字(英文逗号)"},
     INTEGER: {value: "INTEGER", lengthRule: "^[0-9]{1,11}$", checkMsg: "类型长度范围:最长11位长度数字"},
-    INT: {value: "INT", enableDataLength: false},
+    INT: {value: "INT",lengthRule: "^[0-9]{1,11}$", checkMsg: "类型长度范围:最长11位长度数字"},
     TINYINT: {value: "TINYINT", lengthRule: "^[0-9]{1,3}$", checkMsg: "类型长度范围:最长3位长度数字"},
     SMALLINT: {value: "SMALLINT", lengthRule: "^[0-9]{1,5}$", checkMsg: "类型长度范围:最长5位长度数字"},
     BIGINT: {value: "SMALLINT", lengthRule: "^[0-9]{1,20}$", checkMsg: "类型长度范围:最长5位长度数字"},
