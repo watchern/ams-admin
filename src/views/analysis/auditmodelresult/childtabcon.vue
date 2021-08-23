@@ -298,7 +298,7 @@
               :get-row-style="this.renderTableView"
               row-selection="multiple"
               @cellClicked="onCellClicked"
-              @gridReady="onGridReady"
+              @grid-ready="onGridReady"
               @rowSelected="rowChange"
               :default-col-def="defaultColDef"
               :sideBar="true"
@@ -494,12 +494,12 @@
 </template>
 <script>
 import { AgCell } from "../../../components/public/new-ag-grid/ag-cell";
-// 引入样式文件
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-balham.css";
-import { AllModules } from "@ag-grid-enterprise/all-modules";
-// 引入ag-grid-vue
-import { AgGridVue } from "@ag-grid-community/vue";
+// 引入aggrid及样式文件
+import { AgGridVue } from '@ag-grid-community/vue';
+import { AllModules } from '@ag-grid-enterprise/all-modules';
+import '@ag-grid-community/all-modules/dist/styles/ag-grid.css';
+import '@ag-grid-community/all-modules/dist/styles/ag-theme-balham.css';
+
 import Pagination from "@/components/Pagination/index";
 import JsonExcel from "vue-json-excel";
 import childtabscopy from "@/views/analysis/auditmodelresult/childtabscopy";
@@ -571,7 +571,6 @@ export default {
 
   computed: {
     computedRowData() {
-      console.log(this.rowData);
       return this.rotateConfig != null ? this.rotateRowData : this.rowData;
     },
     computedColumnDefs() {
@@ -858,6 +857,8 @@ export default {
   ctrlV: 'ctrl-V'
 },
       frc: {'ag-cell': AgCell},
+      gridApi: null,
+      columnApi: null,
       componentParent: null,
       rotateConfig: null,
       rotateConfigs: [
@@ -1199,8 +1200,18 @@ export default {
     },
     // ag-grid创建完成后执行的事件
     onGridReady(params) {
+      console.log('zzz')
       // 获取gridApi
       this.gridApi = params.api;
+      this.gridColumnApi = params.columnApi;
+    },
+    autoSizeAll(skipHeader) {
+      var allColumnIds = [];
+      this.gridColumnApi.getAllColumns().forEach(function (column) {
+        allColumnIds.push(column.colId);
+      });
+      console.log(allColumnIds)
+      this.gridColumnApi.autoSizeColumns(allColumnIds, skipHeader);
     },
     initData(sql, nextValue, modelName) {
       this.result = {};
@@ -1542,6 +1553,7 @@ export default {
           _this.columnDefs = col;
           _this.rowData = da;
           if (typeof _this.gridApi !== "undefined" && _this.gridApi !== null) {
+            _this.autoSizeAll(false)
             _this.gridApi.closeToolPanel();
           }
         }, 500);
@@ -1702,7 +1714,6 @@ export default {
                             rowColom = {
                               headerName: modelOutputColumn[n].columnAlias,
                               field: this.nextValue.columnNames[j],
-                              width: "180",
                               params: {thresholdValueRel, modelResultDetailCol},
                               cellRenderer: 'ag-cell',
                             };
@@ -1710,7 +1721,6 @@ export default {
                             rowColom = {
                               headerName: modelOutputColumn[n].columnAlias,
                               field: this.nextValue.columnNames[j],
-                              width: "180",
                             };
                           }
                         }
@@ -1752,12 +1762,14 @@ export default {
                         }
                       }
                       this.rowData = rowData;
+                      this.autoSizeAll(false)
                     });
                   } else {
                     for (var k = 0; k < this.nextValue.result.length; k++) {
                       rowData.push(this.nextValue.result[k]);
                     }
                     this.rowData = rowData;
+                    this.autoSizeAll(false)
                   }
                   for(let i = 0;i<col.length;i++){
                     let colType0 = this.result.columnType[i];
@@ -1865,7 +1877,7 @@ export default {
           this.rotateRowData.push(rtObj);
         });
         Object.keys(this.rotateRowData[0]).forEach((k) => {
-          this.rotateColumnDefs.push({ field: k, headerName: k, width: 280 });
+          this.rotateColumnDefs.push({ field: k, headerName: k });
         });
       }
     },
@@ -1927,6 +1939,7 @@ export default {
             }
             this.result.data = chartData;
             this.rowData = this.modelResultData;
+            this.autoSizeAll(false)
             this.modelResultColumnNames = this.nextValue.columnNames;
             if (this.prePersonalVal["agridColumnDatas"] === undefined) {
               for (var j = 0; j < this.nextValue.columnNames.length; j++) {
