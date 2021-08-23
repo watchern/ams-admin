@@ -94,6 +94,11 @@
         </div>
       </div>
     </el-dialog>
+    <div class="bottom-btn">
+      <el-button type="primary" @click="returnFlow">回退</el-button>
+      <el-button type="primary" @click="submitFlow">通过</el-button>
+      <el-button @click="goBack">返回</el-button>
+    </div>
   </div>
 </template>
 <script>
@@ -105,33 +110,52 @@ export default {
     businessDetail,
     ModelFolderTree,
   },
-  //预设数据
-  //  dataObj = {
-  //         applyTitle: "测试标题",
-  //         opinion: "测试意见",
-  //         treeUrlname: "测试路径",
-  //         treeUrlid: "xxxid",
-  //         busdatas: [{ modelName: "测试数据",runTime:'xxxxx',auditItemName:'xxxxxx',riskLevelUuid:'1',modelType:'1',createTime:'2021-8-23' }],
-  //       };
-  props: ["dataObj"],
   data() {
     return {
       // 发布模型
       publicModelValue: "publicModel",
       //文件结构树相关
       showWorkTree: false,
+      //数据数组
+      dataObj: {},
       flowItem: {},
+      id: "",
     };
   },
   destroyed() {
     clearInterval(this.timer);
   },
-  mounted: function () {
+  created: function () {
+    //从路由获取唯一标识
+    this.dataObj.id = this.$route.params.id;
+    //初始化数据
     this.init();
   },
   methods: {
     //初始化数据
-    init() {},
+    init() {
+    //   this.axios.post("xxxx", this.dataObj.id).then((response) => {
+    //     console.log(response);
+    //     this.dataObj = response.data;
+    //   });
+      this.dataObj = {
+        id:'xxx',
+        applyTitle: "测试标题",
+        opinion: "测试意见",
+        treeUrlname: "测试路径",
+        treeUrlid: "xxxid",
+        busdatas: [
+          {
+            modelName: "测试数据",
+            runTime: "xxxxx",
+            auditItemName: "xxxxxx",
+            riskLevelUuid: "1",
+            modelType: "sql",
+            createTime: "2021-8-23",
+          },
+        ],
+      };
+    },
     /**
      * 选择模型树
      */
@@ -142,7 +166,29 @@ export default {
       this.dataObj.treeUrlname = selectNode.label;
       this.dataObj.treeUrlid = selectNode.id;
     },
-    submitFlow() {},
+
+    submitFlow() {
+      this.axios.post("xxxx", this.dataObj).then((response) => {
+        console.log(response);
+        if(response.code == 200){
+            alert("审核成功")
+            this.goBack()
+        }
+      });
+    },
+    returnFlow() {
+      this.axios.post("xxxx", this.dataObj).then((response) => {
+        console.log(response);
+        if(response.code == 200){
+            alert("回退成功")
+            this.goBack()
+        }
+      });
+    },
+    //返回
+    goBack() {
+      this.$router.go(-1);
+    },
   },
 };
 </script>
@@ -175,5 +221,12 @@ export default {
 }
 .title_template {
   padding: 20px 0 10px 0 !important;
+}
+#flowItem3 {
+  padding: 20px;
+}
+.bottom-btn {
+  float: right;
+  padding-right: 100px;
 }
 </style>

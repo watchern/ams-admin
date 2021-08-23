@@ -13,12 +13,6 @@ import tcbauditRouter from './modules/tcbaudit'
 
 const AmsRoutes = [
   {
-    path: '/check',
-    name: '审计模型',
-    component: () => import('@/views/flowwork/reivewCheck')
-    // component: () => import('@/views/analysis/auditmodel/boemodel/modellisttable')
-  },
-  {
     path: '/test',
     name: '审计模型',
     component: () => import('@/views/test')
