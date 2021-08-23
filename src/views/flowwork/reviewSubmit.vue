@@ -342,8 +342,8 @@ import ModelFolderTree from "@/views/analysis/auditmodel/modelfoldertree";
                   if (response.data.code == "0") {
                     this.common.alertMsg(1, "保存成功");
                     //启动流程提交，关闭模态框。
-                    // this.$emit("closeModal", false);
-                    this.$emit("delectData", false);
+                    this.$emit("closeModal", false);
+                    // this.$emit("delectData", false);
                   } else {
                     //执行失败
                     this.common.alertMsg(4, response.data.msg);
