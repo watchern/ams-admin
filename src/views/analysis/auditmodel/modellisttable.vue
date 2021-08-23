@@ -24,11 +24,10 @@
               @click="previewModel"
             />
             <!--            <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />-->
-            <el-dropdown style="margin-right: 10px">
+            <el-dropdown style="margin-right: 10px" v-if="jinyong == '0' || selectTreeNode == null">
               <el-button
                 type="primary"
                 :disabled="btnState.addBtnState || (ifmanger=='0' && selectTreeNode == null)"
-                v-if="jinyong == '0' || selectTreeNode == null"
                 @mouseover="mouseOver"
                 @mouseleave="mouseLeave"
                 class="oper-btn add"
