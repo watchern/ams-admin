@@ -251,22 +251,22 @@ export default {
      * 工作流  点击提交审核按钮
      */
     saveOpinion(applyTitle) {
-      // if (this.$refs.pbFile.fileListData.length != 0) {
-      //   this.fileListDatas = this.$refs.pbFile.fileListData;
-      // }
       this.submitData.applyTitle = applyTitle;
-      this.submitData.fileInfosList = this.fileListDatas;
+      this.submitData.modleDataList=this.submitData.busdatas;
+      // console.log("============="+JSON.stringify(this.submitData));
       this.axios
-        .post("/ams-clue/tcBusRelation/toSubmit", this.submitData)
+        .post("/analysis/modelPublishRelation/toSubmit", this.submitData)
         .then((response) => {
           if (response.data.code == "0") {
-            this.flowItem.appDataUuid = response.data.data.busRelationUuid;
+            this.flowItem.appDataUuid = response.data.data.modelRelationUuid;
             //修改业务执行状态为0，调用监听，执行更新流程状态操作。
             // this.$store.dispatch("applyInfo/setMstate", "0");
-            // this.$store.dispatch("applyInfo/setAppDataUuid", response.data.data.busRelationUuid);
+            alert(JSON.stringify(this.$store.state.applyInfo.applyInfo))
+            this.$store.dispatch("applyInfo/setAppDataUuid", response.data.data.modelRelationUuid);
+            alert(JSON.stringify(this.$store.state.applyInfo.applyInfo))
             // alert(this.$store.state.applyInfo.applyInfo.mstate)
             // alert(response.data.data.busRelationUuid)
-            this.$emit("submitFlow", response.data.data.busRelationUuid);
+            this.$emit("submitFlow", response.data.data.modelRelationUuid);
             // this.flowParam = 1;
           } else {
             this.dialogVisibleSubmit = false;

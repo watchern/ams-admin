@@ -226,7 +226,7 @@
       width="50%"
     >
     <div>
-        <review-detail
+        <review-submit
           ref="flowItem2"
           :flowSet="flowSet"
           :flowItem="flowItem"
@@ -235,26 +235,11 @@
           :submitData="submitData"
           @closeModal="closeFlowItem"
           @delectData="delectData"
-        ></review-detail>
+        ></review-submit>
       </div>
-      <el-form>
-        <el-form-item label="发布路径">
-          <el-input v-model="treeUrlname" disabled></el-input>
-        </el-form-item>
-      </el-form>
-      <el-button type="primary" @click="showWorkTree = true">选择发布位置</el-button>
       <div slot="footer">
         <el-button type="primary" @click="toSubmitTcb">确定</el-button>
         <el-button @click="treeSelectShow = false">取消</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog :visible.sync="showWorkTree" title="选择要发布到的位置">
-      <div>
-        <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
-      <div slot="footer">
-        <el-button type="primary" @click="updatePublicModel">确定</el-button>
-        <el-button @click="showWorkTree = false">取消</el-button>
-      </div>
       </div>
     </el-dialog>
     <el-dialog
@@ -358,7 +343,7 @@ import { replaceNodeParam } from "@/api/analysis/auditparam";
 import { getInfo } from '@/api/user'
 import modelshoppingcart from "@/views/analysis/auditmodel/modelshoppingcart";
 import personTree from "@/components/publicpersontree/index";
-import ReviewDetail from '../../flowwork/reviewDetail.vue';
+import ReviewSubmit from '@/views/flowwork/reviewSubmit.vue';
 export default {
   name: "ModelListTable",
   components: {
@@ -372,7 +357,7 @@ export default {
     paramDraw,
     modelshoppingcart,
     personTree,
-    ReviewDetail,
+    ReviewSubmit,
   },
   props: ["power", "dataUserId", "sceneCode", "isAuditWarring"],
   data() {
@@ -386,7 +371,7 @@ export default {
       },
       flowItem: {
         //动态赋值
-        wftype: "cn_com_boe_as_preInvest",
+        wftype: "cn_com_icss_model_publish",
         applyUuid: "",
         detailUuids: "",
         applyTitle: "",
@@ -396,8 +381,6 @@ export default {
         isSecond: false,
         temp1: "",
       },
-      treeUrlname:"",
-      treeUrlid:"",
       flowParam: 0,
       // 定义数据列
       columnDefs: [
@@ -417,7 +400,6 @@ export default {
           status: '1',  //预警数据状态
           busdatas: []
       },
-      showWorkTree: false,
       isShow: false,
       tableKey: "errorUuid",
       // list列表
@@ -579,75 +561,35 @@ export default {
   },
   methods: {
     toSubmitTcb() {
-      let selection = this.$refs.modelListTable.selection
-      if ( selection.length == 0) {
-        alert("请至少选中一条数据");
-        // this.common.alertMsg(2, "请选中一条数据");
-        return false;
-      }
-      if(this.treeUrlid == ""){
-        alert("请选择发布路径");
-        return false;
-      }
-      //流程接口调用
-      this.submitData.busdatas =  selection;
-      for (var i = 0; i < this.submitData.busdatas.length; i++) {
-        if (this.submitData.busdatas[i].状态 === 1) {
-          this.$message.info({
-            duration: 2000,
-            message: "预警发起的数据不能重复提交！",
-          });
-          return false;
-        } else if (this.submitData.busdatas[i].状态 === 3) {
-          this.$message.info({
-            duration: 2000,
-            message: "已销号的数据不能重复提交！",
-          });
-          return false;
-        }
-      }
-      // this.nowtable.resultTableName
-      this.submitData.busTableName = "发布审核"; // 表名称
-      // this.submitData.status = this.initStatus;  //数据状态（0）
-      this.submitData.busDatabaseType = "mysql"; //数据库类型
-      this.flowItem.versionUuid = this.common.randomString4Len(8);
-      this.flowItem.applyTitle =
-        this.modelTitle + this.common.getNowFormatDay();
-      this.applyInfo.versionUuid = this.flowItem.versionUuid;
-      this.applyInfo.status = "";
-      this.applyInfo.mstate = "";
-      this.applyInfo.fstate = "";
-      this.applyInfo.isUpdate = false; //初始化
-      this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
-
-      console.info(JSON.stringify(this.submitData));
-      console.info(JSON.stringify(this.columnDefs));
-      this.dialogVisibleSubmit = true;
+      setTimeout(() => {
+        this.$refs["flowItem2"].saveOpinion();
+      }, 20);
     },
     //工作流窗口关闭
     closeFlowItem(val) {
-      this.dialogVisibleSubmit = val;
-      this.flowParam = 0;
-      this.initData();
+      this.treeSelectShow = val;
+      // this.flowParam = 0;
+      // this.initData();
     },
     //流程发布失败
     delectData(val) {
-      this.dialogVisibleSubmit = val;
+      this.treeSelectShow = val;
       var data = {
-        busRelationUuid: this.$store.state.applyInfo.applyInfo.appDataUuid,
+        modelRelationUuid: this.$store.state.applyInfo.applyInfo.appDataUuid,
       };
+      alert(this.$store.state.applyInfo.applyInfo.appDataUuid)
       this.$axios
-        .post("/ams-clue/busRelation/delete/rollBackData", data)
+        .post("/analysis/modelPublishRelation/delete/rollBackData", data)
         .then((response) => {
           if (response.data.code == "0") {
-            this.flowItem.appDataUuid = response.data.data.busRelationUuid;
+            this.flowItem.appDataUuid = response.data.data.modelRelationUuid;
           }
         })
         .catch((error) => {
-          this.common.alertMsg(1, "操作失败！");
+          this.common.alertMsg(1, "业务数据回滚失败！");
           console.log(error);
         });
-      this.initData();
+      // this.initData();
     },
     setImportFolder() {
       let selectNode = this.$refs.modelFolderTree.getSelectNode();
@@ -1243,28 +1185,6 @@ export default {
           this.updateModelBasicInfo(selectObj, "撤销发布");
         })
         .catch(() => {});
-    },
-    /**
-     * 修改要发布的模型
-     */
-    updatePublicModel() {
-      const selectNode = this.$refs.modelFolderTree.getSelectNode();
-        var selectObj = this.$refs.modelListTable.selection;
-        for (let i = 0; i < selectObj.length; i++) {
-          selectObj[i].modelFolderUuid = selectNode.id;
-        }
-        this.showWorkTree = false
-        console.log(selectNode)
-        this.treeUrlname = selectNode.label
-        this.treeUrlid = selectNode.id
-      // this.$confirm("是否确定将选中的模型发布到公共模型下?", "提示", {
-      //   confirmButtonText: "确定",
-      //   cancelButtonText: "取消",
-      //   type: "warning",
-      // }).then(() => {
-        
-      //   this.updateModelBasicInfo(selectObj, "发布");
-      // });
     },
     /**
      * 修改模型基本信息

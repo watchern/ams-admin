@@ -9,75 +9,59 @@
     </div>
     <el-row>
       <el-col align="right">
-        <!--v-show 非管理员不能进行的操作-->
         <el-button
           type="primary"
-          :disabled="selections.length === 0"
+          :disabled="!(this.ifManager && selections.length !== 0 )"
           class="oper-btn delete"
           @click="delData"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn copy"
-          :disabled="selections.length !== 1"
+          :disabled="!(this.ifManager && !(selections.length !== 1))"
           @click="copyResource"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn move"
-          :disabled="selections.length === 0"
+          :disabled="!(this.ifManager && selections.length !== 0)"
           @click="movePath"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn rename"
-          :disabled="selections.length !== 1"
+          :disabled="!(this.ifManager && !(selections.length !== 1))"
           @click="renameResource"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn add-table btn-width-md"
-          :disabled="
-            clickData.type == 'table' ||
-            (typeof clickData.extMap !== 'undefined' && typeof clickData.extMap.sceneInstUuid !== 'undefined')
-          "
+          :disabled="disControlTable"
           @click="addTable"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn import-table btn-width-md"
-          :disabled="
-            clickData.type == 'table' ||
-             (typeof clickData.extMap !== 'undefined' && typeof clickData.extMap.sceneInstUuid !== 'undefined')
-          "
+          :disabled="disControlTable"
           @click="uploadTable"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn add-directory btn-width-max"
-          :disabled="clickData.type == 'table'"
+          :disabled="!(this.ifManager  && clickData.type != 'table')"
           @click="createFolder"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn edit"
-          :disabled="selections.length !== 1"
+          :disabled="!(this.ifManager  && !(selections.length !== 1))"
           @click="updateTable"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn link-table  btn-width-md"
-          :disabled="selections.length !== 1"
+          :disabled="!(this.ifManager  && !(selections.length !== 1))"
           @click="relationTable"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
@@ -503,7 +487,6 @@ import childTabs from "@/views/analysis/auditmodelresult/childtabs";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
 import QueryField from "@/components/public/query-field/index";
 import { getArrLength } from "@/utils";
-import { getSystemRole } from "@/api/user"
 import {
   deleteDirectory,
   copyTable,
@@ -519,6 +502,7 @@ import { saveFolder } from "@/api/data/folder";
 import dataTree from "@/views/data/role-res/data-tree";
 import { mapState } from "vuex";
 import { getInfo } from '@TCB/api/user';
+import { getSystemRole} from '@/api/user';
 import { getById } from '@TCB/api/tcbaudit/personalManage';
 
 export default {
@@ -546,7 +530,7 @@ export default {
   // eslint-disable-next-line vue/order-in-components
   data() {
     return {
-      ifShow:false, //控制部分按钮是否显示
+      ifManager:false, //是否为管理员
       saveFlag: true,
       infoFlag: true,
       currentSceneUuid: "auditor",
@@ -651,8 +635,8 @@ export default {
       downloadLoading: false,
       dialoading: false,
       clickId:'',
-      // dataTypeRules: {
-      // },
+      // 操作Table按钮禁用
+      disControlTable : true,
       disableEditColumn: false
     };
   },
@@ -666,8 +650,8 @@ export default {
         const newArray = dataArray[0].roleId;
         const sysRole = "系统管理员";
         getSystemRole(sysRole).then((re) => {
-          if(newArray[0]==re.data.roleid){
-            this.ifShow = true;
+          if(newArray[0] == re.data.roleid ){
+            this.ifManager = true;
           }
         })
       })
@@ -704,6 +688,34 @@ export default {
     //   },
     //   deep: true
     // }
+    // uploadtempInfo: {
+    //   handler(newTemp, oldemp) {
+    //     // this.$emit('update:tab-show', newName)
+    //     // console.log(*************newTemp");
+    //     if (typeof newTemp.colMetas != "undefined"){
+    //       newTemp.colMetas.forEach((item) => {
+    //         // if (!item.dataLengthText) {
+    //         //   item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '');
+    //         // }
+    //         // if (typeof item.dataLengthText == "undefined") {
+    //         //   const dataTypeRule = this.dataTypeRules[item.dataType.toUpperCase().trim()]
+    //         //   if (typeof dataTypeRule != "undefined" && typeof dataTypeRule.hasPrecision != "undefined") {
+    //         //     if (dataTypeRule.hasPrecision) {
+    //         //       item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '')
+    //         //     } else {
+    //         //       item.dataLengthText = item.dataLength
+    //         //     }
+    //         //   }
+    //         // }
+    //       })
+    //     }
+    //   },
+    //   deep: true
+    // },
+    clickData(clickData){
+      this.disControlTable = clickData.type == 'table' || (typeof clickData.extMap !== 'undefined' && typeof clickData.extMap.sceneInstUuid !== 'undefined')
+      this.disControlTable = this.ifManager ? this.disControlTable : !this.disControlTable
+    }
   },
   methods: {
     changeDataType(row){
