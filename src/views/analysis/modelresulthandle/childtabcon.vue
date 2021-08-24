@@ -563,6 +563,7 @@ export default {
       this.gridApi = params.api;
       this.columnApi = params.columnApi;
     },
+    //自动宽度
     autoSizeAll(skipHeader) {
       var allColumnIds = [];
       this.columnApi.getAllColumns().forEach(function (column) {
