@@ -127,11 +127,12 @@
           "
           row-selection="multiple"
           @cellClicked="onCellClicked"
-          @gridReady="onGridReady"
+          @grid-ready="onGridReady"
           @rowSelected="rowChange"
           :defaultColDef="defaultColDef"
           :sideBar="true"
           :modules="modules"
+          @firstDataRendered="autoSizeAll(false)"
         />
 
         <el-card v-if="!isSee" class="box-card" style="height: 100px">
@@ -306,6 +307,7 @@
               :locale-text="localeText"
               :frameworkComponents="frc"
               :context="componentParent"
+              @firstDataRendered="autoSizeAll(false)"
             />
             <!-- :sideBar="true"
             :modules="modules"-->
@@ -858,7 +860,7 @@ export default {
 },
       frc: {'ag-cell': AgCell},
       gridApi: null,
-      columnApi: null,
+      gridColumnApi: null,
       componentParent: null,
       rotateConfig: null,
       rotateConfigs: [
@@ -1200,17 +1202,16 @@ export default {
     },
     // ag-grid创建完成后执行的事件
     onGridReady(params) {
-      console.log('zzz')
       // 获取gridApi
       this.gridApi = params.api;
       this.gridColumnApi = params.columnApi;
     },
+    //自动宽度
     autoSizeAll(skipHeader) {
       var allColumnIds = [];
       this.gridColumnApi.getAllColumns().forEach(function (column) {
         allColumnIds.push(column.colId);
       });
-      console.log(allColumnIds)
       this.gridColumnApi.autoSizeColumns(allColumnIds, skipHeader);
     },
     initData(sql, nextValue, modelName) {
@@ -1553,7 +1554,6 @@ export default {
           _this.columnDefs = col;
           _this.rowData = da;
           if (typeof _this.gridApi !== "undefined" && _this.gridApi !== null) {
-            _this.autoSizeAll(false)
             _this.gridApi.closeToolPanel();
           }
         }, 500);
@@ -1762,14 +1762,12 @@ export default {
                         }
                       }
                       this.rowData = rowData;
-                      this.autoSizeAll(false)
                     });
                   } else {
                     for (var k = 0; k < this.nextValue.result.length; k++) {
                       rowData.push(this.nextValue.result[k]);
                     }
                     this.rowData = rowData;
-                    this.autoSizeAll(false)
                   }
                   for(let i = 0;i<col.length;i++){
                     let colType0 = this.result.columnType[i];
@@ -1939,7 +1937,6 @@ export default {
             }
             this.result.data = chartData;
             this.rowData = this.modelResultData;
-            this.autoSizeAll(false)
             this.modelResultColumnNames = this.nextValue.columnNames;
             if (this.prePersonalVal["agridColumnDatas"] === undefined) {
               for (var j = 0; j < this.nextValue.columnNames.length; j++) {
@@ -2582,7 +2579,7 @@ export default {
       } else {
         if (this.modelUuid != undefined) {
           getModelChartSetup(this.modelUuid).then((resp) => {
-            console.log("走这里了1");
+            console.log("数据情况1");
             if (this.myIndex == 0) {
               this.modelChartSetups = resp.data.modelChartSetups;
               for (var i = 0; i < this.modelChartSetups.length; i++) {
@@ -2618,7 +2615,7 @@ export default {
         } else if (this.modelId != undefined) {
           getModelChartSetup(this.modelId).then((resp) => {
             //做修改操作
-            console.log("走这里了2");
+            console.log("数据情况2");
             if (this.myIndex == 0) {
               this.modelChartSetups = resp.data.modelChartSetups;
               for (var i = 0; i < this.modelChartSetups.length; i++) {
