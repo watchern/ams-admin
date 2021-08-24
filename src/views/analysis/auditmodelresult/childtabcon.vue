@@ -1202,11 +1202,11 @@ export default {
     },
     // ag-grid创建完成后执行的事件
     onGridReady(params) {
-      console.log('zzz')
       // 获取gridApi
       this.gridApi = params.api;
       this.gridColumnApi = params.columnApi;
     },
+    //自动宽度
     autoSizeAll(skipHeader) {
       var allColumnIds = [];
       this.gridColumnApi.getAllColumns().forEach(function (column) {

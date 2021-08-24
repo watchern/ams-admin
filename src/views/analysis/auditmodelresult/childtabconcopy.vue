@@ -447,6 +447,7 @@ export default {
       // 这时就可以通过gridApi调用ag-grid的传统方法了
       // this.gridApi.sizeColumnsToFit();
     },
+    //自动宽度
     autoSizeAll(skipHeader) {
       var allColumnIds = [];
       this.columnApi.getAllColumns().forEach(function (column) {
