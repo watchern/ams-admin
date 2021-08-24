@@ -766,7 +766,7 @@ export default {
       } else {
         this.$set(row, "enableDataLength", false);
       }
-      if (!currRule.enableDataLength) {
+      if (this.CommonUtil.isNotUndefined(currRule.enableDataLength) && !currRule.enableDataLength) {
         this.$set(row, "dataLengthText", "");
       }
 
