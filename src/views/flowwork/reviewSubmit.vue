@@ -26,6 +26,7 @@
                 :flowItem="flowItem"
                 :columnDefs="columnDefs"
                 :submitData="submitData"
+                :ifdel="false"
                 @submitFlow="submitFlow"
         ></businessDetail>
     </template>
