@@ -78,14 +78,14 @@
                 this.nodeData = graph.nodeData[graph.curCell.id]
                 let parentIds = this.nodeData.parentIds//当前分层节点的上级节点ID（源表或结果表节点ID）
                 let parent_node = graph.nodeData[parentIds[0]]
-                let typeArr = ['INTEGER', 'DECIMAL', 'NUMBER', 'FLOAT', 'REAL', 'DATE', 'TIMESTAMP']
+                let typeArr = ['INTEGER', 'DECIMAL', 'NUMBER', 'FLOAT', 'REAL', 'DATE', 'TIMESTAMP', 'TIMESTMP']
                 this.curColumnsInfo = this.$parent.$parent.$parent.columnsInfoPre
                 if (this.nodeData.isSet) {
                     this.curColumnsInfo = this.nodeData.setting.columnsInfo
                 }
                 if (this.curColumnsInfo.length !== 0) { // 初始化数据源
                     for(let i=0; i<this.curColumnsInfo.length; i++){
-                        if ($.inArray(this.curColumnsInfo[i].columnType, typeArr) > -1) {
+                        if ($.inArray(this.curColumnsInfo[i].columnType.trim(), typeArr) > -1) {
                             this.hierarchyColumnArr.push({newColumnName:this.curColumnsInfo[i].newColumnName})
                             this.pre_str_column.push(this.curColumnsInfo[i].newColumnName)
                         }

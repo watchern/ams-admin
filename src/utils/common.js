@@ -15,11 +15,28 @@ export const DataTypeRules = {
     DOUBLE: {value: "DOUBLE", enableDataLength: false},
     FLOAT: {value: "FLOAT", enableDataLength: false},
     TIMESTAMP: {value: "TIMESTAMP", enableDataLength: false},
+    TIMESTMP: {value: "TIMESTMP", enableDataLength: false},
     DATE: {value: "DATE", enableDataLength: false},
     TIME: {value: "TIME", enableDataLength: false},
     CLOB: {value: "CLOB", enableDataLength: false},
     BLOB: {value: "BLOB", enableDataLength: false},
     TEXT: {value: "TEXT", enableDataLength: false}
+}
+
+//"SAVE_TO_FOLDER", "FETCH_TABLE_DATA", "BASIC_PRIV", "PRIVS_INHERITED"
+export const DataPrivAccessType = {
+    // fetch_data        预览
+    // basic_priv         基础权限
+    // privs_interited 向下继承
+    // save_to_folder 文件夹的保存权限，模型能不能保存到这个文件夹下，例如复制：
+    // 向下继承
+    PRIVS_INHERITED: {value:"PRIVS_INHERITED"},
+    // 预览数据权限
+    FETCH_TABLE_DATA:{},
+    // 文件夹的数据表保存权限，例如：模型结果保存可选的文件夹、复制表
+    SAVE_TO_FOLDER :{},
+    // 能看到的权限，基础权限
+    BASIC_PRIV :{}
 }
 
 export function isUndefined(val) {
@@ -57,6 +74,7 @@ export function isNotBlank(val) {
 
 export default {
     DataTypeRules,
+    DataPrivAccessType,
     isUndefined,
     isNotUndefined,
     isEmpty,

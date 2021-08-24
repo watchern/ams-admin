@@ -127,11 +127,12 @@
           "
           row-selection="multiple"
           @cellClicked="onCellClicked"
-          @gridReady="onGridReady"
+          @grid-ready="onGridReady"
           @rowSelected="rowChange"
           :defaultColDef="defaultColDef"
           :sideBar="true"
           :modules="modules"
+          @firstDataRendered="autoSizeAll(false)"
         />
 
         <el-card v-if="!isSee" class="box-card" style="height: 100px">
@@ -298,7 +299,7 @@
               :get-row-style="this.renderTableView"
               row-selection="multiple"
               @cellClicked="onCellClicked"
-              @gridReady="onGridReady"
+              @grid-ready="onGridReady"
               @rowSelected="rowChange"
               :default-col-def="defaultColDef"
               :sideBar="true"
@@ -306,6 +307,7 @@
               :locale-text="localeText"
               :frameworkComponents="frc"
               :context="componentParent"
+              @firstDataRendered="autoSizeAll(false)"
             />
             <!-- :sideBar="true"
             :modules="modules"-->
@@ -494,12 +496,12 @@
 </template>
 <script>
 import { AgCell } from "../../../components/public/new-ag-grid/ag-cell";
-// 引入样式文件
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-balham.css";
-import { AllModules } from "@ag-grid-enterprise/all-modules";
-// 引入ag-grid-vue
-import { AgGridVue } from "@ag-grid-community/vue";
+// 引入aggrid及样式文件
+import { AgGridVue } from '@ag-grid-community/vue';
+import { AllModules } from '@ag-grid-enterprise/all-modules';
+import '@ag-grid-community/all-modules/dist/styles/ag-grid.css';
+import '@ag-grid-community/all-modules/dist/styles/ag-theme-balham.css';
+
 import Pagination from "@/components/Pagination/index";
 import JsonExcel from "vue-json-excel";
 import childtabscopy from "@/views/analysis/auditmodelresult/childtabscopy";
@@ -571,7 +573,6 @@ export default {
 
   computed: {
     computedRowData() {
-      console.log(this.rowData);
       return this.rotateConfig != null ? this.rotateRowData : this.rowData;
     },
     computedColumnDefs() {
@@ -858,6 +859,8 @@ export default {
   ctrlV: 'ctrl-V'
 },
       frc: {'ag-cell': AgCell},
+      gridApi: null,
+      gridColumnApi: null,
       componentParent: null,
       rotateConfig: null,
       rotateConfigs: [
@@ -1201,6 +1204,15 @@ export default {
     onGridReady(params) {
       // 获取gridApi
       this.gridApi = params.api;
+      this.gridColumnApi = params.columnApi;
+    },
+    //自动宽度
+    autoSizeAll(skipHeader) {
+      var allColumnIds = [];
+      this.gridColumnApi.getAllColumns().forEach(function (column) {
+        allColumnIds.push(column.colId);
+      });
+      this.gridColumnApi.autoSizeColumns(allColumnIds, skipHeader);
     },
     initData(sql, nextValue, modelName) {
       this.result = {};
@@ -1702,7 +1714,6 @@ export default {
                             rowColom = {
                               headerName: modelOutputColumn[n].columnAlias,
                               field: this.nextValue.columnNames[j],
-                              width: "180",
                               params: {thresholdValueRel, modelResultDetailCol},
                               cellRenderer: 'ag-cell',
                             };
@@ -1710,7 +1721,6 @@ export default {
                             rowColom = {
                               headerName: modelOutputColumn[n].columnAlias,
                               field: this.nextValue.columnNames[j],
-                              width: "180",
                             };
                           }
                         }
@@ -1865,7 +1875,7 @@ export default {
           this.rotateRowData.push(rtObj);
         });
         Object.keys(this.rotateRowData[0]).forEach((k) => {
-          this.rotateColumnDefs.push({ field: k, headerName: k, width: 280 });
+          this.rotateColumnDefs.push({ field: k, headerName: k });
         });
       }
     },
@@ -2569,7 +2579,7 @@ export default {
       } else {
         if (this.modelUuid != undefined) {
           getModelChartSetup(this.modelUuid).then((resp) => {
-            console.log("走这里了1");
+            console.log("数据情况1");
             if (this.myIndex == 0) {
               this.modelChartSetups = resp.data.modelChartSetups;
               for (var i = 0; i < this.modelChartSetups.length; i++) {
@@ -2605,7 +2615,7 @@ export default {
         } else if (this.modelId != undefined) {
           getModelChartSetup(this.modelId).then((resp) => {
             //做修改操作
-            console.log("走这里了2");
+            console.log("数据情况2");
             if (this.myIndex == 0) {
               this.modelChartSetups = resp.data.modelChartSetups;
               for (var i = 0; i < this.modelChartSetups.length; i++) {

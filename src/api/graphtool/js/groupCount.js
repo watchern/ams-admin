@@ -1,5 +1,5 @@
 // 可用于汇总的字段类型
-const typeArr = ['INTEGER', 'DECIMAL', 'NUMBER', 'FLOAT', 'REAL', 'DATE', 'TIMESTAMP']
+const typeArr = ['INTEGER', 'DECIMAL', 'NUMBER', 'FLOAT', 'REAL', 'DATE', 'TIMESTAMP', 'TIMESTMP']
 let groupCountVue = null// 分组汇总vue对象
 let nodeData = null
 /**
@@ -62,15 +62,15 @@ export function init() {
                         { 'name': '求和', 'value': 'sum' },
                         { 'name': '最大值', 'value': 'max' },
                         { 'name': '最小值', 'value': 'min' },
-                        { 'name': '平均值', 'value': 'ave' }
+                        { 'name': '平均值', 'value': 'avg' }
                     ]
                     for (let c = 0; c < initCountTypeData.length; c++) {
-                        if ($.inArray(countData[m].columnType, typeArr) < 0) { // 设置不可汇总字段的数据数组（不能写到这个for循环外面）
+                        if ($.inArray(countData[m].columnType.trim(), typeArr) < 0) { // 设置不可汇总字段的数据数组（不能写到这个for循环外面）
                             switch (initCountTypeData[c].value) {
                                 case 'sum':
                                 case 'max':
                                 case 'min':
-                                case 'ave':
+                                case 'avg':
                                     initCountTypeData[c].disabled = true
                                     break
                             }
@@ -183,7 +183,7 @@ function initCountSelectData(trNum) {
         { 'name': '求和', 'value': 'sum' },
         { 'name': '最大值', 'value': 'max' },
         { 'name': '最小值', 'value': 'min' },
-        { 'name': '平均值', 'value': 'ave' }
+        { 'name': '平均值', 'value': 'avg' }
     ]
     // 不可汇总字段的数据数组
     let disableCountData = [
@@ -192,7 +192,7 @@ function initCountSelectData(trNum) {
         { 'name': '求和', 'value': 'sum', 'disabled': true },
         { 'name': '最大值', 'value': 'max', 'disabled': true },
         { 'name': '最小值', 'value': 'min', 'disabled': true },
-        { 'name': '平均值', 'value': 'ave', 'disabled': true }
+        { 'name': '平均值', 'value': 'avg', 'disabled': true }
     ]
     let chooseColumnXs = xmSelect.render({
         el: '#searchName' + trNum,
@@ -232,7 +232,7 @@ function initCountSelectData(trNum) {
                         // autoRow: true,
                     })
                 } else { // 选中其他字段
-                    const columnType = change.type // 当前所选中字段的数据类型
+                    const columnType = change.type.trim() // 当前所选中字段的数据类型
                     if ($.inArray(columnType.toUpperCase(), typeArr) < 0) { // 数值或日期类型
                         chooseTypeXs.update({
                             data: disableCountData
