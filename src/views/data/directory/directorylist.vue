@@ -129,9 +129,9 @@
       :visible.sync="folderFormVisible"
       width="600px"
     >
-      <el-form ref="folderForm" :model="resourceForm" label-width="80px">
-        <el-form-item :label="typeLabel" label-width="120px">
-          <el-input v-model="resourceForm.resourceName" style="width: 300px" />
+      <el-form ref="folderForm" :model="resourceForm">
+        <el-form-item :label="typeLabel" >
+          <el-input v-model="resourceForm.resourceName" style="width: 100%" class="detail-form"/>
         </el-form-item>
       </el-form>
       <span slot="footer">
@@ -206,16 +206,16 @@
             :rules="uploadRules"
             :model="uploadtemp"
             label-position="right"
-            style="width: 750px"
+
           >
             <el-form-item
               label="导入表名称：(当导入数据为txt格式时，列名和数据均以','分割即可)"
               prop="tbName"
             >
-              <el-input v-model="uploadtemp.tbName" label="请输入表名称" />
+              <el-input v-model="uploadtemp.tbName" label="请输入表名称" class="detail-form"/>
             </el-form-item>
             <el-form-item label="数据表描述" prop="tbComment">
-              <el-input v-model="uploadtemp.tbComment" label="请输入表描述" />
+              <el-input v-model="uploadtemp.tbComment" label="请输入表描述" class="detail-form"/>
             </el-form-item>
           </el-form>
         </el-col>
@@ -664,18 +664,20 @@ export default {
     // this.dataTypeRules = this.CommonUtil.DataTypeRules
     this.initDirectory();
     //获取登录用户的信息来控制删除按钮是否显示
-    // getInfo().then((resp) => {
-      // getById(resp.data.id).then((res) => {
-      //   const dataArray = res.data;
-      //   const newArray = dataArray[0].roleId;
-      //   const sysRole = "系统管理员";
-      //   getSystemRole(sysRole).then((re) => {
-      //     if(newArray[0] == re.data.roleid ){
-      //       this.ifManager = true;
-      //     }
-      //   })
-      // })
-    // })
+    getInfo().then((resp) => {
+      getById(resp.data.id).then((res) => {
+        const dataArray = res.data;
+        const newArray = dataArray[0].roleId;
+        const sysRole = "系统管理员";
+        getSystemRole(sysRole).then((re) => {
+          for( const item in newArray){
+            if(newArray[item] == re.data.roleid ){
+              this.ifManager = true;
+            }
+          }
+        })
+      })
+    })
   },
   watch: {
     openType: {

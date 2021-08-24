@@ -443,21 +443,25 @@ export default {
      * 导出方法
      */
     exportExcel() {
-      axios({
-        method: "post",
-        url: "/analysis/RunTaskRelController/exportRunTaskRelTable",
-        responseType: "blob",
-      }).then((res) => {
-        const link = document.createElement("a");
-        const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
-        link.style.display = "none";
-        link.href = URL.createObjectURL(blob);
-          //模型运行结果表日期使用当前日期
-          link.setAttribute("download",this.modelTitle +"("+dayjs(new Date()).format('YYYY年MM月DD日hhmmss')+")"+".xls");
-          document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      });
+        const items  = [];
+        // 获取选中行的id
+        this.selected1.forEach(e =>(items.push(e.runTaskRelUuid)));
+        axios({
+            method: "post",
+            data: items,
+            url: "/analysis/RunTaskRelController/exportRunTaskRelTable",
+            responseType: "blob",
+        }).then((res) => {
+            const link = document.createElement("a");
+            const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
+            link.style.display = "none";
+            link.href = URL.createObjectURL(blob);
+            //模型运行结果表日期使用当前日期
+            link.setAttribute("download","预警结果导出("+dayjs(new Date()).format('YYYY年MM月DD日hhmmss')+")"+".xls");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
     },
     customColorMethod(percentage) {
       if (percentage < 30) {

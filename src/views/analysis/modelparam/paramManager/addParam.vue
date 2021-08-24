@@ -31,13 +31,14 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="12">
+          <el-col :span="11">
             <el-form-item label="数据类型" prop="dataType">
               <el-select
                 v-model="form.dataType"
                 @change="changeValue"
                 id="dataType"
                 name="dataType"
+                style="width: 100%"
               >
                 <el-option value="" key="" label="请选择"></el-option>
                 <el-option
@@ -49,9 +50,9 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="12" :offset="1">
             <el-form-item label="输入方式" prop="inputType">
-              <el-select v-model="form.inputType" @change="changeInputType" id="inputType" name="inputType">
+              <el-select v-model="form.inputType" @change="changeInputType" id="inputType" name="inputType" style="width: 100%">
                 <el-option value="" key="" label="请选择"></el-option>
                 <el-option
                   v-for="inputType in this.inputTypes"

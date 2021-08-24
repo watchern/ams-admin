@@ -1,7 +1,7 @@
 <template>
   <div>
-    <el-container style="min-height: 450px;overflow: auto;">
-      <div ref="basicInfo">
+    <el-container style="min-height: 450px;overflow: auto; width: 100%">
+      <div ref="basicInfo" style="width: 100%">
         <el-form ref="basicInfoForm" :model="form" :rules="rules" class="detail-form" :disabled="isBanEdit">
           <el-row>
             <el-col :span="24">
@@ -18,7 +18,7 @@
             </el-col>
           </el-row>
           <p style="font-size:large;font-weight:bold">关联设置</p>
-          <p style="color:silver;font-size:large">———————————————————————————</p>
+          <hr style="color:silver"/>
           <el-row>
             <el-col :span="24">
               <el-form-item label="关联类型" prop="relationType">
