@@ -761,13 +761,14 @@ export default {
   },
   methods: {
     changeDataType(row){
+      debugger
       const currRule = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
       if (!this.disableEditColumn) {
         this.$set(row, "enableDataLength", currRule && this.CommonUtil.isNotUndefined(currRule.enableDataLength) ? currRule.enableDataLength : true);
       } else {
         this.$set(row, "enableDataLength", false);
       }
-      if (this.CommonUtil.isNotUndefined(currRule.enableDataLength)) {
+      if (this.CommonUtil.isNotUndefined(currRule.enableDataLength) && !currRule.enableDataLength) {
         this.$set(row, "dataLengthText", "");
       }
 

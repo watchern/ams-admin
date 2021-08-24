@@ -548,10 +548,13 @@ export default {
         const newArray = dataArray[0].roleId;
         const sysRole = "系统管理员";
         getSystemRole(sysRole).then((re) => {
-          if(newArray[0] == re.data.roleid ){
-            this.ifmanger = 1
-            this.jinyong = 0
-          }else{
+          for (const item in newArray){
+            if(newArray[item] == re.data.roleid ){
+              this.ifmanger = 1
+              this.jinyong = 0
+            }
+          }
+          if(this.ifmanger != '1' ){
             this.ifmanger = 0
             this.jinyong = 1
             this.btnState = {
