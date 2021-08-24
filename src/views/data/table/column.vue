@@ -34,8 +34,8 @@
       class="detail-form"
     >
       <el-form ref="dataForm" :model="tempTable">
-        <el-form-item label="表名称" prop="tableName">
-          <el-input v-model="tempTable.tableName" />
+        <el-form-item label="表名称" prop="displayTbName">
+          <el-input v-model="tempTable.displayTbName" />
         </el-form-item>
         <!-- <el-form-item v-if="openType !== 'addTable'" label="新建表注释" prop="tableComment">
           <el-input v-model="tempTable.tableComment" />
@@ -132,7 +132,7 @@ export default {
       tempColumn: [],
       oldName: "",
       show: false,
-      tempTable: { tableName: "" },
+      tempTable: { displayTbName: "" },
       currColType: '',
       dataTypeRules: {},
       disableEditColumn: false
@@ -166,7 +166,7 @@ export default {
         getColsInfo(tableId).then((resp) => {
           // 返回两个新的数组
           this.oldName = resp.data.displayTbName;
-          this.tempTable.tableName = resp.data.displayTbName;
+          this.tempTable.displayTbName = resp.data.displayTbName;
           this.temp = resp.data.colMetas;
           this.temp.forEach((row) => {
             this.$set(row, "tempIndex", ++this.tempIndex);
@@ -274,7 +274,7 @@ export default {
       const addObj = {};
       addObj.colMetas = this.temp;
       addObj.folderUuid = this.forderId;
-      addObj.tbName = this.tempTable.tableName;
+      addObj.displayTbName = this.tempTable.displayTbName;
       addTable(addObj)
         .then((res) => {
           if (res.data.status === "500") {
@@ -301,7 +301,8 @@ export default {
               extMap: {
                 accessType: ["FETCH_TABLE_DATA", "BASIC_PRIV"],
                 createTime: res.data.successTable.createTime,
-                tableName: res.data.successTable.tbName,
+                displayTbName: res.data.successTable.displayTbName,
+                tableName: res.data.successTable.displayTbName,
                 tbSizeByte: 0,
                 tblType: "T",
               },
@@ -318,12 +319,12 @@ export default {
       const newTableObj = {};
       newTableObj.tableMetaUuid = this.tableId;
       newTableObj.colMetas = this.temp;
-      newTableObj.tbName = this.tempTable.tableName;
+      newTableObj.displayTbName = this.tempTable.displayTbName;
       newTableObj.tbComment = this.tempTable.tbComment;
       const oldTableObj = {};
       oldTableObj.tableMetaUuid = this.tableId;
       oldTableObj.colMetas = this.tempColumn;
-      oldTableObj.tbName = this.oldName;
+      oldTableObj.displayTbName = this.oldName;
       oldTableObj.tbComment = this.tempTable.tbComment;
       var obj = {};
       for (let i = 0; i < newTableObj.colMetas.length; i++) {
@@ -347,8 +348,8 @@ export default {
             });
           } else {
             // 修改成功后重新给页面复制
-            this.oldName = res.data.sussessTable.tbName;
-            this.tempTable.tableName = res.data.sussessTable.tbName;
+            this.oldName = res.data.sussessTable.displayTbName;
+            this.tempTable.displayTbName = res.data.sussessTable.displayTbName;
             res.data.sussessTable.colMetas.forEach((e) => {
               this.tempIndex = 0;
               this.tempIndex++;

@@ -87,7 +87,7 @@
                                     { 'name': '求和', 'value': 'sum' },
                                     { 'name': '最大值', 'value': 'max' },
                                     { 'name': '最小值', 'value': 'min' },
-                                    { 'name': '平均值', 'value': 'ave' }
+                                    { 'name': '平均值', 'value': 'avg' }
                                 ]
                                 initCountTypeData.forEach( item => {
                                     if ($.inArray(curCountData[m].columnType, this.typeArr) < 0) { // 设置不可汇总字段的数据数组（不能写到这个for循环外面）
@@ -95,7 +95,7 @@
                                             case 'sum':
                                             case 'max':
                                             case 'min':
-                                            case 'ave':
+                                            case 'avg':
                                                 item.disabled = true
                                                 break
                                         }

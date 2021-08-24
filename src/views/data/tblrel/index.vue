@@ -454,5 +454,9 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style>
+  .abow_dialog .el-dialog .el-dialog__body .app-container{
+    height:70vh!important;
+    width:550px!important;
+  }
 </style>
