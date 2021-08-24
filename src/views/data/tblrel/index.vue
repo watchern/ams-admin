@@ -71,7 +71,7 @@
           </el-form-item>
           <el-form-item prop="colMetaUuid" label="字段名称">
             <el-row>
-              <el-col :span="12">
+              <el-col :span="22">
                 <el-input v-model="temp.colName" :disabled="true" />
                 <el-input
                   v-model="temp.colMetaUuid"
@@ -79,7 +79,7 @@
                   style="display: none"
                 />
               </el-col>
-              <el-col :span="4">
+              <el-col :span="2">
                 <el-button @click="showDataTree(1)">选择</el-button>
               </el-col>
             </el-row>
@@ -94,7 +94,7 @@
           </el-form-item>
           <el-form-item prop="relColMetaUuid" label="从表字段">
             <el-row>
-              <el-col :span="12">
+              <el-col :span="22">
                 <el-input v-model="temp.relationCol" :disabled="true" />
                 <el-input
                   v-model="temp.relColMetaUuid"
@@ -103,16 +103,17 @@
                   :disabled="true"
                 />
               </el-col>
-              <el-col :span="4">
+              <el-col :span="2">
                 <el-button @click="showDataTree(2)">选择</el-button>
               </el-col>
             </el-row>
           </el-form-item>
-          <el-form-item prop="sqlGenJoinType" label="关联关系">
+          <el-form-item prop="sqlGenJoinType" label="关联关系" >
             <el-select
               v-model="temp.sqlGenJoinType"
               filterable
               placeholder="请选择关联关系"
+              style="width: 100%"
             >
               <el-option
                 v-for="item in sqlJoinCols"

@@ -14,7 +14,7 @@
             <el-input v-model="temp.warningName"  />
           </el-form-item>
           <el-row>
-            <el-col :span="12">
+            <el-col :span="11">
               <el-form-item label="预警类型" >
                 <el-select v-model="temp.warningType" placeholder="请选择预警类型" >
                   <el-option label="模型" :value="1"></el-option>
@@ -22,15 +22,22 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="12" :offset="1">
               <el-form-item  label="结果保存地址">
-                <el-input  class="el-input-z" readonly="readonly" v-model="this.auditWarningSave.locationName"/>
-                <span class="btn-z" @click="modelResultSavePathDialog = true">选择</span>
+                <el-row>
+                  <el-col :span="19" >
+                    <el-input readonly="readonly" v-model="this.auditWarningSave.locationName"/>
+                  </el-col>
+                  <el-col :span="2" :offset="1">
+                    <el-button type="primary" @click="modelResultSavePathDialog = true">选择</el-button>
+                  </el-col>
+                </el-row>
               </el-form-item>
             </el-col>
+
           </el-row>
           <el-row>
-            <el-col :span="12">
+            <el-col :span="11">
               <el-form-item label="分配类型" >
                 <el-select v-model="auditWarningSave.distributionType" @change="distributionTypeChange" placeholder="请选择分配类型" >
                   <el-option label="请选择" :value="0"></el-option>
@@ -39,10 +46,16 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="12" :offset="1">
               <el-form-item  label="人员或项目">
-                <el-input  class="el-input-z" readonly="readonly" v-model="auditWarningSave.distributionName"/>
-                <span class="btn-z" @click="distributionButtonClick">选择</span>
+                <el-row>
+                  <el-col :span="19" >
+                    <el-input  readonly="readonly" v-model="auditWarningSave.distributionName"/>
+                  </el-col>
+                  <el-col :span="2" :offset="1">
+                    <el-button type="primary" @click="distributionButtonClick">选择</el-button>
+                  </el-col>
+                </el-row>
               </el-form-item>
             </el-col>
           </el-row>
@@ -1040,11 +1053,6 @@ export default {
 }
 </script>
 <style scoped>
-  .el-input-z{
-    width:78%;
-    margin: 0 15px 0 0;
-    cursor:no-drop
-  }
   .btn-z{
     width: 70px;
     height: 36px;

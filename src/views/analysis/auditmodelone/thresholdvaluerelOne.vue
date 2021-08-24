@@ -13,19 +13,19 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="12">
+        <el-col :span="11">
           <el-form-item label="运算符" prop="operator">
-            <el-select v-model="thresholdValueRelObj.operator">
+            <el-select v-model="thresholdValueRelObj.operator" style="width: 100%">
               <el-option v-for="(item,i) in operatorObj" :key="item.value" :label="item.name" :value="item.value">
                 {{item.name}}
               </el-option>
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="11" :offset="1">
           <el-form-item label="阈值名称" prop="thresholdValue.thresholdValueName">
             <el-input v-model="thresholdValueRelObj.thresholdValue.thresholdValueUuid" style="display: none" :disabled="true"/>
-            <el-select v-model="thresholdValueRelObj.thresholdValue.thresholdValueName" placeholder="请选择">
+            <el-select v-model="thresholdValueRelObj.thresholdValue.thresholdValueName" placeholder="请选择" style="width: 100%">
               <el-option :label="thresholdValueRelObj.thresholdValue.thresholdValueName" :value="thresholdValueRelObj.thresholdValue.thresholdValueName" style="height: auto">
                 <thresholdvaluetree :isShowEdit="false" v-loading="loading" ref="thresholdvaluetree" @thresholdValueClick="setSelectTreeNode"></thresholdvaluetree>
               </el-option>
@@ -45,12 +45,12 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="10">
+        <el-col :span="12">
           <el-form-item label="背景色" prop="backgroundColor">
             <Colorpicker v-model="thresholdValueRelObj.colorInfoObj.backgroundColor"></Colorpicker>
           </el-form-item>
         </el-col>
-        <el-col :span="10">
+        <el-col :span="11">
           <el-form-item label="字体颜色" prop="fontColor">
             <Colorpicker v-model="thresholdValueRelObj.colorInfoObj.fontColor"></Colorpicker>
           </el-form-item>
