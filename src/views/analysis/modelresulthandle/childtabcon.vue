@@ -562,14 +562,15 @@ export default {
       // 获取gridApi
       this.gridApi = params.api;
       this.columnApi = params.columnApi;
+      // this.gridApi.sizeColumnsToFit();
     },
     //自动宽度
     autoSizeAll(skipHeader) {
-      var allColumnIds = [];
-      this.columnApi.getAllColumns().forEach(function (column) {
-        allColumnIds.push(column.colId);
-      });
-      this.columnApi.autoSizeColumns(allColumnIds, skipHeader);
+      // var allColumnIds = [];
+      // this.columnApi.getAllColumns().forEach(function (column) {
+      //   allColumnIds.push(column.colId);
+      // });
+      // this.columnApi.autoSizeColumns(allColumnIds, skipHeader);
     },
     // 单元格点击事件
     onCellClicked(cell) {},

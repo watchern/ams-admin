@@ -132,7 +132,6 @@
           :defaultColDef="defaultColDef"
           :sideBar="true"
           :modules="modules"
-          @firstDataRendered="autoSizeAll(false)"
         />
 
         <el-card v-if="!isSee" class="box-card" style="height: 100px">
@@ -307,7 +306,6 @@
               :locale-text="localeText"
               :frameworkComponents="frc"
               :context="componentParent"
-              @firstDataRendered="autoSizeAll(false)"
             />
             <!-- :sideBar="true"
             :modules="modules"-->
@@ -735,7 +733,6 @@ export default {
       // height123: document.getElementById("dataShow"),
       ifopen: 0,
       defaultColDef: {
-        flex: 1,
         resizable: true,
         enableValue: true,
         enableRowGroup: true,
@@ -1205,14 +1202,15 @@ export default {
       // 获取gridApi
       this.gridApi = params.api;
       this.gridColumnApi = params.columnApi;
+      // this.gridApi.sizeColumnsToFit();
     },
     //自动宽度
     autoSizeAll(skipHeader) {
-      var allColumnIds = [];
-      this.gridColumnApi.getAllColumns().forEach(function (column) {
-        allColumnIds.push(column.colId);
-      });
-      this.gridColumnApi.autoSizeColumns(allColumnIds, skipHeader);
+      // var allColumnIds = [];
+      // this.gridColumnApi.getAllColumns().forEach(function (column) {
+      //   allColumnIds.push(column.colId);
+      // });
+      // this.gridColumnApi.autoSizeColumns(allColumnIds, skipHeader);
     },
     initData(sql, nextValue, modelName) {
       this.result = {};
@@ -1875,7 +1873,7 @@ export default {
           this.rotateRowData.push(rtObj);
         });
         Object.keys(this.rotateRowData[0]).forEach((k) => {
-          this.rotateColumnDefs.push({ field: k, headerName: k });
+          this.rotateColumnDefs.push({ field: k, headerName: k, width:280 });
         });
       }
     },

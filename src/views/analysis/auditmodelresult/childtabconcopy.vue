@@ -257,6 +257,7 @@ export default {
         modelDetailAssBtn: true,
       },
       dynamicSelect: [], //实时存储多选框勾选中的数据
+      columnApi:null
     };
   },
   mounted() {
@@ -449,11 +450,11 @@ export default {
     },
     //自动宽度
     autoSizeAll(skipHeader) {
-      var allColumnIds = [];
-      this.columnApi.getAllColumns().forEach(function (column) {
-        allColumnIds.push(column.colId);
-      });
-      this.columnApi.autoSizeColumns(allColumnIds, skipHeader);
+//       var allColumnIds = [];
+//       this.columnApi.getAllColumns().forEach(function (column) {
+//         allColumnIds.push(column.colId);
+//       });
+//       this.columnApi.autoSizeColumns(allColumnIds, skipHeader);
     },
     // 单元格点击事件
     onCellClicked(cell) {},
