@@ -785,10 +785,10 @@ export default {
       //     row.colPrecision = arr.length > 1 ? new Number(arr[1].trim()) : null;
       //   }
       // }
-
+debugger
       if (this.CommonUtil.isNotUndefined(currDataType) && this.CommonUtil.isNotUndefined(currDataType.lengthRule)) {
         if (!new RegExp(currDataType.lengthRule).test(row.dataLengthText)) {
-          this.$message.error(row.dataType.toUpperCase() + currDataType["ruleMsg"]);
+          this.$message.error(row.dataType.toUpperCase() + currDataType["checkMsg"]);
           return false;
         }
       }
@@ -939,7 +939,7 @@ export default {
     },
     // 执行create后导入功能
     importTable() {
-      // console.log(this.uploadtempInfo.colMetas);
+      console.log(this.uploadtempInfo.colMetas);
       for (let i = 0; i < this.uploadtempInfo.colMetas.length; i++) {
         let obj = this.uploadtempInfo.colMetas[i];
         if (!this.isValidColumn(obj)) {
