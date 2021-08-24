@@ -49,6 +49,16 @@
          width="150px"
         :formatter="dateFormatter"
       />
+      <el-table-column
+        label="操作"
+        fixed="right"
+        width="120"
+        v-if="ifdel"
+      >
+        <template slot-scope="scope">
+          <el-button  type="primary" @click="delsubmit(scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
       <!-- <el-table-column
         v-for="(item, index) in columnDefs"
         :key="index"
@@ -95,7 +105,7 @@
 <script>
 import { getDictList, getOneDict } from "@/utils/index";
 export default {
-  props: ["flowItem", "submitData"],
+  props: ["flowItem", "submitData","ifdel"],
   data() {
     return {
       columnDefs: [
@@ -183,6 +193,10 @@ export default {
           second;
         return d;
       }
+    },
+    //删除
+    delsubmit(obj){
+
     },
     /**
      * 格式化模型类型
