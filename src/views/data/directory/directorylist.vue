@@ -766,9 +766,9 @@ export default {
       } else {
         this.$set(row, "enableDataLength", false);
       }
-      // if (this.CommonUtil.isNotUndefined(currRule.enableDataLength)) {
-      //   this.$set(row, "dataLengthText", "");
-      // }
+      if (!currRule.enableDataLength) {
+        this.$set(row, "dataLengthText", "");
+      }
 
     },
     isValidColumn(row) {
