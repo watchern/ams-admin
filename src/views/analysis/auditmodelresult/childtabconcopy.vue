@@ -80,6 +80,7 @@
       @cellClicked="onCellClicked"
       @gridReady="onGridReady"
       @rowSelected="rowChange"
+      @firstDataRendered="autoSizeAll(false)"
     />
     <el-card v-if="!isSee" class="box-card" style="height: 100px">
       <div>{{ errorMessage }}</div>
@@ -444,8 +445,15 @@ export default {
       this.gridApi = params.api;
       this.columnApi = params.columnApi;
       // 这时就可以通过gridApi调用ag-grid的传统方法了
-      this.gridApi.sizeColumnsToFit();
+      // this.gridApi.sizeColumnsToFit();
     },
+    autoSizeAll(skipHeader) {
+      var allColumnIds = [];
+      this.columnApi.getAllColumns().forEach(function (column) {
+        allColumnIds.push(column.colId);
+      });
+      this.columnApi.autoSizeColumns(allColumnIds, skipHeader);
+    },
     // 单元格点击事件
     onCellClicked(cell) {},
     initData(sql, nextValue) {
