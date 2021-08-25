@@ -44,9 +44,9 @@
                   </el-form-item>
                 </el-row>
                 <el-row>
-                  <el-col :span="24">
+                  <el-col :span="20">
                     <el-form-item label="风险等级" prop="riskLevelUuid">
-                      <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级" style="width:67%;">
+                      <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级" style="width:100%;">
                         <el-option
                           v-for="state in riskLeve"
                           :key="state.codeValue"
@@ -56,9 +56,9 @@
                       </el-select>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="24">
+                  <el-col :span="20">
                     <el-form-item label="模型类型" prop="modelType">
-                      <el-select disabled v-model="form.modelType" placeholder="请选择模型类型" style="width:67%">
+                      <el-select disabled v-model="form.modelType" placeholder="请选择模型类型" style="width:100%">
                         <el-option
                           v-for="state in modelTypeData"
                           :key="state.codeValue"

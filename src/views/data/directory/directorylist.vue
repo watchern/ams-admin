@@ -9,75 +9,59 @@
     </div>
     <el-row>
       <el-col align="right">
-        <!--v-show 非管理员不能进行的操作-->
         <el-button
           type="primary"
-          :disabled="selections.length === 0"
+          :disabled="disDeleteTable"
           class="oper-btn delete"
           @click="delData"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn copy"
-          :disabled="selections.length !== 1"
+          :disabled="disCopyTable"
           @click="copyResource"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn move"
-          :disabled="selections.length === 0"
+          :disabled="disMoveTable"
           @click="movePath"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
-          class="oper-btn rename"
-          :disabled="selections.length !== 1"
+          class="oper-btn rename btn-width-md"
+          :disabled="disRenameTable"
           @click="renameResource"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn add-table btn-width-md"
-          :disabled="
-            clickData.type == 'table' ||
-            (typeof clickData.extMap !== 'undefined' && typeof clickData.extMap.sceneInstUuid !== 'undefined')
-          "
+          :disabled="disAddTable"
           @click="addTable"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn import-table btn-width-md"
-          :disabled="
-            clickData.type == 'table' ||
-             (typeof clickData.extMap !== 'undefined' && typeof clickData.extMap.sceneInstUuid !== 'undefined')
-          "
+          :disabled="disAddTable"
           @click="uploadTable"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn add-directory btn-width-max"
-          :disabled="clickData.type == 'table'"
+          :disabled="disAddDir"
           @click="createFolder"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn edit"
-          :disabled="selections.length !== 1"
+          :disabled="disEditTable"
           @click="updateTable"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
           class="oper-btn link-table  btn-width-md"
-          :disabled="selections.length !== 1"
+          :disabled="disLinkData"
           @click="relationTable"
-          v-show="ifShow"
         />
         <el-button
           type="primary"
@@ -89,14 +73,14 @@
         <el-button
           type="primary"
           class="oper-btn preview"
-          :disabled="infoFlag"
+          :disabled="disPreviewData"
           @click="preview"
         />
       <!--  分享 -->
         <el-button
           type="primary"
           class="oper-btn share"
-          :disabled="selections.length === 0"
+          :disabled="disShareTable"
           @click="shareTable"
         />
       </el-col>
@@ -145,9 +129,9 @@
       :visible.sync="folderFormVisible"
       width="600px"
     >
-      <el-form ref="folderForm" :model="resourceForm" label-width="80px">
-        <el-form-item :label="typeLabel" label-width="120px">
-          <el-input v-model="resourceForm.resourceName" style="width: 300px" />
+      <el-form ref="folderForm" :model="resourceForm">
+        <el-form-item :label="typeLabel" >
+          <el-input v-model="resourceForm.resourceName" style="width: 100%" class="detail-form"/>
         </el-form-item>
       </el-form>
       <span slot="footer">
@@ -197,7 +181,7 @@
         <el-button type="primary" @click="movePathSave()">保存</el-button>
       </span>
     </el-dialog>
-    <!-- 弹窗3 -->
+    <!-- 导入表数据 -->
     <el-dialog
       :close-on-click-modal="false"
       v-if="uploadVisible"
@@ -222,16 +206,16 @@
             :rules="uploadRules"
             :model="uploadtemp"
             label-position="right"
-            style="width: 750px"
+
           >
             <el-form-item
               label="导入表名称：(当导入数据为txt格式时，列名和数据均以','分割即可)"
               prop="tbName"
             >
-              <el-input v-model="uploadtemp.tbName" label="请输入表名称" />
+              <el-input v-model="uploadtemp.displayTbName" label="请输入表名称" class="detail-form"/>
             </el-form-item>
             <el-form-item label="数据表描述" prop="tbComment">
-              <el-input v-model="uploadtemp.tbComment" label="请输入表描述" />
+              <el-input v-model="uploadtemp.tbComment" label="请输入表描述" class="detail-form"/>
             </el-form-item>
           </el-form>
         </el-col>
@@ -308,15 +292,16 @@
               </template>
             </el-table-column>
             <el-table-column
-              prop="dataLength"
-              label="数据长度"
+              prop="dataLengthText"
+              label="数据长度（精度）"
               show-overflow-tooltip
             >
               <template slot-scope="scope" show-overflow-tooltip>
                 <el-input
-                  v-model="scope.row.dataLength"
+                  v-model="scope.row.dataLengthText"
                   style="width: 90%; height: 55px"
                   :disabled="!scope.row.enableDataLength"
+                  @change="isValidColumn(scope.row)"
                 />
               </template>
             </el-table-column>
@@ -349,7 +334,7 @@
           <tabledatatabs
             ref="tabledatatabs"
             :table-id="tableId"
-            :forder-id="clickData.id"
+            :forder-id="currTreeNode.id"
             :open-type="openType"
             :tab-show.sync="tabShow"
             @table-show="tableshow"
@@ -380,7 +365,7 @@
               <column
                 ref="column"
                 :table-id="tableId"
-                :forder-id="clickData.id"
+                :forder-id="currTreeNode.id"
                 :open-type="openType"
                 :tab-show.sync="tabShow"
                 @append-node="appendnode"
@@ -414,7 +399,7 @@
               <tablerelation
                 ref="tablerelation"
                 :table-id="tableId"
-                :forder-id="clickData.id"
+                :forder-id="currTreeNode.id"
                 :open-type="openType"
               />
             </el-col>
@@ -503,7 +488,6 @@ import childTabs from "@/views/analysis/auditmodelresult/childtabs";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
 import QueryField from "@/components/public/query-field/index";
 import { getArrLength } from "@/utils";
-import { getSystemRole } from "@/api/user"
 import {
   deleteDirectory,
   copyTable,
@@ -519,6 +503,7 @@ import { saveFolder } from "@/api/data/folder";
 import dataTree from "@/views/data/role-res/data-tree";
 import { mapState } from "vuex";
 import { getInfo } from '@TCB/api/user';
+import { getSystemRole} from '@/api/user';
 import { getById } from '@TCB/api/tcbaudit/personalManage';
 
 export default {
@@ -546,9 +531,7 @@ export default {
   // eslint-disable-next-line vue/order-in-components
   data() {
     return {
-      ifShow:false, //控制部分按钮是否显示
-      saveFlag: true,
-      infoFlag: true,
+      ifManager:false, //是否为管理员
       currentSceneUuid: "auditor",
       directyDataUserId: this.$store.state.user.code,
       openType: "",
@@ -576,16 +559,16 @@ export default {
         sortName: "create_time",
       },
       temp: [
-        {
-          id: "",
-          label: "",
-          title: "",
-          type: "",
-          extMap: {
-            createTime: "",
-            tbSizeByte: "",
-          },
-        },
+        // {
+        //   id: "",
+        //   label: "",
+        //   title: "",
+        //   type: "",
+        //   extMap: {
+        //     createTime: "",
+        //     tbSizeByte: "",
+        //   },
+        // },
       ],
       folderForm: {
         folderUuid: null,
@@ -594,7 +577,8 @@ export default {
         orderNum: 0,
         fullPath: null,
       },
-      clickData: { id: "", type: "" },
+      // 树节点click
+      currTreeNode: { id: "", type: "" },
       clickNode: {},
       clickFullPath: [],
       allList: [],
@@ -624,12 +608,12 @@ export default {
       shareVisible: false,
       uploadVisible: false,
       uploadtemp: {
-        tbName: "",
+        displayTbName: "",
         tableFileName: "",
         folderUuid: "",
       },
       uploadRules: {
-        tbName: [
+        displayTbName: [
           { required: true, message: "请填写导入表名称", trigger: "change" },
           {
             type: "string",
@@ -651,27 +635,50 @@ export default {
       downloadLoading: false,
       dialoading: false,
       clickId:'',
-      // dataTypeRules: {
-      // },
-      disableEditColumn: false
+      saveFlag: true,
+      disableEditColumn: false,
+      // 禁用添加文件夹，个人空间，判断根节点有没有sceneInstUuid
+      disAddDir: true,
+      // 禁用新增表，个人场景，或者save_to_folder
+      disAddTable : true,
+      // 禁用编辑表，个人场景
+      disEditTable: true,
+      // 禁用删除表,个人空间下
+      disDeleteTable: true,
+      // 禁用重命名表, 只能重命名个人空间下，
+      disRenameTable: true,
+      // 禁用移动表, 只能移动到个人空间下
+      disMoveTable: true,
+      // 禁用导入表，个人场景，或者save_to_folder
+      disImportTable: true,
+      // 禁用复制表, fetch_table_data，复制到个人场景，或者save_to_folder
+      disCopyTable: true,
+      // 禁用预览表数据，fetch_table_data
+      disPreviewData: true,
+      // 禁用管理表，个人场景
+      disLinkData: true,
+      // 禁用分享表,个人场景
+      disShareTable: true
     };
   },
   created() {
     // this.dataTypeRules = this.CommonUtil.DataTypeRules
     this.initDirectory();
-    //获取登录用户的信息来控制删除按钮是否显示
-    getInfo().then((resp) => {
-      getById(resp.data.id).then((res) => {
-        const dataArray = res.data;
-        const newArray = dataArray[0].roleId;
-        const sysRole = "系统管理员";
-        getSystemRole(sysRole).then((re) => {
-          if(newArray[0]==re.data.roleid){
-            this.ifShow = true;
-          }
-        })
-      })
-    })
+    // //获取登录用户的信息来控制删除按钮是否显示
+    // getInfo().then((resp) => {
+    //   getById(resp.data.id).then((res) => {
+    //     const dataArray = res.data;
+    //     const newArray = dataArray[0].roleId;
+    //     const sysRole = "系统管理员";
+    //     getSystemRole(sysRole).then((re) => {
+    //       for( const item in newArray){
+    //         if(newArray[item] == re.data.roleid ){
+    //           this.ifManager = true;
+    //         }
+    //       }
+    //     })
+    //   })
+    // })
   },
   watch: {
     openType: {
@@ -680,29 +687,78 @@ export default {
         this.disableEditColumn = newOpenType === 'showTable' || newOpenType === 'tableRegister'
       }
     },
-    uploadtempInfo: {
-      handler(newTemp, oldemp) {
-        // this.$emit('update:tab-show', newName)
-        // console.log(*************newTemp");
-        if (typeof newTemp.colMetas != "undefined"){
-          newTemp.colMetas.forEach((item) => {
-            // if (!item.dataLengthText) {
-            //   item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '');
-            // }
-            // if (typeof item.dataLengthText == "undefined") {
-            //   const dataTypeRule = this.dataTypeRules[item.dataType.toUpperCase().trim()]
-            //   if (typeof dataTypeRule != "undefined" && typeof dataTypeRule.hasPrecision != "undefined") {
-            //     if (dataTypeRule.hasPrecision) {
-            //       item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision === 0 ? ',' + item.colPrecision : '')
-            //     } else {
-            //       item.dataLengthText = item.dataLength
-            //     }
-            //   }
-            // }
-          })
+    selections: {
+      handler(newObj, oldObj) {
+        console.log("**************selections");
+        console.log(newObj);
+        console.log("**************selections");
+
+        this.disDeleteTable = newObj.length > 0 ? false : true;
+        this.disEditTable = newObj.length == 1 ? false : true;
+        this.disLinkData = newObj.length == 1 ? false : true;
+        this.disMoveTable = newObj.length > 0 ? false : true;
+        this.disPreviewData = newObj.length == 1 ? false : true;
+        this.disRenameTable = newObj.length == 1 ? false : true;
+        this.disShareTable = newObj.length > 0 ? false : true;
+        this.disCopyTable = newObj.length == 1 ? false : true;
+        if (newObj.length > 0) {
+          for(var i; i<newObj.length; i++) {
+            // 如果全部禁用，无须校验操作权限
+            if (this.disDeleteTable && this.disEditTable && this.disLinkData && this.disMoveTable
+                && this.disPreviewData && this.disPreviewData && this.disRenameTable && this.disShareTable) {
+              break;
+            }
+            var item = newObj[i];
+            var accessType = item.extMap.accessType;
+            // 判断是否拥有预览权限
+            if (!this.disPreviewData && accessType.indexOf(this.CommonUtil.DataPrivAccessType.FETCH_TABLE_DATA.value) < 0) {
+              this.disPreviewData = false
+            }
+            var paths = item.path.split("/");
+            var isPersonalSpace = paths[0].indexOf("场景") > -1;
+            // 判断 数据权限
+            if (accessType.indexOf(this.CommonUtil.DataPrivAccessType.SAVE_TO_FOLDER.value) > 0) {
+              this.disDeleteTable = true
+              this.disEditTable = true
+              this.disLinkData = true
+              this.disMoveTable = true
+              this.disRenameTable = true
+              if (!this.disShareTable && !isPersonalSpace) {
+                this.disShareTable = true
+              }
+            } else {
+              if (!isPersonalSpace) {
+                this.disDeleteTable = true
+                this.disEditTable = true
+                this.disLinkData = true
+                this.disMoveTable = true
+                this.disRenameTable = true
+                this.disShareTable = true
+              }
+            }
+          }
+
         }
-      },
-      deep: true
+      }
+    },
+    currTreeNode(){
+      console.log("**************currTreeNode");
+      console.log(this.currTreeNode);
+      console.log("**************currTreeNode");
+      var type = this.currTreeNode.type;
+      // var accessType = this.currTreeNode.extMap.accessType;
+      // 个人空间，判断根节点有没有sceneInstUuid
+      this.disAddDir = type === "folder" ? false : true;
+      this.disImportTable = type === "folder" ? false : true;
+      this.disAddTable = type === "folder" ? false : true;
+      this.disCopyTable =  this.selections.length == 1 ? false : true;
+      this.disDeleteTable = this.selections.length > 0 ? this.disDeleteTable : true;
+      this.disEditTable = this.selections.length == 1 ? this.disEditTable : true;
+      this.disLinkData = this.selections.length == 1 ? this.disLinkData : true;
+      this.disMoveTable = this.selections.length > 0 ? this.disMoveTable : true;
+      this.disPreviewData = this.selections.length == 1 ? this.disPreviewData : true;
+      this.disRenameTable = this.selections.length == 1 ? this.disRenameTable : true;
+      this.disShareTable = this.selections.length > 0 ? this.disShareTable : true;
     }
   },
   methods: {
@@ -713,53 +769,16 @@ export default {
       } else {
         this.$set(row, "enableDataLength", false);
       }
-
-      if (this.CommonUtil.isUndefined(row.dataLengthText) && row.enableDataLength) {
-        if (this.CommonUtil.isNotUndefined(currRule) && this.CommonUtil.isNotBlank(row.dataLength)) {
-          row.dataLengthText = row.dataLength ? "" + row.dataLength : "255"
-          if (this.CommonUtil.isNotUndefined(currRule.hasPrecision) && currRule.hasPrecision) {
-            row.dataLengthText += (row.colPrecision || row.colPrecision === 0 ? ',' + row.colPrecision : '0')
-          }
-        }
-      } else if (this.CommonUtil.isNotUndefined(row.dataLength)) {
-        row.dataLength = null;
-        row.colPrecision = null;
-        row.dataLengthText = "";
-      }
-    },
-
-    isValidColumn(row) {
-
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          this._verifName().then(res => {
-            this._submit('createDatasources')
-          })
-        }
-      })
-
-
-
-      var currDataType = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
-      var arr = this.CommonUtil.isNotBlank(row.dataLengthText) ? row.dataLengthText.split(",") : null;
-      if (this.CommonUtil.isNotEmpty(arr)) {
-        var dataLengthN = arr.length > 0 ? arr[0].trim() : "";
-        var colPrecisionN = arr.length > 1 ? arr[1].trim() : "";
-        if (dataLengthN !== row.dataLength) {
-          row.dataLength = arr.length > 0 ? arr[0].trim() : null;
-        }
-        if (colPrecisionN !== row.colPrecision) {
-          row.colPrecision = arr.length > 1 ? arr[1].trim() : null;
-        }
-      } else {
-        row.dataLength = null;
-        row.colPrecision = null;
+      if (this.CommonUtil.isNotUndefined(currRule.enableDataLength) && !currRule.enableDataLength) {
         this.$set(row, "dataLengthText", "");
       }
 
+    },
+    isValidColumn(row) {
+      var currDataType = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
       if (this.CommonUtil.isNotUndefined(currDataType) && this.CommonUtil.isNotUndefined(currDataType.lengthRule)) {
-        if (!new RegExp(currDataType.lengthRule).test(row.dataLength)) {
-          this.$message.error(row.dataType.toUpperCase() + currDataType["ruleMsg"]);
+        if (!new RegExp(currDataType.lengthRule).test(row.dataLengthText)) {
+          this.$message.error(row.dataType.toUpperCase() + currDataType["checkMsg"]);
           return false;
         }
       }
@@ -880,9 +899,9 @@ export default {
     },
     // 执行下一步 读取文件列信息
     nextImport() {
-      judgeName(this.uploadtemp.tbName).then((resf) => {
+      judgeName(this.uploadtemp.displayTbName).then((resf) => {
         if (resf.code == 0) {
-          this.uploadtemp.folderUuid = this.clickData.id;
+          this.uploadtemp.folderUuid = this.currTreeNode.id;
           this.$refs["dataForm"].validate((valid) => {
             if (valid) {
               getSqlType().then((resp) => {
@@ -910,7 +929,7 @@ export default {
     },
     // 执行create后导入功能
     importTable() {
-      // console.log(this.uploadtempInfo.colMetas);
+      console.log(this.uploadtempInfo.colMetas);
       for (let i = 0; i < this.uploadtempInfo.colMetas.length; i++) {
         let obj = this.uploadtempInfo.colMetas[i];
         if (!this.isValidColumn(obj)) {
@@ -930,13 +949,13 @@ export default {
             extMap: {
               accessType: ["FETCH_TABLE_DATA", "BASIC_PRIV"],
               createTime: res.data.importTable.createTime,
-              tableName: res.data.importTable.tbName,
+              tableName: res.data.importTable.displayTbName,
               tbSizeByte: 0,
               tblType: "T",
             },
           };
           // 添加节点
-          this.$emit("append-node", childData, this.clickNode);
+          this.$emit("append-node", childData, this.currTreeNode);
           this.$notify({
             title: "成功",
             message: res.data.msg,
@@ -1019,7 +1038,6 @@ export default {
     // 重命名资源名称
     renameResourceSave() {
       var tempData = Object.assign({}, this.selections[0]);
-      console.log(tempData);
       tempData.label = this.resourceForm.resourceName;
       renameResource(tempData).then((res) => {
         if (res.data) {
@@ -1076,9 +1094,9 @@ export default {
     },
     // 得到分页列表
     getListSelect(query) {
-      console.log(query)
       if (query) {
         var list = this.allList.filter((obj) => {
+          if (query.label === null) query.label=""
           return obj.label.indexOf(query.label) !== -1;
         });
         this.total = getArrLength(list);
@@ -1090,11 +1108,9 @@ export default {
     },
     // 初始化列表页面
     getList(data, node, tree) {
-      this.clickData = data;
+      this.currTreeNode = data;
       this.clickId = data.id;
-      console.log(data);
       if(node=='pro'){
-        console.log('复制刷新')
         node = this.clickNode
       }else{
         this.clickNode = node;
@@ -1124,10 +1140,9 @@ export default {
         this.total = getArrLength(data.children);
         this.getListSelect();
       }
-      console.log(this.temp)
     },
     createFolder() {
-      if (this.clickData.extMap.folderType === "virtual") {
+      if (this.currTreeNode.extMap.folderType === "virtual") {
         this.$message({
           type: "info",
           message: "创建失败!该文件为系统文件夹不允许创建",
@@ -1141,10 +1156,10 @@ export default {
     },
     // 保存新建文件夹
     createFolderSave() {
-      if ( typeof this.clickData.extMap !== 'undefined' && typeof this.clickData.extMap.sceneInstUuid !== 'undefined') {
-        this.resourceForm.sceneInstUuid = this.clickData.extMap.sceneInstUuid;
+      if ( typeof this.currTreeNode.extMap !== 'undefined' && typeof this.currTreeNode.extMap.sceneInstUuid !== 'undefined') {
+        this.resourceForm.sceneInstUuid = this.currTreeNode.extMap.sceneInstUuid;
       }
-      this.resourceForm.parentFolderUuid = this.clickData.id;
+      this.resourceForm.parentFolderUuid = this.currTreeNode.id;
       this.resourceForm.fullPath = this.clickFullPath.reverse().join("/");
       this.resourceForm.folderName = this.resourceForm.resourceName;
       this.resourceForm.createUserUuid = this.$store.state.user.code;
@@ -1227,7 +1242,6 @@ export default {
             verResult = false;
             break;
           }
-          console.log(persons);
           const obj = {
             tableMetaUuid: selectObj[i].id,
             seneInstUuid: persons[j].personcode,
@@ -1283,13 +1297,13 @@ export default {
         if (
           this.selections[0].extMap.accessType.indexOf("FETCH_TABLE_DATA") > -1
         ) {
-          this.infoFlag = false;
+          this.disPreviewData = false;
         } else {
-          this.infoFlag = true;
+          this.disPreviewData = true;
         }
       } else {
         this.saveFlag = true;
-        this.infoFlag = true;
+        this.disPreviewData = true;
       }
     },
     appendnode(childData, parentNode) {

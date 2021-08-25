@@ -6,11 +6,11 @@
           ref="dataForm"
           :model="temp"
           label-position="right"
-          style="min-width: 750px;width:80%;"
+          style="min-width: 750px;width:100%;"
         >
           <span class="midText">业务表信息：</span>
           <el-form-item label="汉化名称：" prop="chnName">
-            <el-input v-model="temp.chnName" :disabled="openType === 'showTable'" />
+            <el-input v-model="temp.chnName" :disabled="openType === 'showTable'" class="detail-form"/>
           </el-form-item>
           <span class="midText">列业务信息：</span>
           <el-table :data="temp.colMetas" height="400px" class="detail-form">

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <span class="el-form-item__label">项目名称:</span><el-input style="width: 200px;" v-model="filterprojectName" placeholder="请输入内容"></el-input>
+    <span class="el-form-item__label">项目名称:</span><el-input class="detail-form" style="width: 200px;" v-model="filterprojectName" placeholder="请输入内容"></el-input>
     <el-table  style="height: 400px;overflow-y: scroll"
       v-loading="listLoading"
       :data="list"

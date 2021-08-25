@@ -96,6 +96,9 @@
 .oper-btn.authority:after{
   content:' 权限分配'!important;
 }
+.oper-btn.reset-password:after{
+  content:' 重置密码'!important;
+}
 
 //region @新增相关操作 start@
 .oper-btn.add:after {
@@ -324,7 +327,7 @@
 
 
 .oper-btn.rename:after {
-  content: '\e83e  命名' !important;
+  content: '\e83e  重命名' !important;
 }
 
 .oper-btn.copy:after {

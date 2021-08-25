@@ -320,6 +320,7 @@ export default {
         }
       })
       .catch(error => {
+        this.applications = []
         console.error(error)
       })
     getUnReadRemind().then(resp => {
@@ -445,7 +446,10 @@ export default {
       return src
     },
     async logout() {
-      this.selectMenuIn()
+      this.$store.commit("aceState/setRightFooterTags", {
+        type: "closeAll",
+        val: "",
+      });
       sessionStorage.clear()
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)

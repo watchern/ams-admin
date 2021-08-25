@@ -460,6 +460,7 @@ export function init() {
  * @param isAdd 是否是新增操作
  */
 function addLine(obj, isAdd) {
+    console.log(obj)
     const idx = Math.max(indexOfJoin(obj.from), indexOfJoin(obj.to))
     if (relationVue.join[idx].type === ',') {
         relationVue.join[idx].type = 'INNER JOIN'
@@ -696,7 +697,8 @@ export function saveNodeInfo() {
             } else {
                 columnInfo.isOutputColumn = 0
             }
-            columnInfo.columnName = relationVue.items[index].columnName
+            columnInfo.selectColumnName = relationVue.items[index].columnName
+            columnInfo.columnName =  relationVue.items[index].disColumnName
             columnInfo.newColumnName = relationVue.items[index].disColumnName
             columnInfo.resourceTableName = resourceTableName
             columnInfo.rtn = rtn
