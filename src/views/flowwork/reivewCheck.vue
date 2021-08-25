@@ -1,104 +1,79 @@
 <template>
   <div class="admin_right_main todoDetail" id="flowItem3">
-    <div class="content_form">
-      <el-form
-        ref="applyTitleForm"
-        :model="dataObj"
-        label-width="128px"
-        size="mini"
-      >
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item
-              label="审批标题："
-              class="form_item form_item_one"
-              style="display: flex"
-            >
-              <el-input
-                type="input"
-                :title="dataObj.applyTitle"
-                v-model="dataObj.applyTitle"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-    </div>
     <template>
-      <businessDetail
-        ref="businessDetail"
-        :flowItem="flowItem"
-        :submitData="dataObj"
-        :ifdel="true"
-        @submitFlow="submitFlow"
-      ></businessDetail>
+      <div>
+        <div class="table_header_default">
+          <div style="float: left" class="title_template">
+            <span class="busdatas title_font">模型数据</span>
+          </div>
+        </div>
+        <el-table
+                ref="tab"
+                stripe
+                :data="this.modelList"
+                @selection-change="handleSelectionChange"
+                max-height="300"
+        >
+          <el-table-column type="selection"></el-table-column>
+          <el-table-column label="模型名称" width="200px" prop="modelName">
+            <template slot-scope="scope">
+              {{ scope.row.modelName }}
+            </template>
+          </el-table-column>
+          <el-table-column label="平均运行时间" width="150px" prop="runTime" />
+          <el-table-column label="审计事项" prop="auditItemName" />
+          <el-table-column
+                  label="风险等级"
+                  prop="riskLevelUuid"
+                  align="center"
+                  :formatter="riskLevelFormatter"
+          />
+          <el-table-column
+                  label="模型类型"
+                  prop="modelType"
+                  align="center"
+                  :formatter="modelTypeFormatter"
+          />
+          <el-table-column
+                  label="创建时间"
+                  prop="createTime"
+                  align="center"
+                  width="150px"
+                  :formatter="dateFormatter"
+          />
+          <el-table-column
+                  label="操作"
+                  fixed="right"
+                  width="120"
+          >
+            <template slot-scope="scope">
+              <el-button  type="primary" @click="delsubmit(scope.row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
     </template>
     <el-form>
       <el-form-item label="发布路径">
-        <el-input v-model="dataObj.treeUrlname" disabled></el-input>
+        <el-input v-model="form.commonModelName" disabled></el-input>
       </el-form-item>
     </el-form>
     <el-button type="primary" @click="showWorkTree = true"
-      >选择发布位置</el-button
-    >
-
-    <!-- 流程内容：审核意见、填写意见、选择下一步 -->
-    <div class="flow_template">
-      <template>
-        <div class="opinion_template">
-          <div class="title_template">
-            <span class="title_font">审核意见</span>
-          </div>
-          <div class="content">
-            <div class>
-              <el-form
-                ref="form"
-                :model="dataObj"
-                label-width="128px"
-                size="mini"
-              >
-                <!-- 是否同意，切换工作流分支 -->
-                <el-row :gutter="20">
-                  <el-col :span="8">
-                    <el-form-item
-                      label="处理意见"
-                      class="form_item"
-                      prop="opinion"
-                    >
-                      <el-input
-                        type="textarea"
-                        v-model="dataObj.opinion"
-                      ></el-input>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-              </el-form>
-            </div>
-          </div>
-        </div>
-      </template>
-    </div>
+      >选择发布位置</el-button>
     <el-dialog
       :visible.sync="showWorkTree"
       :modal="false"
-      title="选择要发布到的位置"
-    >
+      title="选择要发布到的位置">
       <div>
         <ModelFolderTree
           ref="modelFolderTree"
-          :public-model="publicModelValue"
-        />
+          :public-model="publicModelValue"/>
         <div slot="footer" style="padding: 10px 0">
           <el-button type="primary" @click="updatePublicModel">确定</el-button>
           <el-button @click="showWorkTree = false">取消</el-button>
         </div>
       </div>
     </el-dialog>
-    <div class="bottom-btn">
-      <el-button type="primary" @click="returnFlow">回退</el-button>
-      <el-button type="primary" @click="submitFlow">通过</el-button>
-      <el-button @click="goBack">返回</el-button>
-    </div>
   </div>
 </template>
 <script>
@@ -106,6 +81,7 @@ import ModelFolderTree from "@/views/analysis/auditmodel/modelfoldertree";
 //用于知会人
 import businessDetail from "./reviewDetail";
 export default {
+  props: ["versionUuid", "appDataUuid", "applyType", "flowSetup","actionIdList"],
   components: {
     businessDetail,
     ModelFolderTree,
@@ -120,41 +96,31 @@ export default {
       dataObj: {},
       flowItem: {},
       id: "",
+      form:{},
+      modelList:[],
+      modleDataList:[],
     };
   },
   destroyed() {
     clearInterval(this.timer);
   },
   created: function () {
-    //从路由获取唯一标识
-    this.dataObj.id = this.$route.params.id;
     //初始化数据
     this.init();
   },
   methods: {
     //初始化数据
     init() {
-    //   this.axios.post("xxxx", this.dataObj.id).then((response) => {
-    //     console.log(response);
-    //     this.dataObj = response.data;
-    //   });
-      this.dataObj = {
-        id:'xxx',
-        applyTitle: "测试标题",
-        opinion: "测试意见",
-        treeUrlname: "测试路径",
-        treeUrlid: "xxxid",
-        busdatas: [
-          {
-            modelName: "测试数据",
-            runTime: "xxxxx",
-            auditItemName: "xxxxxx",
-            riskLevelUuid: "1",
-            modelType: "sql",
-            createTime: "2021-8-23",
-          },
-        ],
-      };
+      this.form.modelRelationUuid = this.appDataUuid;
+      this.$axios
+              .post("/analysis/modelPublishRelation/pa/selectBusDatas", this.form)
+              .then((response) => {
+                this.modelList=response.data.data.modleDataList;
+                this.form.commonModelName=response.data.data.commonModelName;
+              })
+              .catch((error) => {
+                console.log(error);
+              });
     },
     /**
      * 选择模型树
@@ -163,10 +129,55 @@ export default {
       const selectNode = this.$refs.modelFolderTree.getSelectNode();
       this.showWorkTree = false;
       console.log(selectNode);
-      this.dataObj.treeUrlname = selectNode.label;
-      this.dataObj.treeUrlid = selectNode.id;
+      this.form.commonModelName = selectNode.label;
+      this.form.commonModelUuid = selectNode.id;
     },
 
+    updateSave() {
+      if (this.$refs.pbFile.fileListData.length != 0) {
+        this.fileListDatas = this.$refs.pbFile.fileListData;
+      }
+      var data = {
+        modelRelationUuid: this.appDataUuid,
+        status: this.$store.state.applyInfo.applyInfo.status,
+        commonModelUuid: this.form.commonModelUuid,
+        commonModelName: this.form.commonModelName,
+      };
+      this.$axios
+              .post("/analysis/modelPublishRelation/updataSave", data)
+              .then((response) => {
+                if (response.data.code == "0") {
+                  //修改业务审核状态
+                  this.$store.dispatch("applyInfo/setMstate", "0");
+                  this.common.alertMsg(1, "更新成功");
+                } else {
+                  this.common.alertMsg(2, "更新失败");
+                }
+              })
+              .catch((error) => {
+                this.common.alertMsg(2, "更新失败");
+                console.log(error);
+              });
+    },
+
+    delsubmit(val){
+      // alert(JSON.stringify(val))
+      this.modleDataList.push(val)
+      // alert(JSON.stringify(this.modleDataList))
+      this.$axios
+              .post("/analysis/modleData/batchDelete", modleDataList)
+              .then((response) => {
+                if (response.data.code == "0") {
+                  this.common.alertMsg(1, "删除成功");
+                } else {
+                  this.common.alertMsg(2, "删除失败");
+                }
+              })
+              .catch((error) => {
+                this.common.alertMsg(2, "删除失败");
+                console.log(error);
+              });
+    },
     submitFlow() {
       this.axios.post("xxxx", this.dataObj).then((response) => {
         console.log(response);

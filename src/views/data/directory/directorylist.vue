@@ -699,6 +699,7 @@ export default {
         this.disPreviewData = newObj.length == 1 ? false : true;
         this.disRenameTable = newObj.length == 1 ? false : true;
         this.disShareTable = newObj.length > 0 ? false : true;
+        this.disCopyTable = newObj.length == 1 ? false : true;
         if (newObj.length > 0) {
           for(var i; i<newObj.length; i++) {
             // 如果全部禁用，无须校验操作权限
@@ -749,7 +750,7 @@ export default {
       this.disAddDir = type === "folder" ? false : true;
       this.disImportTable = type === "folder" ? false : true;
       this.disAddTable = type === "folder" ? false : true;
-      this.disCopyTable =  type === "folder" ? false : true;
+      this.disCopyTable =  this.selections.length == 1 ? false : true;
       this.disDeleteTable = this.selections.length > 0 ? this.disDeleteTable : true;
       this.disEditTable = this.selections.length == 1 ? this.disEditTable : true;
       this.disLinkData = this.selections.length == 1 ? this.disLinkData : true;
