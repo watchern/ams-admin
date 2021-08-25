@@ -608,12 +608,12 @@ export default {
       shareVisible: false,
       uploadVisible: false,
       uploadtemp: {
-        tbName: "",
+        displayTbName: "",
         tableFileName: "",
         folderUuid: "",
       },
       uploadRules: {
-        tbName: [
+        displayTbName: [
           { required: true, message: "请填写导入表名称", trigger: "change" },
           {
             type: "string",
@@ -664,21 +664,21 @@ export default {
   created() {
     // this.dataTypeRules = this.CommonUtil.DataTypeRules
     this.initDirectory();
-    //获取登录用户的信息来控制删除按钮是否显示
-    getInfo().then((resp) => {
-      getById(resp.data.id).then((res) => {
-        const dataArray = res.data;
-        const newArray = dataArray[0].roleId;
-        const sysRole = "系统管理员";
-        getSystemRole(sysRole).then((re) => {
-          for( const item in newArray){
-            if(newArray[item] == re.data.roleid ){
-              this.ifManager = true;
-            }
-          }
-        })
-      })
-    })
+    // //获取登录用户的信息来控制删除按钮是否显示
+    // getInfo().then((resp) => {
+    //   getById(resp.data.id).then((res) => {
+    //     const dataArray = res.data;
+    //     const newArray = dataArray[0].roleId;
+    //     const sysRole = "系统管理员";
+    //     getSystemRole(sysRole).then((re) => {
+    //       for( const item in newArray){
+    //         if(newArray[item] == re.data.roleid ){
+    //           this.ifManager = true;
+    //         }
+    //       }
+    //     })
+    //   })
+    // })
   },
   watch: {
     openType: {
@@ -912,7 +912,7 @@ export default {
     },
     // 执行下一步 读取文件列信息
     nextImport() {
-      judgeName(this.uploadtemp.tbName).then((resf) => {
+      judgeName(this.uploadtemp.displayTbName).then((resf) => {
         if (resf.code == 0) {
           this.uploadtemp.folderUuid = this.currTreeNode.id;
           this.$refs["dataForm"].validate((valid) => {
@@ -962,7 +962,7 @@ export default {
             extMap: {
               accessType: ["FETCH_TABLE_DATA", "BASIC_PRIV"],
               createTime: res.data.importTable.createTime,
-              tableName: res.data.importTable.tbName,
+              tableName: res.data.importTable.displayTbName,
               tbSizeByte: 0,
               tblType: "T",
             },
