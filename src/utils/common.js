@@ -1,9 +1,9 @@
 export const DataTypeRules = {
     CHAR: {value: "CHAR", lengthRule: "^[0-9]{1,4000}$", checkMsg: "类型长度范围:1-4000之间数字"},
-    VARCHAR2: {value: "VARCHAR2", lengthRule: "^[0-9]{1,4000}$", checkMsg: "类型长度范围:1-4000之间数字"},
-    VARCHAR: {value: "VARCHAR", lengthRule: "^[0-9]{1,4000}$", checkMsg: "类型长度范围:1-4000之间数字"},
-    NVARCHAR: {value: "NVARCHAR", lengthRule: "^[0-9]{1,4000}$", checkMsg: "类型长度范围:1-4000之间数字"},
-    NVARCHAR2: {value: "NVARCHAR2", lengthRule: "^[0-9]{1,4000}$", checkMsg: "类型长度范围:1-4000之间数字"},
+    VARCHAR2: {value: "VARCHAR2", lengthRule: "^[1-9][0-9]{0,3}$", checkMsg: "类型长度范围:1-4000之间数字"},
+    VARCHAR: {value: "VARCHAR", lengthRule: "^[1-9][0-9]{0,3}$", checkMsg: "类型长度范围:1-4000之间数字"},
+    NVARCHAR: {value: "NVARCHAR", lengthRule: "^[1-9][0-9]{0,3}$", checkMsg: "类型长度范围:1-4000之间数字"},
+    NVARCHAR2: {value: "NVARCHAR2", lengthRule: "^[1-9][0-9]{0,3}$", checkMsg: "类型长度范围:1-4000之间数字"},
     NUMBER: {value: "NUMBER", hasPrecision: true, lengthRule: "^[0-9]+[,][0-9]$", checkMsg: "类型长度范围:数字,数字(英文逗号)"},
     NUMRIC: {value: "NUMRIC", hasPrecision: true, lengthRule: "^[0-9]+[,][0-9]$", checkMsg: "类型长度范围:数字,数字(英文逗号)"},
     DECIMAL: {value: "DECIMAL", hasPrecision: true, lengthRule: "^[0-9]+[,][0-9]$", checkMsg: "类型长度范围:数字,数字(英文逗号)"},
