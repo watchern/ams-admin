@@ -664,21 +664,21 @@ export default {
   created() {
     // this.dataTypeRules = this.CommonUtil.DataTypeRules
     this.initDirectory();
-    //获取登录用户的信息来控制删除按钮是否显示
-    getInfo().then((resp) => {
-      getById(resp.data.id).then((res) => {
-        const dataArray = res.data;
-        const newArray = dataArray[0].roleId;
-        const sysRole = "系统管理员";
-        getSystemRole(sysRole).then((re) => {
-          for( const item in newArray){
-            if(newArray[item] == re.data.roleid ){
-              this.ifManager = true;
-            }
-          }
-        })
-      })
-    })
+    // //获取登录用户的信息来控制删除按钮是否显示
+    // getInfo().then((resp) => {
+    //   getById(resp.data.id).then((res) => {
+    //     const dataArray = res.data;
+    //     const newArray = dataArray[0].roleId;
+    //     const sysRole = "系统管理员";
+    //     getSystemRole(sysRole).then((re) => {
+    //       for( const item in newArray){
+    //         if(newArray[item] == re.data.roleid ){
+    //           this.ifManager = true;
+    //         }
+    //       }
+    //     })
+    //   })
+    // })
   },
   watch: {
     openType: {
