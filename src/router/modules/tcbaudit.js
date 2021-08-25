@@ -31,7 +31,7 @@ const tcbauditRouter = {
       name: 'audittasknode',
       component: () => import('@/views/tcbaudit/audittasknode'),
       meta: {
-        title: '人员管理'
+        title: '项目资料树'
       }
     }, 
     {
@@ -39,7 +39,7 @@ const tcbauditRouter = {
       name: 'personalManage',
       component: () => import('@TCB/views/audit/personalManage'),
       meta: {
-        title: '项目资料树'
+        title: '人员管理'
       }
     },
     // {
@@ -76,27 +76,6 @@ const tcbauditRouter = {
         title: '报表统计'
       }
     }
-    // ,
-    // {
-    //   path: 'servermonitor',
-    //   name: 'servermonitor',
-    //   component: () => import('@TCB/views/audit/servermonitor'),
-    //   meta: {
-    //     title: '服务器监控'
-    //   },
-    //   hidden: true
-    // },
-    //
-    // {
-    //   // 传递状态为1为查看，0为编辑
-    //   path: 'definition/:id/:status',
-    //   name: 'projectsdefinitiondetails',
-    //   component: resolve => require(['@TCB/views/audit/workflow/details/index'], resolve),
-    //   meta: {
-    //     title: `流程定义详情`
-    //   },
-    //   hidden: true
-    // }
   ]
 }
 

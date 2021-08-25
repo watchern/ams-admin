@@ -9,10 +9,10 @@
                        @getSqlObj="getSqlObj" v-if="state.id==sqlEditorStr" ref="SQLEditor"
                        :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel"
                        :locationUuid="form.locationUuid" :locationName="form.locationName" :style="{height: someHeight + 'px'}"/>
-            <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" openTypeParam="2"
+            <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" @getGraphObj="getGraphObj" openTypeParam="2" :refreshGraph="refreshAppleTable"
                    v-if="state.id==graphEditorStr"></graph>
           </div>
-          <div class="modelInfoClass" v-show="modelInfoDraw" :style="{position:'absolute',height: this.someHeight + 'px'}">
+          <div class="modelInfoClass" v-show="modelInfoDraw" style="position:absolute; height: calc(100% - 125px); overflow:auto">
             <div ref="basicInfo" class="detail-form">
               <el-form ref="basicInfoForm" :model="form" :rules="basicInfoRules" :disabled="isBanEdit">
                 <el-row>
@@ -86,7 +86,7 @@
               </el-form>
             </div>
           </div>
-          <div class="modelInfoClass" v-show="useParamDraw" :style="{position:'absolute',height: this.someHeight + 'px'}">
+          <div class="modelInfoClass" v-show="useParamDraw" style="position:absolute; height: calc(100% - 125px); overflow:auto">
             <div ref="paramDefaultValue" class="default-value">
               <div style="font-size: 20px">
                 模型参数
@@ -98,7 +98,7 @@
               </div>
             </div>
           </div>
-          <div class="modelInfoClass" v-show="resultConfigDraw" :style="{position:'absolute',height: this.someHeight + 'px'}">
+          <div class="modelInfoClass " v-show="resultConfigDraw" style="position:absolute; height: calc(100% - 125px); overflow:auto">
             <el-tabs v-model="activeName" :stretch="true" style="width: 92%">
               <el-tab-pane label="模型结果" name="first"><div v-show="!isExecuteSql" align='center' class="notExecuteSqlClass" >执行SQL后才能设置</div><div v-show="isExecuteSql" ref="modelResultOutputCol" class="default-value">
                 <div style="font-size: 20px">
@@ -106,7 +106,7 @@
                   <el-tooltip class="item" effect="dark" content="只显示最后的结果列" placement="top-start">
                     <i class="el-icon-info"/></el-tooltip>
                 </div>
-                <div class="model-result-output-col">
+                <div class="model-result-output-col detail-form">
                   <el-table ref="columnData" :data="columnData" class="div-width">
                     <el-table-column prop="outputColumnName" label="输出列名" width="180"/>
                     <el-table-column prop="dataCoding" label="数据转码" width="180">
@@ -602,6 +602,8 @@ export default {
       }
     },
     clickUseParam(){
+      // 刷新参数列表
+      this.refreshAppleTable()
       if (this.modifying == true && this.useParamDraw == true){
         this.modifying = false
         this.useParamDraw = false
@@ -745,6 +747,7 @@ export default {
         if (this.form.modelType == "002003002") {
           let saveResult = true
           let graphObjResult = this.getGraphObj()
+          paramDefaultValue = this.$refs.apple.getParamsSetting()
           if (!graphObjResult) {
             return null
           } else {
@@ -850,6 +853,9 @@ export default {
       if (returnObj.params.length != 0) {
         this.sqlEditorParam = returnObj.params
         this.$refs.apple.initSetting(this.sqlEditorParam)
+      } else {
+        // 编辑时清空参数的情况
+        this.$refs.apple.removeParam()
       }
       this.sqlEditorParamObj = {arr: returnObj.params}//给sql编辑器的参数对象赋值，编辑使用
       // region 初始化固定列
@@ -880,6 +886,10 @@ export default {
       this.form.locationName = returnObj.locationName
       this.form.locationUuid = returnObj.locationUuid
     },
+    // 刷新参数列表
+    refreshAppleTable(){
+      this.$refs.apple.refreshTable()
+    },
     /**
      *获取图形化对象
      */
@@ -905,9 +915,9 @@ export default {
         }
         let contrastResult = this.contrastGraphColumnInfo(returnObj)
         //如果为true说明结果列相同，不需要重新加载
-        if (contrastResult) {
-          return true
-        }
+        // if (contrastResult) {
+        //   return true
+        // }
       }
       //region 初始化模型结果固定输出列
       const columnData = []
@@ -926,9 +936,16 @@ export default {
         if (params.length != 0) {
           this.sqlEditorParam = params
           this.$refs.apple.initSetting(this.sqlEditorParam)
+        }else {
+          // 编辑时清空参数的情况
+          this.$refs.apple.removeParam()
         }
+        // 
         //endregion
-        this.graphColumnInfo = returnObj
+        let that = this
+        setTimeout(function () {
+          that.refreshAppleTable()
+        }, 500)
         this.columnData = columnData
         if (this.columnData.length==0){
           this.isExecuteSql = false
@@ -1311,8 +1328,8 @@ export default {
 }
 
 .model-result-output-col {
-  height: 650px;
-  overflow-y: scroll;
+  /* height: 650px;
+  overflow-y: scroll; */
 }
 
 .default-value {
