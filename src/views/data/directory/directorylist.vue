@@ -558,16 +558,16 @@ export default {
         sortName: "create_time",
       },
       temp: [
-        {
-          id: "",
-          label: "",
-          title: "",
-          type: "",
-          extMap: {
-            createTime: "",
-            tbSizeByte: "",
-          },
-        },
+        // {
+        //   id: "",
+        //   label: "",
+        //   title: "",
+        //   type: "",
+        //   extMap: {
+        //     createTime: "",
+        //     tbSizeByte: "",
+        //   },
+        // },
       ],
       folderForm: {
         folderUuid: null,
