@@ -9,7 +9,7 @@
                        @getSqlObj="getSqlObj" v-if="state.id==sqlEditorStr" ref="SQLEditor"
                        :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel"
                        :locationUuid="form.locationUuid" :locationName="form.locationName" :style="{height: someHeight + 'px'}"/>
-            <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" openTypeParam="2"
+            <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" @getGraphObj="getGraphObj" openTypeParam="2" :refreshGraph="refreshAppleTable"
                    v-if="state.id==graphEditorStr"></graph>
           </div>
           <div class="modelInfoClass" v-show="modelInfoDraw" style="position:absolute; height: calc(100% - 125px); overflow:auto">
@@ -603,7 +603,7 @@ export default {
     },
     clickUseParam(){
       // 刷新参数列表
-      this.$refs.apple.refreshTable()
+      this.refreshAppleTable()
       if (this.modifying == true && this.useParamDraw == true){
         this.modifying = false
         this.useParamDraw = false
@@ -747,6 +747,7 @@ export default {
         if (this.form.modelType == "002003002") {
           let saveResult = true
           let graphObjResult = this.getGraphObj()
+          paramDefaultValue = this.$refs.apple.getParamsSetting()
           if (!graphObjResult) {
             return null
           } else {
@@ -852,6 +853,9 @@ export default {
       if (returnObj.params.length != 0) {
         this.sqlEditorParam = returnObj.params
         this.$refs.apple.initSetting(this.sqlEditorParam)
+      } else {
+        // 编辑时清空参数的情况
+        this.$refs.apple.removeParam()
       }
       this.sqlEditorParamObj = {arr: returnObj.params}//给sql编辑器的参数对象赋值，编辑使用
       // region 初始化固定列
@@ -882,6 +886,10 @@ export default {
       this.form.locationName = returnObj.locationName
       this.form.locationUuid = returnObj.locationUuid
     },
+    // 刷新参数列表
+    refreshAppleTable(){
+      this.$refs.apple.refreshTable()
+    },
     /**
      *获取图形化对象
      */
@@ -907,9 +915,9 @@ export default {
         }
         let contrastResult = this.contrastGraphColumnInfo(returnObj)
         //如果为true说明结果列相同，不需要重新加载
-        if (contrastResult) {
-          return true
-        }
+        // if (contrastResult) {
+        //   return true
+        // }
       }
       //region 初始化模型结果固定输出列
       const columnData = []
@@ -928,9 +936,16 @@ export default {
         if (params.length != 0) {
           this.sqlEditorParam = params
           this.$refs.apple.initSetting(this.sqlEditorParam)
+        }else {
+          // 编辑时清空参数的情况
+          this.$refs.apple.removeParam()
         }
+        // 
         //endregion
-        this.graphColumnInfo = returnObj
+        let that = this
+        setTimeout(function () {
+          that.refreshAppleTable()
+        }, 500)
         this.columnData = columnData
         if (this.columnData.length==0){
           this.isExecuteSql = false

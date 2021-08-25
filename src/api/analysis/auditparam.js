@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-
+import _ from 'lodash'
 
 import * as paramCommonJs from "@/api/graphtool/js/paramCommon";
 let settingVue = null
@@ -1956,22 +1956,39 @@ export function initSettingParam() {
           // 第五步：找出有效参数集合中未配置的参数,并追加TR行
           let moduleParamArr = [] // 存储已匹配的母版参数集合
           for (let j = 0; j < paramArr.length; j++) { // 遍历有效的参数集合
+            let setParamObj = {
+              dataModuleParamId: paramArr[j].moduleParamId,
+              name: paramArr[j].name,
+            }
             let hasExist = false
             for (let i = 0; i < settingVue.setParamArr.length; i++) {
               if (settingVue.setParamArr[i].dataModuleParamId === paramArr[j].moduleParamId) {
+                // 图形化默认值修改
+                if (typeof settingVue.setParamArr[i].dataDefaultVal !== 'undefined' && settingVue.setParamArr[i].dataDefaultVal != null 
+                && typeof paramArr[j].defaultVal !== 'undefined' && settingVue.setParamArr[i].dataDefaultVal != paramArr[j].defaultVal) {
+                  settingVue.setParamArr[i].defaultVal = paramArr[j].defaultVal
+                  settingVue.setParamArr[i].value = paramArr[j].defaultVal
+                  // // 新增图形化执行修改参数
+                  // if (settingVue.setParamArr[i].data == null) {
+                  //   setParamObj.inputType = settingVue.setParamArr[i].inputType //参数类型
+                  //   let param = _.find(paramList, ['ammParamUuid', settingVue.setParamArr[i].dataModuleParamId])
+                  //   let paramObj = {...{},...param}
+                  //   getSettingParamArr(paramObj, setParamObj).then(res => {
+                  //       let returnObj = res
+                  //       settingVue.setParamArr[i].data = returnObj.setParamObj.data
+                  //   })
+                  // }
+                }
                 hasExist = true
                 break
               }
             }
+
             if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && hasExist) { // 过滤掉有效参数集合中已经配置过的参数
               continue
             }
             if ($.inArray(paramArr[j].moduleParamId, moduleParamArr) > -1) { // 过滤掉有效参数集合中母参重复的复制参数
               continue
-            }
-            let setParamObj = {
-              dataModuleParamId: paramArr[j].moduleParamId,
-              name: paramArr[j].name,
             }
             for (let k = 0; k < paramList.length; k++) { // 循环所有母版参数
               let moduleParamId = paramList[k].ammParamUuid
@@ -2435,7 +2452,6 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
         obj.setParamObj.dataAssociatedParamIdArr = associatedParamIdArr
       }
       if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
-        obj.setParamObj.dataDefaultVal = paramObj.defaultVal
          // 下拉列表默认值
          obj.setParamObj.dataDefaultVal = paramObj.defaultVal
          // 默认值
@@ -2515,7 +2531,6 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
         obj.setParamObj.dataAssociatedParamIdArr = associatedParamIdArr
       }
       if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
-        obj.setParamObj.dataDefaultVal = paramObj.defaultVal
         // 下拉树默认值
         obj.setParamObj.dataDefaultVal = paramObj.defaultVal
         obj.setParamObj.value = obj.setParamObj.dataDefaultVal

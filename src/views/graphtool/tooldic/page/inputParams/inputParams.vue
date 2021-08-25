@@ -254,6 +254,8 @@
                             })
                             this.paramListValueList[index] = list
                             }
+                            // 默认值
+                            obj.setParamObj.value = this.paramListValueList[index]
                         }
                         if(dataArr.length > 0){
                             obj.setParamObj.data = dataArr
@@ -273,6 +275,8 @@
                         }
                         if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
                             obj.setParamObj.dataDefaultVal = paramObj.defaultVal
+                            // 默认值
+                            obj.setParamObj.value = paramObj.defaultVal
                         }
                         if(typeof paramObj.dataLength !== 'undefined' && paramObj.dataLength != null){
                             obj.setParamObj.dataDataLength = paramObj.dataLength
@@ -287,6 +291,8 @@
                             }
                             if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
                                 obj.setParamObj.dataDefaultVal = paramObj.defaultVal
+                                // 默认值
+                                obj.setParamObj.value = paramObj.defaultVal
                             }
                         }
                         break
@@ -340,6 +346,8 @@
                                 })
                                 this.paramTreeValueList[index] = list
                             }
+                            // 默认值
+                            obj.setParamObj.value = this.paramTreeValueList[index]
                         }
                         if(dataArr.length > 0){
                             obj.setParamObj.data = dataArr

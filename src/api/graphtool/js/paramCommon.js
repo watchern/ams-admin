@@ -276,23 +276,52 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
     let associatedParamIdArr = []// 受当前参数影响的被关联参数ID集合
     let paramSql = paramObj.paramChoice.optionsSql//拉列表或下拉树的SQL语句
     obj.setParamObj.title = paramObj.paramChoice.allowedNull === 0 ? '不可为空' : '可为空'
+    obj.setParamObj.dataType = paramObj.dataType // dataType
     let hasSql = false// 下拉列表或下拉树是非SQL方式或者是SQL方式但值为空
     switch (obj.setParamObj.inputType) {
         case 'lineinp':// 下拉列表
             if (!paramSql) {// 备选sql为空的情况下 取静态的option值
-                $.each(paramObj.paramChoice.ammParamOptionsList, function(i, v) {
-                    if (v.optionsVal && v.optionsName) {
-                        // 组织下拉选项数据
-                        var optionObj = {
-                            'name': v.optionsName,
-                            'value': v.optionsVal
-                        }
-                        dataArr.push(optionObj)
-                    }
-                })
+                 // 下拉静态列表赋值
+                 paramObj.paramChoice.ammParamOptionsList.forEach(r => {
+                     if (r.optionsVal && r.optionsName) {
+                         // 组织下拉选项数据
+                         dataArr.push({
+                             'name': r.optionsName,
+                             'value': r.optionsVal
+                         })
+                     }
+                 })
             } else { // 执行备选sql
                 if (paramSql !== '') {
                     hasSql = true// 下拉列表是SQL方式
+                    // 初始化默认执行sql
+                    // const response = await executeParamSql(paramSql)
+                    executeParamSql(paramSql).then(response => {
+                        if (response.data == null) {
+                            obj.isError = true
+                            obj.message = `获取参数【${paramObj.paramName}】的值的失败`
+                        } else {
+                            if (response.data.isError) {
+                                obj.isError = true
+                                obj.message = `获取参数【${paramObj.paramName}】的值的失败，原因：${response.data.message}`
+                            } else {
+                                let e = response.data
+                                if (e.paramList && e.paramList.length > 0) {
+                                    // 给下拉列表赋值
+                                    for (let k = 0; k < e.paramList.length; k++) {
+                                        dataArr.push({
+                                            'name': e.paramList[k].paramName,
+                                            'value': e.paramList[k].paramValue
+                                        })
+                                    }
+                                }
+                                if (dataArr.length > 0) {
+                                    obj.setParamObj.data = dataArr
+                                }
+                            }
+                        }
+                    })
+                    
                 }
             }
             if(typeof obj.selectNum !== 'undefined' && obj.selectNum != null){
@@ -310,10 +339,10 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
                 obj.setParamObj.dataAssociatedParamIdArr = associatedParamIdArr
             }
             if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
+                // 下拉列表默认值
                 obj.setParamObj.dataDefaultVal = paramObj.defaultVal
-            }
-            if(dataArr.length > 0){
-                obj.setParamObj.data = dataArr
+                // 默认值
+                obj.setParamObj.value = obj.setParamObj.dataDefaultVal
             }
             if(typeof paramObj.paramChoice.allowedNull !== 'undefined' && paramObj.paramChoice.allowedNull != null){
                 obj.setParamObj.dataAllowedNull = paramObj.paramChoice.allowedNull
@@ -350,24 +379,27 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
         case 'treeinp':// 下拉树
             if (paramSql !== '') { // 执行备选SQL
                 hasSql = true
-                if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
-                    const response = await getSelectTreeData(paramSql)
-                    if(response.data == null){
+                getSelectTreeData(paramSql).then(resp => {
+                    if (resp.data == null) {
                         obj.isError = true
                         obj.message = `获取参数【${paramObj.paramName}】的值的失败`
-                    }else {
-                        if (response.data.isError) {
+                    } else {
+                        if (resp.data.isError) {
                             obj.isError = true
-                            obj.message = `获取参数【${paramObj.paramName}】的值的失败，原因：${response.data.message}`
+                            obj.message = `获取参数【${paramObj.paramName}】的值的失败，原因：${resp.data.message}`
                         } else {
-                            if(response.data.result && response.data.result.length > 0){
-                                dataArr = organizeSelectTreeData(response.data.result)
-                            }else{
+                            if (resp.data.result && resp.data.result.length > 0) {
+                                // dataArr = organizeSelectTreeData(response.data.result)
+                                dataArr = organizeSelectTreeData(resp.data.result)
+                            } else {
                                 dataArr = []
+                            }
+                            if (dataArr.length > 0) {
+                                obj.setParamObj.data = dataArr
                             }
                         }
                     }
-                }
+                })
             }
             if(typeof obj.selectTreeNum !== 'undefined' && obj.selectTreeNum != null){
                 obj.setParamObj.id = `selectTreeParam${obj.selectTreeNum}`
@@ -384,11 +416,13 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
                 obj.setParamObj.dataAssociatedParamIdArr = associatedParamIdArr
             }
             if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
+                // 下拉树默认值
                 obj.setParamObj.dataDefaultVal = paramObj.defaultVal
+                obj.setParamObj.value = obj.setParamObj.dataDefaultVal
             }
-            if(dataArr.length > 0){
-                obj.setParamObj.data = dataArr
-            }
+            // if(dataArr.length > 0){
+            //     obj.setParamObj.data = dataArr
+            // }
             if(typeof paramObj.paramChoice.allowedNull !== 'undefined' && paramObj.paramChoice.allowedNull != null){
                 obj.setParamObj.dataAllowedNull = paramObj.paramChoice.allowedNull
             }

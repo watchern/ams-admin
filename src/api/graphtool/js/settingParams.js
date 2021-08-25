@@ -453,6 +453,12 @@ export async function initSetting() {
                     let hasExist = false
                     for (let i = 0; i < settingVue.setParamArr.length; i++) {
                         if (settingVue.setParamArr[i].dataModuleParamId === paramArr[j].moduleParamId) {
+                            // 图形化默认值修改
+                            if (typeof settingVue.setParamArr[i].dataDefaultVal !== 'undefined' && settingVue.setParamArr[i].dataDefaultVal != null &&
+                                typeof paramArr[j].defaultVal !== 'undefined' && settingVue.setParamArr[i].dataDefaultVal != paramArr[j].defaultVal) {
+                                settingVue.setParamArr[i].defaultVal = paramArr[j].defaultVal
+                                settingVue.setParamArr[i].value = paramArr[j].defaultVal
+                            }
                             hasExist = true
                             break
                         }
@@ -493,7 +499,7 @@ export async function initSetting() {
                 $(settingVue.$refs.setParamTable.$refs.bodyWrapper.children[0].children[1]).sortable().disableSelection()
                 settingVue.$nextTick(() => {
                     // 第六步：统一初始化参数的html（文本框、下拉列表、下拉树）
-                    initParam()
+                    // initParam()
                     // 第七步：刷新SQL值，将已编写的SQL赋值给sql
                     settingVue.sql = settingVue.editor.getValue()
                     settingVue.settingLoading = false
@@ -798,33 +804,32 @@ export function getParamsSettingBySave() {
                         returnObj.message = '参数【' + paramName + '】输入值的长度与设置的长度值【' + parseInt(dataLength) + '】不相等'
                     }
                 }
-                if (settingVue.setParamArr[index].inputType === 'lineinp') { //下拉列表
-                    // let moduleParamId = settingVue.setParamArr[index].dataId // 母参ID
-                    // let selectParamXs = xmSelect.get('#selectParam' + moduleParamId, true)
-                    // let paramSelectedObj = selectParamXs.getValue() // 获取选中的参数值名称
-                    console.log('====settingVue.setParamArr[index]===');
-                    console.log(settingVue.setParamArr[index]);
-                    let paramSelectedObj = settingVue.setParamArr[index].getValue()
-                    let defaultValueArr = []
-                    for (let j = 0; j < paramSelectedObj.length; j++) {
-                        defaultValueArr.push(paramSelectedObj[j].value)
-                    }
-                    if (defaultValueArr.length > 0) {
-                        settingVue.setParamArr[index].value = defaultValueArr
-                    }
-                }
-                if (settingVue.setParamArr[index].inputType === 'treeinp') { //下拉树
-                    let moduleParamId = settingVue.setParamArr[index].dataId // 母参ID
-                    let selectTreeParamXs = xmSelect.get('#selectTreeParam' + moduleParamId, true)
-                    let paramSelectedObj = selectTreeParamXs.getValue() // 获取选中的参数值名称
-                    let defaultValueArr = []
-                    for (let j = 0; j < paramSelectedObj.length; j++) {
-                        defaultValueArr.push(paramSelectedObj[j].value)
-                    }
-                    if (defaultValueArr.length > 0) {
-                        settingVue.setParamArr[index].value = defaultValueArr
-                    }
-                }
+                // if (settingVue.setParamArr[index].inputType === 'lineinp') { //下拉列表
+                //     // let moduleParamId = settingVue.setParamArr[index].dataId // 母参ID
+                //     // let selectParamXs = xmSelect.get('#selectParam' + moduleParamId, true)
+                //     // let paramSelectedObj = selectParamXs.getValue() // 获取选中的参数值名称
+                //     let paramSelectedObj = settingVue.setParamArr[index].value
+                //     let defaultValueArr = []
+                //     for (let j = 0; j < paramSelectedObj.length; j++) {
+                //         defaultValueArr.push(paramSelectedObj[j].value)
+                //     }
+                //     if (defaultValueArr.length > 0) {
+                //         settingVue.setParamArr[index].value = defaultValueArr
+                //     }
+                // }
+                // if (settingVue.setParamArr[index].inputType === 'treeinp') { //下拉树
+                //     // let moduleParamId = settingVue.setParamArr[index].dataId // 母参ID
+                //     // let selectTreeParamXs = xmSelect.get('#selectTreeParam' + moduleParamId, true)
+                //     // let paramSelectedObj = selectTreeParamXs.getValue() // 获取选中的参数值名称
+                //     let paramSelectedObj = settingVue.setParamArr[index].value
+                //     let defaultValueArr = []
+                //     for (let j = 0; j < paramSelectedObj.length; j++) {
+                //         defaultValueArr.push(paramSelectedObj[j].value)
+                //     }
+                //     if (defaultValueArr.length > 0) {
+                //         settingVue.setParamArr[index].value = defaultValueArr
+                //     }
+                // }
             }
         })
     }

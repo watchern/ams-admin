@@ -80,6 +80,10 @@ data(){
       this.arr = paramsSetting
       settingParams.initSettingParam()
     },
+    // 清空参数
+    removeParam(){
+      this.setParamArr = []
+    },
     refreshTable(){
       // key值刷新页面
        this.refresh = !this.refresh

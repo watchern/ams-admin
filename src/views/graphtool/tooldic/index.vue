@@ -2113,7 +2113,7 @@ export default {
      * 接口：获取节点参数信息
      */
     getParamsArr() {
-      return indexJs.getParamsArr();
+       return indexJs.getParamsArr();
     },
     /**
      * 接口：获取中间、最终结果表的输出列信息

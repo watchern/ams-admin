@@ -775,8 +775,6 @@ export default {
         return {};
       }
       let param = this.$refs["paramDrawRef"+model.modelUuid][0].replaceNodeParam(model.modelUuid);
-      console.log('----param----');
-      console.log(param);
       //模型的参数数组
       let paramObj = model.paramObj
       for (let i = 0;i < paramObj.length;i++){
