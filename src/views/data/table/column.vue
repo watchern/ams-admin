@@ -321,12 +321,12 @@ export default {
       newTableObj.colMetas = this.temp;
       newTableObj.displayTbName = this.tempTable.displayTbName;
       newTableObj.tbComment = this.tempTable.tbComment;
-      const oldTableObj = {};
-      oldTableObj.tableMetaUuid = this.tableId;
-      oldTableObj.colMetas = this.tempColumn;
-      oldTableObj.displayTbName = this.oldName;
-      oldTableObj.tbComment = this.tempTable.tbComment;
-      var obj = {};
+      // const oldTableObj = {};
+      // oldTableObj.tableMetaUuid = this.tableId;
+      // oldTableObj.colMetas = this.tempColumn;
+      // oldTableObj.displayTbName = this.oldName;
+      // oldTableObj.tbComment = this.tempTable.tbComment;
+      // var obj = {};
       for (let i = 0; i < newTableObj.colMetas.length; i++) {
         newTableObj.colMetas[i].dataLength = null;
         newTableObj.colMetas[i].colPrecision = null;
@@ -335,8 +335,8 @@ export default {
           return;
         }
       }
-      obj.newTableObj = newTableObj;
-      obj.oldTableObj = oldTableObj;
+      // obj.newTableObj = newTableObj;
+      // obj.oldTableObj = oldTableObj;
 
       // updateTable(obj)
       updateTable(newTableObj)
@@ -347,7 +347,7 @@ export default {
               message: "修改失败！" + res.data.msg,
             });
           } else {
-            // 修改成功后重新给页面复制
+            // 修改成功后重新给页面赋值
             this.oldName = res.data.sussessTable.displayTbName;
             this.tempTable.displayTbName = res.data.sussessTable.displayTbName;
             res.data.sussessTable.colMetas.forEach((e) => {
@@ -370,7 +370,9 @@ export default {
           this.$emit("table-show", this.show);
           this.$emit("saveTableInfoHelp"); 
         })
-        .catch((result) => {});
+        .catch((result) => {
+          console.error(result)
+        });
       // var newColumn = this.arrRemoveMix(this.temp, this.tempColumn)
       // var oldColumn = this.arrRemoveMix(this.tempColumn, this.temp)
       // console.log(newColumn)

@@ -181,7 +181,7 @@
         <el-button type="primary" @click="movePathSave()">保存</el-button>
       </span>
     </el-dialog>
-    <!-- 弹窗3 -->
+    <!-- 导入表数据 -->
     <el-dialog
       :close-on-click-modal="false"
       v-if="uploadVisible"
@@ -212,7 +212,7 @@
               label="导入表名称：(当导入数据为txt格式时，列名和数据均以','分割即可)"
               prop="tbName"
             >
-              <el-input v-model="uploadtemp.tbName" label="请输入表名称" class="detail-form"/>
+              <el-input v-model="uploadtemp.displayTbName" label="请输入表名称" class="detail-form"/>
             </el-form-item>
             <el-form-item label="数据表描述" prop="tbComment">
               <el-input v-model="uploadtemp.tbComment" label="请输入表描述" class="detail-form"/>
@@ -292,15 +292,16 @@
               </template>
             </el-table-column>
             <el-table-column
-              prop="dataLength"
-              label="数据长度"
+              prop="dataLengthText"
+              label="数据长度（精度）"
               show-overflow-tooltip
             >
               <template slot-scope="scope" show-overflow-tooltip>
                 <el-input
-                  v-model="scope.row.dataLength"
+                  v-model="scope.row.dataLengthText"
                   style="width: 90%; height: 55px"
                   :disabled="!scope.row.enableDataLength"
+                  @change="isValidColumn(scope.row)"
                 />
               </template>
             </el-table-column>
@@ -788,7 +789,6 @@ export default {
       //     row.colPrecision = arr.length > 1 ? new Number(arr[1].trim()) : null;
       //   }
       // }
-debugger
       if (this.CommonUtil.isNotUndefined(currDataType) && this.CommonUtil.isNotUndefined(currDataType.lengthRule)) {
         if (!new RegExp(currDataType.lengthRule).test(row.dataLengthText)) {
           this.$message.error(row.dataType.toUpperCase() + currDataType["checkMsg"]);
