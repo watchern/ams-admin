@@ -166,6 +166,7 @@
       :visible.sync="moveTreeVisible"
       width="600px"
       :close-on-click-modal="false"
+      title="移动"
     >
       <dataTree
         style="overflow: auto; height: 62vh"
@@ -463,6 +464,7 @@
       :visible.sync="shareVisible"
       width="80%"
       style="min-width: 1000px"
+      title="分享"
     >
       <el-row>
         <el-col>
