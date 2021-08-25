@@ -763,7 +763,6 @@ export default {
   },
   methods: {
     changeDataType(row){
-      debugger
       const currRule = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
       if (!this.disableEditColumn) {
         this.$set(row, "enableDataLength", currRule && this.CommonUtil.isNotUndefined(currRule.enableDataLength) ? currRule.enableDataLength : true);
@@ -776,19 +775,7 @@ export default {
 
     },
     isValidColumn(row) {
-      debugger
       var currDataType = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
-      // var arr = this.CommonUtil.isNotBlank(row.dataLengthText) ? row.dataLengthText.split(",") : null;
-      // if (this.CommonUtil.isNotEmpty(arr)) {
-      //   var dataLengthN = arr.length > 0 ? arr[0].trim() : "";
-      //   var colPrecisionN = arr.length > 1 ? arr[1].trim() : "";
-      //   if (dataLengthN !== row.dataLength) {
-      //     row.dataLength = arr.length > 0 ? new Number(arr[0].trim()) : null;
-      //   }
-      //   if (colPrecisionN !== row.colPrecision) {
-      //     row.colPrecision = arr.length > 1 ? new Number(arr[1].trim()) : null;
-      //   }
-      // }
       if (this.CommonUtil.isNotUndefined(currDataType) && this.CommonUtil.isNotUndefined(currDataType.lengthRule)) {
         if (!new RegExp(currDataType.lengthRule).test(row.dataLengthText)) {
           this.$message.error(row.dataType.toUpperCase() + currDataType["checkMsg"]);
@@ -968,7 +955,7 @@ export default {
             },
           };
           // 添加节点
-          this.$emit("append-node", childData, this.clickNode);
+          this.$emit("append-node", childData, this.currTreeNode);
           this.$notify({
             title: "成功",
             message: res.data.msg,
