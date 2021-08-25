@@ -275,6 +275,7 @@
           title="请选择项目"
           :visible.sync="projectDialogIsSee"
           width="40%"
+          :close-on-click-modal="false"
         >
           <userProject
             v-if="projectDialogIsSee"

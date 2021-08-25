@@ -143,9 +143,9 @@
       width="600px"
       :close-on-click-modal="false"
     >
-      <el-form ref="folderForm" :model="folderForm" label-width="80px">
-        <el-form-item label="文件夹名称" label-width="120px">
-          <el-input v-model="folderForm.folderName" style="width: 300px" />
+      <el-form ref="folderForm" :model="folderForm" class="detail-form">
+        <el-form-item label="文件夹名称">
+          <el-input v-model="folderForm.folderName"  />
         </el-form-item>
       </el-form>
       <span slot="footer">

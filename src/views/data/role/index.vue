@@ -53,7 +53,7 @@
               <el-input v-model="temp.dataRoleName" />
             </el-form-item>
             <el-form-item label="授权方式" prop="authenType">
-              <el-select ref="authenType" v-model="temp.authenType" placeholder="请选择授权方式">
+              <el-select ref="authenType" v-model="temp.authenType" placeholder="请选择授权方式" style="width: 100%">
                 <el-option
                   v-for="item in authenTypeJson"
                   :key="item.codeValue"

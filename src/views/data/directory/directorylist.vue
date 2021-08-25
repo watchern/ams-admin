@@ -129,9 +129,9 @@
       :visible.sync="folderFormVisible"
       width="600px"
     >
-      <el-form ref="folderForm" :model="resourceForm" label-width="80px">
-        <el-form-item :label="typeLabel" label-width="120px">
-          <el-input v-model="resourceForm.resourceName" style="width: 300px" />
+      <el-form ref="folderForm" :model="resourceForm">
+        <el-form-item :label="typeLabel" >
+          <el-input v-model="resourceForm.resourceName" style="width: 100%" class="detail-form"/>
         </el-form-item>
       </el-form>
       <span slot="footer">
@@ -206,16 +206,16 @@
             :rules="uploadRules"
             :model="uploadtemp"
             label-position="right"
-            style="width: 750px"
+
           >
             <el-form-item
               label="导入表名称：(当导入数据为txt格式时，列名和数据均以','分割即可)"
               prop="tbName"
             >
-              <el-input v-model="uploadtemp.tbName" label="请输入表名称" />
+              <el-input v-model="uploadtemp.tbName" label="请输入表名称" class="detail-form"/>
             </el-form-item>
             <el-form-item label="数据表描述" prop="tbComment">
-              <el-input v-model="uploadtemp.tbComment" label="请输入表描述" />
+              <el-input v-model="uploadtemp.tbComment" label="请输入表描述" class="detail-form"/>
             </el-form-item>
           </el-form>
         </el-col>
@@ -664,18 +664,20 @@ export default {
     // this.dataTypeRules = this.CommonUtil.DataTypeRules
     this.initDirectory();
     //获取登录用户的信息来控制删除按钮是否显示
-    // getInfo().then((resp) => {
-      // getById(resp.data.id).then((res) => {
-      //   const dataArray = res.data;
-      //   const newArray = dataArray[0].roleId;
-      //   const sysRole = "系统管理员";
-      //   getSystemRole(sysRole).then((re) => {
-      //     if(newArray[0] == re.data.roleid ){
-      //       this.ifManager = true;
-      //     }
-      //   })
-      // })
-    // })
+    getInfo().then((resp) => {
+      getById(resp.data.id).then((res) => {
+        const dataArray = res.data;
+        const newArray = dataArray[0].roleId;
+        const sysRole = "系统管理员";
+        getSystemRole(sysRole).then((re) => {
+          for( const item in newArray){
+            if(newArray[item] == re.data.roleid ){
+              this.ifManager = true;
+            }
+          }
+        })
+      })
+    })
   },
   watch: {
     openType: {
@@ -697,6 +699,7 @@ export default {
         this.disPreviewData = newObj.length == 1 ? false : true;
         this.disRenameTable = newObj.length == 1 ? false : true;
         this.disShareTable = newObj.length > 0 ? false : true;
+        this.disCopyTable = newObj.length == 1 ? false : true;
         if (newObj.length > 0) {
           for(var i; i<newObj.length; i++) {
             // 如果全部禁用，无须校验操作权限
@@ -747,7 +750,7 @@ export default {
       this.disAddDir = type === "folder" ? false : true;
       this.disImportTable = type === "folder" ? false : true;
       this.disAddTable = type === "folder" ? false : true;
-      this.disCopyTable =  type === "folder" ? false : true;
+      this.disCopyTable =  this.selections.length == 1 ? false : true;
       this.disDeleteTable = this.selections.length > 0 ? this.disDeleteTable : true;
       this.disEditTable = this.selections.length == 1 ? this.disEditTable : true;
       this.disLinkData = this.selections.length == 1 ? this.disLinkData : true;
@@ -785,10 +788,10 @@ export default {
       //     row.colPrecision = arr.length > 1 ? new Number(arr[1].trim()) : null;
       //   }
       // }
-
+debugger
       if (this.CommonUtil.isNotUndefined(currDataType) && this.CommonUtil.isNotUndefined(currDataType.lengthRule)) {
         if (!new RegExp(currDataType.lengthRule).test(row.dataLengthText)) {
-          this.$message.error(row.dataType.toUpperCase() + currDataType["ruleMsg"]);
+          this.$message.error(row.dataType.toUpperCase() + currDataType["checkMsg"]);
           return false;
         }
       }
@@ -939,7 +942,7 @@ export default {
     },
     // 执行create后导入功能
     importTable() {
-      // console.log(this.uploadtempInfo.colMetas);
+      console.log(this.uploadtempInfo.colMetas);
       for (let i = 0; i < this.uploadtempInfo.colMetas.length; i++) {
         let obj = this.uploadtempInfo.colMetas[i];
         if (!this.isValidColumn(obj)) {
