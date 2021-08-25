@@ -47,9 +47,6 @@
                 let graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
                 let columnsInfoPre = this.$parent.$parent.$parent.columnsInfoPre
-                for(let i=0;i<columnsInfoPre.length;i++){
-                    columnsInfoPre[i].columnName = columnsInfoPre[i].newColumnName
-                }
                 var parentIds = this.nodeData.parentIds
                 if (parentIds.length > 0) {
                     for (let i = 0; i < parentIds.length; i++) {
