@@ -237,6 +237,7 @@
           :submitData="submitData"
           @closeModal="closeFlowItem"
           @delectData="delectData"
+          @changeTreeData="changeTreeData"
         ></review-submit>
       </div>
       <div slot="footer">
@@ -402,7 +403,9 @@ export default {
           busDatabaseName: 'warehouse',  //数据库名
           busDatabaseType: '',  //
           status: '1',  //预警数据状态
-          busdatas: []
+          busdatas: [],
+          commonModelName:'',
+          commonModelUuid:''
       },
       isShow: false,
       tableKey: "errorUuid",
@@ -869,6 +872,10 @@ export default {
     /**
      * 隐藏编辑模型界面
      */
+    changeTreeData(obj){
+      this.submitData.commonModelName = obj.treeUrlname
+      this.submitData.commonModelUuid = obj.treeUrlid
+    },
     modelTableSelectEvent(selection, row) {
       var selectObj = this.$refs.modelListTable.selection;
       if (selectObj.length == 1) {
