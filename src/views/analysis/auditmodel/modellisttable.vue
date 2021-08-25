@@ -1,5 +1,5 @@
 <template>
-  <div class="tree-list-container all zzz">
+  <div class="tree-list-container all">
     <el-tabs
       @tab-click="handleClick"
       v-model="editableTabsValue"
@@ -186,7 +186,7 @@
                     :isRelation="item.isRelation === true ? true : false"
                     @setNextValue="setNextValue"
                     @addTab="addTab"
-                    :modelId="modelId"
+                    :modelId="item.modelUuid"
                     :is-model-preview="true"
                     :ref="item.name"
                     :key="1"
@@ -237,6 +237,7 @@
           :submitData="submitData"
           @closeModal="closeFlowItem"
           @delectData="delectData"
+          @changeTreeData="changeTreeData"
         ></review-submit>
       </div>
       <div slot="footer">
@@ -363,7 +364,7 @@ export default {
     personTree,
     ReviewSubmit,
   },
-  props: ["power", "dataUserId", "sceneCode", "isAuditWarring"],
+  props: ["power", "dataUserId", "sceneCode", "isAuditWarning"],
   data() {
     return {
       //工作流相关
@@ -402,7 +403,9 @@ export default {
           busDatabaseName: 'warehouse',  //数据库名
           busDatabaseType: '',  //
           status: '1',  //预警数据状态
-          busdatas: []
+          busdatas: [],
+          commonModelName:'',
+          commonModelUuid:''
       },
       isShow: false,
       tableKey: "errorUuid",
@@ -494,6 +497,7 @@ export default {
         pageNo: 1,
         pageSize: 50,
       },
+      tabIndex: 0, //语句记录页签个数
       // 人员选择
       dialogFormVisiblePersonTree: false,
       modelId: "",
@@ -869,6 +873,10 @@ export default {
     /**
      * 隐藏编辑模型界面
      */
+    changeTreeData(obj){
+      this.submitData.commonModelName = obj.treeUrlname
+      this.submitData.commonModelUuid = obj.treeUrlid
+    },
     modelTableSelectEvent(selection, row) {
       var selectObj = this.$refs.modelListTable.selection;
       if (selectObj.length == 1) {
@@ -887,7 +895,7 @@ export default {
             otherBtn: true
           }
         }
-        if (this.isAuditWarring != true) {
+        if (this.isAuditWarning != true) {
           this.isShowShoppingCart = true;
           this.$refs.modelShoppingCartRef.setMemo(selectObj);
         }
@@ -898,7 +906,7 @@ export default {
         this.btnState.addBtnState = false;
         this.btnState.editBtnState = true;
         this.btnState.previewBtn = true;
-        if (this.isAuditWarring != true) {
+        if (this.isAuditWarning != true) {
           this.isShowShoppingCart = true;
           this.$refs.modelShoppingCartRef.setMemo(selectObj);
         }
@@ -1447,7 +1455,7 @@ export default {
     addTab(modelObj, isExistParam, executeSQLList, isRelation) {
       let obj = {
         title: modelObj.modelName + "结果",
-        name: modelObj.modelUuid,
+        name: this.modelId != modelObj.modelUuid ? ++this.tabIndex +'' + modelObj.modelUuid : modelObj.modelUuid,
         isExistParam: isExistParam,
         executeSQLList: executeSQLList,
         isRelation: isRelation,
@@ -1455,10 +1463,15 @@ export default {
       if (isExistParam) {
         obj.runModelConfig = modelObj.runModelConfig;
       }
+      // 关联项目id使用
+      obj.modelUuid = modelObj.modelUuid;
       this.editableTabs.push(obj);
-      this.nowTabModelUuid = modelObj.modelUuid;
-      this.editableTabsValue = modelObj.modelUuid;
-      this.modelPreview.push(modelObj.modelUuid);
+      // this.nowTabModelUuid = modelObj.modelUuid;
+      // this.editableTabsValue = modelObj.modelUuid;
+      // this.modelPreview.push(modelObj.modelUuid);
+      this.nowTabModelUuid = obj.name;
+      this.editableTabsValue = obj.name;
+      this.modelPreview.push(obj.name);
     },
     handleClick(tab, event) {
       if (tab.name !== "模型列表") {

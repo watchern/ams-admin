@@ -2630,7 +2630,6 @@ var iconDrag = function (treeNode) {
 			historyNodeName = "拖入表【" + treeNode.name + "】";
 		}
 		graph.oldOptArr.push({ "optType": "drag", "optArr": [{ "id": cell.id, "nodeData": graph.nodeData[cell.id] }] });
-		console.log(graph.getModel().root.children[0].children)
 		//刷新所使用资源树
 		refrashResourceZtree(cell.id, treeNode.name, cell.nodeType);
 		//刷新操作痕迹树
@@ -2653,7 +2652,6 @@ var iconDrag = function (treeNode) {
 			var repcell = cells[0]
 			//连线实例
 			var edge = graph.insertEdge(graph.getDefaultParent(), null, getEdgeCount() + 1, rep, cells[0], 'rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeColor=#3E6F96;strokeWidth=2;')     // 生成线
-			console.log(edge)
 			if (!edgeVerify(edge)) {
 				return;
 			} else {
@@ -2665,7 +2663,6 @@ var iconDrag = function (treeNode) {
 				// 添加父、子ID信息
 				graph.nodeData[rep.id].childrenIds.push(repcell.id)
 				graph.nodeData[repcell.id].parentIds.push(rep.id)
-				console.log(graph.edgeArr)
 			}
 		}
 

@@ -453,6 +453,12 @@ export async function initSetting() {
                     let hasExist = false
                     for (let i = 0; i < settingVue.setParamArr.length; i++) {
                         if (settingVue.setParamArr[i].dataModuleParamId === paramArr[j].moduleParamId) {
+                            // 图形化默认值修改
+                            if (typeof settingVue.setParamArr[i].dataDefaultVal !== 'undefined' && settingVue.setParamArr[i].dataDefaultVal != null &&
+                                typeof paramArr[j].defaultVal !== 'undefined' && settingVue.setParamArr[i].dataDefaultVal != paramArr[j].defaultVal) {
+                                settingVue.setParamArr[i].defaultVal = paramArr[j].defaultVal
+                                settingVue.setParamArr[i].value = paramArr[j].defaultVal
+                            }
                             hasExist = true
                             break
                         }
@@ -493,7 +499,7 @@ export async function initSetting() {
                 $(settingVue.$refs.setParamTable.$refs.bodyWrapper.children[0].children[1]).sortable().disableSelection()
                 settingVue.$nextTick(() => {
                     // 第六步：统一初始化参数的html（文本框、下拉列表、下拉树）
-                    initParam()
+                    // initParam()
                     // 第七步：刷新SQL值，将已编写的SQL赋值给sql
                     settingVue.sql = settingVue.editor.getValue()
                     settingVue.settingLoading = false
@@ -694,7 +700,7 @@ export function getParamsSetting() {
                     let paramName = settingVue.setParamArr[index].dataName// 获取参数名称
                     let dataLength = settingVue.setParamArr[index].dataDataLength// 获取参数值长度
                     // 如果该参数有长度限制且默认值不等于设置的长度值
-                    if (typeof dataLength !== 'undefined' && settingVue.setParamArr[index].value.length !== parseInt(dataLength)) {
+                    if (typeof dataLength !== 'undefined' && settingVue.setParamArr[index].value.length > parseInt(dataLength)) {
                         returnObj.verify = false
                         returnObj.message = '参数【' + paramName + '】输入值的长度与设置的长度值【' + parseInt(dataLength) + '】不相等'
                     }
@@ -744,6 +750,107 @@ export function getParamsSetting() {
                         $.each(trDom,function (k) {
                             let index = parseInt($(this).find("td:eq(0)>div>div").html()) - 1
                             let moduleParamId = settingVue.setParamArr[index].dataId// 取得当前行绑定的参数ID
+                            if (obj.moduleParamId === moduleParamId) {
+                                if (typeof settingVue.setParamArr[index].value !== 'undefined') {
+                                    defaultVal = settingVue.setParamArr[index].value
+                                }
+                                sortVal = parseInt(k + 1)
+                                return false
+                            }
+                        })
+                    }
+                    obj.defaultVal = defaultVal
+                    if (sortVal !== '') {
+                        obj.sortVal = sortVal
+                    }
+                    returnObj.paramsSetting.arr.push(obj)
+                    break
+                }
+            }
+        }
+    }
+    // 对参数数组的值按照排序值由小到大得顺序进行排序
+    paramCommonJs.sortParamArr(returnObj.paramsSetting.arr)
+    return returnObj
+}
+
+
+/**
+ * 获取参数配置，组织配置对象
+ */
+export function getParamsSettingBySave() {
+    // 组装对象
+    let returnObj = {
+        'verify': true,
+        'message': '',
+        'paramsSetting': {
+            'sql': settingVue.editor.getValue(),
+            'arr': []
+        }
+    }
+    let trDom = settingVue.$refs.setParamTable.$refs.bodyWrapper.children[0].children[1].children
+    if (typeof trDom !== 'undefined' && trDom.length > 0) {
+        // 验证文本框输入的默认值
+        $.each(trDom, function () {
+            let index = parseInt($(this).find("td:eq(0)>div>div").html()) - 1
+            if (returnObj.verify) {
+                if (settingVue.setParamArr[index].inputType === 'textinp' && typeof settingVue.setParamArr[index].value !== 'undefined' && settingVue.setParamArr[index].value !== '') {
+                    //验证文本框参数值的长度是否满足
+                    let paramName = settingVue.setParamArr[index].dataName // 获取参数名称
+                    let dataLength = settingVue.setParamArr[index].dataDataLength // 获取参数值长度
+                    // 如果该参数有长度限制且默认值不等于设置的长度值
+                    if (typeof dataLength !== 'undefined' && settingVue.setParamArr[index].value.length > parseInt(dataLength)) {
+                        returnObj.verify = false
+                        returnObj.message = '参数【' + paramName + '】输入值的长度与设置的长度值【' + parseInt(dataLength) + '】不相等'
+                    }
+                }
+                // if (settingVue.setParamArr[index].inputType === 'lineinp') { //下拉列表
+                //     // let moduleParamId = settingVue.setParamArr[index].dataId // 母参ID
+                //     // let selectParamXs = xmSelect.get('#selectParam' + moduleParamId, true)
+                //     // let paramSelectedObj = selectParamXs.getValue() // 获取选中的参数值名称
+                //     let paramSelectedObj = settingVue.setParamArr[index].value
+                //     let defaultValueArr = []
+                //     for (let j = 0; j < paramSelectedObj.length; j++) {
+                //         defaultValueArr.push(paramSelectedObj[j].value)
+                //     }
+                //     if (defaultValueArr.length > 0) {
+                //         settingVue.setParamArr[index].value = defaultValueArr
+                //     }
+                // }
+                // if (settingVue.setParamArr[index].inputType === 'treeinp') { //下拉树
+                //     // let moduleParamId = settingVue.setParamArr[index].dataId // 母参ID
+                //     // let selectTreeParamXs = xmSelect.get('#selectTreeParam' + moduleParamId, true)
+                //     // let paramSelectedObj = selectTreeParamXs.getValue() // 获取选中的参数值名称
+                //     let paramSelectedObj = settingVue.setParamArr[index].value
+                //     let defaultValueArr = []
+                //     for (let j = 0; j < paramSelectedObj.length; j++) {
+                //         defaultValueArr.push(paramSelectedObj[j].value)
+                //     }
+                //     if (defaultValueArr.length > 0) {
+                //         settingVue.setParamArr[index].value = defaultValueArr
+                //     }
+                // }
+            }
+        })
+    }
+    if (!returnObj.verify) {
+        return returnObj
+    }
+    for (let i = 0; i < settingVue.paramDivArr.length; i++) {
+        if (settingVue.paramDivArr[i].opt === 1) { // 如果当前参数有效
+            for (let j = 0; j < settingVue.paramsSetting.arr.length; j++) {
+                if (settingVue.paramDivArr[i].id === settingVue.paramsSetting.arr[j].id) { // 在已拖拽过的参数（包含中间删掉的参数）中匹配参数
+                    let obj = settingVue.paramsSetting.arr[j]
+                    obj.sortVal = 1 // 先给每个参数赋值默认排序值为1
+                    // 设置该参数的默认值和排序值
+                    let defaultVal = ''
+                    let sortVal = ''
+                    let trDom = settingVue.$refs.setParamTable.$refs.bodyWrapper.children[0].children[1].children
+                    if (typeof trDom !== 'undefined' && trDom.length > 0) {
+                        // 验证文本框输入的默认值
+                        $.each(trDom, function (k) {
+                            let index = parseInt($(this).find("td:eq(0)>div>div").html()) - 1
+                            let moduleParamId = settingVue.setParamArr[index].dataId // 取得当前行绑定的参数ID
                             if (obj.moduleParamId === moduleParamId) {
                                 if (typeof settingVue.setParamArr[index].value !== 'undefined') {
                                     defaultVal = settingVue.setParamArr[index].value
