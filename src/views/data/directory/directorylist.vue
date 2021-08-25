@@ -929,7 +929,6 @@ export default {
     },
     // 执行create后导入功能
     importTable() {
-      console.log(this.uploadtempInfo.colMetas);
       for (let i = 0; i < this.uploadtempInfo.colMetas.length; i++) {
         let obj = this.uploadtempInfo.colMetas[i];
         if (!this.isValidColumn(obj)) {

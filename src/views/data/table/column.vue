@@ -323,10 +323,14 @@ export default {
       // oldTableObj.tbComment = this.tempTable.tbComment;
       // var obj = {};
       for (let i = 0; i < newTableObj.colMetas.length; i++) {
+
         newTableObj.colMetas[i].dataLength = null;
         newTableObj.colMetas[i].colPrecision = null;
-        if (newTableObj.colMetas[i].colName === "" || newTableObj.colMetas[i].dataType === "") {
+        if (this.CommonUtil.isBlank(newTableObj.colMetas[i].colName) || this.CommonUtil.isBlank(newTableObj.colMetas[i].dataType)) {
           this.$message.error("请完善数据信息!");
+          return;
+        }
+        if (!this.isValidColumn(newTableObj.colMetas[i])) {
           return;
         }
       }
