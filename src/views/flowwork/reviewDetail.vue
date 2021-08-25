@@ -275,7 +275,6 @@ export default {
             this.flowItem.appDataUuid = response.data.data.modelRelationUuid;
             //修改业务执行状态为0，调用监听，执行更新流程状态操作。
             // this.$store.dispatch("applyInfo/setMstate", "0");
-            alert(JSON.stringify(this.$store.state.applyInfo.applyInfo))
             this.$store.dispatch("applyInfo/setAppDataUuid", response.data.data.modelRelationUuid);
             alert(JSON.stringify(this.$store.state.applyInfo.applyInfo))
             // alert(this.$store.state.applyInfo.applyInfo.mstate)
