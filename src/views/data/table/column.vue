@@ -214,7 +214,7 @@ export default {
       var newObj = {}; // copy obj
       newObj.colName = "";
       newObj.dataType = "";
-      newObj.dataLength = "";
+      newObj.dataLengthText = "";
       newObj.isNullable = 0;
       this.tempIndex++;
       newObj.tempIndex = this.tempIndex;
@@ -254,17 +254,12 @@ export default {
       for (let index = 0; index < this.temp.length; index++) {
         //先判空
         let obj = this.temp[index]
-        if(obj.colName==''||obj.colName==undefined){
+        if(this.CommonUtil.isBlank(obj.colName)){
           this.$message.error("请完善建表信息，字段名称不能为空");
           return
-        }else if(obj.dataType==''||obj.dataType==undefined){
+        }else if(this.CommonUtil.isBlank(obj.dataType)){
           this.$message.error("请完善建表信息，数据类型不能为空");
           return
-        }else{
-          // const r = this.temp[index];
-          //   if (r.dataLength !== "") {
-          //     r.dataLength = parseInt(r.dataLength);
-          //   }
         }
         //再判合法
         if (!this.isValidColumn(obj)) {
@@ -328,10 +323,14 @@ export default {
       // oldTableObj.tbComment = this.tempTable.tbComment;
       // var obj = {};
       for (let i = 0; i < newTableObj.colMetas.length; i++) {
+
         newTableObj.colMetas[i].dataLength = null;
         newTableObj.colMetas[i].colPrecision = null;
-        if (newTableObj.colMetas[i].colName === "" || newTableObj.colMetas[i].dataType === "") {
+        if (this.CommonUtil.isBlank(newTableObj.colMetas[i].colName) || this.CommonUtil.isBlank(newTableObj.colMetas[i].dataType)) {
           this.$message.error("请完善数据信息!");
+          return;
+        }
+        if (!this.isValidColumn(newTableObj.colMetas[i])) {
           return;
         }
       }

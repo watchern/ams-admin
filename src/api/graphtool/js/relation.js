@@ -198,6 +198,7 @@ export function init() {
             if (table) {
                 for (var iit = table.elements; iit.next();) {
                     var itempanel = iit.value
+                    console.log(0)
                     if (itempanel.background !== 'transparent') {
                         items.push(itempanel)
                     }
@@ -374,6 +375,7 @@ export function init() {
                 let rtn = nodeData.columnsInfo[k].rtn
                 const columnInfo = nodeData.columnsInfo[k]
                 let columnName = nodeData.columnsInfo[k].columnName
+                let selectColumnName = nodeData.columnsInfo[k].selectColumnName
                 let disColumnName = nodeData.columnsInfo[k].newColumnName
                 let nodeId = nodeData.columnsInfo[k].nodeId
                 let checked = true
@@ -383,7 +385,8 @@ export function init() {
                         relationVue.checkAll = false
                     }
                 }
-                relationVue.items.push({id,nodeId,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked})
+                console.log(1)
+                relationVue.items.push({id,nodeId,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked,selectColumnName})
                 relationVue.columnsInfo.push({...{},...nodeData.columnsInfo[k]})
             }
             // 组装输出列的表格,end
@@ -440,10 +443,12 @@ export function init() {
                 if (columnsInfo[k].isOutputColumn === 1) {
                     let id = idNum
                     let columnInfo = {...{},...columnsInfo[k]}
-                    let columnName = table.key + "." + columnsInfo[k].newColumnName
+                    // table.key + "." + 
+                    let selectColumnName = table.key + "." + columnsInfo[k].newColumnName
+                    let columnName = columnsInfo[k].newColumnName
                     let disColumnName = columnsInfo[k].newColumnName
                     let checked = false
-                    relationVue.items.push({id,nodeId,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked})
+                    relationVue.items.push({id,nodeId,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked,selectColumnName})
                     relationVue.columnsInfo.push({...columnsInfo[k],...{"nodeId":nodeId,"rtn":rtn,"resourceTableName":resourceTableName}})
                     idNum++
                 }
@@ -460,7 +465,6 @@ export function init() {
  * @param isAdd 是否是新增操作
  */
 function addLine(obj, isAdd) {
-    console.log(obj)
     const idx = Math.max(indexOfJoin(obj.from), indexOfJoin(obj.to))
     if (relationVue.join[idx].type === ',') {
         relationVue.join[idx].type = 'INNER JOIN'
@@ -697,8 +701,8 @@ export function saveNodeInfo() {
             } else {
                 columnInfo.isOutputColumn = 0
             }
-            columnInfo.selectColumnName = relationVue.items[index].columnName
-            columnInfo.columnName =  relationVue.items[index].disColumnName
+            columnInfo.selectColumnName = relationVue.items[index].selectColumnName
+            columnInfo.columnName = relationVue.items[index].columnName
             columnInfo.newColumnName = relationVue.items[index].disColumnName
             columnInfo.resourceTableName = resourceTableName
             columnInfo.rtn = rtn
