@@ -37,6 +37,7 @@ export function init() {
             for (let k = 0; k < countData.length; k++) {
                 groupCountVue.items.push({ 'id': k})
             }
+            console.log(countData)
             groupCountVue.$nextTick(() => {
                 for (let m = 0; m < countData.length; m++) {
                     initCountSelectData(m)
@@ -162,7 +163,7 @@ function initOutputColumn(columnInfo, isCountTr, sign, countType, isInit) {
         }
     }
     if(countType && !isInit){
-        columnItem.columnName = countType.value + "(" + columnItem.columnName + ")";
+        columnItem.selectColumnName = countType.value + "(" + columnItem.columnName + ")";
     }
     groupCountVue.columnItems.push(columnItem)
     groupCountVue.ind++
@@ -472,7 +473,7 @@ export function saveNodeInfo() {
                 columnInfo.checked = false
                 columnInfo.isOutputColumn = 0
             }
-            columnInfo.selectColumnName = groupCountVue.columnItems[index].columnName
+            columnInfo.selectColumnName = groupCountVue.columnItems[index].selectColumnName
             columnInfo.columnName = newColumnName
             columnInfo.newColumnName = newColumnName
             if (typeof groupCountVue.columnItems[index].sign !== "undefined") { // 汇总字段的输出列数据行
