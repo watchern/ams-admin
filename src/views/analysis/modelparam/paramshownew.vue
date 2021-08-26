@@ -89,6 +89,9 @@ data(){
        this.refresh = !this.refresh
     },
     getParamsSetting(){
+      if(this.paramsSetting == null){
+        return
+      }
       return settingParams.getParamsSettingBySave()
     }
   }
