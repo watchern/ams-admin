@@ -11,10 +11,8 @@
                 ref="tab"
                 stripe
                 :data="this.modelList"
-                @selection-change="handleSelectionChange"
                 max-height="300"
         >
-          <el-table-column type="selection"></el-table-column>
           <el-table-column label="模型名称" width="200px" prop="modelName">
             <template slot-scope="scope">
               {{ scope.row.modelName }}
@@ -134,9 +132,6 @@ export default {
     },
 
     updateSave() {
-      if (this.$refs.pbFile.fileListData.length != 0) {
-        this.fileListDatas = this.$refs.pbFile.fileListData;
-      }
       var data = {
         modelRelationUuid: this.appDataUuid,
         status: this.$store.state.applyInfo.applyInfo.status,

@@ -711,13 +711,16 @@ export default{
         if (this.activeName === "custom") {
           var names = [];
           var value = [];
-          this.customStaticValues.push(this.defaultExistsCustomStaticValues);
+          // this.customStaticValues.push(this.defaultExistsCustomStaticValues);
+          // 新增参数顺序
+          names.push(this.defaultExistsCustomStaticValues.names)
+          value.push(this.defaultExistsCustomStaticValues.values)
           for(let i = 0; i < this.customStaticValues.length;i++){
             names.push(this.customStaticValues[i].names);
             value.push(this.customStaticValues[i].values);
           }
-          dataParam["paramOptions.optionsNames"] = names.join("-");
-          dataParam["paramOptions.optionsVals"] = value.join("-");
+          dataParam["paramOptions.optionsNames"] = names.join(",");
+          dataParam["paramOptions.optionsVals"] = value.join(",");
         }
       }
       $.ajax({
@@ -810,15 +813,19 @@ export default{
           var names = [];
           var value = [];
           var uuids = [];
-          this.customStaticValues.push(this.defaultExistsCustomStaticValues);
+          // this.customStaticValues.push(this.defaultExistsCustomStaticValues);
+          // 修改参数顺序
+          names.push(this.defaultExistsCustomStaticValues.names)
+          value.push(this.defaultExistsCustomStaticValues.values)
+          uuids.push(this.defaultExistsCustomStaticValues.uuid);
           for(let i = 0; i < this.customStaticValues.length;i++){
             names.push(this.customStaticValues[i].names);
             value.push(this.customStaticValues[i].values);
             uuids.push(this.customStaticValues[i].uuid);
           }
-          dataParam["paramOptions.optionsNames"] = names.join("-");
-          dataParam["paramOptions.optionsVals"] = value.join("-");
-          dataParam["paramOptions.optionsUuids"] = uuids.join("-");
+          dataParam["paramOptions.optionsNames"] = names.join(",");
+          dataParam["paramOptions.optionsVals"] = value.join(",");
+          dataParam["paramOptions.optionsUuids"] = uuids.join(",");
         }
         dataParam["paramChoice.ammParamChoiceUuid"] = $("#choiceUuid").val();
       }

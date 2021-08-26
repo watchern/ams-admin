@@ -276,7 +276,7 @@ export default {
             //修改业务执行状态为0，调用监听，执行更新流程状态操作。
             // this.$store.dispatch("applyInfo/setMstate", "0");
             this.$store.dispatch("applyInfo/setAppDataUuid", response.data.data.modelRelationUuid);
-            alert(JSON.stringify(this.$store.state.applyInfo.applyInfo))
+            // alert(JSON.stringify(this.$store.state.applyInfo.applyInfo))
             // alert(this.$store.state.applyInfo.applyInfo.mstate)
             // alert(response.data.data.busRelationUuid)
             this.$emit("submitFlow", response.data.data.modelRelationUuid);
