@@ -596,7 +596,7 @@ export default {
       var data = {
         modelRelationUuid: this.$store.state.applyInfo.applyInfo.appDataUuid,
       };
-      alert(this.$store.state.applyInfo.applyInfo.appDataUuid)
+      // alert(this.$store.state.applyInfo.applyInfo.appDataUuid)
       this.$axios
         .post("/analysis/modelPublishRelation/delete/rollBackData", data)
         .then((response) => {
