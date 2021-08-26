@@ -45,7 +45,7 @@ export function init() {
                     var initCountColumnData = JSON.parse(JSON.stringify(groupCountVue.columnData))// 复制全局汇总字段的数组变量的值
                     initCountColumnData.unshift({ 'name': '请选择', 'value': '', 'type': '' })
                     for (let n = 0; n < initCountColumnData.length; n++) { // 设置已汇总字段名称值的选中状态，重新渲染当前行的下拉框
-                        if(countData[m].columnName === countData[m].countTypeValue + "(" + initCountColumnData[n].value + ")"){
+                        if(countData[m].selectColumnName === countData[m].countTypeValue + "(" + initCountColumnData[n].value + ")"){
                             initCountColumnData[n].selected = true;
                             break;
                         }
