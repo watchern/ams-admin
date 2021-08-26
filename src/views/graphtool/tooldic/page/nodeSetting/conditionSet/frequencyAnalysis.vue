@@ -153,11 +153,11 @@
                     let columnSelected = this.analysisData[i].columnSelected
                     let nodeId = this.analysisData[i].nodeId
                     let nodeName = this.analysisData[i].nodeName
-                    let columns = []
+                    let columnsInfo = []
                     Array.from(this.analysisData[i].columnsInfo, n => {
-                        columns.push({...{"selected":n.columnName === columnSelected},...n})
+                        columnsInfo.push({...{"selected":n.columnName === columnSelected},...n})
                     })
-                    contrastCol.push({nodeId,nodeName,columnSelected,columns})
+                    contrastCol.push({nodeId,nodeName,columnSelected,columnsInfo})
                 }
                 this.nodeData.setting.analysisCol = analysisCol
                 this.nodeData.setting.appearNum = appearNum
