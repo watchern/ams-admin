@@ -37,7 +37,6 @@ export function init() {
             for (let k = 0; k < countData.length; k++) {
                 groupCountVue.items.push({ 'id': k})
             }
-            console.log(countData)
             groupCountVue.$nextTick(() => {
                 for (let m = 0; m < countData.length; m++) {
                     initCountSelectData(m)
@@ -147,6 +146,7 @@ function initOutputColumn(columnInfo, isCountTr, sign, countType, isInit) {
         "newColumnName":columnInfo.newColumnName,// 输出字段名称
         "rtn":columnInfo.rtn,
         "checked":columnInfo.checked,
+        "selectColumnName":columnInfo.selectColumnName||''
     }
     if (isCountTr) { // 如果是汇总配置列的行，则附加唯一标识
         columnItem.sign = sign
