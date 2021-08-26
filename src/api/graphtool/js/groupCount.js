@@ -472,7 +472,8 @@ export function saveNodeInfo() {
                 columnInfo.checked = false
                 columnInfo.isOutputColumn = 0
             }
-            columnInfo.columnName = groupCountVue.columnItems[index].columnName
+            columnInfo.selectColumnName = groupCountVue.columnItems[index].columnName
+            columnInfo.columnName = newColumnName
             columnInfo.newColumnName = newColumnName
             if (typeof groupCountVue.columnItems[index].sign !== "undefined") { // 汇总字段的输出列数据行
                 // 组织汇总列的字段配置信息
@@ -480,8 +481,9 @@ export function saveNodeInfo() {
                 columnInfo.sign = groupCountVue.columnItems[index].sign
                 columnInfo.countType = groupCountVue.columnItems[index].dataCountType
                 countData.push({
-                    "columnName":columnInfo.columnName,
+                    "columnName":newColumnName,
                     "columnType":columnInfo.columnType,
+                    "selectColumnName":columnInfo.selectColumnName,
                     "countTypeValue":groupCountVue.columnItems[index].dataCountType.value,
                     "newColumnName":newColumnName
                 })

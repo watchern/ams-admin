@@ -168,8 +168,8 @@
             <el-table-column prop="columnName" label="是否显示" width="80">
               <template slot-scope="scope">
                 <el-select v-model="scope.row.isShow" placeholder="是否显示" value="1" :disabled="isBanEdit">
-                  <el-option label="是" :value="1"/>
-                  <el-option label="否" :value="0"/>
+                  <el-option label="是" value="1"/>
+                  <el-option label="否" value="0"/>
                 </el-select>
               </template>
             </el-table-column>
