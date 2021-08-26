@@ -155,6 +155,12 @@
             :formatter="modelTypeFormatter"
           />
           <el-table-column
+            label="模型用途"
+            prop="modelUse"
+            align="center"
+            :formatter="modelUseFormatter"
+          />
+          <el-table-column
             label="创建时间"
             prop="createTime"
             align="center"
@@ -747,6 +753,18 @@ export default {
       return value;
     },
     /**
+     * 格式化模型用途
+     * @param row 格式化行
+     * @param column 格式化列
+     * @returns {返回格式化后的字符串}
+     */
+    modelUseFormatter(row) {
+      if (row.modelUse == 2) {
+        return "审计预警";
+      }
+      return "审计查询";
+    },
+    /**
      * 格式化风险等级
      * @param row 格式化行
      * @param column 格式化列
@@ -769,8 +787,12 @@ export default {
     getList(query) {
       this.listLoading = true;
       if (query) {
+        if(this.isAuditWarning) { query.modelUse = 2}
         this.pageQuery.condition = query;
+      } else {
+        if(this.isAuditWarning) { this.pageQuery.condition = {modelUse: 2}}
       }
+      
       findModel(this.pageQuery).then((resp) => {
         this.total = resp.data.total;
         this.list = resp.data.records;
