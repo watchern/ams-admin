@@ -33,7 +33,10 @@
       v-if="openType !== 'showTable' && openType !== 'tableRegister'"
       class="detail-form"
     >
-      <el-form ref="dataForm" :model="tempTable">
+      <el-form ref="dataForm"
+               :model="tempTable"
+               :rules="judgeTbName"
+      >
         <el-form-item label="表名称" prop="displayTbName">
           <el-input v-model="tempTable.displayTbName" />
         </el-form-item>
@@ -44,8 +47,8 @@
     </template>
     <el-table :data="temp" @selection-change="handleSelectionChange" class="detail-form" style="padding: 20px 0 ;overflow: auto;height: 43vh">
       <el-table-column type="selection" width="55" />
-      <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
-        <template slot-scope="scope" show-overflow-tooltip>
+      <el-table-column prop="colName" label="字段名称" show-overflow-tooltip >
+        <template slot-scope="scope" show-overflow-tooltip >
           <el-tooltip
             :disabled="scope.row.colName.length < 12"
             effect="dark"
@@ -135,8 +138,24 @@ export default {
       tempTable: { displayTbName: "" },
       currColType: '',
       dataTypeRules: {},
-      disableEditColumn: false
-    };
+      disableEditColumn: false,
+      judgeTbName:{
+        displayTbName:[
+          { required: true, message: "请填写导入表名称", trigger: "change" },
+          {
+            type: 'string',
+            pattern: /^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/,
+            message: '请输入合法表名称',
+          },{
+            type: 'string',
+            pattern: /^[\u4E00-\u9FA5\w]*$/,
+            message: '请输入合法表名称',
+          },
+        ],
+
+      }
+    }
+
   },
   created() {
     this.dataTypeRules = this.CommonUtil.DataTypeRules;
