@@ -2,7 +2,7 @@
   <div id="setParam" ref="settingParamDiv">
 <!--    <div class="col-sm-10">-->
     <el-row>
-      <table id="setParamTable" class="table table-bordered">
+      <table id="setParamTable" class="table table-bordered detail-form" :key="refresh">
         <thead>
         <tr>
           <th align="center" width="200px">参数名称</th>
@@ -19,16 +19,34 @@
         <tr ref="setParamTr" v-for="(setParamObj,index) in setParamArr" :index="index">
           <td align="center">{{setParamObj.name}}</td>
           <td v-if="setParamObj.inputType === 'lineinp'" ref="selectParam">
-            <div :id="setParamObj.id" :title="setParamObj.title" class='xm-select-demo paramTr'></div>
+            <!-- {{setParamObj.data.length}} -->
+            <!-- <div :id="setParamObj.id" :title="setParamObj.title" class='xm-select-demo paramTr'></div> -->
+
+             <!-- 下拉列表类型 -->
+             <!-- setParamObj.dataType == 'str' ? `'`+ item.value + `'`:  -->
+            <el-select v-model="setParamObj.value" style="width: 90%;" 
+                :multiple="setParamObj.dataChoiceType == 0 || setParamObj.dataChoiceType == '0'" filterable clearable>
+              <el-option v-for="item in setParamObj.data" :value="item.value" :label="item.name" :key="item.value" >
+                <span style="float: left"> {{ item.value }}</span>
+                <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
+              </el-option>
+            </el-select>
           </td>
           <td v-if="setParamObj.inputType === 'textinp'" ref="textParam">
             <el-input style="width: 90%;" :title="setParamObj.title" class='paramOption paramTr' v-model="setParamObj.value"></el-input>
           </td>
           <td v-if="setParamObj.inputType === 'timeinp'" ref="dataParam">
-            <el-date-picker style="width: 100%;" :title="setParamObj.title" class='paramOption paramTr' type="date" placeholder="选择日期" v-model="setParamObj.value"></el-date-picker>
+            <el-date-picker style="width: 90%;" :title="setParamObj.title" class='paramOption paramTr' type="date" placeholder="选择日期" v-model="setParamObj.value"></el-date-picker>
           </td>
           <td v-if="setParamObj.inputType === 'treeinp'" ref="selectTreeParam">
-            <div :id="setParamObj.id" :title="setParamObj.title" class='xm-select-demo paramTr'></div>
+            <!-- <div :id="setParamObj.id" :title="setParamObj.title" class='xm-select-demo paramTr'></div> -->
+            <el-cascader
+            v-model="setParamObj.value"
+            style="width:90%"
+            :props="{ label:'name',  multiple: setParamObj.dataChoiceType == 0 || setParamObj.dataChoiceType == '0', emitPath: false}"
+            :options="setParamObj.data"
+            multiple
+            clearable />
           </td>
           <td>{{setParamObj.description}}</td>
         </tr>
@@ -41,13 +59,16 @@
 
 <script>
 import * as settingParams from "@/api/analysis/auditparam";
+import '@/components/ams-loading/css/loading.css'
 export default {
 name: "paramshownew",
 data(){
   return{
+    load:null,
     arr:[],
     setParamArr :[],
-    paramsSetting:[]
+    paramsSetting:[],
+    refresh: true
   }
 },
   mounted(){
@@ -57,10 +78,21 @@ data(){
     initSetting(paramsSetting){
       this.paramsSetting = paramsSetting
       this.arr = paramsSetting
-      settingParams.initSetting()
+      settingParams.initSettingParam()
+    },
+    // 清空参数
+    removeParam(){
+      this.setParamArr = []
+    },
+    refreshTable(){
+      // key值刷新页面
+       this.refresh = !this.refresh
     },
     getParamsSetting(){
-      return settingParams.getParamsSetting()
+      if(this.paramsSetting == null){
+        return
+      }
+      return settingParams.getParamsSettingBySave()
     }
   }
 

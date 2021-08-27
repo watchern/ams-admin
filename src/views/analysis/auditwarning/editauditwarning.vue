@@ -133,8 +133,8 @@
       </el-tab-pane>
       <el-tab-pane label="执行信息" name="executeInfo">
         <el-form ref="executeDataForm" :rules="rules" class="detail-form" :model="temp" :disabled="allReadOnly" >
-          <el-form-item label="执行方式" >
-            <el-select v-model="temp.executeMode" placeholder="请选择执行方式">
+          <el-form-item label="执行方式">
+            <el-select v-model="temp.executeMode" placeholder="请选择执行方式" style="width:100%">
               <el-option label="单次执行" :value="1"></el-option>
               <el-option label="多次执行" :value="2"></el-option>
               <el-option label="周期执行" :value="3"></el-option>
@@ -147,6 +147,7 @@
               type="datetime"
               placeholder="选择执行时间"
               align="right"
+              style="width:100%"
               :picker-options="executeTimeOptions">
             </el-date-picker>
           </el-form-item>
@@ -158,6 +159,7 @@
                 v-model="domain.executeTime"
                 placeholder="选择多次执行时间"
                 align="right"
+                style="width:90%"
                 :picker-options="executeTimeOptions">
               </el-date-picker>
               <!--<el-button type="primary" v-if="index==0" @click="addExecuteTime">添加</el-button>-->
@@ -169,7 +171,7 @@
           <!--周期执行时间配置选择-->
           <el-form-item label="" v-if="temp.executeMode == 3"  >
             <el-form-item label="执行周期设置" >
-              <el-select v-model="temp.intervalExecuteTime.intervalType" placeholder="请选择执行周期">
+              <el-select v-model="temp.intervalExecuteTime.intervalType" placeholder="请选择执行周期" style="width:100%">
                 <el-option label="每天" :value="1"></el-option>
                 <el-option label="每周" :value="2"></el-option>
                 <el-option label="每月" :value="3"></el-option>
@@ -224,6 +226,7 @@
                 :picker-options="{
                   selectableRange: '00:00:00 - 23:59:00'
                 }"
+                style="width:100%"
                 placeholder="请输入执行时间">
               </el-time-picker>
             </el-form-item>
@@ -243,7 +246,11 @@
           <!--模型参数配置-->
           <el-form-item label="模型参数配置" v-show="temp.warningType == 1" >
 <!--            <paramDraw v-for="(domain, index) in temp.modelList" v-if="domain.paramObj != undefined && domain.paramObj.length > 0" :myId="domain.modelUuid" :ref="'paramDrawRef'+domain.modelUuid"/>-->
-            <paramDrawNew v-for="(domain, index) in temp.modelList" v-if="domain.paramObj != undefined && domain.paramObj.length > 0" :ref="'paramDrawRef'+domain.modelUuid" :sql="paramSql[index]" :arr="paramArr[index]"></paramDrawNew>
+            <el-row  v-for="(domain,index) in temp.modelList"  :key="index">
+              <h3 v-if="typeof  domain.paramObj !== 'undefined' && domain.paramObj.length > 0" align="middle" >{{domain.modelName}}</h3>
+              <paramDrawNew v-if="typeof  domain.paramObj !== 'undefined' && domain.paramObj.length > 0"  :ref="'paramDrawRef'+domain.modelUuid" :sql="paramSql[index]" :arr="paramArr[index]"></paramDrawNew>
+            </el-row>
+            <!-- <paramDrawNew v-for="(domain, index) in temp.modelList" v-if="domain.paramObj != undefined && domain.paramObj.length > 0" :ref="'paramDrawRef'+domain.modelUuid" :sql="paramSql[index]" :arr="paramArr[index]"></paramDrawNew> -->
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -316,7 +323,6 @@ import paramDrawNew from '@/views/analysis/modelparam/paramdrawnew'
 import {findModelsWithParam, getWarningById,supQuery,bingLieQuery,getCommonlyAnalysisListByIds} from '@/api/analysis/auditwarning'
 import {getOneDict} from "@/utils"
 import paramDraw from '@/views/analysis/modelparam/paramdraw'
-import {replaceNodeParam } from '@/api/analysis/auditparam'
 import dataTree from "@/views/data/role-res/data-tree";
 import commonlyAnalysisList from "../../../components/ams-indicator-admin/src/views/indicator/commonlyAnalysisList";
 import $ from "jquery";
@@ -621,12 +627,16 @@ export default {
           if(isCreated){
             continue
           }
+          // sql param 数据添加
           if(model.paramObj && model.paramObj.length > 0){
             this.initedParamModel.push(model)
             this.paramSql.push(model.sqlValue)
             this.paramArr.push(model.paramObj)
-            this.$refs["paramDrawRef"+model.modelUuid][0].createParamNodeHtml(model.modelUuid,model.modelName+' 参数','auditwarring')
+            this.$refs["paramDrawRef"+model.modelUuid][0].createParamNodeHtml(model.modelUuid,model.modelName+' 参数','auditwarning')
             // this.$refs["paramDrawRef"+model.modelUuid][0].initParamHtmlSS(model.sqlValue, model.paramObj, model.modelName, model.modelUuid)
+          } else {
+            this.paramSql.push([])
+            this.paramArr.push([])
           }
         }
       })

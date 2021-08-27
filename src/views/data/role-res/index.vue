@@ -265,7 +265,7 @@
                 prop="chnName"
               />
               <!--                prop="encryptType"-->
-              <el-table-column
+<!--              <el-table-column
                 label="脱敏方式"
                 width="150px"
                 align="center"
@@ -280,7 +280,7 @@
                    </el-option>
                  </el-select>
               </template>
-              </el-table-column>
+              </el-table-column>-->
             </el-table>
             <div style="margin: 8px">
               <el-input

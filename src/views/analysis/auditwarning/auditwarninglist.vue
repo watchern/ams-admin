@@ -33,13 +33,13 @@
             @click="startWarning(scope.row.auditWarningUuid)"
             v-if="scope.row.isStart == 0"
           >
-            启动
+            启用
           </el-link>
           <el-link
             type="primary"
             @click="stopWarning(scope.row.auditWarningUuid)"
             v-if="scope.row.isStart == 1">
-            停止
+            停用
           </el-link>
         </template>
       </el-table-column>

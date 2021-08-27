@@ -130,7 +130,7 @@
       :append-to-body="false"
       :close-on-click-modal="false"
       v-if="addParamDialog"
-      title="添加模型参数"
+      :title="textMap[dialogStatus]"
       :visible.sync="addParamDialog">
       <addParam :selectTreeNode="selectTreeNode" @refshParamList="refshParamList" :operationObj="operationObj" ref="addParam"></addParam>
       <div slot="footer" class="dialog-footer">
@@ -202,7 +202,12 @@ export default {
         operationType : 1,
         //参数编号
         paramUuid:''
-      }
+      },
+      textMap: {
+        update: '修改模型参数',
+        create: '添加模型参数'
+      },
+      dialogStatus: 'create'
     }
   },
   computed: {
@@ -490,6 +495,7 @@ export default {
       }
       this.operationObj.operationType = 1
       this.operationObj.paramUuid = ''
+      this.dialogStatus = 'create'
       this.addParamDialog = true
     },
     /**
@@ -557,6 +563,7 @@ export default {
       }
       this.operationObj.operationType = 2
       this.operationObj.paramUuid = selectObj[0].ammParamUuid
+      this.dialogStatus = 'update'
       this.addParamDialog = true
     },
     enableParam(){

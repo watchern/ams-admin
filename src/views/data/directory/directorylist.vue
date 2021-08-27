@@ -128,9 +128,13 @@
       :title="textMap[dialogStatus]"
       :visible.sync="folderFormVisible"
       width="600px"
+
     >
-      <el-form ref="folderForm" :model="resourceForm">
-        <el-form-item :label="typeLabel" >
+      <el-form ref="folderForm"
+               :model="resourceForm"
+               :rules="uploadRules"
+      >
+        <el-form-item :label="typeLabel" prop="resourceName">
           <el-input v-model="resourceForm.resourceName" style="width: 100%" class="detail-form"/>
         </el-form-item>
       </el-form>
@@ -166,6 +170,7 @@
       :visible.sync="moveTreeVisible"
       width="600px"
       :close-on-click-modal="false"
+      title="移动"
     >
       <dataTree
         style="overflow: auto; height: 62vh"
@@ -181,7 +186,7 @@
         <el-button type="primary" @click="movePathSave()">保存</el-button>
       </span>
     </el-dialog>
-    <!-- 弹窗3 -->
+    <!-- 导入表数据 -->
     <el-dialog
       :close-on-click-modal="false"
       v-if="uploadVisible"
@@ -206,13 +211,12 @@
             :rules="uploadRules"
             :model="uploadtemp"
             label-position="right"
-
           >
             <el-form-item
               label="导入表名称：(当导入数据为txt格式时，列名和数据均以','分割即可)"
-              prop="tbName"
+              prop="displayTbName"
             >
-              <el-input v-model="uploadtemp.tbName" label="请输入表名称" class="detail-form"/>
+              <el-input v-model="uploadtemp.displayTbName" label="请输入表名称" class="detail-form" />
             </el-form-item>
             <el-form-item label="数据表描述" prop="tbComment">
               <el-input v-model="uploadtemp.tbComment" label="请输入表描述" class="detail-form"/>
@@ -250,7 +254,11 @@
                       { required: true, message: '请输入字段名称' },
                       {
                         type: 'string',
-                        pattern: /^[a-zA-Z][a-zA-Z0-9_]*$/,
+                        pattern: /^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/,
+                        message: '请输入合法字段名称',
+                      },{
+                        type: 'string',
+                        pattern: /^[\u4E00-\u9FA5\w]*$/,
                         message: '请输入合法字段名称',
                       },
                     ]"
@@ -292,15 +300,16 @@
               </template>
             </el-table-column>
             <el-table-column
-              prop="dataLength"
-              label="数据长度"
+              prop="dataLengthText"
+              label="数据长度（精度）"
               show-overflow-tooltip
             >
               <template slot-scope="scope" show-overflow-tooltip>
                 <el-input
-                  v-model="scope.row.dataLength"
+                  v-model="scope.row.dataLengthText"
                   style="width: 90%; height: 55px"
                   :disabled="!scope.row.enableDataLength"
+                  @change="isValidColumn(scope.row)"
                 />
               </template>
             </el-table-column>
@@ -463,6 +472,7 @@
       :visible.sync="shareVisible"
       width="80%"
       style="min-width: 1000px"
+      title="分享"
     >
       <el-row>
         <el-col>
@@ -558,16 +568,16 @@ export default {
         sortName: "create_time",
       },
       temp: [
-        {
-          id: "",
-          label: "",
-          title: "",
-          type: "",
-          extMap: {
-            createTime: "",
-            tbSizeByte: "",
-          },
-        },
+        // {
+        //   id: "",
+        //   label: "",
+        //   title: "",
+        //   type: "",
+        //   extMap: {
+        //     createTime: "",
+        //     tbSizeByte: "",
+        //   },
+        // },
       ],
       folderForm: {
         folderUuid: null,
@@ -607,17 +617,33 @@ export default {
       shareVisible: false,
       uploadVisible: false,
       uploadtemp: {
-        tbName: "",
+        displayTbName: "",
         tableFileName: "",
         folderUuid: "",
       },
       uploadRules: {
-        tbName: [
+        displayTbName: [
           { required: true, message: "请填写导入表名称", trigger: "change" },
           {
-            type: "string",
-            pattern: /^[a-zA-Z][a-zA-Z0-9_]*$/,
-            message: "请填写合法导入表名称",
+            type: 'string',
+            pattern: /^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/,
+            message: '请输入合法表名称',
+          },{
+            type: 'string',
+            pattern: /^[\u4E00-\u9FA5\w]*$/,
+            message: '请输入合法表名称',
+          },
+        ],
+        resourceName:[
+          { required: true, message: "请填写导入表名称", trigger: "change" },
+          {
+            type: 'string',
+            pattern: /^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/,
+            message: '请输入合法表名称',
+          },{
+            type: 'string',
+            pattern: /^[\u4E00-\u9FA5\w]*$/,
+            message: '请输入合法表名称',
           },
         ],
       },
@@ -663,21 +689,21 @@ export default {
   created() {
     // this.dataTypeRules = this.CommonUtil.DataTypeRules
     this.initDirectory();
-    //获取登录用户的信息来控制删除按钮是否显示
-    getInfo().then((resp) => {
-      getById(resp.data.id).then((res) => {
-        const dataArray = res.data;
-        const newArray = dataArray[0].roleId;
-        const sysRole = "系统管理员";
-        getSystemRole(sysRole).then((re) => {
-          for( const item in newArray){
-            if(newArray[item] == re.data.roleid ){
-              this.ifManager = true;
-            }
-          }
-        })
-      })
-    })
+    // //获取登录用户的信息来控制删除按钮是否显示
+    // getInfo().then((resp) => {
+    //   getById(resp.data.id).then((res) => {
+    //     const dataArray = res.data;
+    //     const newArray = dataArray[0].roleId;
+    //     const sysRole = "系统管理员";
+    //     getSystemRole(sysRole).then((re) => {
+    //       for( const item in newArray){
+    //         if(newArray[item] == re.data.roleid ){
+    //           this.ifManager = true;
+    //         }
+    //       }
+    //     })
+    //   })
+    // })
   },
   watch: {
     openType: {
@@ -762,7 +788,6 @@ export default {
   },
   methods: {
     changeDataType(row){
-      debugger
       const currRule = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
       if (!this.disableEditColumn) {
         this.$set(row, "enableDataLength", currRule && this.CommonUtil.isNotUndefined(currRule.enableDataLength) ? currRule.enableDataLength : true);
@@ -775,20 +800,7 @@ export default {
 
     },
     isValidColumn(row) {
-      debugger
       var currDataType = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
-      // var arr = this.CommonUtil.isNotBlank(row.dataLengthText) ? row.dataLengthText.split(",") : null;
-      // if (this.CommonUtil.isNotEmpty(arr)) {
-      //   var dataLengthN = arr.length > 0 ? arr[0].trim() : "";
-      //   var colPrecisionN = arr.length > 1 ? arr[1].trim() : "";
-      //   if (dataLengthN !== row.dataLength) {
-      //     row.dataLength = arr.length > 0 ? new Number(arr[0].trim()) : null;
-      //   }
-      //   if (colPrecisionN !== row.colPrecision) {
-      //     row.colPrecision = arr.length > 1 ? new Number(arr[1].trim()) : null;
-      //   }
-      // }
-debugger
       if (this.CommonUtil.isNotUndefined(currDataType) && this.CommonUtil.isNotUndefined(currDataType.lengthRule)) {
         if (!new RegExp(currDataType.lengthRule).test(row.dataLengthText)) {
           this.$message.error(row.dataType.toUpperCase() + currDataType["checkMsg"]);
@@ -912,7 +924,7 @@ debugger
     },
     // 执行下一步 读取文件列信息
     nextImport() {
-      judgeName(this.uploadtemp.tbName).then((resf) => {
+      judgeName(this.uploadtemp.displayTbName).then((resf) => {
         if (resf.code == 0) {
           this.uploadtemp.folderUuid = this.currTreeNode.id;
           this.$refs["dataForm"].validate((valid) => {
@@ -942,7 +954,6 @@ debugger
     },
     // 执行create后导入功能
     importTable() {
-      console.log(this.uploadtempInfo.colMetas);
       for (let i = 0; i < this.uploadtempInfo.colMetas.length; i++) {
         let obj = this.uploadtempInfo.colMetas[i];
         if (!this.isValidColumn(obj)) {
@@ -962,13 +973,13 @@ debugger
             extMap: {
               accessType: ["FETCH_TABLE_DATA", "BASIC_PRIV"],
               createTime: res.data.importTable.createTime,
-              tableName: res.data.importTable.tbName,
+              tableName: res.data.importTable.displayTbName,
               tbSizeByte: 0,
               tblType: "T",
             },
           };
           // 添加节点
-          this.$emit("append-node", childData, this.clickNode);
+          this.$emit("append-node", childData, this.currTreeNode);
           this.$notify({
             title: "成功",
             message: res.data.msg,

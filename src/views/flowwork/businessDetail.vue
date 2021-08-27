@@ -21,13 +21,25 @@
     <div v-if="applyType == 'cn_com_boe_as_preInvest' && approvalData.workflowPackageId=='com.icss.ams.starflow.auditService'">
       <!--          // TODO 根据applyType，判断不同工作流，引用不同业务组件，例如：problemflow(问题复核)、clueflow(线索核实)、modelpublishflow(模型上线)-->
       <tcClueBusDatas
-              ref="tcClueBusDatas"
+              ref="busDatas"
               :versionUuid="versionUuid"
               :appDataUuid="appDataUuid"
               :applyType="applyType"
               :flowSetup="flowSetup"
               :actionIdList="actionIdList"
       ></tcClueBusDatas>
+    </div>
+
+    <div v-if="applyType == 'cn_com_icss_model_publish' && approvalData.workflowPackageId=='com.icss.ams.starflow.auditService'">
+      <!--          // TODO 根据applyType，判断不同工作流，引用不同业务组件，例如：problemflow(问题复核)、clueflow(线索核实)、modelpublishflow(模型上线)-->
+      <reivewCheck
+              ref="busDatas"
+              :versionUuid="versionUuid"
+              :appDataUuid="appDataUuid"
+              :applyType="applyType"
+              :flowSetup="flowSetup"
+              :actionIdList="actionIdList"
+      ></reivewCheck>
     </div>
   </div>
 </template>
@@ -36,11 +48,13 @@
 import busDatas from "ams-clue-vue/src/components/todowork/busDatas";
 import problemFlow from "@/views/flowwork/problemflow";
 import tcClueBusDatas from "ams-clue-vue/src/components/tcFlowWork/todowork/busDatas";
+import reivewCheck from "@/views/flowwork/reivewCheck";
 export default {
   components: {
     busDatas,
     problemFlow,
     tcClueBusDatas,
+    reivewCheck,
   },
 
   data() {
@@ -83,7 +97,7 @@ export default {
   methods: {
     updateSave() {
       setTimeout(() => {
-        this.$refs["tcClueBusDatas"].updateSave();
+        this.$refs["busDatas"].updateSave();
       }, 20);
     },
   },

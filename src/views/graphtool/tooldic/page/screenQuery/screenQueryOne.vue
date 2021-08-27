@@ -900,7 +900,7 @@
                                 queryFilterObj = this.queryFilterArr[index]
                                 let dataLength = queryFilterObj.dataDatalength// 获取参数值长度
                                 let paramName = queryFilterObj.dataName// 获取参数名称
-                                if (typeof dataLength !== 'undefined' && queryFilterObj.value.length !== parseInt(dataLength)) { // 如果该参数有长度限制且默认值不等于设置的长度值
+                                if (typeof dataLength !== 'undefined' && queryFilterObj.value.length > parseInt(dataLength)) { // 如果该参数有长度限制且默认值不等于设置的长度值
                                     verify = false
                                     message = `查询条件【${paramName}】输入值的长度与设置的长度值【${parseInt(dataLength)}】不相等`
                                     break

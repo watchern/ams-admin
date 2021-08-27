@@ -31,22 +31,39 @@
             </el-tab-pane>
             <el-tab-pane label="参数配置" name="setParam">
                 <el-row style="color: red;line-height: 35px;height: 30px;">注：可通过上下拖动行对参数进行排序设置</el-row>
-                <el-table :data="setParamArr" height="520" fit ref="setParamTable" style="width:100%;">
+                <el-table :data="setParamArr" height="520" fit ref="setParamTable" style="width:100%;" class="detail-form" :key="refresh">
                     <el-table-column type="index" label="编号" width="60" align="center" :resizable="false"/>
                     <el-table-column prop="name" label="参数名称" width="260" header-align="center" :resizable="false"/>
                     <el-table-column label="默认值设置" width="300" header-align="center" :resizable="false">
                         <template slot-scope="scope">
                             <el-col v-if="scope.row.inputType === 'lineinp'" ref="selectParam" :index="scope.$index">
-                                <div :id="scope.row.id" :title="scope.row.title" class='xm-select-demo'></div>
+                                <!-- <div :id="scope.row.id" :title="scope.row.title" class='xm-select-demo'></div> -->
+                                <el-select v-model="scope.row.value" style="width: 90%;"  :id="scope.row.id" :title="scope.row.title"
+                                    :multiple="scope.row.dataChoiceType == 0 || scope.row.dataChoiceType == '0'" filterable clearable>
+                                    <el-option v-for="item in scope.row.data" :value="item.value" :label="item.name" :key="item.value" >
+                                        <span style="float: left"> {{ item.value }}</span>
+                                        <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                    </el-option>
+                                </el-select>
                             </el-col>
                             <el-col v-if="scope.row.inputType === 'textinp'" :index="scope.$index">
-                                <el-input :title="scope.row.title" class='paramOption' v-model="scope.row.value"></el-input>
+                                <el-input :title="scope.row.title" style="width: 90%;"  class='paramOption' v-model="scope.row.value"></el-input>
                             </el-col>
                             <el-col v-if="scope.row.inputType === 'timeinp'" :index="scope.$index">
-                                <el-date-picker style="width: 100%;" :title="scope.row.title" class='paramOption' type="date" placeholder="选择日期" v-model="scope.row.value" value-format="yyyy-MM-dd"></el-date-picker>
+                                <el-date-picker style="width: 90%;" :title="scope.row.title" class='paramOption' type="date" placeholder="选择日期" v-model="scope.row.value" value-format="yyyy-MM-dd"></el-date-picker>
                             </el-col>
                             <el-col v-if="scope.row.inputType === 'treeinp'" ref="selectTreeParam" :index="scope.$index">
-                                <div :id="scope.row.id" :title="scope.row.title" class='xm-select-demo'></div>
+                                <!-- <div :id="scope.row.id" :title="scope.row.title" class='xm-select-demo'></div>
+                                 -->
+                                  <el-cascader
+                                    :id="scope.row.id"
+                                    :title="scope.row.title"
+                                    v-model="scope.row.value"
+                                    style="width:90%"
+                                    :props="{ label:'name',  multiple: scope.row.dataChoiceType == 0 || scope.row.dataChoiceType == '0', emitPath: false}"
+                                    :options="scope.row.data"
+                                    multiple
+                                    clearable />
                             </el-col>
                         </template>
                     </el-table-column>
@@ -67,6 +84,8 @@
         name: 'SettingParams',
         data(){
             return{
+                // tablekey用于刷新列表
+                refresh: true,
                 activeTabName:'editParam',
                 activeName:'nodeColumn',
                 nodeZtreeObj:null,
@@ -120,6 +139,10 @@
             }
         },
         methods:{
+            refreshTable(){
+                // key值刷新页面
+                this.refresh = !this.refresh
+            },
             initSqlEditor(heightPx){
                 let sqlDom = document.getElementById('settingParamsSql')
                 this.editor = settingParams.initSqlEditor(sqlDom,heightPx)
@@ -235,7 +258,11 @@
             },
             initSetting(event){
                 if(typeof event === 'undefined' || event.name === 'setParam'){
+                    let that = this
                     settingParams.initSetting()
+                    setTimeout(function () {
+                         that.refreshTable()
+                    }, 500)                   
                 }
             },
             operatorsFun(val){
@@ -246,7 +273,7 @@
                 return settingParams.getOptMessage()
             },
             getParamsSetting(){
-                return settingParams.getParamsSetting()
+                return settingParams.getParamsSettingBySave()
             },
             searchColumnZtree(){
                 let searchColumnContent = $.trim(this.searchColumnContent)

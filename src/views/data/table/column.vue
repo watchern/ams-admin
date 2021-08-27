@@ -33,7 +33,10 @@
       v-if="openType !== 'showTable' && openType !== 'tableRegister'"
       class="detail-form"
     >
-      <el-form ref="dataForm" :model="tempTable">
+      <el-form ref="dataForm"
+               :model="tempTable"
+               :rules="judgeTbName"
+      >
         <el-form-item label="表名称" prop="displayTbName">
           <el-input v-model="tempTable.displayTbName" />
         </el-form-item>
@@ -42,10 +45,10 @@
         </el-form-item> -->
       </el-form>
     </template>
-    <el-table :data="temp" @selection-change="handleSelectionChange" class="detail-form" style="padding: 20px 0">
+    <el-table :data="temp" @selection-change="handleSelectionChange" class="detail-form" style="padding: 20px 0 ;overflow: auto;height: 43vh">
       <el-table-column type="selection" width="55" />
-      <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
-        <template slot-scope="scope" show-overflow-tooltip>
+      <el-table-column prop="colName" label="字段名称" show-overflow-tooltip >
+        <template slot-scope="scope" show-overflow-tooltip >
           <el-tooltip
             :disabled="scope.row.colName.length < 12"
             effect="dark"
@@ -135,8 +138,24 @@ export default {
       tempTable: { displayTbName: "" },
       currColType: '',
       dataTypeRules: {},
-      disableEditColumn: false
-    };
+      disableEditColumn: false,
+      judgeTbName:{
+        displayTbName:[
+          { required: true, message: "请填写导入表名称", trigger: "change" },
+          {
+            type: 'string',
+            pattern: /^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/,
+            message: '请输入合法表名称',
+          },{
+            type: 'string',
+            pattern: /^[\u4E00-\u9FA5\w]*$/,
+            message: '请输入合法表名称',
+          },
+        ],
+
+      }
+    }
+
   },
   created() {
     this.dataTypeRules = this.CommonUtil.DataTypeRules;
@@ -214,7 +233,7 @@ export default {
       var newObj = {}; // copy obj
       newObj.colName = "";
       newObj.dataType = "";
-      newObj.dataLength = "";
+      newObj.dataLengthText = "";
       newObj.isNullable = 0;
       this.tempIndex++;
       newObj.tempIndex = this.tempIndex;
@@ -254,17 +273,12 @@ export default {
       for (let index = 0; index < this.temp.length; index++) {
         //先判空
         let obj = this.temp[index]
-        if(obj.colName==''||obj.colName==undefined){
+        if(this.CommonUtil.isBlank(obj.colName)){
           this.$message.error("请完善建表信息，字段名称不能为空");
           return
-        }else if(obj.dataType==''||obj.dataType==undefined){
+        }else if(this.CommonUtil.isBlank(obj.dataType)){
           this.$message.error("请完善建表信息，数据类型不能为空");
           return
-        }else{
-          // const r = this.temp[index];
-          //   if (r.dataLength !== "") {
-          //     r.dataLength = parseInt(r.dataLength);
-          //   }
         }
         //再判合法
         if (!this.isValidColumn(obj)) {
@@ -321,22 +335,26 @@ export default {
       newTableObj.colMetas = this.temp;
       newTableObj.displayTbName = this.tempTable.displayTbName;
       newTableObj.tbComment = this.tempTable.tbComment;
-      const oldTableObj = {};
-      oldTableObj.tableMetaUuid = this.tableId;
-      oldTableObj.colMetas = this.tempColumn;
-      oldTableObj.displayTbName = this.oldName;
-      oldTableObj.tbComment = this.tempTable.tbComment;
-      var obj = {};
+      // const oldTableObj = {};
+      // oldTableObj.tableMetaUuid = this.tableId;
+      // oldTableObj.colMetas = this.tempColumn;
+      // oldTableObj.displayTbName = this.oldName;
+      // oldTableObj.tbComment = this.tempTable.tbComment;
+      // var obj = {};
       for (let i = 0; i < newTableObj.colMetas.length; i++) {
+
         newTableObj.colMetas[i].dataLength = null;
         newTableObj.colMetas[i].colPrecision = null;
-        if (newTableObj.colMetas[i].colName === "" || newTableObj.colMetas[i].dataType === "") {
+        if (this.CommonUtil.isBlank(newTableObj.colMetas[i].colName) || this.CommonUtil.isBlank(newTableObj.colMetas[i].dataType)) {
           this.$message.error("请完善数据信息!");
           return;
         }
+        if (!this.isValidColumn(newTableObj.colMetas[i])) {
+          return;
+        }
       }
-      obj.newTableObj = newTableObj;
-      obj.oldTableObj = oldTableObj;
+      // obj.newTableObj = newTableObj;
+      // obj.oldTableObj = oldTableObj;
 
       // updateTable(obj)
       updateTable(newTableObj)
@@ -347,7 +365,7 @@ export default {
               message: "修改失败！" + res.data.msg,
             });
           } else {
-            // 修改成功后重新给页面复制
+            // 修改成功后重新给页面赋值
             this.oldName = res.data.sussessTable.displayTbName;
             this.tempTable.displayTbName = res.data.sussessTable.displayTbName;
             res.data.sussessTable.colMetas.forEach((e) => {
@@ -370,7 +388,9 @@ export default {
           this.$emit("table-show", this.show);
           this.$emit("saveTableInfoHelp"); 
         })
-        .catch((result) => {});
+        .catch((result) => {
+          console.error(result)
+        });
       // var newColumn = this.arrRemoveMix(this.temp, this.tempColumn)
       // var oldColumn = this.arrRemoveMix(this.tempColumn, this.temp)
       // console.log(newColumn)

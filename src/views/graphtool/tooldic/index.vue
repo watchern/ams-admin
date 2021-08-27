@@ -2113,7 +2113,7 @@ export default {
      * 接口：获取节点参数信息
      */
     getParamsArr() {
-      return indexJs.getParamsArr();
+       return indexJs.getParamsArr();
     },
     /**
      * 接口：获取中间、最终结果表的输出列信息
@@ -2132,3 +2132,9 @@ export default {
 </script>
 <!--引入图形化工具专用CSS样式-->
 <style scoped src="@/api/graphtool/css/index.css"></style>
+<style>
+.mloading-bar a{
+  color: #1890ff;
+  text-decoration: underline!important;
+}
+</style>
