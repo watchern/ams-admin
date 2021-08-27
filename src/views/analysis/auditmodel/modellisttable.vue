@@ -578,7 +578,6 @@ export default {
         })
       })
     })
-    this.ifmanger = 1
     // this.getList({ modelFolderUuid: 1 })
   },
   mounted() {
