@@ -523,6 +523,7 @@ export default {
       this.temp.locationUuid = this.auditWarningSave.locationUuid
       this.temp.locationName = this.auditWarningSave.locationName
 
+
       //单次执行
       if(this.auditWarningSave.executeMode == 1){
         this.temp.singleExecuteTime = this.auditWarningSave.warningExecuteTime[0].executeTime

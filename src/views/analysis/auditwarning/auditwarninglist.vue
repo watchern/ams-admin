@@ -328,22 +328,22 @@ export default {
       //新增
       if (this.operationObj.option == "add") {
         //获取表单数据中的模型列表
-        var editModelList = this.$refs['edit'].temp.modelList;
+        var editModelListAdd = this.$refs['edit'].temp.modelList;
         //遍历模型列表
-        for (var item in editModelList) {
-          var warResTbName = editModelList[item].warningResTbName;
-          //如果模型设置了模型运行结果名进行下列操作
-          if (warResTbName !== undefined) {
-            var settingInfoSql = fromData.warningTaskRel[item].settingInfo;
-            //将填入的模型运行结果名赋值给formData
-            fromData.warningTaskRel[item].warningResTbName = warResTbName;
+        for (var addItem in editModelListAdd) {
+          var addWarResTbName = editModelListAdd[addItem].warningResTbName;
+          //将填入的模型运行结果名赋值给formData
+          fromData.warningTaskRel[addItem].warningResTbName = addWarResTbName;
+          //如果模型设置了模型运行结果名并且sql不为空修改sql (长度12是为了排除 {"sql":null} 或 {} 或 {"sql":""}的情况)
+          var settingInfoSql = fromData.warningTaskRel[addItem].settingInfo;
+          if (addWarResTbName !== undefined && settingInfoSql.length > 12) {
             //找出想要替换的表名
             var newsettingInfoSql = settingInfoSql.split("CREATE TABLE")[1];
             newsettingInfoSql = newsettingInfoSql.split("AS")[0];
             newsettingInfoSql = newsettingInfoSql.trim();
             //将原表名替换成模型运行结果名
-            settingInfoSql = settingInfoSql.replaceAll(newsettingInfoSql,warResTbName);
-            fromData.warningTaskRel[item].settingInfo = settingInfoSql;
+            settingInfoSql = settingInfoSql.replaceAll(newsettingInfoSql,addWarResTbName);
+            fromData.warningTaskRel[addItem].settingInfo = settingInfoSql;
           }
         }
         addWarning(fromData).then(resp => {
@@ -366,27 +366,28 @@ export default {
           this.getList()
         })
       } else if (this.operationObj.option == "update") {
+        //获取表单数据中的模型列表
+        var editModelListUpdate = this.$refs['edit'].temp.modelList;
+        //遍历模型列表
+        for (var updateItem in editModelListUpdate) {
+          var updateWarResTbName = editModelListUpdate[updateItem].warningResTbName;
+          //将填入的模型运行结果名赋值给formData
+          fromData.warningTaskRel[updateItem].warningResTbName = updateWarResTbName;
+        }
         updateWarning(fromData).then(resp => {
-          //获取表单数据中的模型列表
-          var editModelList =this.$refs['edit'].temp.modelList;
           //遍历模型列表
-          for (var item in editModelList) {
-            var warResTbName = editModelList[item].warningResTbName;
-            //如果模型设置了模型运行结果名进行下列操作
-            if (warResTbName !== undefined) {
-              //将填入的模型运行结果名赋值给formData
-              fromData.warningTaskRel[item].warningResTbName = warResTbName;
-
-              var settingInfoSql = fromData.warningTaskRel[item].settingInfo;
-              if(settingInfoSql.length>12){
-                //找出想要替换的表名
-                var newsettingInfoSql = settingInfoSql.split("CREATE TABLE")[1];
-                newsettingInfoSql = newsettingInfoSql.split("AS")[0];
-                newsettingInfoSql = newsettingInfoSql.trim();
-                //将原表名替换成模型运行结果名
-                settingInfoSql = settingInfoSql.replaceAll(newsettingInfoSql,warResTbName);
-                fromData.warningTaskRel[item].settingInfo = settingInfoSql;
-              }
+          for (var updateItem in editModelListUpdate) {
+            var updateWarResTbName = editModelListUpdate[updateItem].warningResTbName;
+            //如果模型设置了模型运行结果名并且sql不为空修改sql (长度12是为了排除 {"sql":null} 或 {} 或 {"sql":""}的情况)
+            var settingInfoSql = fromData.warningTaskRel[updateItem].settingInfo;
+            if (updateWarResTbName !== undefined && settingInfoSql.length > 12) {
+              //找出想要替换的表名
+              var newsettingInfoSql = settingInfoSql.split("CREATE TABLE")[1];
+              newsettingInfoSql = newsettingInfoSql.split("AS")[0];
+              newsettingInfoSql = newsettingInfoSql.trim();
+              //将原表名替换成模型运行结果名
+              settingInfoSql = settingInfoSql.replaceAll(newsettingInfoSql,updateWarResTbName);
+              fromData.warningTaskRel[updateItem].settingInfo = settingInfoSql;
             }
           }
           if (resp.code != 0) {
