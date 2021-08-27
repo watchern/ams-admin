@@ -38,7 +38,6 @@
             init() {
                 const graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
-                console.log(this.nodeData)
                 this.curColumnsInfo = this.$parent.$parent.$parent.columnsInfoPre
                 if (this.nodeData.isSet) {// 配置过,字段信息来自本身节点
                     this.curColumnsInfo = this.nodeData.setting.curColumnsInfo

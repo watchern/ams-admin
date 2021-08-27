@@ -772,8 +772,8 @@ export function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
         'nodeObject': JSON.stringify(notExecuteNodeObject),
         'noData':false
     }
-    graphIndexVue.websocketBatchId = new UUIDGenerator().id
     graphIndexVue.initData()
+    graphIndexVue.websocketBatchId = new UUIDGenerator().id
     graphIndexVue.$nextTick(() => {
         executeAllNodeSql(dataParam).then( response => {
             if (response.data == null) {
@@ -792,6 +792,7 @@ export function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
                     $(graphIndexVue.$refs.sysInfoArea).html(sysInfoAreaHtml + message)
                 }
                 graphIndexVue.executeTaskObj.executeTask = response.data.taskUuidList
+                console.log(graphIndexVue.executeTaskObj)
             }
         })
     })
