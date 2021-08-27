@@ -1,7 +1,7 @@
 <template>
   <div class="app-container" v-loading="isShowLoading" style="height:62vh; overflow:auto;">
     <el-dialog title="选择模型列表" :close-on-click-modal="false" :fullscreen="true" v-if='selectModelVisible' :visible.sync="selectModelVisible" :append-to-body="true" width="80%">
-      <SelectModels ref="selectModels" :isAuditWarring="true" power="warning"/>
+      <SelectModels ref="selectModels" :isAuditWarning="true" power="warning" style="height: calc(100vh - 109px)"/>
       <div slot="footer" class="dialog-footer">
         <el-button @click="selectModelVisible = false">关闭</el-button>
         <el-button type="primary" @click="selectModel">确定</el-button>
@@ -70,6 +70,15 @@
               <el-table-column label="平均运行时间"  prop="runTime" />
               <el-table-column label="模型类型"  prop="modelType" :formatter="modelTypeFormatter" />
               <el-table-column label="审计事项"  prop="auditItemName" />
+              <el-table-column label="模型运行结果名" >
+                <template  slot-scope="scope">
+                  <el-input class="detail-form"
+                              style="width: 100%;"
+                              type="text"
+                              v-model="scope.row.warningResTbName">
+                  </el-input>
+                </template>
+              </el-table-column>
               <el-table-column
                 v-if="!allReadOnly"
                 label="操作"
@@ -507,6 +516,7 @@ export default {
       this.temp.executeMode = this.auditWarningSave.executeMode
       this.temp.locationUuid = this.auditWarningSave.locationUuid
       this.temp.locationName = this.auditWarningSave.locationName
+
       //单次执行
       if(this.auditWarningSave.executeMode == 1){
         this.temp.singleExecuteTime = this.auditWarningSave.warningExecuteTime[0].executeTime
