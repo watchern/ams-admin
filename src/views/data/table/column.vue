@@ -33,7 +33,10 @@
       v-if="openType !== 'showTable' && openType !== 'tableRegister'"
       class="detail-form"
     >
-      <el-form ref="dataForm" :model="tempTable">
+      <el-form ref="dataForm"
+               :model="tempTable"
+               :rules="judgeTbName"
+      >
         <el-form-item label="表名称" prop="displayTbName">
           <el-input v-model="tempTable.displayTbName" />
         </el-form-item>
@@ -42,10 +45,10 @@
         </el-form-item> -->
       </el-form>
     </template>
-    <el-table :data="temp" @selection-change="handleSelectionChange" class="detail-form" style="padding: 20px 0">
+    <el-table :data="temp" @selection-change="handleSelectionChange" class="detail-form" style="padding: 20px 0 ;overflow: auto;height: 43vh">
       <el-table-column type="selection" width="55" />
-      <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
-        <template slot-scope="scope" show-overflow-tooltip>
+      <el-table-column prop="colName" label="字段名称" show-overflow-tooltip >
+        <template slot-scope="scope" show-overflow-tooltip >
           <el-tooltip
             :disabled="scope.row.colName.length < 12"
             effect="dark"
@@ -135,8 +138,25 @@ export default {
       tempTable: { displayTbName: "" },
       currColType: '',
       dataTypeRules: {},
-      disableEditColumn: false
-    };
+      disableEditColumn: false,
+      re:[],
+      judgeTbName:{
+        displayTbName:[
+          { required: true, message: "请填写导入表名称", trigger: "change" },
+          {
+            type: 'string',
+            pattern: /^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/,
+            message: '请输入合法表名称',
+          },{
+            type: 'string',
+            pattern: /^[\u4E00-\u9FA5\w]*$/,
+            message: '请输入合法表名称',
+          },
+        ],
+
+      }
+    }
+
   },
   created() {
     this.dataTypeRules = this.CommonUtil.DataTypeRules;
@@ -249,16 +269,29 @@ export default {
         this.updateTable();
       }
     },
+///^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/
+    judegeTable(val){
+      const judege=(/^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/ && /^[\u4E00-\u9FA5\w]*$/)
+      if (judege.test(val)){
+        return true;
+        }else{
+        return false;
+      }
+    },
     // 保存基本信息
     saveTable() {
       for (let index = 0; index < this.temp.length; index++) {
         //先判空
         let obj = this.temp[index]
+        var a =this.judegeTable(obj.colName)
         if(this.CommonUtil.isBlank(obj.colName)){
           this.$message.error("请完善建表信息，字段名称不能为空");
           return
         }else if(this.CommonUtil.isBlank(obj.dataType)){
           this.$message.error("请完善建表信息，数据类型不能为空");
+          return
+        } if (!a){
+          this.$message.error("请完善建表信息，字段名称不能有特殊符号");
           return
         }
         //再判合法

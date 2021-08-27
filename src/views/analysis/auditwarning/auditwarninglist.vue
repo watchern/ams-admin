@@ -320,34 +320,77 @@ export default {
     /**
      * 保存审计预警调用
      */
-    save(){
+    save: function () {
       let fromData = this.$refs['edit'].getFormData()
-      if(!fromData){
+      if (!fromData) {
         return
       }
       //新增
-      if(this.operationObj.option == "add"){
+      if (this.operationObj.option == "add") {
+        //获取表单数据中的模型列表
+        var editModelListAdd = this.$refs['edit'].temp.modelList;
+        //遍历模型列表
+        for (var addItem in editModelListAdd) {
+          var addWarResTbName = editModelListAdd[addItem].warningResTbName;
+          //将填入的模型运行结果名赋值给formData
+          fromData.warningTaskRel[addItem].warningResTbName = addWarResTbName;
+          //如果模型设置了模型运行结果名并且sql不为空修改sql (长度12是为了排除 {"sql":null} 或 {} 或 {"sql":""}的情况)
+          var settingInfoSql = fromData.warningTaskRel[addItem].settingInfo;
+          if (addWarResTbName !== undefined && settingInfoSql.length > 12) {
+            //找出想要替换的表名
+            var newsettingInfoSql = settingInfoSql.split("CREATE TABLE")[1];
+            newsettingInfoSql = newsettingInfoSql.split("AS")[0];
+            newsettingInfoSql = newsettingInfoSql.trim();
+            //将原表名替换成模型运行结果名
+            settingInfoSql = settingInfoSql.replaceAll(newsettingInfoSql,addWarResTbName);
+            fromData.warningTaskRel[addItem].settingInfo = settingInfoSql;
+          }
+        }
         addWarning(fromData).then(resp => {
-          if(resp.code != 0){
+          if (resp.code != 0) {
             this.$message({
               type: 'error',
               message: '保存预警信息失败!'
             })
             return
           }
+
           this.$notify({
-            title:'提示',
-            message:'保存预警信息成功!',
-            type:'success',
-            duration:2000,
-            position:'bottom-right'
+            title: '提示',
+            message: '保存预警信息成功!',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
           })
           this.editDialogVisible = false
           this.getList()
         })
-      }else if(this.operationObj.option == "update"){
+      } else if (this.operationObj.option == "update") {
+        //获取表单数据中的模型列表
+        var editModelListUpdate = this.$refs['edit'].temp.modelList;
+        //遍历模型列表
+        for (var updateItem in editModelListUpdate) {
+          var updateWarResTbName = editModelListUpdate[updateItem].warningResTbName;
+          //将填入的模型运行结果名赋值给formData
+          fromData.warningTaskRel[updateItem].warningResTbName = updateWarResTbName;
+        }
         updateWarning(fromData).then(resp => {
-          if(resp.code != 0){
+          //遍历模型列表
+          for (var updateItem in editModelListUpdate) {
+            var updateWarResTbName = editModelListUpdate[updateItem].warningResTbName;
+            //如果模型设置了模型运行结果名并且sql不为空修改sql (长度12是为了排除 {"sql":null} 或 {} 或 {"sql":""}的情况)
+            var settingInfoSql = fromData.warningTaskRel[updateItem].settingInfo;
+            if (updateWarResTbName !== undefined && settingInfoSql.length > 12) {
+              //找出想要替换的表名
+              var newsettingInfoSql = settingInfoSql.split("CREATE TABLE")[1];
+              newsettingInfoSql = newsettingInfoSql.split("AS")[0];
+              newsettingInfoSql = newsettingInfoSql.trim();
+              //将原表名替换成模型运行结果名
+              settingInfoSql = settingInfoSql.replaceAll(newsettingInfoSql,updateWarResTbName);
+              fromData.warningTaskRel[updateItem].settingInfo = settingInfoSql;
+            }
+          }
+          if (resp.code != 0) {
             this.$message({
               type: 'error',
               message: '保存预警信息失败!'
@@ -355,11 +398,11 @@ export default {
             return
           }
           this.$notify({
-            title:'提示',
-            message:'保存预警信息成功!',
-            type:'success',
-            duration:2000,
-            position:'bottom-right'
+            title: '提示',
+            message: '保存预警信息成功!',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
           })
           this.editDialogVisible = false
           this.getList()
@@ -376,8 +419,7 @@ export default {
         2:"指标"
       }
       return warningType[row.warningType]
-    }
-
+    },
   }
 }
 </script>

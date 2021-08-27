@@ -116,14 +116,14 @@ export default {
         thresholdValueFolderName: [
           {required: true, message: '请选择阈值分类', trigger: 'blur'}
         ],
-        filterValue: [{type: 'string', validator:this.verValueMethods}
+        filterValue: [{ required: true,type: 'string', validator:this.verValueMethods}
         ],
         thresholdValueType: [
           {required:true}
         ],
-        thresholdValueMemo: [
-          {required:true}
-        ],
+        // thresholdValueMemo: [
+        //   {required:true}
+        // ],
       },
     }
   },

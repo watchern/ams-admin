@@ -68,6 +68,18 @@
                       </el-select>
                     </el-form-item>
                   </el-col>
+                  <el-col :span="20">
+                    <el-form-item label="模型用途" prop="modelUse">
+                      <el-select v-model="form.modelUse" placeholder="请选择模型用途" style="width:100%;">
+                        <el-option
+                          v-for="item in modelUseList"
+                          :key="item.value"
+                          :value="item.value"
+                          :label="item.label"
+                        />
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
                 </el-row>
                 <el-row>
                   <el-col :span="20">
@@ -321,7 +333,8 @@ export default {
         modelType: '',  //002003001审计模型编号  002003002图形化编号
         locationName: '',
         locationUuid: '',
-        graphUuid: ''
+        graphUuid: '',
+        modelUse: 1 // 审计用途
       },
       //参数模型关联对象
       parammModelRel: {},
@@ -351,6 +364,8 @@ export default {
       editorModelLoading: false,
       //风险等级
       riskLeve: [],
+      // 模型用途
+      modelUseList: [{label:"审计查询",value: 1},{label:"审计预警",value: 2}],
       //模型类型
       modelTypeData: [],
       //添加条件显示时候树的索引
@@ -379,6 +394,7 @@ export default {
         riskLevelUuid: [
           {type: 'string', required: true, message: '请选择风险等级', trigger: 'change'}
         ],
+        modelUse: [{required: true, message: '请选择模型用途', trigger: 'change'}],
         modelType: [{type: 'string', required: true, message: '请选择模型类型', trigger: 'change'}
         ]
       },
@@ -1100,7 +1116,8 @@ export default {
         riskLevelUuid: '',
         auditIdeas: '',
         paramConditions: '',
-        sqlValue: ''
+        sqlValue: '',
+        modelUse: 0
       }
       this.parammModelRel = {}
       this.sqlObj = {
