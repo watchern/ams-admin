@@ -128,9 +128,13 @@
       :title="textMap[dialogStatus]"
       :visible.sync="folderFormVisible"
       width="600px"
+
     >
-      <el-form ref="folderForm" :model="resourceForm">
-        <el-form-item :label="typeLabel" >
+      <el-form ref="folderForm"
+               :model="resourceForm"
+               :rules="uploadRules"
+      >
+        <el-form-item :label="typeLabel" prop="resourceName">
           <el-input v-model="resourceForm.resourceName" style="width: 100%" class="detail-form"/>
         </el-form-item>
       </el-form>
@@ -210,7 +214,7 @@
           >
             <el-form-item
               label="导入表名称：(当导入数据为txt格式时，列名和数据均以','分割即可)"
-              prop="tbName"
+              prop="displayTbName"
             >
               <el-input v-model="uploadtemp.displayTbName" label="请输入表名称" class="detail-form" />
             </el-form-item>
@@ -621,10 +625,25 @@ export default {
         displayTbName: [
           { required: true, message: "请填写导入表名称", trigger: "change" },
           {
-
-            type: "string",
-            pattern: /^[a-zA-Z][a-zA-Z0-9_]*$/,
-            message: "请填写合法导入表名称",
+            type: 'string',
+            pattern: /^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/,
+            message: '请输入合法表名称',
+          },{
+            type: 'string',
+            pattern: /^[\u4E00-\u9FA5\w]*$/,
+            message: '请输入合法表名称',
+          },
+        ],
+        resourceName:[
+          { required: true, message: "请填写导入表名称", trigger: "change" },
+          {
+            type: 'string',
+            pattern: /^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/,
+            message: '请输入合法表名称',
+          },{
+            type: 'string',
+            pattern: /^[\u4E00-\u9FA5\w]*$/,
+            message: '请输入合法表名称',
           },
         ],
       },
