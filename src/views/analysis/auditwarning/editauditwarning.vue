@@ -70,6 +70,15 @@
               <el-table-column label="平均运行时间"  prop="runTime" />
               <el-table-column label="模型类型"  prop="modelType" :formatter="modelTypeFormatter" />
               <el-table-column label="审计事项"  prop="auditItemName" />
+              <el-table-column label="模型运行结果名" >
+                <template  slot-scope="scope">
+                  <el-input class="detail-form"
+                              style="width: 100%;"
+                              type="text"
+                              v-model="scope.row.warningResTbName">
+                  </el-input>
+                </template>
+              </el-table-column>
               <el-table-column
                 v-if="!allReadOnly"
                 label="操作"
@@ -513,6 +522,8 @@ export default {
       this.temp.executeMode = this.auditWarningSave.executeMode
       this.temp.locationUuid = this.auditWarningSave.locationUuid
       this.temp.locationName = this.auditWarningSave.locationName
+
+
       //单次执行
       if(this.auditWarningSave.executeMode == 1){
         this.temp.singleExecuteTime = this.auditWarningSave.warningExecuteTime[0].executeTime

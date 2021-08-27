@@ -235,7 +235,11 @@
                       autocomplete="off"
                       :placeholder="getSqlRule(1)"
                     />
-                    <!--                    <el-button type="primary" @click="viewSqlRule(1)" class="btn btn-primary">查看SQL规则</el-button>-->
+                    <el-button
+                      type="primary"
+                      @click="viewSqlRule(1)"
+                      class="btn btn-primary"
+                    >查看SQL规则</el-button>
                     <el-button
                       type="primary"
                       @click="sqlPreview(1)"
@@ -261,7 +265,11 @@
             lete="off"
             :placeholder="getSqlRule(2)"
           />
-          <!--          <el-button type="primary" @click="viewSqlRule(2);" c  lass="btn btn-primary">查看SQL规则</el-button>-->
+          <el-button
+            type="primary"
+            @click="viewSqlRule(2)"
+            class="btn btn-primary"
+          >查看SQL规则</el-button>
           <el-button
             type="primary"
             @click="sqlPreview(2)"

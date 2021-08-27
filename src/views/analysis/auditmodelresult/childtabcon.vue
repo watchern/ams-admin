@@ -2371,8 +2371,12 @@ export default {
       this.tableData = this.nextValue.result;
       this.json_fields = {};
       for (var i = 0; i < this.nextValue.columnNames.length; i++) {
-        this.json_fields[this.nextValue.columnNames[i]] =
-          this.nextValue.columnNames[i];
+        this.json_fields[this.nextValue.columnNames[i]] ={
+          field: this.nextValue.columnNames[i],
+          callback: value =>{
+            return "&nbsp;" + value;
+          }
+        }
       }
       this.excelName = "模型结果导出表";
     },
