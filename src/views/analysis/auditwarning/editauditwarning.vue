@@ -494,9 +494,6 @@ export default {
     }
   },
   created() {
-    console.log("============this.userInfo")
-    console.log(this.userInfo);
-    console.log("============this.userInfo")
     //添加则不做任何操作
     if(this.option == "add"){
       return;

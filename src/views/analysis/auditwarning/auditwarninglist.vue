@@ -119,7 +119,6 @@ export default {
     getInfo().then((resp) => {
       getById(resp.data.id).then((res) => {
         this.userInfo = res.data;
-        console.log(this.userInfo);
       });
     });
   },
