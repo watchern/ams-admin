@@ -771,6 +771,7 @@ export default {
             columnData = this.columnData
             //拿到列之后图形化就可以保存了，调用图形化的保存方法
             await this.$refs.graph[0].saveModelGraph().then(result => {
+              this.modelSql = result.noReplaceModelSql
               if(result.isError){
                 saveResult = false
                 this.$message({type: 'error', message: result.message})
@@ -1274,10 +1275,11 @@ export default {
      */
     async save() {
       let modelObj = await this.getModelObj()
-      console.log(modelObj)
+      // console.log(modelObj)
       if (modelObj == null) {
         return
       }
+      modelObj.sqlValue = this.modelSql
       this.editorModelLoading = true
       if (!this.isUpdate) {
         saveModel(modelObj).then(result => {
