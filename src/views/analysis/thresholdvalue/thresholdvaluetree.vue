@@ -139,7 +139,8 @@ export default {
      */
     handleNodeClick(data) {
       this.selectTreeNode = data
-      if (data.type === "model") {
+      if (data.type === "thresholdValue") {
+        this.$emit("refreshThresholdvalue", data);
       } else {
         this.$emit("refreshThresholdvalueList", data)
         this.$emit("thresholdValueClick",data)

@@ -3,7 +3,7 @@
     <!--模型分类树-->
     <el-container>
       <el-aside class="tree-side">
-        <Thresholdvaluetree :isShowEdit="true" ref="thresholdValueFolderTree" @refreshThresholdvalueList="refreshThresholdvalueList" />
+        <Thresholdvaluetree :isShowEdit="true" @refreshThresholdvalue="refreshThresholdvalue" ref="thresholdValueFolderTree" @refreshThresholdvalueList="refreshThresholdvalueList" />
       </el-aside>
       <Thresholdvaluelist ref="thresholdValueListTable" @loadingSet="loadingSet" @refreshTree="refreshTree" />
     </el-container>
@@ -23,6 +23,13 @@ export default {
     }
   },
   methods: {
+    /**
+     * 选择阈值
+     * @param data 树节点数据
+     */
+    refreshThresholdvalue(data) {
+      this.$refs.thresholdValueListTable.SelectNode(data)
+    },
     /**
      * 刷新阈值列表
      * @param data 树节点数据

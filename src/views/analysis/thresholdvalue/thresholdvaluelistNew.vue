@@ -118,7 +118,7 @@ export default {
 
   },
   created() {
-    // this.getList({ modelFolderUuid: 1 })
+    this.getList()
   },
   mounted() {
 
@@ -184,6 +184,27 @@ export default {
         this.list = resp.data.records
         this.listLoading = false
       })
+    },
+    /**
+     * 选中的节点
+     * @param data 树节点
+     */
+    SelectNode(data) {
+      for(let i =0;i<this.list.length;i++){
+        if(data.id==this.list[i].thresholdValueUuid){
+          var ifpush = 1
+          for(let j =0;j<this.$refs.modelListTable.selection.length;j++){
+            if(this.$refs.modelListTable.selection[j].thresholdValueUuid == this.list[i].thresholdValueUuid){
+              ifpush = 0
+            }
+          }
+          }
+          if(ifpush==1){
+            this.$refs.modelListTable.selection.length = 0;
+            this.$refs.modelListTable.selection.push(this.list[i])
+            return
+          }
+        }
     },
     /**
      * 设置选中的树节点
