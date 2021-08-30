@@ -143,6 +143,7 @@ import dataTree from '@/views/data/role-res/data-tree'
 import myQueryBuilder from '@/views/analysis/auditmodelresult/myquerybuilder'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 import { selectModel,getTableCol } from '@/api/analysis/auditmodel'
+import _ from 'lodash'
 import { debug } from 'leancloud-storage'
 export default {
   name: 'EditModel',
@@ -192,6 +193,8 @@ export default {
       //关联表列数组
       relTableColumn: [],
       currentFilterInputId:'',
+      // 非空参数集合
+      notNullParamList: [],
       //校验
       rules: {
         modelDetailName: [
@@ -222,7 +225,7 @@ export default {
           this.$refs.relModelDivParent.style = 'block'
           this.$refs.relModelTableDiv.style = 'block'
           // 初始化完成树之后初始化被关联模型的参数
-          this.loadParamInfo(this.data.relationObjectUuid)
+          this.loadParamInfo(this.data.relationObjectUuid,1)
           // 初始化关联模型table
           this.relModelTable = this.data.modelDetailConfig
         }
@@ -268,22 +271,49 @@ export default {
         // 如果为关联模型则取模型表的数据
         //校验关联参数的个数和关联的参数是否相等
         let modelDetailConfig = this.$refs.relModelTable.data
+        // 获取非空参数集合
+        let paramsList = _.filter(this.relModelParam, function(o) { return JSON.parse(o.paramValue).allowedNull == 0 })
+        // 请设置关联参数
+        if( modelDetailConfig.length == 0){
+          return { verResult: false, treeId: this.treeId ,message: '请设置关联参数'}
+        }
         //如果个数相等则判断当前选择的参数编号与被关联模型的参数编号是否全部一致
-        if(this.relModelParam.length == modelDetailConfig.length){
+        // if(this.relModelParam.length == modelDetailConfig.length){
+        if(modelDetailConfig.length <= this.relModelParam.length){
           let verResult = true
           let oldParamId = []
+          let relParamId = []
           //先将被关联模型的参数编号拿到数组
           for(let i = 0;i < this.relModelParam.length;i++){
             oldParamId.push(this.relModelParam[i].ammParamUuid)
           }
           //循环界面填写的数据判断填写的关联参数编号是否存在于模型参数的编号内，如果不存在则证明参数关联重复了
           for(let i = 0;i < modelDetailConfig.length;i++){
-            if(oldParamId.indexOf(modelDetailConfig[i].ammParamUuid) == -1){
-              verResult = false
+            if(relParamId.indexOf(modelDetailConfig[i].ammParamUuid) == 0){
+              return { verResult: false, treeId: this.treeId ,message: '关联模型的关联参数重复'}
+            }
+            relParamId.push(modelDetailConfig[i].ammParamUuid)
+            if(modelDetailConfig[i].ammParamUuid == '' || modelDetailConfig[i].ammParamUuid == null){
+              return { verResult: false, treeId: this.treeId ,message: '关联模型的关联参数不能为空'}
+            }
+            if(modelDetailConfig[i].resultColumn == '' || modelDetailConfig[i].resultColumn == null){
+              return { verResult: false, treeId: this.treeId ,message: '关联模型的关联列不能为空'}
             }
           }
-          if(!verResult){
-            return { verResult: false, treeId: this.treeId ,message: '关联模型的关联参数重复'}
+          // if(!verResult){
+          //   return { verResult: false, treeId: this.treeId ,message: '关联模型的关联参数重复'}
+          // }
+          var paramName = []
+          if (paramsList.length > 0) {
+            paramsList.forEach((r) => { 
+              paramName.push(r.paramName)
+              if(relParamId.indexOf(r.ammParamUuid) == -1){
+                   verResult = false
+                 }
+             })
+          }
+           if(!verResult){
+            return { verResult: false, treeId: this.treeId ,message: '关联模型的关联参数必须包含所有的非空参数,非空参数包含【' + paramName.join(',') + '】'}
           }
         }
         else if(this.relModelParam.length < modelDetailConfig.length){
@@ -382,13 +412,14 @@ export default {
       }
       this.modelTreeLoading = true
       // 获取模型基本信息开始初始化能关联的参数
-      this.loadParamInfo(modelTreeNode.id)
+      this.loadParamInfo(modelTreeNode.id,2)
     },
     /**
      * 加载模型参数信息
      * @param modelUuid 模型编号
+     * @param type 初始化1，编辑2
      */
-    loadParamInfo(modelUuid){
+    loadParamInfo(modelUuid, type){
       selectModel(modelUuid).then(result => {
         this.modelTreeLoading = false
         if (result.data == null) {
@@ -402,6 +433,19 @@ export default {
         this.ModelTreeDialog = false
         // 初始化模型的参数
         this.relModelParam = result.data.parammModelRel
+        if(type == 2) {
+          // 编辑时清空
+          this.relModelTable = []
+        }
+        // 必填参数初始化
+        this.notNullParamList = _.filter(this.relModelParam, function(o) { return JSON.parse(o.paramValue).allowedNull == 0 })
+        if (this.notNullParamList.length > 0) {
+          this.notNullParamList.forEach((r) => { 
+            if(typeof _.find(this.relModelTable, ['ammParamUuid', r.ammParamUuid]) == 'undefined' 
+              || _.find(this.relModelTable, ['ammParamUuid', r.ammParamUuid]) == null)
+              this.relModelTable.push({ammParamUuid: r.ammParamUuid,resultColumn: null})
+            })
+        }
         //设置对象
         this.form.relationObjectUuid = result.data.modelUuid
         this.form.relationObjectName = result.data.modelName

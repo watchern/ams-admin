@@ -1,5 +1,5 @@
 <template>
-  <div id="drag">
+  <div id="drag"  v-if="showDrag">
     <!-- <div class="title">
       <h2>已选择模型</h2>
       <div>
@@ -148,6 +148,7 @@
 </template>
 <script>
 import { getOneDict } from "@/utils";
+import _ from 'lodash'
 import runimmediatelycon from "@/views/analysis/auditmodel/runimmediatelycon";
 import { uuid2, addRunTaskAndRunTaskRel } from "@/api/analysis/auditmodel";
 export default {
@@ -161,6 +162,8 @@ export default {
       dragMinHeight: 124,
       memoValue: "",
       currentData: [],
+      // 是否显示运行
+      showDrag: false,
       dialogFormVisible: false,
       list: [],
       runimmediatelyIsSee: false,
@@ -347,8 +350,17 @@ export default {
     //   }
     // },
     setMemo(obj) {
-      this.memoValue = obj.length;
-      this.currentData = obj;
+      let modelList = _.filter(obj, function(o) { return o.modelUse!= 2 })
+      this.showDrag = modelList.length == obj.length ? true : false
+      if(!this.showDrag)
+      this.$notify({
+        title: '提示',
+        message: '选中的模型中包含模型用途为预警的模型',
+        position: 'bottom-right',
+        type: 'warning'
+      })
+      this.memoValue = modelList.length;
+      this.currentData = modelList;
     },
     selectData() {
       this.dialogFormVisible = true;
