@@ -1567,7 +1567,7 @@ function hiddenNodes(nodeList, treeObj) {
     var tmpnode = nodeList[i]
     while (z) {
       var pNode = tmpnode.getParentNode()
-      if (pNode.pid != null) {
+      if (pNode != null && pNode.pid != null) {
         if (pNode.isHidden) {
           pNode.isHidden = false
           pNode.open = true
