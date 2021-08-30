@@ -83,7 +83,7 @@
           </el-table-column>
         </div>
         <!-- 执行预览弹窗 -->
-        <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px">
+        <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px" :modal="false">
           <el-row>
             <el-col>
               <childTabs ref="childTabs" :pre-value="executeSQLList" use-type="previewTable" />
