@@ -474,6 +474,7 @@ export default {
         val: "",
       });
       sessionStorage.clear();
+      localStorage.clear();
       await this.$store.dispatch("user/logout");
       this.$router.push(`/login?redirect=${this.$route.fullPath}`);
     },
