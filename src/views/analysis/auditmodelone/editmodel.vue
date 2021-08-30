@@ -70,7 +70,8 @@
                   </el-col>
                   <el-col :span="20">
                     <el-form-item label="模型用途" prop="modelUse">
-                      <el-select v-model="form.modelUse" placeholder="请选择模型用途" style="width:100%;">
+                      <!-- 模型用途为预警的模型不能编辑模型用途 -->
+                      <el-select v-model="form.modelUse" :disabled="form.modelUse==2" placeholder="请选择模型用途" style="width:100%;">
                         <el-option
                           v-for="item in modelUseList"
                           :key="item.value"
@@ -590,12 +591,21 @@ export default {
       }
     },
     editModelRelationDetermine(){
+      var modelDetailObj =  this.$refs.child.getObj()
+      if (modelDetailObj.verResult == false){
+        this.$message(modelDetailObj.message)
+        return
+      }else {
+        // this.modelDetailIsSee = false
+        // modelDetailObj.onlyId = uuid2()
+        // this.modelDetails.push(modelDetailObj)
         for (var j = 0 ;j<this.modelDetails.length; j++){
           if (this.modelDetails[j].onlyId===this.editingModelDetail.onlyId){
             this.modelDetails.splice(j,1,this.editingModelDetail)
           }
         }
-      this.modelDetailIsSee = false
+        this.modelDetailIsSee = false
+      }
     },
     clickModelInfo(){
       if (this.modifying == true && this.modelInfoDraw == true){
@@ -771,7 +781,6 @@ export default {
             columnData = this.columnData
             //拿到列之后图形化就可以保存了，调用图形化的保存方法
             await this.$refs.graph[0].saveModelGraph().then(result => {
-              this.modelSql = result.noReplaceModelSql
               if(result.isError){
                 saveResult = false
                 this.$message({type: 'error', message: result.message})
@@ -1275,11 +1284,9 @@ export default {
      */
     async save() {
       let modelObj = await this.getModelObj()
-      // console.log(modelObj)
       if (modelObj == null) {
         return
       }
-      modelObj.sqlValue = this.modelSql
       this.editorModelLoading = true
       if (!this.isUpdate) {
         saveModel(modelObj).then(result => {
