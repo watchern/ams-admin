@@ -327,7 +327,7 @@ export default {
             title: '已完成',
             message: html,
             type: 'success',
-            duration: 15000,
+            duration: 2000,
             position: 'bottom-right'
           })
         }
