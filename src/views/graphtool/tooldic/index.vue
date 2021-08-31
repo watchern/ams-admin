@@ -1523,7 +1523,6 @@ export default {
             const nodeExcuteStatus =
               graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus;
               //多节点全部执行暂处理
-              console.log(nodeExcuteStatus)
             if (nodeExcuteStatus === 1 || nodeExcuteStatus === 2 || nodeExcuteStatus === 3 ) {
               //只处理未执行或执行中的状态
               switch (executeSQLObj.state) {
@@ -1539,6 +1538,7 @@ export default {
                     );
                     const lastOptNode = executeSQLObj.customParam[7]; //是否是当前执行队列中最后一个操作节点
                     if ($this.executeType === "all") {
+                      console.log('走你')
                       //全部执行方法
                       if (isLastGroup && lastOptNode) {
                         //如果属于最后一组队列，即全部执行的最后一个节点执行完毕

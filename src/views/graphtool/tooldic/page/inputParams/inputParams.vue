@@ -1,8 +1,8 @@
 <template>
-    <div ref="inputParamContent" style="height: 400px;overflow-y: auto;" class="detail-form">
+    <div ref="inputParamContent" class="detail-form">
         <el-collapse accordion v-model="activeName">
             <el-collapse-item v-for="(nodeParamInfo,index) in nodeParamInfoArr" :key="nodeParamInfo.nodeId" :title="nodeParamInfo.nodeName" :name="nodeParamInfo.curInd" :index="index" ref="nodeParam">
-                <div style="min-height: 290px;overflow-y: auto;" >
+                <div>
                     <el-row v-for="(paramInfo,ind) in nodeParamInfo.paramInfoArr" :key="ind" style="padding:5px 0;">
                         <el-col :span="7" style="line-height:36px;padding-right: 10px;text-align: right;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">
                             <el-tooltip :content="getContent(paramInfo)" placement="bottom">
@@ -83,9 +83,13 @@
                         }
                     }
                     let nodeParamObj = {}// 节点与参数配置绑定的对象
-                    for (let i = 0; i < this.nodeIdArr.length; i++) {
-                        let hasParam = this.nodeData[this.nodeIdArr[i]].hasParam// 是否有参数
-                        let paramsSetting = this.nodeData[this.nodeIdArr[i]].paramsSetting
+                    let replist = []
+                    for (var e in this.nodeData) {
+                        replist.push(this.nodeData[e].nodeInfo.nodeId); 
+                    }
+                    for (let i = 0; i < replist.length; i++) {
+                        let hasParam = this.nodeData[replist[i]].hasParam// 是否有参数
+                        let paramsSetting = this.nodeData[replist[i]].paramsSetting
                         if (hasParam && paramsSetting && paramsSetting.arr && paramsSetting.arr.length !== 0) {
                             let copyParamArr = []// 定义所有参数的对象数组（已去重）
                             let arr = paramsSetting.arr// 获取设置的参数数组
@@ -104,7 +108,7 @@
                                 }
                             }
                             if (copyParamArr.length > 0) {
-                                nodeParamObj[this.nodeIdArr[i]] = copyParamArr
+                                nodeParamObj[replist[i]] = copyParamArr
                             }
                         }
                     }
