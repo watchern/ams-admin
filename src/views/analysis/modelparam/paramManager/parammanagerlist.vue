@@ -541,6 +541,13 @@ export default {
           success: function(data, textStatus, jqXHR){
             if(data.code == 0){
               that.getParamList(that.pageQuery.condition)
+              that.$notify({
+                title: "成功",
+                message: "删除成功！",
+                type: "success",
+                duration: 2000,
+                position: "bottom-right",
+              });
             }
             else{
               that.$message({ type: 'error', message: "删除参数出错,参数错误"})
