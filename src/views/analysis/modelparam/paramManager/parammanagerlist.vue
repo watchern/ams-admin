@@ -518,7 +518,7 @@ export default {
         this.$message({ type: 'info', message: '最少选择一个参数!' })
         return
       }
-      this.$confirm('此操作将永久删除该参数, 是否继续?', '提示', {
+      this.$confirm('删除该参数可能会影响到使用该参数的模型 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'

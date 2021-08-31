@@ -385,7 +385,7 @@ export default {
        * @param index 要删除的索引
        * @param rows 要删除的数据数组
        */
-    deleteRow(index, rows) {
+    deleteRow(index, rows) {      
       rows.splice(index, 1)
     },
     /**
@@ -434,7 +434,7 @@ export default {
         // 初始化模型的参数
         this.relModelParam = result.data.parammModelRel
         if(type == 2) {
-          // 编辑时清空
+          // 编辑切换模型对象时初始化先清空
           this.relModelTable = []
         }
         // 必填参数初始化
@@ -443,7 +443,7 @@ export default {
           this.notNullParamList.forEach((r) => { 
             if(typeof _.find(this.relModelTable, ['ammParamUuid', r.ammParamUuid]) == 'undefined' 
               || _.find(this.relModelTable, ['ammParamUuid', r.ammParamUuid]) == null)
-              this.relModelTable.push({ammParamUuid: r.ammParamUuid,resultColumn: null})
+              this.relModelTable.push({ammParamUuid: r.ammParamUuid,resultColumn: null,allowedNull:0})
             })
         }
         //设置对象
