@@ -740,7 +740,7 @@ export default{
         async:false,
         success: function(data, textStatus, jqXHR){
           if(data.code == 0){
-            this.$notify({
+            that.$notify({
               title: "成功",
               message: "新建成功！",
               type: "success",
@@ -853,7 +853,7 @@ export default{
         async:false,
         success: function(data, textStatus, jqXHR){
           if(data.code == 0){
-            this.$notify({
+          that.$notify({
               title: "成功",
               message: "修改成功！",
               type: "success",
