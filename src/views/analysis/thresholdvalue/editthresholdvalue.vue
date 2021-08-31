@@ -116,10 +116,11 @@ export default {
         thresholdValueFolderName: [
           {required: true, message: '请选择阈值分类', trigger: 'blur'}
         ],
-        filterValue: [{ required: true,type: 'string', validator:this.verValueMethods}
+        filterValue: [
+          { required: true,type: 'string', validator:this.verValueMethods ,message: '请输入值'}
         ],
         thresholdValueType: [
-          {required:true}
+          {required:true, message : '请输入阈值类型'}
         ],
         // thresholdValueMemo: [
         //   {required:true}
@@ -175,6 +176,7 @@ export default {
     },
     verValueMethods(rule, value, callback){
       if(this.thresholdValue.thresholdValueType === 1){
+        console.log(0)
         if(value === ""){
           callback(new Error('请输入值'))
         }
@@ -183,6 +185,7 @@ export default {
         }
       }
       if(this.thresholdValue.thresholdValueType === 2){
+        console.log(1)
         if(this.thresholdValue.thresholdValueInfoList.length === 0){
           this.$message({type:'info',message:'最少输入一个阈值对象和值'})
         }
@@ -202,6 +205,8 @@ export default {
             callback()
           }
         }
+      }else{
+        callback(new Error('请输入值'))
       }
     },
     /**
