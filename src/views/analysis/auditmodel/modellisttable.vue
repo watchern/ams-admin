@@ -382,7 +382,7 @@ export default {
       },
       flowItem: {
         //动态赋值
-        wftype: "cn_com_icss_model_publish",
+        wftype: "modelpublishflow",
         applyUuid: "",
         detailUuids: "",
         applyTitle: "",

@@ -15,8 +15,8 @@
                             <el-select v-model="paramListValueList[ind]" ref="selectParam"  style="width: 100%;" v-if="paramInfo.inputType === 'lineinp' " 
                                 :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable>
                                 <el-option v-for="item in paramInfo.data" :value="paramInfo.dataType == 'str' ? `'`+ item.value + `'`: item.value" :label="item.name" :key="item.value" >
-                                <span style="float: left"> {{ item.value }}</span>
-                                <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                <span style="float: left"> {{ item.name }}</span>
+                                <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value == item.name ? "" : item.value}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
                                 </el-option>
                             </el-select>
                             <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.value" class="textParam"></el-input>
@@ -384,7 +384,7 @@
                         let nodeName = this.nodeParamInfoArr[index].nodeName// 当前节点的名称
                         let nodeId = this.nodeParamInfoArr[index].nodeId// 当前节点的ID
                         let paramsSetting = this.nodeData[nodeId].paramsSetting// 获取当前节点得参数配置信息
-                        let replaceParamSql = paramsSetting.sql// 获取参数的SQL语句
+                        let replaceParamSql = paramsSetting.sql// 获取参数的SQL语句(替换后的sql)
                         let arr = paramsSetting.arr// 参数数组
                         // 先去除已存在的value值
                         for (let k = 0; k < arr.length; k++) {

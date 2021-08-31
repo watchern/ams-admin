@@ -41,8 +41,8 @@
                                 <el-select v-model="scope.row.value" style="width: 90%;"  :id="scope.row.id" :title="scope.row.title"
                                     :multiple="scope.row.dataChoiceType == 0 || scope.row.dataChoiceType == '0'" filterable clearable>
                                     <el-option v-for="item in scope.row.data" :value="item.value" :label="item.name" :key="item.value" >
-                                        <span style="float: left"> {{ item.value }}</span>
-                                        <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                        <span style="float: left"> {{ item.name }}</span>
+                                        <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value == item.name ? "" : item.value}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
                                     </el-option>
                                 </el-select>
                             </el-col>

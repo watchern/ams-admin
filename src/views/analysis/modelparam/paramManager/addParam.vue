@@ -740,6 +740,13 @@ export default{
         async:false,
         success: function(data, textStatus, jqXHR){
           if(data.code == 0){
+            that.$notify({
+              title: "成功",
+              message: "新建成功！",
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
             that.$emit("refshParamList");
           }else{
             that.$message({ type: 'error', message: '程序发生异常，请联系管理员!' });
@@ -846,6 +853,13 @@ export default{
         async:false,
         success: function(data, textStatus, jqXHR){
           if(data.code == 0){
+          that.$notify({
+              title: "成功",
+              message: "修改成功！",
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
             that.$emit("refshParamList");
           }else{
             that.$message({ type: 'error', message: '程序发生异常，请联系管理员!' });

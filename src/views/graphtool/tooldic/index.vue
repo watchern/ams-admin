@@ -884,6 +884,8 @@ export default {
       rightZtreeStyle: "",
       dbType: "", //当前业务库所属的数据库类型，oracle、spark、impala、db2、mysql等
       executeTaskObj: { init: true, executeTask: [], isError: false }, //执行时的任务对象，executeTask：{curNodeId:,taskUUid}
+      modelSql: "",
+      noReplaceModelSql: "",
     };
   },
   created() {
