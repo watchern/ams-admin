@@ -46,7 +46,7 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
     <el-dialog :title="editDialogTitle" v-if='editDialogVisible' :close-on-click-modal="false" :visible.sync="editDialogVisible">
-      <EditAuditWarning ref="edit" :option="operationObj.option" :optionUuid="operationObj.optionUuid"/>
+      <EditAuditWarning ref="edit" :option="operationObj.option" :optionUuid="operationObj.optionUuid" :userInfo="userInfo"/>
       <div slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">关闭</el-button>
         <el-button type="primary" v-show="operationObj.option === 'add' || operationObj.option === 'update'" @click="save">保存</el-button>
@@ -59,6 +59,8 @@ import { findAuditWarningList, addWarning, deleteAuditWarning, updateWarning, st
 import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import EditAuditWarning from '@/views/analysis/auditwarning/editauditwarning'
+import { getInfo } from '@TCB/api/user';
+import { getById } from '@TCB/api/tcbaudit/personalManage';
 export default {
   name: 'auditWarningList',
   components: { Pagination, QueryField, EditAuditWarning },
@@ -103,7 +105,9 @@ export default {
         pageNo: 1,
         //每页显示多少条
         pageSize: 20
-      }
+      },
+        //当前页面的用户信息
+        userInfo:''
     }
   },
   computed: {
@@ -111,6 +115,12 @@ export default {
   },
   created() {
     this.getList()
+    //获取当前用户，并且赋值给添加审计预警时分配到的人员，作为默认值
+    getInfo().then((resp) => {
+      getById(resp.data.id).then((res) => {
+        this.userInfo = res.data;
+      });
+    });
   },
   methods: {
 

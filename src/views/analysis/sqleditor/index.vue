@@ -113,7 +113,7 @@
                 <div id="bottomPart" lay-filter="result-data">
                     <div id="maxOpen" class="max-size">
                         <div id="iconImg" class="iconImg" alt="最大化" @click="maxOpen" />
-                        <div id="iconImg-huifu" class="iconImg" @click="maxOpen" />
+                        <div id="iconImg-huifu" class="iconImg" @click="maxOpen"/>
                         <!-- <div id="iconImg-save" class="iconImg" @click="outTable"></div>
                         <div id="iconImg-table" class="iconImg"></div> -->
                     </div>

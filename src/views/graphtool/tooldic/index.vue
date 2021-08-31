@@ -884,6 +884,8 @@ export default {
       rightZtreeStyle: "",
       dbType: "", //当前业务库所属的数据库类型，oracle、spark、impala、db2、mysql等
       executeTaskObj: { init: true, executeTask: [], isError: false }, //执行时的任务对象，executeTask：{curNodeId:,taskUUid}
+      modelSql: "",
+      noReplaceModelSql: "",
     };
   },
   created() {
@@ -1522,7 +1524,9 @@ export default {
             const sysInfoAreaHtml = $($this.$refs.sysInfoArea).html();
             const nodeExcuteStatus =
               graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus;
-            if (nodeExcuteStatus === 1 || nodeExcuteStatus === 2) {
+              //多节点全部执行暂处理
+              console.log(nodeExcuteStatus)
+            if (nodeExcuteStatus === 1 || nodeExcuteStatus === 2 || nodeExcuteStatus === 3 ) {
               //只处理未执行或执行中的状态
               switch (executeSQLObj.state) {
                 case "2": //执行成功

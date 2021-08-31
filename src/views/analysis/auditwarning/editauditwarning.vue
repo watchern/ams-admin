@@ -40,7 +40,7 @@
             <el-col :span="11">
               <el-form-item label="分配类型" >
                 <el-select v-model="auditWarningSave.distributionType" @change="distributionTypeChange" placeholder="请选择分配类型" >
-                  <el-option label="请选择" :value="0"></el-option>
+                  <!--<el-option label="请选择" :value="0"></el-option>-->
                   <el-option label="分配到人" :value="1"></el-option>
                   <el-option label="分配到项目" :value="2"></el-option>
                 </el-select>
@@ -50,7 +50,7 @@
               <el-form-item  label="人员或项目">
                 <el-row>
                   <el-col :span="19" >
-                    <el-input  readonly="readonly" v-model="auditWarningSave.distributionName"/>
+                    <el-input  readonly="readonly" v-model="auditWarningSave.distributionName"  />
                   </el-col>
                   <el-col :span="2" :offset="1">
                     <el-button type="primary" @click="distributionButtonClick">选择</el-button>
@@ -341,7 +341,12 @@ export default {
     //操作对象uuid
     optionUuid : {
       type: String
+    },
+    //当前页面的用户
+    userInfo : {
+      type: Array
     }
+
   },
   data() {
     return {
@@ -375,11 +380,11 @@ export default {
         //单次执行时间
         singleExecuteTime: '',
         //分配类型   1、人员；2、项目
-        distributionType:0,
+        distributionType:1,
         //分配编号   如果分配类型为1则存储人员编号，为2则存储项目编号
-        distributionUuid:'',
+        distributionUuid:this.userInfo[0].personuuid,
         //分配名称   如果分配类型为1则存储人员名称，为2则存储项目名称
-        distributionName:'',
+        distributionName:this.userInfo[0].personName,
         //多次执行时间关联
         manyTimesExecuteTime:[{
           //多次执行的执行时间
@@ -468,11 +473,11 @@ export default {
         //保存结果文件夹名称
         locationName:'',
         //分配类型   1、人员；2、项目
-        distributionType:0,
+        distributionType:1,
         //分配编号   如果分配类型为1则存储人员编号，为2则存储项目编号
-        distributionUuid:'',
+        distributionUuid:this.userInfo[0].personuuid,
         //分配名称   如果分配类型为1则存储人员名称，为2则存储项目名称
-        distributionName:''
+        distributionName:this.userInfo[0].personName
       },
       //已经初始化参数的模型
       initedParamModel:[],

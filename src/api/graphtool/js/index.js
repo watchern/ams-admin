@@ -857,6 +857,7 @@ export async function saveModelGraph(){
     let isError = false
     let message = ''
     let modelSql = ''//生成的模型语句
+    let noReplaceModelSql = '' // 未替换参数的模型语句
     let modelParamIdArr = [];//模型中用到的参数ID数组
     let paramArr = [];//模型中用到的参数数组信息
     let graphUuid = ''
@@ -900,10 +901,20 @@ export async function saveModelGraph(){
                     newNodeData = {...{}, ...graph.nodeData}//二次赋值是因为此时的【graph.nodeData】部分值发生了改变
                     let dropViewSql = ''//删除视图的SQL语句
                     let dropTableSql = ''//删除表的SQL语句
+                    let originalDropViewSql = ''// 没有注释的原始删除视图的SQL语句
+                    let originalDropTableSql = ''// 没有注释的原始删除表的SQL语句
                     let selectSql = ''
                     let tableName = ''
                     for (let i = 0; i < lineNodeIdArr.length; i++) {
+                        // 拼接没有替换参数的sql，用于存入模型表的modelSql
                         let curNodeInfo = newNodeData[lineNodeIdArr[i]].nodeInfo
+                        if (typeof curNodeInfo.originalSelectSql !== "undefined"){
+                            noReplaceModelSql += curNodeInfo.originalSelectSql +";\n"
+                        }
+                        if (typeof curNodeInfo.originalCreateSql !== "undefined"){
+                            noReplaceModelSql += curNodeInfo.originalCreateSql +";\n"
+                        }
+
                         if (curNodeInfo.optType === 'datasource') {
                             if (curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2) {
                                 selectSql = curNodeInfo.nodeSql
@@ -953,6 +964,7 @@ export async function saveModelGraph(){
                                 //组织SQL语句
                                 if (curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2) {//如果结果表是辅助结果表或最终结果表
                                     dropTableSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果表的SQL语句*/\n DROP TABLE " + tableName + "\n"
+                                    originalDropTableSql += "DROP TABLE " + tableName + ";\n"
                                     if (graphIndexVue.dbType === "db2") {//不能移动位置
                                         modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE TABLE " + tableName + " AS (" + selectSql + ") definition only\n";
                                         //此句只适用于业务库是DB2数据库（目的是为了实现CREATE TABLE xx AS SELECT……的数据插入）
@@ -984,8 +996,10 @@ export async function saveModelGraph(){
                                         }
                                     }
                                     modelSql += "/*节点【" + preNodeInfo.nodeName + "】的查询结果表的SQL语句*/\n " + selectSql + "\n"
+                                    noReplaceModelSql += selectSql;
                                 } else {
                                     dropViewSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果视图的SQL语句*/\n DROP VIEW " + tableName + "\n"
+                                    originalDropViewSql += "DROP VIEW " + tableName + ";\n"
                                     if (graphIndexVue.dbType === "db2") {
                                         modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE VIEW " + tableName + " AS SELECT * FROM (" + selectSql + ") SORT_TEMP\n";//不能移动位置
                                     } else {
@@ -1031,6 +1045,7 @@ export async function saveModelGraph(){
                 //     }
                 //     //替换ID结束
                 // }
+                noReplaceModelSql = originalDropViewSql + originalDropTableSql + noReplaceModelSql
                 modelSql = dropViewSql + dropTableSql + modelSql
                 }
 
@@ -1070,7 +1085,7 @@ export async function saveModelGraph(){
         }
     }
     graphIndexVue.loading.destroy()
-    return {isError,message,graphUuid,modelSql,modelParamIdArr,paramArr}
+    return {isError,message,graphUuid,modelSql,modelParamIdArr,paramArr,noReplaceModelSql}
 }
 
 /**
