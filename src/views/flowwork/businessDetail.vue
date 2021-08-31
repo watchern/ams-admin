@@ -18,7 +18,7 @@
        ></problemFlow>
     </div>
 
-    <div v-if="applyType == 'cn_com_boe_as_preInvest' && approvalData.workflowPackageId=='com.icss.ams.starflow.auditService'">
+    <div v-if="applyType == 'clueflow' && approvalData.workflowPackageId=='com.icss.ams.auditflow'">
       <!--          // TODO 根据applyType，判断不同工作流，引用不同业务组件，例如：problemflow(问题复核)、clueflow(线索核实)、modelpublishflow(模型上线)-->
       <tcClueBusDatas
               ref="busDatas"
@@ -30,7 +30,7 @@
       ></tcClueBusDatas>
     </div>
 
-    <div v-if="applyType == 'cn_com_icss_model_publish' && approvalData.workflowPackageId=='com.icss.ams.starflow.auditService'">
+    <div v-if="applyType == 'modelpublishflow' && approvalData.workflowPackageId=='com.icss.ams.auditflow'">
       <!--          // TODO 根据applyType，判断不同工作流，引用不同业务组件，例如：problemflow(问题复核)、clueflow(线索核实)、modelpublishflow(模型上线)-->
       <reivewCheck
               ref="busDatas"
