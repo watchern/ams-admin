@@ -1,18 +1,16 @@
 <template>
-  <div class="admin_right_main todoDetail" id="flowItem2">
+  <div class="admin_right_main todoDetail" id="flowItem2" style="height: 62vh; overflow: auto">
     <div class="content_form">
       <el-form
         ref="applyTitleForm"
         :model="applyTitleform"
-        label-width="128px"
-        size="mini"
+        class="detail-form"
       >
-        <el-row :gutter="20">
-          <el-col :span="12">
+        <el-row>
+          <el-col>
             <el-form-item
               label="审批标题："
               class="form_item form_item_one"
-              style="display: flex"
             >
               <el-input
                 type="input"
@@ -39,15 +37,21 @@
         @submitFlow="submitFlow"
       ></businessDetail>
     </template>
-    <el-form>
-      <el-form-item label="发布路径">
-        <el-input v-model="treeUrlname" disabled></el-input>
-      </el-form-item>
+    
+    <el-form class="detail-form">
+      <el-row  type="flex" align="bottom" :gutter="20">
+        <el-col :span="19">
+          <el-form-item label="发布路径">
+            <el-input v-model="treeUrlname" disabled></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="4">
+          <el-button type="primary" @click="showWorkTree = true">选择发布位置</el-button>
+        </el-col>
+      </el-row>
     </el-form>
-    <el-button type="primary" @click="showWorkTree = true"
-      >选择发布位置</el-button
-    >
-
+      
+    
     <!-- 流程内容：审核意见、填写意见、选择下一步 -->
     <div class="flow_template">
       <template>
@@ -60,12 +64,11 @@
               <el-form
                 ref="form"
                 :model="opinionform"
-                label-width="128px"
-                size="mini"
+                class="detail-form"
               >
                 <!-- 是否同意，切换工作流分支 -->
-                <el-row :gutter="20">
-                  <el-col :span="8">
+                <el-row>
+                  <el-col>
                     <el-form-item
                       label="处理意见"
                       class="form_item"
@@ -93,11 +96,11 @@
               <el-form
                 ref="form"
                 :model="personform"
-                label-width="128px"
-                size="mini"
+                label-width="80px"
+                class="detail-form"
               >
-                <el-row :gutter="20">
-                  <el-col :span="12">
+                <el-row>
+                  <el-col>
                     <el-form-item label="流程节点" class="form_item">
                       <el-radio-group
                         v-model="personform.activity"
@@ -420,9 +423,9 @@ export default {
 };
 </script>
 <style>
-.admin_right_main .content_form .el-input .el-input__inner {
+/* .admin_right_main .content_form .el-input .el-input__inner {
   width: 360px;
-}
+} */
 
 .todoDetail .el-form-item__label {
   float: left !important;
