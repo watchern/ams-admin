@@ -2027,8 +2027,8 @@ export function initSettingParam() {
             // 第六步：统一初始化参数的html（文本框、下拉列表、下拉树），并反显已配置参数的信息（包括默认值和排序值）
             // initParam(paramArr, hasSetParamIdArr)
             // 第七步：刷新SQL值，将已编写的SQL赋值给sql
-            load.hide()
-              // load.destroy()
+            // load.hide()
+              load.destroy()
           })
         }
       }

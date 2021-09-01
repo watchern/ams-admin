@@ -86,28 +86,32 @@
           </div>
           <div class="title-label">执行任务</div>
           <div class="task-list">
-              <div v-for="(item, index) in list" :key="index" @click="toUrl(item.taskUrl)">
-                <span
-                  v-if="item.taskStatus == 2"
-                  style="color: #ffffff"
-                  class="el-icon-success"
-                />
-                <span
-                  v-if="item.taskStatus == 1"
-                  style="color: #ffffff"
-                  class="el-icon-loading"
-                />
-                <span
-                  v-if="item.taskStatus == 3"
-                  style="color: #ffffff"
-                  class="el-icon-error"
-                />
-                <!-- <span
+            <div
+              v-for="(item, index) in list"
+              :key="index"
+              @click="toUrl(item.taskUrl)"
+            >
+              <span
+                v-if="item.taskStatus == 2"
+                style="color: #ffffff"
+                class="el-icon-success"
+              />
+              <span
+                v-if="item.taskStatus == 1"
+                style="color: #ffffff"
+                class="el-icon-loading"
+              />
+              <span
+                v-if="item.taskStatus == 3"
+                style="color: #ffffff"
+                class="el-icon-error"
+              />
+              <!-- <span
                   style="color: #ffffff; font-size: 14px; padding: 5px"
                   class="tools-box-name"
                   v-text="item.taskEstimatedTime"
                 /> -->
-                <!-- <span
+              <!-- <span
                   style="
                     color: #ffffff;
                     font-size: 14px;
@@ -118,21 +122,23 @@
                   @click="toUrl(item.taskUrl)"
                   v-text="item.taskName"
                 /> -->
-                {{item.taskEstimatedTime ||''}}
-                {{item.taskName||''}}
-                
-              </div>
+              {{ item.taskEstimatedTime || "" }}
+              {{ item.taskName || "" }}
+            </div>
             <span
-                type="primary"
-                style="
+              type="primary"
+              style="
                 color: #ffffff;
                 position: absolute;
                 bottom: 10px;
                 right: 15px;
                 font-size: 13px;
                 font-weight: bold;
-                cursor: pointer;"
-                @click="moreTask">更多</span>
+                cursor: pointer;
+              "
+              @click="moreTask"
+              >更多</span
+            >
           </div>
         </div>
       </div>
@@ -525,141 +531,156 @@ export default {
     this.init();
     this.initWebSocket();
   },
-  activated(){
-    this.refresh()
+  watch: {
+    $route: {
+      handler(val, oldval) {
+        console.log(oldval.path); //老路由信息
+        console.log(val.path);
+        if(oldval.path=='/login'){
+          this.refresh();
+        }
+      },
+      // 深度观察监听
+      deep: true,
+    },
   },
   mounted() {
-    this.refresh()
-    getUserRes()
-      .then((response) => {
-        console.log(response.data.application);
-        response.data.application.forEach((app, index) => {
-          // 设置左侧应用栏数据
-          this.applications.push({
-            img: "",
-            name: app.name,
-            id: app.id,
-            homepage: app.homepage,
-          });
-        });
-        // 设置引用栏弹出二级菜单数据
-        response.data.menugroup.forEach((grp) => {
-          const menuList = [];
-          grp.menuList.forEach((menu) => {
-            menuList.push({
-              id: menu.id,
-              name: menu.name,
-              path: this.getCleanSrc(menu.src),
-            });
-          });
-          if (!this.menugroup[grp.appuuid]) {
-            this.menugroup[grp.appuuid] = [];
-          }
-          this.menugroup[grp.appuuid].push({
-            id: grp.id,
-            name: grp.name,
-            path: grp.navurl,
-            children: menuList,
-          });
-        });
-        let sSTree = [];
-        for (let i = 0; i < this.applications.length; i++) {
-          sSTree.push(this.menugroup[this.applications[i].id]);
-        }
-        let sSLTree = { first: this.applications, second: sSTree };
-        sessionStorage.setItem("shenjiMenuTree", JSON.stringify(sSLTree));
-        let listTree = JSON.parse(sessionStorage.getItem("shenjiMenuTree"));
-        console.log(listTree);
-        this.menugroup = listTree.second;
-        this.menugroupId = listTree.first;
-        this.showmenuGroup = true;
-        var sysDict = JSON.parse(sessionStorage.getItem("sysDict"));
-        if (sysDict == null) {
-          cacheDict().then((resp) => {
-            sessionStorage.setItem("sysDict", JSON.stringify(resp.data));
-          });
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    this.refresh();
   },
   methods: {
-    refresh(){
+    refresh() {
       //最近使用 功能
-    let arry = [];
-    let arryV = [];
-    this.latelyPathList = [];
-    this.latelyUseList = [];
-    this.latelyInImgList = [];
-    this.latelyBdInList = [];
-    this.latelyFastList = [];
-    arry = JSON.parse(localStorage.getItem("userid"));
-    if (!arry) {
-      arry = [];
-    }
-    for (let i = 0; i < arry.length; i++) {
-      arryV.push(arry[i].v);
-    }
-    arryV.sort(function (num1, num2) {
-      return num1 - num2;
-    });
-    for (let x = 1; x < 200; x++) {
-      let Num = eval(arryV[arryV.length - x]);
+      let arry = [];
+      let arryV = [];
+      this.applications = [];
+      this.latelyPathList = [];
+      this.latelyUseList = [];
+      this.latelyInImgList = [];
+      this.latelyBdInList = [];
+      this.latelyFastList = [];
+      this.menugroup = [];
+      this.menugroupId = [];
+      arry = JSON.parse(localStorage.getItem("userid"));
+      if (!arry) {
+        arry = [];
+      }
       for (let i = 0; i < arry.length; i++) {
-        if (arry[i].v === Num && arry[i].p !== "") {
-          if (this.latelyUseList.indexOf(arry[i].id) === -1) {
-            this.latelyPathList.push(arry[i].p);
-            this.latelyUseList.push(arry[i].id);
-            break;
-          }
-        }
+        arryV.push(arry[i].v);
       }
-      if (this.latelyUseList.length >= 5) {
-        break;
-      }
-    }
-    for (let i = 0; i < this.latelyUseList.length; i++) {
-      this.latelyInImgList[i] = { image: require("../../public/base/accessIcon/moxing.png")}
-      let that = this
-      this.latelyImgList.forEach(function(item){
-        if(that.latelyUseList[i]==item.name){
-          that.latelyInImgList[i] = {
-            image: item.image,
-          };
-        }
-      })
-    }
-    for (let i = 0; i < this.latelyInImgList.length; i++) {
-      this.latelyBdInList.push({
-        image: this.latelyInImgList[i].image,
-        bg: this.latelyBackList[i].bg,
+      arryV.sort(function (num1, num2) {
+        return num1 - num2;
       });
-    }
-
-    getQuickMenuList().then((res) => {
-      // latelyImgList中的name与数据库中的name不同  比如latelyImgList中的服务监控
-      for (let i = 0; i < res.data.length; i++) {
-        if (this.latelyFastList.length < 5) {
-          this.latelyFastList.push({
-            id: res.data[i].quickMenuId,
-            name: res.data[i].quickMenuName,
-            path: res.data[i].quickMenuPath,
-            image: require("../../public/base/accessIcon/moxing.png"),
-            bg: this.latelyBackList[i]
-              ? this.latelyBackList[i].bg
-              : "rgb(95,190,235)",
-          });
-        }
-      }
-      for (let i = 0; i < this.latelyFastList.length; i++) {
-        for (let n = 0; n < this.latelyImgList.length; n++) {
-          if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
-            this.latelyFastList[i].image = this.latelyImgList[n].image;
+      for (let x = 1; x < 200; x++) {
+        let Num = eval(arryV[arryV.length - x]);
+        for (let i = 0; i < arry.length; i++) {
+          if (arry[i].v === Num && arry[i].p !== "") {
+            if (this.latelyUseList.indexOf(arry[i].id) === -1) {
+              this.latelyPathList.push(arry[i].p);
+              this.latelyUseList.push(arry[i].id);
+              break;
+            }
           }
         }
+        if (this.latelyUseList.length >= 5) {
+          break;
+        }
       }
-    });
+      for (let i = 0; i < this.latelyUseList.length; i++) {
+        this.latelyInImgList[i] = {
+          image: require("../../public/base/accessIcon/moxing.png"),
+        };
+        let that = this;
+        this.latelyImgList.forEach(function (item) {
+          if (that.latelyUseList[i] == item.name) {
+            that.latelyInImgList[i] = {
+              image: item.image,
+            };
+          }
+        });
+      }
+      for (let i = 0; i < this.latelyInImgList.length; i++) {
+        this.latelyBdInList.push({
+          image: this.latelyInImgList[i].image,
+          bg: this.latelyBackList[i].bg,
+        });
+      }
+
+      getQuickMenuList().then((res) => {
+        // latelyImgList中的name与数据库中的name不同  比如latelyImgList中的服务监控
+        for (let i = 0; i < res.data.length; i++) {
+          if (this.latelyFastList.length < 5) {
+            this.latelyFastList.push({
+              id: res.data[i].quickMenuId,
+              name: res.data[i].quickMenuName,
+              path: res.data[i].quickMenuPath,
+              image: require("../../public/base/accessIcon/moxing.png"),
+              bg: this.latelyBackList[i]
+                ? this.latelyBackList[i].bg
+                : "rgb(95,190,235)",
+            });
+          }
+        }
+        for (let i = 0; i < this.latelyFastList.length; i++) {
+          for (let n = 0; n < this.latelyImgList.length; n++) {
+            if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
+              this.latelyFastList[i].image = this.latelyImgList[n].image;
+            }
+          }
+        }
+      });
+      getUserRes()
+        .then((response) => {
+          console.log(response.data.application);
+          response.data.application.forEach((app, index) => {
+            // 设置左侧应用栏数据
+            this.applications.push({
+              img: "",
+              name: app.name,
+              id: app.id,
+              homepage: app.homepage,
+            });
+          });
+          // 设置引用栏弹出二级菜单数据
+          response.data.menugroup.forEach((grp) => {
+            const menuList = [];
+            grp.menuList.forEach((menu) => {
+              menuList.push({
+                id: menu.id,
+                name: menu.name,
+                path: this.getCleanSrc(menu.src),
+              });
+            });
+            if (!this.menugroup[grp.appuuid]) {
+              this.menugroup[grp.appuuid] = [];
+            }
+            this.menugroup[grp.appuuid].push({
+              id: grp.id,
+              name: grp.name,
+              path: grp.navurl,
+              children: menuList,
+            });
+          });
+          let sSTree = [];
+          for (let i = 0; i < this.applications.length; i++) {
+            sSTree.push(this.menugroup[this.applications[i].id]);
+          }
+          let sSLTree = { first: this.applications, second: sSTree };
+          sessionStorage.setItem("shenjiMenuTree", JSON.stringify(sSLTree));
+          let listTree = JSON.parse(sessionStorage.getItem("shenjiMenuTree"));
+          console.log(listTree);
+          this.menugroup = listTree.second;
+          this.menugroupId = listTree.first;
+          this.showmenuGroup = true;
+          var sysDict = JSON.parse(sessionStorage.getItem("sysDict"));
+          if (sysDict == null) {
+            cacheDict().then((resp) => {
+              sessionStorage.setItem("sysDict", JSON.stringify(resp.data));
+            });
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     },
     theRouting(index) {
       this.$router.push({ path: this.latelyPathList[index] });
@@ -1084,9 +1105,9 @@ export default {
   margin: 50px 0px 0px 100px;
   color: #ffffff;
   font-size: 14px;
-  div{
+  div {
     overflow: hidden;
-    text-overflow:ellipsis;
+    text-overflow: ellipsis;
     white-space: nowrap;
     cursor: pointer;
   }

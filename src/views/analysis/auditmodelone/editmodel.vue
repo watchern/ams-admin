@@ -242,7 +242,7 @@
       <model-detail :style="modelDetailIsSeeHeight" ref="child" v-if="modelDetailIsSee" :data="modelDetailAdd===true?{}:editingModelDetail" :operationtype="operationObj.operationType" :columns="columnData"></model-detail>
       <div slot="footer">
         <el-button type="primary" @click="modelDetailAdd===true?createDetail():editModelRelationDetermine()">确定</el-button>
-        <el-button @click="modelDetailIsSee=false">取消</el-button>
+        <el-button @click="closeModelRelationDetermine()">取消</el-button>
       </div>
     </el-dialog>
     <el-dialog v-if="thresholdIsSee" :visible.sync="thresholdIsSee" :title="thresholdAdd===true?'添加模型阈值':'修改模型阈值'" width="50%" :close-on-click-modal="false">
@@ -351,6 +351,8 @@ export default {
       columnTypeSelect: [],
       //模型详细对象数组
       modelDetails: [],
+      // 模型详细对象数据
+      oldModelDetails: [],
       dragMinWidth: 250,
       dragMinHeight: 180,
       //条件显示数组
@@ -580,6 +582,7 @@ export default {
     editModelRelation(){
       this.modelDetailAdd = false
       this.modelDetailIsSee = true
+      this.oldModelDetails = JSON.parse(JSON.stringify(this.modelDetails));
     },
     deleteModelRelation(){
       for(var i = 0;i<this.selectedModelDetail.length;i++){
@@ -604,6 +607,14 @@ export default {
             this.modelDetails.splice(j,1,this.editingModelDetail)
           }
         }
+        this.modelDetailIsSee = false
+      }
+    },
+    // 取消编辑
+    closeModelRelationDetermine(){
+      if(this.modelDetailAdd) this.modelDetailIsSee = false
+      else {
+        this.modelDetails = this.oldModelDetails
         this.modelDetailIsSee = false
       }
     },

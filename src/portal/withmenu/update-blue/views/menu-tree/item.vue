@@ -7,8 +7,9 @@
         @click.stop.prevent="close(item)"
       >
         <span class="name" :class="[isOpen && 'text-black']">{{ item.name }}</span>
+        <!-- && item.children.length!=1 -->
         <i
-          v-if="item.children && item.children.length && item.children.length!=1"
+          v-if="item.children && item.children.length "
           class="el-icon-arrow-down icon absolute"
           :class="[isOpen && 'icon-open text-black']"
         />
@@ -57,18 +58,19 @@ export default {
           }
         })
       }
-      if (item.children && item.children.length==1) {
-        console.log("三级路径唯一")
-        isCloseTree = true
-        this.$router.push({ path: this.item.children[0].path })
-        this.$store.commit('aceState/setRightFooterTags', {
-          type: 'active',
-          val: {
-            name: item.children[0].name,
-            path: item.children[0].path
-          }
-        })
-      }
+      // 原本给盐城做个个性化
+      // if (item.children && item.children.length==1) {
+      //   console.log("三级路径唯一")
+      //   isCloseTree = true
+      //   this.$router.push({ path: this.item.children[0].path })
+      //   this.$store.commit('aceState/setRightFooterTags', {
+      //     type: 'active',
+      //     val: {
+      //       name: item.children[0].name,
+      //       path: item.children[0].path
+      //     }
+      //   })
+      // }
       let arry = []
       let lstimeIn = []
       // console.log(item.path)

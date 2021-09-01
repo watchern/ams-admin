@@ -357,6 +357,7 @@ export default {
         title: '提示',
         message: '选中的模型中包含模型用途为预警的模型',
         position: 'bottom-right',
+        duration: 2000,
         type: 'warning'
       })
       this.memoValue = modelList.length;
