@@ -199,9 +199,9 @@ export default {
 };
 </script>
 <style>
-.admin_right_main .content_form .el-input .el-input__inner {
+/* .admin_right_main .content_form .el-input .el-input__inner {
   width: 360px;
-}
+} */
 
 .todoDetail .el-form-item__label {
   float: left !important;
