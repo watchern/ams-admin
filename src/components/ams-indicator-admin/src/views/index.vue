@@ -6257,3 +6257,8 @@ var see = "查看";
 }
 #dataView{height: 100%;overflow: auto}
 </style>
+<style>
+.ag-theme-balham .ag-header-cell-label{
+  justify-content: center;
+}
+</style>

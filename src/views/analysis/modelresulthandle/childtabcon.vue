@@ -1260,3 +1260,8 @@ export default {
   line-height: 16px;
 }
 </style>
+<style>
+.ag-theme-balham .ag-header-cell-label{
+  justify-content: center;
+}
+</style>

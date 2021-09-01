@@ -3305,4 +3305,7 @@ export default {
 .ag-theme-balham .ag-icon-small-right {
   width: 10px;
 }
+.ag-theme-balham .ag-header-cell-label{
+  justify-content: center;
+}
 </style>

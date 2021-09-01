@@ -140,7 +140,6 @@
               {{ scope.row.modelName }}
             </template>
           </el-table-column>
-          <el-table-column label="平均运行时间" width="150px" prop="runTime" />
           <el-table-column label="审计事项" prop="auditItemName" />
           <el-table-column
             label="风险等级"
@@ -166,6 +165,7 @@
             align="center"
             :formatter="dateFormatter"
           />
+          <!-- <el-table-column label="平均运行时间" width="150px" prop="runTime" /> -->
         </el-table>
         <pagination
           v-show="total > 0"
