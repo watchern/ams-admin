@@ -35,8 +35,9 @@
   </div>
 </template>
 <script>
-import { listByPage } from '@TCB/api/tcbaudit/project'
-import { getTaskNodeTree } from '@TCB/api/tcbaudit/audittasknode'
+  import { getProjectByMemberUUID } from '@/api/tcbaudit/audittasknode'
+  import { getTaskNodeTree } from '@TCB/api/tcbaudit/audittasknode'
+  import { getInfo } from '@TCB/api/user'
 export default {
   components: {
     // 组件列表 按需引入
@@ -86,15 +87,14 @@ export default {
   },
   methods: {
     // 获取所有项目
-    getProjectList(query) {
-      this.listLoading = true
-      if (query) {
-        this.pageQuery.condition = query
-        this.pageQuery.pageNo = 1
-      }
-      listByPage(this.pageQuery).then(resp => {
-        this.projectlist = resp.data.records
-        if (resp.data.records.length > 0) { this.projectUuid = resp.data.records[0].projectUuid }
+    getProjectList() {
+      getInfo().then(res => {
+        getProjectByMemberUUID(res.data.id).then(resp => {
+          this.projectlist = resp.data
+          if (resp.data.length > 0) {
+            this.projectUuid = resp.data[0].projectUuid
+          }
+        })
       })
     },
     // 获取项目资料树
