@@ -233,7 +233,7 @@ export default {
             title: '成功',
             message: res.data.msg,
             type: 'success',
-            duration: 5000,
+            duration: 2000,
             position: 'bottom-right'
           })
           this.getList()

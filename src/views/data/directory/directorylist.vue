@@ -867,7 +867,7 @@ export default {
               title: "成功",
               message: "删除成功",
               type: "success",
-              duration: 5000,
+              duration: 2000,
               position: "bottom-right",
             });
             this.$emit("remove", this.selections, this.clickNode);
@@ -984,7 +984,7 @@ export default {
             title: "成功",
             message: res.data.msg,
             type: "success",
-            duration: 5000,
+            duration: 2000,
             position: "bottom-right",
           });
         } else {
@@ -1053,7 +1053,7 @@ export default {
           title: "成功",
           message: "移动成功",
           type: "success",
-          duration: 5000,
+          duration: 2000,
           position: "bottom-right",
         });
         this.$emit("refresh");
@@ -1203,7 +1203,7 @@ export default {
           title: "成功",
           message: "新建成功",
           type: "success",
-          duration: 3000,
+          duration: 2000,
           position: "bottom-right",
         });
         this.folderFormVisible = false;

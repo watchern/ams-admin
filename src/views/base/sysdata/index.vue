@@ -272,6 +272,7 @@ export default {
       if (!codeValue) {
         this.$notify.error({
           title: '错误',
+          duration: 2000,
           message: '请输入4-32位的数字',
           position: 'bottom-right'
         })
@@ -285,6 +286,7 @@ export default {
       if (!codeValue) {
         this.$notify.error({
           title: '错误',
+          duration: 2000,
           message: '请输入4-32位的数字',
           position: 'bottom-right'
         })

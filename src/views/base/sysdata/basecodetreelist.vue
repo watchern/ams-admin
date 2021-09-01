@@ -113,6 +113,7 @@ export default {
         this.$notify.error({
           title: '错误',
           message: '请选中一条数据进行修改',
+          duration: 2000,
           position: 'bottom-right'
         })
         return false
@@ -125,6 +126,7 @@ export default {
         this.$notify.error({
           title: '错误',
           message: '请选中一条以上数据进行删除',
+          duration: 2000,
           position: 'bottom-right'
         })
         return false
