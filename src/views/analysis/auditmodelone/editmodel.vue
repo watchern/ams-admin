@@ -1299,7 +1299,10 @@ export default {
       if (modelObj == null) {
         return
       }
-      modelObj.sqlValue = this.modelSql
+      // 如果是图形化模型 取modelSql
+      if (this.form.modelType === "002003002"){
+        modelObj.sqlValue = this.modelSql
+      }
       this.editorModelLoading = true
       if (!this.isUpdate) {
         saveModel(modelObj).then(result => {
