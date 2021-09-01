@@ -284,7 +284,7 @@ export default {
       },
       flowItem: {
         //动态赋值
-        wftype: "cn_com_boe_as_preInvest",
+        wftype: "clueflow",
         applyUuid: "",
         detailUuids: "",
         applyTitle: "",
