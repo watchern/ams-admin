@@ -239,7 +239,7 @@
       </div>
     </el-dialog>
     <el-dialog v-if="modelDetailIsSee" :visible.sync="modelDetailIsSee" :title="modelDetailAdd===true?'添加模型关联':'修改模型关联'" width="50%" :close-on-click-modal="false">
-      <model-detail :style="modelDetailIsSeeHeight" ref="child" v-if="modelDetailIsSee" :data="modelDetailAdd===true?{}:editingModelDetail" :operationtype="operationObj.operationType" :columns="columnData"></model-detail>
+      <model-detail style="height:500px" ref="child" v-if="modelDetailIsSee" :data="modelDetailAdd===true?{}:editingModelDetail" :operationtype="operationObj.operationType" :columns="columnData"></model-detail>
       <div slot="footer">
         <el-button type="primary" @click="modelDetailAdd===true?createDetail():editModelRelationDetermine()">确定</el-button>
         <el-button @click="closeModelRelationDetermine()">取消</el-button>
@@ -436,7 +436,7 @@ export default {
       },
       selectedThreshold:[],
       isExecuteSql:false,
-      modelDetailIsSeeHeight:"",
+      // modelDetailIsSeeHeight:"",
       someHeight: 700
     }
   },
@@ -446,7 +446,7 @@ export default {
     }
   },
   created() {
-    this.modelDetailIsSeeHeight = "height:" + (window.outerHeight - 300) + "px"
+    // this.modelDetailIsSeeHeight = ""
     //设置一个默认的模型编号
     this.form.modelUuid = getUuid()
     this.operationObj = JSON.parse(sessionStorage.getItem('operationObj'));
