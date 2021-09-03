@@ -176,8 +176,8 @@
         },
         mounted() {
             this.init()
-            this.joinType = this.joinTypeArr[2].value
-            this.joinDescription = this.joinTypeArr[2].description
+            // this.joinType = this.joinTypeArr[2].value
+            // this.joinDescription = this.joinTypeArr[2].description
         },
         methods: {
             init() {

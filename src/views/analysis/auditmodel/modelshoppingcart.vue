@@ -538,6 +538,7 @@ export default {
             //     message: "定时运行时间距当前时间要大于5分钟",
             //   });
             // } else {
+            // 立即运行
             var runTaskUuid = uuid2();
             var batchUuid = uuid2();
             var runTaskRels = [];

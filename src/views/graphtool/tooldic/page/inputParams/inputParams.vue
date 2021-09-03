@@ -83,13 +83,9 @@
                         }
                     }
                     let nodeParamObj = {}// 节点与参数配置绑定的对象
-                    let replist = []
-                    for (var e in this.nodeData) {
-                        replist.push(this.nodeData[e].nodeInfo.nodeId); 
-                    }
-                    for (let i = 0; i < replist.length; i++) {
-                        let hasParam = this.nodeData[replist[i]].hasParam// 是否有参数
-                        let paramsSetting = this.nodeData[replist[i]].paramsSetting
+                  for (let i = 0; i < this.nodeIdArr.length; i++) {
+                    let hasParam = this.nodeData[this.nodeIdArr[i]].hasParam// 是否有参数
+                    let paramsSetting = this.nodeData[this.nodeIdArr[i]].paramsSetting
                         if (hasParam && paramsSetting && paramsSetting.arr && paramsSetting.arr.length !== 0) {
                             let copyParamArr = []// 定义所有参数的对象数组（已去重）
                             let arr = paramsSetting.arr// 获取设置的参数数组
@@ -108,7 +104,7 @@
                                 }
                             }
                             if (copyParamArr.length > 0) {
-                                nodeParamObj[replist[i]] = copyParamArr
+                                nodeParamObj[this.nodeIdArr[i]] = copyParamArr
                             }
                         }
                     }

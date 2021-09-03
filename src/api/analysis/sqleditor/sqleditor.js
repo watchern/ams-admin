@@ -1069,7 +1069,7 @@ export function initParamTreeNew() {
       key: {
         checked: 'isChecked',
         name: 'name',
-        title: 'displayName'
+        title: 'label'
       },
       // 设置数据格式
       simpleData: {

@@ -1314,6 +1314,7 @@ export function reSetOptProperty() {
                 changeNodeIcon(1, false, childrenIds[i])
             }
         }
+        changeNodeInfo(curNodeId,true)
         autoSaveGraph()
         graphIndexVue.$notify({
             title: graphIndexVue.$t('message.title'),

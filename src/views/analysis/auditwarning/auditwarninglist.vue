@@ -344,11 +344,12 @@ export default {
           var addWarResTbName = editModelListAdd[addItem].warningResTbName;
           //将填入的模型运行结果名赋值给formData
           fromData.warningTaskRel[addItem].warningResTbName = addWarResTbName;
-          //如果模型设置了模型运行结果名并且sql不为空修改sql (长度12是为了排除 {"sql":null} 或 {} 或 {"sql":""}的情况)
+          //如果模型设置了模型运行结果名并且sql不为空修改
           var settingInfoSql = fromData.warningTaskRel[addItem].settingInfo;
-          if (addWarResTbName !== undefined && settingInfoSql.length > 12) {
+          let sql = JSON.parse(settingInfoSql).sql
+          if (typeof addWarResTbName !== 'undefined' && this.CommonUtil.isNotBlank(sql) && typeof sql.split("CREATE TABLE")[1] !== 'undefined') {
             //找出想要替换的表名
-            var newsettingInfoSql = settingInfoSql.split("CREATE TABLE")[1];
+            var newsettingInfoSql = sql.split("CREATE TABLE")[1];
             newsettingInfoSql = newsettingInfoSql.split("AS")[0];
             newsettingInfoSql = newsettingInfoSql.trim();
             //将原表名替换成模型运行结果名
@@ -388,11 +389,12 @@ export default {
           //遍历模型列表
           for (var updateItem in editModelListUpdate) {
             var updateWarResTbName = editModelListUpdate[updateItem].warningResTbName;
-            //如果模型设置了模型运行结果名并且sql不为空修改sql (长度12是为了排除 {"sql":null} 或 {} 或 {"sql":""}的情况)
+            //如果模型设置了模型运行结果名并且sql不为空修改
             var settingInfoSql = fromData.warningTaskRel[updateItem].settingInfo;
-            if (updateWarResTbName !== undefined && settingInfoSql.length > 12) {
+              let sql = JSON.parse(settingInfoSql).sql
+              if (typeof updateWarResTbName !== 'undefined' && this.CommonUtil.isNotBlank(sql) && typeof sql.split("CREATE TABLE")[1] !== 'undefined') {
               //找出想要替换的表名
-              var newsettingInfoSql = settingInfoSql.split("CREATE TABLE")[1];
+                var newsettingInfoSql = sql.split("CREATE TABLE")[1];
               newsettingInfoSql = newsettingInfoSql.split("AS")[0];
               newsettingInfoSql = newsettingInfoSql.trim();
               //将原表名替换成模型运行结果名

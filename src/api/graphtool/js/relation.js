@@ -198,7 +198,6 @@ export function init() {
             if (table) {
                 for (var iit = table.elements; iit.next();) {
                     var itempanel = iit.value
-                    console.log(0)
                     if (itempanel.background !== 'transparent') {
                         items.push(itempanel)
                     }
@@ -385,7 +384,6 @@ export function init() {
                         relationVue.checkAll = false
                     }
                 }
-                console.log(1)
                 relationVue.items.push({id,nodeId,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked,selectColumnName})
                 relationVue.columnsInfo.push({...{},...nodeData.columnsInfo[k]})
             }
@@ -474,6 +472,7 @@ function addLine(obj, isAdd) {
     }
     let fromCondition = obj.from + "." + obj.fromPort;
     let toCondition = obj.to + "." + obj.toPort;
+    let repcompare = '='
     if(isAdd){
         relationVue.join[idx].on.push({
             from: obj.from,
@@ -485,18 +484,32 @@ function addLine(obj, isAdd) {
             toCondition : toCondition
         })
     }else{
+        repcompare = obj.compare
         if(typeof obj.fromCondition !== "undefined" && typeof obj.toCondition !== "undefined"){
             fromCondition = obj.fromCondition;
             toCondition = obj.toCondition;
         }
     }
-    relationVue.comper = '='
+    relationVue.comper = repcompare
     relationVue.mainPort = obj.fromPort
     relationVue.toPort = obj.toPort
     relationVue.from = obj.from
     relationVue.to = obj.to
-    relationVue.useMainPort = fromCondition
-    relationVue.useToPort = toCondition
+    // relationVue.useMainPort = fromCondition
+    // relationVue.useToPort = toCondition
+    let parentobj = relationVue.myDiagram.model.nodeDataArray
+    for(let i = 0;i<parentobj.length;i++){
+        if(parentobj[i].key==obj.from){
+            relationVue.useMainPort = parentobj[i].chineseName + "." + obj.fromPort
+            break
+        }
+    }
+    for(let i = 0;i<parentobj.length;i++){
+        if(parentobj[i].key==obj.to){
+            relationVue.useToPort = parentobj[i].chineseName + "." + obj.toPort
+            break
+        }
+    }
     relationVue.showJoinArea = true
     showJoin(obj)
 }
@@ -725,6 +738,7 @@ export function saveNodeInfo() {
             if(onArr[t].from === e.from && onArr[t].fromPort === e.fromPort && onArr[t].to === e.to && onArr[t].toPort === e.toPort){
                 e.fromCondition = onArr[t].fromCondition;
                 e.toCondition = onArr[t].toCondition;
+                e.compare = onArr[t].compare
                 break;
             }
         }
