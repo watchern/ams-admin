@@ -255,11 +255,15 @@ function getIdArr(idArr, nodeId) {
  * */
 function changeNodeInfo(curNodeId, isChangeSource) {
     var idArr = getAllChildrenIds(curNodeId)	// 得到当前节点的子孙节点集合
-    idArr.unshift(curNodeId)	// 将当前节点添加至集合的第一个位置
+    //每次更改重置后续节点操作2021-9-3应鑫鑫要求更改
+    if(isChangeSource){
+        idArr.unshift(curNodeId)
+    }
+    // 将当前节点添加至集合的第一个位置
     for (var i = 0; i < idArr.length; i++) {		// 循环变更信息
         graph.nodeData[idArr[i]].nodeInfo.nodeExcuteStatus = 1				// 置节点执行状态为未执行
         graph.nodeData[idArr[i]].isChangeSource = isChangeSource			// 置改变前置节点信息为已改变
-        if (graph.nodeData[idArr[i]].isSet && graph.nodeData[idArr[i]].isChangeSource) {		// 如果当前节点已配置且改变了前置节点信息
+        if (graph.nodeData[idArr[i]].isSet) {		// 如果当前节点已配置且改变了前置节点信息
             graph.nodeData[idArr[i]].isSet = false			// 重置其配置状态，在打开时不读取已配置信息，重新进行配置
             delete graph.nodeData[idArr[i]].hasParam;
             delete graph.nodeData[idArr[i]].paramsSetting;

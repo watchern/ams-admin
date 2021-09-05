@@ -575,7 +575,7 @@ export default {
             continue
           }
           let settingInfo = JSON.parse(taskRef.settingInfo)
-          taskRef.sqlValue = taskRef.sqlValue
+          // taskRef.sqlValue = taskRef.sqlValue
           taskRef.modelUuid = taskRef.sourceUuid
           if(!settingInfo.paramsArr){
             this.temp.modelList.push(taskRef)
@@ -711,7 +711,7 @@ export default {
             sourceUuid : model.modelUuid,
             //模型版本号
             modelVersion : model.modelVersion,
-            settingInfo : JSON.stringify({sql:model.modelSql})
+            settingInfo : JSON.stringify({sql:model.sqlValue})
           }
           //没参数直接添加
           if(!model.paramObj || model.paramObj.length == 0){

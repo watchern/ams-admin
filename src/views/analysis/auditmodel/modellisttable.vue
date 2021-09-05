@@ -1484,6 +1484,8 @@ export default {
       };
       if (isExistParam) {
         obj.runModelConfig = modelObj.runModelConfig;
+      } else {
+        obj.runModelConfig = {sql: modelObj.sqlValue};
       }
       // 关联项目id使用
       obj.modelUuid = modelObj.modelUuid;
