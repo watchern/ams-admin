@@ -114,7 +114,8 @@ export default {
   z-index: 1999
 }
 .home-right{
-  background: #eaeaea url('style/images/bg.png') no-repeat left center fixed;
+  //#eaeaea url('style/images/bg.png') no-repeat left center fixed
+  background: #fff ;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;

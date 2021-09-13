@@ -132,7 +132,7 @@ export default {
 .right-footer {
   background: rgb(85,158,212);
   overflow: hidden;
-  width: 100vw;
+  // width: 100vw;
   .animat-enter-active,
   .animat-leave-active {
     transition: all 1s;
