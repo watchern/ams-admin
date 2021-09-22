@@ -511,9 +511,6 @@ import {
 import { saveFolder } from "@/api/data/folder";
 import dataTree from "@/views/data/role-res/data-tree";
 import { mapState } from "vuex";
-import { getInfo } from '@TCB/api/user';
-import { getSystemRole} from '@/api/user';
-import { getById } from '@TCB/api/tcbaudit/personalManage';
 
 export default {
   computed: {

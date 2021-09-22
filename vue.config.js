@@ -161,14 +161,6 @@ module.exports = {
           '^/datamax-server/': '/'
         }
       },
-      '/tcbaudit/': {
-        timeout: 1800000,
-        target: process.env.TCBAUDIT_API,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/tcbaudit/': '/'
-        }
-      },
       '/starflow/': {
         timeout: 1800000,
         target: process.env.AMSSTARFLOW_API,
@@ -210,7 +202,6 @@ module.exports = {
     resolve: {
       alias: {
         '@': resolve('src'),
-        '@TCB': 'tcbaudit-vue/src',
         '@ETL': 'ams-etlscheduler-ui/src',
         '@MAX': 'ams-datamax/src'
       }

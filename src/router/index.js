@@ -9,7 +9,6 @@ import baseRouter from './modules/base/base'
 import etlschedulerRouter from './modules/etlscheduler/etlscheduler'
 import analysisRouter from './modules/analysis/analysis'
 import graphRouter from './modules/graphtool/graphtool'
-import tcbauditRouter from './modules/tcbaudit'
 
 const AmsRoutes = [
   {
@@ -144,8 +143,7 @@ const AmsRoutes = [
   baseRouter,
   analysisRouter,
   etlschedulerRouter,
-  graphRouter,
-  tcbauditRouter
+  graphRouter
 ]
 
 export const constantRoutes = [

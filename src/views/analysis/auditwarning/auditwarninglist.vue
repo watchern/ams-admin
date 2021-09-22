@@ -59,8 +59,6 @@ import { findAuditWarningList, addWarning, deleteAuditWarning, updateWarning, st
 import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import EditAuditWarning from '@/views/analysis/auditwarning/editauditwarning'
-import { getInfo } from '@TCB/api/user';
-import { getById } from '@TCB/api/tcbaudit/personalManage';
 export default {
   name: 'auditWarningList',
   components: { Pagination, QueryField, EditAuditWarning },
@@ -115,12 +113,6 @@ export default {
   },
   created() {
     this.getList()
-    //获取当前用户，并且赋值给添加审计预警时分配到的人员，作为默认值
-    getInfo().then((resp) => {
-      getById(resp.data.id).then((res) => {
-        this.userInfo = res.data;
-      });
-    });
   },
   methods: {
 

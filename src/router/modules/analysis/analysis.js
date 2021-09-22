@@ -19,11 +19,6 @@ const analysisRouter = {
       component: () => import('@/views/analysis/auditmodel/index')
       // component: () => import('@/views/analysis/auditmodel/boemodel/modellisttable')
     },
-    {
-      path: 'problemflow',
-      name: '问题',
-      component: () => import('@/views/flowwork/problemflow')
-    },
     //ps:京东方-新需求路由
     {
       path: 'boeauditmodel',

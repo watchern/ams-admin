@@ -233,21 +233,9 @@
       title="发布模型"
       width="50%"
     >
-    <div>
-        <review-submit
-          ref="flowItem2"
-          :flowSet="flowSet"
-          :flowItem="flowItem"
-          :flow-param="flowParam"
-          :columnDefs="columnDefs"
-          :submitData="submitData"
-          @closeModal="closeFlowItem"
-          @delectData="delectData"
-          @changeTreeData="changeTreeData"
-        ></review-submit>
-      </div>
+      <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
       <div slot="footer">
-        <el-button type="primary" @click="toSubmitTcb">确定</el-button>
+        <el-button type="primary" @click="updatePublicModel">确定</el-button>
         <el-button @click="treeSelectShow = false">取消</el-button>
       </div>
     </el-dialog>
@@ -351,7 +339,6 @@ import paramDrawNew from "@/views/analysis/modelparam/paramdrawnew";
 import { replaceNodeParam } from "@/api/analysis/auditparam";
 import { getInfo } from '@/api/user'
 import { getSystemRole} from '@/api/user';
-import { getById } from '@TCB/api/tcbaudit/personalManage';
 import modelshoppingcart from "@/views/analysis/auditmodel/modelshoppingcart";
 import personTree from "@/components/publicpersontree/index";
 import ReviewSubmit from '@/views/flowwork/reviewSubmit.vue';
@@ -368,31 +355,10 @@ export default {
     paramDraw,
     modelshoppingcart,
     personTree,
-    ReviewSubmit,
   },
   props: ["power", "dataUserId", "sceneCode", "isAuditWarning"],
   data() {
     return {
-      //工作流相关
-      flowSet: {
-        opinionList: false,
-        opinion: false,
-        nextStep: true,
-        isSecond: false,
-      },
-      flowItem: {
-        //动态赋值
-        wftype: "modelpublishflow",
-        applyUuid: "",
-        detailUuids: "",
-        applyTitle: "",
-        workEffortId: "",
-        appDataUuid: "",
-        versionUuid: "",
-        isSecond: false,
-        temp1: "",
-      },
-      flowParam: 0,
       // 定义数据列
       columnDefs: [
         {field:"modelName",headerName:"模型名称"},
@@ -402,17 +368,6 @@ export default {
         {field:"modelType",headerName:"模型类型"},
         {field:"createTime",headerName:"创建时间"},
       ],
-      //工作流相关
-      submitData: {
-          versionUuid: 'tlLuwUhC',
-          busTableName: '',  //表名
-          busDatabaseName: 'warehouse',  //数据库名
-          busDatabaseType: '',  //
-          status: '1',  //预警数据状态
-          busdatas: [],
-          commonModelName:'',
-          commonModelUuid:''
-      },
       isShow: false,
       tableKey: "errorUuid",
       // list列表
@@ -501,7 +456,7 @@ export default {
       pageQuery: {
         condition: null,
         pageNo: 1,
-        pageSize: 50,
+        pageSize: 20,
       },
       tabIndex: 0, //语句记录页签个数
       // 人员选择
@@ -551,33 +506,6 @@ export default {
   },
   created() {
     this.getList()
-    //判断是否是管理员身份
-    getInfo().then((resp) => {
-      getById(resp.data.id).then((res) => {
-        const dataArray = res.data;
-        const newArray = dataArray[0].roleId;
-        const sysRole = "系统管理员";
-        getSystemRole(sysRole).then((re) => {
-          for (const item in newArray){
-            if(newArray[item] == re.data.roleid ){
-              this.ifmanger = 1
-              this.jinyong = 0
-            }
-          }
-          if(this.ifmanger != '1' ){
-            this.ifmanger = 0
-            this.jinyong = 1
-            this.btnState = {
-              addBtnState: false,
-              editBtnState: true,
-              deleteBtnState: true,
-              previewBtn: true,
-              otherBtn: false,
-            }
-          }
-        })
-      })
-    })
     // this.getList({ modelFolderUuid: 1 })
   },
   mounted() {
@@ -585,37 +513,6 @@ export default {
     this.initData();
   },
   methods: {
-    toSubmitTcb() {
-      setTimeout(() => {
-        this.$refs["flowItem2"].saveOpinion();
-      }, 20);
-    },
-    //工作流窗口关闭
-    closeFlowItem(val) {
-      this.treeSelectShow = val;
-      // this.flowParam = 0;
-      // this.initData();
-    },
-    //流程发布失败
-    delectData(val) {
-      this.treeSelectShow = val;
-      var data = {
-        modelRelationUuid: this.$store.state.applyInfo.applyInfo.appDataUuid,
-      };
-      // alert(this.$store.state.applyInfo.applyInfo.appDataUuid)
-      this.$axios
-        .post("/analysis/modelPublishRelation/delete/rollBackData", data)
-        .then((response) => {
-          if (response.data.code == "0") {
-            this.flowItem.appDataUuid = response.data.data.modelRelationUuid;
-          }
-        })
-        .catch((error) => {
-          this.common.alertMsg(1, "业务数据回滚失败！");
-          console.log(error);
-        });
-      // this.initData();
-    },
     setImportFolder() {
       let selectNode = this.$refs.modelFolderTree.getSelectNode();
       if (selectNode.id == undefined) {
@@ -798,29 +695,6 @@ export default {
         this.list = resp.data.records;
         this.listLoading = false;
       });
-    },
-    /**
-     * 选中的节点
-     * @param data 树节点
-     */
-    SelectNode(data) {
-      for(let i =0;i<this.list.length;i++){
-        if(data.id==this.list[i].modelUuid){
-          var ifpush = 1
-          for(let j =0;j<this.$refs.modelListTable.selection.length;j++){
-            if(this.$refs.modelListTable.selection[j].modelUuid == this.list[i].modelUuid){
-              ifpush = 0
-            }
-          }
-          }
-          if(ifpush==1){
-            this.$refs.modelListTable.selection.length = 0;
-            this.$refs.modelListTable.selection.push(this.list[i])
-            this.modelTableSelectEvent()
-            return
-          }
-        }
-      console.log(this.$refs.modelListTable.selection)
     },
     /**
      * 设置选中的树节点
@@ -1233,6 +1107,23 @@ export default {
         .catch(() => {});
     },
     /**
+     * 修改要发布的模型
+     */
+    updatePublicModel() {
+      this.$confirm("是否确定将选中的模型发布到公共模型下?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        const selectNode = this.$refs.modelFolderTree.getSelectNode();
+        var selectObj = this.$refs.modelListTable.selection;
+        for (let i = 0; i < selectObj.length; i++) {
+          selectObj[i].modelFolderUuid = selectNode.id;
+        }
+        this.updateModelBasicInfo(selectObj, "发布");
+      });
+    },
+    /**
      * 修改模型基本信息
      * @param selectObj 要修改的数组对象
      * @param tips 提示信息
@@ -1415,7 +1306,6 @@ export default {
                 JSON.parse(result.data.parammModelRel[i].paramValue)
               );
             }
-            // console.log(paramObj)
             this.currentPreviewModelParamAndSql.sqlValue = result.data.sqlValue;
             this.currentPreviewModelParamAndSql.paramObj = paramObj;
             this.currentPreviewModelParamAndSql.modelUuid =

@@ -1,30 +1,6 @@
 <template>
   <!-- firstParentTabCon.vue界面是父页签第一个页签中的内容 -->
   <div class="app-container">
-    <!-- 问题新增弹框 -->
-    <el-dialog title="生成问题" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
-      <ProblemPopover 
-        ref="problempopover"
-        :temp="temp"
-        dialogStatus="create"
-        :disableUpdate="false"
-        @changedialogFormVisible="changedialogFormVisible"
-        @refreshesParent="refreshesParent"
-      />
-      <div slot="footer">
-        <el-button  @click="changedialogFormVisible(false)"
-          >取消</el-button
-        >
-        <el-button type="primary" @click="handleAudit()"
-          >提交审核
-        </el-button>
-        <el-button
-          type="primary"
-          @click="createProblemData()"
-          >保存
-        </el-button>
-      </div>
-    </el-dialog>
     <el-container>
       <el-header>
         <div class="filter-container">
@@ -46,19 +22,19 @@
               class="oper-btn add-problem btn-width-md"
               @click="createProblem"
             />
-<!--            <el-button
+            <el-button
               :disabled="false"
               type="primary"
               size="small"
               class="oper-btn processing"
               @click="handleResult"
-            />-->
-<!--            <el-button-->
-<!--              :disabled="buttonIson.deleteBtn"-->
-<!--              type="primary"-->
-<!--              @click="deleteRunTaskRel"-->
-<!--              class="oper-btn delete-projectrel btn-width-max"-->
-<!--            />-->
+            />
+            <el-button
+              :disabled="buttonIson.deleteBtn"
+              type="primary"
+              @click="deleteRunTaskRel"
+              class="oper-btn delete-projectrel btn-width-max"
+            />
           </el-row>
         </div>
         <el-table
@@ -253,11 +229,9 @@ import AV from "leancloud-storage";
 import { getParamSettingArr } from "@/api/analysis/auditparam";
 import personTree from "@/components/publicpersontree/index";
 import { getDictList } from '@/utils'
-import { save, update, del, personList, projectList, toTreeData, getProjectById } from '@TCB/api/tcbaudit/problem'
 import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
-import ProblemPopover from '@TCB/components/ProblemPopover/index'
 export default {
-  components: { Pagination, QueryField, runimmediatelycon, personTree, flowItem, ProblemPopover },
+  components: { Pagination, QueryField, runimmediatelycon, personTree, flowItem },
   props: {
     projectId: {
       type: String,

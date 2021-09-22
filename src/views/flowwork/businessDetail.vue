@@ -11,12 +11,12 @@
         :actionIdList="actionIdList"
       ></busDatas>
     </div>
-    <div  v-if="applyType == 'problemflow'">
+<!--    <div  v-if="applyType == 'problemflow'">
       <problemFlow
         :appDataUuid="appDataUuid"
         :applyType="applyType"
        ></problemFlow>
-    </div>
+    </div>-->
 
     <div v-if="applyType == 'clueflow' && approvalData.workflowPackageId=='com.icss.ams.auditflow'">
       <!--          // TODO 根据applyType，判断不同工作流，引用不同业务组件，例如：problemflow(问题复核)、clueflow(线索核实)、modelpublishflow(模型上线)-->
@@ -46,13 +46,13 @@
 <script>
 // TODO 引入待办业务组件
 import busDatas from "ams-clue-vue/src/components/todowork/busDatas";
-import problemFlow from "@/views/flowwork/problemflow";
+// import problemFlow from "@/views/flowwork/problemflow";
 import tcClueBusDatas from "ams-clue-vue/src/components/tcFlowWork/todowork/busDatas";
 import reivewCheck from "@/views/flowwork/reivewCheck";
 export default {
   components: {
     busDatas,
-    problemFlow,
+    // problemFlow,
     tcClueBusDatas,
     reivewCheck,
   },
