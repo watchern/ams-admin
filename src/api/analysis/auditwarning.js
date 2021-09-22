@@ -215,3 +215,16 @@ export function supQuery(objInList, objDimList) {
 
   return resultObj
 }
+
+/***
+ * 判断模型运行结果名是否已存在
+ * @param warningResTbName 模型运行结果名
+ */
+export function judgeName(data){
+  return request({
+    baseURL: analysisUrl,
+    url: '/auditWarning/judgeName',
+    method: 'post',
+    data
+  })
+}

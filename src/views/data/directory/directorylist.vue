@@ -376,11 +376,13 @@
                 :forder-id="currTreeNode.id"
                 :open-type="openType"
                 :tab-show.sync="tabShow"
+                :get-tree="getTree"
                 @append-node="appendnode"
                 @table-show="tableshow"
                 @saveTableInfoHelp="saveTableInfoHelp"
                 @changeDataType="changeDataType"
                 @isValidColumn="isValidColumn"
+                @get-list="getList"
                 class="detail-form"
               />
             </el-col>
@@ -511,6 +513,9 @@ import {
 import { saveFolder } from "@/api/data/folder";
 import dataTree from "@/views/data/role-res/data-tree";
 import { mapState } from "vuex";
+import { getInfo } from '@/api/user';
+import { getSystemRole} from '@/api/user';
+// import { getById } from '@TCB/api/tcbaudit/personalManage';
 
 export default {
   computed: {
@@ -537,12 +542,19 @@ export default {
   // eslint-disable-next-line vue/order-in-components
   data() {
     return {
+      // tree相关属性
+      getTree: {
+        tree: null,
+        data: null,
+        node: null
+      },
       ifManager:false, //是否为管理员
       currentSceneUuid: "auditor",
       directyDataUserId: this.$store.state.user.code,
       openType: "",
       // 移动树节点展示
-      tableKey: "id",
+      /*tableKey: "id",*/
+      tableKey: true,
       treeType: "save", // common:正常的权限树   save:用于保存数据的文件夹树
       tableId: "",
       typeLabel: "",
@@ -1023,6 +1035,7 @@ export default {
         }
       }
       this.moveSelect = data;
+      // this.$emit("nodeclick",data, node, tree)
     },
     movePath() {
       var moveObj = this.selections.filter((obj) => {
@@ -1100,10 +1113,15 @@ export default {
     },
     // 表结构维护
     updateTable() {
+      if (this.selections[0].type === "folder") {
+        this.$message({ type: "info", message: "编辑失败!编辑文件夹操作不允许"});
+        return;
+      } else {
       this.openType = "updateTable";
       this.tableColumnVisible = true;
       this.tabShow = "column";
       this.tableId = this.selections[0].id;
+      }
     },
     // 表结构维护
     relationTable() {
@@ -1129,6 +1147,9 @@ export default {
     },
     // 初始化列表页面
     getList(data, node, tree) {
+      this.getTree.data = data
+      this.getTree.node = node
+      this.getTree.tree = tree
       this.currTreeNode = data;
       this.clickId = data.id;
       if(node=='pro'){
@@ -1160,6 +1181,7 @@ export default {
         // eslint-disable-next-line no-undef
         this.total = getArrLength(data.children);
         this.getListSelect();
+        this.tableKey = !this.tableKey;
       }
     },
     createFolder() {

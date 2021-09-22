@@ -3,8 +3,6 @@
  * @param curSelCell 当前生成的连接线
  */
 export function edgeVerify(curSelCell) {
-    // console.log(curSelCell)
-    // console.log(graph.edgeArr)
     if (curSelCell.source == null && curSelCell.target != null || curSelCell.source != null && curSelCell.target == null) { // 不允许连接线没有来源或没有目标
         alertMsg('警告', '不允许的操作', 'warning')
         removeCellsHistory(curSelCell)
@@ -86,7 +84,6 @@ function removeCellsHistory(curSelCell) {
 
     if (!graph.edgeArr[curSelCell.id]) { // 如果当前线不在集合中（即为新增的线），则删除
         let obj = graph.getDeletableCells(graph.getSelectionCells())
-        console.log(obj)
         if (obj == null || obj == '' || obj == []) {
             graph.removeCells([curSelCell], false)
         } else {

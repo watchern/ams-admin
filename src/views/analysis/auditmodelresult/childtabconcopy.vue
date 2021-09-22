@@ -847,7 +847,6 @@ export default {
       })
       for(let i =0;i<replist.length;i++){
         if(value == replist[i]){
-          console.log('切断')
           this.$message('该模型已打开');
           return
         }

@@ -49,8 +49,8 @@
           <el-input v-model="temp.ruleDesc" type="textarea" />
         </el-form-item>
         <el-form-item label="转码方式" prop="ruleType">
-          <el-radio v-model="temp.ruleType" :label="1">SQL语句</el-radio>
-          <el-radio v-model="temp.ruleType" :label="2">手动输入</el-radio>
+          <el-radio v-model="temp.ruleType" :label="1" :disabled="dialogStatus === 'update' ? true : false">SQL语句</el-radio>
+          <el-radio v-model="temp.ruleType" :label="2" :disabled="dialogStatus === 'update' ? true : false">手动输入</el-radio>
         </el-form-item>
          <el-form-item v-if="temp.ruleType === 1" label="转码规则" prop="sqlContent" placeholder="请输入SQL">
           <el-link v-if="temp.ruleType === 1" size="mini" type="primary" @click="exSql()">执行SQL</el-link>
@@ -152,7 +152,7 @@
 <script>
 import childTabs from '@/views/analysis/auditmodelresult/childtabs'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, save, update, del, selectOne, previewSql } from '@/api/data/transCode'
+import { listByPage, save, update, del, selectOne, previewSql, getTrueSql, getShowSql , getSqlRules} from '@/api/data/transCode'
 import QueryField from '@/components/public/query-field/index'
 import XLSX from 'xlsx'
 export default {
@@ -205,7 +205,8 @@ export default {
         transColRels: [{
           codeValue: null,
           transValue: null
-        }]
+        }],
+        sqlContent : ''
       },
       colsJson: [],
       selections: [],
@@ -346,9 +347,44 @@ export default {
         if (valid) {
           if (this.temp.ruleType === 2) {
             this.temp.transColRels = this.transColRelsData
+
+            save(this.temp).then(() => {
+              this.getList()
+              this.previewVisible = false
+              this.dialogFormVisible = false
+              this.$notify({
+                title: '成功',
+                message: '创建成功',
+                type: 'success',
+                duration: 2000,
+                position: 'bottom-right'
+              })
+            })
           } else {
             this.temp.transColRels = this.sqlRule
+            //获取真实的sql语句
+            getTrueSql(this.temp.sqlContent).then(resp => {
+              this.temp.sqlContent  = resp.data
+              //获取初始值和转码值的list
+              getSqlRules(resp.data).then(re =>{
+                //声明一个最终赋值给temp的数组
+                const transColRels = [];
+                //遍历返回的data
+                for(const item in re.data){
+                  //声明初始值和转码值的对象需要在遍历中，否则对象可能会覆盖
+                  const transColRel = {
+                    codeValue: '',
+                    transValue: ''
           }
+                  //将初始值和转码值存入对象中
+                  transColRel.codeValue = re.data[item][0];
+                  transColRel.transValue = re.data[item][1];
+                  //将对象存入数组中
+                  transColRels.push(transColRel);
+                }
+                //将数组存入temp对象，在执行save方法时，就可以一并存入数据库
+                this.temp.transColRels = transColRels;
+
           save(this.temp).then(() => {
             this.getList()
             this.previewVisible = false
@@ -361,6 +397,9 @@ export default {
               position: 'bottom-right'
             })
           })
+              })
+            })
+          }
         }
       })
     },
@@ -370,7 +409,9 @@ export default {
         this.$message({ type: 'info', message: '执行失败！转码规则未填写' })
         return
       }
-      transCodeObj.sqlContent = this.temp.sqlContent
+      getTrueSql(this.temp.sqlContent).then(resp =>{
+        transCodeObj.sqlContent = resp.data
+
       previewSql(transCodeObj).then(res => {
         this.transCodeShow = true
         this.colsJson = res.data.columnNames
@@ -381,24 +422,30 @@ export default {
           this.$refs.childTabs.loadTableData(this.arrSql)
         })
       })
+      })
+
     },
     handleUpdate() {
       var rulObj = Object.assign({}, this.selections[0]) // copy obj
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       selectOne(rulObj).then(res => {
+        if (res.data.ruleType === 1) {
         this.resetTemp()
+            getShowSql(res.data.sqlContent).then(resp =>{
         this.temp = res.data
-        if (this.temp.ruleType === 1) {
+              this.temp.sqlContent = resp.data
           this.colsJson = []
           this.colsJson.push(this.temp.transColRels[0].transValue)
           this.colsJson.push(this.temp.transColRels[0].codeValue)
           this.sqlRule = res.data.transColRels
           this.temp.transColRels = []
           this.transColRelsData = []
+            })
         } else {
           this.colsJson = []
           this.resetSqlRule()
+            this.temp =  res.data;
           this.transColRelsData = res.data.transColRels
           var temporaryObj = this.tableInput.transColRels
           temporaryObj.start = '0'
@@ -426,7 +473,31 @@ export default {
           //   this.temp.transColRels = this.transColRelsData
           // }
           if (this.temp.ruleType === 1) {
-            this.temp.transColRels = this.sqlRule
+            this.temp.transColRels = '';
+            //获取真实的sql语句
+            getTrueSql(this.temp.sqlContent).then(resp => {
+              this.temp.sqlContent = resp.data
+              //获取初始值和转码值的list
+              getSqlRules(resp.data).then(re => {
+                //声明一个最终赋值给temp的数组
+                const transColRels = [];
+                //遍历返回的data
+                for (const item in re.data) {
+                  //声明初始值和转码值的对象需要在遍历中，否则对象可能会覆盖
+                  const transColRel = {
+                    codeValue: '',
+                    transValue: ''
+                  }
+                  //将初始值和转码值存入对象中
+                  transColRel.codeValue = re.data[item][0];
+                  transColRel.transValue = re.data[item][1];
+                  //将对象存入数组中
+                  transColRels.push(transColRel);
+                }
+                //将数组存入temp对象
+                this.temp.transColRels = transColRels;
+              })
+            })
           } else {
             this.temp.sqlContent = ''
             this.temp.transColRels = this.transColRelsData
@@ -457,7 +528,8 @@ export default {
         type: 'warning',
         center: true
       }).then(() => {
-        del(ids).then(() => {
+        del(ids).then((resp) => {
+          if(resp){
           this.getList()
           this.$notify({
             title: '成功',
@@ -466,6 +538,15 @@ export default {
             duration: 2000,
             position: 'bottom-right'
           })
+          }else{
+            this.$notify({
+              title: '失败',
+              message: '删除失败',
+              type: 'error',
+              duration: 2000,
+              position: 'bottom-right'
+            })
+          }
         })
       })
     },
@@ -490,7 +571,6 @@ export default {
           const exlname = workbook.SheetNames[0] // 取第一张表
           const exl = XLSX.utils.sheet_to_json(workbook.Sheets[exlname], { header: 1, defval: '' }) // 生成json表格内容
           var transArr = []
-          debugger
           for (const obj in exl) {
             const tranObj = {}
             tranObj.codeValue = exl[obj][0]

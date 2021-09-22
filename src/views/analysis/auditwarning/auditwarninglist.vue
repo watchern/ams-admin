@@ -55,7 +55,7 @@
   </div>
 </template>
 <script>
-import { findAuditWarningList, addWarning, deleteAuditWarning, updateWarning, startById, stopById} from '@/api/analysis/auditwarning'
+import { findAuditWarningList, addWarning, deleteAuditWarning, updateWarning, startById, stopById, judgeName} from '@/api/analysis/auditwarning'
 import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import EditAuditWarning from '@/views/analysis/auditwarning/editauditwarning'
@@ -331,6 +331,24 @@ export default {
       if (this.operationObj.option == "add") {
         //获取表单数据中的模型列表
         var editModelListAdd = this.$refs['edit'].temp.modelList;
+
+        var nameList = [];
+        //遍历模型列表
+        for (var i in editModelListAdd) {
+          var addTbName = editModelListAdd[i].warningResTbName;
+          if(addTbName == null || addTbName == ""){
+            this.$message.warning("模型运行结果名不可为空！");
+            return;
+          }
+          //将填入的模型运行结果名赋值给list
+          nameList.push(addTbName);
+        }
+        //判断模型结果名是否存在 返回""证明不存在，返回"error"证明传入结果名存在空值（已在前台排除并提示），返回其他字符串证明存在，且字符串本身为结果名
+        judgeName(nameList).then(re =>{
+          if(re.data != ""){
+            this.$message.warning("模型运行结果名："+re.data+" 已存在，请重新输入！");
+            return;
+          }else{
         //遍历模型列表
         for (var addItem in editModelListAdd) {
           var addWarResTbName = editModelListAdd[addItem].warningResTbName;
@@ -356,9 +374,32 @@ export default {
           this.editDialogVisible = false
           this.getList()
         })
+          }
+        })
       } else if (this.operationObj.option == "update") {
         //获取表单数据中的模型列表
         var editModelListUpdate = this.$refs['edit'].temp.modelList;
+
+        var nameListU = [];
+        //遍历模型列表
+        for (var j in editModelListUpdate) {
+          var addTbNameU = editModelListUpdate[j].warningResTbName;
+          if(addTbNameU == null || addTbNameU == ""){
+            this.$message.warning("模型运行结果名不可为空！");
+            return;
+          }
+          //将填入的模型运行结果名赋值给list
+          nameListU.push(addTbNameU);
+        }
+        //判断模型结果名是否存在 返回""证明不存在，返回"error"证明传入结果名存在空值（已在前台排除并提示），返回其他字符串证明存在，且字符串本身为结果名
+        judgeName(nameListU).then(re => {
+          var result = re.data;
+          //并且不存在原结果表名
+          var ifExists = nameListU.indexOf(result);
+          if (result != "" && ifExists == -1 ) {
+            this.$message.warning("模型运行结果名：" + result + " 已存在，请重新输入！");
+            return;
+          } else {
         //遍历模型列表
         for (var updateItem in editModelListUpdate) {
           var updateWarResTbName = editModelListUpdate[updateItem].warningResTbName;
@@ -382,6 +423,8 @@ export default {
           })
           this.editDialogVisible = false
           this.getList()
+        })
+      }
         })
       }
     },

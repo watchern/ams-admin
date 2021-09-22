@@ -118,7 +118,8 @@
                     if (data && data.length > 0) {
                         for (var i = 0; i < data.length; i++) {
                             if(hasMoreTable){//数据融合节点
-                                if (data[i].value === this.items[j].curColumnName && data[i].nodeId === nodeId && data[i].nullNodeId === nullNodeId) {
+                            //
+                                if (data[i].value === this.items[j].disColumnName && data[i].nodeId === nodeId && data[i].nullNodeId === nullNodeId) {
                                     this.items[j].checked = true
                                     num++
                                     break

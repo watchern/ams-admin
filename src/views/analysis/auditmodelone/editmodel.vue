@@ -23,7 +23,7 @@
                   </el-col>
                 </el-row>
                 <el-row>
-                  <el-form-item label="业务分类">
+                  <el-form-item label="业务分类" prop="modelFolderUuid">
                     <el-col :span="18">
                       <el-input v-model="form.modelFolderUuid" class="display" :disabled="true"/>
                       <el-input v-model="form.modelFolderName" :disabled="true"/>
@@ -335,7 +335,8 @@ export default {
         locationName: '',
         locationUuid: '',
         graphUuid: '',
-        modelUse: 1 // 审计用途
+        modelUse: 1, // 审计用途
+        resultTableName: ''
       },
       //参数模型关联对象
       parammModelRel: {},
@@ -390,6 +391,9 @@ export default {
       basicInfoRules: {
         modelName: [
           {type: 'string', required: true, message: '请输入模型名称', trigger: 'blur'}
+        ],
+        modelFolderUuid: [
+          {required: true, message: '请选择业务分类', trigger: 'change'}
         ],
         auditItemUuid: [
           {required: true, message: '请选择审计事项', trigger: 'change'}
@@ -775,6 +779,8 @@ export default {
             this.$message({type: 'info', message: paramDefaultValue.message})
             return null
           }
+        } else {
+          this.form.parammModelRel = null
         }
       } else if (this.$refs.graph != undefined) {
         // 获取图形化参数对象  到下边去处理
@@ -798,6 +804,7 @@ export default {
                 this.$message({type: 'error', message: result.message})
               }
               this.form.graphUuid = result.graphUuid
+              this.form.resultTableName = result.resultTableName
             });
             if(!saveResult){
               return null
@@ -891,11 +898,12 @@ export default {
       if (returnObj.params.length != 0) {
         this.sqlEditorParam = returnObj.params
         this.$refs.apple.initSetting(this.sqlEditorParam)
+        this.sqlEditorParamObj = {arr: returnObj.params} //给sql编辑器的参数对象赋值，编辑使用
       } else {
         // 编辑时清空参数的情况
         this.$refs.apple.removeParam()
+        this.sqlEditorParamObj = {arr: []}// 清空参数
       }
-      this.sqlEditorParamObj = {arr: returnObj.params}//给sql编辑器的参数对象赋值，编辑使用
       // region 初始化固定列
       const columnData = []
       for (let i = 0; i < sqlObj.column.length; i++) {
@@ -977,6 +985,7 @@ export default {
         }else {
           // 编辑时清空参数的情况
           this.$refs.apple.removeParam()
+          this.form.parammModelRel = null
         }
         // 
         //endregion

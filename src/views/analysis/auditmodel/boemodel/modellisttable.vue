@@ -429,7 +429,7 @@ export default {
         modelType: "",
       },
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 20,
       },

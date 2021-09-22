@@ -368,6 +368,10 @@
   content:'\e600  格式化'!important;
 }
 
+.oper-btn.commit:after{
+  content:'\e671 提交审核' !important;
+}
+
 //region @所有取消按钮 start@
 .oper-btn.cancel:after{
   content:'\e657  取消'!important;

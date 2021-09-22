@@ -291,6 +291,9 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
                          })
                      }
                  })
+                 if (dataArr.length > 0) {
+                     obj.setParamObj.data = dataArr
+                 }
             } else { // 执行备选sql
                 if (paramSql !== '') {
                     hasSql = true// 下拉列表是SQL方式

@@ -6,11 +6,12 @@
         :model="applyTitleform"
         class="detail-form"
       >
-        <el-row>
-          <el-col>
+        <el-row :gutter="20">
+          <el-col :span="12">
             <el-form-item
               label="审批标题："
               class="form_item form_item_one"
+              style="display: flex"
             >
               <el-input
                 type="input"

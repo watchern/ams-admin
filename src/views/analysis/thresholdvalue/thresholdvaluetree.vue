@@ -141,6 +141,7 @@ export default {
       this.selectTreeNode = data
       if (data.type === "thresholdValue") {
         this.$emit("refreshThresholdvalue", data);
+        this.$emit("thresholdValueClick",data)
       } else {
         this.$emit("refreshThresholdvalueList", data)
         this.$emit("thresholdValueClick",data)

@@ -2188,7 +2188,7 @@ export function getExecuteTask(data,dataUserId,sceneCode) {
 /**
  * 编辑模型
  * @param sql 要编辑的sql
- * @param paramObj 参数对象
+ * @param paramObjOne 参数对象
  */
 export function editorSql(sql, paramObjOne) {
   editorObj.setValue(sql)

@@ -351,7 +351,6 @@ export default {
       node.expand(); // 主动调用展开节点方法，重新查询该节点下的所有子节点
     },
     nodeClick(data, node, tree) {
-      console.log('走这里')
       this.divInfo = false;
       if (node.data.type === "TABLE") {
         this.$nextTick(() => {

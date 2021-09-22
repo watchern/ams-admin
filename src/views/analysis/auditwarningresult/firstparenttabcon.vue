@@ -1,6 +1,6 @@
 <template>
   <!-- firstParentTabCon.vue界面是父页签第一个页签中的内容 -->
-  <div class="app-container">
+  <div class="app-container firstParentTabCon">
     <el-container>
       <el-aside class="tree-side">
         <div class="tree-container" style = "height:700px;overflow:auto;">
@@ -209,6 +209,7 @@
         label="运行信息"
         prop="runMessage"
         width="200px"
+        :show-overflow-tooltip="true"
       />
       <el-table-column
         label="关联项目"
@@ -1194,6 +1195,7 @@ export default {
     dataCountFormatter(row) {
       var tables = row.runResultTables;
       var dataCount = 0;
+      if(tables == null) { return dataCount; }
       for (var i = 0; i < tables.length; i++) {
         if (tables[i].tableType == 1) {
           dataCount = tables[i].dataCount;
@@ -1205,5 +1207,8 @@ export default {
 };
 </script>
 <style>
+.firstParentTabCon .el-tooltip__popper {
+  max-width: 700px;
+}
 </style>
 

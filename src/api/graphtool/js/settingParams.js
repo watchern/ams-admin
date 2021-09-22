@@ -385,6 +385,10 @@ export async function initSetting() {
         // 第一步：先判断编辑的参数SQL语句是否有变化
         let oldSql = settingVue.sql// 获取旧SQL语句
         let newSql = settingVue.editor.getValue()// 获取新编辑的SQL
+        // sql发生变化
+        // if (newSql != oldSql) {
+        //     settingVue.setParamArr = []
+        // }
         let hasSetParamIdArr = []// 存放有效参数集合中已配置过得参数集合
         if (settingVue.isAdd) { // 如果是新增
             if (oldSql === newSql) { // 如果SQL无变化

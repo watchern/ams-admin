@@ -877,6 +877,14 @@
                             lastSqlIndex = result.data.lastSqlIndex
                             this.executeLoading = false
                             this.currentExecuteSQL = result.data.executeSQLList
+                            if (this.currentExecuteSQL !=null && this.currentExecuteSQL.length > 0 && lastSqlIndex>=0) {
+                                for (var i=0; i<this.currentExecuteSQL.length; i++) {
+                                    if (this.currentExecuteSQL[i].type === null) {
+                                        // 等于lastSqlIndex 标记主表，否则辅表
+                                        this.currentExecuteSQL[i].type = i === lastSqlIndex ? "1" : "2"
+                                    }
+                                }
+                            }
                             this.modelOriginalTable = result.data.tables
                             this.createTreeNode = result.data.treeNodeInfo
                             this.resultShow.push({ id: 1 })

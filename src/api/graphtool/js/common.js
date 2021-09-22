@@ -71,7 +71,6 @@ export function saveNodeSetting() {
             }
         }
         graphIndexVue.nodeSettingDialogVisible = false
-        console.log('情况1')
         graphIndexVue.$nextTick( () => {
             // 变更当前节点的配置状态信息
             graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus = 1
@@ -605,6 +604,8 @@ export function executeToNode() {
  * 全部执行
  * */
 export function executeAllNode() {
+    // 执行类型为全部执行
+    graphIndexVue.executeType = 'all'
     // 获取当前图形化中所有末级结果表节点集合
     var nodeDataArr = []
     var cells = graph.getModel().cells
@@ -715,9 +716,11 @@ export function executeAllNode() {
             }
         }
         if(checkParam){
+            graphIndexVue.executeNodeIdArr = allNodeIdArr
+            graphIndexVue.executeNodeObject = notExecuteNodeObject
             graphIndexVue.nodeParamDialogVisible = true
             graphIndexVue.$nextTick( () => {
-                graphIndexVue.$refs.inputParams.createParamNodeHtml()
+                graphIndexVue.$refs.inputParams.createParamNodeHtml("all")
             })
         }else {
             // 节点的核心执行方法

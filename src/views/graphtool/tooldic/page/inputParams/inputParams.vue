@@ -66,7 +66,7 @@
              * 组织所有待执行节点队列中有参数设置的节点的HTML
              * @author JL
              */
-            async createParamNodeHtml(){
+            async createParamNodeHtml(type){
                 try {
                     this.loading = $(this.$refs.inputParamContent).mLoading({ 'text': '正在初始化数据，请稍后……', 'hasCancel': false })
                     let paramsArr = []// 定义所有母参信息数组
@@ -83,9 +83,16 @@
                         }
                     }
                     let nodeParamObj = {}// 节点与参数配置绑定的对象
-                  for (let i = 0; i < this.nodeIdArr.length; i++) {
-                    let hasParam = this.nodeData[this.nodeIdArr[i]].hasParam// 是否有参数
-                    let paramsSetting = this.nodeData[this.nodeIdArr[i]].paramsSetting
+                    let replist = []
+                    //增加情况判断是否是全部执行
+                    if(type=="all"){
+                        replist = Object.keys(this.nodeData)
+                    }else{
+                        replist = this.nodeIdArr
+                    }
+                    for (let i = 0; i < replist.length; i++) {
+                        let hasParam = this.nodeData[replist[i]].hasParam// 是否有参数
+                        let paramsSetting = this.nodeData[replist[i]].paramsSetting
                         if (hasParam && paramsSetting && paramsSetting.arr && paramsSetting.arr.length !== 0) {
                             let copyParamArr = []// 定义所有参数的对象数组（已去重）
                             let arr = paramsSetting.arr// 获取设置的参数数组
@@ -99,12 +106,12 @@
                                         }
                                         copyParamArr.push(paramsArr[k])
                                         moduleParamArr.push(moduleParamId)
-                                        break
+                                        // break
                                     }
                                 }
                             }
                             if (copyParamArr.length > 0) {
-                                nodeParamObj[this.nodeIdArr[i]] = copyParamArr
+                                nodeParamObj[replist[i]] = copyParamArr
                             }
                         }
                     }
@@ -395,9 +402,15 @@
                         if(paramOptionDom && paramOptionDom.length > 0){
                             for(let j=0; j<paramOptionDom.length; j++){
                                 let index = paramOptionDom[j].$attrs.index
+                              if (index < paramInfoArr.length){
                                 paramInfoObj = paramInfoArr[index]
                                 let moduleParamId = paramInfoObj.dataId// 母参数ID
                                 let allowedNull = typeof paramInfoObj.dataAllowedNull !== 'undefined' ? paramInfoObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
+                                for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                                    if (arr[w].moduleParamId === moduleParamId) {
+                                        arr[w]['allowedNull'] = allowedNull
+                                    }
+                                }
                                 let paramValue = typeof paramInfoObj.value !== 'undefined' ? paramInfoObj.value : ""
                                 let obj = {
                                     'moduleParamId': moduleParamId,
@@ -424,6 +437,7 @@
                                 }
                             }
                         }
+                        }
                         // 获取参数查询条件（下拉列表）
                         let selectParamDom = this.$refs.selectParam
                         if(selectParamDom && selectParamDom.length > 0){
@@ -437,6 +451,11 @@
                                         'moduleParamId': moduleParamId,
                                         'paramValue': '',
                                         'allowedNull': '0'
+                                    }
+                                    for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                                        if (arr[w].moduleParamId === moduleParamId) {
+                                            arr[w]['allowedNull'] = allowedNull
+                                        }
                                     }
                                     if (allowedNull === 1) { // 允许为空
                                         obj.allowedNull = '1'
@@ -484,6 +503,11 @@
                                         'moduleParamId': moduleParamId,
                                         'paramValue': '',
                                         'allowedNull': '0'
+                                    }
+                                    for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                                        if (arr[w].moduleParamId === moduleParamId) {
+                                            arr[w]['allowedNull'] = allowedNull
+                                        }
                                     }
                                     if (allowedNull === 1) { // 允许为空
                                         obj.allowedNull = '1'

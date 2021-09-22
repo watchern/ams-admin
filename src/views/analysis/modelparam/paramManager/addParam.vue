@@ -351,7 +351,7 @@ export default{
         paramName: "",
         dataType: "",
         inputType: "",
-        allowedNull: "",
+        allowedNull: 1,
         dataLength: "",
         maxIntervalVal: "",
         maxIntervalUnit: "",

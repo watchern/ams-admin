@@ -1,5 +1,5 @@
 <template>
-  <!-- childTabCon.vue是子页签中内容的通用组件 -->
+  <!-- childTabCon.vue是子页签中内容的通用组件 aggrid -->
   <div class="itxst">
     <el-dialog title="查询条件设置" :visible.sync="dialogVisible" width="30%">
       <myQueryBuilder
@@ -594,11 +594,11 @@ export default {
    * sql编辑器模型结果使用变量：useType=sqlEditor 表示是sql编辑器模型结果所用  prePersonalVal：每一个prePersonalVal对应一个childtabcon组件，后续会触发父组件chidltabs中的loadTableData方法来根据prePersonalVal进行aggrid数据的展现
    */
   props: [
-    "nowtable",
+    "nowtable",  // {"id":"xxx","name":null,"sql":"SELECT ID FROM WAREHOUSE.RDM_x","type":null,"sqlParam":null,"customParam":null,"resultName":null,"process":0,"state":null}
     "modelUuid",
     "modelTitle",
     "useType",
-    "prePersonalVal",
+    "prePersonalVal",// {"id":"xxx","name":null,"sql":"SELECT ID FROM WAREHOUSE.RDM_x","type":null,"sqlParam":null,"customParam":null,"resultName":null,"process":0,"state":null}
     "resultSpiltObjects",
     "modelId",
     "preLength",
@@ -2014,7 +2014,6 @@ export default {
      * 点击查询条件设置按钮触发
      */
     queryConditionSetting() {
-      console.log('走这里');
       this.dialogVisible = true;
     },
     /**
@@ -2236,7 +2235,6 @@ export default {
       });
       for (let i = 0; i < replist.length; i++) {
         if (value == replist[i]) {
-          console.log("切断");
           this.$message("该模型已打开");
           return;
         }
@@ -2351,7 +2349,6 @@ export default {
         const obj = { sqls: sql, businessField: "modelresultdetail" };
         getExecuteTask(obj)
           .then((resp) => {
-            console.log("getExecuteTask1");
             this.currentExecuteSQL = resp.data.executeSQLList;
             //界面渲染完成之后开始执行sql,将sql送入调度
             startExecuteSql(resp.data).then((result) => {});
@@ -3296,6 +3293,14 @@ export default {
 }
 </style>
 <style>
+/* 应客户要求改滚动条颜色 */
+.itxst ::-webkit-scrollbar{
+  background-color: transparent;
+}
+.itxst ::-webkit-scrollbar-thumb{
+  background-color: #559ed4 !important;
+}
+
 .ag-theme-balham .ag-menu .ag-menu-option-icon span {
   line-height: 16px;
 }

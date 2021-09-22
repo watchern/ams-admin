@@ -122,9 +122,10 @@
 <script>
 import { getSqlType, getColsInfo } from "@/api/data/table-info";
 import { addTable, updateTable } from "@/api/data/directory";
+import _ from "lodash"
 export default {
   // eslint-disable-next-line vue/require-prop-types
-  props: ["tableId", "openType", "forderId"],
+  props: ["tableId", "openType", "forderId", "getTree"],
   data() {
     return {
       copyColObj: {},

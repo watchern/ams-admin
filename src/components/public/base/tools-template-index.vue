@@ -630,7 +630,6 @@ export default {
       });
       getUserRes()
         .then((response) => {
-          console.log(response.data.application);
           response.data.application.forEach((app, index) => {
             // 设置左侧应用栏数据
             this.applications.push({
@@ -667,7 +666,6 @@ export default {
           let sSLTree = { first: this.applications, second: sSTree };
           sessionStorage.setItem("shenjiMenuTree", JSON.stringify(sSLTree));
           let listTree = JSON.parse(sessionStorage.getItem("shenjiMenuTree"));
-          console.log(listTree);
           this.menugroup = listTree.second;
           this.menugroupId = listTree.first;
           this.showmenuGroup = true;

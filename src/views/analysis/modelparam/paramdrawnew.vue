@@ -581,7 +581,7 @@ export default {
                       }else {
                         arr[a].paramValue = filterArr[x].paramValue
                       }
-                      replaceParamSql = replaceParamSql.replace(arr[a].id, filterArr[x].paramValue)// 将参数SQL中的参数ID替换为输入得值
+                      replaceParamSql = replaceParamSql.replaceAll(arr[a].id, filterArr[x].paramValue)// 将参数SQL中的参数ID替换为输入得值
                     }
                   }
                 }

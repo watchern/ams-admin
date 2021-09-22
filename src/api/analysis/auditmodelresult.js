@@ -388,6 +388,9 @@ export function replaceParam(filterArr, arr, replaceSql) {
       }
     }
   }
+  for (var n = 0; n < arr.length; n++) { // 再次遍历被关联模型的参数
+    replaceSql = replaceSql.replaceAll(arr[n].id, "") // 如果参数没被替换，证明没有被关联，赋空值
+  }
   return replaceSql
 }
 

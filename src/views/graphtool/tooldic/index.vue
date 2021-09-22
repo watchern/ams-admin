@@ -628,6 +628,8 @@
         ref="sqlEditor"
         callType="graphModel"
         :sqlValue="sqlEditorCurSql"
+        @getSqlObj="getSqlObj"
+        :sql-editor-param-obj="sqlEditorParamObj"
       />
       <div v-if="graph.canEditor" slot="footer">
         <el-button @click="sqlEditorDialogVisible = false">取消</el-button>
@@ -886,6 +888,10 @@ export default {
       executeTaskObj: { init: true, executeTask: [], isError: false }, //执行时的任务对象，executeTask：{curNodeId:,taskUUid}
       modelSql: "",
       noReplaceModelSql: "",
+      //sql编辑器参数对象
+      sqlEditorParamObj: {},
+      //模型历史表数组
+      modelOriginalTable: [],
     };
   },
   created() {
@@ -934,8 +940,133 @@ export default {
     }px`;
   },
   methods: {
+    /**
+     * 获取SQL编辑器或图形化编辑器编辑的sql等信息并展示到界面
+     */
+    getSqlObj() {
+      const returnObj = this.$refs.SQLEditor[0].getSaveInfo()
+      if (returnObj == undefined) {
+        return
+      }
+      // 转换参数格式 重置参数对象属性，因为SQL编辑器是移植的，因此兼容那边的数据格式，因此对数据格式进行转换
+      const params = this.changeParamDataFormat(returnObj.params, 1)
+      // 转换列格式 处理sql编辑器返回的列数据信息，拼接成该界面能识别的格式
+      const column = this.changeColumnDataFormat(returnObj.columnNames, returnObj.columnTypes)
+      // 处理历史表
+      const modelOriginalTable = this.changeOriginalTable(returnObj.modelOriginalTable)
+      const sqlObj = {
+        sqlValue: returnObj.sqlValue,
+        params: params,
+        column: column,
+        modelChartSetup: returnObj.modelChartSetup,
+        modelOriginalTable: modelOriginalTable
+      }
+      this.form.sqlValue = sqlObj.sqlValue
+      this.form.graphUuid = ""
+      // 初始化默认参数
+      // 初始化参数默认值界面界面
+      // if (returnObj.params.length != 0) {
+      //   this.paramShowVIf = true
+      //   this.sqlEditorParam = returnObj.params
+      // } else {
+      //   this.paramShowVIf = false
+      // }
+      this.sqlEditorParamObj = {arr: returnObj.params}//给sql编辑器的参数对象赋值，编辑使用
+      // region 初始化固定列
+      const columnData = []
+      for (let i = 0; i < sqlObj.column.length; i++) {
+        const columnDataObj = {
+          outputColumnName: sqlObj.column[i].columnName,
+          columnType: sqlObj.column[i].columnType
+        }
+        columnData.push(columnDataObj)
+      }
+      // endregion
+      // 列数据
+      // this.columnData = columnData
+      // 模型SQL用到的数据表
+      this.modelOriginalTable = sqlObj.modelOriginalTable
+      // 处理图表JSON
+      // this.modelChartSetup = sqlObj.modelChartSetup
+      // this.form.locationName = returnObj.locationName
+      // this.form.locationUuid = returnObj.locationUuid
+    },
+    /**
+     *相互转换param数据格式
+     * @param paramObj 参数对象
+     * @param type 1、获取sql编辑器时候需要的
+     */
+    changeParamDataFormat(paramObj, type) {
+      if (paramObj == undefined || paramObj == null) {
+        return
+      }
+      if (type == 1) {
+        // SQL编辑器参数对象转编辑界面参数对象
+        const params = []
+        for (let i = 0; i < paramObj.length; i++) {
+          const obj = {
+            ammParamUuid: paramObj[i].moduleParamId,
+            paramName: paramObj[i].name,
+            copyParamId: paramObj[i].copyParamId,
+            description: '',
+            paramValue: ''
+          }
+          params.push(obj)
+        }
+        return params
+      } else if (type == 2) {
+        // 参数界面编辑对象转SQL编辑器参数对象
+        var returnObj = {'arr': []}
+        for (let b = 0; b < paramObj.length; b++) {
+          const id = '{#' + paramObj[b].ammParamUuid + '#}'
+          const name = paramObj[b].paramName
+          const moduleParamId = paramObj[b].linkParamUuid
+          const allowedNull = typeof paramObj[b].ammParamChoice.allowedNull !== 'undefined' ? paramObj[b].ammParamChoice.allowedNull : 1
+          var obj = {
+            id: id,
+            name: name,
+            moduleParamId: moduleParamId,
+            copyParamId: id,
+            allowedNull: allowedNull
+          }
+          returnObj.arr.push(obj)
+        }
+        return returnObj
+      }
+    },
+    /**
+     *转换列对象
+     * @param columnNames 列名称
+     * @param columnType 列类型
+     */
+    changeColumnDataFormat(columnNames, columnType) {
+      // [{ columnName: 'AUDIT_ITEM_UUID', columnType: 'varchar' }, { columnName: 'AUDIT_ITEM_NAME', columnType: 'varchar' }]
+      const returnObj = []
+      for (let i = 0; i < columnNames.length; i++) {
+        var obj = {
+          columnName: columnNames[i],
+          columnType: columnType[i]
+        }
+        returnObj.push(obj)
+      }
+      return returnObj
+    },
+    /**
+     * 转换列对象
+     * @param originalTableObj 历史表对象
+     */
+    changeOriginalTable(originalTableObj) {
+      const resultObj = []
+      for (let i = 0; i < originalTableObj.length; i++) {
+        const obj = {
+          originalTableName: originalTableObj[i].tableName,
+          executionType: originalTableObj[i].tableType
+        }
+        resultObj.push(obj)
+      }
+      return resultObj
+    },
     maxOpen() {
-      console.log("最大化");
       if (this.maxormin == true) {
         $("#geResultContainer").css({
           position: "fixed",
@@ -1540,7 +1671,6 @@ export default {
                     );
                     const lastOptNode = executeSQLObj.customParam[7]; //是否是当前执行队列中最后一个操作节点
                     if ($this.executeType === "all") {
-                      console.log('走你')
                       //全部执行方法
                       if (isLastGroup && lastOptNode) {
                         //如果属于最后一组队列，即全部执行的最后一个节点执行完毕

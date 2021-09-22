@@ -865,6 +865,7 @@ export async function saveModelGraph(){
     // 先判断在整个图形中是否存在打了标记的最终结果表，默认为未标记（false）
     let hasResultSign = false
     let nodeIdArr = Object.keys(graph.nodeData)
+    let resultTableName = '' // 最终结果表名
     for (let i = 0; i < nodeIdArr.length; i++) {
         let resultTableStatus = graph.nodeData[nodeIdArr[i]].nodeInfo.resultTableStatus
         if (resultTableStatus === 2) {
@@ -889,7 +890,6 @@ export async function saveModelGraph(){
                 'nodeData': JSON.stringify(graph.nodeData),
                 "noData": true
             }
-            console.log('情况2')
             const response = await executeNodeSql(dataParam)
             if (response.data != null) {
                 //改变当前图形节点的信息

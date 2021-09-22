@@ -1160,6 +1160,7 @@ export default {
     dataCountFormatter(row) {
       var tables = row.runResultTables;
       var dataCount = 0;
+      if(tables == null) { return dataCount; }
       for (var i = 0; i < tables.length; i++) {
         if (tables[i].tableType == 1) {
           dataCount = tables[i].dataCount;

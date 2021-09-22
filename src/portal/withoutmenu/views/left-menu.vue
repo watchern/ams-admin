@@ -172,7 +172,6 @@ export default {
         return []
       }
       const appid = this.applications[this.currentIndex].id
-      console.log(this.menugroup[appid])
       return this.menugroup[appid]
     },
     getPersonUuid(){
@@ -226,7 +225,6 @@ export default {
     initmounted() {
       getUserRes()
         .then((response) => {
-          console.log(response.data.application);
           this.applications = [];
           response.data.application.forEach((app, index) => {
             // 设置左侧应用栏数据

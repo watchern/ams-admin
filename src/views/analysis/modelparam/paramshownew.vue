@@ -83,6 +83,7 @@ data(){
     // 清空参数
     removeParam(){
       this.setParamArr = []
+      this.paramsSetting = null
     },
     refreshTable(){
       // key值刷新页面
