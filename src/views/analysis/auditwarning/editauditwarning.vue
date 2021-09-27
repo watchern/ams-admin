@@ -1058,8 +1058,10 @@ export default {
         });
       }
       else if (projects.length === 1) {
-        this.auditWarningSave.distributionUuid = projects[0].PRJ_PROJECT_UUID
-        this.auditWarningSave.distributionName = projects[0].PRJ_NAME
+        // this.auditWarningSave.distributionUuid = projects[0].PRJ_PROJECT_UUID
+        this.auditWarningSave.distributionUuid = projects[0].prjProjectUuid
+        // this.auditWarningSave.distributionName = projects[0].PRJ_NAME
+        this.auditWarningSave.distributionName = projects[0].prjName
         this.projectDialog = false;
       } else {
         this.$message({

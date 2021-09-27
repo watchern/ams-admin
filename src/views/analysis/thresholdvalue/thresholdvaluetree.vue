@@ -52,7 +52,7 @@
       title="请填写分类信息"
       :visible.sync="dialogFormVisible"
       :close-on-click-modal="false">
-      <el-form :model="form">
+      <el-form :model="form" class="detail-form">
         <el-form-item label="分类名称">
           <el-input v-model="form.thresholdValueFolderName" autocomplete="off" />
         </el-form-item>

@@ -399,45 +399,46 @@
                         let paramInfoObj = null
                         // 获取参数查询条件（文本框）
                         let paramOptionDom = this.$refs.paramOption
-                        if(paramOptionDom && paramOptionDom.length > 0){
-                            for(let j=0; j<paramOptionDom.length; j++){
-                                let index = paramOptionDom[j].$attrs.index
-                              if (index < paramInfoArr.length){
-                                paramInfoObj = paramInfoArr[index]
-                                let moduleParamId = paramInfoObj.dataId// 母参数ID
-                                let allowedNull = typeof paramInfoObj.dataAllowedNull !== 'undefined' ? paramInfoObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
-                                for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                        if(paramOptionDom && paramOptionDom.length > 0) {
+                          for (let j = 0; j < paramOptionDom.length; j++) {
+                            let index = paramOptionDom[j].$attrs.index
+                            if (index < paramInfoArr.length) {
+                              paramInfoObj = paramInfoArr[index]
+                              let moduleParamId = paramInfoObj.dataId// 母参数ID
+                              let allowedNull = typeof paramInfoObj.dataAllowedNull !== 'undefined' ? paramInfoObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
+                              for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                                if (arr[w].moduleParamId === moduleParamId) {
+                                  arr[w]['allowedNull'] = allowedNull
+                                }
+                              }
+                              let paramValue = typeof paramInfoObj.value !== 'undefined' ? paramInfoObj.value : ""
+                              let obj = {
+                                'moduleParamId': moduleParamId,
+                                'paramValue': $.trim(paramValue), // 处理可能存在的空格
+                                'allowedNull': '0'
+                              }
+                              if (allowedNull === 1) { // 允许为空
+                                obj.allowedNull = '1'
+                                if (paramValue === '') {
+                                  hasAllowedNullParam = true
+                                  for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
                                     if (arr[w].moduleParamId === moduleParamId) {
-                                        arr[w]['allowedNull'] = allowedNull
+                                      arr[w]['value'] = ''
                                     }
+                                  }
                                 }
-                                let paramValue = typeof paramInfoObj.value !== 'undefined' ? paramInfoObj.value : ""
-                                let obj = {
-                                    'moduleParamId': moduleParamId,
-                                    'paramValue': $.trim(paramValue), // 处理可能存在的空格
-                                    'allowedNull': '0'
+                                filterArr.push(obj)
+                              } else { // 不允许为空
+                                if (paramValue !== '') {
+                                  filterArr.push(obj)
+                                } else {
+                                  paramNum++
                                 }
-                                if (allowedNull === 1) { // 允许为空
-                                    obj.allowedNull = '1'
-                                    if (paramValue === '') {
-                                        hasAllowedNullParam = true
-                                        for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
-                                            if (arr[w].moduleParamId === moduleParamId) {
-                                                arr[w]['value'] = ''
-                                            }
-                                        }
-                                    }
-                                    filterArr.push(obj)
-                                } else { // 不允许为空
-                                    if (paramValue !== '') {
-                                        filterArr.push(obj)
-                                    } else {
-                                        paramNum++
-                                    }
-                                }
+                              }
                             }
+                          }
                         }
-                        }
+
                         // 获取参数查询条件（下拉列表）
                         let selectParamDom = this.$refs.selectParam
                         if(selectParamDom && selectParamDom.length > 0){

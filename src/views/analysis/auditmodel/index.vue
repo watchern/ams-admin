@@ -1,5 +1,6 @@
 <template>
-  <div class="app-container"  v-loading="loading" :element-loading-text="loadText">
+  <div class="app-container" ref="bigLoading" >
+<!--    v-loading="loading" :element-loading-text="loadText"-->
     <!--模型分类树-->
     <el-container>
       <el-aside class="tree-side">
@@ -12,6 +13,7 @@
 <script>
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 import ModelListTable from '@/views/analysis/auditmodel/modellisttable'
+import {changeNodeIcon} from "../../../api/graphtool/js/common";
 export default {
   components: { ModelFolderTree, ModelListTable },
   computed:{
@@ -50,7 +52,8 @@ export default {
      * @param data 树节点数据
      */
     refreshModelList(data) {
-      var query = { modelFolderUuid: data.id }
+      let query = {}
+      data.type == "model"? query = { modelUuid: data.id } : query = { modelFolderUuid: data.id }
       this.$refs.modelListTable.getList(query)
       this.$refs.modelListTable.setSelectTreeNode(data)
     },
@@ -73,8 +76,15 @@ export default {
       return this.$refs.modelListTable.getModelListCheckData()
     },
     loadingSet(isShow,loadText){
-      this.loading = isShow
-      this.loadText = loadText;
+      if(isShow){
+        let _this = this
+        this.bigLoading = $(this.$refs.bigLoading).mLoading({ 'text': loadText, 'hasCancel': true, 'hasTime': true, "callback" : function () {
+            _this.bigLoading.destroy()
+            _this.$refs.modelListTable.canceltab()
+          }})
+      }else {
+        this.bigLoading.destroy()
+      }
     }
   }
 }

@@ -454,9 +454,11 @@ export default {
         modelType: "",
       },
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 20,
+        sortBy:"desc",
+        sortName:"modelName"
       },
       tabIndex: 0, //语句记录页签个数
       // 人员选择
@@ -476,7 +478,8 @@ export default {
       modelFolderUuid: "",
       modelFolderName: "",
       relationNextValue: {},
-      jinyong:0//禁用编辑等按钮
+      jinyong:0,//禁用编辑等按钮
+      ifcancel:0
     };
   },
   computed: {},
@@ -694,6 +697,14 @@ export default {
         this.total = resp.data.total;
         this.list = resp.data.records;
         this.listLoading = false;
+        if(query.modelUuid){
+          // this.$refs.modelListTable.selection
+          let _this = this
+          setTimeout(function(){
+            _this.$refs.modelListTable.selection.push(resp.data.records[0])
+            _this.modelTableSelectEvent()
+          },200)
+        }
       });
     },
     /**
@@ -702,7 +713,7 @@ export default {
      */
     setSelectTreeNode(data) {
       this.selectTreeNode = data;
-      console.log(data)
+      this.editableTabsValue = "modelList"
       //非管理员公共模型页面按钮隐藏
       if(data.path.indexOf('gonggong') != -1 && this.ifmanger==0){
         //禁用
@@ -1326,6 +1337,10 @@ export default {
      * @param selectObj 界面选中元素
      * @param isExistParam 是否存在参数
      */
+    canceltab(){
+      this.ifcancel = 1
+      console.log("取消")
+    },
     executeSql(obj, selectObj, isExistParam) {
       this.$emit(
         "loadingSet",
@@ -1333,6 +1348,7 @@ export default {
         "正在运行模型'" + selectObj[0].modelName + "',请稍候"
       );
       getExecuteTask(obj, this.dataUserId, this.sceneCode).then((result) => {
+        if(this.ifcancel==0){
         if (result.data.isError) {
           this.$message({
             type: "error",
@@ -1356,6 +1372,10 @@ export default {
               this.executeLoading = false;
             });
         }
+        }else{
+          this.ifcancel = 0
+        }
+
       });
     },
     /**
@@ -1485,6 +1505,8 @@ export default {
       this.dialogFormVisible = false;
       this.$emit("loadingSet", true, "正在执行...");
       getExecuteTask(obj, this.dataUserId, this.sceneCode).then((result) => {
+
+        if(this.ifcancel==0){
         if (result.data.isError) {
           this.$message({
             type: "error",
@@ -1495,6 +1517,9 @@ export default {
           this.$emit("loadingSet", false, "");
           //界面渲染完成之后开始执行sql,将sql送入调度
           startExecuteSql(result.data).then((result) => {});
+        }
+        }else{
+          this.ifcancel = 0
         }
       });
     },

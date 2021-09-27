@@ -208,7 +208,6 @@ export default {
   watch: {
     $route: {
       handler(val, oldval) {
-        console.log(oldval.path); //老路由信息
         if (oldval.path == "/login") {
           this.initmounted()
         }

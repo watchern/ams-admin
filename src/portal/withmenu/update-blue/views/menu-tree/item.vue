@@ -42,13 +42,11 @@ export default {
       this.isOpen = bool
     },
     close(item) {
-      console.log(item)
       let isCloseTree = false
       if (!item.children) {
         isCloseTree = true
       }
       if (item.path && item.path !== '' && this.item.path!=='') {
-        console.log("二级有路径")
         this.$router.push({ path: this.item.path })
         this.$store.commit('aceState/setRightFooterTags', {
           type: 'active',

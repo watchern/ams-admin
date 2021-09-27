@@ -6,12 +6,12 @@
       placeholder="输入关键字进行过滤"
       class="tree-search"
     />
+    <!-- default-expand-all elementui 树默认展开全部，2021-9-8应客户要求去掉 -->
     <MyElTree
       ref="tree"
       :data="data"
       :props="defaultProps"
       :filter-node-method="filterNode"
-      default-expand-all
       :expand-on-click-node="false"
       node-key="id"
       check-strictly
@@ -60,7 +60,7 @@
       :visible.sync="dialogFormVisible"
       :close-on-click-modal="false"
     >
-      <el-form :model="form">
+      <el-form :model="form" class="detail-form">
         <el-form-item label="分类名称">
           <el-input v-model="form.modelFolderName" autocomplete="off" />
         </el-form-item>
@@ -205,11 +205,7 @@ export default {
      */
     handleNodeClick(data) {
       this.selectTreeNode = data;
-      if (data.type === "model") {
-        this.$emit("refreshModels", data);
-      } else {
         this.$emit("refreshModelList", data);
-      }
     },
     /**
      * 树过滤
@@ -304,6 +300,7 @@ export default {
             this.$set(this.selectTreeNode, "children", []);
           }
           this.selectTreeNode.children.push(newChild);
+          this.form.modelFolderName = null
         } else {
           this.$notify({
             title: "提示",
