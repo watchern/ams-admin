@@ -382,9 +382,9 @@ export default {
         //分配类型   1、人员；2、项目
         distributionType:1,
         //分配编号   如果分配类型为1则存储人员编号，为2则存储项目编号
-        distributionUuid:this.userInfo[0].personuuid,
+        distributionUuid:this.userInfo[0].id,
         //分配名称   如果分配类型为1则存储人员名称，为2则存储项目名称
-        distributionName:this.userInfo[0].personName,
+        distributionName:this.userInfo[0].name,
         //多次执行时间关联
         manyTimesExecuteTime:[{
           //多次执行的执行时间
@@ -475,9 +475,9 @@ export default {
         //分配类型   1、人员；2、项目
         distributionType:1,
         //分配编号   如果分配类型为1则存储人员编号，为2则存储项目编号
-        distributionUuid:this.userInfo[0].personuuid,
+        distributionUuid:this.userInfo[0].id,
         //分配名称   如果分配类型为1则存储人员名称，为2则存储项目名称
-        distributionName:this.userInfo[0].personName
+        distributionName:this.userInfo[0].name
       },
       //已经初始化参数的模型
       initedParamModel:[],

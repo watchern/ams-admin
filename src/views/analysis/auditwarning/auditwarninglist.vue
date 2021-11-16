@@ -59,6 +59,7 @@ import { findAuditWarningList, addWarning, deleteAuditWarning, updateWarning, st
 import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import EditAuditWarning from '@/views/analysis/auditwarning/editauditwarning'
+import { getInfo } from '@/api/user';
 export default {
   name: 'auditWarningList',
   components: { Pagination, QueryField, EditAuditWarning },
@@ -105,7 +106,7 @@ export default {
         pageSize: 20
       },
         //当前页面的用户信息
-        userInfo:''
+        userInfo:[]
     }
   },
   computed: {
@@ -113,6 +114,10 @@ export default {
   },
   created() {
     this.getList()
+    //获取当前用户
+    getInfo().then((resp) => {
+      this.userInfo[0] = resp.data;
+    });
   },
   methods: {
 
