@@ -394,7 +394,7 @@
         </span>
       </template>
     </el-dialog>
-    <!-- 弹窗6 -->
+    <!-- 关联表弹窗 -->
     <el-dialog
       v-if="tableRelationVisible"
       :visible.sync="tableRelationVisible"
@@ -692,7 +692,9 @@ export default {
       // 禁用管理表，个人场景
       disLinkData: true,
       // 禁用分享表,个人场景
-      disShareTable: true
+      disShareTable: true,
+      //websocket对象
+      webSocket: null
     };
   },
   created() {
@@ -826,6 +828,15 @@ export default {
       if (typeof this.sceneCode !== "undefined") {
         this.currentSceneUuid = this.sceneCode;
       }
+      // WebSocket 建立与服务端的连接
+      const webSocketPath =
+              this.AmsWebsocket.getWSBaseUrl(this.AmsModules.DATA) +
+              this.$store.getters.personcode +
+              "copyTable";
+      this.webSocket = new WebSocket(webSocketPath);
+      this.webSocket.onopen =  function (event) {
+        console.log("websocket连接成功");
+      };
     },
     fileuploadname(data) {
       this.uploadtemp.tableFileName = data
@@ -908,24 +919,30 @@ export default {
         duration: 1500,
         position: "bottom-right",
       });
-      copyTable(tempData).then((res) => {
-        if (res.data) {
-          this.$notify({
+      //调用复制表方法
+      copyTable(tempData).then((res) => {});
+        // 发送消息
+      let _this = this;
+        this.webSocket.onmessage = function (event) {
+          _this.$notify({
             title: "成功",
             message: "复制表成功",
             type: "success",
             duration: 2000,
             position: "bottom-right",
           });
-          this.$emit("refresh",this.clickId);
-          // this.getListSelect()
-        } else {
+          _this.$emit("refresh", _this.clickId);
+        };
+
+      // 通信失败
+      this.webSocket.onerror = function (event) {
           this.$message({
-            type: "info",
-            message: "复制失败!复制表名称已由现有对象使用",
+          type: "error",
+          message: "通信失败！请联系管理员！",
           });
-        }
-      });
+      };
+      //关闭连接
+      this.webSocket.onclose = function (event) {};
       this.resourceForm.resourceName = "";
       this.folderFormVisible = false;
       //手动清空temp，让用户重新选择
