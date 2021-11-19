@@ -65,7 +65,8 @@
                 <el-button
                   v-if="
                     (data.extMap && data.extMap.folder_type === 'maintained') ||
-                    data.type === 'TABLE'
+                    data.type === 'TABLE'||
+                    data.type === 'VIEW'
                   "
                   type="text"
                   size="mini"
@@ -399,7 +400,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          if (data.type === "TABLE") {
+          if (data.type === "TABLE" || data.type === "VIEW" ) {
             delTable(data.id).then((resp) => {
               this.$notify(
                 commonNotify({ type: "success", message: "删除成功！" })
