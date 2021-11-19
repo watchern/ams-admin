@@ -522,7 +522,7 @@ export default {
     // 因为时序问题，store中没有personcode时组件可能被加载 导致dataUserId==''  所以要加personcode!=='' 控制
     // eslint-disable-next-line no-undef
     ...mapState({
-      personcode: (state) => state.user.code,
+      personcode: (state) => state.user.datauserid,
     }),
   },
   // eslint-disable-next-line vue/order-in-components
