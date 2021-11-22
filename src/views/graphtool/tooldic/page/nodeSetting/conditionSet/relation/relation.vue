@@ -159,8 +159,7 @@
                 showTableJoin: false,
                 joinTypeArr: [{ value: 'LEFT JOIN', name: '左连接', description:'左连接：选取关联字段将两张表进行关联，左表的所有数据均显示，右表的数据只显示关联字段值相等的数据，若右表关联结果无数据则补空显示'},
                     { value: 'RIGHT JOIN', name: '右连接', description:'选取关联字段将两张表进行关联，右表的所有数据均显示，左表的数据只显示关联字段值相等的数据，若左表关联结果无数据则补空显示'},
-                    { value: 'INNER JOIN', name: '内连接', description:'内连接：选取关联字段将两张表进行关联，仅显示两张表中关联字段值相等的数据'},
-                    { value: 'FULL JOIN', name: '外连接', description:'外连接：选取关联字段将两张表进行关联，显示出左表和右表关联后的所有数据，但去除重复数据，两表中若无关联数据则补空显示'}],
+                    { value: 'INNER JOIN', name: '内连接', description:'内连接：选取关联字段将两张表进行关联，仅显示两张表中关联字段值相等的数据'}],
                 joinType: '',
                 joinDescription:'',
                 columnsInfoPre: [], // 前置节点的输出列信息集合（只用于有且只有一个前置节点的节点）
