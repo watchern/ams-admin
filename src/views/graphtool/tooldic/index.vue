@@ -2019,8 +2019,8 @@ export default {
           // let i = nodes[0].name.indexOf('(')
           // const nodeName = i==-1?nodes[0].name:nodes[0].name.slice(0,i);
           // const resultTableName = nodeName;
-          const nodeName = typeof nodes[0].english === 'undefined'? nodes[0].name : nodes[0].english;
-          const resultTableName = nodes[0].name;
+          const nodeName = nodes[0].name ;
+          const resultTableName = typeof nodes[0].english === 'undefined'? nodes[0].name : nodes[0].english;
           const isRoleTable = true;
           this.initData();
           this.$nextTick(() => {
