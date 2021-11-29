@@ -234,8 +234,9 @@
                                 vueObj.select_colms = treeNode.realInfo.select_colms// 反显列
                                 vueObj.select_cz = treeNode.realInfo.select_cz
                                 vueObj.compareObj = typeof treeNode.realInfo.compareObj === 'undefined' ? 'value' : treeNode.realInfo.compareObj
-                                vueObj.ompareColumnSel = treeNode.realInfo.compareColumnSel// 反显筛选对象
-                                vueObj.conn_value = treeNode.realInfo.conn_value// 反显值
+                                vueObj.compareColumnSel = vueObj.compareObj === 'value' ? '' : treeNode.realInfo.compareColumnSel// 反显筛选对象
+                                vueObj.conn_value =  vueObj.compareObj === 'value' ? treeNode.realInfo.conn_value : ''// 反显值
+                                vueObj.showConnValue = vueObj.compareObj === 'value'  ? true:false;//控制输入框或下拉框
                                 vueObj.connType = treeNode.realInfo.filter_conn_type
                                 vueObj.quotes = treeNode.realInfo.quotes
                                 vueObj.blankSpace = treeNode.realInfo.blank_space
