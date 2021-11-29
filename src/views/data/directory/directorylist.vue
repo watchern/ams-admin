@@ -792,6 +792,15 @@ export default {
       this.disPreviewData = this.selections.length == 1 ? this.disPreviewData : true;
       this.disRenameTable = this.selections.length == 1 ? this.disRenameTable : true;
       this.disShareTable = this.selections.length > 0 ? this.disShareTable : true;
+
+      //新增表，导入表，新增文件夹需要有写入权限
+      var accessType = this.currTreeNode.extMap.accessType.indexOf("SAVE_TO_FOLDER");
+      //下标小于0，表示不存在，没有 新增表，导入表，新增文件夹 三个权限，禁用对应按钮
+      if(accessType<0){
+        this.disAddDir = true;
+        this.disImportTable = true;
+        this.disAddTable = true;
+      }
     }
   },
   methods: {
