@@ -1346,6 +1346,10 @@ export default {
       var verResult = true;
       var selectObj = this.selections;
       const persons = this.$refs.personTree.getSelectValue();
+      if(persons.length == 0){
+        this.$message({ type: 'warning', message: '请选择共享人员！' })
+        return
+      }
       for (let i = 0; i < selectObj.length; i++) {
         for (let j = 0; j < persons.length; j++) {
           if (persons[j].personuuid === userId) {
@@ -1354,7 +1358,7 @@ export default {
           }
           const obj = {
             tableMetaUuid: selectObj[i].id,
-            seneInstUuid: persons[j].personcode,
+            seneInstUuid: persons[j].userid,
             folderName: persons[j].cnname,
           };
           tableShareRelList.push(obj);
