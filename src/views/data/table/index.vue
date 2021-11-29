@@ -419,6 +419,10 @@ export default {
         .catch(() => {});
     },
     createFolder() {
+      if(this.folderForm.folderName == null || this.folderForm.folderName.length == 0){
+        this.$message({type:'info',message:"文件夹名不可为空，请重新输入文件夹名！"})
+        return
+      }
       saveFolder(this.folderForm).then((resp) => {
         var childData = {
           id: resp.data,
@@ -435,6 +439,10 @@ export default {
       });
     },
     updateFolder() {
+      if(this.folderForm.folderName == null || this.folderForm.folderName.length == 0){
+        this.$message({type:'info',message:"文件夹名不可为空，请重新输入文件夹名！"})
+        return
+      }
       updateFolder(this.folderForm).then((resp) => {
         this.tempData.label = this.folderForm.folderName;
         this.$refs.tree2.updateKeyChildren(
