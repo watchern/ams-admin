@@ -1275,7 +1275,7 @@ export default {
       this.resourceForm.fullPath = this.clickFullPath.reverse().join("/");
       this.resourceForm.folderName = this.resourceForm.resourceName;
       this.resourceForm.createUserUuid = this.$store.state.user.code;
-      if(this.resourceForm.folderName == null || this.resourceForm.folderName.length == 0){
+      if(this.resourceForm.folderName == null || this.resourceForm.folderName.trim().length == 0){
         this.$message({type:'info',message:"文件夹名不可为空，请重新输入文件夹名！"})
         return
       }
