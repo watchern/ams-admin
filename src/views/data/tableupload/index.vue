@@ -105,7 +105,7 @@ export default {
             );
           });
         } else {
-          const md5 = spark.end();
+          const md5 = spark.end() + time;
           loading.close();
           this.computeMD5Success(md5, file);
           console.log(

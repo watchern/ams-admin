@@ -693,8 +693,10 @@ export default {
       disLinkData: true,
       // 禁用分享表,个人场景
       disShareTable: true,
-      //websocket对象
-      webSocket: null
+      //复制表websocket对象
+      webSocketCopy: null,
+      //导入表websocket对象
+      webSocketImport: null
     };
   },
   created() {
@@ -830,14 +832,23 @@ export default {
       if (typeof this.sceneCode !== "undefined") {
         this.currentSceneUuid = this.sceneCode;
       }
-      // WebSocket 建立与服务端的连接
-      const webSocketPath =
+      // 导入表 WebSocket 建立与服务端的连接
+      const webSocketPathImport =
+              this.AmsWebsocket.getWSBaseUrl(this.AmsModules.DATA) +
+              this.$store.getters.personcode +
+              "importTable";
+      this.webSocketImport = new WebSocket(webSocketPathImport);
+      this.webSocketImport.onopen =  function (event) {
+        console.log("导入表websocket连接成功");
+      };
+      // 复制表 WebSocket 建立与服务端的连接
+      const webSocketPathCopy =
               this.AmsWebsocket.getWSBaseUrl(this.AmsModules.DATA) +
               this.$store.getters.personcode +
               "copyTable";
-      this.webSocket = new WebSocket(webSocketPath);
-      this.webSocket.onopen =  function (event) {
-        console.log("websocket连接成功");
+      this.webSocketCopy = new WebSocket(webSocketPathCopy);
+      this.webSocketCopy.onopen =  function (event) {
+        console.log("复制表websocket连接成功");
       };
     },
     fileuploadname(data) {
@@ -922,29 +933,35 @@ export default {
         position: "bottom-right",
       });
       //调用复制表方法
-      copyTable(tempData).then((res) => {});
+      copyTable(tempData);
         // 发送消息
       let _this = this;
-        this.webSocket.onmessage = function (event) {
-          _this.$notify({
-            title: "成功",
-            message: "复制表成功",
-            type: "success",
-            duration: 2000,
-            position: "bottom-right",
-          });
-          _this.$emit("refresh", _this.clickId);
+        this.webSocketCopy.onmessage = function (res) {
+          if("true" == res){
+            _this.$notify({
+              title: "成功",
+              message: "复制表成功",
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+            _this.$emit("refresh", _this.clickId);
+          }else{
+            _this.$message.error('复制表失败！');
+          }
         };
 
       // 通信失败
-      this.webSocket.onerror = function (event) {
+      this.webSocketCopy.onerror = function (event) {
           this.$message({
           type: "error",
           message: "通信失败！请联系管理员！",
           });
       };
       //关闭连接
-      this.webSocket.onclose = function (event) {};
+      this.webSocketCopy.onclose = function (event) {
+        console.log("复制表WebSocket已关闭连接")
+      };
       this.resourceForm.resourceName = "";
       this.folderFormVisible = false;
       //手动清空temp，让用户重新选择
@@ -1010,18 +1027,49 @@ export default {
           this.$emit("append-node", childData, this.currTreeNode);
           this.$notify({
             title: "成功",
-            message: res.data.msg,
-            type: "success",
+            message: "表创建成功，正在导入中...",
+            type: "info",
             duration: 2000,
             position: "bottom-right",
           });
         } else {
           this.$message({
             type: "error",
-            message: res.data.msg,
+            message: "表创建失败",
           });
         }
-      });
+      })
+      let _this = this;
+      this.webSocketImport.onmessage = function (event) {
+        const res = JSON.parse(event.data);
+        if (res.isSuccess === true) {
+          _this.$notify({
+            title: "成功",
+            message: res.result,
+            type: "success",
+            duration: 2000,
+            position: "bottom-right",
+          });
+        }else{
+          _this.$message({
+            type: "error",
+            message: res.result,
+          });
+        }
+      };
+      // 通信失败
+      this.webSocketImport.onerror = function (event) {
+        this.$message({
+          type: "error",
+          message: "通信失败！请联系管理员！",
+        });
+      };
+      //关闭连接
+      this.webSocketImport.onclose = function (event) {
+        console.log("导入表WebSocket已关闭连接")
+      };
+
+
     },
     // 不允许重命名系统文件夹
     renameResource() {
