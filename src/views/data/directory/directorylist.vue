@@ -132,7 +132,7 @@
     >
       <el-form ref="folderForm"
                :model="resourceForm"
-               :rules="uploadRules"
+               :rules="resourceFormRules"
       >
         <el-form-item :label="typeLabel" prop="resourceName">
           <el-input v-model="resourceForm.resourceName" style="width: 100%" class="detail-form"/>
@@ -642,20 +642,13 @@ export default {
             pattern: /^[\u4E00-\u9FA5\w]*$/,
             message: '请输入合法表名称',
           },
-        ],
-        resourceName:[
-          { required: true, message: "请填写导入表名称", trigger: "change" },
-          {
-            type: 'string',
-            pattern: /^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/,
-            message: '请输入合法表名称',
-          },{
-            type: 'string',
-            pattern: /^[\u4E00-\u9FA5\w]*$/,
-            message: '请输入合法表名称',
-          },
-        ],
+        ]
       },
+      resourceFormRules: {
+        resourceName: [
+          { required: true, message: '请输入表或文件夹名称' },
+        ]
+      } ,
       // 导入步骤
       uploadStep: 1,
       uploadtempInfo: [],
