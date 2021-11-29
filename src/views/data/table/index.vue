@@ -419,7 +419,7 @@ export default {
         .catch(() => {});
     },
     createFolder() {
-      if(this.folderForm.folderName == null || this.folderForm.folderName.length == 0){
+      if(this.folderForm.folderName == null || this.folderForm.folderName.trim().length == 0){
         this.$message({type:'info',message:"文件夹名不可为空，请重新输入文件夹名！"})
         return
       }
@@ -439,7 +439,7 @@ export default {
       });
     },
     updateFolder() {
-      if(this.folderForm.folderName == null || this.folderForm.folderName.length == 0){
+      if(this.folderForm.folderName == null || this.folderForm.folderName.trim().length == 0){
         this.$message({type:'info',message:"文件夹名不可为空，请重新输入文件夹名！"})
         return
       }
