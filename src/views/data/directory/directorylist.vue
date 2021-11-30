@@ -115,13 +115,14 @@
         </template>
       </el-table-column> -->
     </el-table>
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="pageQuery.pageNo"
-      :limit.sync="pageQuery.pageSize"
-      @pagination="getListSelect"
-    />
+<!--    :page.sync="pageQuery.pageNo"-->
+<!--    :limit.sync="pageQuery.pageSize"-->
+<!--    <pagination-->
+<!--      v-show="total > 0"-->
+<!--      :total="total"-->
+<!--      @pagination="getListSelect"-->
+<!--    />-->
+    <div class="pagesize">共 {{total}} 条</div>
     <!-- 复制表弹框 -->
     <el-dialog
       :close-on-click-modal="false"
@@ -1248,7 +1249,7 @@ export default {
         this.temp = data.children;
         this.allList = data.children;
         // eslint-disable-next-line no-undef
-        this.total = getArrLength(data.children);
+        this.total = 0;
         this.getListSelect();
         this.tableKey = !this.tableKey;
       }
