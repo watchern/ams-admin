@@ -1143,6 +1143,10 @@ export default {
     renameResourceSave() {
       var tempData = Object.assign({}, this.selections[0]);
       tempData.label = this.resourceForm.resourceName;
+      if(tempData.label == null || tempData.label.trim().length == 0){
+        this.$message({type:'info',message:"文件夹或表名不可为空，请重新输入！"})
+        return
+      }
       renameResource(tempData).then((res) => {
         if (res.data) {
           this.$notify({
