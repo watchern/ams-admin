@@ -345,6 +345,25 @@ export default {
         .catch((result) => {});
     },
     updateTable() {
+      for (let index = 0; index < this.temp.length; index++) {
+        //先判空
+        let obj = this.temp[index]
+        var a =this.judegeTable(obj.colName)
+        if(this.CommonUtil.isBlank(obj.colName)){
+          this.$message.error("请完善建表信息，字段名称不能为空");
+          return
+        }else if(this.CommonUtil.isBlank(obj.dataType)){
+          this.$message.error("请完善建表信息，数据类型不能为空");
+          return
+        } if (!a){
+          this.$message.error("请完善建表信息，字段名称不能有特殊符号");
+          return
+        }
+        //再判合法
+        if (!this.isValidColumn(obj)) {
+          return;
+        }
+      }
       const newTableObj = {};
       newTableObj.tableMetaUuid = this.tableId;
       newTableObj.colMetas = this.temp;

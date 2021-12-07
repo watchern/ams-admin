@@ -1004,6 +1004,19 @@ export default {
     importTable() {
       for (let i = 0; i < this.uploadtempInfo.colMetas.length; i++) {
         let obj = this.uploadtempInfo.colMetas[i];
+        //先判空
+        var a =this.judegeTable(obj.colName)
+        if(this.CommonUtil.isBlank(obj.colName)){
+          this.$message.error("请完善建表信息，字段名称不能为空");
+          return
+        }else if(this.CommonUtil.isBlank(obj.dataType)){
+          this.$message.error("请完善建表信息，数据类型不能为空");
+          return
+        } if (!a){
+          this.$message.error("请完善建表信息，字段名称不能有特殊符号");
+          return
+        }
+        //再判合法
         if (!this.isValidColumn(obj)) {
           return;
         }
@@ -1073,6 +1086,14 @@ export default {
       };
 
 
+    },
+    judegeTable(val){
+      const judege=(/^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/ && /^[\u4E00-\u9FA5\w]*$/)
+      if (judege.test(val)){
+        return true;
+      }else{
+        return false;
+      }
     },
     // 不允许重命名系统文件夹
     renameResource() {
