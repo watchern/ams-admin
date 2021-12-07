@@ -11,6 +11,19 @@ export var sendVueObj = (_this) => {
     layeX = _this.layeX
     layeY = _this.layeY
 }
+export function judgeColumns(){
+    let items = relationVue.items;
+    for (let i = 0; i < items.length; i++) {
+        for(let j = i+1; j < items.length; j++){
+            let columnName = items[i].columnName;
+            let columnNameCompare = items[j].columnName;
+            if(columnName == columnNameCompare){
+                return false;
+            }
+        }
+    }
+    return true;
+}
 
 export function init() {
     // init for these samples -- you don't need to call this初始化这些样本 - 您不需要调用它

@@ -182,6 +182,14 @@
             init() {
                 relationJs.sendVueObj(this)
                 relationJs.init()
+                let flag = relationJs.judgeColumns();
+                if(!flag){
+                    this.$message({
+                        type: "warning",
+                        message: "上级两个节点中有相同名字的字段，请在上级节点修改输出字段名称",
+                    })
+                    return
+                }
                 $(this.$refs.outPutTable.$refs.bodyWrapper.children[0].children[1]).sortable().disableSelection()
             },
             myDiagramMousemove(event) {
