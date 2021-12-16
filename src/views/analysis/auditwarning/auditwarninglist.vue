@@ -73,7 +73,7 @@ import {
 import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import EditAuditWarning from '@/views/analysis/auditwarning/editauditwarning'
-
+import { getInfo } from '@/api/user';
 export default {
   name: 'auditWarningList',
   components: {Pagination, QueryField, EditAuditWarning},
@@ -119,13 +119,19 @@ export default {
         //每页显示多少条
         pageSize: 20
       },
-      //当前页面的用户信息
-      userInfo: ''
+      // //当前页面的用户信息
+      // userInfo: ''
+        //当前页面的用户信息
+        userInfo:[]
     }
   },
   computed: {},
   created() {
     this.getList()
+    //获取当前用户
+    getInfo().then((resp) => {
+      this.userInfo[0] = resp.data;
+    });
   },
   methods: {
 

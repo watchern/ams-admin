@@ -65,7 +65,8 @@
                 <el-button
                   v-if="
                     (data.extMap && data.extMap.folder_type === 'maintained') ||
-                    data.type === 'TABLE'
+                    data.type === 'TABLE'||
+                    data.type === 'VIEW'
                   "
                   type="text"
                   size="mini"
@@ -399,7 +400,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          if (data.type === "TABLE") {
+          if (data.type === "TABLE" || data.type === "VIEW" ) {
             delTable(data.id).then((resp) => {
               this.$notify(
                 commonNotify({ type: "success", message: "删除成功！" })
@@ -418,6 +419,10 @@ export default {
         .catch(() => {});
     },
     createFolder() {
+      if(this.folderForm.folderName == null || this.folderForm.folderName.trim().length == 0){
+        this.$message({type:'info',message:"文件夹名不可为空，请重新输入文件夹名！"})
+        return
+      }
       saveFolder(this.folderForm).then((resp) => {
         var childData = {
           id: resp.data,
@@ -434,6 +439,10 @@ export default {
       });
     },
     updateFolder() {
+      if(this.folderForm.folderName == null || this.folderForm.folderName.trim().length == 0){
+        this.$message({type:'info',message:"文件夹名不可为空，请重新输入文件夹名！"})
+        return
+      }
       updateFolder(this.folderForm).then((resp) => {
         this.tempData.label = this.folderForm.folderName;
         this.$refs.tree2.updateKeyChildren(

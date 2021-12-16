@@ -795,7 +795,7 @@ export default {
             return null
           } else {
             //获取完图形化的列信息之后重新赋值 因为这个时候界面没渲染完成，因此直接从数据里拿
-            columnData = this.columnData
+            //columnData = this.columnData   //覆盖后转码无法使用，先注掉
             //拿到列之后图形化就可以保存了，调用图形化的保存方法
             await this.$refs.graph[0].saveModelGraph().then(result => {
               this.modelSql = result.modelSql
@@ -822,9 +822,9 @@ export default {
       for (let i = 0; i < columnData.length; i++) {
         if (columnData[i].isShow == undefined) {
           columnData[i].isShow = 1
+        }
           columnData[i].columnOrder = ++columnOrder
         }
-      }
       this.form.modelOutputColumn = columnData
 
       // endregion

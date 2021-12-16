@@ -964,7 +964,8 @@ export async function saveModelGraph(){
                                     dropTableSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果表的SQL语句*/\n DROP TABLE " + tableName + ";\n"
                                     originalDropTableSql += "DROP TABLE " + tableName + ";\n"
                                     // 判断前置节点是否存在未替换的原始sql
-                                    if (typeof preNodeInfo !== "undefined" && typeof preNodeInfo.originalCreateSql !== "undefined" && preNodeInfo.originalCreateSql !== "") {
+                                    // if (typeof preNodeInfo !== "undefined" && typeof preNodeInfo.originalCreateSql !== "undefined" && preNodeInfo.originalCreateSql !== "") {
+                                    if (typeof preNodeInfo !== "undefined" && typeof preNodeInfo.originalCreateSql !== "undefined" && preNodeInfo.originalCreateSql.trim().length > 0) {
                                         // 判断是否是db2场景
                                         if (graphIndexVue.dbType === "db2"){
                                             modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n "+ preNodeInfo.originalCreateSql + ";\n";
@@ -979,7 +980,7 @@ export async function saveModelGraph(){
                                             //此句只适用于业务库是DB2数据库（目的是为了实现CREATE TABLE xx AS SELECT……的数据插入）
                                             modelSql += "/*节点【" + preNodeInfo.nodeName + "】的结果表插入数据的SQL语句*/\n INSERT INTO " + tableName + " " + selectSql + ";\n";
                                         } else {
-                                            modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE TABLE " + tableName + " AS " + selectSql + "\n";
+                                            modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE TABLE " + tableName + " AS " + selectSql + ";\n";
                                         }
                                     }
                                     selectSql = `SELECT ${selectColArr.join(",")}

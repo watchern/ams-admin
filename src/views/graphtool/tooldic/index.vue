@@ -2020,8 +2020,8 @@ export default {
           // let i = nodes[0].name.indexOf('(')
           // const nodeName = i==-1?nodes[0].name:nodes[0].name.slice(0,i);
           // const resultTableName = nodeName;
-          const nodeName = nodes[0].name;
-          const resultTableName = nodes[0].name;
+          const nodeName = nodes[0].name ;
+          const resultTableName = typeof nodes[0].english === 'undefined'? nodes[0].name : nodes[0].english;
           const isRoleTable = true;
           this.initData();
           this.$nextTick(() => {
@@ -2127,7 +2127,7 @@ export default {
         } else {
           this.graphListDialogVisible = false;
           this.$nextTick(() => {
-            this.urlParamStr = "";
+            let urlParamStr = "";
             if (returnObj.graphType === 3) {
               if (returnObj.publicType === 1) {
                 // 场景查询
@@ -2143,6 +2143,14 @@ export default {
               this.urlParamStr =
                 "?graphUuid=" + returnObj.graphUuid + "&openGraphType=1";
             }
+            //删除下方页签
+            this.$store.commit("aceState/setRightFooterTags", {
+              type: "close",
+              val: {
+                name: "编辑图形",
+                path: ``,
+              },
+            });
             //路由代换来刷新页面
             this.$router.replace("/nopermission");
             let _this = this;

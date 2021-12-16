@@ -148,10 +148,11 @@ Vue.prototype.AmsModules = {
 Vue.prototype.AmsWebsocket = {
   getWSBaseUrl: function(moduleName) {
     moduleName = moduleName ? moduleName : null
-    const websockettype = process.env["VUE_APP_WEBSOCKETTYPE"] ? process.env["VUE_APP_WEBSOCKETTYPE"]: "client"
-    if(moduleName == null || websockettype==="client") {
+    const websockettype = process.env["VUE_APP_WEBSOCKETTYPE"] ? process.env["VUE_APP_WEBSOCKETTYPE"] : "client"
+    const appservername = process.env["VUE_APP_SERVERNAME"] ? process.env["VUE_APP_SERVERNAME"] : ""
+    if (moduleName == null || websockettype === "client") {
       // 默认读浏览器访问host
-      return 'ws://' + window.location.host+ '/websocket?'
+      return 'ws://' + window.location.host + appservername + '/websocket?'
     } else {
       // 读env配置
       switch (moduleName.toLowerCase()) {
@@ -163,9 +164,11 @@ Vue.prototype.AmsWebsocket = {
           return process.env["VUE_APP_GRAPHTOOL_WEB_SOCKET"]
         case Vue.prototype.AmsModules.INDICATOR:
           return process.env["VUE_APP_INDICATOR_WEB_SOCKET"]
+        case Vue.prototype.AmsModules.DATA:
+          return process.env["VUE_APP_DATA_WEB_SOCKET"]
         default:
           // 默认读浏览器访问host
-          return 'ws://' + window.location.host+ '/websocket?'
+          return 'ws://' + window.location.host + '/websocket?'
       }
     }
   }

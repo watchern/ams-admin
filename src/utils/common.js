@@ -7,8 +7,6 @@ export const DataTypeRules = {
     NUMBER: {value: "NUMBER", hasPrecision: true, lengthRule: "^[0-9]+[,][0-9]$", checkMsg: "类型长度范围:数字,数字(英文逗号)"},
     NUMRIC: {value: "NUMRIC", hasPrecision: true, lengthRule: "^[0-9]+[,][0-9]$", checkMsg: "类型长度范围:数字,数字(英文逗号)"},
     DECIMAL: {value: "DECIMAL", hasPrecision: true, lengthRule: "^[0-9]+[,][0-9]$", checkMsg: "类型长度范围:数字,数字(英文逗号)"},
-    INTEGER: {value: "INTEGER", lengthRule: "^[1-9][0-9]{0,10}$", checkMsg: "类型长度范围:最长11位长度数字"},
-    INT: {value: "INT",lengthRule: "^[1-9][0-9]{0,10}$", checkMsg: "类型长度范围:最长11位长度数字"},
     TINYINT: {value: "TINYINT", lengthRule: "^[1-9][0-9]{0,2}$", checkMsg: "类型长度范围:最长3位长度数字"},
     SMALLINT: {value: "SMALLINT", lengthRule: "^[1-9][0-9]{0,4}$", checkMsg: "类型长度范围:最长5位长度数字"},
     BIGINT: {value: "BIGINT", lengthRule: "^[1-9][0-9]{0,19}$", checkMsg: "类型长度范围:最长20位长度数字"},
@@ -20,7 +18,10 @@ export const DataTypeRules = {
     TIME: {value: "TIME", enableDataLength: false},
     CLOB: {value: "CLOB", enableDataLength: false},
     BLOB: {value: "BLOB", enableDataLength: false},
-    TEXT: {value: "TEXT", enableDataLength: false}
+    TEXT: {value: "TEXT", enableDataLength: false},
+    //MYSQL库中不需要设置以下两种数据类型的长度（INTEGER,INT）
+    INTEGER: {value: "INTEGER", enableDataLength: false},
+    INT: {value: "INT", enableDataLength: false},
 }
 
 //"SAVE_TO_FOLDER", "FETCH_TABLE_DATA", "BASIC_PRIV", "PRIVS_INHERITED"

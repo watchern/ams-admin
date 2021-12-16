@@ -115,13 +115,14 @@
         </template>
       </el-table-column> -->
     </el-table>
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="pageQuery.pageNo"
-      :limit.sync="pageQuery.pageSize"
-      @pagination="getListSelect"
-    />
+<!--    :page.sync="pageQuery.pageNo"-->
+<!--    :limit.sync="pageQuery.pageSize"-->
+<!--    <pagination-->
+<!--      v-show="total > 0"-->
+<!--      :total="total"-->
+<!--      @pagination="getListSelect"-->
+<!--    />-->
+    <div class="pagesize">共 {{total}} 条</div>
     <!-- 复制表弹框 -->
     <el-dialog
       :close-on-click-modal="false"
@@ -132,7 +133,7 @@
     >
       <el-form ref="folderForm"
                :model="resourceForm"
-               :rules="uploadRules"
+               :rules="resourceFormRules"
       >
         <el-form-item :label="typeLabel" prop="resourceName">
           <el-input v-model="resourceForm.resourceName" style="width: 100%" class="detail-form"/>
@@ -394,7 +395,7 @@
         </span>
       </template>
     </el-dialog>
-    <!-- 弹窗6 -->
+    <!-- 关联表弹窗 -->
     <el-dialog
       v-if="tableRelationVisible"
       :visible.sync="tableRelationVisible"
@@ -522,7 +523,7 @@ export default {
     // 因为时序问题，store中没有personcode时组件可能被加载 导致dataUserId==''  所以要加personcode!=='' 控制
     // eslint-disable-next-line no-undef
     ...mapState({
-      personcode: (state) => state.user.code,
+      personcode: (state) => state.user.datauserid,
     }),
   },
   // eslint-disable-next-line vue/order-in-components
@@ -642,20 +643,13 @@ export default {
             pattern: /^[\u4E00-\u9FA5\w]*$/,
             message: '请输入合法表名称',
           },
-        ],
-        resourceName:[
-          { required: true, message: "请填写导入表名称", trigger: "change" },
-          {
-            type: 'string',
-            pattern: /^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/,
-            message: '请输入合法表名称',
-          },{
-            type: 'string',
-            pattern: /^[\u4E00-\u9FA5\w]*$/,
-            message: '请输入合法表名称',
-          },
-        ],
+        ]
       },
+      resourceFormRules: {
+        resourceName: [
+          { required: true, message: '请输入表或文件夹名称' },
+        ]
+      } ,
       // 导入步骤
       uploadStep: 1,
       uploadtempInfo: [],
@@ -692,7 +686,11 @@ export default {
       // 禁用管理表，个人场景
       disLinkData: true,
       // 禁用分享表,个人场景
-      disShareTable: true
+      disShareTable: true,
+      //复制表websocket对象
+      webSocketCopy: null,
+      //导入表websocket对象
+      webSocketImport: null
     };
   },
   created() {
@@ -782,9 +780,11 @@ export default {
       var type = this.currTreeNode.type;
       // var accessType = this.currTreeNode.extMap.accessType;
       // 个人空间，判断根节点有没有sceneInstUuid
-      this.disAddDir = type === "folder" ? false : true;
-      this.disImportTable = type === "folder" ? false : true;
-      this.disAddTable = type === "folder" ? false : true;
+      //在分享数据、模型结果、图形化临时结果文件夹（"shareFolder","modelFolder","graphFolder"）禁用新增表，导入表，新增文件夹操作
+      var id = this.currTreeNode.id;
+      this.disAddDir = type === "folder" &&  id != "shareFolder" && id != "modelFolder" && id != "graphFolder" ? false : true;
+      this.disImportTable = type === "folder" &&  id != "shareFolder" && id != "modelFolder" && id != "graphFolder" ? false : true;
+      this.disAddTable = type === "folder" &&  id != "shareFolder" && id != "modelFolder" && id != "graphFolder" ? false : true;
       this.disCopyTable =  this.selections.length == 1 ? false : true;
       this.disDeleteTable = this.selections.length > 0 ? this.disDeleteTable : true;
       this.disEditTable = this.selections.length == 1 ? this.disEditTable : true;
@@ -793,6 +793,15 @@ export default {
       this.disPreviewData = this.selections.length == 1 ? this.disPreviewData : true;
       this.disRenameTable = this.selections.length == 1 ? this.disRenameTable : true;
       this.disShareTable = this.selections.length > 0 ? this.disShareTable : true;
+
+      //新增表，导入表，新增文件夹需要有写入权限
+      var accessType = this.currTreeNode.extMap.accessType.indexOf("SAVE_TO_FOLDER");
+      //下标小于0，表示不存在，没有 新增表，导入表，新增文件夹 三个权限，禁用对应按钮
+      if(accessType<0){
+        this.disAddDir = true;
+        this.disImportTable = true;
+        this.disAddTable = true;
+      }
     }
   },
   methods: {
@@ -826,6 +835,24 @@ export default {
       if (typeof this.sceneCode !== "undefined") {
         this.currentSceneUuid = this.sceneCode;
       }
+      // 导入表 WebSocket 建立与服务端的连接
+      const webSocketPathImport =
+              this.AmsWebsocket.getWSBaseUrl(this.AmsModules.DATA) +
+              this.$store.getters.personcode +
+              "importTable";
+      this.webSocketImport = new WebSocket(webSocketPathImport);
+      this.webSocketImport.onopen =  function (event) {
+        console.log("导入表websocket连接成功");
+      };
+      // 复制表 WebSocket 建立与服务端的连接
+      const webSocketPathCopy =
+              this.AmsWebsocket.getWSBaseUrl(this.AmsModules.DATA) +
+              this.$store.getters.personcode +
+              "copyTable";
+      this.webSocketCopy = new WebSocket(webSocketPathCopy);
+      this.webSocketCopy.onopen =  function (event) {
+        console.log("复制表websocket连接成功");
+      };
     },
     fileuploadname(data) {
       this.uploadtemp.tableFileName = data
@@ -908,24 +935,36 @@ export default {
         duration: 1500,
         position: "bottom-right",
       });
-      copyTable(tempData).then((res) => {
-        if (res.data) {
-          this.$notify({
-            title: "成功",
-            message: "复制表成功",
-            type: "success",
-            duration: 2000,
-            position: "bottom-right",
-          });
-          this.$emit("refresh",this.clickId);
-          // this.getListSelect()
-        } else {
+      //调用复制表方法
+      copyTable(tempData);
+        // 发送消息
+      let _this = this;
+        this.webSocketCopy.onmessage = function (res) {
+          if("true" == res){
+            _this.$notify({
+              title: "成功",
+              message: "复制表成功",
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+            _this.$emit("refresh", _this.clickId);
+          }else{
+            _this.$message.error('复制表失败！');
+          }
+        };
+
+      // 通信失败
+      this.webSocketCopy.onerror = function (event) {
           this.$message({
-            type: "info",
-            message: "复制失败!复制表名称已由现有对象使用",
+          type: "error",
+          message: "通信失败！请联系管理员！",
           });
-        }
-      });
+      };
+      //关闭连接
+      this.webSocketCopy.onclose = function (event) {
+        console.log("复制表WebSocket已关闭连接")
+      };
       this.resourceForm.resourceName = "";
       this.folderFormVisible = false;
       //手动清空temp，让用户重新选择
@@ -965,6 +1004,19 @@ export default {
     importTable() {
       for (let i = 0; i < this.uploadtempInfo.colMetas.length; i++) {
         let obj = this.uploadtempInfo.colMetas[i];
+        //先判空
+        var a =this.judegeTable(obj.colName)
+        if(this.CommonUtil.isBlank(obj.colName)){
+          this.$message.error("请完善建表信息，字段名称不能为空");
+          return
+        }else if(this.CommonUtil.isBlank(obj.dataType)){
+          this.$message.error("请完善建表信息，数据类型不能为空");
+          return
+        } if (!a){
+          this.$message.error("请完善建表信息，字段名称不能有特殊符号");
+          return
+        }
+        //再判合法
         if (!this.isValidColumn(obj)) {
           return;
         }
@@ -991,18 +1043,57 @@ export default {
           this.$emit("append-node", childData, this.currTreeNode);
           this.$notify({
             title: "成功",
-            message: res.data.msg,
-            type: "success",
+            message: "表创建成功，正在导入中...",
+            type: "info",
             duration: 2000,
             position: "bottom-right",
           });
         } else {
           this.$message({
             type: "error",
-            message: res.data.msg,
+            message: "表创建失败",
           });
         }
-      });
+      })
+      let _this = this;
+      this.webSocketImport.onmessage = function (event) {
+        const res = JSON.parse(event.data);
+        if (res.isSuccess === true) {
+          _this.$notify({
+            title: "成功",
+            message: res.result,
+            type: "success",
+            duration: 2000,
+            position: "bottom-right",
+          });
+        }else{
+          _this.$message({
+            type: "error",
+            message: res.result,
+          });
+        }
+      };
+      // 通信失败
+      this.webSocketImport.onerror = function (event) {
+        this.$message({
+          type: "error",
+          message: "通信失败！请联系管理员！",
+        });
+      };
+      //关闭连接
+      this.webSocketImport.onclose = function (event) {
+        console.log("导入表WebSocket已关闭连接")
+      };
+
+
+    },
+    judegeTable(val){
+      const judege=(/^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/ && /^[\u4E00-\u9FA5\w]*$/)
+      if (judege.test(val)){
+        return true;
+      }else{
+        return false;
+      }
     },
     // 不允许重命名系统文件夹
     renameResource() {
@@ -1073,6 +1164,10 @@ export default {
     renameResourceSave() {
       var tempData = Object.assign({}, this.selections[0]);
       tempData.label = this.resourceForm.resourceName;
+      if(tempData.label == null || tempData.label.trim().length == 0){
+        this.$message({type:'info',message:"文件夹或表名不可为空，请重新输入！"})
+        return
+      }
       renameResource(tempData).then((res) => {
         if (res.data) {
           this.$notify({
@@ -1179,7 +1274,7 @@ export default {
         this.temp = data.children;
         this.allList = data.children;
         // eslint-disable-next-line no-undef
-        this.total = getArrLength(data.children);
+        this.total = 0;
         this.getListSelect();
         this.tableKey = !this.tableKey;
       }
@@ -1206,6 +1301,10 @@ export default {
       this.resourceForm.fullPath = this.clickFullPath.reverse().join("/");
       this.resourceForm.folderName = this.resourceForm.resourceName;
       this.resourceForm.createUserUuid = this.$store.state.user.code;
+      if(this.resourceForm.folderName == null || this.resourceForm.folderName.trim().length == 0){
+        this.$message({type:'info',message:"文件夹名不可为空，请重新输入文件夹名！"})
+        return
+      }
       saveFolder(this.resourceForm).then((resp) => {
         var childData = {
           id: resp.data,
@@ -1279,6 +1378,10 @@ export default {
       var verResult = true;
       var selectObj = this.selections;
       const persons = this.$refs.personTree.getSelectValue();
+      if(persons.length == 0){
+        this.$message({ type: 'warning', message: '请选择共享人员！' })
+        return
+      }
       for (let i = 0; i < selectObj.length; i++) {
         for (let j = 0; j < persons.length; j++) {
           if (persons[j].personuuid === userId) {
@@ -1287,7 +1390,7 @@ export default {
           }
           const obj = {
             tableMetaUuid: selectObj[i].id,
-            seneInstUuid: persons[j].personcode,
+            seneInstUuid: persons[j].userid,
             folderName: persons[j].cnname,
           };
           tableShareRelList.push(obj);

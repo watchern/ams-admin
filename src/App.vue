@@ -17,4 +17,34 @@ export default {
 .el-loading-mask {
   z-index: 1998;
 }
+
+/* 应客户要求改滚动条颜色 */
+.itxst ::-webkit-scrollbar{
+  background-color: transparent;
+}
+.itxst ::-webkit-scrollbar-thumb{
+  background-color: #559ed4 !important;
+}
+/*aggrid样式*/
+.ag-theme-balham .ag-icon-asc::before {
+  content: "" !important;
+}
+.ag-theme-balham .ag-icon-filter::before {
+  content: "" !important;
+}
+.ag-theme-balham .ag-icon-desc::before {
+  content: "" !important;
+}
+.ag-theme-balham .ag-menu .ag-menu-option-icon span {
+  line-height: 16px;
+}
+.ag-theme-balham .ag-header-cell-menu-button .ag-icon-menu {
+  height: 16px;
+}
+.ag-theme-balham .ag-icon-small-right {
+  width: 10px;
+}
+.ag-theme-balham .ag-header-cell-label{
+  justify-content: center;
+}
 </style>

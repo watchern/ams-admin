@@ -48,6 +48,7 @@ export default {
   },
   methods: {
     onFileSuccess: function (rootFile, file, response, chunk) {
+      if(chunk.offset == file.chunks.length -1) {
       if (JSON.parse(response).code !== 0) {
         this.$message.error(this.$t(JSON.parse(response).msg));
         file.cancel();
@@ -61,6 +62,7 @@ export default {
           duration: 2000,
           position: "bottom-right",
         });
+      }
       }
     },
     onFileProgress(rootFile, file, chunk) {
@@ -105,7 +107,7 @@ export default {
             );
           });
         } else {
-          const md5 = spark.end();
+          const md5 = spark.end() + time;
           loading.close();
           this.computeMD5Success(md5, file);
           console.log(

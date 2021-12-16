@@ -34,7 +34,7 @@ export default {
     return {
       allScene: [],
       currentSceneUuid: this.$store.getters.scenecode,
-      directyDataUserId: this.$store.state.user.code,
+      directyDataUserId: this.$store.state.user.datauserid,
       directySceneCode: 'auditor',
       isTreeShow: true
     }

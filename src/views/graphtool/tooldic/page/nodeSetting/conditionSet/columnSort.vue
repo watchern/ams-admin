@@ -42,12 +42,14 @@
                 if (this.nodeData.isSet) {// 配置过,字段信息来自本身节点
                     this.curColumnsInfo = this.nodeData.setting.curColumnsInfo
                     this.columnDataValue = this.nodeData.setting.columnDataValue
+                    let i=0;
                     console.log(this.curColumnsInfo)
                     Array.from(this.curColumnsInfo, item => this.columnData.push({ 'pinyin': item.newColumnName, 'label': item.newColumnName, 'key': item.columnName, 'sortType': 'ASC', 'showSort': false}))
                     Array.from(this.columnDataValue, n => {
                         let index = this.columnData.findIndex(item => item.key === n)
                         if (index > -1) {
                             this.columnData[index].showSort = true
+                            this.columnData[index].sortType = this.nodeData.setting.rightData[i++].sortType
                             this.$nextTick(() => {
                                 let cWidth = this.$refs.sortCol.$el.clientWidth;
                                 let sWidth = this.$refs.sortCol.$el.scrollWidth;
