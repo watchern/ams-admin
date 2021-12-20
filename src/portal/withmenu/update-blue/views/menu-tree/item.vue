@@ -72,7 +72,7 @@ export default {
       let arry = []
       let lstimeIn = []
       // console.log(item.path)
-      if(localStorage.getItem('userid')){
+      if(localStorage.getItem('userid') && (localStorage.getItem('userid').startsWith("{") || localStorage.getItem('userid').startsWith("["))){
         arry = JSON.parse(localStorage.getItem('userid'))
       }
       if(arry.length == 0 && item.path !== ''){
