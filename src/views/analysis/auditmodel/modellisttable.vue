@@ -336,9 +336,7 @@ import {
 import crossrangeParam from "@/views/analysis/modelparam/crossrangeparam";
 import paramDraw from "@/views/analysis/modelparam/paramdraw";
 import paramDrawNew from "@/views/analysis/modelparam/paramdrawnew";
-import { replaceNodeParam } from "@/api/analysis/auditparam";
-import { getInfo } from '@/api/user'
-import { getSystemRole} from '@/api/user';
+import {getInfo, isAdmin} from '@/api/user'
 import modelshoppingcart from "@/views/analysis/auditmodel/modelshoppingcart";
 import personTree from "@/components/publicpersontree/index";
 import ReviewSubmit from '@/views/flowwork/reviewSubmit.vue';
@@ -509,6 +507,25 @@ export default {
   },
   created() {
     this.getList()
+    // 校验用户权限
+    isAdmin().then((res) => {
+      // 如果是管理员则放开按钮权限
+      if (res) {
+        this.ifmanger = 1
+        this.jinyong = 0
+      } else {
+        // 禁用按钮权限
+        this.ifmanger = 0
+        this.jinyong = 1
+        this.btnState = {
+          addBtnState: false,
+          editBtnState: true,
+          deleteBtnState: true,
+          previewBtn: true,
+          otherBtn: false,
+        }
+      }
+    })
     // this.getList({ modelFolderUuid: 1 })
   },
   mounted() {
