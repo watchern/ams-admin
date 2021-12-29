@@ -2127,7 +2127,7 @@ export default {
         } else {
           this.graphListDialogVisible = false;
           this.$nextTick(() => {
-            let urlParamStr = "";
+            this.urlParamStr = "";
             if (returnObj.graphType === 3) {
               if (returnObj.publicType === 1) {
                 // 场景查询
@@ -2143,20 +2143,13 @@ export default {
               this.urlParamStr =
                 "?graphUuid=" + returnObj.graphUuid + "&openGraphType=1";
             }
-            //删除下方页签
-            this.$store.commit("aceState/setRightFooterTags", {
-              type: "close",
-              val: {
-                name: "编辑图形",
-                path: ``,
-              },
-            });
+            let repath = this.$route.path
             //路由代换来刷新页面
             this.$router.replace("/nopermission");
             let _this = this;
             setTimeout(function () {
               console.log(_this.urlParamStr)
-              _this.$router.replace(`/graphtool/tooldic${_this.urlParamStr}&openType=${_this.openType}`);
+              _this.$router.replace(`${repath}${_this.urlParamStr}&openType=${_this.openType}`);
               // _this.$store.commit("aceState/setRightFooterTags", {
               //   type: "active",
               //   val: {
