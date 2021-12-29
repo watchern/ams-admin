@@ -426,7 +426,7 @@ export function init() {
                 nodeId = preNodeData.nodeInfo.nodeId
             }
             // 组装图表和输出列的表格,start
-            let local = `${i*100} ${layeY}${offsetY}`
+            let local = `${i*250} ${layeY}${offsetY}`
             let table = {
                 'key': resourceTableName, // 表名
                 'tableName': resourceTableName,
