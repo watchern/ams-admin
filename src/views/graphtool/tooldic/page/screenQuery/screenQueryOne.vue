@@ -184,7 +184,6 @@
                                 this.allNodeData[nodeId].setting.index = this.screenParam.layering_index
                             }
                             //组装列表字段数组
-                            var columnsInfo = curNodeData.columnsInfo;
                             Array.from(curNodeData.columnsInfo, item => {
                                 if(item.isOutputColumn === 1){
                                     this.columnInfoArr.push(item);
@@ -291,7 +290,7 @@
                 switch (obj.setParamObj.inputType) {
                     case 'lineinp':// 下拉列表
                         if (!paramSql) {// 备选sql为空的情况下 取静态的option值
-                            $.each(paramObj.paramChoice.paramOptionsList, function(i, v) {
+                            $.each(paramObj.paramChoice.ammParamOptionsList, function(i, v) {
                                 if (v.optionsVal && v.optionsName) {
                                     // 组织下拉选项数据
                                     dataArr.push({
@@ -901,7 +900,7 @@
                                 queryFilterObj = this.queryFilterArr[index]
                                 let dataLength = queryFilterObj.dataDatalength// 获取参数值长度
                                 let paramName = queryFilterObj.dataName// 获取参数名称
-                                if (typeof dataLength !== 'undefined' && queryFilterObj.value.length !== parseInt(dataLength)) { // 如果该参数有长度限制且默认值不等于设置的长度值
+                                if (typeof dataLength !== 'undefined' && queryFilterObj.value.length > parseInt(dataLength)) { // 如果该参数有长度限制且默认值不等于设置的长度值
                                     verify = false
                                     message = `查询条件【${paramName}】输入值的长度与设置的长度值【${parseInt(dataLength)}】不相等`
                                     break

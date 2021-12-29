@@ -5,16 +5,17 @@
     </div>
     <el-row type="flex" class="row-bg">
       <el-col align="right">
-        <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add-1" @click="addThreshValue" />
-        <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit-2" @click="updateThresholdValue" />
-        <el-button type="primary" :disabled="btnState.deleteBtnState" class="oper-btn delete-6" @click="deleteThresholdValue" />
-        <el-dropdown placement="bottom" trigger="click" class="el-dropdown">
-          <el-button type="primary" :disabled="btnState.otherBtn" class="oper-btn more" />
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="">发布</el-dropdown-item>
-            <el-dropdown-item @click.native="">撤销发布</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
+        <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addThreshValue" />
+        <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateThresholdValue" />
+        <el-button type="primary" :disabled="btnState.deleteBtnState" class="oper-btn delete" @click="deleteThresholdValue" />
+              <!--未完善的功能先注释掉-->
+<!--        <el-dropdown placement="bottom" trigger="click" class="el-dropdown">-->
+<!--          <el-button type="primary" :disabled="btnState.otherBtn" class="oper-btn more" />-->
+<!--          <el-dropdown-menu slot="dropdown">-->
+<!--            <el-dropdown-item @click.native="">发布</el-dropdown-item>-->
+<!--            <el-dropdown-item @click.native="">撤销发布</el-dropdown-item>-->
+<!--          </el-dropdown-menu>-->
+<!--        </el-dropdown>-->
       </el-col>
     </el-row>
     <el-table
@@ -32,7 +33,7 @@
       <el-table-column type="selection" width="55" />
       <el-table-column label="阈值名称" width="300px" prop="thresholdValueFolderName">
         <template slot-scope="scope">
-          <el-link type="primary" @click="selectModelDetail(scope.row.thresholdValueUuid)">{{ scope.row.thresholdValueName }}</el-link>
+          <el-link type="primary" @click="selectDetail(scope.row.thresholdValueUuid)">{{ scope.row.thresholdValueName }}</el-link>
         </template>
       </el-table-column>
       <el-table-column label="阈值类型" width="150px" align="center" prop="thresholdValueType" :formatter="threshTypeFormatter" />
@@ -44,7 +45,7 @@
       <EditThresholdValue ref="EditThresholdValue" :operationObj="operationObj" />
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisibleEdit = false">关闭</el-button>
-        <el-button type="primary" @click="getSaveObj">确定</el-button>
+        <el-button v-if="operationObj.operationType !== 3" type="primary" @click="getSaveObj">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -117,7 +118,7 @@ export default {
 
   },
   created() {
-    // this.getList({ modelFolderUuid: 1 })
+    this.getList()
   },
   mounted() {
 
@@ -183,6 +184,27 @@ export default {
         this.list = resp.data.records
         this.listLoading = false
       })
+    },
+    /**
+     * 选中的节点
+     * @param data 树节点
+     */
+    SelectNode(data) {
+      for(let i =0;i<this.list.length;i++){
+        if(data.id==this.list[i].thresholdValueUuid){
+          var ifpush = 1
+          for(let j =0;j<this.$refs.modelListTable.selection.length;j++){
+            if(this.$refs.modelListTable.selection[j].thresholdValueUuid == this.list[i].thresholdValueUuid){
+              ifpush = 0
+            }
+          }
+          }
+          if(ifpush==1){
+            this.$refs.modelListTable.selection.length = 0;
+            this.$refs.modelListTable.selection.push(this.list[i])
+            return
+          }
+        }
     },
     /**
      * 设置选中的树节点
@@ -278,6 +300,29 @@ export default {
           this.dialogFormVisibleEdit = true
         } else {
           this.$message({ type: 'error', message: '修改失败' })
+        }
+      }).catch(reason => {
+        this.$emit('loadingSet',false,"");
+      })
+    },
+    /**
+     * 查看模型
+     * @param modelUuid 模型编号
+     */
+    selectDetail( thresholdValueUuid ) {
+      this.$emit('loadingSet',true,"正在获取阈值信息...");
+      findThresholdValueById(thresholdValueUuid).then(result => {
+        this.$emit('loadingSet',false,"");
+        if (result.code == 0) {
+          this.operationObj = {
+            operationType: 3,
+            thresholdValue: result.data,
+            folderId: '',
+            folderName: ''
+          }
+          this.dialogFormVisibleEdit = true
+        } else {
+          this.$message({ type: 'error', message: '查找失败' })
         }
       }).catch(reason => {
         this.$emit('loadingSet',false,"");

@@ -1,6 +1,6 @@
 <template>
   <!-- index.vue是最外层的父页签组件，把firstParentTabCon.vue挂载进来作为第一个页签中的内容 -->
-  <div>
+  <div class="warningresult">
     <el-tabs
       v-model="editableTabsValue"
       type="card"
@@ -11,7 +11,7 @@
       <el-tab-pane
         name="预警结果"
         label="预警结果"
-      ><firstParentTabCon @addtab="addTab" /></el-tab-pane>
+      ><firstParentTabCon :runTaskUuid="runTaskUuid" @addtab="addTab" /></el-tab-pane>
       <el-tab-pane
         v-for="item in editableTabs"
         :key="item.name"
@@ -21,12 +21,18 @@
         <!-- 新页签中页签组件 -->
         <!-- <div v-html="item.content"></div> -->
         <childTabs
+          ref="childtabsref"
           :maintable="item.mainTable"
           :helptables="item.helpTables"
           :model-uuid="item.modeluuid"
-          useType="modelRunResult"
+          :modelTitle="item.title"
           :resultSpiltObjects="item.resultSpiltObjects"
-          :settingInfo="item.settingInfo"
+          :useType="item.useType===undefined?'modelRunResult':item.useType"
+          :pre-value="item.currentExecuteSQL"
+          @addTab="addTab"
+          @setNextValue="setNextValue"
+          :model-id="item.modelId"
+          :result-mark="item.currentExecuteSQL===undefined?'modelResult':'modelPreview'"
         />
       </el-tab-pane>
     </el-tabs>
@@ -47,11 +53,17 @@ export default {
       tabIndex: 0, //语句记录页签个数
       mainTable: {}, //运行结果表主表对象
       helpTables: [], //运行结果表附表数组
+      runTaskUuid: null // 模型预警结果id
+    }
+  },
+  created(){
+    if (this.$route.params.runTaskUuid) {
+      this.runTaskUuid = this.$route.params.runTaskUuid
     }
   },
   methods: {
     // 添加页签方法  resultTable:辅表（运行结果表）数组    mainTable:主表（运行结果表对象）   modelname:模型的名称，用来给新页签赋值title属性用
-    addTab(resultTable, mainTable, modelname, modelUuid,resultSpiltObjects,settingInfo) {
+    addTab(resultTable, mainTable, modelname, modelUuid,resultSpiltObjects,usetype,currentExecuteSQL) {
       const newTabName = ++this.tabIndex + ''
       this.mainTable = mainTable
       this.helpTables = resultTable
@@ -62,9 +74,17 @@ export default {
         helpTables: resultTable,
         modeluuid: modelUuid,
         resultSpiltObjects:resultSpiltObjects,
-        settingInfo:settingInfo
+        useType : usetype,
+        modelId:modelUuid,
+        currentExecuteSQL:currentExecuteSQL
       })
       this.editableTabsValue = newTabName
+    },
+    setNextValue(val){
+      let _this =this
+      setTimeout(function(){
+        _this.$refs.childtabsref[_this.editableTabs.length-1].loadTableData(val,'apple')
+      },1000)
     },
     // 删除页签方法
     removeTab(targetName) {
@@ -89,3 +109,8 @@ export default {
   }
 }
 </script>
+<style>
+.warningresult .is-vertical{
+  overflow: hidden;
+}
+</style>

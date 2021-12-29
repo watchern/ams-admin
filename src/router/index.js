@@ -9,7 +9,43 @@ import baseRouter from './modules/base/base'
 import etlschedulerRouter from './modules/etlscheduler/etlscheduler'
 import analysisRouter from './modules/analysis/analysis'
 import graphRouter from './modules/graphtool/graphtool'
+
 const AmsRoutes = [
+  {
+    path: '/test',
+    name: '审计模型',
+    component: () => import('@/views/test')
+    // component: () => import('@/views/analysis/auditmodel/boemodel/modellisttable')
+  },
+  {
+    path: '/dowork',
+    name: '工作流',
+    component: (resolve) => require(['@/portal/' + (process.env.VUE_APP_BASE_MENU === 'withmenu'?'withmenu/' + process.env.VUE_APP_BASE_SKIN:'withoutmenu') + '/index'], resolve),
+    meta: {
+    },
+    children: [
+      {
+        path: '/todowork',
+        name: 'todowork',
+        component: () => import('ams-starflow-vue/src/components/todowork/todowork')
+      },
+      {
+        path: '/todoDetail',
+        name: 'todoDetail',
+        component: () => import('ams-starflow-vue/src/components/todowork/todoDetail')
+      },
+    ]
+  },
+  {
+    path: '/todoDetailOut',
+    name: 'todoDetailOut',
+    component: () => import('ams-starflow-vue/src/components/todowork/todoDetailOut')
+  },
+  {
+    path: '/earlyWaringPenetrateList',
+    name: 'earlyWaringPenetrateList',
+    component: () => import('ams-clue-vue/src/components/todowork/earlyWaringPenetrateList')
+  },
   {
     path: '/',
     redirect: '/ams/first'
@@ -47,11 +83,21 @@ const AmsRoutes = [
   {
     path: '/ams',
     name: 'ams',
-    component: () => import('@/portal/default/index'),
+    component: (resolve) => require(['@/portal/' + (process.env.VUE_APP_BASE_MENU === 'withmenu'?'withmenu/' + process.env.VUE_APP_BASE_SKIN:'withoutmenu') + '/index'], resolve),
     children: [
       {
         path: '',
         redirect: '/ams/first'
+      },
+      {
+        path: '/repassword',
+        component: () => import('@/views/error-page/repassword'),
+        hidden: true
+      },
+      {
+        path: '/nopermission',
+        component: () => import('@/views/error-page/nopermission'),
+        hidden: true
       },
       {
         path: 'first',
@@ -86,7 +132,7 @@ const AmsRoutes = [
   {
     path: '/datamining',
     name: '数据挖掘',
-    component: () => import('@/portal/default/index'),
+    component: (resolve) => require(['@/portal/' + (process.env.VUE_APP_BASE_MENU === 'withmenu'?'withmenu/' + process.env.VUE_APP_BASE_SKIN:'withoutmenu') + '/index'], resolve),
     children: [{
       path: '/datamining/index',
       name: '数据挖掘',
@@ -189,4 +235,22 @@ export function resetRouter() {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher
 }
+
+//解决编程式路由往同一地址跳转时会报错的情况
+const originalPush1 = Router.prototype.push;
+const originalReplace = Router.prototype.replace;
+//push
+Router.prototype.push = function push(location, onResolve, onReject) {
+  if (onResolve || onReject)
+    return originalPush1.call(this, location, onResolve, onReject);
+  return originalPush1.call(this, location).catch(err => err);
+};
+//replace
+Router.prototype.replace = function push(location, onResolve, onReject) {
+  if (onResolve || onReject)
+    return originalReplace.call(this, location, onResolve, onReject);
+  return originalReplace.call(this, location).catch(err => err);
+};
+
 export default router
+

@@ -1,403 +1,139 @@
 [
 	{
-		"id" : "charFun",
-		"pid" : "function",
-		"name" : "字符函数",
-		"displayName" : "字符函数",
-		"level" : 1,
-		"type" : "funFolder",
-		"isParent" : true,
-		"open" : false,
-		"children": [
-			{
-				"id" : "ASCII",
-				"pid" : "charFun",
-				"name" : "ASCII(x)",
-				"displayName" : "返回字符“x”的ASCII码",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "CONCAT",
-				"pid" : "charFun",
-				"name" : "CONCAT(x,y)",
-				"displayName" : "连接字符串“x”和“y”",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "INSTR",
-				"pid" : "charFun",
-				"name" : "INSTR(x,str,start,n)",
-				"displayName" : "从“x”中查找“str”，可以设置从“start”位置开始，第“n”次出现",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "LENGTH",
-				"pid" : "charFun",
-				"name" : "LENGTH(x)",
-				"displayName" : "返回“x”的长度",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "LOWER",
-				"pid" : "charFun",
-				"name" : "LOWER(x)",
-				"displayName" : "“x”转换成小写",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "UPPER",
-				"pid" : "charFun",
-				"name" : "UPPER(x)",
-				"displayName" : "“x”转换成大写",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "LTRIM",
-				"pid" : "charFun",
-				"name" : "LTRIM(x,trimStr)",
-				"displayName" : "把“x”的左边截去trimStr字符串，缺省截去空格",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "RTRIM",
-				"pid" : "charFun",
-				"name" : "RTRIM(x,trimStr)",
-				"displayName" : "把“x”的右边截去trimStr字符串，缺省截去空格",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "TRIM",
-				"pid" : "charFun",
-				"name" : "TRIM(trimStr from x)",
-				"displayName" : "把“x”的两边截去trimStr字符串，缺省截去空格",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "REPLACE",
-				"pid" : "charFun",
-				"name" : "REPLACE(x,old,new)",
-				"displayName" : "在“x”中查找“old”，并替换成“new”",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "SUBSTR",
-				"pid" : "charFun",
-				"name" : "SUBSTR(x,start,length)",
-				"displayName" : "返回“x”的字符串，从“start”处开始，截取“length”个字符，缺省“length”，默认到结尾",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
+		"id" : "charFun", "pid" : "function", "name" : "字符函数", "displayName" : "字符函数",
+        "level" : 1, "type" : "funFolder", "isParent" : true, "open" : false,
+		"children": [{
+                "id" : "CHR", "pid" : "charFun", "name" : "CHR(x)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+                "displayName" : "返回字符“x”的ASCII字符"
+            },{
+				"id" : "ASCII", "pid" : "charFun", "name" : "ASCII(x)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+                "displayName" : "返回字符串“x”首个字符的ASCII数值"
+            },{
+				"id" : "CONCAT", "pid" : "charFun", "name" : "CONCAT(x,y)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+                "displayName" : "连接字符串“x”和“y”"
+            },{
+                "id" : "INITCAP", "pid" : "charFun", "name" : "INITCAP(x)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+                "displayName" : "返回字符单词“x”首字母大写，其余小写，单词用空格和非字母字符分隔”"
+            },{
+				"id" : "INSTR", "pid" : "charFun", "name" : "INSTR(x,str,start,n)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+                "displayName" : "从“x”中查找“str”，可以设置从“start”位置开始，第“n”次出现"
+			},{
+				"id" : "LENGTH", "pid" : "charFun", "name" : "LENGTH(x)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "返回“x”的长度"
+			},{
+				"id" : "LOWER", "pid" : "charFun", "name" : "LOWER(x)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "“x”转换成小写"
+			},{
+				"id" : "UPPER", "pid" : "charFun", "name" : "UPPER(x)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "“x”转换成大写"
+			},{
+                "id" : "TRIM", "pid" : "charFun", "name" : "TRIM(trimStr from x)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+                "displayName" : "把“x”的两边截去trimStr字符串，缺省截去空格"
+            },{
+				"id" : "LTRIM", "pid" : "charFun", "name" : "LTRIM(x,trimStr)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "把“x”的左边截去trimStr字符串，缺省截去空格"
+			},{
+				"id" : "RTRIM", "pid" : "charFun", "name" : "RTRIM(x,trimStr)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "把“x”的右边截去trimStr字符串，缺省截去空格"
+            },{
+                "id" : "LPAD", "pid" : "charFun", "name" : "LPAD(x,n,y)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+                "displayName" : "在字符串“x”的左边粘贴多个字符“y”，直到字符串总字节数达到“n”个字节。“y”默认为空格"
+            },{
+                "id" : "RPAD", "pid" : "charFun", "name" : "RPAD(x,n,y)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+                "displayName" : "在字符串“x”的右边粘贴多个字符“y”，直到字符串总字节数达到“n”个字节。“y”默认为空格"
+            },{
+				"id" : "REPLACE", "pid" : "charFun", "name" : "REPLACE(x,old,new)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "在“x”中查找“old”，并替换成“new”"
+			},{
+				"id" : "SUBSTR", "pid" : "charFun", "name" : "SUBSTR(x,start,length)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "返回“x”的字符串，从“start”处开始，截取“length”个字符，缺省“length”，默认到结尾"
 			}
 		]
-	},
-	{
-		"id" : "numberFun",
-		"pid" : "function",
-		"name" : "数字函数",
-		"displayName" : "数字函数",
-		"level" : 1,
-		"type" : "funFolder",
-		"isParent" : true,
-		"open" : false,
+	},{
+		"id" : "numberFun", "pid" : "function", "name" : "数字函数", "displayName" : "数字函数",
+		"level" : 1, "type" : "funFolder", "isParent" : true, "open" : false,
 		"children": [
 			{
-				"id" : "ABS",
-				"pid" : "numberFun",
-				"name" : "ABS(x)",
-				"displayName" : "返回数字“x”的绝对值",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "CEIL",
-				"pid" : "numberFun",
-				"name" : "CEIL(x)",
-				"displayName" : "返回大于等于“x”的最小整数",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "FLOOR",
-				"pid" : "numberFun",
-				"name" : "FLOOR(x)",
-				"displayName" : "返回小于等于“x”的最大整数",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "MOD",
-				"pid" : "numberFun",
-				"name" : "MOD(x,y)",
-				"displayName" : "返回“x”除以“y”的余数",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "EXTRACT",
-				"pid" : "numberFun",
-				"name" : "ROUND(x,y)",
-				"displayName" : "“x”在第“y”位的四舍五入，缺省“y”时，y=0",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "TRUNC",
-				"pid" : "numberFun",
-				"name" : "TRUNC(x,y)",
-				"displayName" : "“x”在第“y”位截断，缺省“y”时，y=0",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
+				"id" : "ABS", "pid" : "numberFun", "name" : "ABS(x)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "返回数字“x”的绝对值"
+			},{
+				"id" : "CEIL", "pid" : "numberFun", "name" : "CEIL(x)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "返回大于等于“x”的最小整数"
+			},{
+				"id" : "FLOOR", "pid" : "numberFun", "name" : "FLOOR(x)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "返回小于等于“x”的最大整数"
+			},{
+				"id" : "MOD", "pid" : "numberFun", "name" : "MOD(x,y)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "返回“x”除以“y”的余数"
+			},{
+				"id" : "EXTRACT", "pid" : "numberFun", "name" : "ROUND(x,y)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "“x”在第“y”位的四舍五入，缺省“y”时，y=0"
+			},{
+				"id" : "TRUNC", "pid" : "numberFun", "name" : "TRUNC(x,y)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "“x”在第“y”位截断，缺省“y”时，y=0"
 			}
 		]
-	},
-	{
-		"id": "dateFun",
-		"pid": "function",
-		"name": "日期函数",
-		"displayName": "日期函数",
-		"level": 1,
-		"type": "funFolder",
-		"isParent": true,
-		"open": false,
+	},{
+		"id": "dateFun", "pid": "function", "name": "日期函数", "displayName": "日期函数",
+        "level": 1, "type": "funFolder", "isParent": true, "open": false,
 		"children": [
 			{
-				"id": "ADD_MONTHS",
-				"pid": "dateFun",
-				"name": "ADD_MONTHS(d,n)",
-				"displayName": "在某一个日期“d”上，加上指定的月数“n”，返回计算后的新日期",
-				"level": 2,
-				"type": "funNode",
-				"isParent": false,
-				"open": false,
-				"children": []
-			},
-			{
-				"id": "LAST_DAY",
-				"pid": "dateFun",
-				"name": "LAST_DAY(d)",
-				"displayName": "返回指定日期“d”当月的最后一天",
-				"level": 2,
-				"type": "funNode",
-				"isParent": false,
-				"open": false,
-				"children": []
-			},
-			{
-				"id": "EXTRACT",
-				"pid": "dateFun",
-				"name": "EXTRACT(fmt from d)",
-				"displayName": "提取日期“d”中的特定部分“fmt”",
-				"level": 2,
-				"type": "funNode",
-				"isParent": false,
-				"open": false,
-				"children": []
+				"id": "ADD_MONTHS", "pid": "dateFun", "name": "ADD_MONTHS(d,n)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName": "在某一个日期“d”上，加上指定的月数“n”，返回计算后的新日期"
+			},{
+				"id": "LAST_DAY", "pid": "dateFun", "name": "LAST_DAY(d)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName": "返回指定日期“d”当月的最后一天"
+			},{
+				"id": "EXTRACT", "pid": "dateFun", "name": "EXTRACT(fmt from d)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName": "提取日期“d”中的特定部分“fmt”"
 			}
 		]
-	},
-	{
-		"id": "changeFun",
-		"pid": "function",
-		"name": "转换函数",
-		"displayName": "转换函数",
-		"level": 1,
-		"type": "funFolder",
-		"isParent": true,
-		"open": false,
+	},{
+		"id": "changeFun", "pid": "function", "name": "转换函数", "displayName": "转换函数",
+		"level": 1, "type": "funFolder", "isParent": true, "open": false,
 		"children": [
 			{
-				"id" : "TO_CHAR",
-				"pid" : "changeFun",
-				"name" : "TO_CHAR(x,fmt)",
-				"displayName" : "把日期或数字“x”转换为指定格式“fmt”的字符串",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "TO_DATE",
-				"pid" : "changeFun",
-				"name" : "TO_DATE(x,fmt)",
-				"displayName" : "把一个字符串“x”以“fmt”格式转换成一个日期类型",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "TO_NUMBER",
-				"pid" : "changeFun",
-				"name" : "TO_NUMBER(x,fmt)",
-				"displayName" : "把一个字符串“x”以“fmt”格式转换成一个数字",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
+				"id" : "TO_CHAR", "pid" : "changeFun", "name" : "TO_CHAR(x,fmt)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "把日期或数字“x”转换为指定格式“fmt”的字符串"
+			},{
+				"id" : "TO_DATE", "pid" : "changeFun", "name" : "TO_DATE(x,fmt)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "把一个字符串“x”以“fmt”格式转换成一个日期类型"
+			},{
+				"id" : "TO_NUMBER", "pid" : "changeFun", "name" : "TO_NUMBER(x,fmt)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "把一个字符串“x”以“fmt”格式转换成一个数字"
 			}
 		]
-	},
-	{
-		"id": "polymerizeFun",
-		"pid": "function",
-		"name": "聚合函数",
-		"displayName": "聚合函数",
-		"level": 1,
-		"type": "funFolder",
-		"isParent": true,
-		"open": false,
+	},{
+		"id": "polymerizeFun", "pid": "function", "name": "聚合函数", "displayName": "聚合函数",
+		"level": 1, "type": "funFolder", "isParent": true, "open": false,
 		"children": [
 			{
-				"id" : "AVG",
-				"pid" : "polymerizeFun",
-				"name" : "AVG(x)",
-				"displayName" : "返回“x”的平均值",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "SUM",
-				"pid" : "polymerizeFun",
-				"name" : "SUM(x)",
-				"displayName" : "返回“x”求和后的值",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "MIN",
-				"pid" : "polymerizeFun",
-				"name" : "MIN(x)",
-				"displayName" : "返回“x”的最小值",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "MAX",
-				"pid" : "polymerizeFun",
-				"name" : "MAX(x)",
-				"displayName" : "返回“x”的最大值",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "COUNT",
-				"pid" : "polymerizeFun",
-				"name" : "COUNT(x)",
-				"displayName" : "返回“x”的统计值",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
+				"id" : "AVG", "pid" : "polymerizeFun", "name" : "AVG(x)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "返回“x”的平均值"
+			},{
+				"id" : "SUM", "pid" : "polymerizeFun", "name" : "SUM(x)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "返回“x”求和后的值"
+			},{
+				"id" : "MIN", "pid" : "polymerizeFun", "name" : "MIN(x)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "返回“x”的最小值"
+			},{
+				"id" : "MAX", "pid" : "polymerizeFun", "name" : "MAX(x)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "返回“x”的最大值"
+			},{
+				"id" : "COUNT", "pid" : "polymerizeFun", "name" : "COUNT(x)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "返回“x”的统计值"
 			}
 		]
-	},
-	{
-		"id": "otherFun",
-		"pid": "function",
-		"name": "其他函数",
-		"displayName": "其他函数",
-		"level": 1,
-		"type": "funFolder",
-		"isParent": true,
-		"open": false,
+	},{
+		"id": "otherFun", "pid": "function", "name": "其他函数", "displayName": "其他函数",
+        "level": 1, "type": "funFolder", "isParent": true, "open": false,
 		"children": [
 			{
-				"id" : "NVL",
-				"pid" : "otherFun",
-				"name" : "NVL(x,value)",
-				"displayName" : "如果“x”为空，返回“value”，否则返回“x”",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
-			},
-			{
-				"id" : "NVL2",
-				"pid" : "otherFun",
-				"name" : "NVL2(x,value1,value2)",
-				"displayName" : "如果“x”非空，返回“value1”，否则返回“value2”",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children": []
+				"id" : "NVL", "pid" : "otherFun", "name" : "NVL(x,value)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "如果“x”为空，返回“value”，否则返回“x”"
+			},{
+				"id" : "NVL2", "pid" : "otherFun", "name" : "NVL2(x,value1,value2)", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+				"displayName" : "如果“x”非空，返回“value1”，否则返回“value2”"
 			}
 		]
 	}

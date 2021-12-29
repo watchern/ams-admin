@@ -86,7 +86,12 @@
                     this.comparisonLoading = true
                 }
                 this.loadText = '数据请求中，请稍后……'
-                getAnalysisDataDetail(data).then( response => {}).catch( () => {
+                getAnalysisDataDetail(data).then( response => {
+                    if(response.data.isError){
+                        this.comparisonLoading = false
+                        this.$message.error('数据请求失败')
+                    }
+                }).catch( () => {
                     this.comparisonLoading = false
                 })
             },
@@ -105,7 +110,7 @@
             },
             initWebsocket(){
                 let $this = this
-                const webSocketPath = `${process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET}${this.$store.state.user.id}graph_comparison`
+                const webSocketPath = `${this.AmsWebsocket.getWSBaseUrl(this.AmsModules.GRAPHTOOL)}${this.$store.state.user.id}graph_comparison`
                 // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
                 this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
                 // 发送消息

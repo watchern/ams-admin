@@ -20,45 +20,40 @@
         :disabled="modelRunResultBtnIson.exportBtn"
         type="primary"
         @click="exportExcel"
-        class="oper-btn export-2"
-      ></el-button>
+        class="oper-btn export"
+      />
       <el-button
         style="display: none"
         :disabled="modelRunResultBtnIson.chartDisplayBtn"
         type="primary"
-        class="oper-btn chart"
-        ></el-button
-      >
+        class="oper-btn chart btn-width-md"
+        />
       <el-button
         style="display: none"
         :disabled="modelRunResultBtnIson.associatedBtn"
         type="primary"
         @click="getValues"
-        class="oper-btn refresh"
-      ></el-button>
+        class="oper-btn restart btn-width-md"
+      />
       <el-button
         style="display: none"
         :disabled="modelRunResultBtnIson.disassociateBtn"
         type="primary"
         @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
-        >移除关联</el-button
-      >
-      <el-button :disabled="false" type="primary" @click="queryConditionSetting" class="oper-btn search"
-        ></el-button
-      >
-      >
+        >移除关联</el-button>
+      <!-- @查看设置@-->
+      <el-button :disabled="false" type="primary" @click="queryConditionSetting" class="oper-btn setting-detail btn-width-md" />
       <!-- <el-button type="primary" @click="addDetailRel('qwer', '项目10')"
         >重置</el-button -->
-      <el-button :disabled="false" type="primary" @click="reSet" class="oper-btn again-2"
-        ></el-button>
+      <el-button :disabled="false" type="primary" @click="reSet" class="oper-btn reset"></el-button>
+      <!-- @查询关联@  -->
       <el-button
-        class="oper-btn link"
+        class="oper-btn linkdetail btn-width-md"
         :disabled="modelRunResultBtnIson.modelDetailAssBtn"
         v-if="modelDetailButtonIsShow"
         type="primary"
         @click="openModelDetail"
-        ></el-button
-      >
+        />
        </div>
     </el-row>
     <el-row v-if="modelResultButtonIsShow" style="display: flex">
@@ -67,10 +62,10 @@
         <el-button
           type="primary"
           @click="modelResultExport"
-          class="oper-btn export-3"
+          class="oper-btn export"
         ></el-button>
       </downloadExcel>
-      <el-button type="primary" class="oper-btn chart"></el-button>
+      <el-button type="primary" class="oper-btn chart btn-width-md"></el-button>
     </el-row>
     <ag-grid-vue
       v-if="isSee"
@@ -85,6 +80,7 @@
       @cellClicked="onCellClicked"
       @gridReady="onGridReady"
       @rowSelected="rowChange"
+      @firstDataRendered="autoSizeAll(false)"
     />
     <el-card v-if="!isSee" class="box-card" style="height: 100px">
       <div>{{ errorMessage }}</div>
@@ -181,6 +177,8 @@ import { string } from "jszip/lib/support";
 import { startExecuteSql } from "@/api/analysis/sqleditor/sqleditor";
 import { getTransMap } from "@/api/data/transCode.js";
 
+//引入时间格式化方法
+import dayjs from 'dayjs';
 export default {
   name: "childTabCon",
   // 注册draggable组件
@@ -204,7 +202,7 @@ export default {
    * 模型运行结果使用变量：nowtable：表示模型结果表对象   modelUuid：根据modelUUid进行表格渲染，只有主表用渲染  useType=modelRunResult 表示是模型运行结果所用
    * sql编辑器模型结果使用变量：useType=sqlEditor 表示是sql编辑器模型结果所用  prePersonalVal：每一个prePersonalVal对应一个childtabcon组件，后续会触发父组件chidltabs中的loadTableData方法来根据prePersonalVal进行aggrid数据的展现
    */
-  props: ["nowtable", "modelUuid", "useType", "prePersonalVal"],
+  props: ["modelTitle","nowtable", "modelUuid", "useType", "prePersonalVal"],
   data() {
     return {
       dialogVisible: false,
@@ -259,6 +257,7 @@ export default {
         modelDetailAssBtn: true,
       },
       dynamicSelect: [], //实时存储多选框勾选中的数据
+      columnApi:null
     };
   },
   mounted() {
@@ -301,7 +300,8 @@ export default {
         const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
         link.style.display = "none";
         link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "模型运行结果表.xlsx");
+        //模型运行结果表日期使用当前日期
+        link.setAttribute("download",this.modelTitle +"("+dayjs(new Date()).format('YYYY年MM月DD日hhmmss')+")"+".xls");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -446,8 +446,16 @@ export default {
       this.gridApi = params.api;
       this.columnApi = params.columnApi;
       // 这时就可以通过gridApi调用ag-grid的传统方法了
-      this.gridApi.sizeColumnsToFit();
+      // this.gridApi.sizeColumnsToFit();
     },
+    //自动宽度
+    autoSizeAll(skipHeader) {
+//       var allColumnIds = [];
+//       this.columnApi.getAllColumns().forEach(function (column) {
+//         allColumnIds.push(column.colId);
+//       });
+//       this.columnApi.autoSizeColumns(allColumnIds, skipHeader);
+    },
     // 单元格点击事件
     onCellClicked(cell) {},
     initData(sql, nextValue) {
@@ -576,7 +584,7 @@ export default {
         var rowData = [];
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
           if (this.nextValue.executeSQL.state == "2") {
-            if(this.nextValue.executeSQL.type=='SELECT'){
+            if(this.nextValue.executeSQL.type=='Select'){
               //todo 增加sql类型判断
               if (true) {
                 this.modelResultButtonIsShow = true;
@@ -832,6 +840,17 @@ export default {
      * 点击详细dialog的确定按钮后触发
      */
     modelDetailCetermine() {
+      let replist =  []
+      $(".el-tabs__item").each(function(e){
+        let repstr  = $(this).attr('id').slice(4,$(this).attr('id').length)
+        replist.push(repstr)
+      })
+      for(let i =0;i<replist.length;i++){
+        if(value == replist[i]){
+          this.$message('该模型已打开');
+          return
+        }
+      }
       var selectRowData = this.gridApi.getSelectedRows();
       var relationType = null;
       var objectName = "";
@@ -960,10 +979,7 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
-/*      const webSocketPath =
-        "ws://localhost:8086/analysis/websocket?" +
-        this.$store.getters.personuuid;*/
-      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid+'modelresultdetail';
+      const webSocketPath = this.AmsWebsocket.getWSBaseUrl(this.AmsModules.ANALYSIS) + this.$store.getters.personuuid+'modelresultdetail';
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
       // 当服务端打开连接
@@ -989,5 +1005,10 @@ export default {
 .itxst {
   margin: 10px;
   text-align: left;
+}
+</style>
+<style>
+.ag-theme-balham .ag-header-cell-label{
+  justify-content: center;
 }
 </style>

@@ -50,8 +50,7 @@ export default {
 
 <style lang="scss">
   .page-container .tree-container{
-    height: 80vh;
-    overflow: scroll;
+    height:55vh; overflow:auto;
   }
   .page-container .tree-container .filter-tree {
     margin-top: 20px;

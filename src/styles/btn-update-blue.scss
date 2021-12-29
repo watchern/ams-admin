@@ -1,0 +1,449 @@
+@import './variables.scss';
+
+.self-made-btn {
+  background: transparent;
+  color: #333;
+}
+
+.self-made-btn-a {
+  background: #559ed4 !important;
+  color: #fff !important;
+}
+
+.el-button {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #353A43;
+  font-weight: bold;
+}
+
+.el-button:active {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #353A43;
+  outline: none;
+  font-weight: bold;
+}
+
+.el-button:hover,
+.el-button:focus {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #353A43;
+  font-weight: bold;
+}
+
+.el-button--primary {
+  background: rgb(85, 158, 212) !important;
+  border-color: rgb(90, 195, 235) !important;
+  color: #fff !important;
+  font-weight: bold;
+}
+
+.el-button--primary:active {
+  background: rgb(90, 195, 235) !important;
+  border-color: rgb(90, 195, 235) !important;
+  color: rgb(242, 243, 253) !important;
+  outline: none;
+  font-weight: bold;
+}
+
+.el-button--primary:hover,
+.el-button--primary:focus {
+  background: rgb(90, 195, 235) !important;
+  border-color: rgb(90, 195, 235) !important;
+  color: rgb(242, 243, 253) !important;
+  font-weight: bold;
+}
+
+.el-button--primary.is-disabled,
+.el-button--primary.is-disabled:hover,
+.el-button--primary.is-disabled:focus,
+.el-button--primary.is-disabled:active {
+  color: #fff;
+  background-color: #c6cfd6;
+  border-color: #c6cfd6;
+}
+
+.oper-btn {
+  background: rgb(85, 158, 212);
+  width: 60px;
+  height: 24px;
+  padding: 4px;
+  border-radius: 4px;
+  position: relative;
+  color: #ffffff;
+  font-style: normal;
+  font-family: "iconfont" !important;
+  font-weight: normal !important;
+}
+
+// 按钮4个字
+.btn-width-md {
+  width: 96px !important;
+}
+
+// 按钮6个字
+.btn-width-max {
+  width: 132px !important;
+}
+.oper-btn.logout:after{
+  content:' 注销'!important;
+}
+.oper-btn.unlock:after{
+  content:' 解除锁定'!important;
+}
+.oper-btn.authority:after{
+  content:' 权限分配'!important;
+}
+.oper-btn.reset-password:after{
+  content:' 重置密码'!important;
+}
+
+//region @新增相关操作 start@
+.oper-btn.add:after {
+  content: '\e60a  新增' !important;
+}
+.oper-btn.scheduleadd:after {
+  content: '\e60a' !important;
+}
+.oper-btn.add-table:after {
+  content: '\e60a  新增表' !important;
+}
+.oper-btn.add-row:after {
+  content: '\e60a  新增行' !important;
+}
+.oper-btn.add-rule:after {
+  content: '\e60a  新增规则' !important;
+}
+.oper-btn.add-partial:after{
+  content:'\e60a  新增区间'!important;
+}
+.oper-btn.add-directory:after{
+  content:'\e67c  新增文件夹'!important;
+}
+.oper-btn.add-problem:after{
+  content:'\e60a  生成问题'!important;
+}
+//endregion @新增相关操作 end@
+
+//region @编辑相关操作 start@
+.oper-btn.edit:after {
+  content: '\e604  编辑' !important;
+}
+.oper-btn.edit-period:after {
+  content: '\e604  编辑使用期限' !important;
+}
+//endregion @编辑相关操作 end@
+
+//region @查看详情、预览等相关操作 start@
+.oper-btn.preview:after {
+  content: '\e609  预览' !important;
+}
+.oper-btn.detail:after {
+  content: '\e609  详情' !important;
+}
+.oper-btn.detail-rule:after {
+  content: '\e609  查看规则详情' !important;
+}
+//endregion @查看详情、预览等相关操作 end@
+
+.oper-btn.buildsql:after {
+  content: '\e637  编译模型SQL' !important;
+}
+
+// again
+.oper-btn.reset:after{
+  content:'\e69c  重置'!important;
+}
+
+// link
+.oper-btn.linkdetail:after{
+  content:'\e77c  查询关联'!important;
+}
+
+.oper-btn.testconn:after{
+  content:'\e77c  测试连接'!important;
+}
+
+.oper-btn.allocation:after {
+  content: '\e6af  结果分配' !important;
+}
+
+.oper-btn.link-bindres:after{
+  content:'\e6af  绑定资源'!important;
+}
+
+.oper-btn.link-table:after{
+  content:'\e6af  关联表'!important;
+}
+
+// publish
+.oper-btn.publish:after {
+  content: '\e695  发布' !important;
+}
+
+// setting
+.oper-btn.setting:after {
+  content: '\e606  设置' !important;
+}
+
+.oper-btn.setting-param:after{
+  content:'\e606  设置参数'!important;
+}
+
+.oper-btn.edit-setting-param:after{
+  content:'\e606  修改参数'!important;
+}
+
+// share
+.oper-btn.share:after{
+  content:'\e60b  分享'!important;
+}
+
+// search
+.oper-btn.search:after {
+  content: '\e60f  查询' !important;
+}
+
+.oper-btn.setting-detail:after{
+  content:'\e60f  查询设置'!important;
+}
+
+// move
+.oper-btn.disallocation:after{
+  content: '\e672  移除项目分配' !important;
+}
+
+.oper-btn.move:after{
+  content:'\e672  移动'!important;
+}
+
+// processing
+.oper-btn.processing:after {
+  content: '\e671  处理' !important;
+}
+
+.oper-btn.mark-read:after{
+  content:'\e671  标记已阅'!important;
+}
+
+.oper-btn.opensql:after{
+  content:'\e67d  打开SQL'!important;
+}
+
+//region @所有导入、上传按钮 start@
+.oper-btn.import:after {
+  content: '\e775  导入' !important;
+}
+.oper-btn.import-table:after {
+  content: '\e775  导入表' !important;
+}
+.oper-btn.upload:after {
+  content: '\e602  上传' !important;
+}
+.oper-btn.upload-file:after{
+  content:'\e67c  上传文件'!important;
+}
+//endregion @所有导入、上传按钮 end@
+
+//region @所有导出/下载按钮 start@
+.oper-btn.export:after {
+  content: '\e7a3  导出' !important;
+}
+.oper-btn.download:after{
+  content:'\e7a3  下载'!important;
+}
+.oper-btn.download-template:after{
+  content:'\e7a3  下载模板'!important;
+}
+.oper-btn.exportsql:after{
+  content:'\e637  导出宽表SQL'!important;
+}
+//endregion @所有导出、下载按钮 end@
+
+//region @启用、停用、暂停、停止、运行等按钮 start@
+.oper-btn.offline:after{
+  content:'\e607  停用'!important;
+}
+.oper-btn.pause:after{
+  content:'\e607  暂停'!important;
+}
+.oper-btn.stop:after{
+  content:'\e60c 停止'!important;
+}
+.oper-btn.online:after{
+  content:'\e608  启用'!important;
+}
+.oper-btn.start:after{
+  content:'\e608  运行'!important;
+}
+.oper-btn.start-failed:after{
+  content:'\e608  运行失败任务'!important;
+}
+.oper-btn.recover-paused:after{
+  content:'\e608  运行暂停任务'!important;
+}
+.oper-btn.start-now:after{
+  content:'\e608  立即运行'!important;
+}
+.oper-btn.restart:after{
+  content:'\e66e  重新运行'!important;
+}
+//endregion @启用、停用、暂停、停止、运行等按钮 end@
+
+//region @删除、清空等按钮 start@
+.oper-btn.delete:after{
+  content:'\e601  删除'!important;
+}
+.oper-btn.delete-partial:after{
+  content:'\e601  删除区间'!important;
+}
+.oper-btn.delete-result:after{
+  content:'\e601  删除结果'!important;
+}
+.oper-btn.delete-projectrel:after{
+  content:'\e601  删除关联项目'!important;
+}
+.oper-btn.delete-param:after{
+  content:'\e601  清除参数'!important;
+}
+.oper-btn.delete-row:after{
+  content:'\e601  删除'!important;
+}
+
+.oper-btn.delete-rule:after{
+  content:'\e601  删除规则'!important;
+}
+.oper-btn.scheduledelete:after {
+  content: '\e601' !important;
+}
+//endregion @删除、清空等按钮 end@
+
+// 单义图标  15个
+.oper-btn.more:after {
+  content: '\e605  更多' !important;
+}
+
+
+.oper-btn.rename:after {
+  content: '\e83e  重命名' !important;
+}
+
+.oper-btn.copy:after {
+  content: '\e66c  复制' !important;
+}
+
+.oper-btn.maintain:after {
+  content: '\e69f  工具' !important;
+}
+
+.oper-btn.auth:after {
+  content: '\e670  授权' !important;
+}
+
+.oper-btn.save:after {
+  content: '\e67e  保存' !important;
+}
+
+.oper-btn.save-none:after {
+  content: '\e67e' !important;
+}
+
+.oper-btn.chart:after {
+  content: '\e6d8  图表' !important;
+}
+
+.oper-btn.help:after{
+  content:'\e629  说明'!important;
+}
+.oper-btn.customfield:after{
+  content:'\e665  自定义字段'!important;
+}
+.oper-btn.sqlcheck:after{
+  content:'\e613  校验'!important;
+}
+
+.oper-btn.format:after{
+  content:'\e600  格式化'!important;
+}
+
+.oper-btn.commit:after{
+  content:'\e671 提交审核' !important;
+}
+
+//region @所有取消按钮 start@
+.oper-btn.cancel:after{
+  content:'\e657  取消'!important;
+}
+
+.oper-btn.cancel-none:after{
+  content: '\e657 ' !important;
+}
+.oper-btn.cancel-exec:after {
+  content: '\e607  取消执行' !important;
+}
+.oper-btn.cancelshare:after{
+  content:'\e63d  取消分享'!important;
+}
+.oper-btn.cancel-publish:after{
+  content:'\e657  取消发布'!important;
+}
+//endregion @所有取消按钮 end@
+
+// 未使用 16个
+.oper-btn.pdf:after {
+  content: '\e639' !important;
+}
+
+.oper-btn.ppt:after {
+  content: '\e63a' !important;
+}
+
+.oper-btn.txt:after {
+  content: '\e63b' !important;
+}
+
+.oper-btn.word:after {
+  content: '\e63c' !important;
+}
+
+.oper-btn.menu:after {
+  content: '\e669' !important;
+}
+
+.oper-btn.share-3:after {
+  content: '\e66a' !important;
+}
+
+.oper-btn.collect:after {
+  content: '\e66d' !important;
+}
+
+.oper-btn.split:after{
+  content: '\e617  结果拆分' !important;
+}
+
+.oper-btn.show-detail:after {
+  content: '\e609' !important;
+}
+
+.oper-btn.timing:after{
+  content:'\e60d'!important;
+}
+
+.oper-btn.menu-2:after {
+  content: '\e89a' !important;
+}
+
+.oper-btn.drag:after {
+  content: '\e680' !important;
+}
+
+.oper-btn.interactive:after{
+  content:'\e60e'!important;
+}
+
+.oper-btn.skip:after {
+  content:'\e612  跳过'!important;
+}

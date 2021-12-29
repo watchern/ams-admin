@@ -3,7 +3,7 @@
     <el-row>
       <el-col v-if="openType!== 'showTable'" align="right">
         <el-button type="primary" size="mini" class="oper-btn add" @click="addCol()" />
-        <el-button type="danger" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="delCol()" />
+        <el-button type="primary" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="delCol()" />
       </el-col>
     </el-row>
     <el-table :data="temp" @selection-change="handleSelectionChange">

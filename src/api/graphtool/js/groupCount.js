@@ -1,5 +1,5 @@
 // 可用于汇总的字段类型
-const typeArr = ['INTEGER', 'DECIMAL', 'NUMBER', 'FLOAT', 'REAL', 'DATE', 'TIMESTAMP']
+const typeArr = ['INTEGER', 'DECIMAL', 'NUMBER', 'FLOAT', 'REAL', 'DATE', 'TIMESTAMP', 'TIMESTMP']
 let groupCountVue = null// 分组汇总vue对象
 let nodeData = null
 /**
@@ -18,15 +18,13 @@ export function init() {
         groupCountVue.columnsInfo = nodeData.setting.columnsInfo
         //初始化输出字段列表
         Array.from(nodeData.columnsInfo, item => {
-            if (item.isCount) {
-                // 初始化汇总字段的输出列行数据（只初始化汇总字段的）
+            // item.isCount：第一种是undefined（这种情况是第一次配置该节点）
+            // 第二种是false（这种情况是该节点已经配置过一次，为false的字段信息是可用于分组的字段，同时也是前置节点的所有输出字段）
+            if (item.isCount) {//初始化汇总字段的
                 const sign = item.sign
                 const countType = item.countType
                 initOutputColumn(item, true, sign, countType, true)
             } else {
-                // item.isCount：第一种是undefined（这种情况是第一次配置该节点）
-                // 第二种是false（这种情况是该节点已经配置过一次，为false的字段信息是可用于分组的字段，同时也是前置节点的所有输出字段）
-                // 初始化输出列信息
                 initOutputColumn(item, false, null, null, true)
             }
         })
@@ -47,7 +45,7 @@ export function init() {
                     var initCountColumnData = JSON.parse(JSON.stringify(groupCountVue.columnData))// 复制全局汇总字段的数组变量的值
                     initCountColumnData.unshift({ 'name': '请选择', 'value': '', 'type': '' })
                     for (let n = 0; n < initCountColumnData.length; n++) { // 设置已汇总字段名称值的选中状态，重新渲染当前行的下拉框
-                        if(countData[m].columnName === countData[m].countTypeValue + "(" + initCountColumnData[n].value + ")"){
+                        if(countData[m].selectColumnName === countData[m].countTypeValue + "(" + initCountColumnData[n].value + ")"){
                             initCountColumnData[n].selected = true;
                             break;
                         }
@@ -64,15 +62,15 @@ export function init() {
                         { 'name': '求和', 'value': 'sum' },
                         { 'name': '最大值', 'value': 'max' },
                         { 'name': '最小值', 'value': 'min' },
-                        { 'name': '平均值', 'value': 'ave' }
+                        { 'name': '平均值', 'value': 'avg' }
                     ]
                     for (let c = 0; c < initCountTypeData.length; c++) {
-                        if ($.inArray(countData[m].columnType, typeArr) < 0) { // 设置不可汇总字段的数据数组（不能写到这个for循环外面）
+                        if ($.inArray(countData[m].columnType.trim(), typeArr) < 0) { // 设置不可汇总字段的数据数组（不能写到这个for循环外面）
                             switch (initCountTypeData[c].value) {
                                 case 'sum':
                                 case 'max':
                                 case 'min':
-                                case 'ave':
+                                case 'avg':
                                     initCountTypeData[c].disabled = true
                                     break
                             }
@@ -148,6 +146,7 @@ function initOutputColumn(columnInfo, isCountTr, sign, countType, isInit) {
         "newColumnName":columnInfo.newColumnName,// 输出字段名称
         "rtn":columnInfo.rtn,
         "checked":columnInfo.checked,
+        "selectColumnName":columnInfo.selectColumnName||''
     }
     if (isCountTr) { // 如果是汇总配置列的行，则附加唯一标识
         columnItem.sign = sign
@@ -164,7 +163,7 @@ function initOutputColumn(columnInfo, isCountTr, sign, countType, isInit) {
         }
     }
     if(countType && !isInit){
-        columnItem.columnName = countType.value + "(" + columnItem.columnName + ")";
+        columnItem.selectColumnName = countType.value + "(" + columnItem.columnName + ")";
     }
     groupCountVue.columnItems.push(columnItem)
     groupCountVue.ind++
@@ -185,7 +184,7 @@ function initCountSelectData(trNum) {
         { 'name': '求和', 'value': 'sum' },
         { 'name': '最大值', 'value': 'max' },
         { 'name': '最小值', 'value': 'min' },
-        { 'name': '平均值', 'value': 'ave' }
+        { 'name': '平均值', 'value': 'avg' }
     ]
     // 不可汇总字段的数据数组
     let disableCountData = [
@@ -194,7 +193,7 @@ function initCountSelectData(trNum) {
         { 'name': '求和', 'value': 'sum', 'disabled': true },
         { 'name': '最大值', 'value': 'max', 'disabled': true },
         { 'name': '最小值', 'value': 'min', 'disabled': true },
-        { 'name': '平均值', 'value': 'ave', 'disabled': true }
+        { 'name': '平均值', 'value': 'avg', 'disabled': true }
     ]
     let chooseColumnXs = xmSelect.render({
         el: '#searchName' + trNum,
@@ -234,7 +233,7 @@ function initCountSelectData(trNum) {
                         // autoRow: true,
                     })
                 } else { // 选中其他字段
-                    const columnType = change.type // 当前所选中字段的数据类型
+                    const columnType = change.type.trim() // 当前所选中字段的数据类型
                     if ($.inArray(columnType.toUpperCase(), typeArr) < 0) { // 数值或日期类型
                         chooseTypeXs.update({
                             data: disableCountData
@@ -474,7 +473,8 @@ export function saveNodeInfo() {
                 columnInfo.checked = false
                 columnInfo.isOutputColumn = 0
             }
-            columnInfo.columnName = groupCountVue.columnItems[index].columnName
+            columnInfo.selectColumnName = groupCountVue.columnItems[index].selectColumnName
+            columnInfo.columnName = newColumnName
             columnInfo.newColumnName = newColumnName
             if (typeof groupCountVue.columnItems[index].sign !== "undefined") { // 汇总字段的输出列数据行
                 // 组织汇总列的字段配置信息
@@ -482,8 +482,9 @@ export function saveNodeInfo() {
                 columnInfo.sign = groupCountVue.columnItems[index].sign
                 columnInfo.countType = groupCountVue.columnItems[index].dataCountType
                 countData.push({
-                    "columnName":columnInfo.columnName,
+                    "columnName":newColumnName,
                     "columnType":columnInfo.columnType,
+                    "selectColumnName":columnInfo.selectColumnName,
                     "countTypeValue":groupCountVue.columnItems[index].dataCountType.value,
                     "newColumnName":newColumnName
                 })

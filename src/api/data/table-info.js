@@ -34,6 +34,15 @@ export function saveTable(data) {
     data
   })
 }
+/* 批量缓存数据操作*/
+export function batchSaveTable(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/batchSave`,
+    method: 'post',
+    data
+  })
+}
 export function saveTableInfo(data) {
   return request({
     baseURL: baseURL,
@@ -50,6 +59,14 @@ export function updateTable(data) {
     data
   })
 }
+export function judgeName(tableName) {
+  return request({
+    baseURL: baseURL,
+    url: `/validateTableName`,
+    method: 'get',
+    params: { tableName: tableName}
+  })
+}
 export function delTable(ids) {
   var param = ids.split('>')
   return request({
@@ -59,6 +76,7 @@ export function delTable(ids) {
   })
 }
 export function getResELTree(data) {
+
   if (!data) data = { dataUserId: '', sceneCode: '' }
   if (!data.type) data.type = 'common'
   return request({

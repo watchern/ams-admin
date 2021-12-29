@@ -3,7 +3,7 @@
     <el-row>
       <el-col v-if="openType !== 'showTable' && openType !== 'tableRegister'" align="right">
         <el-button type="primary" size="mini" class="oper-btn add" @click="addCol()" />
-        <el-button type="danger" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="delCol()" />
+        <el-button type="primary" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="delCol()" />
       </el-col>
     </el-row>
     <!-- 如果进行查看 -->
@@ -16,11 +16,11 @@
       style="width: 100%;"
     >
       <el-table-column label="表名称" width="150px" prop="tbName" />
-      <el-table-column label="字段名称" width="150px" prop="colName" />
+      <!-- <el-table-column label="字段名称" width="150px" prop="colName" /> -->
       <el-table-column label="从表名称" width="200px" prop="relationTableName" />
       <el-table-column label="关联字段" width="150px" prop="relationCol" />
       <el-table-column label="关联关系" align="center" prop="sqlGenJoinType" :formatter="formatSqlGenJoinType" />
-      <el-table-column label="过滤条件" prop="describtion">
+      <!-- <el-table-column label="过滤条件" prop="describtion">
         <template v-if="scope.row.sqlGenOnStr!=null && scope.row.sqlGenOnStr.length>0" slot-scope="scope">
           <el-popover trigger="hover" placement="top" width="500">
             <el-row>
@@ -29,15 +29,15 @@
               </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
-              <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
+              <!-- <el-tag><i class="el-icon-tickets" /></el-tag> 
               <el-link :underline="false" type="primary">查看过滤</el-link>
             </div>
           </el-popover>
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
     <!-- 如果进行关联操作 -->
-    <el-table v-if="openType !== 'showTable' && openType !== 'tableRegister'" :data="temp" height="700px" @selection-change="handleSelectionChange">
+    <el-table v-if="openType !== 'showTable' && openType !== 'tableRegister'" :data="temp" max-height="500px" @selection-change="handleSelectionChange" class="detail-form">
       <el-table-column type="selection" width="55" />
       <el-table-column prop="colMetaUuid" label="关联字段">
         <template slot-scope="scope">
@@ -61,7 +61,7 @@
               <el-input v-model="scope.row.relationTableName" :disabled="true" />
             </el-col>
             <el-col :span="6">
-              <el-button @click="showDataTree(scope.row.index)">选择</el-button>
+              <el-button size="mini" style="padding:10px;" @click="showDataTree(scope.row.index)">选择</el-button>
             </el-col>
           </el-row>
         </template>
@@ -111,7 +111,7 @@
             </el-col>
             <el-button @click="openQueryBuilder(scope.row.index)">设置</el-button>
           </el-row>
-          <el-dialog title="条件设置" :visible.sync="queryBuilderDialogVisible" width="30%" :append-to-body="true">
+          <el-dialog title="条件设置" :visible.sync="queryBuilderDialogVisible" width="30%" :append-to-body="true" :close-on-click-modal="false">
             <myQueryBuilder
               v-if="queryBuilderDialogVisible"
               ref="myQueryBuilder"
@@ -127,7 +127,7 @@
         </template>
       </el-table-column>
       <!-- </el-table> -->
-      <el-dialog v-if="dataTableTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="dataTableTree" title="请选择数据表" width="80%">
+      <el-dialog v-if="dataTableTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="dataTableTree" title="请选择数据表" width="80%" :close-on-click-modal="false">
         <data-tree ref="dataTableTree" :data-user-id="dataUserId" :scene-code="sceneCode" />
         <div slot="footer">
           <el-button tvype="primary" @click="getDataTable">确定</el-button>

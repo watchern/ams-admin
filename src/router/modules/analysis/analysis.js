@@ -2,24 +2,33 @@
 const analysisRouter = {
   path: '/analysis',
   name: '审计分析',
-  component: () => import('@/portal/default/index'),
+  component: (resolve) => require(['@/portal/' + (process.env.VUE_APP_BASE_MENU === 'withmenu'?'withmenu/' + process.env.VUE_APP_BASE_SKIN:'withoutmenu') + '/index'], resolve),
   meta: {
+    // keepAlive: true
   },
   children: [
+    {
+      path: 'check',
+      name: '审计模型',
+      component: () => import('@/views/flowwork/reivewCheck')
+      // component: () => import('@/views/analysis/auditmodel/boemodel/modellisttable')
+    },
     {
       path: 'auditmodel',
       name: '审计模型',
       component: () => import('@/views/analysis/auditmodel/index')
+      // component: () => import('@/views/analysis/auditmodel/boemodel/modellisttable')
+    },
+    //ps:京东方-新需求路由
+    {
+      path: 'boeauditmodel',
+      name: '京东方审计模型',
+      component: () => import('@/views/analysis/auditmodel/boemodel/modellisttable')
     },
     {
       path: 'auditmodelresult',
       name: '模型运行结果',
       component: () => import('@/views/analysis/auditmodelresult/index')
-    },
-    {
-      path: 'auditmodelparam',
-      name: '模型参数',
-      component: () => import('@/views/analysis/modelparam/index')
     },
     {
       path: 'editormodel',
@@ -42,9 +51,21 @@ const analysisRouter = {
       component: () => import('@/views/analysis/auditwarningresult/index')
     },
     {
+      path: 'warningresult/:runTaskUuid',
+      name: '审计预警结果',
+      component: resolve => require(['@/views/analysis/auditwarningresult/index'], resolve),
+      meta: {
+        title: '审计预警结果'
+      }
+    },
+    {
       path: 'sqleditor',
       name: 'SQL编辑器',
-      component: () => import('@/views/analysis/sqleditor/index')
+      component: () => import('@/views/analysis/sqleditor/index'),
+      //2021.6.4 太仓需求sql编辑页保留编辑内容
+      // meta: {
+      //   keepAlive: true
+      // },
     },
     {
       path: 'editormodelnew',
@@ -81,6 +102,12 @@ const analysisRouter = {
       path: 'threadoldvalue',
       name: '阈值管理',
       component: () => import('@/views/analysis/thresholdvalue/index')
+    }
+    ,
+    {
+      path: 'parammanagerlist',
+      name: '参数管理',
+      component: () => import('@/views/analysis/modelparam/paramManager/parammanagerlist')
     }
   ]
 }

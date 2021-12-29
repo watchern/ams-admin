@@ -11,22 +11,30 @@
           />
         </div>
       </el-header>
-      <el-main style="width: 92vw">
+      <!-- style="width: 92vw" -->
+      <el-main>
         <div align="right">
           <el-row>
             <el-button
               :disabled="false"
               type="primary"
               size="small"
+              class="oper-btn add-problem btn-width-md"
+              @click="createProblem"
+            />
+            <el-button
+              :disabled="false"
+              type="primary"
+              size="small"
               class="oper-btn processing"
               @click="handleResult"
-            ></el-button>
+            />
             <el-button
               :disabled="buttonIson.deleteBtn"
               type="primary"
               @click="deleteRunTaskRel"
-              class="oper-btn delete-3"
-            ></el-button>
+              class="oper-btn delete-projectrel btn-width-max"
+            />
           </el-row>
         </div>
         <el-table
@@ -46,7 +54,6 @@
           <el-table-column
             label="模型名称"
             width="300px"
-            align="center"
             prop="model.modelName"
           >
             <template slot-scope="scope">
@@ -75,7 +82,6 @@
           <el-table-column
             label="处理意见"
             width="100px"
-            align="center"
             prop="handleIdea"
           />
           <el-table-column
@@ -102,7 +108,6 @@
             label="运行SQL"
             prop="settingInfo"
             align="center"
-            width="200px"
           >
             <template slot-scope="scope">
               <el-link type="primary" @click="selectSql(scope.row)">{{
@@ -113,15 +118,12 @@
           <el-table-column
             label="运行参数"
             prop="settingInfo"
-            align="center"
             width="200px"
             :formatter="settingInfoParamsArrFormatter"
           />
           <el-table-column
             label="关联项目"
             prop="projectName"
-            align="center"
-            width="200px"
           />
           <el-table-column
             v-if="false"
@@ -226,10 +228,47 @@ import VueAxios from "vue-axios";
 import AV from "leancloud-storage";
 import { getParamSettingArr } from "@/api/analysis/auditparam";
 import personTree from "@/components/publicpersontree/index";
+import { getDictList } from '@/utils'
+import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
 export default {
-  components: { Pagination, QueryField, runimmediatelycon, personTree },
+  components: { Pagination, QueryField, runimmediatelycon, personTree, flowItem },
+  props: {
+    projectId: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
+      //工作流相关
+      submitData: {
+        versionUuid: "tlLuwUhC",
+        busTableName: "", //表名
+        busDatabaseName: "warehouse", //数据库名
+        busDatabaseType: "", //
+        status: "1", //预警数据状态
+        busdatas: [],
+      },
+      iftodowork:false,
+      flowSet: {
+        opinionList: false,
+        opinion: false,
+        nextStep: true,
+        isSecond: false,
+      },
+      flowItem: {
+        //动态赋值
+        wftype: "clueflow",
+        applyUuid: "",
+        detailUuids: "",
+        applyTitle: "",
+        workEffortId: "",
+        appDataUuid: "",
+        versionUuid: "",
+        isSecond: false,
+        temp1: "",
+      },
+      flowParam: 0,
       tableKey: "errorUuid",
       list: null, // 绑定elementTable的数据
       total: 0,
@@ -238,8 +277,8 @@ export default {
         //最上面模模糊查询所用数据
         { label: "模型名称", name: "modelName", type: "fuzzyText" },
         { label: "运行人", name: "runUserName", type: "fuzzyText" },
-        { label: "运行sql", name: "sql", type: "fuzzyText" },
-        { label: "运行参数", name: "param", type: "fuzzyText" },
+        // { label: "运行sql", name: "sql", type: "fuzzyText" },
+        // { label: "运行参数", name: "param", type: "fuzzyText" },
         { label: "执行时间范围", name: "runStartTime", type: "timePeriod" },
       ],
       formStyle: {
@@ -275,6 +314,21 @@ export default {
       sqlInfo: "",
       sqlInfoDialog: false, //点击模型结果关联按钮控制人员dialog显示
       projectUuid: "", //关联项目的Uuid
+      // 问题属性绑定
+      temp: {
+        problemUuid: null, // 问题UUID
+        problemName: null, // 问题name
+        problemSource: '2', // 问题来源
+        projectUuid: null, // 项目UUID
+        projectName: null, // 项目name
+        isImportant: null, // 是否重要
+        auditPersonUuid: null, // 审计人员UUID
+        auditPersonName: null, // 审计人员name
+        discoveryTime: null, // 问题发现时间
+        problemType: null, // 问题类型
+        problemDetailsList: []// 问题明细List
+      },
+      dialogFormVisible: false
     };
   },
   created() {
@@ -286,7 +340,115 @@ export default {
       this.getLikeList();
     }
   },
+  watch: {
+    // 监听父组件传值projectId
+    projectId() {
+      this.getLikeList()
+      // this.getProjectPerson(this.projectId)
+    },
+  },
   methods: {
+    // 弹框状态修改
+    changedialogFormVisible(val){
+      this.dialogFormVisible = val
+    },
+    //父组件刷新
+    refreshesParent(){
+      // this.getList()
+    },
+    // 提交审核
+    handleAudit(){
+      this.$refs.problempopover.todoaudit()
+    },
+    // 问题添加
+    createProblemData(){
+      this.$refs.problempopover.createData()
+    },
+    // 问题添加前打开弹窗
+    handleProblemCreate(){
+      this.resetTemp()
+      this.temp.projectUuid = this.projectId
+      this.dialogFormVisible = true
+      this.$refs.problempopover.getPreLoadProjectList()
+    },
+    //工作流相关    
+    closeFlowItem(val) {
+      this.iftodowork = val;
+      this.flowParam = 0;
+      this.getLikeList();
+    },
+    //流程发布失败
+    delectData(val) {
+      this.iftodowork = val;
+      var data = {
+        busRelationUuid: this.flowItem.appDataUuid,
+      };
+      this.$axios
+        .post("/ams-clue/busRelation/delete/rollBackData", data)
+        .then((response) => {
+          if (response.data.code == "0") {
+            this.flowItem.appDataUuid = response.data.data.busRelationUuid;
+          }
+        })
+        .catch((error) => {
+          this.common.alertMsg(1, "操作失败！");
+          console.log(error);
+        });
+      this.getLikeList();
+    },
+    saveOpinion() {
+      this.flowItem.versionUuid = this.common.randomString4Len(8);
+      var data = {
+        versionUuid: this.flowItem.versionUuid,
+        busdatas: this.multipleSelection||'',
+        busTableName: this.submitData.busTableName,
+        busDatabaseName: this.submitData.busDatabaseName,
+        busDatabaseType: this.submitData.busDatabaseType,
+      };
+      this.$axios
+        .post("/ams-clue/busRelation/toSubmit", data)
+        .then((response) => {
+          if (response.data.code == "0") {
+            this.flowItem.appDataUuid = response.data.data.busRelationUuid;
+            //修改业务执行状态为0，调用监听，执行更新流程状态操作。
+            this.$store.dispatch("applyInfo/setMstate", "0");
+            this.flowParam = 1;
+          } else {
+            this.iftodowork = false;
+            this.common.alertMsg(1, "操作失败！");
+          }
+        })
+        .catch((error) => {
+          this.iftodowork = false;
+          this.common.alertMsg(1, "操作失败！");
+          console.log(error);
+        });
+    },
+    // 问题表单初始化
+    resetTemp() {
+      this.temp = {
+        problemUuid: null, // 问题UUID
+        problemName: null, // 问题name
+        problemSource: '2', // 问题来源
+        projectUuid: null, // 项目UUID
+        projectName: null, // 项目name
+        isImportant: null, // 是否重要
+        auditPersonUuid: null, // 审计人员UUID
+        auditPersonName: null, // 审计人员name
+        discoveryTime: null, // 问题发现时间
+        problemType: null, // 问题类型
+        problemDetailsList: []// 问题明细List
+      }
+    },
+
+    getSortClass: function(key) {
+      const sort = this.pageQuery.sort
+      return sort === `+${key}` ? 'asc' : 'desc'
+    },
+    // 初始化审计人员
+    resetAudit() {
+      this.temp.auditPersonUuid = null
+    },
     /**
      *解析url上的参数
      */
@@ -337,7 +499,6 @@ export default {
      * modelName是选中的模型的名字
      */
     getResultTables(val, modelName, modelUuid, runStatus, resultSpiltObjects) {
-      debugger
       if (runStatus == 3) {
         var assistTables = [];
         var mainTable = null;
@@ -464,6 +625,7 @@ export default {
      * 查询列表方法
      */
     getLikeList(query) {
+      this.projectUuid = this.projectId
       this.listLoading = true;
       var model = {};
       var runTask = {};
@@ -549,6 +711,19 @@ export default {
       this.pageQuery.sortName = prop;
       this.handleFilter();
     },
+     //生成问题
+    createProblem(){
+      var selectObj = this.$refs.resultTable.selection;
+      if (selectObj.length == 0) {
+        this.$message({
+          type: "info",
+          message: "请选择要生成的模型结果",
+        });
+        return;
+      }else{
+        this.handleProblemCreate()
+      }
+    },
     /**
      * 点击删除按钮触发的事件
      */
@@ -605,6 +780,7 @@ export default {
     dataCountFormatter(row) {
       var tables = row.runResultTables;
       var dataCount = 0;
+      if (tables == null) { return dataCount; }
       for (var i = 0; i < tables.length; i++) {
         if (tables[i].tableType == 1) {
           dataCount = tables[i].dataCount;

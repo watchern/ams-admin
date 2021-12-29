@@ -1,39 +1,79 @@
 <template>
   <div class="app-container">
     <el-row>
-      <el-col v-if="openType !== 'showTable' && openType !== 'tableRegister'" align="right">
+      <el-col
+        v-if="openType !== 'showTable' && openType !== 'tableRegister'"
+        align="right"
+      >
         <!-- <el-button type="primary" size="mini" class="oper-btn iconoper-export" title="上移" @click="upTheCol()" />
         <el-button type="primary" size="mini" class="oper-btn iconoper-import" title="下移" @click="downTheCol()" /> -->
-        <el-button type="primary" size="mini" class="oper-btn add" @click="addCol()" />
-        <el-button type="primary" size="mini" class="oper-btn copy" :disabled="selections.length !== 1" @click="copyCol()" />
-        <el-button type="danger" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="delCol()" />
+        <el-button
+          type="primary"
+          size="mini"
+          class="oper-btn add"
+          @click="addCol()"
+        />
+        <el-button
+          type="primary"
+          size="mini"
+          class="oper-btn copy"
+          :disabled="selections.length !== 1"
+          @click="copyCol()"
+        />
+        <el-button
+          type="primary"
+          size="mini"
+          class="oper-btn delete"
+          :disabled="selections.length === 0"
+          @click="delCol()"
+        />
       </el-col>
     </el-row>
-    <template v-if="openType !== 'showTable' && openType !== 'tableRegister'" class="detail-form">
-      <el-form
-        ref="dataForm"
-        :model="tempTable"
+    <template
+      v-if="openType !== 'showTable' && openType !== 'tableRegister'"
+      class="detail-form"
+    >
+      <el-form ref="dataForm"
+               :model="tempTable"
+               :rules="judgeTbName"
       >
-        <el-form-item label="表名称" prop="tableName">
-          <el-input v-model="tempTable.tableName" />
+        <el-form-item label="表名称" prop="displayTbName">
+          <el-input v-model="tempTable.displayTbName" />
         </el-form-item>
         <!-- <el-form-item v-if="openType !== 'addTable'" label="新建表注释" prop="tableComment">
           <el-input v-model="tempTable.tableComment" />
         </el-form-item> -->
       </el-form>
     </template>
-    <el-table :data="temp" height="500px" @selection-change="handleSelectionChange">
+    <el-table :data="temp" @selection-change="handleSelectionChange" class="detail-form" style="padding: 20px 0 ;overflow: auto;height: 43vh">
       <el-table-column type="selection" width="55" />
-      <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
-        <template slot-scope="scope" show-overflow-tooltip>
-          <el-tooltip :disabled="scope.row.colName.length < 12" effect="dark" :content="scope.row.colName" placement="top">
-            <el-input v-model="scope.row.colName" style="width:90%;" :disabled="openType === 'showTable' || openType === 'tableRegister'" />
+      <el-table-column prop="colName" label="字段名称" show-overflow-tooltip >
+        <template slot-scope="scope" show-overflow-tooltip >
+          <el-tooltip
+            :disabled="scope.row.colName.length < 12"
+            effect="dark"
+            :content="scope.row.colName"
+            placement="top"
+          >
+            <el-input
+              v-model="scope.row.colName"
+              style="width: 90%"
+              :disabled="openType === 'showTable' || openType === 'tableRegister'"
+            />
           </el-tooltip>
         </template>
       </el-table-column>
       <el-table-column prop="dataType" label="数据类型">
         <template slot-scope="scope">
-          <el-select ref="dataType" v-model="scope.row.dataType" :disabled="openType === 'showTable' || openType === 'tableRegister'" filterable style="width:90%" placeholder="请选择数据类型">
+          <el-select
+            ref="dataType"
+            v-model="scope.row.dataType"
+            :disabled="openType === 'showTable' || openType === 'tableRegister'"
+            filterable
+            style="width: 90%"
+            @change="changeDataType(scope.row)"
+            placeholder="请选择数据类型"
+          >
             <el-option
               v-for="item in sqlType"
               :key="item"
@@ -43,14 +83,31 @@
           </el-select>
         </template>
       </el-table-column>
-      <el-table-column prop="dataLength" label="数据长度" show-overflow-tooltip>
+      <!--        -->
+      <el-table-column
+        label="数据长度（精度）"
+        prop="dataLengthText"
+        show-overflow-tooltip>
         <template slot-scope="scope" show-overflow-tooltip>
-          <el-input v-model="scope.row.dataLength" style="width:90%;" :disabled="openType === 'showTable' || openType === 'tableRegister'" />
+        <!--   v-model 需要根据是否是decimal展示长度+精度 用到了双三目，有点难看
+            @focus="clickVal(scope.row)"-->
+          <el-input
+            @change="isValidColumn(scope.row)"
+            v-model="scope.row.dataLengthText"
+            style="width: 90%"
+            :disabled="!scope.row.enableDataLength"
+          />
         </template>
       </el-table-column>
-      <el-table-column prop="isNullable" label="是否为空" width="80px">
+      <el-table-column label="是否为空" width="120px">
         <template slot-scope="scope">
-          <el-radio v-model="scope.row.isNullable" :disabled="openType === 'showTable' || openType === 'tableRegister'" :label="1" @click.native.prevent="clickitem(scope.$index,1)"><span /></el-radio>
+          <el-radio
+            v-model="scope.row.isNullable"
+            :disabled="openType === 'showTable' || openType === 'tableRegister'"
+            :label="1"
+            @click.native.prevent="clickitem(scope.$index, 1)"
+            ><span
+          /></el-radio>
         </template>
       </el-table-column>
       <!-- <el-table-column v-if="openType !== 'addTable'" prop="colComment" label="注释" show-overflow-tooltip>
@@ -63,11 +120,12 @@
 </template>
 
 <script>
-import { getSqlType, getColsInfo } from '@/api/data/table-info'
-import { addTable, updateTable } from '@/api/data/directory'
+import { getSqlType, getColsInfo } from "@/api/data/table-info";
+import { addTable, updateTable } from "@/api/data/directory";
+import _ from "lodash"
 export default {
   // eslint-disable-next-line vue/require-prop-types
-  props: ['tableId', 'openType', 'forderId'],
+  props: ["tableId", "openType", "forderId", "getTree"],
   data() {
     return {
       copyColObj: {},
@@ -76,42 +134,79 @@ export default {
       temp: [],
       tempIndex: 0,
       tempColumn: [],
-      oldName: '',
+      oldName: "",
       show: false,
-      tempTable: { tableName: '' }
+      tempTable: { displayTbName: "" },
+      currColType: '',
+      dataTypeRules: {},
+      disableEditColumn: false,
+      re:[],
+      judgeTbName:{
+        displayTbName:[
+          { required: true, message: "请填写导入表名称", trigger: "change" },
+          {
+            type: 'string',
+            pattern: /^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/,
+            message: '请输入合法表名称',
+          },{
+            type: 'string',
+            pattern: /^[\u4E00-\u9FA5\w]*$/,
+            message: '请输入合法表名称',
+          },
+        ],
+
+      }
     }
+
   },
   created() {
-    this.initTable(this.tableId)
+    this.dataTypeRules = this.CommonUtil.DataTypeRules;
+    this.dataTypeRules = _.DataTypeRules;
+    this.initTable(this.tableId);
+  },
+  watch: {
+    openType: {
+      handler(newOpenType) {
+        this.disableEditColumn = newOpenType === 'showTable' || newOpenType === 'tableRegister'
+      }
+    }
+
   },
   methods: {
+    changeDataType(row){
+      this.$emit("changeDataType", row);
+    },
+    isValidColumn(row) {
+      return this.$emit("isValidColumn", row);
+    },
     initTable(tableId) {
-      getSqlType().then(resp => {
-        this.sqlType = resp.data
-      })
-      if (this.openType !== 'addTable') {
-        getColsInfo(tableId).then(resp => {
+      getSqlType().then((resp) => {
+        this.sqlType = resp.data;
+      });
+      if (this.openType !== "addTable") {
+        getColsInfo(tableId).then((resp) => {
           // 返回两个新的数组
-          this.oldName = resp.data.displayTbName
-          this.tempTable.tableName = resp.data.displayTbName
-          resp.data.colMetas.forEach(e => {
-            this.tempIndex++
-            e.tempIndex = this.tempIndex
+          this.oldName = resp.data.displayTbName;
+          this.tempTable.displayTbName = resp.data.displayTbName;
+          this.temp = resp.data.colMetas;
+          this.temp.forEach((row) => {
+            this.$set(row, "tempIndex", ++this.tempIndex);
+            this.changeDataType(row);
           })
-          this.tempColumn = resp.data.colMetas.slice()
-          this.temp = JSON.parse(JSON.stringify(resp.data.colMetas))
-        })
+        });
       }
     },
     handleSelectionChange(val) {
-      this.selections = val
+      this.selections = val;
     },
     upTheCol() {
-      var rulObj = Object.assign({}, this.selections[0]) // copy obj
-      var index = this.temp.findIndex(v => JSON.stringify(v) === JSON.stringify(rulObj))
-      this.temp.splice(index - 1, 0, rulObj)
-      this.temp.splice(index + 1, 1)
-      this.selections = rulObj
+      var rulObj = Object.assign({}, this.selections[0]); // copy obj
+      var index = this.temp.findIndex(
+        (v) => JSON.stringify(v) === JSON.stringify(rulObj)
+      );
+      this.temp.splice(index - 1, 0, rulObj);
+      this.temp.splice(index + 1, 1);
+      this.selections = rulObj;
       // var rulObj = Object.assign({}, this.selections[0]) // copy obj
       // var index = this.temp.findIndex(v => JSON.stringify(v) === JSON.stringify(rulObj))
       // if (this.temp.length > 1 && index !== 0) {
@@ -121,11 +216,13 @@ export default {
       // }
     },
     downTheCol() {
-      var rulObj = Object.assign({}, this.selections[0]) // copy obj
-      var index = this.temp.findIndex(v => JSON.stringify(v) === JSON.stringify(rulObj))
-      this.temp.splice(index - 1, 0, rulObj)
-      this.temp.splice(index + 1, 1)
-      this.selections = rulObj
+      var rulObj = Object.assign({}, this.selections[0]); // copy obj
+      var index = this.temp.findIndex(
+        (v) => JSON.stringify(v) === JSON.stringify(rulObj)
+      );
+      this.temp.splice(index - 1, 0, rulObj);
+      this.temp.splice(index + 1, 1);
+      this.selections = rulObj;
       // var rulObj = Object.assign({}, this.selections[0]) // copy obj
       // var index = this.temp.findIndex(v => JSON.stringify(v) === JSON.stringify(rulObj))
       // if (this.temp.length > 1 && index !== this.temp.length - 1) {
@@ -135,130 +232,199 @@ export default {
       // }
     },
     addCol() {
-      var newObj = {} // copy obj
-      newObj.colName = ''
-      newObj.dataType = 'VARCHAR2'
-      newObj.dataLength = ''
-      newObj.isNullable = 0
-      this.tempIndex++
-      newObj.tempIndex = this.tempIndex
-      newObj.colComment = ''
-      this.temp.splice(this.temp.length, 0, newObj)
+      var newObj = {}; // copy obj
+      newObj.colName = "";
+      newObj.dataType = "";
+      newObj.dataLengthText = "";
+      newObj.isNullable = 0;
+      this.tempIndex++;
+      newObj.tempIndex = this.tempIndex;
+      newObj.colComment = "";
+      this.temp.splice(this.temp.length, 0, newObj);
     },
     delCol() {
       this.selections.forEach((r, i) => {
-        var index = this.temp.findIndex(v => JSON.stringify(v) === JSON.stringify(r))
-        this.temp.splice(index, 1)
-      })
+        var index = this.temp.findIndex(
+          (v) => JSON.stringify(v) === JSON.stringify(r)
+        );
+        this.temp.splice(index, 1);
+      });
     },
     copyCol() {
-      this.copyColObj = Object.assign({}, this.selections[0])
-      this.temp.splice(this.temp.length, 0, this.copyColObj)
+      this.copyColObj = Object.assign({}, this.selections[0]);
+      this.temp.splice(this.temp.length, 0, this.copyColObj);
     },
     clickitem(row, e) {
       // 当点击已经选中的把 isNullable 置0，就是取消选中，并返回
       if (this.temp[row].isNullable === e) {
-        this.temp[row].isNullable = 0
-        return
+        this.temp[row].isNullable = 0;
+        return;
       }
       // 不是选中，选中当前点击 Radio
-      this.temp[row].isNullable = e
+      this.temp[row].isNullable = e;
     },
     saveTableInfo() {
-      if (this.openType === 'addTable') {
-        this.saveTable()
+      if (this.openType === "addTable") {
+        this.saveTable();
       } else {
-        this.updateTable()
+        this.updateTable();
+      }
+    },
+///^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/
+    judegeTable(val){
+      const judege=(/^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/ && /^[\u4E00-\u9FA5\w]*$/)
+      if (judege.test(val)){
+        return true;
+        }else{
+        return false;
       }
     },
     // 保存基本信息
     saveTable() {
       for (let index = 0; index < this.temp.length; index++) {
-        const r = this.temp[index]
-        if (r.dataLength !== '') {
-          r.dataLength = parseInt(r.dataLength)
+        //先判空
+        let obj = this.temp[index]
+        var a =this.judegeTable(obj.colName)
+        if(this.CommonUtil.isBlank(obj.colName)){
+          this.$message.error("请完善建表信息，字段名称不能为空");
+          return
+        }else if(this.CommonUtil.isBlank(obj.dataType)){
+          this.$message.error("请完善建表信息，数据类型不能为空");
+          return
+        } if (!a){
+          this.$message.error("请完善建表信息，字段名称不能有特殊符号");
+          return
+        }
+        //再判合法
+        if (!this.isValidColumn(obj)) {
+          return;
         }
       }
-      const addObj = {}
-      addObj.colMetas = this.temp
-      addObj.folderUuid = this.forderId
-      addObj.tbName = this.tempTable.tableName
-      addTable(addObj).then((res) => {
-        if (res.data.status === '500') {
-          this.$notify({
-            title: '失败',
-            message: res.data.msg,
-            type: 'error',
-            duration: 2000,
-            position: 'bottom-right'
-          })
-        } else {
-          this.$notify({
-            title: '成功',
-            message: '新建表成功！',
-            type: 'success',
-            duration: 2000,
-            position: 'bottom-right'
-          })
-          var childData = {
-            id: res.data.successTable.tableMetaUuid,
-            label: res.data.successTable.displayTbName,
-            pid: res.data.successTable.folderUuid,
-            type: 'table',
-            extMap: {
-              accessType: ['FETCH_TABLE_DATA', 'BASIC_PRIV'],
-              createTime: res.data.successTable.createTime,
-              tableName: res.data.successTable.tbName,
-              tbSizeByte: 0,
-              tblType: 'T'
-            }
+      const addObj = {};
+      addObj.colMetas = this.temp;
+      addObj.folderUuid = this.forderId;
+      addObj.displayTbName = this.tempTable.displayTbName;
+      addTable(addObj)
+        .then((res) => {
+          if (res.data.status === "500") {
+            this.$notify({
+              title: "失败",
+              message: res.data.msg,
+              type: "error",
+              duration: 2000,
+              position: "bottom-right",
+            });
+          } else {
+            this.$notify({
+              title: "成功",
+              message: "新建表成功！",
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+            var childData = {
+              id: res.data.successTable.tableMetaUuid,
+              label: res.data.successTable.displayTbName,
+              pid: res.data.successTable.folderUuid,
+              type: "table",
+              extMap: {
+                accessType: ["FETCH_TABLE_DATA", "BASIC_PRIV"],
+                createTime: res.data.successTable.createTime,
+                displayTbName: res.data.successTable.displayTbName,
+                tableName: res.data.successTable.displayTbName,
+                tbSizeByte: 0,
+                tblType: "T",
+              },
+            };
+            // 添加节点
+            this.$emit("table-show", this.show);
+            this.$emit("append-node", childData, this.clickNode);
+            this.$emit("saveTableInfoHelp"); 
           }
-          // 添加节点
-          this.$emit('table-show', this.show)
-          this.$emit('append-node', childData, this.clickNode)
-        }
-      }).catch((result) => {
-      })
+        })
+        .catch((result) => {});
     },
     updateTable() {
-      const newTableObj = {}
-      newTableObj.tableMetaUuid = this.tableId
-      newTableObj.colMetas = this.temp
-      newTableObj.tbName = this.tempTable.tableName
-      newTableObj.tbComment = this.tempTable.tbComment
-      const oldTableObj = {}
-      oldTableObj.tableMetaUuid = this.tableId
-      oldTableObj.colMetas = this.tempColumn
-      oldTableObj.tbName = this.oldName
-      oldTableObj.tbComment = this.tempTable.tbComment
-      var obj = {}
-      obj.newTableObj = newTableObj
-      obj.oldTableObj = oldTableObj
-      updateTable(obj).then((res) => {
-        if (res.data.status === '500') {
-          this.$message({ type: 'info', message: '修改失败！' + res.data.msg })
-        } else {
-          // 修改成功后重新给页面复制
-          this.oldName = res.data.sussessTable.tbName
-          this.tempTable.tableName = res.data.sussessTable.tbName
-          res.data.sussessTable.colMetas.forEach(e => {
-            this.tempIndex = 0
-            this.tempIndex++
-            e.tempIndex = this.tempIndex
-          })
-          this.tempColumn = res.data.sussessTable.colMetas.slice()
-          this.temp = JSON.parse(JSON.stringify(res.data.sussessTable.colMetas))
-          this.$notify({
-            title: '成功',
-            message: '修改表结构成功',
-            type: 'success',
-            duration: 2000,
-            position: 'bottom-right'
-          })
+      for (let index = 0; index < this.temp.length; index++) {
+        //先判空
+        let obj = this.temp[index]
+        var a =this.judegeTable(obj.colName)
+        if(this.CommonUtil.isBlank(obj.colName)){
+          this.$message.error("请完善建表信息，字段名称不能为空");
+          return
+        }else if(this.CommonUtil.isBlank(obj.dataType)){
+          this.$message.error("请完善建表信息，数据类型不能为空");
+          return
+        } if (!a){
+          this.$message.error("请完善建表信息，字段名称不能有特殊符号");
+          return
         }
-        this.$emit('table-show', this.show)
-      }).catch((result) => {
-      })
+        //再判合法
+        if (!this.isValidColumn(obj)) {
+          return;
+        }
+      }
+      const newTableObj = {};
+      newTableObj.tableMetaUuid = this.tableId;
+      newTableObj.colMetas = this.temp;
+      newTableObj.displayTbName = this.tempTable.displayTbName;
+      newTableObj.tbComment = this.tempTable.tbComment;
+      // const oldTableObj = {};
+      // oldTableObj.tableMetaUuid = this.tableId;
+      // oldTableObj.colMetas = this.tempColumn;
+      // oldTableObj.displayTbName = this.oldName;
+      // oldTableObj.tbComment = this.tempTable.tbComment;
+      // var obj = {};
+      for (let i = 0; i < newTableObj.colMetas.length; i++) {
+
+        newTableObj.colMetas[i].dataLength = null;
+        newTableObj.colMetas[i].colPrecision = null;
+        if (this.CommonUtil.isBlank(newTableObj.colMetas[i].colName) || this.CommonUtil.isBlank(newTableObj.colMetas[i].dataType)) {
+          this.$message.error("请完善数据信息!");
+          return;
+        }
+        if (!this.isValidColumn(newTableObj.colMetas[i])) {
+          return;
+        }
+      }
+      // obj.newTableObj = newTableObj;
+      // obj.oldTableObj = oldTableObj;
+
+      // updateTable(obj)
+      updateTable(newTableObj)
+        .then((res) => {
+          if (res.data.status === "500") {
+            this.$message({
+              type: "info",
+              message: "修改失败！" + res.data.msg,
+            });
+          } else {
+            // 修改成功后重新给页面赋值
+            this.oldName = res.data.sussessTable.displayTbName;
+            this.tempTable.displayTbName = res.data.sussessTable.displayTbName;
+            res.data.sussessTable.colMetas.forEach((e) => {
+              this.tempIndex = 0;
+              this.tempIndex++;
+              e.tempIndex = this.tempIndex;
+            });
+            this.tempColumn = res.data.sussessTable.colMetas.slice();
+            this.temp = JSON.parse(
+              JSON.stringify(res.data.sussessTable.colMetas)
+            );
+            this.$notify({
+              title: "成功",
+              message: "修改表结构成功",
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+          }
+          this.$emit("table-show", this.show);
+          this.$emit("saveTableInfoHelp"); 
+        })
+        .catch((result) => {
+          console.error(result)
+        });
       // var newColumn = this.arrRemoveMix(this.temp, this.tempColumn)
       // var oldColumn = this.arrRemoveMix(this.tempColumn, this.temp)
       // console.log(newColumn)
@@ -334,7 +500,7 @@ export default {
       //   })
       // }).catch((result) => {
       // })
-    }
+    },
     // arrRemoveMix(arr1, arr2) {
     //   return this.filterData(this.arrayDifference(arr1, arr2))
     // },
@@ -374,5 +540,6 @@ export default {
     //   }
     //   return true
     // }
-  }}
+  },
+};
 </script>

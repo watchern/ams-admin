@@ -1,5 +1,5 @@
 <template>
-  <div class="query-field" :style="{position: componentMisalignment?'relative':'absolute'}">
+  <div class="query-field" :class="skinMisalignment?(componentMisalignment?'re-or':'ab-or'):'re-or'">
     <el-form :inline="true" :model="query" label-position="bottom">
       <div class="switch-btn">
         <img :src="this.switchImg" @click="onSwitchWith">
@@ -7,14 +7,14 @@
 
       <el-form-item v-for="fd in formData" v-if="searchBar == '0'" :label="fd.label">
         <el-input v-if="fd.type==='text'" v-model="query[fd.name]" :style="textStyle"/>
-        <el-input v-if="fd.type==='fuzzyText'" v-model="query[fd.name]" placeholder="模糊查询" :style="textStyle"/>
+        <el-input v-if="fd.type==='fuzzyText'" v-model="query[fd.name]" placeholder="" :style="textStyle"/>
         <el-select v-if="fd.type==='select'" v-model="query[fd.name]" :style="selectStyle">
           <el-option label="全部" value="" />
           <el-option v-for="opt in fd.data" :label="opt.name" :value="opt.value" />
         </el-select>
         <template v-if="fd.type==='timePeriod'">
-          <el-date-picker v-model="query[fd.name+'Start']" type="date" placeholder="开始时间" :style="timeStyle"/>
-          <el-date-picker v-model="query[fd.name+'End']" type="date" placeholder="结束时间" :style="timeStyle"/>
+          <el-date-picker v-model="query[fd.name+'Start']" :type="dateType" placeholder="开始时间" :style="timeStyle"/>
+          <el-date-picker v-model="query[fd.name+'End']" :type="dateType" placeholder="结束时间" :style="timeStyle"/>
         </template>
       </el-form-item>
 
@@ -43,17 +43,9 @@ export default {
       type: Array,
       default: []
     },
-    textWidth:{
-      type: Number,
-      default: 163
-    },
-    selectWidth:{
-      type: Number,
-      default: 163
-    },
-    timePeriodWidth:{
-      type: Number,
-      default: 220
+    dateType:{
+      type: String,
+      default: 'date'
     }
   },
   data() {
@@ -77,20 +69,21 @@ export default {
       screenWidth: document.body.clientWidth,
       // 是否需要错行显示
       componentMisalignment: false,
-      textWidthZ:0,
-      selectWidthZ:0,
-      timePeriodWidthZ:0
+      skinMisalignment: true,
+      textWidth:163,
+      selectWidth:163,
+      timePeriodWidth:220
     }
   },
   computed: {
     textStyle() {
-      return `width: ${this.textWidthZ}px`
+      return `width: ${this.textWidth}px`
     },
     selectStyle() {
-      return `width: ${this.selectWidthZ}px`
+      return `width: ${this.selectWidth}px`
     },
     timeStyle() {
-      return `width: ${this.timePeriodWidthZ}px`
+      return `width: ${this.timePeriodWidth}px`
     }
   },
   watch: {
@@ -112,7 +105,7 @@ export default {
           setTimeout(function(){
             that.timer = false;
             that.contentWidthChange();//执行自己的逻辑
-          },400)
+          },1000/60)
         }
       },
       immediate:true,
@@ -130,9 +123,11 @@ export default {
         that.screenWidth= window.screenWidth;
       })();
     })
-    this.textWidthZ = this.textWidth
-    this.selectWidthZ = this.selectWidth
-    this.timePeriodWidthZ = this.timePeriodWidth
+    if (process.env.VUE_APP_BASE_SKIN === 'default') {
+      this.skinMisalignment = true
+    } else {
+      this.skinMisalignment = false
+    }
   },
   methods: {
     getData() {
@@ -242,26 +237,26 @@ export default {
         }
       }
       // 判断应该减少宽度的情况
-      if (this.screenWidth < 1920 && widthCount >= 4) {
+      if (this.screenWidth < 1920 && widthCount >= 3) {
         // 如果减少宽度仍旧不够 则放开限制 自动换行
         if (this.screenWidth >= 1400 && this.screenWidth< 1920) {
           let inPutWords = (30 * (1920 - this.screenWidth) / 520).toFixed(1)
-          this.textWidthZ = 163 - inPutWords
-          this.selectWidthZ = 163 - inPutWords
+          this.textWidth = 153 - inPutWords
+          this.selectWidth = 153 - inPutWords
           let inPutTimes = (85 * (1920 - this.screenWidth) / 520).toFixed(1)
-          this.timePeriodWidthZ = 220 - inPutTimes
+          this.timePeriodWidth = 200 - inPutTimes
           this.componentMisalignment = false
         } else {
-          this.textWidthZ = 130
-          this.selectWidthZ = 130
-          this.timePeriodWidthZ = 135
+          this.textWidth = 90
+          this.selectWidth = 100
+          this.timePeriodWidth = 125
           this.componentMisalignment = true
         }
       } else {
         // 宽度足够则恢复原设定
-        this.textWidthZ = 163
-        this.selectWidthZ = 163
-        this.timePeriodWidthZ = 220
+        this.textWidth = 153
+        this.selectWidth = 153
+        this.timePeriodWidth = 200
         this.componentMisalignment = false
       }
     }
@@ -286,7 +281,7 @@ export default {
     vertical-align: top;
   }
   .full-search{
-    float: right;
+    float: left;
   }
   .switch-btn{
     margin-top:3px;
@@ -307,5 +302,11 @@ export default {
   }
   .someimgin:hover{
     background: #ececec;
+  }
+  .ab-or{
+    position:absolute;
+  }
+  .re-or{
+    position:relative;
   }
 </style>

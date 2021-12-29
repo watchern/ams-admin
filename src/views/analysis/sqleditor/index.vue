@@ -27,7 +27,7 @@
                             <el-button
                                 type="primary"
                                 size="small"
-                                class="oper-btn clean"
+                                class="oper-btn format btn-width-max"
                                 @click="sqlFormat"
                                 style="margin-left:18px"
                             />
@@ -40,13 +40,13 @@
                             <el-button
                                 type="primary"
                                 size="small"
-                                class="oper-btn folder-1"
+                                class="oper-btn opensql btn-width-md"
                                 @click="openSqlDraftList"
                             />
                             <el-button
                                 type="primary"
                                 size="small"
-                                class="oper-btn sqlcheck"
+                                class="oper-btn sqlcheck btn-width-md"
                                 @click="getColumnSqlInfo"
                             />
                             <el-dropdown style="margin-left:10px">
@@ -68,15 +68,15 @@
                                 <el-button
                                     type="primary"
                                     size="small"
-                                    class="oper-btn maintain"
+                                    class="oper-btn maintain btn-width-md"
                                 />
                                 <el-dropdown-menu slot="dropdown">
-                                    <el-dropdown-item
+                                    <!-- <el-dropdown-item
                                         @click.native="findAndReplace(2)"
                                     >查找</el-dropdown-item>
                                     <el-dropdown-item
                                         @click.native="findAndReplace(1)"
-                                    >替换</el-dropdown-item>
+                                    >替换</el-dropdown-item> -->
                                     <el-dropdown-item
                                         @click.native="caseTransformation(1)"
                                     >转大写</el-dropdown-item>
@@ -91,7 +91,7 @@
                                     >取消注释</el-dropdown-item>
                                 </el-dropdown-menu>
                             </el-dropdown>
-                            <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px;margin-left: 15px;cursor: pointer;" @click="modelResultSavePathDialog = true">{{ path }}</label>
+                            <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px;margin-left: 15px;cursor: pointer;" @click="modelResultSavePathDialog = true">{{ path }} <i class="el-icon-edit" style="font-size:16px;"></i></label>
                         </el-col>
                     </el-row>
                     <div
@@ -113,7 +113,7 @@
                 <div id="bottomPart" lay-filter="result-data">
                     <div id="maxOpen" class="max-size">
                         <div id="iconImg" class="iconImg" alt="最大化" @click="maxOpen" />
-                        <div id="iconImg-huifu" class="iconImg" @click="maxOpen" />
+                        <div id="iconImg-huifu" class="iconImg" @click="maxOpen"/>
                         <!-- <div id="iconImg-save" class="iconImg" @click="outTable"></div>
                         <div id="iconImg-table" class="iconImg"></div> -->
                     </div>
@@ -123,7 +123,7 @@
                             :key="result.id"
                             :pre-value="currentExecuteSQL"
                             use-type="sqlEditor"
-                            style="width: 101.5%;height:450px;"
+                            style="width: 100%;"
                             :chartModelUuid='modelUuid'
                             :modelId='modelUuid'
                             id="childTabs1"
@@ -140,7 +140,7 @@
                   </div>
                 </div>
             </div>
-            <div id="vertical"> <div /> </div>
+            <div id="vertical"> <i class="el-icon-d-caret skin-textColor"/> </div>
             <input
                 id="personId"
                 type="hidden"
@@ -278,7 +278,7 @@
         initTableTree,
         initFunctionTree,
         initEvent,
-        initParamTree,
+        initParamTreeNew,
         tableTreeSearch,
         paramTreeSearch,
         functionTreeSearch,
@@ -492,7 +492,7 @@
                   'ws://localhost:8086/analysis/websocket?' +
                   this.$store.getters.personuuid*/
                 const webSocketPath =
-                    process.env.VUE_APP_ANALYSIS_WEB_SOCKET +
+                    this.AmsWebsocket.getWSBaseUrl(this.AmsModules.ANALYSIS) +
                     this.$store.getters.personuuid +
                     'sqleditor'+this.pushUuid
                 // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
@@ -581,7 +581,7 @@
                 initFunctionTree()
                 initVariable()
                 initEvent()
-                initParamTree()
+                initParamTreeNew()
                 this.executeLoading = true
                 this.loadText = '正在初始化数据表...'
                 initTableTip(this.dataUserId,this.sceneCode1).then((result) => {
@@ -613,7 +613,9 @@
                             if (result.data == null) {
                                 // 证明当前登录人没有任何执行路径记录 直接给一个默认的  从数据模块那面取  暂时没有 因为数据那面让写死  数据组长-张闯
                                 this.tempPath = '根路径'
+                                // this.tempPath = ''
                                 this.tempId = this.$store.getters.datauserid;
+                                // this.tempId = ''
                                 this.path = '当前执行SQL保存路径:' + this.tempPath
                                 this.modelResultSavePathId = this.tempId
                             } else {
@@ -834,6 +836,7 @@
             executeSQL() {
                 if (this.tempId === '') {
                     this.$message({ type: 'info', message: '请选择SQL执行保存路径!' })
+                    this.modelResultSavePathDialog = true
                     return
                 }
                 const result = getSql()
@@ -874,6 +877,14 @@
                             lastSqlIndex = result.data.lastSqlIndex
                             this.executeLoading = false
                             this.currentExecuteSQL = result.data.executeSQLList
+                            if (this.currentExecuteSQL !=null && this.currentExecuteSQL.length > 0 && lastSqlIndex>=0) {
+                                for (var i=0; i<this.currentExecuteSQL.length; i++) {
+                                    if (this.currentExecuteSQL[i].type === null) {
+                                        // 等于lastSqlIndex 标记主表，否则辅表
+                                        this.currentExecuteSQL[i].type = i === lastSqlIndex ? "1" : "2"
+                                    }
+                                }
+                            }
                             this.modelOriginalTable = result.data.tables
                             this.createTreeNode = result.data.treeNodeInfo
                             this.resultShow.push({ id: 1 })
@@ -1071,7 +1082,7 @@
         cursor: pointer;
     }
     #rightPart {
-      /*width: 69.6732%;*/
+        /*width: 69.6732%;*/
         width: 84.82%;
         position: relative;
         padding: 0;
@@ -1158,7 +1169,13 @@
         z-index: 200;
         top:0;
     }
-
+    #vertical i{
+      position: relative;
+      top: 50%;
+      left: -8px;
+      font-size: 20px;
+      transform:rotate(90deg);
+    }
     .el-aside{
         /* margin-bottom: 10px; */
     }
@@ -1218,14 +1235,15 @@
     }
 
     .data-show{
-        width: calc(100% - 30px);
+        width: 100%;
         height: 100%;
+        background: #fff;
     }
 
     .left-part{
         overflow-x: hidden;
         overflow-y: auto;
-        width: 14.66666667%;
+         width: 14.66666667%;
         /*width: 29.6732%;*/
         float: left;
         height: 100%;
@@ -1273,4 +1291,3 @@
       margin: 5px 0 10px 0;
     }
 </style>
-

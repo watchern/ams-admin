@@ -2,14 +2,19 @@
     <div style="width: 100%;">
         <el-row style="padding-top: 10px;">
             <el-col align="right">
-                <el-button type="primary" v-show="nodeData != null && nodeData.nodeInfo.optType !== 'union' && nodeData.nodeInfo.optType !== 'delRepeat'" class="oper-btn customfield" @click="customizeColumn('1')" title="自定义字段" style="line-height: normal;"/>
+                <el-button type="primary" v-show="nodeData != null && nodeData.nodeInfo.optType !== 'union' && nodeData.nodeInfo.optType !== 'delRepeat'" class="oper-btn customfield btn-width-max" @click="customizeColumn('1')" title="自定义字段" style="line-height: normal;"/>
                 <el-button type="primary" class="oper-btn help" @click="helpDialogVisible = true" title="说明" style="line-height: normal;"/>
             </el-col>
         </el-row>
+        <!-- 图形化展示 -->
         <el-table :data="items" border style="width: 100%;" height="526" ref="outPutTable">
             <el-table-column type="index" label="编号" width="60" align="center" :resizable="false"/>
             <el-table-column label="上一节点名称" width="200" :show-overflow-tooltip="true" prop="rtn" header-align="center" :resizable="false"></el-table-column>
-            <el-table-column label="字段名称" width="260" :show-overflow-tooltip="true" prop="curColumnName" header-align="center" :resizable="false"></el-table-column>
+            <el-table-column label="字段名称" width="260" :show-overflow-tooltip="true" header-align="center"  :resizable="false">
+                <template slot-scope="scope">
+                    {{scope.row.columnInfo.newColumnName}}
+                </template>
+            </el-table-column>
             <el-table-column label="输出字段名称" width="240" header-align="center" :resizable="false">
                 <template slot-scope="scope">
                     <el-input v-model="scope.row.disColumnName"></el-input>
@@ -113,7 +118,8 @@
                     if (data && data.length > 0) {
                         for (var i = 0; i < data.length; i++) {
                             if(hasMoreTable){//数据融合节点
-                                if (data[i].value === this.items[j].curColumnName && data[i].nodeId === nodeId && data[i].nullNodeId === nullNodeId) {
+                            //
+                                if (data[i].value === this.items[j].disColumnName && data[i].nodeId === nodeId && data[i].nullNodeId === nullNodeId) {
                                     this.items[j].checked = true
                                     num++
                                     break
@@ -167,7 +173,7 @@
                         const index = parseInt($(this).find("td:eq(0)>div>div").html()) - 1
                         var checked = $this.items[index].checked
                         var this_column = {...{},...$this.items[index].columnInfo}
-                        var old_colum_name = $this.items[index].curColumnName// 之前的newColumnName
+                        var old_colum_name = $this.items[index].columnInfo.columnName// 之前的newColumnName
                         if (checked) {
                             this_column.isOutputColumn = 1
                         } else {

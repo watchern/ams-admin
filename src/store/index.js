@@ -7,6 +7,8 @@ import datasource from './modules/datasource'
 import projects from './modules/projects'
 import monitor from './modules/monitor'
 import resource from './modules/resource'
+import applyInfo from 'ams-starflow-vue/src/store/modules/applyInfo'
+
 
 Vue.use(Vuex)
 
@@ -20,7 +22,6 @@ const modules = modulesFiles.keys().reduce((modules, modulePath) => {
   const moduleName = modulePath.replace(/^\.\/(.*)\.\w+$/, '$1')
   const value = modulesFiles(modulePath)
   modules[moduleName] = value.default
-
   // 把dag用到的store加入到modules中
   modules['dag'] = dag
   modules['security'] = security
@@ -28,12 +29,13 @@ const modules = modulesFiles.keys().reduce((modules, modulePath) => {
   modules['projects'] = projects
   modules['monitor'] = monitor
   modules['resource'] = resource
+  modules['applyInfo'] = applyInfo
   return modules
 }, {})
 
 const store = new Vuex.Store({
-  modules,
-  getters
+  getters,
+  modules
 })
 
 export default store

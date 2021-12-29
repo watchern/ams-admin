@@ -1,17 +1,19 @@
 <template>
-  <div class="app-container"  v-loading="loading" :element-loading-text="loadText">
+  <div class="app-container" ref="bigLoading" >
+<!--    v-loading="loading" :element-loading-text="loadText"-->
     <!--模型分类树-->
     <el-container>
       <el-aside class="tree-side">
-        <ModelFolderTree ref="modelFolderTree" :power="power" @refreshModelList="refreshModelList" :spaceFolderName="thisFolderName" :spaceFolderId="thisDataUserId"/>
+        <ModelFolderTree ref="modelFolderTree" :power="power" @refreshModelList="refreshModelList" @refreshModels="refreshModels" :spaceFolderName="thisFolderName" :spaceFolderId="thisDataUserId"/>
       </el-aside>
-      <ModelListTable :isAuditWarring="isAuditWarring" :data-user-id='thisDataUserId' :scene-code='thisSceneCode' ref="modelListTable" :power="power" @loadingSet="loadingSet" @refreshTree="refreshTree" />
+      <ModelListTable :isAuditWarning="isAuditWarning" :data-user-id='thisDataUserId' :scene-code='thisSceneCode' ref="modelListTable" :power="power" @loadingSet="loadingSet" @refreshTree="refreshTree"/>
     </el-container>
   </div>
 </template>
 <script>
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 import ModelListTable from '@/views/analysis/auditmodel/modellisttable'
+import {changeNodeIcon} from "../../../api/graphtool/js/common";
 export default {
   components: { ModelFolderTree, ModelListTable },
   computed:{
@@ -28,7 +30,7 @@ export default {
       return this.folderName ? this.folderName:'个人模型';
     }
   },
-  props:['power','dataUserId','sceneCode','isAuditWarring','folderName'],
+  props:['power','dataUserId','sceneCode','isAuditWarning','folderName'],
   data() {
     return {
       //dataSpaceName: sessionStorage.getItem("dataUserName"),
@@ -39,11 +41,19 @@ export default {
   },
   methods: {
     /**
+     * 选择模型
+     * @param data 树节点数据
+     */
+    refreshModels(data) {
+      this.$refs.modelListTable.SelectNode(data)
+    },
+    /**
      * 刷新模型列表
      * @param data 树节点数据
      */
     refreshModelList(data) {
-      var query = { modelFolderUuid: data.id }
+      let query = {}
+      data.type == "model"? query = { modelUuid: data.id } : query = { modelFolderUuid: data.id }
       this.$refs.modelListTable.getList(query)
       this.$refs.modelListTable.setSelectTreeNode(data)
     },
@@ -54,14 +64,27 @@ export default {
       this.$refs.modelFolderTree.getModelFolder()
     },
     /**
+     * 刷新模型分类树
+     */
+    getRootFolderUuid(id) {
+      return this.$refs.modelFolderTree.getRootFolderUuid(id)
+    },
+    /**
      * 获取模型列表选中的数据
      */
     getModelListCheckData(){
       return this.$refs.modelListTable.getModelListCheckData()
     },
     loadingSet(isShow,loadText){
-      this.loading = isShow
-      this.loadText = loadText;
+      if(isShow){
+        let _this = this
+        this.bigLoading = $(this.$refs.bigLoading).mLoading({ 'text': loadText, 'hasCancel': true, 'hasTime': true, "callback" : function () {
+            _this.bigLoading.destroy()
+            _this.$refs.modelListTable.canceltab()
+          }})
+      }else {
+        this.bigLoading.destroy()
+      }
     }
   }
 }

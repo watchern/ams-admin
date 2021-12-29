@@ -2,7 +2,7 @@
   <div class="app-container" v-loading="loading" :element-loading-text="loadText">
     <el-container class="el-container">
       <div class="detail-form">
-        <el-form :model="thresholdValue"  ref="basicInfoForm" :rules="basicInfoRules">
+        <el-form :model="thresholdValue"  ref="basicInfoForm" :rules="basicInfoRules" :disabled="isFormEdit">
           <el-row>
             <el-col :span="23">
               <el-form-item label="阈值名称" prop="thresholdValueName">
@@ -11,9 +11,9 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-col :span="20">
+            <el-col :span="23">
                 <el-form-item label="阈值类型" prop="thresholdValueType">
-                  <el-select v-model="thresholdValue.thresholdValueType" placeholder="请选择" @change="onSelectChange">
+                  <el-select v-model="thresholdValue.thresholdValueType" style="width:100%" placeholder="请选择" @change="onSelectChange">
                     <el-option :key="1" label="单值" :value="1"></el-option>
                     <el-option :key="2" label="多值" :value="2"></el-option>
                   </el-select>
@@ -22,12 +22,12 @@
           </el-row>
           <el-row>
             <el-form-item label="阈值分类" prop="thresholdValueFolderName">
-              <el-col :span="22">
+              <el-col :span="19">
                 <el-input v-model="thresholdValue.thresholdValueFolderUuid" style="display: none" :disabled="true"/>
                 <el-input v-model="thresholdValue.thresholdValueFolderName" :disabled="true"/>
               </el-col>
-              <el-col :span="2">
-                <el-button @click.prevent="openFolderTreeDialog">设置</el-button>
+              <el-col :span="2" v-if="!isFormEdit"  :offset="1">
+                <el-button type="primary" @click.prevent="openFolderTreeDialog">设置</el-button>
               </el-col>
             </el-form-item>
           </el-row>
@@ -102,6 +102,7 @@ export default {
       },
       //是否禁止编辑
       isBanEdit:false,
+      isFormEdit:false,
       //文件夹dialog
       folderTreeDialog:false,
       //遮罩层
@@ -115,8 +116,15 @@ export default {
         thresholdValueFolderName: [
           {required: true, message: '请选择阈值分类', trigger: 'blur'}
         ],
-        filterValue: [{type: 'string', validator:this.verValueMethods}
-        ]
+        filterValue: [
+          { required: true,type: 'string', validator:this.verValueMethods ,message: '请输入值'}
+        ],
+        thresholdValueType: [
+          {required:true, message : '请输入阈值类型'}
+        ],
+        // thresholdValueMemo: [
+        //   {required:true}
+        // ],
       },
     }
   },
@@ -138,6 +146,12 @@ export default {
     }
     else{
       //修改
+    }
+    /*详情*/
+    if(this.operationObj.operationType === 3) {
+      this.thresholdValue = this.operationObj.thresholdValue
+      this.isBanEdit = true;
+      this.isFormEdit = true;
     }
   },
   methods: {
@@ -189,6 +203,8 @@ export default {
             callback()
           }
         }
+      }else{
+        callback(new Error('请输入值'))
       }
     },
     /**

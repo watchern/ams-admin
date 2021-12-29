@@ -43,6 +43,7 @@
               icon="el-icon-arrow-right"
               circle
               @click="addGrp"
+              title="选中（或勾选）左侧组织树节点并点击此按钮可以向角色添加用户/用户组"
             />
           </p>
         </div>
@@ -50,7 +51,7 @@
 
       <el-col :span="15">
         <el-col align="right" style=" padding-top: 4px;padding-right:50px">
-          <el-button type="primary" class="oper-btn edit-3" :disabled="selections.length !== 1" @click="setExpireDate" />
+<!--          <el-button type="primary" class="oper-btn edit-period btn-width-max" :disabled="selections.length !== 1" @click="setExpireDate" />-->
           <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" @click="removeGrp" />
         </el-col>
         <el-table
@@ -95,7 +96,7 @@
       </el-col>
     </el-row>
     <div class="bottom-btn">
-      <el-button @click="goBack">取消</el-button>
+      <el-button @click="goBack">返回</el-button>
       <el-button type="primary" @click="saveRoleGrp">保存</el-button>
     </div>
   </div>
@@ -174,7 +175,10 @@ export default {
     },
     addGrp() {
       console.log(this.grpUuid)
-      var nodes = this.$refs['A' + this.grpUuid][0].getCheckedNodes()
+      var nodes = this.$refs['A' + this.grpUuid][0].getCheckedNodes();
+      if(nodes.length === 0){
+          nodes.push(this.$refs['A' + this.grpUuid][0].getCurrentNode());
+      }
       nodes.forEach(node => {
         console.log(node)
         if (this.tableData.filter(data => {
@@ -195,6 +199,9 @@ export default {
       })
       console.log(this.tableData)
     },
+
+
+
 
     saveRoleGrp() {
       this.listLoading = true

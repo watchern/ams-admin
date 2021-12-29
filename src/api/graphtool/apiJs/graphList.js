@@ -232,6 +232,19 @@ export function deleteExecuteNodes(ids) {
 }
 
 /**
+ * 取消正在执行的节点SQL任务
+ * @param ids 任务UUID串
+ */
+export function cancelExecuteTask(ids){
+    return request({
+        baseURL: baseURL,
+        url: `/graphCt/cancelExecuteTask`,
+        method: 'post',
+        params:{"ids":ids}
+    })
+}
+
+/**
  * 执行节点
  */
 export function executeNodeSql(data) {
@@ -477,5 +490,16 @@ export function getColumnsByTable(data) {
         url: '/tableMeta/getCols',
         method: 'post',
         params: data
+    })
+}
+
+/**
+ * 获取数据表树节点下的字段列表数据
+ */
+export function getDbType(){
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/getDbType',
+        method: 'post'
     })
 }

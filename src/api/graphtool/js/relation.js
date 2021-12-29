@@ -11,6 +11,19 @@ export var sendVueObj = (_this) => {
     layeX = _this.layeX
     layeY = _this.layeY
 }
+export function judgeColumns(){
+    let items = relationVue.items;
+    for (let i = 0; i < items.length; i++) {
+        for(let j = i+1; j < items.length; j++){
+            let columnName = items[i].columnName;
+            let columnNameCompare = items[j].columnName;
+            if(columnName == columnNameCompare){
+                return false;
+            }
+        }
+    }
+    return true;
+}
 
 export function init() {
     // init for these samples -- you don't need to call this初始化这些样本 - 您不需要调用它
@@ -134,11 +147,8 @@ export function init() {
                 // 线的点击事件
                 try {
                     var data = item.data
-
-                    var from = data.from
-                    var to = data.to
-                    var i = indexOfJoin(from)
-                    var j = indexOfJoin(to)
+                    var i = indexOfJoin(data.from)
+                    var j = indexOfJoin(data.to)
 
                     var idx = Math.max(i, j)
                     var compare = ''
@@ -148,11 +158,31 @@ export function init() {
                             compare = on.compare
                         }
                     }
+                    var fromCondition = data.from + "." + data.fromPort;
+                    var toCondition = data.to + "." + data.toPort;
+                    //重新组织连线关系，start
+                    var onArr = [];
+                    relationVue.join.forEach( o => {
+                        if(typeof o.on !== "undefined"){
+                            $.extend(onArr,o.on);
+                        }
+                    })
+                    for(var t=0; t<onArr.length; t++){
+                        if(onArr[t].from === data.from && onArr[t].fromPort === data.fromPort && onArr[t].to === data.to && onArr[t].toPort === data.toPort){
+                            fromCondition = onArr[t].fromCondition;
+                            toCondition = onArr[t].toCondition;
+                            break;
+                        }
+                    }
+                    //重新组织连线关系，end
+
                     relationVue.comper = compare
                     relationVue.mainPort = data.fromPort
                     relationVue.toPort = data.toPort
                     relationVue.from = data.from
                     relationVue.to = data.to
+                    relationVue.useMainPort = fromCondition
+                    relationVue.useToPort = toCondition
                     relationVue.showJoinArea = true
                     showJoin(data)
                 } catch (e) {}
@@ -272,13 +302,17 @@ export function init() {
                         to: obj.to,
                         fromPort: obj.fromPort,
                         toPort: obj.toPort,
-                        compare: '='
+                        compare: '=',
+                        fromCondition : obj.from + "." + obj.fromPort,
+                        toCondition : obj.to + "." + obj.toPort
                     })
                     relationVue.comper = '='
-                    relationVue.mainPort = obj.fromPort
-                    relationVue.toPort = obj.toPort
-                    relationVue.from = obj.from
-                    relationVue.to = obj.to
+                    relationVue.mainPort = ''
+                    relationVue.toPort = ''
+                    relationVue.from = ''
+                    relationVue.to = ''
+                    relationVue.useMainPort = ''
+                    relationVue.useToPort = ''
                     showJoin(obj)
                     relationVue.showJoinArea = true
                 }
@@ -353,6 +387,7 @@ export function init() {
                 let rtn = nodeData.columnsInfo[k].rtn
                 const columnInfo = nodeData.columnsInfo[k]
                 let columnName = nodeData.columnsInfo[k].columnName
+                let selectColumnName = nodeData.columnsInfo[k].selectColumnName
                 let disColumnName = nodeData.columnsInfo[k].newColumnName
                 let nodeId = nodeData.columnsInfo[k].nodeId
                 let checked = true
@@ -362,7 +397,7 @@ export function init() {
                         relationVue.checkAll = false
                     }
                 }
-                relationVue.items.push({id,nodeId,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked})
+                relationVue.items.push({id,nodeId,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked,selectColumnName})
                 relationVue.columnsInfo.push({...{},...nodeData.columnsInfo[k]})
             }
             // 组装输出列的表格,end
@@ -419,11 +454,13 @@ export function init() {
                 if (columnsInfo[k].isOutputColumn === 1) {
                     let id = idNum
                     let columnInfo = {...{},...columnsInfo[k]}
-                    let columnName = table.key + "." + columnsInfo[k].newColumnName
+                    // table.key + "." + 
+                    let selectColumnName = table.key + "." + columnsInfo[k].newColumnName
+                    let columnName = columnsInfo[k].newColumnName
                     let disColumnName = columnsInfo[k].newColumnName
                     let checked = false
-                    relationVue.items.push({id,nodeId,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked})
-                    relationVue.columnsInfo.push({...columnsInfo[k],...{"columnName":columnName,"nodeId":nodeId,"rtn":rtn,"resourceTableName":resourceTableName}})
+                    relationVue.items.push({id,nodeId,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked,selectColumnName})
+                    relationVue.columnsInfo.push({...columnsInfo[k],...{"nodeId":nodeId,"rtn":rtn,"resourceTableName":resourceTableName}})
                     idNum++
                 }
             }
@@ -446,20 +483,46 @@ function addLine(obj, isAdd) {
     if (!relationVue.join[idx].on) {
         relationVue.join[idx].on = []
     }
-    if (isAdd) {
+    let fromCondition = obj.from + "." + obj.fromPort;
+    let toCondition = obj.to + "." + obj.toPort;
+    let repcompare = '='
+    if(isAdd){
         relationVue.join[idx].on.push({
             from: obj.from,
             to: obj.to,
             fromPort: obj.fromPort,
             toPort: obj.toPort,
-            compare: '='
+            compare: '=',
+            fromCondition : fromCondition,
+            toCondition : toCondition
         })
+    }else{
+        repcompare = obj.compare
+        if(typeof obj.fromCondition !== "undefined" && typeof obj.toCondition !== "undefined"){
+            fromCondition = obj.fromCondition;
+            toCondition = obj.toCondition;
+        }
     }
-    relationVue.comper = '='
+    relationVue.comper = repcompare
     relationVue.mainPort = obj.fromPort
     relationVue.toPort = obj.toPort
     relationVue.from = obj.from
     relationVue.to = obj.to
+    // relationVue.useMainPort = fromCondition
+    // relationVue.useToPort = toCondition
+    let parentobj = relationVue.myDiagram.model.nodeDataArray
+    for(let i = 0;i<parentobj.length;i++){
+        if(parentobj[i].key==obj.from){
+            relationVue.useMainPort = parentobj[i].chineseName + "." + obj.fromPort
+            break
+        }
+    }
+    for(let i = 0;i<parentobj.length;i++){
+        if(parentobj[i].key==obj.to){
+            relationVue.useToPort = parentobj[i].chineseName + "." + obj.toPort
+            break
+        }
+    }
     relationVue.showJoinArea = true
     showJoin(obj)
 }
@@ -470,6 +533,27 @@ function addNode(obj,isAdd) {
     }
 
     relationVue.showJoinArea = false
+}
+
+/**
+ * 保存编辑后的连接条件
+ * @param type
+ */
+export function saveCondition(type) {
+    const idx = Math.max(indexOfJoin(relationVue.from), indexOfJoin(relationVue.to));
+    let onArr = relationVue.join[idx].on
+    if (typeof onArr !== "undefined" && onArr.length > 0) {
+        for(var t=0; t<onArr.length; t++){
+            if(onArr[t].from === relationVue.from && onArr[t].to === relationVue.to && onArr[t].fromPort === relationVue.mainPort && onArr[t].toPort === relationVue.toPort){
+                if(type === "from"){
+                    onArr[t].fromCondition = relationVue.useMainPort;
+                }else{//type === "to"
+                    onArr[t].toCondition = relationVue.useToPort;
+                }
+                break;
+            }
+        }
+    }
 }
 
 // 查询join里对象的idx
@@ -597,7 +681,7 @@ export function changeCopare(val) {
     let toPort = relationVue.toPort
     const idx = Math.max(indexOfJoin(fromtab), indexOfJoin(totab))
     for (let k = 0; k < relationVue.join[idx].on.length; k++) {
-        if (relationVue.join[idx].on[k].fromPort === fromPort && relationVue.join[idx].on[k].toPort === toPort) {
+        if (relationVue.join[idx].on[k].fromPort === fromPort && relationVue.join[idx].on[k].toPort === toPort && relationVue.join[idx].on[k].from === fromtab && relationVue.join[idx].on[k].to === totab) {
             relationVue.join[idx].on[k].compare = val
         }
     }
@@ -643,6 +727,7 @@ export function saveNodeInfo() {
             } else {
                 columnInfo.isOutputColumn = 0
             }
+            columnInfo.selectColumnName = relationVue.items[index].selectColumnName
             columnInfo.columnName = relationVue.items[index].columnName
             columnInfo.newColumnName = relationVue.items[index].disColumnName
             columnInfo.resourceTableName = resourceTableName
@@ -652,8 +737,28 @@ export function saveNodeInfo() {
         })
     }
     // 开始保存节点所有数据信息
-    nodeData.setting.sqlEdit = relationVue.myDiagram.model.toJson()
-    nodeData.setting.join = relationVue.join
+    let sqlEditStr = JSON.parse(relationVue.myDiagram.model.toJson());
+    sqlEditStr.nodeDataArray = relationVue.join;
+    //重新组织连线关系，start
+    var onArr = [];
+    relationVue.join.forEach(e => {
+        if(typeof e.on !== "undefined"){
+            $.extend(onArr,e.on);
+        }
+    })
+    sqlEditStr.linkDataArray.forEach(e => {
+        for(var t=0; t<onArr.length; t++){
+            if(onArr[t].from === e.from && onArr[t].fromPort === e.fromPort && onArr[t].to === e.to && onArr[t].toPort === e.toPort){
+                e.fromCondition = onArr[t].fromCondition;
+                e.toCondition = onArr[t].toCondition;
+                e.compare = onArr[t].compare
+                break;
+            }
+        }
+    })
+    //重新组织连线关系，end
+    nodeData.setting.sqlEdit = JSON.stringify(sqlEditStr);
+    nodeData.setting.join = relationVue.join//此处再存储一份是为了后端组装SQL语句
     nodeData.columnsInfo = columnsInfo
     relationVue.$refs.basicVueRef.save_base()						// 保存基础信息
     nodeData.isSet = true

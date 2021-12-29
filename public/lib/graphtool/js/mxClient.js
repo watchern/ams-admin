@@ -5123,14 +5123,14 @@ var mxUtils = {
 		var dx = 0;
 		var dy = 0;
 
-		// Horizontal alignment
+		// Horizontal alignment 水平对齐
 		if(align == mxConstants.ALIGN_CENTER) {
 			dx = -0.5;
 		} else if(align == mxConstants.ALIGN_RIGHT) {
 			dx = -1;
 		}
 
-		// Vertical alignment
+		// Vertical alignment 垂直对齐
 		if(valign == mxConstants.ALIGN_MIDDLE) {
 			dy = -0.5;
 		} else if(valign == mxConstants.ALIGN_BOTTOM) {
@@ -5169,12 +5169,12 @@ var mxUtils = {
 		fontFamily = (fontFamily != null) ? fontFamily : mxConstants.DEFAULT_FONTFAMILY;
 		var div = document.createElement('div');
 
-		// Sets the font size and family
+		// Sets the font size and family 设置字体大小和字体族
 		div.style.fontFamily = fontFamily;
 		div.style.fontSize = Math.round(fontSize) + 'px';
 		div.style.lineHeight = Math.round(fontSize * mxConstants.LINE_HEIGHT) + 'px';
 
-		// Disables block layout and outside wrapping and hides the div
+		// Disables block layout and outside wrapping and hides the div 禁用块布局和外部包装和隐藏div
 		div.style.position = 'absolute';
 		div.style.visibility = 'hidden';
 		div.style.display = (mxClient.IS_QUIRKS) ? 'inline' : 'inline-block';
@@ -5187,11 +5187,11 @@ var mxUtils = {
 			div.style.whiteSpace = 'nowrap';
 		}
 
-		// Adds the text and inserts into DOM for updating of size
+		// Adds the text and inserts into DOM for updating of size 添加文本并插入到DOM中以更新大小
 		div.innerHTML = text;
 		document.body.appendChild(div);
 
-		// Gets the size and removes from DOM
+		// Gets the size and removes from DOM 获取大小并从DOM中删除
 		var size = new mxRectangle(0, 0, div.offsetWidth, div.offsetHeight);
 		document.body.removeChild(div);
 
@@ -5214,13 +5214,13 @@ var mxUtils = {
 		var view = graph.getView();
 		var result = null;
 
-		// Disables events on the view
+		// Disables events on the view 禁用视图上的事件
 		var eventsEnabled = view.isEventsEnabled();
 		view.setEventsEnabled(false);
 
-		// Workaround for label bounds not taken into account for image export.
-		// Creates a temporary draw pane which is used for rendering the text.
-		// Text rendering is required for finding the bounds of the labels.
+		// Workaround for label bounds not taken into account for image export. 处理标签边界没有考虑到图像导出。
+		// Creates a temporary draw pane which is used for rendering the text. 创建一个临时绘制窗格，用于呈现文本。
+		// Text rendering is required for finding the bounds of the labels. 找到标签的边界需要文本呈现。
 		var drawPane = view.drawPane;
 		var overlayPane = view.overlayPane;
 
@@ -5228,23 +5228,23 @@ var mxUtils = {
 			view.drawPane = document.createElementNS(mxConstants.NS_SVG, 'g');
 			view.canvas.appendChild(view.drawPane);
 
-			// Redirects cell overlays into temporary container
+			// Redirects cell overlays into temporary container 将单元格覆盖重定向到临时容器
 			view.overlayPane = document.createElementNS(mxConstants.NS_SVG, 'g');
 			view.canvas.appendChild(view.overlayPane);
 		} else {
 			view.drawPane = view.drawPane.cloneNode(false);
 			view.canvas.appendChild(view.drawPane);
 
-			// Redirects cell overlays into temporary container
+			// Redirects cell overlays into temporary container 将单元格覆盖重定向到临时容器
 			view.overlayPane = view.overlayPane.cloneNode(false);
 			view.canvas.appendChild(view.overlayPane);
 		}
 
-		// Resets the translation
+		// Resets the translation 重置翻译
 		var translate = view.getTranslate();
 		view.translate = new mxPoint(x0, y0);
 
-		// Creates the temporary cell states in the view
+		// Creates the temporary cell states in the view 在视图中创建临时单元格状态
 		var temp = new mxTemporaryCellStates(graph.getView(), scale, cells);
 
 		try {
@@ -13054,6 +13054,7 @@ mxToolbar.prototype.addBreak = function() {
  * Adds a horizontal line to the container.
  */
 mxToolbar.prototype.addLine = function() {
+	console.log("图形化测试")
 	var hr = document.createElement('hr');
 
 	hr.style.marginRight = '6px';

@@ -1,32 +1,51 @@
 <template>
-  <div style="min-height: 290px;overflow-y: auto;" ref="inputParamContent" class="paramadrawnew">
-    <el-collapse accordion v-model="activeName">
-      <el-collapse-item ref="nodeParam" name="collapse1" :title="collapseTitle">
-    <div v-if="hasParam" align='center' style='font-weight:lighter ;font-size:15px' >该模型没有参数</div>
-    <el-row v-for="(paramInfo,ind) in paramInfoArr" :key="ind" style="margin: 15px;" >
-      <el-col :span="7" style="line-height:36px;padding-right: 10px;text-align: right;">
-        <el-tooltip :content="paramInfo.description" placement="bottom">
-          <label>{{paramInfo.paramName}}</label>
-        </el-tooltip>
-      </el-col>
-      <el-col :span="15">
-        <div ref="selectParam" :index="ind" v-if="paramInfo.inputType === 'lineinp'" :id="paramInfo.id" :title="paramInfo.title"></div>
-        <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.dataDefaultVal" class="textParam"></el-input>
-        <el-date-picker ref="paramOption" :index="ind"  v-if="paramInfo.inputType === 'timeinp'" :title="paramInfo.title" type="date" placeholder="选择日期" v-model="paramInfo.dataDefaultVal" style="width: 98%;" value-format="yyyy-MM-dd"></el-date-picker>
-        <div ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title"></div>
-      </el-col>
-      <el-col :span="2" v-show="paramInfo.allowedNull">
-        <div style="color: red;display: inline-block;font-weight: bold;font-size: 20px;">*</div>
-      </el-col>
-    </el-row>
-      </el-collapse-item>
-    </el-collapse>
+  <div style="overflow-y: visible;" ref="inputParamContent" class="paramadrawnew">
+    <div ref="nodeParam" style="overflow:auto;max-height:62vh" class="detail-form">
+      <el-row  v-for="(paramInfo,ind) in paramInfoArr" :key="ind" style="margin: 15px;" >
+        <el-col :span="7" style="line-height:36px;padding-right: 10px;">
+          <el-tooltip :content="paramInfo.description" placement="bottom">
+            <label>{{paramInfo.paramName}}</label>
+          </el-tooltip>
+        </el-col>
+        <el-col :span="15">
+          <!-- 下拉列表类型 -->
+          <el-select v-model="paramListValueList[ind]" ref="selectParam"  style="width: 100%;" v-if="paramInfo.inputType === 'lineinp' " 
+              :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable>
+            <el-option v-for="item in paramInfo.data" :value="paramInfo.dataType == 'str' ? `'`+ item.value + `'`: item.value" :label="item.name" :key="item.value" >
+              <span style="float: left"> {{ item.name}}</span>
+              <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value == item.name ? "" : item.value}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
+            </el-option>
+          </el-select>
+          <!-- <div class="select-div el-input__inner" ref="selectParam" :index="ind" v-if="paramInfo.inputType === 'lineinp'" :id="paramInfo.id" :title="paramInfo.title"></div> -->
+          <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.dataDefaultVal" class="textParam"></el-input>
+          <!-- 树类型参数 -->
+          <el-cascader
+            v-model="paramTreeValueList[ind]"
+            v-if="paramInfo.inputType === 'treeinp'"
+            style="width:100%"
+            ref="selectTreeParam"
+            :props="{ label:'name',  multiple: paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0', emitPath: false}"
+            :options="paramInfo.data"
+            multiple
+            clearable />
+          <!-- <div class="select-div" ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title"></div> -->
+          <span  v-if="paramInfo.inputType === 'timeinp'" >
+            <el-date-picker v-if="paramInfo.timeFormat!='other'" ref="paramOption" :index="ind"  :title="paramInfo.title" :type="paramInfo.timeFormat" placeholder="选择日期" :value-format="timeDealFormat(paramInfo.timeFormat)"  v-model="paramInfo.dataDefaultVal" style="width: 98%;"></el-date-picker> 
+            <el-date-picker v-else ref="paramOption" :index="ind"  :title="paramInfo.title" type="date" placeholder="选择日期" :value-format="paramInfo.customizeFormat" v-model="paramInfo.dataDefaultVal" style="width: 98%;"></el-date-picker> 
+          </span>
+        </el-col>
+        <el-col :span="2" v-show="paramInfo.allowedNull">
+          <div style="color: red;display: inline-block;font-weight: bold;font-size: 20px;">*</div>
+        </el-col>
+      </el-row>
+      <!-- 分隔线 -->
+      <!-- <el-divider v-if="paramInfoArr.length>0"></el-divider> -->
+    </div>  
   </div>
 </template>
-
 <script>
 import '@/components/ams-loading/css/loading.css'
-import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams ,recplaceParams } from '@/api/graphtool/apiJs/graphList'
+import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,recplaceParams } from '@/api/graphtool/apiJs/graphList'
 import * as paramCommonJs from '@/api/graphtool/js/paramCommon'
 import {removeJcCssfile,addJsFile} from "@/api/analysis/common"
 export default {
@@ -41,7 +60,9 @@ export default {
       activeName:'collapse1',
       overallParmaobj:{},    //定义全局参数对象 用于模型预览不同模型，将第一次输入的参数传入第二次输入参数界面
       collapseTitle:'',
-      hasParam:false
+      hasParam:false,
+      paramListValueList: [], // 下拉列表参数值集合
+      paramTreeValueList: [] // 下拉树列表参数值集合
     }
   },created(){
     addJsFile('/lib/layui/xm-select.js','xm-select')
@@ -76,15 +97,20 @@ export default {
             let moduleParamId = paramsArr[k].ammParamUuid
             if (moduleParamId === this.arr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) { // 匹配复制参数的母版参数ID
               this.arr[j].allowedNull = paramsArr[k].paramChoice.allowedNull
-              if (flag==='modelPreview' ||flag==='auditwarring'){
-                if (this.arr[j].paramValue) {
-                  paramsArr[k].defaultVal = this.arr[j].paramValue
-                }
-              }else{
-                if (this.arr[j].defaultVal) {
+              // if (flag==='modelPreview' ||flag==='auditwarning'){
+              //   if (this.arr[j].paramValue) {
+              //     paramsArr[k].defaultVal = this.arr[j].paramValue
+              //     // paramsArr[k].defaultVal = this.arr[j].defaultVal
+              //   }
+              // }else{
+              //   if (this.arr[j].defaultVal) {
+              //     paramsArr[k].defaultVal = this.arr[j].defaultVal
+              //   }
+              // }
+              // 默认值赋值
+              if (this.arr[j].defaultVal) {
                   paramsArr[k].defaultVal = this.arr[j].defaultVal
                 }
-              }
               copyParamArr.push(paramsArr[k])
               moduleParamArr.push(moduleParamId)
               break
@@ -108,7 +134,7 @@ export default {
         if (typeof copyParamArr[n].description !== 'undefined' && copyParamArr[n].description != null) {
           paramInfoObj.description = '（参数说明：' + copyParamArr[n].description + '）'
         }
-        let returnObj = await this.initParamHtml(copyParamArr[n], paramInfoObj, this.selectNum, this.selectTreeNum)
+        let returnObj = await this.initParamHtml(copyParamArr[n], paramInfoObj, this.selectNum, this.selectTreeNum, n)
         if (typeof returnObj.selectNum !== 'undefined') {
           this.selectNum = returnObj.selectNum
           paramInfoObj.selectNum = returnObj.selectNum
@@ -126,12 +152,14 @@ export default {
         }
         this.paramInfoArr.push(paramInfoObj)
       }
+      console.log(this.paramInfoArr);
       this.$nextTick(() => {
-        this.initParamInputAndSelect()
+        // this.initParamInputAndSelect()
+        this.loading.destroy()
         let nodeParamDom = this.$refs.nodeParam
-        if (nodeParamDom.$children.length===0){
-          this.hasParam = true
-        }
+        // if (nodeParamDom.$children.length===0){
+        //   this.hasParam = true
+        // }
       })
       }catch (e) {
         this.loading.destroy()
@@ -147,7 +175,7 @@ export default {
      * @param selectTreeNum 下拉树参数的个数
      * @author JL
      */
-    async initParamHtml(paramObj, setParamObj, selectNum, selectTreeNum) {
+    async initParamHtml(paramObj, setParamObj, selectNum, selectTreeNum, index) {
       let obj = {
         "selectNum":selectNum,
         "selectTreeNum":selectTreeNum,
@@ -161,6 +189,7 @@ export default {
       let paramSql = paramObj.paramChoice.optionsSql//拉列表或下拉树的SQL语句
       obj.setParamObj.title = paramObj.paramChoice.allowedNull === 0 ? '不可为空' : '可为空'
       obj.setParamObj.allowedNull = false
+      obj.setParamObj.dataType = paramObj.dataType // dataType
       if(paramObj.paramChoice.allowedNull === 0) {
         obj.setParamObj.allowedNull = true
       }
@@ -168,19 +197,17 @@ export default {
       switch (obj.setParamObj.inputType) {
         case 'lineinp':// 下拉列表
           if (!paramSql) {// 备选sql为空的情况下 取静态的option值
-            $.each(paramObj.paramChoice.paramOptionsList, function(i, v) {
-              if (v.optionsVal && v.optionsName) {
+            // 下拉静态列表赋值
+            paramObj.paramChoice.ammParamOptionsList.forEach(r => {
+              if (r.optionsVal && r.optionsName) {
                 // 组织下拉选项数据
-                dataArr.push({
-                  'name': v.optionsName,
-                  'value': v.optionsVal
-                })
+                dataArr.push({'name': r.optionsName,'value': r.optionsVal })
               }
             })
           } else { // 执行备选sql
             if (paramSql !== '') {
               hasSql = true// 下拉列表是SQL方式
-              if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
+               // 初始化默认执行sql
                 const response = await executeParamSql(paramSql)
                 if(response.data == null){
                   obj.isError = true
@@ -191,19 +218,21 @@ export default {
                     obj.message = `获取参数【${paramObj.paramName}】的值的失败，原因：${response.data.message}`
                   } else {
                     let e = response.data
-                    if (e.valueList && e.valueList.length > 0) {
-                      for (let k = 0; k < e.valueList.length; k++) {
+                    if (e.paramList && e.paramList.length > 0) {
+                      // 给下拉列表赋值
+                      for (let k = 0; k < e.paramList.length; k++) {
                         dataArr.push({
-                          'name': e.valueList[k].paramName,
-                          'value': e.valueList[k].paramValue
+                          'name': e.paramList[k].paramName,
+                          'value': e.paramList[k].paramValue
                         })
                       }
                     }
                   }
                 }
-              }
+
             }
           }
+          // data赋值
           if(typeof obj.selectNum !== 'undefined' && obj.selectNum != null){
             obj.selectNum++
             obj.setParamObj.id = `selectParam${obj.selectNum}`
@@ -218,11 +247,28 @@ export default {
             obj.setParamObj.dataParamArr = paramArr
             obj.setParamObj.dataAssociatedParamIdArr = associatedParamIdArr
           }
-          if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
-            obj.setParamObj.dataDefaultVal = paramObj.defaultVal
-          }
+          
           if(dataArr.length > 0){
             obj.setParamObj.data = dataArr
+          }
+          if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
+            obj.setParamObj.dataDefaultVal = paramObj.defaultVal
+            // 下拉列表默认值
+            if (paramObj.paramChoice.choiceType === '1'){
+              // 单选
+              this.paramListValueList[index] = paramObj.dataType == 'str'? `'` + paramObj.defaultVal + `'` : paramObj.defaultVal
+            } else {
+              // 多选
+              const list = [] 
+              if (paramObj.defaultVal.length > 0){
+                paramObj.defaultVal.forEach(o => {
+                  if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
+                  else {list.push(o) }
+                })
+                this.paramListValueList[index] = list
+              }
+              
+            }
           }
           if(typeof paramObj.paramChoice.allowedNull !== 'undefined' && paramObj.paramChoice.allowedNull != null){
             obj.setParamObj.dataAllowedNull = paramObj.paramChoice.allowedNull
@@ -255,13 +301,15 @@ export default {
             if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
               obj.setParamObj.dataDefaultVal = paramObj.defaultVal
             }
+             //时间类型（年/月/日/其他）
+            obj.setParamObj.timeFormat = paramObj.paramTimes.timeFormat;
+            obj.setParamObj.customizeFormat = paramObj.paramTimes.customizeFormat; 
           }
           break
         case 'treeinp':// 下拉树
           if (paramSql !== '') { // 执行备选SQL
             hasSql = true
-            if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
-              const response = await getSelectTreeData(paramSql)
+            const response = await getSelectTreeData(paramSql)
               if(response.data == null){
                 obj.isError = true
                 obj.message = `获取参数【${paramObj.paramName}】的值的失败`
@@ -271,13 +319,12 @@ export default {
                   obj.message = `获取参数【${paramObj.paramName}】的值的失败，原因：${response.data.message}`
                 } else {
                   if(response.data.result && response.data.result.length > 0){
-                    dataArr = paramCommonJs.organizeSelectTreeData(response.data.result)
+                    dataArr = paramCommonJs.organizeSelectTreeDataByType(response.data.result, obj.setParamObj.dataType)
                   }else{
                     dataArr = []
                   }
                 }
               }
-            }
           }
           if(typeof obj.selectTreeNum !== 'undefined' && obj.selectTreeNum != null){
             obj.selectTreeNum++
@@ -295,6 +342,23 @@ export default {
           }
           if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
             obj.setParamObj.dataDefaultVal = paramObj.defaultVal
+            // 下拉树默认值
+            if (paramObj.paramChoice.choiceType === '1'){
+              // 单选
+              // this.paramTreeValueList[index] = list[0]
+              this.paramTreeValueList[index] = paramObj.dataType == 'str' ? `'` + paramObj.defaultVal + `'` : paramObj.defaultVal
+            } else {
+              // 多选
+              const list = []
+              if (paramObj.defaultVal.length > 0){
+                paramObj.defaultVal.forEach(o => {
+                  if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
+                  else {list.push(o) }
+                })
+                this.paramTreeValueList[index] = list
+              }
+              
+            }
           }
           if(dataArr.length > 0){
             obj.setParamObj.data = dataArr
@@ -306,317 +370,14 @@ export default {
       }
       return obj
     },
-    /**
-     * 初始化下拉列表、下拉树
-     * @author JL
-     */
-    initParamInputAndSelect() {
-      let vue_this = this
-      // 初始化下拉列表
-      let selectParam = this.$refs.selectParam
-      if (selectParam && selectParam.length > 0) {
-        for(let i=0; i<selectParam.length; i++) {
-          let divId = selectParam[i].getAttribute("id")
-          let paramInfoObj = this.paramInfoArr.find(item => item.id === divId)
-          if(typeof paramInfoObj === "undefined"){
-            continue;
-          }
-          let choiceType = paramInfoObj.dataChoiceType// 下拉列表的数据是单选还是多选
-          let sql = typeof paramInfoObj.dataSql !== 'undefined' ? paramInfoObj.dataSql : ''// 该参数是否有SQL语句（0否1是）
-          let dataArr = typeof paramInfoObj.data !== 'undefined' ? paramInfoObj.data : []// 下拉列表数据
-          let initDataArr = false// 是否初始化数据
-          let selectSetting = {
-            el: `#${divId}`,
-            filterable: true,
-            filterMethod: function (val, item) {
-              if (val === item.value || (item.name && item.name.indexOf(val) > -1)) { // 把value相同的搜索出来或把名称中包含的搜索出来
-                return true
-              }
-              return false// 不知道的就不管了
-            },
-            data: dataArr
-          }
-          if (choiceType === '1') { // 单选
-            selectSetting.radio = true
-            selectSetting.clickClose = true
-          }
-          if (sql !== '') { // 当前参数是SQL语句方式
-            let associatedParamIdArr = typeof paramInfoObj.dataAssociatedParamIdArr !== 'undefined' ? paramInfoObj.dataAssociatedParamIdArr : []// 当前参数的被关联的参数的集合
-            let paramArr = typeof paramInfoObj.dataParamArr !== 'undefined' ? paramInfoObj.dataParamArr : []// 影响当前参数的主参数的集合
-            selectSetting.show = function () {
-              initDataArr = vue_this.selectShow($(vue_this.$refs.inputParamContent), '#selectParam', paramInfoObj.selectNum, paramInfoObj, sql, paramArr, dataArr, initDataArr)
-            }
-            selectSetting.hide = function () {
-              if (initDataArr && dataArr.length === 0) {
-                let selectXs = xmSelect.get(`#${divId}`, true)// 获取当前下拉框的实体对象
-                dataArr = selectXs.options.data
-                initDataArr = false
-              }
-              if ($.inArray(paramInfoObj.dataId, associatedParamIdArr) > -1) {
-                vue_this.selectHide('#selectParam', paramInfoObj.selectNum,associatedParamIdArr)
-              }
-            }
-          }
-          // 设置默认值
-          let defaultVal = []
-          if (paramInfoObj.dataDefaultVal instanceof Array){
-            selectSetting.initValue = paramInfoObj.dataDefaultVal
-          }else {
-            defaultVal.push(paramInfoObj.dataDefaultVal)
-            if (typeof defaultVal !== 'undefined') {
-              selectSetting.initValue = defaultVal// 初始化默认值
-            }
-          }
-          xmSelect.render(selectSetting)
-        }
-      }
-      // 初始化下拉树
-      let selectTreeParam = this.$refs.selectTreeParam
-      if (selectTreeParam && selectTreeParam.length > 0) {
-        for(let i=0; i<selectTreeParam.length; i++){
-          let divId = selectTreeParam[i].getAttribute("id")
-          let paramInfoObj = this.paramInfoArr.find(item => item.id === divId)
-          if(typeof paramInfoObj === "undefined"){
-            continue;
-          }
-          let choiceType = paramInfoObj.dataChoiceType// 下拉列表的数据是单选还是多选
-          let sql = typeof paramInfoObj.dataSql !== 'undefined' ? paramInfoObj.dataSql : ''// 该参数是否有SQL语句（0否1是）
-          let dataArr = typeof paramInfoObj.data !== 'undefined' ? paramInfoObj.data : []// 下拉列表数据
-          let initDataArr = false// 是否初始化数据
-          let selectSetting = {
-            el: `#${divId}`, // 此处使用【i】的原因在于每个参数都可能被重复使用，只能通过数量下标来确保【el】唯一
-            // autoRow: true,
-            filterable: true,
-            tree: {
-              show: true,
-              showFolderIcon: true, // 显示三角标
-              showLine: true, // 显示虚线
-              indent: 30, // 间距
-              strict: false// 严格父子结构
-            },
-            height: 'auto',
-            data: dataArr
-          }
-          if (sql !== '') { // 当前参数是SQL语句方式
-            let associatedParamIdArr = typeof paramInfoObj.dataAssociatedParamIdArr !== 'undefined' ? paramInfoObj.dataAssociatedParamIdArr : []// 当前参数的被关联的参数的集合
-            let paramArr = typeof paramInfoObj.dataParamArr !== 'undefined' ? paramInfoObj.dataParamArr : []// 影响当前参数的主参数的集合
-            selectSetting.show = function () {
-              initDataArr = vue_this.selectShow($(vue_this.$refs.inputParamContent), "#selectTreeParam", paramInfoObj.selectTreeNum, paramInfoObj, sql, paramArr, dataArr, initDataArr)
-            }
-            selectSetting.hide = function() {
-              if (initDataArr && dataArr.length === 0) {
-                let selectXs = xmSelect.get(`#${divId}`, true)// 获取当前下拉框的实体对象
-                dataArr = selectXs.options.data
-                initDataArr = false
-              }
-              if ($.inArray(paramInfoObj.dataId, associatedParamIdArr) > -1) {
-                vue_this.selectHide("#selectTreeParam", paramInfoObj.selectTreeNum,associatedParamIdArr)
-              }
-            }
-          }
-          // 设置默认值
-          let defaultVal = []
-          if (paramInfoObj.dataDefaultVal instanceof Array){
-            selectSetting.initValue = paramInfoObj.dataDefaultVal
-          }else {
-            defaultVal.push(paramInfoObj.dataDefaultVal)
-            if (typeof defaultVal !== 'undefined') {
-              selectSetting.initValue = defaultVal// 初始化默认值
-            }
-          }
-          defaultVal.push(paramInfoObj.dataDefaultVal)
-          if (choiceType === '1') { // 单选
-            selectSetting.radio = true
-            selectSetting.clickClose = true
-          } else {
-            selectSetting.on = function(data) {
-              let arr = data.arr
-              let checkData = data.change.slice(0, 1)// 当前选中的节点数据
-              let newDataArr = paramCommonJs.getChildrenData(checkData[0], [checkData[0]])// 获取当前选中的节点数据和其子孙节点数据
-              if (data.isAdd) { // 选中时
-                // 先将dataArr在arr中已存在的部分移除
-                for (let k = 0; k < newDataArr.length; k++) { // 遍历即将取消选中的上级节点
-                  for (let j = arr.length - 1; j >= 0; j--) { // 倒叙遍历所有选中的节点
-                    if (arr[j].value === newDataArr[k].value && arr[j].pValue === newDataArr[k].pValue) { // 若存在
-                      arr.splice(j, 1)// 则倒序移除
-                      break
-                    }
-                  }
-                }
-                // 将下拉树组装好的数据进行拆分，把每个对象的孩子差分出来
-                let preDataArr = paramCommonJs.getSplitDataArr(dataArr)
-                // 根据当前节点递归获取未被选中的且需要被选中的上级节点
-                let parentUnCheckedArr = paramCommonJs.getParentUnChecked(checkData[0], [], preDataArr, arr)
-                newDataArr = newDataArr.concat(parentUnCheckedArr)
-                arr.push.apply(arr, newDataArr)// 将新选中的与已选中的进行合并
-              } else { // 取消选中时
-                // 根据当前节点递归获取被选中的且需要取消选中的上级节点
-                let parentCheckedArr = paramCommonJs.getParentChecked(checkData[0], [], arr)
-                // 遍历取消上级节点的选中状态
-                for (let k = 0; k < parentCheckedArr.length; k++) { // 遍历即将取消选中的上级节点
-                  for (let j = arr.length - 1; j >= 0; j--) { // 倒叙遍历所有选中的节点
-                    if (arr[j].value === parentCheckedArr[k].value && arr[j].pValue === parentCheckedArr[k].pValue) { // 若存在则倒序移除
-                      arr.splice(j, 1)
-                      break
-                    }
-                  }
-                }
-                // 遍历取消当前节点的子孙节点的选中状态
-                for (let m = 0; m < newDataArr.length; m++) { // 遍历即将取消选中的节点
-                  for (let n = arr.length - 1; n >= 0; n--) { // 倒叙遍历所有选中的节点
-                    if (arr[n].value === newDataArr[m].value && arr[n].pValue === newDataArr[m].pValue) { // 若存在则倒序移除
-                      arr.splice(n, 1)
-                      break
-                    }
-                  }
-                }
-              }
-              return arr
-            }
-          }
-          xmSelect.render(selectSetting)
-        }
-      }
-      this.loading.destroy()
-    },
-    /**
-     * 根据影响当前参数的主参所选中的值，过滤当前参数的数据
-     * @param dom 遮罩层dom对象
-     * @param idStr 当前下拉框是下拉列表还是下拉树（传它们的部分ID标识）
-     * @param ind 参数的标识（下标）
-     * @param paramInfoObj 参数信息对象
-     * @param sql 当前参数的SQL语句
-     * @param paramArr 它受谁影响，即它为被关联参数时，其主参数的集合
-     * @param dataArr 原始数据（未过滤之前的数据）
-     * @param initDataArr 此次加载的是否是初始化数据
-     * @description 下拉框展开时调用
-     * @author JL
-     */
-    async selectShow(dom, idStr, ind, paramInfoObj, sql, paramArr, dataArr, initDataArr) {
-      this.loading = $(dom).mLoading({ 'text': '参数数据请求中，请稍后……', 'hasCancel': false })
-      // 找出该参数与被关联参数之间的联系（它影响谁和谁影响它两种）
-      try {
-        let sqlWhereStr = ''
-        let selectXs = null
-        // 在当前参数列表中匹配影响当前参数的主参数集合，获取其选中的值拼接where条件
-        for (let t = 0; t < paramArr.length; t++) {
-          if (paramArr[t].paramId === paramInfoObj.dataId) {
-            selectXs = xmSelect.get(idStr + ind, true)// 获取当前下拉框的实体对象
-            let selectedObjArr = selectXs.getValue()// 获取选中的参数值集合
-            if (selectedObjArr && selectedObjArr.length > 0) {
-              let associatedParamCol = paramArr[t].associatedParamCol// 被关联参数值（对应的列名称）
-              let key = paramArr[t].paramValueType === 'realValue' ? 'value' : 'name'// 判断是真实值还是显示值
-              if (paramInfoObj.dataChoiceType === '1') { // 单选
-                sqlWhereStr += ' and ' + associatedParamCol + "='" + selectedObjArr[0][key] + "'"
-              } else { // 多选
-                let valueStr = ''
-                for (let k = 0; k < selectedObjArr.length; k++) {
-                  valueStr += "'" + selectedObjArr[k][key] + "',"
-                }
-                if (valueStr !== '') {
-                  valueStr = valueStr.substring(0, valueStr.length - 1)
-                }
-                sqlWhereStr += ' and ' + associatedParamCol + ' in (' + valueStr + ')'
-              }
-            }
-            break
-          }
-        }
-        selectXs = xmSelect.get(idStr + ind, true)// 获取当前下拉框的实体对象
-        let oldSqlWhereStr = typeof $(idStr + ind).attr('data-sqlWhereStr') !== 'undefined' ? $(idStr + ind).attr('data-sqlWhereStr') : ''
-        let response = null;
-        if (sqlWhereStr !== '') {
-          if (oldSqlWhereStr === '' || oldSqlWhereStr !== sqlWhereStr) {
-            sql = 'SELECT * FROM (' + sql + ') where 1=1' + sqlWhereStr
-            if (idStr === '#selectParam') { // 下拉列表
-              response = await executeParamSql(sql)
-            } else { // idStr=='#selectTreeParam'   下拉树
-              response = await getSelectTreeData(sql)
-            }
-            if (response.data.isError) {
-              this.loading.destroy()
-              this.$message.error(`获取参数${paramInfoObj.dataName}的值的失败，原因：${response.data.message}`)
-            } else {
-              let newDataArr = []
-              if (idStr === '#selectParam') {
-                for (let k = 0; k < response.data.paramList.length; k++) {
-                  newDataArr.push({
-                    'name': response.data.paramList[k].paramName,
-                    'value': response.data.paramList[k].paramValue
-                  })
-                }
-              } else { // idStr=='#selectTreeParam'
-                newDataArr = paramCommonJs.organizeSelectTreeData(response.data.result)
-              }
-              selectXs.update({
-                data: newDataArr
-                // autoRow: true,
-              })
-              $(idStr + ind).attr('data-sqlWhereStr', sqlWhereStr)
-              this.loading.destroy()
-            }
-          } else {
-            this.loading.destroy()
-          }
-        }
-        if (sqlWhereStr === '' && dataArr.length === 0) { // 当影响它的主参没有选择值且本身没数据时（第一次加载全部数据）
-          initDataArr = true
-          if (idStr === '#selectParam') { // 下拉列表
-            response = await executeParamSql(sql)
-          } else { // idStr=='#selectTreeParam'   下拉树
-            response = await getSelectTreeData(sql)
-          }
-          if (response.data.isError) {
-            this.loading.destroy()
-            this.$message.error(`获取参数${paramInfoObj.dataName}的值的失败，原因：${response.data.message}`)
-          } else {
-            if (idStr === '#selectParam') {
-              for (let k = 0; k < response.data.paramList.length; k++) {
-                dataArr.push({
-                  'name': response.data.paramList[k].paramName,
-                  'value': response.data.paramList[k].paramValue
-                })
-              }
-            } else { // idStr=='#selectTreeParam'
-              dataArr = paramCommonJs.organizeSelectTreeData(response.data.result)
-            }
-            selectXs.update({
-              data: dataArr
-              // autoRow: true,
-            })
-            this.loading.destroy()
-          }
-        }
-        if (sqlWhereStr === '' && dataArr.length !== 0) {
-          if (paramArr.length !== 0) { // 本身受其它参数影响
-            selectXs.update({
-              data: dataArr
-              // autoRow: true,
-            })
-          }
-          $(idStr + ind).removeAttr('data-sqlWhereStr')
-          this.loading.destroy()
-        }
-      } catch (e) {
-        this.loading.destroy()
-        this.$message.error('程序执行出错，刷新参数数据失败')
-        console.info(e)
-      }
-      return initDataArr
-    },
-    /**
-     * 清空当前参数的被关联参数的值
-     * @param idStr 当前下拉框是下拉列表还是下拉树（传它们的部分ID标识）
-     * @param ind 参数的标识（下标）
-     * @param associatedParamIdArr 当前参数的所有被关联参数ID数组
-     * @description 当前参数选中值时调用
-     * @author JL
-     */
-    selectHide(idStr, ind, associatedParamIdArr) {
-      let selectXs = xmSelect.get(idStr + ind, true)// 获取当前下拉框的实体对象
-      let selectedObj = selectXs.getValue()// 获取选中的参数值
-      if (selectedObj && selectedObj.length > 0) {
-        selectXs.setValue([])// 清空选中值
+    //处理时间格式
+    timeDealFormat(val){
+      if(val=="year"){
+        return "yyyy";
+      }else if(val=="month"){
+        return "yyyy-MM";
+      }else{
+        return "yyyy-MM-dd";
       }
     },
     /**
@@ -684,15 +445,13 @@ export default {
           }
           // 获取参数查询条件（下拉列表）
           let selectParamDom = this.$refs.selectParam
-          if(selectParamDom && selectParamDom.length > 0){
-            for(let n=0; n<selectParamDom.length; n++){
-              let index = selectParamDom[n].getAttribute("index")
-              paramInfoObj = paramInfoArr[index]
+          if(selectParamDom && selectParamDom.length > 0) {
+            for(var i = 0; i< this.paramListValueList.length;i++){
+             if( typeof this.paramListValueList[i] !== 'undefined'){
+               paramInfoObj = paramInfoArr[i]
               let moduleParamId = paramInfoObj.dataId// 母参数ID
               let allowedNull = typeof paramInfoObj.dataAllowedNull !== 'undefined' ? paramInfoObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
               let choiceType = paramInfoObj.dataChoiceType// 当前参数是多选还是单选：0：多选，1、单选
-              let selectParamXs = xmSelect.get('#selectParam' + paramInfoObj.selectNum, true)// 获取下拉列表参数的单实例
-              let paramSelectedObj = selectParamXs.getValue()// 获取选中的参数值名称
               let obj = {
                 'moduleParamId': moduleParamId,
                 'paramValue': '',
@@ -700,7 +459,7 @@ export default {
               }
               if (allowedNull === 1) { // 允许为空
                 obj.allowedNull = '1'
-                if (paramSelectedObj.length === 0) { // 未选择值
+                if (this.paramListValueList[i].length === 0) { // 未选择值
                   hasAllowedNullParam = true
                   for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
                     if (arr[w].moduleParamId === moduleParamId) {
@@ -709,45 +468,37 @@ export default {
                   }
                 } else {
                   if (choiceType === '1') { // 单选
-                    obj.paramValue = paramSelectedObj[0].value
-                  } else {
-                    for (let j = 0; j < paramSelectedObj.length; j++) { // 多值，以'','',……形式展现
-                      obj.paramValue += "'" + paramSelectedObj[j].value + "',"
-                    }
-                    obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
+                    obj.paramValue = this.paramListValueList[i]
+                  } else { // 多选
+                    obj.paramValue = this.paramListValueList[i].join(',')
                   }
+                  
                 }
                 filterArr.push(obj)
               } else { // 不允许为空
-                if (paramSelectedObj.length !== 0) {
+                if (this.paramListValueList[i].length !== 0 ) {
                   if (choiceType === '1') { // 单选
-                    obj.paramValue = paramSelectedObj[0].value
+                    obj.paramValue = this.paramListValueList[i]
                   } else {
-                    for (let j = 0; j < paramSelectedObj.length; j++) { // 多值，以'','',……形式展现
-                      obj.paramValue += "'" + paramSelectedObj[j].value + "',"
-                    }
-                    obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
+                    obj.paramValue = this.paramListValueList[i].join(',')
                   }
                   filterArr.push(obj)
                 } else {
                   paramNum++
                 }
               }
+             }
             }
           }
-
           // 获取参数查询条件（下拉树）
           let selectTreeParamDom = this.$refs.selectTreeParam
           if(selectTreeParamDom && selectTreeParamDom.length > 0) {
-            for (let m = 0; m < selectTreeParamDom.length; m++) {
-              // $(this).find('.selectTreeParam').each(function(i, v) {
-              let index = selectTreeParamDom[m].getAttribute("index")
-              paramInfoObj = paramInfoArr[index]
+            for(var treenum = 0; treenum< this.paramTreeValueList.length;treenum++){
+             if( typeof this.paramTreeValueList[treenum] !== 'undefined'){
+               paramInfoObj = paramInfoArr[treenum]
               let moduleParamId = paramInfoObj.dataId// 母参数ID
               let allowedNull = typeof paramInfoObj.dataAllowedNull !== 'undefined' ? paramInfoObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
               let choiceType = paramInfoObj.dataChoiceType// 当前参数是多选还是单选：0：多选，1、单选
-              let selectTreeParamXs = xmSelect.get('#selectTreeParam' + paramInfoObj.selectTreeNum, true)// 获取下拉树参数的单实例
-              let paramSelectedObj = selectTreeParamXs.getValue()// 获取选中的参数值名称
               let obj = {
                 'moduleParamId': moduleParamId,
                 'paramValue': '',
@@ -755,7 +506,7 @@ export default {
               }
               if (allowedNull === 1) { // 允许为空
                 obj.allowedNull = '1'
-                if (paramSelectedObj.length === 0) { // 未选择值
+                if (this.paramTreeValueList[treenum].length === 0) { // 未选择值
                   hasAllowedNullParam = true
                   for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
                     if (arr[w].moduleParamId === moduleParamId) {
@@ -764,31 +515,27 @@ export default {
                   }
                 } else {
                   if (choiceType === '1') { // 单选
-                    obj.paramValue = paramSelectedObj[0].value
-                  } else {
-                    for (let b = 0; b < paramSelectedObj.length; b++) { // 多值，以'','',……形式展现
-                      obj.paramValue += "'" + paramSelectedObj[b].value + "',"
-                    }
-                    obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
+                    obj.paramValue = this.paramTreeValueList[treenum]
+                  } else { // 多选
+                    obj.paramValue = this.paramTreeValueList[treenum].join(',')
                   }
+                  
                 }
                 filterArr.push(obj)
               } else { // 不允许为空
-                if (paramSelectedObj.length !== 0) {
+                if (this.paramTreeValueList[treenum].length !== 0) {
                   if (choiceType === '1') { // 单选
-                    obj.paramValue = paramSelectedObj[0].value
+                    obj.paramValue = this.paramTreeValueList[treenum]
                   } else {
-                    for (let b = 0; b < paramSelectedObj.length; b++) { // 多值，以'','',……形式展现
-                      obj.paramValue += "'" + paramSelectedObj[b].value + "',"
-                    }
-                    obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
+                    obj.paramValue = this.paramTreeValueList[treenum].join(',')
                   }
                   filterArr.push(obj)
                 } else {
                   paramNum++
                 }
               }
-            }
+             }
+           }
           }
           if (paramNum !== 0) { // 第一步，先判断是否有必填的参数没有输入值
             returnObj.verify = false
@@ -802,7 +549,7 @@ export default {
               paramInfoObj = paramInfoArr[index]
               let dataLength = paramInfoObj.dataDatalength// 获取参数值长度
               let paramName = paramInfoObj.dataName// 获取参数名称
-              if (typeof dataLength !== 'undefined' && paramInfoObj.dataDefaultVal.length !== parseInt(dataLength)) { // 如果该参数有长度限制且默认值不等于设置的长度值
+              if (typeof dataLength !== 'undefined' && paramInfoObj.dataDefaultVal.length > parseInt(dataLength)) { // 如果该参数有长度限制且默认值不等于设置的长度值
                 returnObj.verify = false
                 returnObj.message +=  '参数【' + paramName + '】输入值的长度与设置的长度值【' + parseInt(dataLength) + '】不相等'
                 break
@@ -834,7 +581,7 @@ export default {
                       }else {
                         arr[a].paramValue = filterArr[x].paramValue
                       }
-                      replaceParamSql = replaceParamSql.replace(arr[a].id, filterArr[x].paramValue)// 将参数SQL中的参数ID替换为输入得值
+                      replaceParamSql = replaceParamSql.replaceAll(arr[a].id, filterArr[x].paramValue)// 将参数SQL中的参数ID替换为输入得值
                     }
                   }
                 }
@@ -844,6 +591,7 @@ export default {
           }
           returnObj.paramsArr = arr
       }
+
       return returnObj
     }
   }
@@ -852,6 +600,14 @@ export default {
 
 <style lang="scss" scoped>
   .paramadrawnew>>>.el-collapse-item__wrap{
-    overflow: visible;
+    overflow: scroll;
   }
+  .paramadrawnew>>>.select-div{
+    z-index: 40000;
+  }
+</style>
+<style>
+ .paramadrawnew .xm-body .scroll-body{
+   max-width:500px;
+}
 </style>

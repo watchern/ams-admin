@@ -8,11 +8,11 @@
             <SQLEditor :data-user-id='dataUserId' :scene-code1='sceneCode' :modelUuid='form.modelUuid'
                        @getSqlObj="getSqlObj" v-if="state.id==sqlEditorStr" ref="SQLEditor"
                        :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel"
-                       :locationUuid="form.locationUuid" :locationName="form.locationName" class="sql-editor"/>
-            <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" openTypeParam="2"
+                       :locationUuid="form.locationUuid" :locationName="form.locationName" :style="{height: someHeight + 'px'}"/>
+            <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" @getGraphObj="getGraphObj" openTypeParam="2" :refreshGraph="refreshAppleTable"
                    v-if="state.id==graphEditorStr"></graph>
           </div>
-          <div class="modelInfoClass" v-show="modelInfoDraw" style="position:absolute;height: calc(100% - 63px);">
+          <div class="modelInfoClass" v-show="modelInfoDraw" style="position:absolute; height: calc(100% - 125px); overflow:auto">
             <div ref="basicInfo" class="detail-form">
               <el-form ref="basicInfoForm" :model="form" :rules="basicInfoRules" :disabled="isBanEdit">
                 <el-row>
@@ -23,7 +23,7 @@
                   </el-col>
                 </el-row>
                 <el-row>
-                  <el-form-item label="业务分类">
+                  <el-form-item label="业务分类" prop="modelFolderUuid">
                     <el-col :span="18">
                       <el-input v-model="form.modelFolderUuid" class="display" :disabled="true"/>
                       <el-input v-model="form.modelFolderName" :disabled="true"/>
@@ -44,9 +44,9 @@
                   </el-form-item>
                 </el-row>
                 <el-row>
-                  <el-col :span="24">
+                  <el-col :span="20">
                     <el-form-item label="风险等级" prop="riskLevelUuid">
-                      <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级" style="width:67%;">
+                      <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级" style="width:100%;">
                         <el-option
                           v-for="state in riskLeve"
                           :key="state.codeValue"
@@ -56,14 +56,27 @@
                       </el-select>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="24">
+                  <el-col :span="20">
                     <el-form-item label="模型类型" prop="modelType">
-                      <el-select disabled v-model="form.modelType" placeholder="请选择模型类型" style="width:67%">
+                      <el-select disabled v-model="form.modelType" placeholder="请选择模型类型" style="width:100%">
                         <el-option
                           v-for="state in modelTypeData"
                           :key="state.codeValue"
                           :value="state.codeValue"
                           :label="state.codeName"
+                        />
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="20">
+                    <el-form-item label="模型用途" prop="modelUse">
+                      <!-- 模型用途为预警的模型不能编辑模型用途 -->
+                      <el-select v-model="form.modelUse" :disabled="form.modelUse==2" placeholder="请选择模型用途" style="width:100%;">
+                        <el-option
+                          v-for="item in modelUseList"
+                          :key="item.value"
+                          :value="item.value"
+                          :label="item.label"
                         />
                       </el-select>
                     </el-form-item>
@@ -86,7 +99,7 @@
               </el-form>
             </div>
           </div>
-          <div class="modelInfoClass" v-show="useParamDraw" style="position:absolute;height: calc(100% - 63px);">
+          <div class="modelInfoClass" v-show="useParamDraw" style="position:absolute; height: calc(100% - 125px); overflow:auto">
             <div ref="paramDefaultValue" class="default-value">
               <div style="font-size: 20px">
                 模型参数
@@ -98,15 +111,15 @@
               </div>
             </div>
           </div>
-          <div class="modelInfoClass" v-show="resultConfigDraw" style="position:absolute;height: calc(100% - 63px);">
-            <el-tabs v-model="activeName" :stretch="true">
+          <div class="modelInfoClass " v-show="resultConfigDraw" style="position:absolute; height: calc(100% - 125px); overflow:auto">
+            <el-tabs v-model="activeName" :stretch="true" style="width: 92%">
               <el-tab-pane label="模型结果" name="first"><div v-show="!isExecuteSql" align='center' class="notExecuteSqlClass" >执行SQL后才能设置</div><div v-show="isExecuteSql" ref="modelResultOutputCol" class="default-value">
                 <div style="font-size: 20px">
                   模型结果
                   <el-tooltip class="item" effect="dark" content="只显示最后的结果列" placement="top-start">
                     <i class="el-icon-info"/></el-tooltip>
                 </div>
-                <div class="model-result-output-col">
+                <div class="model-result-output-col detail-form">
                   <el-table ref="columnData" :data="columnData" class="div-width">
                     <el-table-column prop="outputColumnName" label="输出列名" width="180"/>
                     <el-table-column prop="dataCoding" label="数据转码" width="180">
@@ -114,14 +127,12 @@
                         <SelectTransCode ref="SelectTransCode" :transuuid.sync="scope.row.dataCoding"/>
                       </template>
                     </el-table-column>
-                    <el-table-column prop="columnName" label="显示列" align="center" width="80">
+                    <el-table-column prop="columnName" label="是否显示" width="80">
                       <template slot-scope="scope">
-<!--                        <el-select v-model="scope.row.isShow" placeholder="是否显示" value="1" :disabled="isBanEdit">-->
-<!--                          <el-option label="是" :value="1"/>-->
-<!--                          <el-option la bel="否" :value="0"/>-->
-<!--                        </el-select>-->
-                        <el-checkbox v-model="scope.row.isShow" v-if="scope.row.isShow === 1 || scope.row.isShow == undefined" :checked=true true-label="1" false-label="0" :disabled="isBanEdit"></el-checkbox>
-                        <el-checkbox v-model="scope.row.isShow" v-else :checked=false true-label="1" false-label="0" :value="scope.row.isShow" :disabled="isBanEdit"></el-checkbox>
+                        <el-select v-model="scope.row.isShow" placeholder="是否显示" value="1" :disabled="isBanEdit">
+                          <el-option label="是" :value="1"/>
+                          <el-option label="否" :value="0"/>
+                        </el-select>
                       </template>
                     </el-table-column>
 <!--                    <el-table-column prop="columnName" label="对应业务字段" width="180">-->
@@ -199,12 +210,12 @@
               </el-tab-pane>
             </el-tabs>
           </div>
-          <div  style="z-index:1000;position: absolute;float:right;right: 15px;height:calc(100% - 63px);width: 45px;background-color:  #f7f7f7;border-radius: 0px 20px 20px 0px;"><!--v-if="!modifying"-->
-            <div @click="clickModelInfo()" :style="{background: changeBtn.one === true?'#fff':'transparent',height: 65.33+'px',borderTopRightRadius: 20 + 'px'}" @mouseover="configurationSave1 = false" @mouseleave="configurationSave1 = true"><img v-if="configurationSave1" class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/modelinfo.png"/><span class="rightButtonClassa" v-if="!configurationSave1" >基础信息</span></div>
-            <div @click="clickUseParam()" :style="{background: changeBtn.two === true?'#fff':'transparent',height: 65.33+'px'}" @mouseover="configurationSave2 = false" @mouseleave="configurationSave2 = true"><img v-if="configurationSave2" class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/useParam.png"/><span class="rightButtonClassa" v-if="!configurationSave2" >已用参数</span></div>
-            <div @click="clickResultConfig()" :style="{background: changeBtn.three === true?'#fff':'transparent',height: 65.33+'px'}" @mouseover="configurationSave3 = false" @mouseleave="configurationSave3 = true"><img v-if="configurationSave3" class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/resultConfig.png"/><span class="rightButtonClassa" v-if="!configurationSave3" >结果展现</span></div>
-            <el-button type="primary" size="small" class="oper-btn save" style="position: absolute;bottom: 95px;left: 9px;" @click="save"></el-button>
-            <el-button type="primary" size="small" class="oper-btn cancel" style="position: absolute;bottom: 35px;left: -1px;" @click="closeWinfrom"></el-button>
+          <div class="editmodel-right"><!--v-if="!modifying"-->
+            <div @click="clickModelInfo()"><span :class="changeBtn.one === true?'self-made-btn-a':'self-made-btn'"  class="rightButtonClassa">基础信息</span></div>
+            <div @click="clickUseParam()"><span :class="changeBtn.two === true?'self-made-btn-a':'self-made-btn'" class="rightButtonClassa">已用参数</span></div>
+            <div @click="clickResultConfig()"><span :class="changeBtn.three === true?'self-made-btn-a':'self-made-btn'" class="rightButtonClassa">结果展现</span></div>
+            <el-button type="primary" size="small" class="oper-btn save-none" style="position: absolute;bottom: 95px;left: 9px;width: 24px" @click="save" />
+            <el-button type="primary" size="small" class="oper-btn cancel-none" style="position: absolute;bottom: 35px;left: -1px;width: 24px;" @click="closeWinfrom" />
           </div>
           <el-form-item label="模型sql" prop="sqlValue" class="display">
             <el-input v-model="form.sqlValue" type="textarea"/>
@@ -213,28 +224,28 @@
       </div>
     </el-container>
     <el-dialog v-if="auditItemTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="auditItemTree"
-               title="请选择审计事项" width="80%">
+               title="请选择审计事项" width="80%" :close-on-click-modal="false">
       <AuditItemTree ref="auditItemTreeRef"></AuditItemTree>
       <div slot="footer">
         <el-button  type="primary" @click="getAuditItem">确定</el-button>
         <el-button @click="auditItemTree=false">取消</el-button>
       </div>
     </el-dialog>
-    <el-dialog v-if="modelFolderTreeDialog" :visible.sync="modelFolderTreeDialog" title="选择业务分类" width="50%">
+    <el-dialog v-if="modelFolderTreeDialog" :visible.sync="modelFolderTreeDialog" title="选择业务分类" width="50%" :close-on-click-modal="false">
       <ModelFolderTree ref="modelFolderTree" public-model="editorModel"/>
       <div slot="footer">
         <el-button type="primary" @click="setBusinessFolder">确定</el-button>
         <el-button @click="modelFolderTreeDialog=false">取消</el-button>
       </div>
     </el-dialog>
-    <el-dialog v-if="modelDetailIsSee" :visible.sync="modelDetailIsSee" :title="modelDetailAdd===true?'添加模型关联':'修改模型关联'" width="50%">
-      <model-detail :style="modelDetailIsSeeHeight" ref="child" v-if="modelDetailIsSee" :data="modelDetailAdd===true?{}:editingModelDetail" :operationtype="operationObj.operationType" :columns="columnData"></model-detail>
+    <el-dialog v-if="modelDetailIsSee" :visible.sync="modelDetailIsSee" :title="modelDetailAdd===true?'添加模型关联':'修改模型关联'" width="50%" :close-on-click-modal="false">
+      <model-detail style="height:500px" ref="child" v-if="modelDetailIsSee" :data="modelDetailAdd===true?{}:editingModelDetail" :operationtype="operationObj.operationType" :columns="columnData"></model-detail>
       <div slot="footer">
         <el-button type="primary" @click="modelDetailAdd===true?createDetail():editModelRelationDetermine()">确定</el-button>
-        <el-button @click="modelDetailIsSee=false">取消</el-button>
+        <el-button @click="closeModelRelationDetermine()">取消</el-button>
       </div>
     </el-dialog>
-    <el-dialog v-if="thresholdIsSee" :visible.sync="thresholdIsSee" :title="thresholdAdd===true?'添加模型阈值':'修改模型阈值'" width="50%">
+    <el-dialog v-if="thresholdIsSee" :visible.sync="thresholdIsSee" :title="thresholdAdd===true?'添加模型阈值':'修改模型阈值'" width="50%" :close-on-click-modal="false">
           <thresholdvaluerel v-if="thresholdIsSee" ref="thresholdChild" :setThreasholdValueObj="setThreasholdValueObj"></thresholdvaluerel>
       <div slot="footer">
         <el-button type="primary" @click="thresholdAdd===true?createThreshold():editThresholdDetermine()">确定</el-button>
@@ -260,6 +271,7 @@ import graph from '@/views/graphtool/tooldic/index'
 import messageTips from '@/views/analysis/auditmodel/message'
 import paramshownew from "@/views/analysis/modelparam/paramshownew";
 import thresholdvaluerel from "@/views/analysis/auditmodelone/thresholdvaluerelOne";
+import chartAudit from "@/api/analysis/chartauditmodel"
 // import func from 'vue-temp/vue-editor-bridge'
 export default {
   name: 'EditModel',
@@ -322,7 +334,9 @@ export default {
         modelType: '',  //002003001审计模型编号  002003002图形化编号
         locationName: '',
         locationUuid: '',
-        graphUuid: ''
+        graphUuid: '',
+        modelUse: 1, // 审计用途
+        resultTableName: ''
       },
       //参数模型关联对象
       parammModelRel: {},
@@ -338,6 +352,8 @@ export default {
       columnTypeSelect: [],
       //模型详细对象数组
       modelDetails: [],
+      // 模型详细对象数据
+      oldModelDetails: [],
       dragMinWidth: 250,
       dragMinHeight: 180,
       //条件显示数组
@@ -352,6 +368,8 @@ export default {
       editorModelLoading: false,
       //风险等级
       riskLeve: [],
+      // 模型用途
+      modelUseList: [{label:"审计查询",value: 1},{label:"审计预警",value: 2}],
       //模型类型
       modelTypeData: [],
       //添加条件显示时候树的索引
@@ -374,12 +392,16 @@ export default {
         modelName: [
           {type: 'string', required: true, message: '请输入模型名称', trigger: 'blur'}
         ],
+        modelFolderUuid: [
+          {required: true, message: '请选择业务分类', trigger: 'change'}
+        ],
         auditItemUuid: [
           {required: true, message: '请选择审计事项', trigger: 'change'}
         ],
         riskLevelUuid: [
           {type: 'string', required: true, message: '请选择风险等级', trigger: 'change'}
         ],
+        modelUse: [{required: true, message: '请选择模型用途', trigger: 'change'}],
         modelType: [{type: 'string', required: true, message: '请选择模型类型', trigger: 'change'}
         ]
       },
@@ -418,11 +440,8 @@ export default {
       },
       selectedThreshold:[],
       isExecuteSql:false,
-      modelDetailIsSeeHeight:"",
-      // 右侧列表按钮样式
-      configurationSave1: true,
-      configurationSave2: true,
-      configurationSave3: true
+      // modelDetailIsSeeHeight:"",
+      someHeight: 700
     }
   },
   watch: {
@@ -431,7 +450,7 @@ export default {
     }
   },
   created() {
-    this.modelDetailIsSeeHeight = "height:" + (window.outerHeight - 300) + "px"
+    // this.modelDetailIsSeeHeight = ""
     //设置一个默认的模型编号
     this.form.modelUuid = getUuid()
     this.operationObj = JSON.parse(sessionStorage.getItem('operationObj'));
@@ -476,6 +495,9 @@ export default {
       //禁用所有界面可编辑元素
       this.isBanEdit = true
     }
+    // 自适应高度
+    let windowHeight = document.getElementsByClassName("app-container")[0]
+    this.someHeight = windowHeight.offsetHeight
   },
   methods: {
     editThresholdDetermine(){
@@ -564,6 +586,7 @@ export default {
     editModelRelation(){
       this.modelDetailAdd = false
       this.modelDetailIsSee = true
+      this.oldModelDetails = JSON.parse(JSON.stringify(this.modelDetails));
     },
     deleteModelRelation(){
       for(var i = 0;i<this.selectedModelDetail.length;i++){
@@ -575,12 +598,29 @@ export default {
       }
     },
     editModelRelationDetermine(){
+      var modelDetailObj =  this.$refs.child.getObj()
+      if (modelDetailObj.verResult == false){
+        this.$message(modelDetailObj.message)
+        return
+      }else {
+        // this.modelDetailIsSee = false
+        // modelDetailObj.onlyId = uuid2()
+        // this.modelDetails.push(modelDetailObj)
         for (var j = 0 ;j<this.modelDetails.length; j++){
           if (this.modelDetails[j].onlyId===this.editingModelDetail.onlyId){
             this.modelDetails.splice(j,1,this.editingModelDetail)
           }
         }
-      this.modelDetailIsSee = false
+        this.modelDetailIsSee = false
+      }
+    },
+    // 取消编辑
+    closeModelRelationDetermine(){
+      if(this.modelDetailAdd) this.modelDetailIsSee = false
+      else {
+        this.modelDetails = this.oldModelDetails
+        this.modelDetailIsSee = false
+      }
     },
     clickModelInfo(){
       if (this.modifying == true && this.modelInfoDraw == true){
@@ -603,6 +643,8 @@ export default {
       }
     },
     clickUseParam(){
+      // 刷新参数列表
+      this.refreshAppleTable()
       if (this.modifying == true && this.useParamDraw == true){
         this.modifying = false
         this.useParamDraw = false
@@ -628,8 +670,6 @@ export default {
     },
     clickResultConfig(){
       if (this.modifying == true && this.resultConfigDraw == true){
-        console.log('111')
-        console.log(this.columnData)
         this.modifying = false
         this.resultConfigDraw = false
         this.changeBtn.three = false
@@ -739,6 +779,8 @@ export default {
             this.$message({type: 'info', message: paramDefaultValue.message})
             return null
           }
+        } else {
+          this.form.parammModelRel = null
         }
       } else if (this.$refs.graph != undefined) {
         // 获取图形化参数对象  到下边去处理
@@ -748,18 +790,21 @@ export default {
         if (this.form.modelType == "002003002") {
           let saveResult = true
           let graphObjResult = this.getGraphObj()
+          paramDefaultValue = this.$refs.apple.getParamsSetting()
           if (!graphObjResult) {
             return null
           } else {
             //获取完图形化的列信息之后重新赋值 因为这个时候界面没渲染完成，因此直接从数据里拿
-            columnData = this.columnData
+            //columnData = this.columnData   //覆盖后转码无法使用，先注掉
             //拿到列之后图形化就可以保存了，调用图形化的保存方法
             await this.$refs.graph[0].saveModelGraph().then(result => {
+              this.modelSql = result.modelSql
               if(result.isError){
                 saveResult = false
                 this.$message({type: 'error', message: result.message})
               }
               this.form.graphUuid = result.graphUuid
+              this.form.resultTableName = result.resultTableName
             });
             if(!saveResult){
               return null
@@ -777,9 +822,9 @@ export default {
       for (let i = 0; i < columnData.length; i++) {
         if (columnData[i].isShow == undefined) {
           columnData[i].isShow = 1
+        }
           columnData[i].columnOrder = ++columnOrder
         }
-      }
       this.form.modelOutputColumn = columnData
 
       // endregion
@@ -787,7 +832,11 @@ export default {
       // 获取到参数的默认值，是个JSON，将JSON存入到数据库  以便下次反显时使用
       //拿到默认值后组织成后台数据库的格式
       if (paramDefaultValue != undefined && paramDefaultValue.length != 0) {
-        const paramData = paramDefaultValue.paramSettingArr
+        if(paramDefaultValue.paramSettingArr){
+          var paramData = paramDefaultValue.paramSettingArr
+        }else{
+          var paramData = paramDefaultValue
+        }
         let newParamData = []
         for (let i = 0; i < paramData.length; i++) {
           var obj = {
@@ -849,8 +898,12 @@ export default {
       if (returnObj.params.length != 0) {
         this.sqlEditorParam = returnObj.params
         this.$refs.apple.initSetting(this.sqlEditorParam)
+        this.sqlEditorParamObj = {arr: returnObj.params} //给sql编辑器的参数对象赋值，编辑使用
+      } else {
+        // 编辑时清空参数的情况
+        this.$refs.apple.removeParam()
+        this.sqlEditorParamObj = {arr: []}// 清空参数
       }
-      this.sqlEditorParamObj = {arr: returnObj.params}//给sql编辑器的参数对象赋值，编辑使用
       // region 初始化固定列
       const columnData = []
       for (let i = 0; i < sqlObj.column.length; i++) {
@@ -879,6 +932,10 @@ export default {
       this.form.locationName = returnObj.locationName
       this.form.locationUuid = returnObj.locationUuid
     },
+    // 刷新参数列表
+    refreshAppleTable(){
+      this.$refs.apple.refreshTable()
+    },
     /**
      *获取图形化对象
      */
@@ -904,9 +961,9 @@ export default {
         }
         let contrastResult = this.contrastGraphColumnInfo(returnObj)
         //如果为true说明结果列相同，不需要重新加载
-        if (contrastResult) {
-          return true
-        }
+        // if (contrastResult) {
+        //   return true
+        // }
       }
       //region 初始化模型结果固定输出列
       const columnData = []
@@ -925,9 +982,17 @@ export default {
         if (params.length != 0) {
           this.sqlEditorParam = params
           this.$refs.apple.initSetting(this.sqlEditorParam)
+        }else {
+          // 编辑时清空参数的情况
+          this.$refs.apple.removeParam()
+          this.form.parammModelRel = null
         }
+        // 
         //endregion
-        this.graphColumnInfo = returnObj
+        let that = this
+        setTimeout(function () {
+          that.refreshAppleTable()
+        }, 500)
         this.columnData = columnData
         if (this.columnData.length==0){
           this.isExecuteSql = false
@@ -1082,7 +1147,8 @@ export default {
         riskLevelUuid: '',
         auditIdeas: '',
         paramConditions: '',
-        sqlValue: ''
+        sqlValue: '',
+        modelUse: 0
       }
       this.parammModelRel = {}
       this.sqlObj = {
@@ -1242,6 +1308,10 @@ export default {
       if (modelObj == null) {
         return
       }
+      // 如果是图形化模型 取modelSql
+      if (this.form.modelType === "002003002"){
+        modelObj.sqlValue = this.modelSql
+      }
       this.editorModelLoading = true
       if (!this.isUpdate) {
         saveModel(modelObj).then(result => {
@@ -1277,16 +1347,13 @@ export default {
         })
       }
       //}
+      // 调用保存图表拖拽布局
+      chartAudit.$emit('chartAuditOn');
     }
-  },
+  }
 }
 </script>
 <style scoped>
-.sql-editor {
-  height: 842px;
-  /* overflow-y:scroll */
-}
-
 .display {
   display: none;
 
@@ -1312,8 +1379,8 @@ export default {
 }
 
 .model-result-output-col {
-  height: 650px;
-  overflow-y: scroll;
+  /* height: 650px;
+  overflow-y: scroll; */
 }
 
 .default-value {
@@ -1438,19 +1505,18 @@ export default {
   position: relative;
   animation: modelInfo 0.5s forwards;
   right: 60px;
-  box-shadow: -15px 0 15px 0 #3f444d12;
 }
 
 @keyframes modelInfo {
   0%{width: 0%;}
-  100%{width: 43%}
+  100%{width: 706px}
 }
 .sqlEditorWidth{
   float: left;
   animation: sqlEditorWidth 0.5s forwards;
 }
 @keyframes sqlEditorWidth {
-  0%{width: 98%;}
+  0%{width: calc(100% - 45px);}
   100%{width: 50%;}
 }
 
@@ -1460,7 +1526,7 @@ export default {
 }
 @keyframes sqlEditorWidth1 {
   0%{width: 50%;}
-  100%{width: 98%;}
+  100%{width: calc(100% - 45px);}
 }
 .rightButtonClass{
   width: 25px;
@@ -1476,14 +1542,15 @@ export default {
 .rightButtonClassa{
   display: inline-block;
   font-size: 14px;
-  background: rgb(232, 240, 255);
   height: 40px;
   width: 40px;
   line-height: 16px;
   border-radius: 3px;
   margin: 12px 0 0 3px;
   padding: 3.5px 5px 5px 5.5px;
-  color: rgb(27,76,139);
   cursor: pointer;
+}
+.rightButtonClassa:hover{
+  background: rgba(0,0,0,0.1)
 }
 </style>

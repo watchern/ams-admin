@@ -36,7 +36,7 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
     <!-- 这是第一个弹窗，用来添加基础数据类别 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" height="70vh">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false" height="70vh">
       <el-form
         class="detail-form"
         ref="dataForm"
@@ -66,7 +66,7 @@
       </el-form>
       <div slot="footer">
         <el-button type="primary" size="mini" @click="closeDialog()" style="color:#353A43;background:#fff;border:none;font-weight:bold;font-size:14px">取消</el-button>
-        <el-button @click="dialogStatus==='create'?createData():updateData()" style="color:#c8ff8c;background:#353A43">保存</el-button>
+        <el-button type="primary" size="mini" @click="dialogStatus==='create'?createData():updateData()" style="color:#c8ff8c;background:#353A43">保存</el-button>
       </div>
     </el-dialog>
     <!-- 这是第二个弹窗，用来操作类别下具体的基础数据 -->
@@ -136,7 +136,7 @@
       </el-form>
       <el-button type="primary" class="oper-btn delete" size="mini" :disabled="selectionSecond.length === 0" @click="deleteDataSecond()" style="float:right;margin:0 15px 0 10px"></el-button>
       <el-button type="primary" class="oper-btn edit" size="mini" :disabled="selectionSecond.length !== 1" @click="updateDataSecond()" style="float:right"></el-button>
-      <el-button type="primary" class="oper-btn again-2" size="mini" @click="resetTempSecond()" style="float:right"></el-button>
+      <el-button type="primary" class="oper-btn reset" size="mini" @click="resetTempSecond()" style="float:right"></el-button>
       <el-button type="primary" class="oper-btn add" size="mini" @click="addSecondCode()" style="float:right"></el-button>
 
       <el-table
@@ -272,6 +272,7 @@ export default {
       if (!codeValue) {
         this.$notify.error({
           title: '错误',
+          duration: 2000,
           message: '请输入4-32位的数字',
           position: 'bottom-right'
         })
@@ -285,6 +286,7 @@ export default {
       if (!codeValue) {
         this.$notify.error({
           title: '错误',
+          duration: 2000,
           message: '请输入4-32位的数字',
           position: 'bottom-right'
         })
@@ -293,7 +295,7 @@ export default {
     },
     numberIndex() {
       var data = this.tempSecond.codeIndex
-      const codeIndex = new RegExp('^[0-9]$').test(data)
+      const codeIndex = new RegExp('^[0-9]+$').test(data)
       if (!codeIndex) {
         this.$notify.error({
           title: '错误',

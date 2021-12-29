@@ -168,8 +168,8 @@
             <el-table-column prop="columnName" label="是否显示" width="80">
               <template slot-scope="scope">
                 <el-select v-model="scope.row.isShow" placeholder="是否显示" value="1" :disabled="isBanEdit">
-                  <el-option label="是" :value="1"/>
-                  <el-option label="否" :value="0"/>
+                  <el-option label="是" value="1"/>
+                  <el-option label="否" value="0"/>
                 </el-select>
               </template>
             </el-table-column>
@@ -239,7 +239,7 @@
         </div>
       </div>
     </el-container>
-    <el-dialog v-if="auditItemTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="auditItemTree"
+    <el-dialog v-if="auditItemTree" :destroy-on-close="true" :close-on-click-modal="false" :append-to-body="true" :visible.sync="auditItemTree"
                title="请选择审计事项" width="80%">
       <AuditItemTree ref="auditItemTreeRef"></AuditItemTree>
       <div slot="footer">
@@ -247,7 +247,7 @@
         <el-button @click="auditItemTree=false">取消</el-button>
       </div>
     </el-dialog>
-    <el-dialog v-if="modelFolderTreeDialog" :visible.sync="modelFolderTreeDialog" title="选择业务分类" width="50%">
+    <el-dialog v-if="modelFolderTreeDialog" :visible.sync="modelFolderTreeDialog" :close-on-click-modal="false" title="选择业务分类" width="50%">
       <ModelFolderTree ref="modelFolderTree" public-model="editorModel"/>
       <div slot="footer">
         <el-button type="primary" @click="setBusinessFolder">确定</el-button>
@@ -478,6 +478,7 @@ export default {
     }
   },
   mounted() {
+    alert(123)
     this.initEvent()
     this.initData(this.operationObj)
     // 如果为2则反显要修改的数据
@@ -604,8 +605,8 @@ export default {
         this.$refs.relInfo.style.display = 'none'
         this.$refs.chartConfig.style.display = 'none'
         this.$refs.modelFilterShowParent.style.display = 'none'
-        if (this.$refs.[data.id][0] != undefined) {
-          this.$refs.[data.id][0].style.display = 'block'
+        if (this.$refs[data.id][0] != undefined) {
+          this.$refs[data.id][0].style.display = 'block'
         }
       }
       this.currentSelectTreeNode = data
@@ -616,11 +617,11 @@ export default {
     hideModelDetail() {
       for (let i = 0; i < this.modelDetails.length; i++) {
         const id = this.modelDetails[i].id
-        this.$refs.[id][0].style.display = 'none'
+        this.$refs[id][0].style.display = 'none'
       }
       for (let i = 0; i < this.filterShows.length; i++) {
         const id = this.filterShows[i].id
-        this.$refs.[id][0].style.display = 'none'
+        this.$refs[id][0].style.display = 'none'
       }
     },
     /**

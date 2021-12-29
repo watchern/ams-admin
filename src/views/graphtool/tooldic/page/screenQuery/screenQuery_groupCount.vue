@@ -19,7 +19,7 @@
                     <el-table-column label="操作" width="180" align="center">
                         <template slot-scope="scope">
                             <el-button v-if="scope.$index === 0" type="primary" class="oper-btn add-3" @click="addCountTr" style="line-height: normal;"/>
-                            <el-button v-if="scope.$index !== 0" type="primary" class="oper-btn delete-7" @click="delCountTr(scope.$index)" style="line-height: normal;"/>
+                            <el-button v-if="scope.$index !== 0" type="primary" class="oper-btn delete-row btn-width-md" @click="delCountTr(scope.$index)" style="line-height: normal;"/>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -68,9 +68,10 @@
                                 this.countTrNum = m + 1
                                 let chooseColumnXs = xmSelect.get(`#searchName${m}` , true)// 获取当前行中汇总字段名称的单实例
                                 let initCountColumnData = JSON.parse(JSON.stringify(this.columnData))// 复制全局汇总字段的数组变量的值
+                                cosoel
                                 initCountColumnData.unshift({ 'name': '请选择', 'value': '', 'type': '' })
                                 for (let n = 0; n < initCountColumnData.length; n++) { // 设置已汇总字段名称值的选中状态，重新渲染当前行的下拉框
-                                    if(curCountData[m].columnName === initCountColumnData[n].value){
+                                    if(curCountData[m].newColumnName === initCountColumnData[n].value){
                                         initCountColumnData[n].selected = true;
                                         break;
                                     }
@@ -87,7 +88,7 @@
                                     { 'name': '求和', 'value': 'sum' },
                                     { 'name': '最大值', 'value': 'max' },
                                     { 'name': '最小值', 'value': 'min' },
-                                    { 'name': '平均值', 'value': 'ave' }
+                                    { 'name': '平均值', 'value': 'avg' }
                                 ]
                                 initCountTypeData.forEach( item => {
                                     if ($.inArray(curCountData[m].columnType, this.typeArr) < 0) { // 设置不可汇总字段的数据数组（不能写到这个for循环外面）
@@ -95,7 +96,7 @@
                                             case 'sum':
                                             case 'max':
                                             case 'min':
-                                            case 'ave':
+                                            case 'avg':
                                                 item.disabled = true
                                                 break
                                         }
@@ -297,7 +298,7 @@
                             }else{
                                 this.countColumnStrArr.push(`${typeValue[0].value}(${columnValue[0].name}) as ${columnValue[0].name}_${typeValue[0].name}`)
                                 this.countColumnArr.push(`${columnValue[0].name}_${typeValue[0].name}`)
-                                this.countData.push({"columnName":columnValue[0].name,"columnType":columnValue[0].type,"countTypeValue":typeValue[0].value})
+                                this.countData.push({"newColumnName":columnValue[0].name,"columnType":columnValue[0].type,"countTypeValue":typeValue[0].value})
                                 countColumnArrInfo.push(repeatSign)
                             }
                         }

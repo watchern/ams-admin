@@ -6,14 +6,14 @@
           ref="dataForm"
           :model="temp"
           label-position="right"
-          style="width: 750px;"
+          style="min-width: 750px;width:100%;"
         >
           <span class="midText">业务表信息：</span>
           <el-form-item label="汉化名称：" prop="chnName">
-            <el-input v-model="temp.chnName" :disabled="openType === 'showTable'" />
+            <el-input v-model="temp.chnName" :disabled="openType === 'showTable'" class="detail-form"/>
           </el-form-item>
           <span class="midText">列业务信息：</span>
-          <el-table :data="temp.colMetas" height="400px">
+          <el-table :data="temp.colMetas" height="400px" class="detail-form">
             <el-table-column prop="colName" label="字段名称">
               <template slot-scope="scope">
                 <el-input v-model="scope.row.colName" style="width:90%;" :disabled="openType === 'showTable'" />
@@ -24,7 +24,7 @@
                 <el-input v-model="scope.row.chnName" style="width:90%;" :disabled="openType === 'showTable'" />
               </template>
             </el-table-column>
-            <el-table-column prop="bizAttrUuid" label="业务标签">
+            <!--<el-table-column prop="bizAttrUuid" label="业务标签">
               <template slot-scope="scope">
                 <el-select ref="bizAttrUuid" v-model="scope.row.bizAttrUuid" clearable :disabled="openType === 'showTable'">
                   <el-option
@@ -35,7 +35,7 @@
                   />
                 </el-select>
               </template>
-            </el-table-column>
+            </el-table-column>-->
             <el-table-column prop="transRuleUuid" label="转码规则" width="260px" :disabled="openType === 'showTable'">
               <template slot-scope="scope">
                 <SelectTransCode

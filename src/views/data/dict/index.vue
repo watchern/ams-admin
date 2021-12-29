@@ -9,8 +9,8 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" class="oper-btn export-5" @click="exportFile" />
-        <el-button type="primary" class="oper-btn import-2" @click="importFile" />
+        <el-button type="primary" class="oper-btn download-template btn-width-md" @click="exportFile" />
+        <el-button type="primary" class="oper-btn import" @click="importFile" />
       </el-col>
     </el-row>
     <el-table
@@ -20,7 +20,7 @@
       border
       fit
       highlight-current-row
-      style="width: 100%;height:500px;overflow: auto;"
+      style="width: 100%;height:calc(100% - 140px);overflow: auto;"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -31,15 +31,15 @@
       <el-table-column label="创建时间" width="300px" align="center" :formatter="formatCreateTime" prop="createTime" />
       <el-table-column label="操作" align="center" min-width="100">
         <template slot-scope="scope">
-          <el-button type="primary" class="oper-btn detail" title="预览" size="mini" @click="selectFilterOne(scope.row.tableMetaUuid)" />
+          <el-button type="primary" class="oper-btn preview" title="预览" size="mini" @click="selectFilterOne(scope.row.tableMetaUuid)" />
         </template>
       </el-table-column>
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
     <!-- 弹窗1 预览数据-->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisibleTable">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisibleTable" :close-on-click-modal="false">
       <template>
-        <div class="detail-form">
+        <div class="detail-form" style="height:62vh; overflow:auto;">
           <el-form
             ref="dataForm"
             :rules="rules"
@@ -63,7 +63,7 @@
             border
             fit
             highlight-current-row
-            style="width: 100%;height:500px;overflow: auto;"
+            style="width: 100%;overflow: auto;"
           >
             <el-table-column label="字段名称" width="250px" prop="colName" />
             <el-table-column label="字段汉化名称" width="250px" prop="chnName" />
@@ -77,7 +77,7 @@
       </div>
     </el-dialog>
     <!-- 弹窗2 导入数据-->
-    <el-dialog v-if="importVisible" :title="textMap[dialogStatus]" :visible.sync="importVisible" width="800px">
+    <el-dialog v-if="importVisible" :title="textMap[dialogStatus]" :visible.sync="importVisible" :close-on-click-modal="false" width="800px">
       <el-row>
         <el-col>
           <directory-file-import @fileuploadname="fileuploadname" />
@@ -152,7 +152,12 @@ export default {
   methods: {
     getList(query) {
       this.listLoading = true
+      if (query == null) {
+        query = new Object()
+      }
+      query.tblType='T'
       if (query) this.pageQuery.condition = query
+
       listByPage(this.pageQuery).then(resp => {
         this.total = resp.data.total
         this.list = resp.data.records
@@ -190,7 +195,7 @@ export default {
     // 导出表信息作为模板
     exportFile() {
       if (this.selections.length === 0) {
-        this.$message({ type: 'info', message: '无选择表,下载模板失败!' })
+        this.$message({ type: 'info', message: '无选择表,失败!' })
       } else {
         axios.post(`/data/tableMeta/exportFile`, qs.stringify({ tableMetasJson: JSON.stringify(this.selections) }),
           { responseType: 'blob', headers: {
@@ -228,7 +233,7 @@ export default {
             title: '成功',
             message: res.data.msg,
             type: 'success',
-            duration: 5000,
+            duration: 2000,
             position: 'bottom-right'
           })
           this.getList()

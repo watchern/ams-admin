@@ -80,7 +80,8 @@ export default {
         operators = ["=", "<>", "like", "not like"];
       } else if (
         columnObj.columnType.toUpperCase().indexOf("INT") != -1 ||
-        columnObj.columnType.toUpperCase().indexOf("NUMBER") != -1
+        columnObj.columnType.toUpperCase().indexOf("NUMBER") != -1||
+        columnObj.columnType.toUpperCase().indexOf("DECIMAL") != -1
       ) {
         operators = ["=", "<>", "<", "<=", ">", ">="];
       }
@@ -91,7 +92,12 @@ export default {
      */
     selectSql() {
       if (this.queryJson.children == null) {
-        alert("请添加条件后在进行查询！");
+       this.$message({
+         showClose: true,
+          message: '请添加条件后在进行查询!',
+          type: 'warning'
+        });
+        // alert("请添加条件后在进行查询！");
       } else {
         var sql = this.queryToSql(this.queryJson);
         var obj = { sql: sql, queryJson: this.queryJson };
@@ -103,7 +109,11 @@ export default {
      */
     getSelectSql() {
       if (this.queryJson.children == null) {
-        alert("请添加条件后在进行查询！");
+        this.$message({
+          showClose: true,
+          message: '请添加条件后在进行查询!',
+          type: 'warning'
+        });
       } else {
         var sql = this.queryToSql(this.queryJson);
         var obj = { sql: sql, queryJson: this.queryJson };

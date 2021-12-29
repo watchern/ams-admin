@@ -1,5 +1,5 @@
 <template>
-  <div id="drag">
+  <div id="drag"  v-if="showDrag">
     <!-- <div class="title">
       <h2>已选择模型</h2>
       <div>
@@ -54,6 +54,7 @@
       title="当前已选模型"
       :visible.sync="dialogFormVisible"
       :append-to-body="true"
+      :close-on-click-modal="false"
     >
       <el-table
         ref="modelListTable"
@@ -66,19 +67,18 @@
         <el-table-column
           label="模型名称"
           width="100px"
-          align="center"
           prop="modelName"
         />
         <el-table-column
           label="平均运行时间"
           width="150px"
-          align="center"
           prop="runTime"
         />
         <el-table-column label="审计事项" prop="auditItemName" />
         <el-table-column
           label="风险等级"
           prop="riskLevelUuid"
+          align="center"
           :formatter="riskLevelFormatter"
         />
         <el-table-column
@@ -90,6 +90,7 @@
           label="创建时间"
           width="180px"
           prop="createTime"
+          align="center"
           :formatter="dateFormatter"
         />
       </el-table>
@@ -98,7 +99,9 @@
       title="模型运行设置-立即"
       :visible.sync="runimmediatelyIsSee"
       width="60%"
+      top="5vh"
       :append-to-body="true"
+      :close-on-click-modal="false"
     >
       <runimmediatelycon
         :data-user-id='dataUserId'
@@ -118,10 +121,11 @@
       :visible.sync="timingExecutionIsSee"
       width="60%"
       :append-to-body="true"
+      :close-on-click-modal="false"
     >
       <runimmediatelycon
         :data-user-id='dataUserId'
-        :scene-code1='sceneCode'
+        :scene-code='sceneCode'
         v-if="timingExecutionIsSee"
         ref="modelsetting"
         :timing="true"
@@ -144,6 +148,7 @@
 </template>
 <script>
 import { getOneDict } from "@/utils";
+import _ from 'lodash'
 import runimmediatelycon from "@/views/analysis/auditmodel/runimmediatelycon";
 import { uuid2, addRunTaskAndRunTaskRel } from "@/api/analysis/auditmodel";
 export default {
@@ -157,6 +162,8 @@ export default {
       dragMinHeight: 124,
       memoValue: "",
       currentData: [],
+      // 是否显示运行
+      showDrag: false,
       dialogFormVisible: false,
       list: [],
       runimmediatelyIsSee: false,
@@ -343,8 +350,18 @@ export default {
     //   }
     // },
     setMemo(obj) {
-      this.memoValue = obj.length;
-      this.currentData = obj;
+      let modelList = _.filter(obj, function(o) { return o.modelUse!= 2 })
+      this.showDrag = modelList.length == obj.length ? true : false
+      if(!this.showDrag)
+      this.$notify({
+        title: '提示',
+        message: '选中的模型中包含模型用途为预警的模型',
+        position: 'bottom-right',
+        duration: 2000,
+        type: 'warning'
+      })
+      this.memoValue = modelList.length;
+      this.currentData = modelList;
     },
     selectData() {
       this.dialogFormVisible = true;
@@ -429,6 +446,7 @@ export default {
      */
     modelRunSetting() {
       this.$refs.modelsetting.replaceParams().then(results=>{
+        if(!results) return
         this.models = results.models;
         this.replacedInfo = results.replaceInfo;
         var modelResultSavePathId = results.modelResultSavePathId;
@@ -520,6 +538,7 @@ export default {
             //     message: "定时运行时间距当前时间要大于5分钟",
             //   });
             // } else {
+            // 立即运行
             var runTaskUuid = uuid2();
             var batchUuid = uuid2();
             var runTaskRels = [];

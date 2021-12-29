@@ -3,7 +3,7 @@
 const baseRouter = {
   path: '/base',
   name: '公共管理',
-  component: () => import('@/portal/default/index'),
+  component: (resolve) => require(['@/portal/' + (process.env.VUE_APP_BASE_MENU === 'withmenu'?'withmenu/' + process.env.VUE_APP_BASE_SKIN:'withoutmenu') + '/index'], resolve),
   meta: {
   },
   children: [

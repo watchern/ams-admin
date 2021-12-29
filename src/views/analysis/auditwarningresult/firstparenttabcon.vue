@@ -1,6 +1,6 @@
 <template>
   <!-- firstParentTabCon.vue界面是父页签第一个页签中的内容 -->
-  <div class="app-container">
+  <div class="app-container firstParentTabCon">
     <el-container>
       <el-aside class="tree-side">
         <div class="tree-container" style = "height:700px;overflow:auto;">
@@ -15,45 +15,48 @@
         @submit="getLikeList"
       />
     </el-header>
-    <el-main style="width:77.5vw;">
+    <!-- style="width:77.5vw;" -->
+    <el-main>
     <div align="right">
       <el-row>
-        <el-button
+        <!-- @分配结果@-->
+        <!-- <el-button
           type="primary"
           @click="openProjectDialog"
-          :disabled="buttonIson.AssociatedBtn"
-          class="oper-btn link-2"
-        ></el-button>
-        <el-button
+          :disabled="buttonIson.disableAssociatedBtn"
+          class="oper-btn allocation btn-width-md"
+        /> -->
+<!--        <el-button
           type="primary"
           @click="modelResultOpenDialog()"
-          :disabled="buttonIson.resultShareBtn"
-          class="oper-btn share"
-        ></el-button>
-        <el-button
+          :disabled="buttonIson.disableShareBtn"
+          class="oper-btn allocation btn-width-md"
+        />-->
+        <!-- 移除关联项目 -->
+        <!-- <el-button
           type="primary"
-          @click="RemoverelationProject()"
-          :disabled="buttonIson.DisassociateBtn"
-          class="oper-btn move"
-          ></el-button>
-        <el-button
+          @click="removeRelationProject()"
+          :disabled="buttonIson.disableDisassociateBtn"
+          class="btn-width-max oper-btn disallocation"
+          /> -->
+<!--        <el-button
           type="primary"
-          :disabled="buttonIson.resultSplitBtn"
-          class="oper-btn split-2"
+          :disabled="buttonIson.disableSplitBtn"
+          class="oper-btn split"
           @click="openResultSplitDialog"
-        ></el-button>
+        ></el-button>-->
         <el-button
           type="primary"
           @click="exportExcel"
-          :disabled="buttonIson.exportBtn"
-          class="oper-btn export-2"
-        ></el-button>
+          :disabled="buttonIson.disableExportBtn"
+          class="oper-btn export"
+        />
         <el-button
-          :disabled="buttonIson.deleteBtn"
+          :disabled="buttonIson.disableDeleteBtn"
           type="primary"
           @click="deleteRunTaskRel"
-          class="oper-btn delete-2"
-        ></el-button>
+          class="oper-btn delete"
+        />
       </el-row>
     </div>
     <el-table
@@ -73,7 +76,6 @@
         v-if="warringResultType===1"
         label="模型名称"
         width="300px"
-        align="center"
         prop="model.modelName"
       >
         <template slot-scope="scope">
@@ -98,7 +100,6 @@
         v-if="warringResultType===2"
         label="指标名称"
         width="300px"
-        align="center"
         prop="model.modelName"
       >
         <template slot-scope="scope">
@@ -183,25 +184,32 @@
         prop="runEndTime"
         :formatter="dateFormatter1"
       />
+      <!-- :formatter="settingInfoSqlFormatter" -->
       <el-table-column
         label="运行SQL"
         prop="settingInfo"
         align="center"
         width="200px"
-        :formatter="settingInfoSqlFormatter"
-      />
+      >
+            <template slot-scope="scope">
+              <el-popover trigger="hover" placement="top" width="500" :content="settingInfoSqlFormatter(scope.row)">
+                <div slot="reference" class="name-wrapper">
+                  <el-link :underline="false" type="primary">查看</el-link>
+                </div>
+              </el-popover>
+            </template>
+          </el-table-column>
       <el-table-column
         label="运行参数"
         prop="settingInfo"
-        align="center"
         width="200px"
         :formatter="settingInfoParamsArrFormatter"
       />
       <el-table-column
         label="运行信息"
         prop="runMessage"
-        align="center"
         width="200px"
+        :show-overflow-tooltip="true"
       />
       <el-table-column
         label="关联项目"
@@ -330,8 +338,15 @@ import AV from "leancloud-storage";
 import { getParamSettingArr } from "@/api/analysis/auditparam";
 import warningresulttree from "@/views/analysis/auditwarningresult/warningresulttree";
 import personTree from "@/components/publicpersontree/index";
+
+//引入时间格式化方法
+import dayjs from 'dayjs';
 export default {
   components: { Pagination, QueryField, warningresulttree,personTree },
+  props: {
+    runTaskUuid: String,
+      modelTitle:String
+  },
   data() {
     return {
       tableKey: "errorUuid",
@@ -361,12 +376,14 @@ export default {
       success1: false, // 用来测试open2方法里的deleteRunResultShare方法返回值是否为true，如果为true则success为true
       selected1: [], // 存储表格中选中的数据
       buttonIson: {
-        AssociatedBtn: true,
-        DisassociateBtn: true,
-        deleteBtn: true,
-        resultSplitBtn: true,
-        resultShareBtn: true,
-        exportBtn: false,
+        disableAssociatedBtn: true,
+        // 取消执行按钮
+        disableCancelExecBtn: true,
+        disableDisassociateBtn: true,
+        disableDeleteBtn: true,
+        disableSplitBtn: true,
+        disableShareBtn: true,
+        disableExportBtn: false,
       },
       settingTimingIsSee: false,
       setDateTime: "",
@@ -381,7 +398,11 @@ export default {
     };
   },
   created() {
-
+    var query = {}
+    if(this.runTaskUuid != null){
+      query = {runTaskUuid: this.runTaskUuid}
+    }
+    this.getLikeList(query)
   },
   methods: {
     determineProject(){
@@ -423,8 +444,12 @@ export default {
      * 导出方法
      */
     exportExcel() {
+      const items  = [];
+      // 获取选中行的id
+      this.selected1.forEach(e =>(items.push(e.runTaskRelUuid)));
       axios({
-        method: "get",
+        method: "post",
+        data: items,
         url: "/analysis/RunTaskRelController/exportRunTaskRelTable",
         responseType: "blob",
       }).then((res) => {
@@ -432,8 +457,9 @@ export default {
         const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
         link.style.display = "none";
         link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "模型运行结果表.xlsx");
-        document.body.appendChild(link);
+          //模型运行结果表日期使用当前日期
+          link.setAttribute("download","预警结果导出("+dayjs(new Date()).format('YYYY年MM月DD日hhmmss')+")"+".xls");
+          document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
       });
@@ -644,29 +670,28 @@ export default {
     /**
      * 当多选框改变时触发
      */
-    //      buttonIson:{AssociatedBtn:true,DisassociateBtn:true,deleteBtn:true,resultSplitBtn:true,resultShareBtn:true,exportBtn:false}
     handleSelectionChange(val) {
       if (val.length <= 0) {
-        this.buttonIson.AssociatedBtn = true;
-        this.buttonIson.DisassociateBtn = true;
-        this.buttonIson.deleteBtn = true;
-        this.buttonIson.resultSplitBtn = true;
-        this.buttonIson.resultShareBtn = true;
-        this.buttonIson.exportBtn = false;
+        this.buttonIson.disableAssociatedBtn = true;
+        this.buttonIson.disableDisassociateBtn = true;
+        this.buttonIson.disableDeleteBtn = true;
+        this.buttonIson.disableSplitBtn = true;
+        this.buttonIson.disableShareBtn = true;
+        this.buttonIson.disableExportBtn = false;
       } else if (val.length == 1) {
-        this.buttonIson.AssociatedBtn = false;
-        this.buttonIson.DisassociateBtn = false;
-        this.buttonIson.deleteBtn = false;
-        this.buttonIson.resultSplitBtn = true;
-        this.buttonIson.resultShareBtn = false;
-        this.buttonIson.exportBtn = false;
+        this.buttonIson.disableAssociatedBtn = false;
+        this.buttonIson.disableDisassociateBtn = false;
+        this.buttonIson.disableDeleteBtn = false;
+        this.buttonIson.disableSplitBtn = true;
+        this.buttonIson.disableShareBtn = false;
+        this.buttonIson.disableExportBtn = false;
       } else if (val.length > 1) {
-        this.buttonIson.AssociatedBtn = false;
-        this.buttonIson.DisassociateBtn = false;
-        this.buttonIson.deleteBtn = false;
-        this.buttonIson.resultSplitBtn = false;
-        this.buttonIson.resultShareBtn = false;
-        this.buttonIson.exportBtn = false;
+        this.buttonIson.disableAssociatedBtn = false;
+        this.buttonIson.disableDisassociateBtn = false;
+        this.buttonIson.disableDeleteBtn = false;
+        this.buttonIson.disableSplitBtn = false;
+        this.buttonIson.disableShareBtn = false;
+        this.buttonIson.disableExportBtn = false;
       }
       this.share.splice(0, this.share.length);
       this.notShare.splice(0, this.notShare.length);
@@ -981,7 +1006,7 @@ export default {
     /**
      * 移除项目关联
      */
-    RemoverelationProject() {
+    removerelationProject() {
       var ids = [];
       for (var i = 0; i < this.selected1.length; i++) {
         ids.push(this.selected1[i].runTaskRelUuid);
@@ -1170,6 +1195,7 @@ export default {
     dataCountFormatter(row) {
       var tables = row.runResultTables;
       var dataCount = 0;
+      if(tables == null) { return dataCount; }
       for (var i = 0; i < tables.length; i++) {
         if (tables[i].tableType == 1) {
           dataCount = tables[i].dataCount;
@@ -1180,4 +1206,9 @@ export default {
   },
 };
 </script>
+<style>
+.firstParentTabCon .el-tooltip__popper {
+  max-width: 700px;
+}
+</style>
 

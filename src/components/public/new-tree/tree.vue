@@ -40,7 +40,6 @@ export default {
   methods: {
     handleNodeClick(data) {
       this.$emit('node-click', data)
-      console.log(data)
     }
   }
 }

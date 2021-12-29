@@ -1,9 +1,13 @@
 .DS_Store
 node_modules/
 /dist/
+dist/
+ROOT/
+/ROOT*
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.history*
 
 # Editor directories and files
 .idea
@@ -12,3 +16,12 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
+*.iml
+*.xml
+package-lock.json
+.env.development
+*.log
+**/*.log
+**/*.zip
+*.zip
+**/package-lock.json

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-container>
-      <el-aside class="left-side" width="300px" height="748px">
+      <el-aside class="left-side" height="748px">
         <el-scrollbar>
           <el-tabs tab-position="left" style="height: 100%;">
             <el-tab-pane>
@@ -29,7 +29,7 @@
           </div>
         </el-scrollbar>
       </el-aside>
-      <el-main>
+      <el-main v-loading="theRightLoding">
         <div class="top-collapse-container">
           <div class="top-collapse-con">
             <div class="toggle-btn J_slideup_btn" @click="packUpClick"><i class="icon-toggle"></i><span>收起</span></div>
@@ -421,7 +421,9 @@ export default {
         height: '200px',
         width: '100%'
       },
-      tableHeight:"height:60%"
+      tableHeight:"height:60%",
+      // 右半部分loding
+      theRightLoding: false
     }
   },
   watch: {
@@ -489,8 +491,8 @@ export default {
      */
     getWebSocket() {
       this.currentPageWebSocketUuid = this.getuuid();
-      const webSocketPath =
-        process.env.VUE_APP_INDICATOR_WEB_SOCKET + this.currentPageWebSocketUuid + this.currentPageWebSocketBusinessId
+      const webSocketPath = process.env.this.AmsWebsocket.getWSBaseUrl(this.AmsModules.INDICATOR) + this.currentPageWebSocketUuid + this.currentPageWebSocketBusinessId
+        // process.env.this.AmsWebsocket.getWSBaseUrl(this.AmsModules.INDICATOR) + this.currentPageWebSocketUuid + this.currentPageWebSocketBusinessId
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
       // 当服务端打开连接
@@ -502,7 +504,6 @@ export default {
       }
       const func2 = function func3(val) {
         let dataList = {}
-        debugger
         //找到当前分析区的对象
         for(let i = 0; i < this.dataList.length;i++){
           if(this.dataList[i].id === val.analysisRegionId){
@@ -537,8 +538,7 @@ export default {
             id:val.analysisRegionId,
             name:val.measureName
           }
-          //处理aggrid的列信息ss
-          debugger
+          //处理aggrid的列信息
           let data = {id:val.analysisRegionId,data:result,measureName:val.measureName,chartConfig:val.chartConfig}
           //根据返回的结果id找到数组里面的数据进行修改
             dataList.data = result
@@ -1706,6 +1706,7 @@ export default {
       $("#" + treeNode.tId + "_span").attr("title", spantxt);
       var aObj = $("#" + treeNode.tId + "_a");
       if (treeNode.type == "folder" && treeNode.title != undefined) {
+        console.log(treeNode)
         //xudaiqng  20191119  start
         aObj.append("<span class='node_num'>" + treeNode.childCount + "</span>");
         //xudaiqng  20191119  end
@@ -4922,7 +4923,8 @@ export default {
     supQuery(objInList, objDimList, analysisRegionId,chartConfig) {
       var that = this;
       var url = this.contextUrl + "/indicatrixAnalysis/supAnalysis";
-      let loadingInstance = Loading.service({fullscreen: true});
+      // let loadingInstance = Loading.service({fullscreen: true});
+      this.theRightLoding = true
       var newInList = [];
       let filterShow = [];
       //取出每个分析区的第一个指标并删除，用该指标与其他指标进行组织sql
@@ -4953,7 +4955,8 @@ export default {
             name = value.measureName;
             logName += value.measureName + ",";
           });
-          loadingInstance.close()
+          // loadingInstance.close()
+          that.theRightLoding = false
           if (res.isError == true) {
             let dataView = {
               id:analysisRegionId,
@@ -4972,7 +4975,8 @@ export default {
           that.executeSql(res.executeSQLList,logName,newAnalysisRegionId,chartConfig)
         },
         error: function (res) {
-            loadingInstance.close();
+            // loadingInstance.close();
+            that.theRightLoding = false
             that.$message("分析出错，" + res.message, {time: 30000, btn: ['知道了']});
             return;
         }
@@ -4988,7 +4992,8 @@ export default {
     bingLieQuery(objInList, objDimList, analysisRegionId,chartConfig) {
       var that = this;
       var url = this.contextUrl + "/indicatrixAnalysis/getInData";
-      let loadingInstance = Loading.service({fullscreen: true});
+      // let loadingInstance = Loading.service({fullscreen: true});
+      this.theRightLoding = true
       var indicatrixObj = null;
       let filterShow = [];
       $.each(objInList, function (num, value) {
@@ -5005,7 +5010,8 @@ export default {
         data: {inMeasure: JSON.stringify(indicatrixObj), listDim: JSON.stringify(objDimList)},
         async: true,
         success: function (res) {
-          loadingInstance.close();
+          // loadingInstance.close();
+          that.theRightLoding = false
           if (res.isError == true) {
             let dataView = {
               id:analysisRegionId,
@@ -5024,11 +5030,13 @@ export default {
         },
         error: function (res) {
           if (res.state == false) {
-            loadingInstance.close();
+            // loadingInstance.close();
+            that.theRightLoding = false
             that.$message("分析出错，" + res.message, {time: 30000, btn: ['知道了']});
             return;
           }
-          loadingInstance.close();
+          // loadingInstance.close();
+          that.theRightLoding = false
         }
       });
     },
@@ -6248,4 +6256,9 @@ var see = "查看";
   text-align: left;
 }
 #dataView{height: 100%;overflow: auto}
+</style>
+<style>
+.ag-theme-balham .ag-header-cell-label{
+  justify-content: center;
+}
 </style>

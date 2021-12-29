@@ -25,7 +25,7 @@
             <el-row>
                 <el-col>
                     <el-form-item label="转码规则" v-if="isSql">
-                        <el-input type="textarea" v-model="formData.sqlContent" :disabled="true" autosize/>
+                        <!--<el-input type="textarea" v-model="formData.sqlContent" :disabled="true" autosize/>
                         <el-row style="margin-top: 10px;">
                             <el-col :span="4">
                                 <label style="float: right;padding-right: 10px;">真实值</label>
@@ -39,7 +39,12 @@
                             <el-col :span="8">
                                 <el-input v-model="formData.sceneCode" :disabled="true" />
                             </el-col>
-                        </el-row>
+                        </el-row>-->
+                        <el-input type="textarea" v-model="formData.sqlContent" :disabled="true" autosize/>
+                        <el-table height="200" :data="listValue" border fit highlight-current-row>
+                            <el-table-column label="真实值" align="center" prop="codeValue"/>
+                            <el-table-column label="转码值" align="center" prop="transValue"/>
+                        </el-table>
                     </el-form-item>
                     <el-form-item label="转码规则" v-if="!isSql">
                         <el-table height="200" :data="listValue" border fit highlight-current-row>

@@ -6,12 +6,12 @@
       placeholder="输入关键字进行过滤"
       class="tree-search"
     />
+    <!-- default-expand-all elementui 树默认展开全部，2021-9-8应客户要求去掉 -->
     <MyElTree
       ref="tree"
       :data="data"
       :props="defaultProps"
       :filter-node-method="filterNode"
-      default-expand-all
       :expand-on-click-node="false"
       node-key="id"
       check-strictly
@@ -58,8 +58,9 @@
       v-if="dialogFormVisible"
       title="请填写分类信息"
       :visible.sync="dialogFormVisible"
+      :close-on-click-modal="false"
     >
-      <el-form :model="form">
+      <el-form :model="form" class="detail-form">
         <el-form-item label="分类名称">
           <el-input v-model="form.modelFolderName" autocomplete="off" />
         </el-form-item>
@@ -82,7 +83,7 @@ import {
 export default {
   name: "ModelFolderTree",
   components: { MyElTree },
-  props: ["publicModel", "power", "spaceFolderName", "spaceFolderId"],
+  props: ["publicModel", "power", "spaceFolderName", "spaceFolderId", "filterId"],
   data() {
     return {
       filterText: null,
@@ -169,6 +170,9 @@ export default {
               }
             }
             this.isBussinessType = true
+            if(this.filterId) {
+              newData = newData.filter(data => data.id === this.filterId)
+            }
             this.data = newData;
           } else if (this.publicModel === "relationModel") {
              findModelFolderTree(true, spaceFolderName, spaceFolderId).then((result) => {
@@ -201,10 +205,7 @@ export default {
      */
     handleNodeClick(data) {
       this.selectTreeNode = data;
-      if (data.type === "model") {
-      } else {
         this.$emit("refreshModelList", data);
-      }
     },
     /**
      * 树过滤
@@ -299,6 +300,7 @@ export default {
             this.$set(this.selectTreeNode, "children", []);
           }
           this.selectTreeNode.children.push(newChild);
+          this.form.modelFolderName = null
         } else {
           this.$notify({
             title: "提示",
@@ -375,6 +377,32 @@ export default {
     getSelectNode() {
       return this.$refs.tree.getCheckedNodes()[0];
     },
+    getRootFolderUuid(id, data, inner) {
+      if(!inner) {
+        for (const d of this.data) {
+          if(this.getRootFolderUuid(id, d, true)) {
+            return d.id;
+          }
+        }
+      }
+      if(id && data) {
+        if(data.id === id) {
+          return true;
+        } else if(data.children && data.children.length){
+          const d = data.children.find(d => d.id === id);
+          if(d) {
+            return true;
+          } else {
+            for (const child of data.children) {
+              if(this.getRootFolderUuid(id, child, true)) {
+                return true;
+              }
+            }
+          }
+        }
+      }
+      return false;
+    }
   },
 };
 </script>

@@ -9,7 +9,7 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" size="mini" class="oper-btn processing-1" :disabled="selections.length === 0" @click="updateCode()" />
+        <el-button type="primary" size="mini" class="oper-btn mark-read btn-width-md" :disabled="readButStatus" @click="updateCode()" />
       </el-col>
     </el-row>
     <el-table
@@ -56,6 +56,7 @@
       top="10vh"
       title="消息详情"
       width="50%"
+      :close-on-click-modal="false"
     >
       <el-row>
         <el-col :span="24"><div class="visible-p1">
@@ -65,9 +66,9 @@
       <el-divider />
       <el-row>
         <el-col :span="12"><div class="visible-p2">
-          {{ this.temp.remindTime }}
+          提醒时间: {{ this.temp.remindTime }}
         </div></el-col>
-        <el-col :span="12"><div class="visible-p4">
+        <el-col :span="12" v-if="temp.remindUserName" ><div class="visible-p4">
           发送人：{{ this.temp.remindUserName }}
         </div></el-col>
       </el-row>
@@ -119,6 +120,7 @@ export default {
         remindedUserName: '',
         remindedType: ''
       },
+      readButStatus: true,
       selections: [],
       dialogFormVisible: false,
       pageQuery: {
@@ -126,6 +128,12 @@ export default {
         pageNo: 1,
         pageSize: 20
       }
+    }
+  },watch: {
+    // 监听selections集合
+    selections() {
+      // 系统提醒已阅按钮 只有选择了未阅读的的消息时才可用
+      this.readButStatus = this.selections.filter((r) => r.readStatus === 0).length === 0;
     }
   },
   computed: {
@@ -144,7 +152,7 @@ export default {
     readStatusFormatter(row, column) {
       var status = row.readStatus
       if (status === 0) {
-        return <span class='red'>未阅</span>
+        return '未阅'
       } else {
         return '已阅'
       }
@@ -177,10 +185,10 @@ export default {
     resetQuery() {
       this.query = {
         condition: {
-          remindTitle: '',
-          remindContent: '',
-          remindTime: '',
-          readStatus: ''
+          remindTitle: null,
+          remindContent: null,
+          remindTime: null,
+          readStatus: null
         }
       }
     },
@@ -206,12 +214,11 @@ export default {
     },
     handdetails(data) {
       var id = data.remindUuid
-      if (data.modeUrl != null) {
-        this.selectDetail(data)
-      } else {
-        console.log(id)
+      if (data.modeUrl == null || data.modeUrl == '') {
         this.temp = data
         this.dialogFormVisible = true
+      } else {
+        this.selectDetail(data)
       }
       if (data.readStatus === 0) {
         updateRemind(id).then(result => {
@@ -251,6 +258,9 @@ export default {
 }
 .handreada-no:hover{text-decoration:underline}
 .handreada:hover{text-decoration:underline}
+/*
+  弹窗布局
+*/
 .visible-p1{
   text-align: center;
   width: 95%;
