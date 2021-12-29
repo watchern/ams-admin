@@ -140,7 +140,7 @@
         <div class="name"
              :class="currentIndex === index ? 'active-box' : ''">
           <svg-icon :icon-class="
-              'cd' + (index + 1) + (currentIndex === index ? 'x' : 'w')
+              'cd' + (index%9 + 1) + (currentIndex === index ? 'x' : 'w')
             "
                     style="margin-right: 5px" />
           {{ item.name }}
@@ -365,47 +365,52 @@ export default {
         .then((response) => {
           console.log(response.data)
           this.applications = [];
-          response.data.forEach((app, index) => {
+          response.data.application.forEach((app, index) => {
             // 设置左侧应用栏数据
             this.applications.push({
               img: require(`../style/images/icon0.png`),
               name: app.name,
-              permissionId: app.permissionId,
+              appuuid: app.id,
               homepage: app.homepage || "",
-              url: app.url || "",
+              url: app.routepath || "",
               type: app.type || "",
-              childrenlength: app.children.length,
+              childrenlength: 1,
             });
           });
           this.menugroup = [];
           // 设置引用栏弹出二级菜单数据
-          response.data.forEach((grp) => {
-            const menuList = [];
-            grp.children.forEach((menu) => {
-              menuList.push({
-                permissionId: menu.permissionId,
-                name: menu.name,
-                url: this.getCleanSrc(menu.url || ""),
-                children: menu.children,
-                type: menu.type,
-              });
+          response.data.application.forEach((grp) => {
+            let menuList = [];
+            response.data.menugroup.forEach((menu) => {
+              if(menu.appuuid==grp.id){
+                menuList.push({
+                  appuuid: menu.appuuid,
+                  name: menu.name,
+                  url: this.getCleanSrc(menu.routepath || ""),
+                  children: menu.menuList,
+                  type: menu.type||'',
+                });
+              }
             });
-            if (!this.menugroup[grp.permissionId]) {
-              this.menugroup[grp.permissionId] = [];
+            if (!this.menugroup[grp.id]) {
+              this.menugroup[grp.id] = [];
             }
-            this.menugroup[grp.permissionId] = menuList;
-            // this.menugroup[grp.permissionId].push({
-            //   id: grp.permissionId,
+            this.menugroup[grp.id] = menuList;
+            // this.menugroup[grp.appuuid].push({
+            //   id: grp.appuuid,
             //   name: grp.name,
             //   path: grp.navurl || "",
             //   children: menuList,
             // });
           });
-          let sSTree = [];
-          for (let i = 0; i < this.applications.length; i++) {
-            sSTree.push(this.menugroup[this.applications[i].permissionId]);
+          console.log(this.applications)
+          console.log(this.menugroup)
+          let second = []
+          for(let i =0;i<this.menugroup.length;i++){
+            second.push(this.menugroup[i])
           }
-          let sSLTree = { first: this.applications, second: sSTree };
+          let sSLTree = { first: this.applications, second:second  };
+          console.log(sSLTree)
           sessionStorage.setItem("shenjiMenuTree", JSON.stringify(sSLTree));
           let listTree = JSON.parse(sessionStorage.getItem("shenjiMenuTree"));
           this.moremenugroup = listTree.second;
@@ -523,6 +528,7 @@ export default {
       };
     },
     selectMenu (app, index, ifhome) {
+      console.log(this.moremenugroup,index)
       this.secchoose = -1;
       this.thichoose = -1;
       // window.open('http://10.19.206.196:8088/WebReport/decision/view/form?viewlet=vendor/zhuowang/test.cpt&ref_t=design&ref_c=d6740dbd-0279-40d0-b361-3cc1adb80d35');

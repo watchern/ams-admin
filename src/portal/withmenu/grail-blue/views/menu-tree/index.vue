@@ -15,7 +15,7 @@
             :item="item"
             :index="index"
             @close="close"
-            :class="chooseId == item.permissionId ? 'thirdchoose' : ''"
+            :class="chooseId == item.appuuid ? 'thirdchoose' : ''"
             @changechooseId="changechooseId" />
       <!--      <Item v-for="(item,index) in menu" ref="itemDom" :item="item" :index="index" @close="close" />-->
     </ul>

@@ -26,7 +26,7 @@
           v-if="val.type != 2"
           :key="index"
           :item="val"
-          :class="thirdId == val.permissionId ? 'thirdchoose' : ''"
+          :class="thirdId == val.appuuid ? 'thirdchoose' : ''"
           @close="close3(val)"
         />
       </ul>
@@ -63,7 +63,7 @@ export default {
     //   let newitem = {
     //     children: [],
     //     name: "项目工作台",
-    //     permissionId: 42,
+    //     appuuid: 42,
     //     type: 1,
     //     url: "/audit/auditItems/projectWorkbench",
     //   };
@@ -71,12 +71,12 @@ export default {
     //     this.isOpen = false;
     //   } else {
     //     this.isOpen = false;
-    //     this.thirdId = newitem.permissionId;
+    //     this.thirdId = newitem.appuuid;
     //     let isCloseTree = false;
     //     if (!newitem.children) {
     //       isCloseTree = true;
     //     }
-    //     this.changechooseId(newitem.permissionId);
+    //     this.changechooseId(newitem.appuuid);
     //     let arry = [];
     //     let lstimeIn = [];
     //     // console.log(item.path)
@@ -109,14 +109,14 @@ export default {
         this.isOpen = false;
       } else {
         this.isOpen = false;
-        this.thirdId = newitem.permissionId;
+        this.thirdId = newitem.appuuid;
         let isCloseTree = false;
         if (!newitem.children) {
           isCloseTree = true;
         }
         if (newitem.url && newitem.url !== "" && this.item.url !== "") {
           console.log("二级有路径");
-          this.changechooseId(newitem.permissionId);
+          this.changechooseId(newitem.appuuid);
           this.$router.push({ path: newitem.url });
           this.$store.commit("aceState/setRightFooterTags", {
             type: "active",
@@ -156,14 +156,14 @@ export default {
     },
     close3(newitem) {
       this.isOpen = false;
-      this.thirdId = newitem.permissionId;
+      this.thirdId = newitem.appuuid;
       let isCloseTree = false;
       if (!newitem.children) {
         isCloseTree = true;
       }
       if (newitem.url && newitem.url !== "" && this.item.url !== "") {
         console.log("三级有路径");
-        this.changechooseId(newitem.permissionId);
+        this.changechooseId(newitem.appuuid);
         this.$router.push({ path: newitem.url });
         this.$store.commit("aceState/setRightFooterTags", {
           type: "active",
