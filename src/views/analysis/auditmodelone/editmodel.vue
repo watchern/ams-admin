@@ -796,6 +796,15 @@ export default {
           } else {
             //获取完图形化的列信息之后重新赋值 因为这个时候界面没渲染完成，因此直接从数据里拿
             //columnData = this.columnData   //覆盖后转码无法使用，先注掉
+            if (
+              this.$refs.columnData.data &&
+              this.$refs.columnData.data != [] &&
+              this.$refs.columnData.data != ""
+            ) {
+              columnData = this.$refs.columnData.data;
+            } else {
+              columnData = this.columnData;
+            }
             //拿到列之后图形化就可以保存了，调用图形化的保存方法
             await this.$refs.graph[0].saveModelGraph().then(result => {
               this.modelSql = result.modelSql
@@ -987,7 +996,7 @@ export default {
           this.$refs.apple.removeParam()
           this.form.parammModelRel = null
         }
-        // 
+        //
         //endregion
         let that = this
         setTimeout(function () {
@@ -1304,16 +1313,18 @@ export default {
      * 保存模型
      */
     async save() {
-      let modelObj = await this.getModelObj()
-      if (modelObj == null) {
-        return
-      }
+      let modelObj = await this.getModelObj();
+      console.log(modelObj);
       // 如果是图形化模型 取modelSql
-      if (this.form.modelType === "002003002"){
-        modelObj.sqlValue = this.modelSql
+      if (this.form.modelType === "002003002") {
+        modelObj.sqlValue = this.modelSql;
       }
-      this.editorModelLoading = true
+      this.editorModelLoading = true;
       if (!this.isUpdate) {
+        if (modelObj == null ) {
+          this.$message("请成功运行后保存");
+          return;
+        }
         saveModel(modelObj).then(result => {
           this.editorModelLoading = false
           if (result.code === 0) {

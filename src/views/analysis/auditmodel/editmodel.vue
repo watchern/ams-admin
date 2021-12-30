@@ -694,7 +694,16 @@ export default {
             return null
           } else {
             //获取完图形化的列信息之后重新赋值 因为这个时候界面没渲染完成，因此直接从数据里拿
-            columnData = this.columnData
+            // columnData = this.columnData
+            if (
+              this.$refs.columnData.data &&
+              this.$refs.columnData.data != [] &&
+              this.$refs.columnData.data != ""
+            ) {
+              columnData = this.$refs.columnData.data;
+            } else {
+              columnData = this.columnData;
+            }
             //拿到列之后图形化就可以保存了，调用图形化的保存方法
             await this.$refs.graph[0].saveModelGraph().then(result => {
               if(result.isError){

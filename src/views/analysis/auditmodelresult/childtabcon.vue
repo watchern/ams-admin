@@ -1681,16 +1681,17 @@ export default {
                     }
                   }
                   var datacodes = [];
-                  for (var i = 0; i < modelOutputColumn.length; i++) {
+                  for (let i = 0; i < modelOutputColumn.length; i++) {
                     if (modelOutputColumn[i].dataCoding != undefined) {
                       datacodes.push(modelOutputColumn[i].dataCoding);
                     }
                   }
-                  for (var j = 0; j < this.nextValue.columnNames.length; j++) {
-                    var rowColom = {};
-                    for (var n = 0; n < modelOutputColumn.length; n++) {
+                  for (let j = 0; j < this.nextValue.columnNames.length; j++) {
+                    let rowColom = {};
+                    for (let n = 0; n < modelOutputColumn.length; n++) {
                       if (
-                        modelOutputColumn[n].outputColumnName ==
+                          // 此处逻辑：类似于oracle数据库字段增加了前后缀的\" 所以替换后再比较
+                        modelOutputColumn[n].outputColumnName.replaceAll('\"','') ==
                         this.nextValue.columnNames[j]
                       ) {
                         if (modelOutputColumn[n].isShow == 1) {
