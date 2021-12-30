@@ -25,6 +25,15 @@ export function getInfo() {
     params: { }
   })
 }
+
+// 根据用户ID判断是否是管理员用户
+export function isAdmin() {
+  return request({
+    baseURL: baseURL,
+    url: '/sysRole/isAdmin',
+    method: 'get'
+  })
+}
 export function getUserRes() {
   return request({
     baseURL: baseURL,

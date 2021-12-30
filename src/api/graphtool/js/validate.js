@@ -92,7 +92,6 @@ function removeCellsHistory(curSelCell) {
         ownerEditor.editor.undoManager.indexOfNextAdd -= 2
         ownerEditor.editor.undoManager.history.splice(ownerEditor.editor.undoManager.history.length - 2, 2)
     } else { // 撤销本次操作，同时删除历史记录
-        console.log('删除历史')
         ownerEditor.editor.undoManager.undo()
         ownerEditor.editor.undoManager.history.pop()
     }

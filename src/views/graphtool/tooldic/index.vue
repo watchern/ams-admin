@@ -892,6 +892,7 @@ export default {
       sqlEditorParamObj: {},
       //模型历史表数组
       modelOriginalTable: [],
+      urlParamStr:''
     };
   },
   created() {
@@ -2126,42 +2127,37 @@ export default {
         } else {
           this.graphListDialogVisible = false;
           this.$nextTick(() => {
-            let urlParamStr = "";
+            this.urlParamStr = "";
             if (returnObj.graphType === 3) {
               if (returnObj.publicType === 1) {
                 // 场景查询
-                urlParamStr =
+                this.urlParamStr =
                   "?graphUuid=" + returnObj.graphUuid + "&openGraphType=3";
               } else {
                 // 个人场景查询
-                urlParamStr =
+                this.urlParamStr =
                   "?graphUuid=" + returnObj.graphUuid + "&openGraphType=2";
               }
             } else {
               // 个人图形
-              urlParamStr =
+              this.urlParamStr =
                 "?graphUuid=" + returnObj.graphUuid + "&openGraphType=1";
             }
-            //删除下方页签
-            this.$store.commit("aceState/setRightFooterTags", {
-              type: "close",
-              val: {
-                name: "编辑图形",
-                path: ``,
-              },
-            });
+            let repath = this.$route.path
             //路由代换来刷新页面
             this.$router.replace("/nopermission");
             let _this = this;
             setTimeout(function () {
-              _this.$store.commit("aceState/setRightFooterTags", {
-                type: "active",
-                val: {
-                  name: "编辑图形",
-                  path: `/graphtool/tooldic${urlParamStr}&openType=${_this.openType}`,
-                },
-              });
-            }, 100);
+              console.log(_this.urlParamStr)
+              _this.$router.replace(`${repath}${_this.urlParamStr}&openType=${_this.openType}`);
+              // _this.$store.commit("aceState/setRightFooterTags", {
+              //   type: "active",
+              //   val: {
+              //     name: "编辑图形",
+              //     path: `/graphtool/tooldic${_this.urlParamStr}&openType=${_this.openType}`,
+              //   },
+              // });
+            }, 200);
           });
         }
       } else {

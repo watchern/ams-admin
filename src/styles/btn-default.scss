@@ -549,6 +549,13 @@
   content:'格式化sql'!important;
 }
 
+.oper-btn.commit:after {
+  content: '\e786' !important;
+}
+.oper-btn.commit:hover::before {
+  content: '提交审核' !important;
+}
+
 .oper-btn.help:after{
   content:'\e629'!important;
 }

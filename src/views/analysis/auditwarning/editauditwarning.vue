@@ -67,16 +67,16 @@
             </el-row>
             <el-table key="modelList" v-loading="modelListLoading" ref="modelListTable" align="center" :data="temp.modelList" border fit highlight-current-row>
               <el-table-column label="模型名称"  prop="modelName" />
-              <el-table-column label="平均运行时间"  prop="runTime" />
+              <!-- <el-table-column label="平均运行时间"  prop="runTime" /> -->
               <el-table-column label="模型类型"  prop="modelType" :formatter="modelTypeFormatter" />
               <el-table-column label="审计事项"  prop="auditItemName" />
-              <el-table-column label="模型运行结果名" >
-                <template  slot-scope="scope">
-                  <el-input class="detail-form"
-                              style="width: 100%;"
-                              type="text"
-                              v-model="scope.row.warningResTbName">
-                  </el-input>
+              <el-table-column label="模型运行结果名" width="240px" >
+                <template slot-scope="scope">
+                <el-input class="detail-form"
+                style="width: 100%;padding:0!important;"
+                type="text"
+                v-model="scope.row.warningResTbName">
+                </el-input>
                 </template>
               </el-table-column>
               <el-table-column
@@ -1058,8 +1058,10 @@ export default {
         });
       }
       else if (projects.length === 1) {
-        this.auditWarningSave.distributionUuid = projects[0].PRJ_PROJECT_UUID
-        this.auditWarningSave.distributionName = projects[0].PRJ_NAME
+        // this.auditWarningSave.distributionUuid = projects[0].PRJ_PROJECT_UUID
+        this.auditWarningSave.distributionUuid = projects[0].prjProjectUuid
+        // this.auditWarningSave.distributionName = projects[0].PRJ_NAME
+        this.auditWarningSave.distributionName = projects[0].prjName
         this.projectDialog = false;
       } else {
         this.$message({

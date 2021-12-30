@@ -750,7 +750,6 @@ export function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
     graphIndexVue.executeTaskObj = {"init":false,"executeTask":[],"isError":false}
     $(graphIndexVue.$refs.sysInfoArea).html("")
     graphIndexVue.loading = $(graphIndexVue.$refs.graphToolDiv).mLoading({ 'text': '正在执行全部节点，请稍后……', 'hasCancel': true, 'hasTime': true, "callback" : function () {
-        debugger   
         //执行任务的主键
             const taskUuidArr = graphIndexVue.executeTaskObj.executeTask//被取消执行节点的任务UUID
             if(taskUuidArr.length === 0 && !graphIndexVue.executeTaskObj.init && !graphIndexVue.executeTaskObj.isError){
@@ -799,7 +798,6 @@ export function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
                     $(graphIndexVue.$refs.sysInfoArea).html(sysInfoAreaHtml + message)
                 }
                 graphIndexVue.executeTaskObj.executeTask = response.data.taskUuidList
-                console.log(graphIndexVue.executeTaskObj)
             }
         })
     })
@@ -1192,7 +1190,6 @@ export function curNodeSQL() {
  * 双击预览数据 / 右键查看数据
  * */
 export function previewNodeData() {
-    console.log(graph.nodeData[graph.curCell.id])
     let curNodeInfo = graph.nodeData[graph.curCell.id].nodeInfo
     let nodeExcuteStatus = curNodeInfo.nodeExcuteStatus
     if (nodeExcuteStatus !== 3) {

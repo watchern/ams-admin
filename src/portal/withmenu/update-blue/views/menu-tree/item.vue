@@ -42,13 +42,11 @@ export default {
       this.isOpen = bool
     },
     close(item) {
-      console.log(item)
       let isCloseTree = false
       if (!item.children) {
         isCloseTree = true
       }
       if (item.path && item.path !== '' && this.item.path!=='') {
-        console.log("二级有路径")
         this.$router.push({ path: this.item.path })
         this.$store.commit('aceState/setRightFooterTags', {
           type: 'active',
@@ -74,7 +72,7 @@ export default {
       let arry = []
       let lstimeIn = []
       // console.log(item.path)
-      if(localStorage.getItem('userid')){
+      if(localStorage.getItem('userid') && (localStorage.getItem('userid').startsWith("{") || localStorage.getItem('userid').startsWith("["))){
         arry = JSON.parse(localStorage.getItem('userid'))
       }
       if(arry.length == 0 && item.path !== ''){

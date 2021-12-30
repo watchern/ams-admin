@@ -534,8 +534,6 @@ export default {
   watch: {
     $route: {
       handler(val, oldval) {
-        console.log(oldval.path); //老路由信息
-        console.log(val.path);
         if(oldval.path=='/login'){
           this.refresh();
         }

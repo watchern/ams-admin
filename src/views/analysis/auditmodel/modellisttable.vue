@@ -24,7 +24,7 @@
               @click="previewModel"
             />
             <!--            <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />-->
-            <el-dropdown style="margin-right: 10px" v-if="jinyong == '0' || selectTreeNode == null">
+            <el-dropdown style="margin-right: 10px" v-if="!disableBtn || selectTreeNode == null">
               <el-button
                 type="primary"
                 :disabled="btnState.addBtnState || (ifmanger=='0' && selectTreeNode == null)"
@@ -44,7 +44,7 @@
             <el-button
               type="primary"
               :disabled="btnState.editBtnState || (ifmanger=='0' && selectTreeNode == null)"
-              v-if="jinyong == '0' || selectTreeNode == null"
+              v-if="!disableBtn || selectTreeNode == null"
               class="oper-btn edit"
               @click="updateModel"
             />
@@ -52,11 +52,11 @@
             <el-button
               type="primary"
               :disabled="btnState.deleteBtnState || (ifmanger=='0' && selectTreeNode == null)"
-              v-if="jinyong == '0' || selectTreeNode == null"
+              v-if="!disableBtn || selectTreeNode == null"
               class="oper-btn delete"
               @click="deleteModel"
             />
-            <el-dropdown placement="bottom" trigger="click" class="el-dropdown" v-if="jinyong == '0' || selectTreeNode == null">
+            <el-dropdown placement="bottom" trigger="click" class="el-dropdown" v-if="!disableBtn || selectTreeNode == null">
               <el-button
                 type="primary"
                 :disabled="btnState.otherBtn || (ifmanger=='0' && selectTreeNode == null)"
@@ -336,9 +336,7 @@ import {
 import crossrangeParam from "@/views/analysis/modelparam/crossrangeparam";
 import paramDraw from "@/views/analysis/modelparam/paramdraw";
 import paramDrawNew from "@/views/analysis/modelparam/paramdrawnew";
-import { replaceNodeParam } from "@/api/analysis/auditparam";
-import { getInfo } from '@/api/user'
-import { getSystemRole} from '@/api/user';
+import {getInfo, isAdmin} from '@/api/user'
 import modelshoppingcart from "@/views/analysis/auditmodel/modelshoppingcart";
 import personTree from "@/components/publicpersontree/index";
 import ReviewSubmit from '@/views/flowwork/reviewSubmit.vue';
@@ -454,9 +452,11 @@ export default {
         modelType: "",
       },
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 20,
+        sortBy:"desc",
+        sortName:"modelName"
       },
       tabIndex: 0, //语句记录页签个数
       // 人员选择
@@ -476,7 +476,8 @@ export default {
       modelFolderUuid: "",
       modelFolderName: "",
       relationNextValue: {},
-      jinyong:0//禁用编辑等按钮
+      disableBtn: false,//禁用编辑等按钮
+      ifcancel:0
     };
   },
   computed: {},
@@ -506,6 +507,25 @@ export default {
   },
   created() {
     this.getList()
+    // 校验用户权限
+    isAdmin().then((res) => {
+      // 如果是管理员则放开按钮权限
+      if (res) {
+        this.ifmanger = 1
+        this.disableBtn = false
+      } else {
+        // 禁用按钮权限
+        this.ifmanger = 0
+        this.disableBtn = true
+        this.btnState = {
+          addBtnState: false,
+          editBtnState: true,
+          deleteBtnState: true,
+          previewBtn: true,
+          otherBtn: false,
+        }
+      }
+    })
     // this.getList({ modelFolderUuid: 1 })
   },
   mounted() {
@@ -694,6 +714,14 @@ export default {
         this.total = resp.data.total;
         this.list = resp.data.records;
         this.listLoading = false;
+        if(query != null && typeof query !== "undefined" && typeof query.modelUuid !== "undefined"){
+          // this.$refs.modelListTable.selection
+          let _this = this
+          setTimeout(function(){
+            _this.$refs.modelListTable.selection.push(resp.data.records[0])
+            _this.modelTableSelectEvent()
+          },200)
+        }
       });
     },
     /**
@@ -702,14 +730,14 @@ export default {
      */
     setSelectTreeNode(data) {
       this.selectTreeNode = data;
-      console.log(data)
+      this.editableTabsValue = "modelList"
       //非管理员公共模型页面按钮隐藏
       if(data.path.indexOf('gonggong') != -1 && this.ifmanger==0){
         //禁用
-        this.jinyong = 1
+        this.disableBtn = true
       }else{
         //解禁
-        this.jinyong = 0
+        this.disableBtn = false
       }
       getInfo()
     },
@@ -782,7 +810,7 @@ export default {
         this.btnState.addBtnState = false;
         this.btnState.editBtnState = false;
         this.btnState.previewBtn = false;
-        if(this.jinyong==1){
+        if(this.disableBtn){
           this.btnState = {
             addBtnState: false,
             editBtnState: true,
@@ -1326,6 +1354,10 @@ export default {
      * @param selectObj 界面选中元素
      * @param isExistParam 是否存在参数
      */
+    canceltab(){
+      this.ifcancel = 1
+      console.log("取消")
+    },
     executeSql(obj, selectObj, isExistParam) {
       this.$emit(
         "loadingSet",
@@ -1333,6 +1365,7 @@ export default {
         "正在运行模型'" + selectObj[0].modelName + "',请稍候"
       );
       getExecuteTask(obj, this.dataUserId, this.sceneCode).then((result) => {
+        if(this.ifcancel==0){
         if (result.data.isError) {
           this.$message({
             type: "error",
@@ -1356,6 +1389,10 @@ export default {
               this.executeLoading = false;
             });
         }
+        }else{
+          this.ifcancel = 0
+        }
+
       });
     },
     /**
@@ -1485,6 +1522,8 @@ export default {
       this.dialogFormVisible = false;
       this.$emit("loadingSet", true, "正在执行...");
       getExecuteTask(obj, this.dataUserId, this.sceneCode).then((result) => {
+
+        if(this.ifcancel==0){
         if (result.data.isError) {
           this.$message({
             type: "error",
@@ -1495,6 +1534,9 @@ export default {
           this.$emit("loadingSet", false, "");
           //界面渲染完成之后开始执行sql,将sql送入调度
           startExecuteSql(result.data).then((result) => {});
+        }
+        }else{
+          this.ifcancel = 0
         }
       });
     },

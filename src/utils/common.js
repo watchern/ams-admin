@@ -29,11 +29,11 @@ export const DataPrivAccessType = {
     // 向下继承
     PRIVS_INHERITED: {value:"PRIVS_INHERITED"},
     // 预览数据权限
-    FETCH_TABLE_DATA:{},
+    FETCH_TABLE_DATA:{value:"FETCH_TABLE_DATA"},
     // 文件夹的数据表保存权限，例如：模型结果保存可选的文件夹、复制表
-    SAVE_TO_FOLDER :{},
+    SAVE_TO_FOLDER :{value:"SAVE_TO_FOLDER"},
     // 能看到的权限，基础权限
-    BASIC_PRIV :{}
+    BASIC_PRIV :{value:"BASIC_PRIV"}
 }
 
 export function isUndefined(val) {

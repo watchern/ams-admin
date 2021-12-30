@@ -12,7 +12,7 @@
             <el-table-column label="上一节点名称" width="200" :show-overflow-tooltip="true" prop="rtn" header-align="center" :resizable="false"></el-table-column>
             <el-table-column label="字段名称" width="260" :show-overflow-tooltip="true" header-align="center"  :resizable="false">
                 <template slot-scope="scope">
-                    {{scope.row.columnInfo.newColumnName}}
+                    {{scope.row.columnInfo.columnName}}
                 </template>
             </el-table-column>
             <el-table-column label="输出字段名称" width="240" header-align="center" :resizable="false">
@@ -118,7 +118,6 @@
                     if (data && data.length > 0) {
                         for (var i = 0; i < data.length; i++) {
                             if(hasMoreTable){//数据融合节点
-                            //
                                 if (data[i].value === this.items[j].disColumnName && data[i].nodeId === nodeId && data[i].nullNodeId === nullNodeId) {
                                     this.items[j].checked = true
                                     num++
@@ -284,12 +283,12 @@
                     let id = null
                     let disColumnName = returnObj.columnInfo.newColumnName
                     if(this.customizeColumnType === "1"){//自定义字段
+                        id = this.items.length + 1
+                        rtn = '自定义字段'
                         nodeId = 'customizeColumn'
                         nullNodeId = 'customizeColumn'
                         resourceTableName = 'customizeColumnTempTable'
-                        id = this.items.length + 1
-                        rtn = '自定义字段'
-                        this.items.push({ id, curColumnName, nodeId, nullNodeId, columnInfo, rtn, disColumnName, checked, resourceTableName})
+                        this.items.push({ id, curColumnName, nodeId, nullNodeId, columnInfo, rtn, disColumnName, checked, resourceTableName,selectColumnName:curColumnName})
                     }else{//修改设置
                         id = this.curColumnInfo.id
                         nodeId = this.curColumnInfo.nodeId
@@ -298,7 +297,7 @@
                         resourceTableName = this.curColumnInfo.resourceTableName
                         let index = this.items.findIndex( item => item.id === this.curColumnInfo.id)
                         if(index > -1){
-                            this.items.splice(index,1,{id, curColumnName, nodeId, nullNodeId, columnInfo, rtn, disColumnName, checked, resourceTableName})
+                            this.items.splice(index,1,{id, curColumnName, nodeId, nullNodeId, columnInfo, rtn, disColumnName, checked, resourceTableName,selectColumnName:curColumnName})
                         }
                     }
                 }

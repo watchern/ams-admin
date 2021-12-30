@@ -886,7 +886,6 @@ export default {
     };
   },
   mounted() {
-    console.log(this.$route.path);
     if (this.$route.path == "/analysis/editormodelnew") {
       this.ifopen = 1;
     }
@@ -1019,12 +1018,10 @@ export default {
     openProjectDialog() {
       // 验证是否已经关联项目
       var selectData = this.gridApi.getSelectedRows();
-      console.log(selectData);
       let paramslist = [];
       for (let i = 0; i < selectData.length; i++) {
         paramslist.push(selectData[i].onlyuuid);
       }
-      console.log(paramslist);
       // 查询该明细是否已经分配项目，如果未分配则打开分配窗口
       getByResultDetailIds(paramslist).then((resp) => {
         if (resp.data.length === 0) {
@@ -2289,7 +2286,6 @@ export default {
             detailModel = resp.data;
             getExecuteTask(obj)
               .then((resp) => {
-                console.log("getExecuteTask0");
                 this.currentExecuteSQL = resp.data.executeSQLList;
                 //界面渲染完成之后开始执行sql,将sql送入调度
                 startExecuteSql(resp.data).then((result) => {
@@ -2746,7 +2742,6 @@ export default {
       ) {
         mouseInGrid = true;
       }
-      console.log(mouseInGrid);
       if (
         mouseInGrid === true &&
         this.chartConfigs.layout.findIndex((item) => item.i === "drop") === -1
@@ -2906,7 +2901,6 @@ export default {
         for (let i = 0; i < this.modelChartSetups.length; i++) {
           let modelChartSetupZ = {};
           let json = JSON.parse(this.modelChartSetups[i].chartJson);
-          console.log(this.modelChartSetups[i]);
           for (let j = 0; j < this.chartConfigs.layout.length; j++) {
             if (this.chartConfigs.layout[j].i === json.layout.i) {
               modelChartSetupZ = {

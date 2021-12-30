@@ -749,7 +749,6 @@ export function exportGraphBack(param) {
     // todo
     let fileName = graphIndexVue.$store.getters.personcode + '_exportGraph_' + dayjs(new Date()).format('YYYYMMDDHHmmssSSS') + '.xml'
     exportGraphXml({fileName,...param}).then( response => {
-        debugger
         if(response.data){
             progressDownLoad('/graphtool/graphCt/downLoadXml', fileName, {fileName: fileName}, function() {
                 loading.destroy()
@@ -955,23 +954,28 @@ export async function saveModelGraph(){
                                     selectSql = preNodeInfo.nodeSql
                                     tableName = preNodeInfo.resultTableName
                                 }
+                                // 最终表名
+                                if (curNodeInfo.resultTableStatus === 2) {
+                                    resultTableName = tableName
+                                }
                                 //组织SQL语句
                                 if (curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2) {//如果结果表是辅助结果表或最终结果表
-                                    dropTableSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果表的SQL语句*/\n DROP TABLE " + tableName + "\n"
+                                    dropTableSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果表的SQL语句*/\n DROP TABLE " + tableName + ";\n"
                                     originalDropTableSql += "DROP TABLE " + tableName + ";\n"
                                     // 判断前置节点是否存在未替换的原始sql
+                                    // if (typeof preNodeInfo !== "undefined" && typeof preNodeInfo.originalCreateSql !== "undefined" && preNodeInfo.originalCreateSql !== "") {
                                     if (typeof preNodeInfo !== "undefined" && typeof preNodeInfo.originalCreateSql !== "undefined" && preNodeInfo.originalCreateSql.trim().length > 0) {
                                         // 判断是否是db2场景
                                         if (graphIndexVue.dbType === "db2"){
-                                            modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n "+ preNodeInfo.originalCreateSql + "\n";
+                                            modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n "+ preNodeInfo.originalCreateSql + ";\n";
                                             //此句只适用于业务库是DB2数据库（目的是为了实现CREATE TABLE xx AS SELECT……的数据插入）
                                             modelSql += "/*节点【" + preNodeInfo.nodeName + "】的结果表插入数据的SQL语句*/\n INSERT INTO " + tableName + " " + preNodeInfo.originalSelectSql + ";\n";
                                         } else {
-                                            modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE TABLE " + tableName + " AS " + preNodeInfo.originalSelectSql + "\n";
+                                            modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE TABLE " + tableName + " AS " + preNodeInfo.originalSelectSql + ";\n";
                                         }
                                     } else {
                                         if (graphIndexVue.dbType === "db2") {//不能移动位置
-                                            modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE TABLE " + tableName + " AS (" + selectSql + ") definition only\n";
+                                            modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE TABLE " + tableName + " AS (" + selectSql + " ) definition only;\n";
                                             //此句只适用于业务库是DB2数据库（目的是为了实现CREATE TABLE xx AS SELECT……的数据插入）
                                             modelSql += "/*节点【" + preNodeInfo.nodeName + "】的结果表插入数据的SQL语句*/\n INSERT INTO " + tableName + " " + selectSql + ";\n";
                                         } else {
@@ -1005,12 +1009,12 @@ export async function saveModelGraph(){
                                 } else {
                                     dropViewSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果视图的SQL语句*/\n DROP VIEW " + tableName + ";\n"
                                     originalDropViewSql += "DROP VIEW " + tableName + ";\n"
-                                    if (typeof preNodeInfo !== "undefined" && typeof preNodeInfo.originalCreateSql !== "undefined"){
-                                        modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n "+ preNodeInfo.originalCreateSql + "\n";
+                                    if (typeof preNodeInfo !== "undefined" && typeof preNodeInfo.originalCreateSql !== "undefined" && preNodeInfo.originalCreateSql !== ""){
+                                        modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n "+ preNodeInfo.originalCreateSql + ";\n";
                                     } else if (graphIndexVue.dbType === "db2") {
-                                        modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE VIEW " + tableName + " AS SELECT * FROM (" + selectSql + ") SORT_TEMP\n";//不能移动位置
+                                        modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE VIEW " + tableName + " AS SELECT * FROM (" + selectSql + ") SORT_TEMP;\n";//不能移动位置
                                     } else {
-                                        modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE VIEW " + tableName + " AS " + selectSql + "\n";//不能移动位置
+                                        modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE VIEW " + tableName + " AS " + selectSql + ";\n";//不能移动位置
                                     }
                                 }
                             }
@@ -1091,7 +1095,7 @@ export async function saveModelGraph(){
         }
     }
     graphIndexVue.loading.destroy()
-    return {isError,message,graphUuid,modelSql,modelParamIdArr,paramArr,noReplaceModelSql}
+    return {isError,message,graphUuid,modelSql,modelParamIdArr,paramArr,noReplaceModelSql,resultTableName}
 }
 
 /**

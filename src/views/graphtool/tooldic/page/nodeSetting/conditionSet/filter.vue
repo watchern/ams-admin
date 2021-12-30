@@ -9,7 +9,7 @@
             <el-col :span="8">
                 <label>筛选字段&nbsp;</label>
                 <el-select v-model="select_colms" filterable @change="setSelectColms">
-                    <el-option v-for="selectCol in selectColms" :key="selectCol.newColumnName" :label="selectCol.newColumnName" :value="selectCol.columnName">{{ selectCol.displayName }}</el-option>
+                  <el-option v-for="selectCol in selectColms" :key="selectCol.newColumnName" :label="selectCol.newColumnName" :value="selectCol.newColumnName">{{ selectCol.displayName }}</el-option>
                 </el-select>
             </el-col>
             <el-col :span="8">

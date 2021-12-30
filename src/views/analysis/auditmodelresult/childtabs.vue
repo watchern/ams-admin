@@ -100,7 +100,6 @@ export default {
             tabname = this.preValue.length === key + 1 ? '主表' : '辅助' + (key + 1)
           }
           this.selectTabName = tabname === '主表' ? '' + key : this.selectTabName
-          console.log(this.selectTabName)
           return tabname;
         }else if(this.useType==='previewTable'){
             return '数据详情'

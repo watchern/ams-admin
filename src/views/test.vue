@@ -68,7 +68,6 @@ export default {
       this.gridColumnApi.autoSizeColumns(allColumnIds, skipHeader);
     },
     onGridReady(params) {
-      console.log('zzz')
       this.gridApi = params.api;
       this.gridColumnApi = params.columnApi;
 

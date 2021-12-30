@@ -184,7 +184,7 @@
         ref="dataTree"
         :data-user-id="personcode"
         :scene-code="currentSceneUuid"
-        :tree-type="treeType"
+        tree-type="move"
         @node-click="nodeclick"
       />
       <span slot="footer">

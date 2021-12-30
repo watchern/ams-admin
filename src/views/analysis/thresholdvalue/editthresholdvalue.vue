@@ -176,7 +176,6 @@ export default {
     },
     verValueMethods(rule, value, callback){
       if(this.thresholdValue.thresholdValueType === 1){
-        console.log(0)
         if(value === ""){
           callback(new Error('请输入值'))
         }
@@ -185,7 +184,6 @@ export default {
         }
       }
       if(this.thresholdValue.thresholdValueType === 2){
-        console.log(1)
         if(this.thresholdValue.thresholdValueInfoList.length === 0){
           this.$message({type:'info',message:'最少输入一个阈值对象和值'})
         }
