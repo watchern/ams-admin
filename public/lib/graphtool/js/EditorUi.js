@@ -660,7 +660,7 @@ EditorUi = function (editor, container, lightbox) {
 					var nodeSql = "SELECT";
 					for (var i = 0; i < e.data.length; i++) {
 						// 列名取中文名，没有的话取原名
-						var columnName = (e.data[i].chnName===null || e.data[i].chnName=== '') ? e.data[i].colName : e.data[i].chnName;
+						var columnName = (e.data[i].chnName === null || e.data[i].chnName === '') ? e.data[i].colName : e.data[i].chnName;
 						// var newColumnName = e.data[i].chnName?e.data[i].chnName:columnName;
 						var newColumnName = columnName
 						columnsInfo.push({
@@ -1720,7 +1720,7 @@ EditorUi.prototype.refresh = function (sizeDidChange) {
 	}
 	this.sidebarContainer.style.height = h + "px";
 	this.container.style.width = ($(this.graphToolDiv).width() - this.hsplitPosition - this.detailContainerWidth - this.splitSize) + "px";
-	this.vsplit.style.left = $(this.sidebarContainer).width() + $(this.graphToolDiv).offset().left + this.splitSize + "px";
+	this.vsplit.style.left = $(this.sidebarContainer).width() + this.splitSize + 5 + "px";//+ $(this.graphToolDiv).offset().left
 	this.vsplit.style.width = ($(this.graphToolDiv).width() - this.hsplitPosition - this.detailContainerWidth - this.splitSize) + "px";
 	this.detailContainer.style.height = this.sidebarContainer.style.height;
 	this.detailContainer.style.bottom = this.sidebarContainer.style.height;
@@ -2599,7 +2599,7 @@ var iconDrag = function (treeNode) {
 			"id": cell.id,
 			"name": treeNode.name,
 			"type": treeNode.type,
-			"english":treeNode.english||''
+			"english": treeNode.english || ''
 		};
 		initNodeData(options, true);
 		//初始化节点配置信息,end
@@ -2703,9 +2703,9 @@ var initNodeData = function (options, changeIcon) {
 	switch (options.type) {
 		case "datasource":
 			isSet = true;
-			if(options.english){
+			if (options.english) {
 				nodeInfo.resultTableName = options.english;
-			}else{
+			} else {
 				nodeInfo.resultTableName = options.name;
 			}
 			nodeInfo.nodeExcuteStatus = 3;
