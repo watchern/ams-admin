@@ -24,7 +24,7 @@
               @click="previewModel"
             />
             <!--            <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />-->
-            <el-dropdown style="margin-right: 10px" v-if="jinyong == '0' || selectTreeNode == null">
+            <el-dropdown style="margin-right: 10px" v-if="!disableBtn || selectTreeNode == null">
               <el-button
                 type="primary"
                 :disabled="btnState.addBtnState || (ifmanger=='0' && selectTreeNode == null)"
@@ -44,7 +44,7 @@
             <el-button
               type="primary"
               :disabled="btnState.editBtnState || (ifmanger=='0' && selectTreeNode == null)"
-              v-if="jinyong == '0' || selectTreeNode == null"
+              v-if="!disableBtn || selectTreeNode == null"
               class="oper-btn edit"
               @click="updateModel"
             />
@@ -52,11 +52,11 @@
             <el-button
               type="primary"
               :disabled="btnState.deleteBtnState || (ifmanger=='0' && selectTreeNode == null)"
-              v-if="jinyong == '0' || selectTreeNode == null"
+              v-if="!disableBtn || selectTreeNode == null"
               class="oper-btn delete"
               @click="deleteModel"
             />
-            <el-dropdown placement="bottom" trigger="click" class="el-dropdown" v-if="jinyong == '0' || selectTreeNode == null">
+            <el-dropdown placement="bottom" trigger="click" class="el-dropdown" v-if="!disableBtn || selectTreeNode == null">
               <el-button
                 type="primary"
                 :disabled="btnState.otherBtn || (ifmanger=='0' && selectTreeNode == null)"
@@ -476,7 +476,7 @@ export default {
       modelFolderUuid: "",
       modelFolderName: "",
       relationNextValue: {},
-      jinyong:0,//禁用编辑等按钮
+      disableBtn: false,//禁用编辑等按钮
       ifcancel:0
     };
   },
@@ -512,11 +512,11 @@ export default {
       // 如果是管理员则放开按钮权限
       if (res) {
         this.ifmanger = 1
-        this.jinyong = 0
+        this.disableBtn = false
       } else {
         // 禁用按钮权限
         this.ifmanger = 0
-        this.jinyong = 1
+        this.disableBtn = true
         this.btnState = {
           addBtnState: false,
           editBtnState: true,
@@ -714,7 +714,7 @@ export default {
         this.total = resp.data.total;
         this.list = resp.data.records;
         this.listLoading = false;
-        if(query.modelUuid){
+        if(query != null && typeof query !== "undefined" && typeof query.modelUuid !== "undefined"){
           // this.$refs.modelListTable.selection
           let _this = this
           setTimeout(function(){
@@ -734,10 +734,10 @@ export default {
       //非管理员公共模型页面按钮隐藏
       if(data.path.indexOf('gonggong') != -1 && this.ifmanger==0){
         //禁用
-        this.jinyong = 1
+        this.disableBtn = true
       }else{
         //解禁
-        this.jinyong = 0
+        this.disableBtn = false
       }
       getInfo()
     },
@@ -810,7 +810,7 @@ export default {
         this.btnState.addBtnState = false;
         this.btnState.editBtnState = false;
         this.btnState.previewBtn = false;
-        if(this.jinyong==1){
+        if(this.disableBtn){
           this.btnState = {
             addBtnState: false,
             editBtnState: true,

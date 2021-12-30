@@ -231,7 +231,6 @@ export default {
       this.setFilter(obj.sql, JSON.stringify(obj.queryJson))
     },
     setFilter(sql, queryJson) {
-      debugger
       this.temp[this.currentFilterInputId].sqlGenOnStr = sql
       this.temp[this.currentFilterInputId].sqlGenOnStrJson = queryJson
     },

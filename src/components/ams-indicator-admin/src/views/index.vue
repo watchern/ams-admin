@@ -3182,7 +3182,6 @@ export default {
      * @param name 名称
      */
     addAnalistsNode(name, pbScopeUuid, folderId) {
-      debugger
       var inRegionStyle = $("#inRegion").html();
       var dimRegionStyle = $("#dimAnalysisRegion").html();
       var mapping = JSON.stringify(this.inRegionAndDimRegionMapping);
