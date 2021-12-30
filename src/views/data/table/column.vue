@@ -143,7 +143,7 @@ export default {
       re:[],
       judgeTbName:{
         displayTbName:[
-          { required: true, message: "请填写导入表名称", trigger: "change" },
+          { required: true, message: "请填写表名称", trigger: "change" },
           {
             type: 'string',
             pattern: /^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/,
