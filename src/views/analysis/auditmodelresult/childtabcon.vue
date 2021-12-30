@@ -233,8 +233,8 @@
                 "
               >
                 <el-col :span="14">
-                  <el-input readonly="ture" value="设置查询条件后此处显示条件内容" v-if="nowSql == 'undefined'"></el-input>
-                  <el-input readonly="ture" :value="nowSql" v-if="nowSql != 'undefined'"></el-input>
+                  <el-input :readonly="true" value="设置查询条件后此处显示条件内容" v-if="nowSql == 'undefined'"></el-input>
+                  <el-input :readonly="true" :value="nowSql" v-if="nowSql != 'undefined'"></el-input>
                 </el-col >
                 <el-col :span="10" >
                 <el-dropdown>
