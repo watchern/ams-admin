@@ -1319,7 +1319,6 @@ export default {
       if (this.form.modelType === "002003002") {
         modelObj.sqlValue = this.modelSql;
       }
-      this.editorModelLoading = true;
       if (!this.isUpdate) {
         if (modelObj == null ) {
           this.$message("请成功运行后保存");
