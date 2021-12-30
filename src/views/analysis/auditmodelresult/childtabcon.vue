@@ -1401,7 +1401,7 @@ export default {
                     if (
                       this.modelOutputColumn[
                         j
-                      ].outputColumnName.toLowerCase() == colNames[i]
+                      ].outputColumnName.replaceAll('\"','').toLowerCase() == colNames[i]
                     ) {
                       if (this.modelOutputColumn[j].isShow == 1) {
                         var rowColom = {};

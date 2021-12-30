@@ -774,7 +774,7 @@ export default {
                     if (
                       this.modelOutputColumn[
                         k
-                      ].outputColumnName.toLowerCase() == colNames[j]
+                      ].outputColumnName.replaceAll('\"','').toLowerCase() == colNames[j].replaceAll('\"','')
                     ) {
                       if (this.modelOutputColumn[k].dataCoding != undefined) {
                         var a = da[i][colNames[j]];
