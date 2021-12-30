@@ -749,7 +749,6 @@ export function exportGraphBack(param) {
     // todo
     let fileName = graphIndexVue.$store.getters.personcode + '_exportGraph_' + dayjs(new Date()).format('YYYYMMDDHHmmssSSS') + '.xml'
     exportGraphXml({fileName,...param}).then( response => {
-        debugger
         if(response.data){
             progressDownLoad('/graphtool/graphCt/downLoadXml', fileName, {fileName: fileName}, function() {
                 loading.destroy()

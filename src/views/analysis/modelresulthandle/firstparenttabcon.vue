@@ -15,13 +15,13 @@
       <el-main>
         <div align="right">
           <el-row>
-            <el-button
-              :disabled="false"
-              type="primary"
-              size="small"
-              class="oper-btn add-problem btn-width-md"
-              @click="createProblem"
-            />
+<!--            <el-button-->
+<!--              :disabled="false"-->
+<!--              type="primary"-->
+<!--              size="small"-->
+<!--              class="oper-btn add-problem btn-width-md"-->
+<!--              @click="createProblem"-->
+<!--            />-->
             <el-button
               :disabled="false"
               type="primary"

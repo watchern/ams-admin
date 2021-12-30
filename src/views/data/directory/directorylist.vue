@@ -91,7 +91,12 @@
       :data="temp"
       border
       fit
-      style="width: 100%; height: 500px; overflow: auto"
+      style="
+        width: 100%;
+        min-height: 300px;
+        max-height: calc(100% - 100px);
+        overflow: auto;
+      "
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -123,7 +128,6 @@
 <!--      @pagination="getListSelect"-->
 <!--    />-->
     <div class="pagesize">共 {{total}} 条</div>
-    <!-- 复制表弹框 -->
     <el-dialog
       :close-on-click-modal="false"
       :title="textMap[dialogStatus]"
@@ -131,10 +135,18 @@
       width="600px"
 
     >
-      <el-form ref="folderForm"
-               :model="resourceForm"
-               :rules="resourceFormRules"
-      >
+      <!-- 复制表输入框 -->
+      <el-form ref="folderForm" :model="resourceForm" :rules="uploadRules" v-if="dialogStatus === 'copyTable' || dialogStatus === 'updateFolder' || dialogStatus === 'updateTable'">
+        <el-form-item :label="typeLabel" prop="displayTbName">
+          <el-input
+            v-model="resourceForm.displayTbName"
+            style="width: 100%"
+            class="detail-form"
+          />
+        </el-form-item>
+      </el-form>
+      <!-- 新增文件夾输入框 -->
+      <el-form ref="folderForm" :model="resourceForm" :rules="uploadRules" v-if="dialogStatus === 'createFolder'">
         <el-form-item :label="typeLabel" prop="resourceName">
           <el-input v-model="resourceForm.resourceName" style="width: 100%" class="detail-form"/>
         </el-form-item>
@@ -605,6 +617,7 @@ export default {
       // 要移动的数据集合
       moveSelect: [],
       resourceForm: {
+        displayTbName:null,
         folderUuid: null,
         resourceName: null,
         parentFolderUuid: null,
@@ -633,7 +646,7 @@ export default {
       },
       uploadRules: {
         displayTbName: [
-          { required: true, message: "请填写导入表名称", trigger: "change" },
+          { required: true, message: "请填写表名称", trigger: "change" },
           {
             type: 'string',
             pattern: /^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/,
@@ -643,12 +656,24 @@ export default {
             pattern: /^[\u4E00-\u9FA5\w]*$/,
             message: '请输入合法表名称',
           },
-        ]
-      },
-      resourceFormRules: {
+        ],
         resourceName: [
-          { required: true, message: '请输入表或文件夹名称' },
-        ]
+          {
+            required: true,
+            message: "请填写新增文件夹名称",
+            trigger: "change",
+          },
+          {
+            type: "string",
+            pattern: /^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/,
+            message: "请输入合法文件夹名称",
+          },
+          {
+            type: "string",
+            pattern: /^[\u4E00-\u9FA5\w]*$/,
+            message: "请输入合法文件夹名称",
+          },
+        ],
       } ,
       // 导入步骤
       uploadStep: 1,
@@ -768,10 +793,9 @@ export default {
                 this.disShareTable = true
               }
             }
+            }
           }
-
         }
-      }
     },
     currTreeNode(){
       console.log("**************currTreeNode");
@@ -920,14 +944,27 @@ export default {
 
         this.dialogStatus = "copyTable";
         this.typeLabel = "复制表名称";
-        this.resourceForm.resourceName = "";
+        this.resourceForm.displayTbName = "";
         this.folderFormVisible = true;
       }
     },
     // 填写复制表名称后点击保存
     copyResourceSave() {
+      if (
+        !(
+          /^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/.test(
+            this.resourceForm.displayTbName
+          ) && /^[\u4E00-\u9FA5\w]*$/.test(this.resourceForm.displayTbName)
+        )
+      ) {
+        this.$message({
+          type: "info",
+          message: "请填写正确的表名！",
+        });
+        return;
+      }
       var tempData = Object.assign({}, this.selections[0]);
-      tempData.label = this.resourceForm.resourceName;
+      tempData.label = this.resourceForm.displayTbName;
       this.$notify({
         title: "请稍后",
         message: "正在复制中..",
@@ -956,7 +993,7 @@ export default {
 
       // 通信失败
       this.webSocketCopy.onerror = function (event) {
-          this.$message({
+          _this.$message({
           type: "error",
           message: "通信失败！请联系管理员！",
           });
@@ -965,7 +1002,7 @@ export default {
       this.webSocketCopy.onclose = function (event) {
         console.log("复制表WebSocket已关闭连接")
       };
-      this.resourceForm.resourceName = "";
+      this.resourceForm.displayTbName = "";
       this.folderFormVisible = false;
       //手动清空temp，让用户重新选择
       this.temp = []
@@ -1075,7 +1112,7 @@ export default {
       };
       // 通信失败
       this.webSocketImport.onerror = function (event) {
-        this.$message({
+        _this.$message({
           type: "error",
           message: "通信失败！请联系管理员！",
         });
@@ -1097,7 +1134,7 @@ export default {
     },
     // 不允许重命名系统文件夹
     renameResource() {
-      this.resourceForm.resourceName = "";
+      this.resourceForm.displayTbName = "";
       if (this.selections[0].type === "folder") {
         if (this.selections[0].extMap.folderType === "virtual") {
           this.$message({
@@ -1160,14 +1197,24 @@ export default {
         this.$emit("refresh");
       });
     },
+    //现在右侧只显示表，排除对文件夹的提示信息
     // 重命名资源名称
     renameResourceSave() {
-      var tempData = Object.assign({}, this.selections[0]);
-      tempData.label = this.resourceForm.resourceName;
-      if(tempData.label == null || tempData.label.trim().length == 0){
-        this.$message({type:'info',message:"文件夹或表名不可为空，请重新输入！"})
-        return
+      if (
+              !(
+                      /^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/.test(
+            this.resourceForm.displayTbName
+          ) && /^[\u4E00-\u9FA5\w]*$/.test(this.resourceForm.displayTbName)
+              )
+      ) {
+        this.$message({
+          type: "info",
+          message: "请填写正确的表名！",
+        });
+        return;
       }
+      var tempData = Object.assign({}, this.selections[0]);
+      tempData.label = this.resourceForm.displayTbName;
       renameResource(tempData).then((res) => {
         if (res.data) {
           this.$notify({
@@ -1189,7 +1236,7 @@ export default {
           });
         }
       });
-      this.resourceForm.resourceName = "";
+      this.resourceForm.displayTbName = "";
       this.folderFormVisible = false;
     },
     // 新增表
@@ -1271,12 +1318,27 @@ export default {
         // 父节点node
         this.total = 1;
       } else {
-        this.temp = data.children;
-        this.allList = data.children;
-        // eslint-disable-next-line no-undef
+        this.temp = [];
+        this.allList = [];
         this.total = 0;
+        this.forChildren(data.children);
+        // eslint-disable-next-line no-undef
         this.getListSelect();
         this.tableKey = !this.tableKey;
+      }
+    },
+    forChildren(msg){
+      if(msg.length>0){
+        for(let i = 0;i<msg.length;i++){
+          if(msg[i].type == "table"){
+            this.temp.push(msg[i]);
+            this.allList.push(msg[i]);
+            this.total += 1;
+          }
+          if(msg[i].children.length > 0){
+            this.forChildren(msg[i].children);
+          }
+        }
       }
     },
     createFolder() {
@@ -1294,6 +1356,19 @@ export default {
     },
     // 保存新建文件夹
     createFolderSave() {
+      if (
+          !(
+            /^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/.test(
+                    this.resourceForm.resourceName
+            ) && /^[\u4E00-\u9FA5\w]*$/.test(this.resourceForm.resourceName)
+          )
+      ) {
+        this.$message({
+          type: "info",
+          message: "请填写正确的文件夹名！",
+        });
+        return;
+      }
       if ( typeof this.currTreeNode.extMap !== 'undefined' && typeof this.currTreeNode.extMap.sceneInstUuid !== 'undefined') {
         this.resourceForm.sceneInstUuid = this.currTreeNode.extMap.sceneInstUuid;
       }
