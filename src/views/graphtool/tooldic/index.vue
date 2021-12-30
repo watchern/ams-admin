@@ -2144,6 +2144,11 @@ export default {
                 "?graphUuid=" + returnObj.graphUuid + "&openGraphType=1";
             }
             let repath = this.$route.path
+            if(repath == "/analysis/editormodelnew")  {
+              // 个人图形
+              this.urlParamStr =
+                  "?graphUuid=" + returnObj.graphUuid + "&openGraphType=4";
+            }
             //路由代换来刷新页面
             this.$router.replace("/nopermission");
             let _this = this;
