@@ -91,7 +91,12 @@
       :data="temp"
       border
       fit
-      style="width: 100%; height: 500px; overflow: auto"
+      style="
+        width: 100%;
+        min-height: 300px;
+        max-height: calc(100% - 100px);
+        overflow: auto;
+      "
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -768,10 +773,9 @@ export default {
                 this.disShareTable = true
               }
             }
+            }
           }
-
         }
-      }
     },
     currTreeNode(){
       console.log("**************currTreeNode");
@@ -956,7 +960,7 @@ export default {
 
       // 通信失败
       this.webSocketCopy.onerror = function (event) {
-          this.$message({
+          _this.$message({
           type: "error",
           message: "通信失败！请联系管理员！",
           });
@@ -1075,7 +1079,7 @@ export default {
       };
       // 通信失败
       this.webSocketImport.onerror = function (event) {
-        this.$message({
+        _this.$message({
           type: "error",
           message: "通信失败！请联系管理员！",
         });
