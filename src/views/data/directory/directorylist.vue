@@ -1318,12 +1318,27 @@ export default {
         // 父节点node
         this.total = 1;
       } else {
-        this.temp = data.children;
-        this.allList = data.children;
-        // eslint-disable-next-line no-undef
+        this.temp = [];
+        this.allList = [];
         this.total = 0;
+        this.forChildren(data.children);
+        // eslint-disable-next-line no-undef
         this.getListSelect();
         this.tableKey = !this.tableKey;
+      }
+    },
+    forChildren(msg){
+      if(msg.length>0){
+        for(let i = 0;i<msg.length;i++){
+          if(msg[i].type == "table"){
+            this.temp.push(msg[i]);
+            this.allList.push(msg[i]);
+            this.total += 1;
+          }
+          if(msg[i].children.length > 0){
+            this.forChildren(msg[i].children);
+          }
+        }
       }
     },
     createFolder() {
