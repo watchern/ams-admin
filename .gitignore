@@ -2,6 +2,7 @@
 node_modules/
 /dist/
 dist/
+amsadmin/
 ROOT/
 /ROOT*
 npm-debug.log*
