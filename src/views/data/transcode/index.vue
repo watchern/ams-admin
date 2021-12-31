@@ -522,12 +522,27 @@ export default {
                 }
                 //将数组存入temp对象
                 this.temp.transColRels = transColRels;
+
+                var tempData = Object.assign({}, this.temp)
+                update(tempData).then(() => {
+                  const index = this.list.findIndex(v => v.transRuleUuid === this.temp.transRuleUuid)
+                  this.list.splice(index, 1, this.temp)
+                  this.previewVisible = false
+                  this.dialogFormVisible = false
+                  this.$notify({
+                    title: '成功',
+                    message: '更新成功',
+                    type: 'success',
+                    duration: 2000,
+                    position: 'bottom-right'
+                  })
+                })
               })
             })
           } else {
             this.temp.sqlContent = ''
             this.temp.transColRels = this.transColRelsData
-          }
+
           var tempData = Object.assign({}, this.temp)
           update(tempData).then(() => {
             const index = this.list.findIndex(v => v.transRuleUuid === this.temp.transRuleUuid)
@@ -542,6 +557,7 @@ export default {
               position: 'bottom-right'
             })
           })
+        }
         }
       })
     },
