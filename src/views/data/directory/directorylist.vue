@@ -1080,6 +1080,7 @@ export default {
           };
           // 添加节点
           this.$emit("append-node", childData, this.currTreeNode);
+          this.$emit("refresh", this.clickId);
           this.$notify({
             title: "成功",
             message: "表创建成功，正在导入中...",
