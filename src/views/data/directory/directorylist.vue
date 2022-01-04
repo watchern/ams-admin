@@ -930,7 +930,8 @@ export default {
               duration: 2000,
               position: "bottom-right",
             });
-            this.$emit("remove", this.selections, this.clickNode);
+            // this.$emit("remove", this.selections, this.clickNode);
+            this.$emit("refresh", this.clickId);
           });
         });
       }
