@@ -15,7 +15,7 @@
       </div>
     </div>
     <div class="readonlyTo" v-if="showHelpHeight" v-loading="loading">
-      <div class="readonlyChild" id="readonlyChild"></div>
+      <div class="readonlyChild" id="readonlyChild" />
       <div @click="showHelpHeight = false" class="readonlyToX">X</div>
       <div class="readonlyClose" @click="showHelpHeight = false"></div>
     </div>
@@ -28,7 +28,8 @@ import RightFooter from './views/right-footer'
 import { getHelpByMenuPath } from '@/api/base/helpdocument'
 export default {
   components: {
-    LeftMenu,
+    LeftMenu
+    ,
     RightFooter
   },
   data () {
@@ -58,25 +59,25 @@ export default {
   },
   methods: {
     getHelp () {
-      let saveData = []
-      saveData.push({
-        menuPath: this.$route.fullPath
-      })
-      this.loading = true
-      this.showHelpHeight = true
-      getHelpByMenuPath(saveData[0]).then(resp => {
-        if(resp.code === 0 && resp.data !== null){
-          if (resp.data.helpDocument !== '') {
-            document.getElementById('readonlyChild').innerHTML = resp.data.helpDocument
-          } else {
-            document.getElementById('readonlyChild').innerHTML = '<p>暂无新手引导</p>'
-          }
-          this.loading = false
-        } else if (resp.code === 0 && resp.data === null){
-          document.getElementById('readonlyChild').innerHTML = '<p>暂无新手引导</p>'
-          this.loading = false
-        }
-      })
+      // let saveData = []
+      // saveData.push({
+      //   menuPath: this.$route.fullPath
+      // })
+      // this.loading = true
+      // this.showHelpHeight = true
+      // getHelpByMenuPath(saveData[0]).then(resp => {
+      //   if(resp.code === 0 && resp.data !== null){
+      //     if (resp.data.helpDocument !== '') {
+      //       document.getElementById('readonlyChild').innerHTML = resp.data.helpDocument
+      //     } else {
+      //       document.getElementById('readonlyChild').innerHTML = '<p>暂无新手引导</p>'
+      //     }
+      //     this.loading = false
+      //   } else if (resp.code === 0 && resp.data === null){
+      //     document.getElementById('readonlyChild').innerHTML = '<p>暂无新手引导</p>'
+      //     this.loading = false
+      //   }
+      // })
     },
   }
 }

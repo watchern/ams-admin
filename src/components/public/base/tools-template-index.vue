@@ -25,10 +25,10 @@
             </el-tooltip>
           </div>
         </div>
-        <div class="title-label-menu" style="margin-top: 15px">
+        <div class="title-label-menu" style="margin-top: 15px;display:none;">
           自定义快捷菜单
         </div>
-        <div class="lately-use-box flex a-center j-start flex-row">
+        <div class="lately-use-box flex a-center j-start flex-row" style="display:none;">
           <div
             v-for="(item, index) in latelyFastList"
             :key="index"
@@ -41,7 +41,7 @@
           <div
             class="use-box flex a-center j-center use-zy"
             @click="dialogVisible = true"
-            :style="{ background: 'rgb(95, 190, 235)' }"
+            :style="{ background: '#353A43 !important' }"
           >
             <img src="../../public/base/accessIcon/zidingyi.png" />
           </div>
@@ -76,7 +76,7 @@
       <!--      </div>-->
 
       <div class="newest-item">
-        <div class="newest-item-box">
+        <div class="newest-item-box" style="background: #353A43 !important;">
           <div data-v-02dbff7e="" class="title-label-img">
             <img
               data-v-02dbff7e=""
@@ -236,19 +236,19 @@ export default {
       ],
       latelyBackList: [
         {
-          bg: "rgb(95,190,235)",
+          bg: "#353A43 !important",
         },
         {
-          bg: "rgb(95,190,235)",
+          bg: "#353A43 !important",
         },
         {
-          bg: "rgb(95,190,235)",
+          bg: "#353A43 !important",
         },
         {
-          bg: "rgb(95,190,235)",
+          bg: "#353A43 !important",
         },
         {
-          bg: "rgb(95,190,235)",
+          bg: "#353A43 !important",
         },
       ],
       latelyUseList: [],
@@ -614,7 +614,7 @@ export default {
               image: require("../../public/base/accessIcon/moxing.png"),
               bg: this.latelyBackList[i]
                 ? this.latelyBackList[i].bg
-                : "rgb(95,190,235)",
+                : "#353A43 !important",
             });
           }
         }
@@ -802,7 +802,7 @@ export default {
                   image: require("../../public/base/accessIcon/moxing.png"),
                   bg: this.latelyBackList[i]
                     ? this.latelyBackList[i].bg
-                    : "rgb(95,190,235)",
+                    : "#353A43 !important",
                 });
               }
             }
@@ -933,7 +933,7 @@ export default {
     }
     .title-label-menu {
       font-size: 20.16px;
-      color: #559ed4;
+      // color: #559ed4;
     }
     .title {
       font-family: BebasNeue;

@@ -52,10 +52,16 @@
           <el-radio v-model="temp.ruleType" :label="1" :disabled="dialogStatus === 'update' ? true : false">SQL语句</el-radio>
           <el-radio v-model="temp.ruleType" :label="2" :disabled="dialogStatus === 'update' ? true : false">手动输入</el-radio>
         </el-form-item>
-         <el-form-item v-if="temp.ruleType === 1" label="转码规则" prop="sqlContent" placeholder="请输入SQL">
+         <el-form-item v-if="temp.ruleType === 1" label="转码规则" prop="sqlContent">
           <el-link v-if="temp.ruleType === 1" size="mini" type="primary" @click="exSql()">执行SQL</el-link>
-          <el-input v-model="temp.sqlContent" type="textarea" />
+          <el-input v-model="temp.sqlContent" type="textarea"  :placeholder="sqlRuleText"/>
         </el-form-item>
+        <el-button
+                type="primary"
+                @click="viewSqlRule()"
+                class="btn btn-primary"
+        >查看SQL规则</el-button
+        >
          <div v-if="temp.ruleType === 1" :data="sqlRule">
           <el-table-column prop="codeValue" label="真实值">
             <template slot-scope="scope">
@@ -146,6 +152,24 @@
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
       </div>
     </el-dialog>
+    <el-dialog
+            :append-to-body="true"
+            :close-on-click-modal="false"
+            v-if="SQLRuleDialog"
+            title="SQL规则"
+            :visible.sync="SQLRuleDialog"
+    >
+      <el-input
+              :autosize="{ minRows: 2, maxRows: 5 }"
+              type="textarea"
+              :disabled="true"
+              v-model="sqlRuleText"
+      >
+      </el-input>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="SQLRuleDialog = false">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -222,7 +246,9 @@ export default {
         ruleType: [{ required: true, message: '请填写转码方式', trigger: 'change' }],
         ruleDesc: [{ max: 100, message: '长度不得超过100', trigger: 'change' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      SQLRuleDialog: false,
+      sqlRuleText: "格式：SELECT A,B FROM 模式.C\nA:真实值，B:显示值，若字段过多,则默认只使用前两列进行真实值与显示值的匹配",
     }
   },
   created() {
@@ -496,12 +522,27 @@ export default {
                 }
                 //将数组存入temp对象
                 this.temp.transColRels = transColRels;
+
+                var tempData = Object.assign({}, this.temp)
+                update(tempData).then(() => {
+                  const index = this.list.findIndex(v => v.transRuleUuid === this.temp.transRuleUuid)
+                  this.list.splice(index, 1, this.temp)
+                  this.previewVisible = false
+                  this.dialogFormVisible = false
+                  this.$notify({
+                    title: '成功',
+                    message: '更新成功',
+                    type: 'success',
+                    duration: 2000,
+                    position: 'bottom-right'
+                  })
+                })
               })
             })
           } else {
             this.temp.sqlContent = ''
             this.temp.transColRels = this.transColRelsData
-          }
+
           var tempData = Object.assign({}, this.temp)
           update(tempData).then(() => {
             const index = this.list.findIndex(v => v.transRuleUuid === this.temp.transRuleUuid)
@@ -516,6 +557,7 @@ export default {
               position: 'bottom-right'
             })
           })
+        }
         }
       })
     },

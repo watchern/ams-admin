@@ -1089,13 +1089,7 @@ export default {
       return returnObj
     },
     closeWinfrom() {
-      this.$store.commit('aceState/setRightFooterTags', {
-        type: 'close',
-        val: {
-          name: this.formName,
-          path: '/analysis/editorModel'
-        }
-      })
+      this.$router.push({ path: "/analysis/auditmodel" })
     },
     /**
      * 转换列对象
