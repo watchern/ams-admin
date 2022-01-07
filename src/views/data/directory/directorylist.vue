@@ -8,7 +8,8 @@
       />
     </div>
     <el-row>
-      <el-col align="right">
+      <!-- !onlyImport 展示全部按钮 -->
+      <el-col align="right" v-if="!onlyImport">
         <el-button
           type="primary"
           :disabled="disDeleteTable"
@@ -82,6 +83,14 @@
           class="oper-btn share"
           :disabled="disShareTable"
           @click="shareTable"
+        />
+      </el-col>
+      <el-col align="right" v-else>
+        <el-button
+            type="primary"
+            class="oper-btn import-table btn-width-md"
+            :disabled="disAddTable"
+            @click="uploadTable"
         />
       </el-col>
     </el-row>
@@ -715,10 +724,15 @@ export default {
       //复制表websocket对象
       webSocketCopy: null,
       //导入表websocket对象
-      webSocketImport: null
+      webSocketImport: null,
+      onlyImport:false
     };
   },
   created() {
+    // 路由中如果包含import=1,则只展示导入文件，否则展示全部按钮
+    if(this.$route.query.import){
+      this.$route.query.import == 1?this.onlyImport=true:this.onlyImport=false
+    }
     // this.dataTypeRules = this.CommonUtil.DataTypeRules
     this.initDirectory();
     // //获取登录用户的信息来控制删除按钮是否显示

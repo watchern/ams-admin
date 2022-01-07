@@ -119,8 +119,8 @@ const actions = {
             var sceneName = resp.data.sceneName
             commit('SET_SCENECODE', sceneCode)
             commit('SET_SCENENAME', sceneName)
-            // commit('SET_DATAUSERID', dataUserId)
-            // commit('SET_DATAUSERNAME', dataUserName)
+            commit('SET_DATAUSERID', dataUserId)
+            commit('SET_DATAUSERNAME', dataUserName)
           })
         }
         resolve(data)
