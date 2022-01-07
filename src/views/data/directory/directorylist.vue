@@ -930,7 +930,8 @@ export default {
               duration: 2000,
               position: "bottom-right",
             });
-            this.$emit("remove", this.selections, this.clickNode);
+            // this.$emit("remove", this.selections, this.clickNode);
+            this.$emit("refresh", this.clickId);
           });
         });
       }
@@ -1021,6 +1022,8 @@ export default {
                   this.uploadtempInfo = res.data;
                   if (this.uploadtempInfo.colMetas.length >0 ){
                     for(let i=0;i<this.uploadtempInfo.colMetas.length;i++) {
+                      //设置默认数据类型长度为255
+                      this.uploadtempInfo.colMetas[i].dataLengthText = 255;
                       this.changeDataType(this.uploadtempInfo.colMetas[i])
                     }
                   }
@@ -1078,6 +1081,7 @@ export default {
           };
           // 添加节点
           this.$emit("append-node", childData, this.currTreeNode);
+          this.$emit("refresh", this.clickId);
           this.$notify({
             title: "成功",
             message: "表创建成功，正在导入中...",
