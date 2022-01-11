@@ -339,7 +339,7 @@ export default {
     modelshoppingcart,
     personTree,
   },
-  props: ["power", "isAuditWarring"],
+  props: ["power", "isAuditWarning"],
   data() {
     return {
       //京东方专用
@@ -429,7 +429,7 @@ export default {
         modelType: "",
       },
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 20,
       },

@@ -6,12 +6,12 @@
       placeholder="输入关键字进行过滤"
       class="tree-search"
     />
+    <!-- default-expand-all elementui 树默认展开全部，2021-9-8应客户要求去掉 -->
     <MyElTree
       ref="tree"
       :data="data"
       :props="defaultProps"
       :filter-node-method="filterNode"
-      default-expand-all
       :expand-on-click-node="false"
       node-key="id"
       check-strictly
@@ -19,9 +19,8 @@
       @check-change="handleNodeClick1"
       :show-checkbox="
         this.publicModel === 'editorModel' ||
-        this.publicModel === 'relationModel' || this.publicModel === 'publicModel'
-          ? true
-          : false
+        this.publicModel === 'relationModel' ||
+        this.publicModel === 'publicModel' ? true : false
       "
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
@@ -33,24 +32,27 @@
             size="mini"
             class="tree-line-btn"
             @click.stop="() => setSelectTreeNode(node, data, 1)"
-            ><svg-icon icon-class="icon-add-1"
-          /></el-button>
+            >
+            <svg-icon icon-class="icon-add-1" />
+          </el-button>
           <el-button
             title="修改模型分类"
             type="text"
             size="mini"
             class="tree-line-btn"
             @click.stop="() => setSelectTreeNode(node, data, 2)"
-            ><svg-icon icon-class="icon-edit-1"
-          /></el-button>
+            >
+            <svg-icon icon-class="icon-edit-1" />
+          </el-button>
           <el-button
             title="删除模型分类"
             type="text"
             size="mini"
             class="tree-line-btn"
             @click.stop="() => deleteFolder(node, data)"
-            ><svg-icon icon-class="icon-delete-1"
-          /></el-button>
+            >
+            <svg-icon icon-class="icon-delete-1" />
+          </el-button>
         </span>
       </span>
     </MyElTree>
@@ -60,7 +62,7 @@
       :visible.sync="dialogFormVisible"
       :close-on-click-modal="false"
     >
-      <el-form :model="form">
+      <el-form :model="form" class="detail-form">
         <el-form-item label="分类名称">
           <el-input v-model="form.modelFolderName" autocomplete="off" />
         </el-form-item>
@@ -105,7 +107,8 @@ export default {
       },
       checkedId: "",
       appContainerDivStyle:"",
-      isBussinessType:false  //是否是业务分类
+      isBussinessType:false,  //是否是业务分类
+      isShowModel:true
     };
   },
   watch: {
@@ -135,54 +138,54 @@ export default {
      *获取模型分类
      */
     getModelFolder() {
-      var spaceFolderName = ''
-      var spaceFolderId = ''
-      if (this.spaceFolderName === undefined){
-        spaceFolderName = '个人模型'
-      }else {
-        spaceFolderName = this.spaceFolderName
-      }
-      if (this.spaceFolderId === undefined){
-        spaceFolderId = this.$store.getters.datauserid
-      }else {
-        spaceFolderId = this.spaceFolderId
-      }
-      if (this.publicModel != undefined && this.publicModel != "") {
-        findModelFolderTree(false, spaceFolderName, spaceFolderId).then((result) => {
-          let newData = [];
-          if (this.publicModel === "publicModel") {
-            // 处理数据  只保留公共分类的文件夹数据
-            for (let i = 0; i < result.data.length; i++) {
-              if (result.data[i].id == "gonggong") {
-                newData.push(result.data[i]);
-              }
-            }
-            this.data = newData;
-          } else if (this.publicModel === "editorModel") {
-            // todo 揉入权限信息
-            for (let i = 0; i < result.data.length; i++) {
-              if (
-                result.data[i].id == "gonggong" ||
-                result.data[i].id == this.$store.getters.datauserid
-              ) {
-                result.data[i].disabled = true;
-                newData.push(result.data[i]);
-              }
-            }
-            this.isBussinessType = true
-            if(this.filterId) {
-              newData = newData.filter(data => data.id === this.filterId)
-            }
-            this.data = newData;
-          } else if (this.publicModel === "relationModel") {
-             findModelFolderTree(true, spaceFolderName, spaceFolderId).then((result) => {
-          this.data = result.data;
-        });
-          } else {
-            newData = result.data;
-            this.data = newData;
-          }
+      const GONGGONG = "gonggong";
+      var spaceFolderName = this.CommonUtil.isBlank(this.spaceFolderName) ? '个人模型' : this.spaceFolderName
+      var spaceFolderId = this.CommonUtil.isBlank(this.spaceFolderId) ? this.$store.getters.datauserid : this.spaceFolderId
 
+      //如果是预警只显示文件夹
+      this.isShowModel = this.power === 'warning' ? false: this.isShowModel;
+
+      if (this.CommonUtil.isNotBlank(this.publicModel)) {
+        this.isShowModel = false;
+        findModelFolderTree(this.isShowModel, spaceFolderName, spaceFolderId).then((result) => {
+          let newData = [];
+          switch (this.publicModel) {
+            case "publicModel":
+              // 处理数据  只保留公共分类的文件夹数据
+              for (let i = 0; i < result.data.length; i++) {
+                if (result.data[i].id == GONGGONG) {
+                  newData.push(result.data[i]);
+                }
+              }
+              this.data = newData;
+              break;
+            case "editorModel":
+              // todo 揉入权限信息
+              for (let i = 0; i < result.data.length; i++) {
+                if (
+                    result.data[i].id == GONGGONG ||
+                    result.data[i].id == this.$store.getters.datauserid
+                ) {
+                  result.data[i].disabled = true;
+                  newData.push(result.data[i]);
+                }
+              }
+              this.isBussinessType = true
+              if (this.filterId) {
+                newData = newData.filter(data => data.id === this.filterId)
+              }
+              this.data = newData;
+              break;
+            case "relationModel":
+              findModelFolderTree(true, spaceFolderName, spaceFolderId).then((result) => {
+                this.data = result.data;
+              });
+              break;
+            default:
+              newData = result.data;
+              this.data = newData;
+              break;
+          }
         });
       } else {
         findModelFolderTree(true, spaceFolderName, spaceFolderId).then((result) => {
@@ -205,10 +208,7 @@ export default {
      */
     handleNodeClick(data) {
       this.selectTreeNode = data;
-      if (data.type === "model") {
-      } else {
         this.$emit("refreshModelList", data);
-      }
     },
     /**
      * 树过滤
@@ -303,6 +303,7 @@ export default {
             this.$set(this.selectTreeNode, "children", []);
           }
           this.selectTreeNode.children.push(newChild);
+          this.form.modelFolderName = null
         } else {
           this.$notify({
             title: "提示",

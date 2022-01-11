@@ -48,7 +48,7 @@
       </span>
         </MyElTree>
       </el-aside>
-      <div style="margin-top: 10px;margin-left:10px;">
+      <div style="margin-top: 10px;margin-left:10px;width: calc(100% - 320px)">
         <div class="filter-container">
           <QueryField ref="queryfield" :form-data="queryFields" @submit="getParamList" />
         </div>
@@ -116,7 +116,7 @@
       title="请填写分类信息"
       :visible.sync="dialogFormVisible"
     >
-      <el-form :model="form">
+      <el-form :model="form" class="detail-form">
         <el-form-item label="分类名称">
           <el-input v-model="form.folderName" autocomplete="off" />
         </el-form-item>
@@ -130,7 +130,7 @@
       :append-to-body="false"
       :close-on-click-modal="false"
       v-if="addParamDialog"
-      title="添加模型参数"
+      :title="textMap[dialogStatus]"
       :visible.sync="addParamDialog">
       <addParam :selectTreeNode="selectTreeNode" @refshParamList="refshParamList" :operationObj="operationObj" ref="addParam"></addParam>
       <div slot="footer" class="dialog-footer">
@@ -202,7 +202,12 @@ export default {
         operationType : 1,
         //参数编号
         paramUuid:''
-      }
+      },
+      textMap: {
+        update: '修改模型参数',
+        create: '添加模型参数'
+      },
+      dialogStatus: 'create'
     }
   },
   computed: {
@@ -490,6 +495,7 @@ export default {
       }
       this.operationObj.operationType = 1
       this.operationObj.paramUuid = ''
+      this.dialogStatus = 'create'
       this.addParamDialog = true
     },
     /**
@@ -512,7 +518,7 @@ export default {
         this.$message({ type: 'info', message: '最少选择一个参数!' })
         return
       }
-      this.$confirm('此操作将永久删除该参数, 是否继续?', '提示', {
+      this.$confirm('删除该参数可能会影响到使用该参数的模型 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -535,6 +541,13 @@ export default {
           success: function(data, textStatus, jqXHR){
             if(data.code == 0){
               that.getParamList(that.pageQuery.condition)
+              that.$notify({
+                title: "成功",
+                message: "删除成功！",
+                type: "success",
+                duration: 2000,
+                position: "bottom-right",
+              });
             }
             else{
               that.$message({ type: 'error', message: "删除参数出错,参数错误"})
@@ -557,6 +570,7 @@ export default {
       }
       this.operationObj.operationType = 2
       this.operationObj.paramUuid = selectObj[0].ammParamUuid
+      this.dialogStatus = 'update'
       this.addParamDialog = true
     },
     enableParam(){

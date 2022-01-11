@@ -72,7 +72,7 @@
             <el-tab-pane label="输出字段设置" name="outPutCol">
                 <el-row style="padding-top: 10px;">
                     <el-col align="right">
-                        <el-button type="primary" class="oper-btn customfield" @click="customizeColumn('1')" title="自定义字段" tyle="line-height: normal;"/>
+                        <el-button type="primary" class="oper-btn customfield btn-width-max" @click="customizeColumn('1')" title="自定义字段" tyle="line-height: normal;"/>
                         <el-button type="primary" class="oper-btn help" @click="helpDialogVisible = true" title="说明" style="line-height: normal;"/>
                     </el-col>
                 </el-row>
@@ -159,8 +159,7 @@
                 showTableJoin: false,
                 joinTypeArr: [{ value: 'LEFT JOIN', name: '左连接', description:'左连接：选取关联字段将两张表进行关联，左表的所有数据均显示，右表的数据只显示关联字段值相等的数据，若右表关联结果无数据则补空显示'},
                     { value: 'RIGHT JOIN', name: '右连接', description:'选取关联字段将两张表进行关联，右表的所有数据均显示，左表的数据只显示关联字段值相等的数据，若左表关联结果无数据则补空显示'},
-                    { value: 'INNER JOIN', name: '内连接', description:'内连接：选取关联字段将两张表进行关联，仅显示两张表中关联字段值相等的数据'},
-                    { value: 'FULL JOIN', name: '外连接', description:'外连接：选取关联字段将两张表进行关联，显示出左表和右表关联后的所有数据，但去除重复数据，两表中若无关联数据则补空显示'}],
+                    { value: 'INNER JOIN', name: '内连接', description:'内连接：选取关联字段将两张表进行关联，仅显示两张表中关联字段值相等的数据'}],
                 joinType: '',
                 joinDescription:'',
                 columnsInfoPre: [], // 前置节点的输出列信息集合（只用于有且只有一个前置节点的节点）
@@ -176,13 +175,21 @@
         },
         mounted() {
             this.init()
-            this.joinType = this.joinTypeArr[2].value
-            this.joinDescription = this.joinTypeArr[2].description
+            // this.joinType = this.joinTypeArr[2].value
+            // this.joinDescription = this.joinTypeArr[2].description
         },
         methods: {
             init() {
                 relationJs.sendVueObj(this)
                 relationJs.init()
+                let flag = relationJs.judgeColumns();
+                if(!flag){
+                    this.$message({
+                        type: "warning",
+                        message: "上级两个节点中有相同名字的字段，请在上级节点修改输出字段名称",
+                    })
+                    return
+                }
                 $(this.$refs.outPutTable.$refs.bodyWrapper.children[0].children[1]).sortable().disableSelection()
             },
             myDiagramMousemove(event) {
@@ -308,6 +315,7 @@
                     let id = null
                     let nodeId = ''
                     let disColumnName = returnObj.columnInfo.newColumnName
+                    console.log("selectColumnName")
                     if(this.customizeColumnType === "1"){//自定义字段
                         id = this.items.length + 1
                         rtn = '自定义字段'

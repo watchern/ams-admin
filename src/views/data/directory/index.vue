@@ -1,5 +1,5 @@
 <template>
-  <div class="tree-list-container" style="display:flex;">
+  <div class="tree-list-container" style="display:flex; justify-content:space-around">
     <div class="tree">
       <!-- <el-row>
         <el-col>
@@ -13,11 +13,7 @@
           </el-select>
         </el-col>
       </el-row> -->
-      <el-row style="margin-top:20px">
-        <el-col>
-          <dataTree v-if="isTreeShow" ref="dataTree" :data-user-id="directyDataUserId" :scene-code="directySceneCode" @node-click="nodeclick" />
-        </el-col>
-      </el-row>
+      <dataTree v-if="isTreeShow" ref="dataTree" :data-user-id="directyDataUserId" :scene-code="directySceneCode" @node-click="nodeclick" />
     </div>
     <div class="divContent">
       <BaseDirectoryList ref="listData" :data-user-id="directyDataUserId" :scene-code="directySceneCode" @append-node="appendnode" @remove="remove" @refresh="refresh" />
@@ -38,7 +34,7 @@ export default {
     return {
       allScene: [],
       currentSceneUuid: this.$store.getters.scenecode,
-      directyDataUserId: this.$store.state.user.code,
+      directyDataUserId: this.$store.state.user.datauserid,
       directySceneCode: 'auditor',
       isTreeShow: true
     }
@@ -56,7 +52,7 @@ export default {
     setTimeout(function(){
       $('.el-tree-node:eq(0)').click()
     },1000)
-   
+
   },
   methods: {
     initDirectory() {
@@ -81,8 +77,8 @@ export default {
     remove(data, parentNode) {
       this.$refs.dataTree.remove(data, parentNode)
     },
-    refresh() {
-      this.$refs.dataTree.refresh()
+    refresh(query) {
+      this.$refs.dataTree.refresh(query)
     }
   }
 }
@@ -90,15 +86,14 @@ export default {
 
 <style scoped>
 .tree {
-  min-width: 15%;
+  width: 16%;
   margin-left: 1%;
-  height: 95%;
+  height: 100%;
 }
 .divContent {
-  width: 70%;
-  min-width:870px;
+  width: 83%;
 }
-.agreeicon0  {
+.agreeicon0 {
   display: inline-block;
   height: 16px;
   width: 16px;
@@ -109,7 +104,7 @@ export default {
   vertical-align: top;
   *vertical-align: middle;
 }
-.agreeicon1  {
+.agreeicon1 {
   display: inline-block;
   height: 16px;
   width: 16px;
@@ -120,7 +115,7 @@ export default {
   vertical-align: top;
   *vertical-align: middle;
 }
-.agreeicon2  {
+.agreeicon2 {
   display: inline-block;
   height: 14px;
   width: 14px;

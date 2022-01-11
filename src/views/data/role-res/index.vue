@@ -9,11 +9,13 @@
      <!-- :gutter="5" -->
     <el-row style="display:flex;height:90%;">
        <!-- :span="6" -->
+      <!-- @原始数据@ -->
+
       <el-col style="min-width:350px;width:auto;">
         <el-input v-model="filterText1" placeholder="输入关键字进行过滤" />
         <div class="tree-container databg">
           <MyElTree
-            ref="tree1"
+            ref="treeTable"
             v-loading="tree1Loading"
             :props="props"
             class="filter-tree"
@@ -94,11 +96,12 @@
         </div>
       </el-col>
        <!-- :span="6" -->
+      <!-- @角色数据@ -->
       <el-col style="min-width:350px;width:auto;">
         <el-input v-model="filterText2" placeholder="输入关键字进行过滤" />
         <div class="tree-container databg">
           <MyElTree
-            ref="tree2"
+            ref="treeRole"
             :props="props"
             class="filter-tree"
             :highlight-current="true"
@@ -261,12 +264,23 @@
                 align="center"
                 prop="chnName"
               />
-              <el-table-column
-                label="加密策略"
+              <!--                prop="encryptType"-->
+<!--              <el-table-column
+                label="脱敏方式"
                 width="150px"
                 align="center"
-                prop="encryptType"
-              />
+              >
+               <template slot-scope="scope">
+                 <el-select  v-model="scope.row.roleCol.encryptType" placeholder="选择脱敏方式" value="NONE">
+                   <el-option
+                           v-for="item in options"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value">
+                   </el-option>
+                 </el-select>
+              </template>
+              </el-table-column>-->
             </el-table>
             <div style="margin: 8px">
               <el-input
@@ -314,6 +328,7 @@ export default {
           children: [],
         },
       ],
+      options: [ {label: "未加密", value: "NONE"}, {label: "中间加密", value: "MIDDLE"}, {label: "两边加密", value: "SIDE"}],
       currentData: null, // 当前选中的数据表
       currentSelection: [],
       accessTypeArray: [],
@@ -324,10 +339,10 @@ export default {
   computed: {},
   watch: {
     filterText1(val) {
-      this.$refs.tree1.filter(val);
+      this.$refs.treeTable.filter(val);
     },
     filterText2(val) {
-      this.$refs.tree2.filter(val);
+      this.$refs.treeRole.filter(val);
     },
   },
   created() {
@@ -374,13 +389,13 @@ export default {
         }
       },
     addRoleTable() {
-      this.changeTreeNodeStatus(this.$refs.tree2.getAllNodes()[0],true)
+      this.changeTreeNodeStatus(this.$refs.treeRole.getAllNodes()[0],true)
       let _this = this
       setTimeout(function(){
         /* 先对选中节点以pid为key做hashmap */
-      var ckTbs = _this.$refs.tree1.getCheckedNodes(false, true);
+      var ckTbs = _this.$refs.treeTable.getCheckedNodes(false, true);
       if (ckTbs.length == 0) {
-        ckTbs.push(_this.$refs.tree1.getCurrentNode());
+        ckTbs.push(_this.$refs.treeTable.getCurrentNode());
       }
       var ckTbsMap = {};
       ckTbs.forEach((item) => {
@@ -427,7 +442,7 @@ export default {
       const index = children.findIndex((d) => d.id === data.id);
       children.splice(index, 1);
       // 取消主树的checkBox
-      this.$refs.tree1.setChecked(data,false,true)
+      this.$refs.treeTable.setChecked(data,false,true)
     },
     //所有子集禁用
     witerData(node, data) {
@@ -452,12 +467,19 @@ export default {
         } else {
           this.listLoading = true;
           getRoleCols(this.roleUuid, node.data.id).then((resp) => {
+            console.log(resp)
             this.listLoading = false;
             node.data.cols = resp.data;
             this.currentData = node.data;
             // if(!this.currentData.extMap) this.$set(this.currentData, 'extMap', null);
             this.currentData.cols.forEach((d) => {
-              this.$set(d, "selected", d.roleCol !== null);
+              console.log(d)
+              if (d.roleCol === null ) {
+                d.roleCol={encryptType:'NONE'}
+              }
+                else {
+                  this.$set(d, "selected", d.roleCol !== null);
+              }
             });
             if (!this.currentData.accessType)
               this.$set(this.currentData, "accessType", []);
@@ -482,7 +504,7 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-      var allNodes = this.$refs.tree2.getAllNodes();
+      var allNodes = this.$refs.treeRole.getAllNodes();
       var folders = [];
       var tables = [];
       var cols = [];
@@ -510,6 +532,7 @@ export default {
                   cols.push({
                     colMetaUuid: col.colMetaUuid,
                     dataRoleUuid: this.roleUuid,
+                    encryptType: col.roleCol.encryptType
                   });
                 }
               });

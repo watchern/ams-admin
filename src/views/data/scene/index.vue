@@ -10,7 +10,7 @@
     <el-row>
       <el-col align="right">
         <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreate()" />
-        <el-button type="primary" size="mini" class="oper-btn edit-4" :disabled="selections.length !== 1" @click="toEdit()" />
+        <el-button type="primary" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" @click="toEdit()" />
         <el-button type="primary" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
       </el-col>
     </el-row>

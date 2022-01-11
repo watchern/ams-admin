@@ -1,12 +1,13 @@
 <template>
-  <div class="tree-list-container all zzz">
+  <div class="tree-list-container all">
     <el-tabs
       @tab-click="handleClick"
       v-model="editableTabsValue"
       closable
       @tab-remove="removeTab"
+      style="height: 100%"
     >
-      <el-tab-pane label="模型列表" name="modelList">
+      <el-tab-pane label="模型列表" name="modelList" style="height: 100%">
         <div class="filter-container">
           <QueryField
             ref="queryfield"
@@ -23,14 +24,13 @@
               @click="previewModel"
             />
             <!--            <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />-->
-            <el-dropdown style="margin-right: 10px">
+            <el-dropdown style="margin-right: 10px" v-if="!disableBtn || selectTreeNode == null">
               <el-button
                 type="primary"
-                :disabled="btnState.addBtnState"
+                :disabled="btnState.addBtnState || (ifmanger=='0' && selectTreeNode == null)"
                 @mouseover="mouseOver"
                 @mouseleave="mouseLeave"
                 class="oper-btn add"
-                @click="selectModelTypeDetermine('002003001')"
               />
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
@@ -43,21 +43,23 @@
             </el-dropdown>
             <el-button
               type="primary"
-              :disabled="btnState.editBtnState"
+              :disabled="btnState.editBtnState || (ifmanger=='0' && selectTreeNode == null)"
+              v-if="!disableBtn || selectTreeNode == null"
               class="oper-btn edit"
               @click="updateModel"
             />
             <!--            <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateModel1" />-->
             <el-button
               type="primary"
-              :disabled="btnState.deleteBtnState"
+              :disabled="btnState.deleteBtnState || (ifmanger=='0' && selectTreeNode == null)"
+              v-if="!disableBtn || selectTreeNode == null"
               class="oper-btn delete"
               @click="deleteModel"
             />
-            <el-dropdown placement="bottom" trigger="click" class="el-dropdown">
+            <el-dropdown placement="bottom" trigger="click" class="el-dropdown" v-if="!disableBtn || selectTreeNode == null">
               <el-button
                 type="primary"
-                :disabled="btnState.otherBtn"
+                :disabled="btnState.otherBtn || (ifmanger=='0' && selectTreeNode == null)"
                 class="oper-btn more"
               />
               <el-dropdown-menu slot="dropdown">
@@ -103,17 +105,23 @@
           title="选择业务分类"
           width="50%"
         >
-          <ModelFolderTree ref="modelFolderTree" public-model="editorModel" :filter-id="moveFolderId"/>
+          <ModelFolderTree
+            ref="modelFolderTree"
+            public-model="editorModel"
+            :filter-id="moveFolderId"
+          />
           <div slot="footer">
             <el-button type="primary" @click="moveModelConfirm">确定</el-button>
-            <el-button @click="modelFolderTreeDialogMove = false">取消</el-button>
+            <el-button @click="modelFolderTreeDialogMove = false"
+              >取消</el-button
+            >
           </div>
         </el-dialog>
         <el-table
           :key="tableKey"
           ref="modelListTable"
           v-loading="listLoading"
-          style="min-height: 450px; overflow-y: scroll"
+          style="height: calc(100% - 200px); overflow-y: scroll"
           :data="list"
           border
           fit
@@ -124,14 +132,14 @@
           <el-table-column type="selection" width="55" />
           <el-table-column label="模型名称" width="300px" prop="modelName">
             <template slot-scope="scope">
-              <el-link
+              <!-- <el-link
                 type="primary"
                 @click="selectModelDetail(scope.row.modelUuid)"
                 >{{ scope.row.modelName }}</el-link
-              >
+              > -->
+              {{ scope.row.modelName }}
             </template>
           </el-table-column>
-          <el-table-column label="平均运行时间" width="150px" prop="runTime" />
           <el-table-column label="审计事项" prop="auditItemName" />
           <el-table-column
             label="风险等级"
@@ -146,11 +154,18 @@
             :formatter="modelTypeFormatter"
           />
           <el-table-column
+            label="模型用途"
+            prop="modelUse"
+            align="center"
+            :formatter="modelUseFormatter"
+          />
+          <el-table-column
             label="创建时间"
             prop="createTime"
             align="center"
             :formatter="dateFormatter"
           />
+          <!-- <el-table-column label="平均运行时间" width="150px" prop="runTime" /> -->
         </el-table>
         <pagination
           v-show="total > 0"
@@ -177,7 +192,7 @@
                     :isRelation="item.isRelation === true ? true : false"
                     @setNextValue="setNextValue"
                     @addTab="addTab"
-                    :modelId="modelId"
+                    :modelId="item.modelUuid"
                     :is-model-preview="true"
                     :ref="item.name"
                     :key="1"
@@ -321,9 +336,10 @@ import {
 import crossrangeParam from "@/views/analysis/modelparam/crossrangeparam";
 import paramDraw from "@/views/analysis/modelparam/paramdraw";
 import paramDrawNew from "@/views/analysis/modelparam/paramdrawnew";
-import { replaceNodeParam } from "@/api/analysis/auditparam";
+import {getInfo, isAdmin} from '@/api/user'
 import modelshoppingcart from "@/views/analysis/auditmodel/modelshoppingcart";
 import personTree from "@/components/publicpersontree/index";
+import ReviewSubmit from '@/views/flowwork/reviewSubmit.vue';
 export default {
   name: "ModelListTable",
   components: {
@@ -338,9 +354,18 @@ export default {
     modelshoppingcart,
     personTree,
   },
-  props: ["power", "dataUserId", "sceneCode", "isAuditWarring"],
+  props: ["power", "dataUserId", "sceneCode", "isAuditWarning"],
   data() {
     return {
+      // 定义数据列
+      columnDefs: [
+        {field:"modelName",headerName:"模型名称"},
+        {field:"runTime",headerName:"平均运行时间"},
+        {field:"auditItemName",headerName:"审计事项"},
+        {field:"riskLevelUuid",headerName:"风险等级"},
+        {field:"modelType",headerName:"模型类型"},
+        {field:"createTime",headerName:"创建时间"},
+      ],
       isShow: false,
       tableKey: "errorUuid",
       // list列表
@@ -384,8 +409,10 @@ export default {
         editBtnState: true,
         deleteBtnState: true,
         previewBtn: true,
+        runBtn: true,
         otherBtn: false,
       },
+      ifmanger:0,//是否是管理员
       // 当前预览模型参数和sql
       currentPreviewModelParamAndSql: {},
       queryFields: [
@@ -426,10 +453,13 @@ export default {
         modelType: "",
       },
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 20,
+        sortBy:"desc",
+        sortName:"modelName"
       },
+      tabIndex: 0, //语句记录页签个数
       // 人员选择
       dialogFormVisiblePersonTree: false,
       modelId: "",
@@ -447,6 +477,8 @@ export default {
       modelFolderUuid: "",
       modelFolderName: "",
       relationNextValue: {},
+      disableBtn: false,//禁用编辑等按钮
+      ifcancel:0
     };
   },
   computed: {},
@@ -475,6 +507,26 @@ export default {
     editableTabs() {},
   },
   created() {
+    this.getList()
+    // 校验用户权限
+    isAdmin().then((res) => {
+      // 如果是管理员则放开按钮权限
+      if (res) {
+        this.ifmanger = 1
+        this.disableBtn = false
+      } else {
+        // 禁用按钮权限
+        this.ifmanger = 0
+        this.disableBtn = true
+        this.btnState = {
+          addBtnState: false,
+          editBtnState: true,
+          deleteBtnState: true,
+          previewBtn: true,
+          otherBtn: false,
+        }
+      }
+    })
     // this.getList({ modelFolderUuid: 1 })
   },
   mounted() {
@@ -482,6 +534,9 @@ export default {
     this.initData();
   },
   methods: {
+    startrun(){
+      this.$refs.modelShoppingCartRef.runImmediately()
+    },
     setImportFolder() {
       let selectNode = this.$refs.modelFolderTree.getSelectNode();
       if (selectNode.id == undefined) {
@@ -527,11 +582,7 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
-      /* const webSocketPath = 'ws://localhost:8086/analysis/websocket?' + this.$store.getters.personuuid*/
-      const webSocketPath =
-        this.AmsWebsocket.getWSBaseUrl(this.AmsModules.ANALYSIS) +
-        this.$store.getters.personuuid +
-        "modellisttable";
+      const webSocketPath = this.AmsWebsocket.getWSBaseUrl(this.AmsModules.ANALYSIS) + this.$store.getters.personuuid + 'modellisttable'
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
       // 当服务端打开连接
@@ -623,6 +674,18 @@ export default {
       return value;
     },
     /**
+     * 格式化模型用途
+     * @param row 格式化行
+     * @param column 格式化列
+     * @returns {返回格式化后的字符串}
+     */
+    modelUseFormatter(row) {
+      if (row.modelUse == 2) {
+        return "审计预警";
+      }
+      return "审计查询";
+    },
+    /**
      * 格式化风险等级
      * @param row 格式化行
      * @param column 格式化列
@@ -645,12 +708,24 @@ export default {
     getList(query) {
       this.listLoading = true;
       if (query) {
+        if(this.isAuditWarning) { query.modelUse = 2}
         this.pageQuery.condition = query;
+      } else {
+        if(this.isAuditWarning) { this.pageQuery.condition = {modelUse: 2}}
       }
+      
       findModel(this.pageQuery).then((resp) => {
         this.total = resp.data.total;
         this.list = resp.data.records;
         this.listLoading = false;
+        if(query != null && typeof query !== "undefined" && typeof query.modelUuid !== "undefined"){
+          // this.$refs.modelListTable.selection
+          let _this = this
+          setTimeout(function(){
+            _this.$refs.modelListTable.selection.push(resp.data.records[0])
+            _this.modelTableSelectEvent()
+          },200)
+        }
       });
     },
     /**
@@ -659,6 +734,16 @@ export default {
      */
     setSelectTreeNode(data) {
       this.selectTreeNode = data;
+      this.editableTabsValue = "modelList"
+      //非管理员公共模型页面按钮隐藏
+      if(data.path.indexOf('gonggong') != -1 && this.ifmanger==0){
+        //禁用
+        this.disableBtn = true
+      }else{
+        //解禁
+        this.disableBtn = false
+      }
+      getInfo()
     },
     /**
      * 保存模型
@@ -716,6 +801,10 @@ export default {
     /**
      * 隐藏编辑模型界面
      */
+    changeTreeData(obj){
+      this.submitData.commonModelName = obj.treeUrlname
+      this.submitData.commonModelUuid = obj.treeUrlid
+    },
     modelTableSelectEvent(selection, row) {
       var selectObj = this.$refs.modelListTable.selection;
       if (selectObj.length == 1) {
@@ -725,7 +814,18 @@ export default {
         this.btnState.addBtnState = false;
         this.btnState.editBtnState = false;
         this.btnState.previewBtn = false;
-        if (this.isAuditWarring != true) {
+        this.btnState.runBtn = false;
+        if(this.disableBtn){
+          this.btnState = {
+            addBtnState: false,
+            editBtnState: true,
+            deleteBtnState: true,
+            previewBtn: false,
+            runBtn: false,
+            otherBtn: true
+          }
+        }
+        if (this.isAuditWarning != true) {
           this.isShowShoppingCart = true;
           this.$refs.modelShoppingCartRef.setMemo(selectObj);
         }
@@ -736,7 +836,8 @@ export default {
         this.btnState.addBtnState = false;
         this.btnState.editBtnState = true;
         this.btnState.previewBtn = true;
-        if (this.isAuditWarring != true) {
+        this.btnState.runBtn = false;
+        if (this.isAuditWarning != true) {
           this.isShowShoppingCart = true;
           this.$refs.modelShoppingCartRef.setMemo(selectObj);
         }
@@ -747,6 +848,7 @@ export default {
         this.btnState.addBtnState = false;
         this.btnState.editBtnState = true;
         this.btnState.previewBtn = true;
+        this.btnState.runBtn = true;
         this.isShowShoppingCart = false;
       }
     },
@@ -814,6 +916,7 @@ export default {
       });
     },
     updateModel() {
+      console.log(this.$refs.modelListTable.selection)
       this.isUpdate = true;
       var selectObj = this.$refs.modelListTable.selection;
       if (selectObj.length == 0) {
@@ -949,6 +1052,7 @@ export default {
         return;
       }
       this.treeSelectShow = true;
+      this.submitData.busdatas = this.$refs.modelListTable.selection
     },
     /*
     * 移动模型
@@ -1258,6 +1362,10 @@ export default {
      * @param selectObj 界面选中元素
      * @param isExistParam 是否存在参数
      */
+    canceltab(){
+      this.ifcancel = 1
+      console.log("取消")
+    },
     executeSql(obj, selectObj, isExistParam) {
       this.$emit(
         "loadingSet",
@@ -1265,6 +1373,7 @@ export default {
         "正在运行模型'" + selectObj[0].modelName + "',请稍候"
       );
       getExecuteTask(obj, this.dataUserId, this.sceneCode).then((result) => {
+        if(this.ifcancel==0){
         if (result.data.isError) {
           this.$message({
             type: "error",
@@ -1277,7 +1386,7 @@ export default {
           if (isExistParam) {
             selectObj[0].runModelConfig = obj.runModelConfig;
           }
-          this.addTab(selectObj[0], isExistParam, result.data.executeSQLList);
+          this.addTab(selectObj[0], isExistParam, result.data.executeSQLList,false);
           //界面渲染完成之后开始执行sql,将sql送入调度
           startExecuteSql(result.data)
             .then((result) => {
@@ -1288,6 +1397,10 @@ export default {
               this.executeLoading = false;
             });
         }
+        }else{
+          this.ifcancel = 0
+        }
+
       });
     },
     /**
@@ -1299,18 +1412,25 @@ export default {
     addTab(modelObj, isExistParam, executeSQLList, isRelation) {
       let obj = {
         title: modelObj.modelName + "结果",
-        name: modelObj.modelUuid,
+        name: this.modelId != modelObj.modelUuid ? ++this.tabIndex +'' + modelObj.modelUuid : modelObj.modelUuid,
         isExistParam: isExistParam,
         executeSQLList: executeSQLList,
         isRelation: isRelation,
       };
       if (isExistParam) {
         obj.runModelConfig = modelObj.runModelConfig;
+      } else {
+        obj.runModelConfig = {sql: modelObj.sqlValue};
       }
+      // 关联项目id使用
+      obj.modelUuid = modelObj.modelUuid;
       this.editableTabs.push(obj);
-      this.nowTabModelUuid = modelObj.modelUuid;
-      this.editableTabsValue = modelObj.modelUuid;
-      this.modelPreview.push(modelObj.modelUuid);
+      // this.nowTabModelUuid = modelObj.modelUuid;
+      // this.editableTabsValue = modelObj.modelUuid;
+      // this.modelPreview.push(modelObj.modelUuid);
+      this.nowTabModelUuid = obj.name;
+      this.editableTabsValue = obj.name;
+      this.modelPreview.push(obj.name);
     },
     handleClick(tab, event) {
       if (tab.name !== "模型列表") {
@@ -1410,6 +1530,8 @@ export default {
       this.dialogFormVisible = false;
       this.$emit("loadingSet", true, "正在执行...");
       getExecuteTask(obj, this.dataUserId, this.sceneCode).then((result) => {
+
+        if(this.ifcancel==0){
         if (result.data.isError) {
           this.$message({
             type: "error",
@@ -1420,6 +1542,9 @@ export default {
           this.$emit("loadingSet", false, "");
           //界面渲染完成之后开始执行sql,将sql送入调度
           startExecuteSql(result.data).then((result) => {});
+        }
+        }else{
+          this.ifcancel = 0
         }
       });
     },
@@ -1448,13 +1573,14 @@ export default {
             formName: result.data.modelName + "详细",
           };
           sessionStorage.setItem("operationObj", JSON.stringify(operationObj));
-          this.$store.commit("aceState/setRightFooterTags", {
-            type: "active",
-            val: {
-              name: result.data.modelName + "详细",
-              path: "/analysis/editormodelnew",
-            },
-          });
+          this.$router.push(`/analysis/editormodelnew`)
+          // this.$store.commit("aceState/setRightFooterTags", {
+          //   type: "active",
+          //   val: {
+          //     name: result.data.modelName + "详细",
+          //     path: "/analysis/editormodelnew",
+          //   },
+          // });
         } else {
           this.$message({ type: "error", message: "查看模型详细失败" });
         }
@@ -1535,5 +1661,6 @@ export default {
 }
 >>> .el-tabs__content {
   overflow: visible;
+  height: 100%;
 }
 </style>

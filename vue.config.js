@@ -1,7 +1,7 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
-
+const Timestamp = new Date().getTime();
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
@@ -202,11 +202,15 @@ module.exports = {
     // Object.assign(config, {
     config.entry.app = ["@babel/polyfill", "./src/main.js"]
     return{
+      output: { // 输出重构  打包编译后的 文件名称  【模块名称.版本号.时间戳】
+        filename: `static/js/[name].${Timestamp}.js`,
+        chunkFilename: `static/js/[name].${Timestamp}.js`
+      },
     name: name,
     resolve: {
       alias: {
         '@': resolve('src'),
-        '@ETL': 'ams-etlscheduler-ui/src',
+        '@ETL': 'ams-etlscheduler-ui-hsfs/src',
         '@MAX': 'ams-datamax/src'
       }
     },
@@ -232,6 +236,10 @@ module.exports = {
         deleteOriginalAssets: false // 删除原文件
         // deleteOriginalAssets: process.env.NODE_ENV !== 'development' // 删除原文件
       })
+      // ,
+      // new ProvidePlugin({
+      //   _: 'lodash'
+      // })
       // ,
       // new UglifyJsPlugin({
       //     uglifyOptions: {
@@ -330,6 +338,14 @@ module.exports = {
     loaderOptions: {
       sass: {
         data: `@import "ams-datamax/src/assets/styles/index.scss";`
+      },
+      css: {
+        // 这里的选项会传递给 css-loader
+        importLoaders: 1,
+      },
+      less: {
+        // 这里的选项会传递给 postcss-loader
+        importLoaders: 1,
       }
     }
   }

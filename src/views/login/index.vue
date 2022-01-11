@@ -171,7 +171,7 @@
 <script>
 import { validUsername } from "@/utils/validate";
 // import LangSelect from '@/components/LangSelect'
-import { getUserRes } from "@/api/user";
+
 export default {
   name: "Login",
 
@@ -225,7 +225,6 @@ export default {
         console.log(query);
         if (query) {
           this.redirect = query.redirect;
-          console.log(this.redirect);
           this.otherQuery = this.getOtherQuery(query);
         }
       },
@@ -284,21 +283,11 @@ export default {
             this.$store
               .dispatch("user/login", this.loginForm)
               .then(() => {
-                getUserRes().then((response) => {
-                  response.data.application.forEach((app, index) => {
-                    // 设置左侧应用栏数据
-                    if (response.data.application[0].homepage) {
-                      this.$router.push({
-                        path: response.data.application[0].homepage || "/",
-                        query: this.otherQuery,
-                      });
-                      this.loading = false;
-                    } else {
-                      this.$router.replace("/nopermission");
-                      this.loading = false;
-                    }
-                  });
+                this.$router.push({
+                  path: this.redirect || "/",
+                  query: this.otherQuery,
                 });
+                this.loading = false;
               })
               .catch(() => {
                 this.loading = false;
@@ -315,21 +304,11 @@ export default {
             this.$store
               .dispatch("user/login", this.loginForm)
               .then(() => {
-                getUserRes().then((response) => {
-                  response.data.application.forEach((app, index) => {
-                    // 设置左侧应用栏数据
-                    if (response.data.application[0].homepage) {
-                      this.$router.push({
-                        path: response.data.application[0].homepage || "/",
-                        query: this.otherQuery,
-                      });
-                      this.loading = false;
-                    } else {
-                      this.$router.replace("/nopermission");
-                      this.loading = false;
-                    }
-                  });
+                this.$router.push({
+                  path: this.redirect || "/",
+                  query: this.otherQuery,
                 });
+                this.loading = false;
               })
               .catch(() => {
                 this.loading = false;
@@ -432,6 +411,7 @@ $cursor: #fff;
     margin: 0 auto;
     overflow: hidden;
     margin-top: 10%;
+    // background-image: url(../../styles/image/bgcolor.png);
     //background-color: #353A43!important;
 
     box-shadow: 0 29px 38px 0 rgba(53, 58, 67, 0.26);
@@ -591,13 +571,13 @@ $cursor: #fff;
       margin-top: 11%;
       display: flex;
     }
-    .loginbackcolor {
+    .loginbackcolor{
       padding-top: 20px;
     }
-    .right-title {
+    .right-title{
       padding-bottom: 30px !important;
     }
-    .login-box2button {
+    .login-box2button{
       font-size: 20px;
       height: 45px;
       margin-top: 0 !important;
@@ -615,13 +595,13 @@ $cursor: #fff;
       margin-top: 7%;
       display: flex;
     }
-    .loginbackcolor {
+    .loginbackcolor{
       padding-top: 20px;
     }
-    .right-title {
+    .right-title{
       padding-bottom: 30px !important;
     }
-    .login-box2button {
+    .login-box2button{
       font-size: 20px;
       height: 45px;
       margin-top: 0 !important;

@@ -9,7 +9,7 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" size="mini" class="oper-btn processing-1" :disabled="readButStatus" @click="updateCode()" />
+        <el-button type="primary" size="mini" class="oper-btn mark-read btn-width-md" :disabled="readButStatus" @click="updateCode()" />
       </el-col>
     </el-row>
     <el-table
@@ -66,9 +66,9 @@
       <el-divider />
       <el-row>
         <el-col :span="12"><div class="visible-p2">
-          {{ this.temp.remindTime }}
+          提醒时间: {{ this.temp.remindTime }}
         </div></el-col>
-        <el-col :span="12"><div class="visible-p4">
+        <el-col :span="12" v-if="temp.remindUserName" ><div class="visible-p4">
           发送人：{{ this.temp.remindUserName }}
         </div></el-col>
       </el-row>
@@ -185,10 +185,10 @@ export default {
     resetQuery() {
       this.query = {
         condition: {
-          remindTitle: '',
-          remindContent: '',
-          remindTime: '',
-          readStatus: ''
+          remindTitle: null,
+          remindContent: null,
+          remindTime: null,
+          readStatus: null
         }
       }
     },
@@ -214,12 +214,11 @@ export default {
     },
     handdetails(data) {
       var id = data.remindUuid
-      if (data.modeUrl != null) {
-        this.selectDetail(data)
-      } else {
-        console.log(id)
+      if (data.modeUrl == null || data.modeUrl == '') {
         this.temp = data
         this.dialogFormVisible = true
+      } else {
+        this.selectDetail(data)
       }
       if (data.readStatus === 0) {
         updateRemind(id).then(result => {

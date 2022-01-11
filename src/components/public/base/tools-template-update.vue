@@ -28,8 +28,8 @@
             </el-tooltip>
           </div>
         </div>
-        <div class="title-label" style="margin-top: 15px">自定义快捷菜单</div>
-          <div class="lately-use-box flex a-center j-start flex-row">
+        <div class="title-label" style="margin-top: 15px;display:none;">自定义快捷菜单</div>
+          <div class="lately-use-box flex a-center j-start flex-row" style="display:none;">
             <div
               v-for="(item,index) in latelyFastList"
               :key="index"
@@ -77,7 +77,7 @@
 
       <div class="newest-item">
         <div class="title-label">执行任务</div>
-        <div class="newest-item-box">
+        <div class="newest-item-box" style="background: #353A43 !important;">
           <div>
             <ul>
               <li v-for="(item , index) in list" :key="index">
@@ -88,7 +88,7 @@
                 <span style="color:#eaeaea;font-size:11px;padding:2px;cursor:pointer;" class="tools-box-name" @click="toUrl(item.taskUrl)" v-text="item.taskName" />
               </li>
             </ul>
-            <span type="primary" style="color:#fff;float:right;bottom:-22px;font-size:13px;font-weight:bold;cursor:pointer;" @click="moreTask">更多</span>
+            <span type="primary" style="color:#fff;position: absolute; bottom: 10px; right: 15px;font-size:13px;font-weight:bold;cursor:pointer;" @click="moreTask">更多</span>
           </div>
         </div>
       </div>
@@ -213,19 +213,19 @@ export default {
       ],
       latelyBackList:[
         {
-          bg: 'rgb(95,190,235)'
+          bg: '#353A43 !important'
         },
         {
-          bg: 'rgb(95,190,235)'
+          bg: '#353A43 !important'
         },
         {
-          bg: 'rgb(95,190,235)'
+          bg: '#353A43 !important'
         },
         {
-          bg: 'rgb(95,190,235)'
+          bg: '#353A43 !important'
         },
         {
-          bg: 'rgb(95,190,235)'
+          bg: '#353A43 !important'
         }
       ],
       latelyUseList: [],
@@ -881,11 +881,11 @@ export default {
       }
     }
     .newest-item {
-      width: 426px;
+      width: 500px;
       &-box {
         height: 140px;
         margin-top: 20px;
-        border: 1px solid rgb(95,190,235);
+        border: 1px solid #353A43 !important;
         //box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
         border-radius: 8px;
         padding: 10px 20px;

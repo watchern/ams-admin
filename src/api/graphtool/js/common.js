@@ -254,11 +254,15 @@ function getIdArr(idArr, nodeId) {
  * */
 function changeNodeInfo(curNodeId, isChangeSource) {
     var idArr = getAllChildrenIds(curNodeId)	// 得到当前节点的子孙节点集合
-    idArr.unshift(curNodeId)	// 将当前节点添加至集合的第一个位置
+    //每次更改重置后续节点操作2021-9-3应鑫鑫要求更改
+    if(isChangeSource){
+        idArr.unshift(curNodeId)
+    }
+    // 将当前节点添加至集合的第一个位置
     for (var i = 0; i < idArr.length; i++) {		// 循环变更信息
         graph.nodeData[idArr[i]].nodeInfo.nodeExcuteStatus = 1				// 置节点执行状态为未执行
         graph.nodeData[idArr[i]].isChangeSource = isChangeSource			// 置改变前置节点信息为已改变
-        if (graph.nodeData[idArr[i]].isSet && graph.nodeData[idArr[i]].isChangeSource) {		// 如果当前节点已配置且改变了前置节点信息
+        if (graph.nodeData[idArr[i]].isSet) {		// 如果当前节点已配置且改变了前置节点信息
             graph.nodeData[idArr[i]].isSet = false			// 重置其配置状态，在打开时不读取已配置信息，重新进行配置
             delete graph.nodeData[idArr[i]].hasParam;
             delete graph.nodeData[idArr[i]].paramsSetting;
@@ -572,6 +576,7 @@ export function executeNode_callback(notExecuteNodeIdArr) {
         'nodeData': JSON.stringify(graph.nodeData),
         'noData':false
     }
+    // console.log(graph.nodeData)
     graphIndexVue.initData()
     graphIndexVue.websocketBatchId = executeId
     graphIndexVue.$nextTick(() => {
@@ -599,6 +604,8 @@ export function executeToNode() {
  * 全部执行
  * */
 export function executeAllNode() {
+    // 执行类型为全部执行
+    graphIndexVue.executeType = 'all'
     // 获取当前图形化中所有末级结果表节点集合
     var nodeDataArr = []
     var cells = graph.getModel().cells
@@ -709,9 +716,11 @@ export function executeAllNode() {
             }
         }
         if(checkParam){
+            graphIndexVue.executeNodeIdArr = allNodeIdArr
+            graphIndexVue.executeNodeObject = notExecuteNodeObject
             graphIndexVue.nodeParamDialogVisible = true
             graphIndexVue.$nextTick( () => {
-                graphIndexVue.$refs.inputParams.createParamNodeHtml()
+                graphIndexVue.$refs.inputParams.createParamNodeHtml("all")
             })
         }else {
             // 节点的核心执行方法
@@ -741,7 +750,7 @@ export function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
     graphIndexVue.executeTaskObj = {"init":false,"executeTask":[],"isError":false}
     $(graphIndexVue.$refs.sysInfoArea).html("")
     graphIndexVue.loading = $(graphIndexVue.$refs.graphToolDiv).mLoading({ 'text': '正在执行全部节点，请稍后……', 'hasCancel': true, 'hasTime': true, "callback" : function () {
-            //执行任务的主键
+        //执行任务的主键
             const taskUuidArr = graphIndexVue.executeTaskObj.executeTask//被取消执行节点的任务UUID
             if(taskUuidArr.length === 0 && !graphIndexVue.executeTaskObj.init && !graphIndexVue.executeTaskObj.isError){
                 alertMsg('提示', '未创建完执行任务，请稍后', 'warning')
@@ -769,12 +778,12 @@ export function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
         'nodeObject': JSON.stringify(notExecuteNodeObject),
         'noData':false
     }
-    graphIndexVue.websocketBatchId = new UUIDGenerator().id
     graphIndexVue.initData()
+    graphIndexVue.websocketBatchId = new UUIDGenerator().id
     graphIndexVue.$nextTick(() => {
         executeAllNodeSql(dataParam).then( response => {
             if (response.data == null) {
-                loadingInstance.close();
+                // loadingInstance.close();
                 graphIndexVue.$message.error('全部执行节点的请求失败')
                 // 更改执行状态图标为未执行
                 for (let i=0; i<nodeIdArr.length; i++) {
@@ -1309,6 +1318,7 @@ export function reSetOptProperty() {
                 changeNodeIcon(1, false, childrenIds[i])
             }
         }
+        changeNodeInfo(curNodeId,true)
         autoSaveGraph()
         graphIndexVue.$notify({
             title: graphIndexVue.$t('message.title'),

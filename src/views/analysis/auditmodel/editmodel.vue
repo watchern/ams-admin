@@ -168,8 +168,8 @@
             <el-table-column prop="columnName" label="是否显示" width="80">
               <template slot-scope="scope">
                 <el-select v-model="scope.row.isShow" placeholder="是否显示" value="1" :disabled="isBanEdit">
-                  <el-option label="是" :value="1"/>
-                  <el-option label="否" :value="0"/>
+                  <el-option label="是" value="1"/>
+                  <el-option label="否" value="0"/>
                 </el-select>
               </template>
             </el-table-column>
@@ -605,8 +605,8 @@ export default {
         this.$refs.relInfo.style.display = 'none'
         this.$refs.chartConfig.style.display = 'none'
         this.$refs.modelFilterShowParent.style.display = 'none'
-        if (this.$refs.[data.id][0] != undefined) {
-          this.$refs.[data.id][0].style.display = 'block'
+        if (this.$refs[data.id][0] != undefined) {
+          this.$refs[data.id][0].style.display = 'block'
         }
       }
       this.currentSelectTreeNode = data
@@ -617,11 +617,11 @@ export default {
     hideModelDetail() {
       for (let i = 0; i < this.modelDetails.length; i++) {
         const id = this.modelDetails[i].id
-        this.$refs.[id][0].style.display = 'none'
+        this.$refs[id][0].style.display = 'none'
       }
       for (let i = 0; i < this.filterShows.length; i++) {
         const id = this.filterShows[i].id
-        this.$refs.[id][0].style.display = 'none'
+        this.$refs[id][0].style.display = 'none'
       }
     },
     /**
@@ -694,7 +694,16 @@ export default {
             return null
           } else {
             //获取完图形化的列信息之后重新赋值 因为这个时候界面没渲染完成，因此直接从数据里拿
-            columnData = this.columnData
+            // columnData = this.columnData
+            if (
+              this.$refs.columnData.data &&
+              this.$refs.columnData.data != [] &&
+              this.$refs.columnData.data != ""
+            ) {
+              columnData = this.$refs.columnData.data;
+            } else {
+              columnData = this.columnData;
+            }
             //拿到列之后图形化就可以保存了，调用图形化的保存方法
             await this.$refs.graph[0].saveModelGraph().then(result => {
               if(result.isError){
@@ -977,13 +986,7 @@ export default {
       return returnObj
     },
     closeWinfrom() {
-      this.$store.commit('aceState/setRightFooterTags', {
-        type: 'close',
-        val: {
-          name: this.formName,
-          path: '/analysis/editorModel'
-        }
-      })
+      this.$router.push({ path: "/analysis/auditmodel" })
     },
     /**
      * 转换列对象

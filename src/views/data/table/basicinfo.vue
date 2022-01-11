@@ -5,10 +5,10 @@
         ref="dataForm"
         :model="temp"
         label-position="right"
-        style="width: 600px; margin-left:50px;"
+        style="width:90%;min-width:500px; margin-left:50px;"
       >
         <el-form-item label="表名称" prop="tbName">
-          <el-input v-model="temp.tbName" readonly />
+          <el-input v-model="temp.displayTbName" readonly />
         </el-form-item>
 <!-- 2021/06/07 @黄鑫 因暂无业务需求，隐藏表物理路径 -->
 <!--        <el-form-item label="表物理路径" prop="tablePath">-->
@@ -17,6 +17,12 @@
         <el-form-item label="字段数" prop="fieldsNum">
           <el-input v-model="temp.fieldsNum" readonly />
         </el-form-item>
+        <!--  <el-form-item label="行数" prop="rowNum">
+           <el-input v-model="temp.rowNum" readonly />
+         </el-form-item>
+         <el-form-item label="表容量" prop="tableSize">
+           <el-input v-model="temp.tableSize" readonly />
+         </el-form-item>-->
         <el-form-item label="行数" prop="rowNum">
           <el-input v-model="temp.rowNum" readonly />
         </el-form-item>
@@ -44,6 +50,7 @@ export default {
       temp: {
         tableMetaUuid: undefined,
         tbName: '',
+        displayTbName:'',
         tablePath: '',
         fieldsNum: '',
         rowNum: '',

@@ -91,17 +91,29 @@ export function rmResultRelProjectlr(data) {
 }
 
 /**
- * 根据RunTaskRelUuid查询该结果有无关联项目
- * @param {*} data
+ * 获取所有状态开启的项目
  */
-export function getResultRelProject(data) {
+export function getProjects() {
+  return request({
+    baseURL: analysisUrl,
+    url: '/prjProjectController/getAllPrj',
+    method: 'get',
+  })
+}
+
+/**
+ * 根据结果明细的onlyUuid查询项目关联表
+ */
+export function getByResultDetailIds(data) {
   return request({
     baseURL: analysisUrl,
     url: '/ResultDetailProjectRelController/getResultRelProject',
-    method: 'get',
-    params:{RunTaskRelUuid:data}
+    method: 'post',
+    data
   })
 }
+
+
 
 /**
  * 添加结果共享
@@ -166,9 +178,21 @@ export function exportRunTaskRel() {
   return request({
     baseURL: analysisUrl,
     url: '/RunTaskRelController/exportRunTaskRelTable',
-    method: 'get'
+    method: 'post',
   })
 }
+
+/**
+ * 取消执行模型
+ * @param {*} id 
+ */
+ export function pauseRunRelTask(id) {
+   return request({
+     baseURL: analysisUrl,
+     url: `/RunTaskRelController/pauseRunRelTask/${id}`,
+     method: 'get'
+   })
+ }
 
 /**
  * 运行任务重新运行
@@ -359,10 +383,13 @@ export function replaceParam(filterArr, arr, replaceSql) {
     for (var k = 0; k < arr.length; k++) { // 遍历当前节点绑定的参数
       if (arr[k].copyParamId === moduleParamId) {
         if (typeof filterArr[j].paramValue != undefined) {
-          replaceSql = replaceSql.replace(arr[k].id, filterArr[j].paramValue) // 将参数SQL中的参数ID替换为输入得值
+          replaceSql = replaceSql.replaceAll(arr[k].id, filterArr[j].paramValue) // 将参数SQL中的参数ID替换为输入得值
         }
       }
     }
+  }
+  for (var n = 0; n < arr.length; n++) { // 再次遍历被关联模型的参数
+    replaceSql = replaceSql.replaceAll(arr[n].id, "") // 如果参数没被替换，证明没有被关联，赋空值
   }
   return replaceSql
 }

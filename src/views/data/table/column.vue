@@ -33,19 +33,22 @@
       v-if="openType !== 'showTable' && openType !== 'tableRegister'"
       class="detail-form"
     >
-      <el-form ref="dataForm" :model="tempTable">
-        <el-form-item label="表名称" prop="tableName">
-          <el-input v-model="tempTable.tableName" />
+      <el-form ref="dataForm"
+               :model="tempTable"
+               :rules="judgeTbName"
+      >
+        <el-form-item label="表名称" prop="displayTbName">
+          <el-input v-model="tempTable.displayTbName" />
         </el-form-item>
         <!-- <el-form-item v-if="openType !== 'addTable'" label="新建表注释" prop="tableComment">
           <el-input v-model="tempTable.tableComment" />
         </el-form-item> -->
       </el-form>
     </template>
-    <el-table :data="temp" @selection-change="handleSelectionChange">
+    <el-table :data="temp" @selection-change="handleSelectionChange" class="detail-form" style="padding: 20px 0 ;overflow: auto;height: 43vh">
       <el-table-column type="selection" width="55" />
-      <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
-        <template slot-scope="scope" show-overflow-tooltip>
+      <el-table-column prop="colName" label="字段名称" show-overflow-tooltip >
+        <template slot-scope="scope" show-overflow-tooltip >
           <el-tooltip
             :disabled="scope.row.colName.length < 12"
             effect="dark"
@@ -55,9 +58,7 @@
             <el-input
               v-model="scope.row.colName"
               style="width: 90%"
-              :disabled="
-                openType === 'showTable' || openType === 'tableRegister'
-              "
+              :disabled="openType === 'showTable' || openType === 'tableRegister'"
             />
           </el-tooltip>
         </template>
@@ -70,6 +71,7 @@
             :disabled="openType === 'showTable' || openType === 'tableRegister'"
             filterable
             style="width: 90%"
+            @change="changeDataType(scope.row)"
             placeholder="请选择数据类型"
           >
             <el-option
@@ -81,21 +83,23 @@
           </el-select>
         </template>
       </el-table-column>
+      <!--        -->
       <el-table-column
-        prop="dataLength"
         label="数据长度（精度）"
-        show-overflow-tooltip
-      >
+        prop="dataLengthText"
+        show-overflow-tooltip>
         <template slot-scope="scope" show-overflow-tooltip>
+        <!--   v-model 需要根据是否是decimal展示长度+精度 用到了双三目，有点难看
+            @focus="clickVal(scope.row)"-->
           <el-input
-            @change="judelength(scope.row)"
-            v-model="scope.row.dataLength"
+            @change="isValidColumn(scope.row)"
+            v-model="scope.row.dataLengthText"
             style="width: 90%"
-            :disabled="openType === 'showTable' || openType === 'tableRegister'"
+            :disabled="!scope.row.enableDataLength"
           />
         </template>
       </el-table-column>
-      <el-table-column prop="isNullable" label="是否为空" width="80px">
+      <el-table-column label="是否为空" width="120px">
         <template slot-scope="scope">
           <el-radio
             v-model="scope.row.isNullable"
@@ -118,9 +122,10 @@
 <script>
 import { getSqlType, getColsInfo } from "@/api/data/table-info";
 import { addTable, updateTable } from "@/api/data/directory";
+import _ from "lodash"
 export default {
   // eslint-disable-next-line vue/require-prop-types
-  props: ["tableId", "openType", "forderId"],
+  props: ["tableId", "openType", "forderId", "getTree"],
   data() {
     return {
       copyColObj: {},
@@ -131,67 +136,48 @@ export default {
       tempColumn: [],
       oldName: "",
       show: false,
-      tempTable: { tableName: "" },
-    };
+      tempTable: { displayTbName: "" },
+      currColType: '',
+      dataTypeRules: {},
+      disableEditColumn: false,
+      re:[],
+      judgeTbName:{
+        displayTbName:[
+          { required: true, message: "请填写表名称", trigger: "change" },
+          {
+            type: 'string',
+            pattern: /^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/,
+            message: '请输入合法表名称',
+          },{
+            type: 'string',
+            pattern: /^[\u4E00-\u9FA5\w]*$/,
+            message: '请输入合法表名称',
+          },
+        ],
+
+      }
+    }
+
   },
   created() {
+    this.dataTypeRules = this.CommonUtil.DataTypeRules;
+    this.dataTypeRules = _.DataTypeRules;
     this.initTable(this.tableId);
   },
-  methods: {
-    judelength(rowdata) {
-      console.log(rowdata);
-      let xx = rowdata.dataType.toUpperCase();
-      switch (xx) {
-        case "CHAR":
-         if (1 <= rowdata.dataLength && rowdata.dataLength <= 8000) {
-          } else {
-            this.$message.error('char类型长度范围:1-8000之间数字');
-          }
-          break;
-        case "VARCHAR2":
-          if (1 <= rowdata.dataLength && rowdata.dataLength <= 8000) {
-          } else {
-            this.$message.error("varchar2类型长度范围:1-8000之间数字");
-          }
-          break;
-        case "VARCHAR":
-          if (1 <= rowdata.dataLength && rowdata.dataLength <= 8000) {
-          } else {
-            this.$message.error("varchar类型长度范围:1-8000之间数字");
-          }
-          break;
-        case "NVARCHAR":
-          if (1 <= rowdata.dataLength && rowdata.dataLength <= 4000) {
-          } else {
-            this.$message.error("nvarchar类型长度范围:1-4000之间数字");
-          }
-          break;
-        case "NUMBER":
-          var flag1 = new RegExp("^[0-9]$");
-          var flag2 = new RegExp("^[0-9]+[,]+[0-9]$");
-          if (flag1.test(rowdata.dataLength)) {
-          } else if (flag2.test(rowdata.dataLength)) {
-          } else {
-            this.$message.error(
-              "number类型长度范围:单个数字，也可以是 数字,数字(英文逗号)"
-            );
-          }
-          break;
-        case "DECIMAL":
-          var flag = new RegExp("^[0-9]+[,]+[0-9]$");
-          if (flag.test(rowdata.dataLength)) {
-          } else {
-            this.$message.error("decimal类型长度范围:数字,数字(英文逗号)");
-          }
-          break;
-        case "INT":
-          var flag = new RegExp("^[0-9]{1,11}$");
-          if (flag.test(rowdata.dataLength)) {
-          } else {
-            this.$message.error("int类型长度范围:最长11位长度数字");
-          }
-          break;
+  watch: {
+    openType: {
+      handler(newOpenType) {
+        this.disableEditColumn = newOpenType === 'showTable' || newOpenType === 'tableRegister'
       }
+    }
+
+  },
+  methods: {
+    changeDataType(row){
+      this.$emit("changeDataType", row);
+    },
+    isValidColumn(row) {
+      return this.$emit("isValidColumn", row);
     },
     initTable(tableId) {
       getSqlType().then((resp) => {
@@ -201,13 +187,12 @@ export default {
         getColsInfo(tableId).then((resp) => {
           // 返回两个新的数组
           this.oldName = resp.data.displayTbName;
-          this.tempTable.tableName = resp.data.displayTbName;
-          resp.data.colMetas.forEach((e) => {
-            this.tempIndex++;
-            e.tempIndex = this.tempIndex;
-          });
-          this.tempColumn = resp.data.colMetas.slice();
-          this.temp = JSON.parse(JSON.stringify(resp.data.colMetas));
+          this.tempTable.displayTbName = resp.data.displayTbName;
+          this.temp = resp.data.colMetas;
+          this.temp.forEach((row) => {
+            this.$set(row, "tempIndex", ++this.tempIndex);
+            this.changeDataType(row);
+          })
         });
       }
     },
@@ -250,7 +235,7 @@ export default {
       var newObj = {}; // copy obj
       newObj.colName = "";
       newObj.dataType = "";
-      newObj.dataLength = "";
+      newObj.dataLengthText = "";
       newObj.isNullable = 0;
       this.tempIndex++;
       newObj.tempIndex = this.tempIndex;
@@ -285,87 +270,40 @@ export default {
         this.updateTable();
       }
     },
+///^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/
+    judegeTable(val){
+      const judege=(/^[\D][\u4E00-\u9FA5\w]{0}[\u4E00-\u9FA5\w]*$/ && /^[\u4E00-\u9FA5\w]*$/)
+      if (judege.test(val)){
+        return true;
+        }else{
+        return false;
+      }
+    },
     // 保存基本信息
     saveTable() {
       for (let index = 0; index < this.temp.length; index++) {
         //先判空
         let obj = this.temp[index]
-        if(obj.colName==''||obj.colName==undefined){
+        var a =this.judegeTable(obj.colName)
+        if(this.CommonUtil.isBlank(obj.colName)){
           this.$message.error("请完善建表信息，字段名称不能为空");
           return
-        }else if(obj.dataType==''||obj.dataType==undefined){
+        }else if(this.CommonUtil.isBlank(obj.dataType)){
           this.$message.error("请完善建表信息，数据类型不能为空");
           return
-        }else{
-          // const r = this.temp[index];
-          //   if (r.dataLength !== "") {
-          //     r.dataLength = parseInt(r.dataLength);
-          //   }
+        } if (!a){
+          this.$message.error("请完善建表信息，字段名称不能有特殊符号");
+          return
         }
         //再判合法
-        let xx = obj.dataType.toUpperCase();
-        switch (xx) {
-        case "CHAR":
-         if (1 <= obj.dataLength && obj.dataLength <= 8000 && obj.dataLength!='') {
-          } else {
-            this.$message.error('char类型长度范围:1-8000之间数字');
-            return
-          }
-          break;
-        case "VARCHAR2":
-          if (1 <= obj.dataLength && obj.dataLength <= 8000 && obj.dataLength!='') {
-          } else {
-            this.$message.error("varchar2类型长度范围:1-8000之间数字");
-            return
-          }
-          break;
-        case "VARCHAR":
-          if (1 <= obj.dataLength && obj.dataLength <= 8000 && obj.dataLength!='') {
-          } else {
-            this.$message.error("varchar类型长度范围:1-8000之间数字");
-            return
-          }
-          break;
-        case "NVARCHAR":
-          if (1 <= obj.dataLength && obj.dataLength <= 4000 && obj.dataLength!='') {
-          } else {
-            this.$message.error("nvarchar类型长度范围:1-4000之间数字");
-            return
-          }
-          break;
-        case "NUMBER":
-          var flag1 = new RegExp("^[0-9]$");
-          var flag2 = new RegExp("^[0-9]+[,]+[0-9]$");
-          if ((flag1.test(obj.dataLength)|| flag2.test(obj.dataLength)) && obj.dataLength!='') {
-          } else {
-            this.$message.error(
-              "number类型长度范围:单个数字，也可以是 数字,数字(英文逗号)"
-            );
-            return
-          }
-          break;
-        case "DECIMAL":
-          var flag = new RegExp("^[0-9]+[,]+[0-9]$");
-          if (flag.test(obj.dataLength) && obj.dataLength!='') {
-          } else {
-            this.$message.error("decimal类型长度范围:数字,数字(英文逗号)");
-            return
-          }
-          break;
-        case "INT":
-          var flag = new RegExp("^[0-9]{1,11}$");
-          if (flag.test(obj.dataLength) && obj.dataLength!='') {
-          } else {
-            this.$message.error("int类型长度范围:最长11位长度数字");
-            return
-          }
-          break;
-      }
+        if (!this.isValidColumn(obj)) {
+          return;
+        }
       }
       const addObj = {};
       addObj.colMetas = this.temp;
       addObj.folderUuid = this.forderId;
-      addObj.tbName = this.tempTable.tableName;
+      addObj.displayTbName = this.tempTable.displayTbName;
       addTable(addObj)
         .then((res) => {
           if (res.data.status === "500") {
@@ -392,7 +330,8 @@ export default {
               extMap: {
                 accessType: ["FETCH_TABLE_DATA", "BASIC_PRIV"],
                 createTime: res.data.successTable.createTime,
-                tableName: res.data.successTable.tbName,
+                displayTbName: res.data.successTable.displayTbName,
+                tableName: res.data.successTable.displayTbName,
                 tbSizeByte: 0,
                 tblType: "T",
               },
@@ -406,33 +345,53 @@ export default {
         .catch((result) => {});
     },
     updateTable() {
-      const newTableObj = {};
-      newTableObj.tableMetaUuid = this.tableId;
-      newTableObj.colMetas = this.temp;
-      newTableObj.tbName = this.tempTable.tableName;
-      newTableObj.tbComment = this.tempTable.tbComment;
-      const oldTableObj = {};
-      oldTableObj.tableMetaUuid = this.tableId;
-      oldTableObj.colMetas = this.tempColumn;
-      oldTableObj.tbName = this.oldName;
-      oldTableObj.tbComment = this.tempTable.tbComment;
-      var obj = {};
-      console.log(newTableObj.colMetas);
-      for (let i = 0; i < newTableObj.colMetas.length; i++) {
-        if (
-          newTableObj.colMetas[i].colName != "" &&
-          newTableObj.colMetas[i].dataType != "" &&
-          newTableObj.colMetas[i].dataLength != ""
-        ) {
-        } else {
-          this.$message.error("请完善数据信息!");
+      for (let index = 0; index < this.temp.length; index++) {
+        //先判空
+        let obj = this.temp[index]
+        var a =this.judegeTable(obj.colName)
+        if(this.CommonUtil.isBlank(obj.colName)){
+          this.$message.error("请完善建表信息，字段名称不能为空");
+          return
+        }else if(this.CommonUtil.isBlank(obj.dataType)){
+          this.$message.error("请完善建表信息，数据类型不能为空");
+          return
+        } if (!a){
+          this.$message.error("请完善建表信息，字段名称不能有特殊符号");
+          return
+        }
+        //再判合法
+        if (!this.isValidColumn(obj)) {
           return;
         }
       }
-      obj.newTableObj = newTableObj;
-      obj.oldTableObj = oldTableObj;
+      const newTableObj = {};
+      newTableObj.tableMetaUuid = this.tableId;
+      newTableObj.colMetas = this.temp;
+      newTableObj.displayTbName = this.tempTable.displayTbName;
+      newTableObj.tbComment = this.tempTable.tbComment;
+      // const oldTableObj = {};
+      // oldTableObj.tableMetaUuid = this.tableId;
+      // oldTableObj.colMetas = this.tempColumn;
+      // oldTableObj.displayTbName = this.oldName;
+      // oldTableObj.tbComment = this.tempTable.tbComment;
+      // var obj = {};
+      for (let i = 0; i < newTableObj.colMetas.length; i++) {
 
-      updateTable(obj)
+        newTableObj.colMetas[i].dataLength = null;
+        newTableObj.colMetas[i].colPrecision = null;
+        if (this.CommonUtil.isBlank(newTableObj.colMetas[i].colName) || this.CommonUtil.isBlank(newTableObj.colMetas[i].dataType)) {
+          this.$message.error("请完善数据信息!");
+          return;
+        }
+        if (!this.isValidColumn(newTableObj.colMetas[i])) {
+          return;
+        }
+      }
+      // obj.newTableObj = newTableObj;
+      // obj.oldTableObj = oldTableObj;
+
+      // updateTable(obj)
+      updateTable(newTableObj)
         .then((res) => {
           if (res.data.status === "500") {
             this.$message({
@@ -440,9 +399,9 @@ export default {
               message: "修改失败！" + res.data.msg,
             });
           } else {
-            // 修改成功后重新给页面复制
-            this.oldName = res.data.sussessTable.tbName;
-            this.tempTable.tableName = res.data.sussessTable.tbName;
+            // 修改成功后重新给页面赋值
+            this.oldName = res.data.sussessTable.displayTbName;
+            this.tempTable.displayTbName = res.data.sussessTable.displayTbName;
             res.data.sussessTable.colMetas.forEach((e) => {
               this.tempIndex = 0;
               this.tempIndex++;
@@ -463,7 +422,9 @@ export default {
           this.$emit("table-show", this.show);
           this.$emit("saveTableInfoHelp"); 
         })
-        .catch((result) => {});
+        .catch((result) => {
+          console.error(result)
+        });
       // var newColumn = this.arrRemoveMix(this.temp, this.tempColumn)
       // var oldColumn = this.arrRemoveMix(this.tempColumn, this.temp)
       // console.log(newColumn)

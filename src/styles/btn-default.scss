@@ -33,31 +33,31 @@
 }
 
 .el-button--primary {
-  background: #353A43;
-  border-color: #353A43;
-  color: #C8FF8C;
-  font-weight: bold;
+  background: #353A43!important;
+  border-color: #353A43!important;
+  color: #C8FF8C!important;
+  font-weight: bold!important;
 }
 
 .el-button--primary:active {
-  background: #353A43;
-  border-color: #353A43;
-  color: #C8FF8C;
-  outline: none;
-  font-weight: bold;
+  background: #353A43!important;
+  border-color: #353A43!important;
+  color: #C8FF8C!important;
+  outline: none!important;
+  font-weight: bold!important;
 }
 
 .el-button--primary:hover, .el-button--primary:focus {
-  background: #434954;
-  border-color: #434954;
-  color: #C8FF8C;
-  font-weight: bold;
+  background: #434954!important;
+  border-color: #434954!important;
+  color: #C8FF8C!important;
+  font-weight: bold!important;
 }
 
 .el-button--primary.is-disabled, .el-button--primary.is-disabled:hover, .el-button--primary.is-disabled:focus, .el-button--primary.is-disabled:active {
-  color: #fff;
-  background-color: #c6cfd6;
-  border-color: #c6cfd6;
+  color: #fff!important;
+  background-color: #c6cfd6!important;
+  border-color: #c6cfd6!important;
 }
 
 .oper-btn{
@@ -71,250 +71,222 @@
   font-family: "iconfont" !important;
   font-weight: normal!important;
 }
+.oper-btn.logout:hover::before{
+  content:'注销'!important;
+}
+.oper-btn.unlogout:hover::before{
+  content:'解除锁定'!important;
+}
+.oper-btn.impower:hover::before{
+  content:'权限分配'!important;
+}
 .oper-btn:hover::before {
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-size: 13px;
+  line-height: 1.2;
+  min-width: 10px;
+  word-wrap: break-word;
   position: absolute;
-  padding: 4px 4px;
   width:68px;
-  border: 1px solid #333;
-  border-radius: 3px;
-  font-size: 14px;
   color: #000;
-  background-color: #fff;
   z-index: 999999999;
   white-space:normal;
-  line-height: 18px;
+  background: #fff;
+  border: 1px solid #303133;
   left: -22px;
   top: 26px;
   //margin-top: 26px;
   //margin-left: -26px;
 }
 
-// add
+
+//region @新增相关操作 start@
 .oper-btn.add:after{
-  content:'\e60a'!important;
-}
-.oper-btn.add-1:after{
-  content:'\e60a'!important;
-}
-.oper-btn.add-2:after{
-  content:'\e60a'!important;
-}
-.oper-btn.add-3:after{
-  content:'\e60a'!important;
-}
-.oper-btn.add-4:after{
-  content:'\e60a'!important;
-}
-.oper-btn.add-5:after{
   content:'\e60a'!important;
 }
 .oper-btn.add:hover::before{
   content:'新增'!important;
 }
-.oper-btn.add-1:hover::before{
-  content:'新增阈值'!important;
+.oper-btn.scheduleadd:after{
+  content:'\e60a'!important;
 }
-.oper-btn.add-2:hover::before{
+.oper-btn.add-table:after{
+  content:'\e60a'!important;
+}
+.oper-btn.add-table:hover::before{
   content:'新增表'!important;
 }
-.oper-btn.add-3:hover::before{
+.oper-btn.add-3:after{
+  content:'\e60a'!important;
+}
+.oper-btn.add-row:hover::before{
   content:'新增行'!important;
 }
-.oper-btn.add-4:hover::before{
+.oper-btn.add-rule:after{
+  content:'\e60a'!important;
+}
+.oper-btn.add-rule:hover::before{
   content:'新增规则'!important;
 }
-.oper-btn.add-5:hover::before{
+.oper-btn.add-partial:after{
+  content:'\e60a'!important;
+}
+.oper-btn.add-partial:hover::before{
   content:'新增区间'!important;
 }
-// edit
+.oper-btn.add-directory:after{
+  content:'\e67c'!important;
+}
+.oper-btn.add-directory:hover::before{
+  content:'新增文件夹'!important;
+}
+.oper-btn.add-problem:after{
+  content:'\e60a'!important;
+}
+.oper-btn.add-problem:hover::before{
+  content:'生成问题'!important;
+}
+//endregion @新增相关操作 end@
+
+//region @编辑相关操作 start@
 .oper-btn.edit:after{
-  content:'\e604'!important;
-}
-.oper-btn.edit-1:after{
-  content:'\e604'!important;
-}
-.oper-btn.edit-2:after{
-  content:'\e604'!important;
-}
-.oper-btn.edit-3:after{
-  content:'\e604'!important;
-}
-.oper-btn.edit-4:after{
-  content:'\e604'!important;
-}
-.oper-btn.edit-5:after{
   content:'\e604'!important;
 }
 .oper-btn.edit:hover::before{
   content:'编辑'!important;
 }
-.oper-btn.edit-1:hover::before{
-  content:'编辑已停用的流程'!important;
+.oper-btn.edit-period:after{
+  content:'\e604'!important;
 }
-.oper-btn.edit-2:hover::before{
-  content:'编辑阈值'!important;
-}
-.oper-btn.edit-3:hover::before{
+.oper-btn.edit-period:hover::before{
   content:'编辑使用期限'!important;
 }
-.oper-btn.edit-4:hover::before{
-  content:'维护'!important;
+//endregion @编辑相关操作 end@
+
+//region @查看详情、预览等相关操作 start@
+.oper-btn.preview:after{
+  content:'\e609'!important;
 }
-.oper-btn.edit-5:hover::before{
-   content:'表结构维护'!important;
+.oper-btn.preview:hover::before{
+  content:'预览'!important;
 }
-// detail
 .oper-btn.detail:after{
   content:'\e609'!important;
 }
-.oper-btn.detail-1:after{
-  content:'\e609'!important;
-}
-.oper-btn.detail-2:after{
-  content:'\e609'!important;
-}
 .oper-btn.detail:hover::before{
-  content:'预览'!important;
+  content:'查看详情'!important;
 }
-.oper-btn.detail-1:hover::before{
+.oper-btn.detail-rule:after{
+  content:'\e609'!important;
+}
+.oper-btn.detail-rule:hover::before{
   content:'查看规则详情'!important;
 }
- .oper-btn.detail-2:hover::before{
-   content:'表结构展示'!important;
- }
-// excel
-.oper-btn.excel:after{
+.oper-btn.buildsql:after{
   content:'\e637'!important;
 }
-.oper-btn.excel-2:after{
-  content:'\e637'!important;
-}
-.oper-btn.excel-3:after{
-  content:'\e637'!important;
-}
-.oper-btn.excel:hover::before{
-  content:'导出'!important;
-}
-.oper-btn.excel-2:hover::before{
+.oper-btn.buildsql:hover::before{
   content:'编译模型SQL'!important;
 }
-.oper-btn.excel-3:hover::before{
-  content:'获取宽表SQL'!important;
-}
+//endregion @查看详情、预览等相关操作 end@
+
 // again
-.oper-btn.again-2:after{
+.oper-btn.reset:after{
   content:'\e69c'!important;
 }
-.oper-btn.again-3:after{
-  content:'\e69c'!important;
-}
-.oper-btn.again-2:hover::before{
-  content:'刷新'!important;
-}
-.oper-btn.again-3:hover::before{
+.oper-btn.reset:hover::before{
   content:'重置'!important;
 }
 // link
-.oper-btn.link:after{
+.oper-btn.linkdetail:after{
   content:'\e77c'!important;
 }
-.oper-btn.link-3:after{
-  content:'\e77c'!important;
-}
-.oper-btn.link:hover::before{
+.oper-btn.linkdetail:hover::before{
   content:'查询关联'!important;
 }
-.oper-btn.link-3:hover::before{
+.oper-btn.testconn:after{
+  content:'\e77c'!important;
+}
+.oper-btn.testconn:hover::before{
   content:'测试连接'!important;
 }
-.oper-btn.link-2:after{
+.oper-btn.allocation:after{
   content:'\e6af'!important;
 }
-.oper-btn.link-1:after{
+.oper-btn.allocation:hover::before{
+  content:'结果分配'!important;
+}
+.oper-btn.link-bindres:after{
   content:'\e6af'!important;
 }
-.oper-btn.link-2:hover::before{
-  content:'分配项目'!important;
-}
-.oper-btn.link-1:hover::before{
+.oper-btn.link-bindres:hover::before{
   content:'绑定资源'!important;
 }
-
-.oper-btn.link-3:after{
+.oper-btn.testconn:after{
   content:'\e6af'!important;
 }
-.oper-btn.link-3:hover::before{
-  content:'关联信息'!important;
+.oper-btn.testconn:hover::before{
+  content:'测试连接'!important;
 }
+
 // publish
 .oper-btn.publish:after{
-  content:'\e695'!important;
-}
-.oper-btn.publish-1:after{
   content:'\e695'!important;
 }
 .oper-btn.publish:hover::before{
   content:'发布'!important;
 }
-.oper-btn.publish-1:hover::before{
-  content:'取消发布'!important;
-}
 // setting
 .oper-btn.setting:after{
-  content:'\e606'!important;
-}
-.oper-btn.setting-1:after{
-  content:'\e606'!important;
-}
-.oper-btn.setting-2:after{
   content:'\e606'!important;
 }
 .oper-btn.setting:hover::before{
   content:'设置'!important;
 }
-.oper-btn.setting-1:hover::before{
+.oper-btn.setting-param:after{
+  content:'\e606'!important;
+}
+.oper-btn.setting-param:hover::before{
   content:'设置参数'!important;
 }
-.oper-btn.setting-2:hover::before{
+.oper-btn.edit-setting-param:after{
+  content:'\e606'!important;
+}
+.oper-btn.edit-setting-param:hover::before{
   content:'修改参数'!important;
 }
 // share
-.oper-btn.share-1:after{
-  content:'\e60b'!important;
-}
-.oper-btn.share-1:hover::before{
-  content:'分享'!important;
-}
 .oper-btn.share:after{
   content:'\e60b'!important;
 }
 .oper-btn.share:hover::before{
-  content:'结果分配'!important;
+  content:'分享'!important;
 }
 // search
 .oper-btn.search:after{
   content:'\e60f'!important;
 }
 .oper-btn.search:hover::before{
-  content:'查询设置'!important;
+  content:'查询'!important;
 }
-.oper-btn.search-1:after{
+.oper-btn.setting-detail:after{
   content:'\e60f'!important;
 }
-.oper-btn.search-1:hover::before{
-  content:'预览数据'!important;
+.oper-btn.setting-detail:hover::before{
+  content:'查询设置'!important;
 }
-// move
-.oper-btn.move:after{
+// move 移除项目分配
+.oper-btn.disassociate:after{
   content:'\e672'!important;
 }
 .oper-btn.move:hover::before{
   content:'移除分配项目'!important;
 }
-.oper-btn.move-1:after{
+.oper-btn.move:after{
   content:'\e672'!important;
 }
-.oper-btn.move-1:hover::before{
+.oper-btn.move:hover::before{
   content:'移动'!important;
 }
 // processing
@@ -324,182 +296,179 @@
 .oper-btn.processing:hover::before{
   content:'处理'!important;
 }
-.oper-btn.processing-1:after{
+.oper-btn.mark-read:after{
   content:'\e671'!important;
 }
-.oper-btn.processing-1:hover::before{
+.oper-btn.mark-read:hover::before{
   content:'标记已阅'!important;
 }
-// add-folder
-.oper-btn.add-folder:after{
-  content:'\e67c'!important;
-}
-.oper-btn.add-folder:hover::before{
-  content:'上传文件'!important;
-}
-.oper-btn.add-folder-1:after{
-  content:'\e67c'!important;
-}
-.oper-btn.add-folder-1:hover::before{
-  content:'新增文件夹'!important;
-}
-// refresh
-.oper-btn.refresh:after{
-  content:'\e66e'!important;
-}
-.oper-btn.refresh:hover::before{
-  content:'重新运行'!important;
-}
-.oper-btn.refresh-1:after{
-  content:'\e66e'!important;
-}
-.oper-btn.refresh-1:hover::before{
-  content:'分配项目'!important;
-}
-// folder
-.oper-btn.folder:after{
+
+.oper-btn.opensql:after{
   content:'\e67d'!important;
 }
-.oper-btn.folder:hover::before{
-  content:'上传文件夹'!important;
-}
-.oper-btn.folder-1:after{
-  content:'\e67d'!important;
-}
-.oper-btn.folder-1:hover::before{
+.oper-btn.opensql:hover::before{
   content:'打开SQL'!important;
 }
-// export
+
+//region @所有导入、上传按钮 start@
+.oper-btn.import:after{
+  content:'\e7a3'!important;
+}
+.oper-btn.import:hover::before{
+  content:'导入'!important;
+}
+.oper-btn.import-table:after{
+  content:'\e7a3'!important;
+}
+.oper-btn.import-table:hover::before{
+  content:'导入表'!important;
+}
+.oper-btn.upload:after {
+  content: '\e602' !important;
+}
+.oper-btn.upload:hover::before{
+  content:'上传'!important;
+}
+.oper-btn.upload-file:after{
+  content:'\e67c'!important;
+}
+.oper-btn.upload-file:hover::before{
+  content:'上传文件'!important;
+}
+//endregion @所有导入、上传按钮 end@
+
+//region @所有导出、下载按钮 start@
 .oper-btn.export:after{
   content:'\e602'!important;
 }
 .oper-btn.export:hover::before{
-  content:'导入表'!important;
-}
-.oper-btn.export-1:after{
-  content:'\e602'!important;
-}
-.oper-btn.export-1:hover::before{
-  content:'上传'!important;
-}
-.oper-btn.export-3:after{
-  content:'\e602'!important;
-}
-.oper-btn.export-3:hover::before{
   content:'导出'!important;
 }
-// import
-.oper-btn.import:after{
+.oper-btn.download:after{
   content:'\e603'!important;
 }
-.oper-btn.import:hover::before{
+.oper-btn.download:hover::before{
   content:'下载'!important;
 }
-.oper-btn.import-1:after{
+.oper-btn.download-template:after{
   content:'\e603'!important;
 }
-.oper-btn.import-1:hover::before{
-  content:'下载流程模板'!important;
+.oper-btn.download-template:hover::before{
+  content:'下载模板'!important;
 }
-// pause
+.oper-btn.exportsql:after{
+  content:'\e637'!important;
+}
+.oper-btn.exportsql:hover::before{
+  content:'导出宽表SQL'!important;
+}
+//endregion @所有导出、下载按钮 end@
+
+//region @启用、停用、暂停、停止、运行等按钮 start@
+.oper-btn.offline:after{
+  content:'\e607'!important;
+}
+.oper-btn.offline:hover::before{
+  content:'停用'!important;
+}
 .oper-btn.pause:after{
   content:'\e607'!important;
 }
 .oper-btn.pause:hover::before{
-  content:'停用'!important;
-}
-.oper-btn.pause-1:after{
-  content:'\e607'!important;
-}
-.oper-btn.pause-1:hover::before{
   content:'暂停'!important;
 }
-// start
+.oper-btn.stop:after{
+  content:'\e60c'!important;
+}
+.oper-btn.stop:hover::before{
+  content:'停止'!important;
+}
+.oper-btn.online:after{
+  content:'\e608'!important;
+}
+.oper-btn.online:hover::before{
+  content:'启用'!important;
+}
 .oper-btn.start:after{
   content:'\e608'!important;
 }
 .oper-btn.start:hover::before{
   content:'运行'!important;
 }
-.oper-btn.start-1:after{
+.oper-btn.start-failed:after{
   content:'\e608'!important;
 }
-.oper-btn.start-1:hover::before{
-  content:'失败流程从失败任务节点启动'!important;
+.oper-btn.start-failed:hover::before{
+  content:'从失败任务节点启动'!important;
 }
-.oper-btn.start-2:after{
+.oper-btn.recover-paused:after{
   content:'\e608'!important;
 }
-.oper-btn.start-2:hover::before{
-  content:'恢复暂停的流程'!important;
+.oper-btn.recover-paused:hover::before{
+  content:'运行暂停任务'!important;
 }
-.oper-btn.start-3:after{
+.oper-btn.start-now:after{
   content:'\e608'!important;
 }
-.oper-btn.start-3:hover::before{
-  content:'启用'!important;
-}
-.oper-btn.start-4:after{
-  content:'\e608'!important;
-}
-.oper-btn.start-4:hover::before{
+.oper-btn.start-now:hover::before{
   content:'立即运行'!important;
 }
-// delete
+.oper-btn.restart:after{
+  content:'\e66e'!important;
+}
+.oper-btn.restart:hover::before{
+  content:'重新运行'!important;
+}
+//endregion @启用、停用、暂停、停止、运行等按钮 end@
+
+
+//region @删除、清空等按钮 start@
 .oper-btn.delete:after{
   content:'\e601'!important;
 }
 .oper-btn.delete:hover::before{
   content:'删除'!important;
 }
-.oper-btn.delete-1:after{
+.oper-btn.delete-partial:after{
   content:'\e601'!important;
 }
-.oper-btn.delete-1:hover::before{
+.oper-btn.delete-partial:hover::before{
   content:'删除区间'!important;
 }
-.oper-btn.delete-2:after{
+.oper-btn.delete-result:after{
   content:'\e601'!important;
 }
-.oper-btn.delete-2:hover::before{
+.oper-btn.delete-result:hover::before{
   content:'结果删除'!important;
 }
-.oper-btn.delete-3:after{
+.oper-btn.delete-projectrel:after{
   content:'\e601'!important;
 }
-.oper-btn.delete-3:hover::before{
+.oper-btn.delete-projectrel:hover::before{
   content:'如果选中的结果有项目关联，则删除的是关联的项目，如果没有则不能删除'!important;
 }
-.oper-btn.delete-4:after{
+.oper-btn.delete-param:after{
   content:'\e601'!important;
 }
-.oper-btn.delete-4:hover::before{
+.oper-btn.delete-param:hover::before{
   content:'清除参数'!important;
 }
-.oper-btn.delete-5:after{
+.oper-btn.delete-row:after{
   content:'\e601'!important;
 }
-.oper-btn.delete-5:hover::before{
-  content:'删除单个依赖'!important;
-}
-.oper-btn.delete-6:after{
-  content:'\e601'!important;
-}
-.oper-btn.delete-6:hover::before{
-  content:'删除阈值'!important;
-}
-.oper-btn.delete-7:after{
-  content:'\e601'!important;
-}
-.oper-btn.delete-7:hover::before{
+.oper-btn.delete-row:hover::before{
   content:'删除行'!important;
 }
-.oper-btn.delete-8:after{
+.oper-btn.delete-rule:after{
   content:'\e601'!important;
 }
-.oper-btn.delete-8:hover::before{
+.oper-btn.delete-rule:hover::before{
   content:'删除规则'!important;
 }
+.oper-btn.scheduledelete:after{
+  content:'\e601'!important;
+}
+//endregion @删除、清空等按钮 end@
 
 // 单义图标  15个
 
@@ -511,29 +480,10 @@
   content:'更多'!important;
 }
 
-.oper-btn.export-2:after{
-  content:'\e775'!important;
-}
-.oper-btn.export-2:hover::before{
-  content:'导出'!important;
-}
-.oper-btn.export-4:after{
-  content:'\e775'!important;
-}
-.oper-btn.export-4:hover::before{
-  content:'结果导出'!important;
-}
-.oper-btn.export-5:after{
-  content:'\e775'!important;
-}
-.oper-btn.export-5:hover::before{
-  content:'模板导出'!important;
-}
-
-.oper-btn.split-2:after{
+.oper-btn.split:after{
   content:'\e617'!important;
 }
-.oper-btn.split-2:hover::before{
+.oper-btn.split:hover::before{
   content:'结果拆分'!important;
 }
 
@@ -571,19 +521,18 @@
 .oper-btn.save:hover::before{
   content:'保存'!important;
 }
+.oper-btn.save-none:after{
+  content:'\e67e'!important;
+}
+.oper-btn.save-none:hover::before{
+  content:'保存'!important;
+}
 
 .oper-btn.chart:after{
   content:'\e6d8'!important;
 }
 .oper-btn.chart:hover::before{
   content:'图表展示'!important;
-}
-
-.oper-btn.cancelshare:after{
-  content:'\e63d'!important;
-}
-.oper-btn.cancelshare:hover::before{
-  content:'取消分享'!important;
 }
 
 .oper-btn.sqlcheck:after{
@@ -593,11 +542,18 @@
   content:'校验SQL'!important;
 }
 
-.oper-btn.clean:after{
+.oper-btn.format:after{
   content:'\e600'!important;
 }
-.oper-btn.clean:hover::before{
+.oper-btn.format:hover::before{
   content:'格式化sql'!important;
+}
+
+.oper-btn.commit:after {
+  content: '\e786' !important;
+}
+.oper-btn.commit:hover::before {
+  content: '提交审核' !important;
 }
 
 .oper-btn.help:after{
@@ -614,19 +570,38 @@
   content:'自定义字段'!important;
 }
 
-.oper-btn.cancel:after{
-  content:'\e657'!important;
+//region 所有取消按钮
+.oper-btn.cancel:after {
+  content: '\e657' !important;
 }
-.oper-btn.cancel:hover::before{
-  content:'取消'!important;
+.oper-btn.cancel:hover::before {
+  content: '取消' !important;
 }
-
-.oper-btn.import-2:after{
-  content:'\e7a3'!important;
+.oper-btn.cancel-none:after {
+  content: '\e657' !important;
 }
-.oper-btn.import-2:hover::before{
-  content:'模板导入'!important;
+.oper-btn.cancel-none:hover::before {
+  content: '取消' !important;
 }
+.oper-btn.cancel-publish:after {
+  content: '\e657' !important;
+}
+.oper-btn.cancel-publish:hover::before {
+  content: '取消发布' !important;
+}
+.oper-btn.cancelshare:after {
+  content: '\e63d' !important;
+}
+.oper-btn.cancelshare:hover::before {
+  content: '取消分享' !important;
+}
+.oper-btn.cancel-exec:after {
+  content: '\e607' !important;
+}
+.oper-btn.cancel-exec:hover::before {
+  content: '取消执行' !important;
+}
+//endregion
 
 // 未使用 16个
 .oper-btn.pdf:after{
@@ -641,26 +616,13 @@
 .oper-btn.word:after{
   content:'\e63c'!important;
 }
-.oper-btn.import-2:after{
-  content:'\e7a3'!important;
-}
+
+
 .oper-btn.menu:after{
   content:'\e669'!important;
 }
-.oper-btn.share-3:after{
-  content:'\e66a'!important;
-}
 .oper-btn.collect:after{
   content:'\e66d'!important;
-}
-.oper-btn.split:after{
-  content:'\e66f'!important;
-}
-.oper-btn.show-detail:after{
-  content:'\e609'!important;
-}
-.oper-btn.stop:after{
-  content:'\e60c'!important;
 }
 .oper-btn.timing:after{
   content:'\e60d'!important;
@@ -671,25 +633,14 @@
 .oper-btn.drag:after{
   content:'\e680'!important;
 }
-.oper-btn.search-2:after{
-  content:'\e63f'!important;
-}
 .oper-btn.interactive:after{
   content:'\e60e'!important;
 }
 
 // 新增
-.oper-btn.minussign:after{
+.oper-btn.skip:after{
   content:'\e612'!important;
 }
-.oper-btn.minussign:hover::before{
+.oper-btn.skip:hover::before{
   content:'跳过指定环节'!important;
-}
-
-// etl依赖添加删除
-.oper-btn.scheduleadd:after{
-  content:'\e60a'!important;
-}
-.oper-btn.scheduledelete:after{
-  content:'\e601'!important;
 }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <span class="el-form-item__label">项目名称:</span><el-input style="width: 200px;" v-model="filterprojectName" placeholder="请输入内容"></el-input>
+    <span class="el-form-item__label">项目名称:</span><el-input class="detail-form" style="width: 200px;" v-model="filterprojectName" placeholder="请输入内容"></el-input>
     <el-table  style="height: 400px;overflow-y: scroll"
       v-loading="listLoading"
       :data="list"
@@ -14,32 +14,33 @@
         label="项目名称"
         width="200px"
         align="center"
-        prop="PRJ_NAME"
+        prop="prjName"
       />
       <el-table-column
         label="创建人名称"
         width="150px"
         align="center"
-        prop="CREATE_PERSON_NAME"
+        prop="createPersonName"
       />
       <el-table-column
         label="创建时间"
         width="200px"
         align="center"
-        prop="CREATE_TIME"
+        prop="createTime"
       />
     </el-table>
   </div>
 </template>
 <script>
 import { getProjectByLoginUserUuid } from "@/api/base/userproject";
+import {getProjects} from "@/api/analysis/auditmodelresult";
 export default {
   watch:{
     filterprojectName(val){
       if (val!==''){
         this.list = []
         for (var i =0;i< this.datas.length;i++){
-          if (this.datas[i].PRJ_NAME.indexOf(val) !== -1){
+          if (this.datas[i].prjName.indexOf(val) !== -1){
             this.list.push(this.datas[i])
           }
         }
@@ -49,7 +50,8 @@ export default {
     }
   },
   created() {
-    this.getProject();
+    // this.getProject();
+    this.getAllPrj();
   },
   data() {
     return {
@@ -63,6 +65,16 @@ export default {
   methods: {
     getProject() {
       getProjectByLoginUserUuid().then((resp) => {
+        this.datas = resp.data
+        this.list = resp.data;
+        this.listLoading = false;
+      });
+    },
+    /**
+     * 获取项目列表
+     **/
+    getAllPrj(){
+      getProjects().then((resp) => {
         this.datas = resp.data
         this.list = resp.data;
         this.listLoading = false;

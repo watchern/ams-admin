@@ -679,7 +679,8 @@ export function initTableTree(result) {
       result.data[i].icon = tableIconPath
       result.data[i].enName = result.data[i].name;
       if(result.data[i].nameCn){
-        result.data[i].name = result.data[i].name + "(" + result.data[i].nameCn + ")"
+        // result.data[i].name = result.data[i].name + "(" + result.data[i].nameCn + ")"
+        result.data[i].name = result.data[i].nameCn
       }
       result.data[i].isParent = true
     } else if (result.data[i].type === 'view') {
@@ -687,7 +688,8 @@ export function initTableTree(result) {
       result.data[i].isParent = true
       result.data[i].enName = result.data[i].name;
       if(result.data[i].nameCn){
-        result.data[i].name = result.data[i].name + "(" + result.data[i].nameCn + ")"
+        // result.data[i].name = result.data[i].name + "(" + result.data[i].nameCn + ")"
+        result.data[i].name = result.data[i].nameCn
       }
     } else if (result.data[i].type === 'folder') {
       result.data[i].isParent = true
@@ -917,14 +919,14 @@ export function maxOpenOne() {
     $('#iconImg').css('display', 'none')
     $('#iconImg-huifu').css('display', 'block')
     $('#bottomPart').css({ 'position': 'fixed', 'width': max_width + '%', 'left': max_left, 'top': 0, 'height': 100 + '%', 'z-index': 10000 })
-    $('.ag-theme-balham').css('height', 650)
+    // $('.ag-theme-balham').css('height', 650)
     maxormin = false
   } else if (maxormin == false) {
     $('#drag').show(100)
     $('#iconImg').css('display', 'block')
     $('#iconImg-huifu').css('display', 'none')
     $('#bottomPart').css({ 'position': 'static', 'left': 0, 'width': 100 + '%', 'height': '480px', 'z-index': 100 })
-    $('.ag-theme-balham').css('height', 300)
+    // $('.ag-theme-balham').css('height', 300)
     maxormin = true
   }
 }
@@ -1067,7 +1069,7 @@ export function initParamTreeNew() {
       key: {
         checked: 'isChecked',
         name: 'name',
-        title: 'displayName'
+        title: 'label'
       },
       // 设置数据格式
       simpleData: {
@@ -1163,7 +1165,7 @@ export function initParamTreeNew() {
   }
   getParamsTree().then(result => {
     if (result.data.isError) {
-      
+
     } else {
       for(let i = 0; i < result.data.paramNode.length;i++) {
         setIcon(result.data.paramNode[i])
@@ -1190,7 +1192,7 @@ function setIcon(treeNode){
         treeNode.isParent = false
       }
       else if(treeNode.type == 'folder'){
-        treeNode.icon = paramPackageIconPath;  
+        treeNode.icon = paramPackageIconPath;
       }
     }
 }
@@ -1565,7 +1567,7 @@ function hiddenNodes(nodeList, treeObj) {
     var tmpnode = nodeList[i]
     while (z) {
       var pNode = tmpnode.getParentNode()
-      if (pNode.pid != null) {
+      if (pNode != null && pNode.pid != null) {
         if (pNode.isHidden) {
           pNode.isHidden = false
           pNode.open = true
@@ -2186,7 +2188,7 @@ export function getExecuteTask(data,dataUserId,sceneCode) {
 /**
  * 编辑模型
  * @param sql 要编辑的sql
- * @param paramObj 参数对象
+ * @param paramObjOne 参数对象
  */
 export function editorSql(sql, paramObjOne) {
   editorObj.setValue(sql)

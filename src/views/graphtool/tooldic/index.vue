@@ -333,12 +333,18 @@
         />
       </div>
       <div id="geResultContainer" class="geResultContainer">
-        <!--<button id="viewAllData" class="btn btn-primary" onclick="viewAllData()" style="position: absolute;right: 200px;top: 10px;display:none;">预览全部数据</button>-->
-        <!--<button id="exportAllData" class="btn btn-primary" onclick="exportAllData()" style="position: absolute;right: 100px;top: 10px;display:none;">全部导出</button>-->
-        <!--<div id="maxOpen" style="width:80px;position: absolute;right: 0;top: 15px;display:none;" onclick="maxOpen()">-->
-        <!--<img class="iconImgGraph" src="../../../api/graphtool/images/icon/maximize.png" alt="最大化">-->
-        <!--<span class="iconText">最大化</span>-->
-        <!--</div>-->
+        <!-- <button id="viewAllData" class="btn btn-primary" onclick="viewAllData()" style="position: absolute;right: 200px;top: 10px;display:none;">预览全部数据</button> -->
+        <!-- <button id="exportAllData" class="btn btn-primary" onclick="exportAllData()" style="position: absolute;right: 100px;top: 10px;display:none;">全部导出</button> -->
+        <!-- <div id="maxOpen" style="width:80px;position: absolute;right: 0;top: 15px;display:none;" onclick="maxOpen()">
+        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/maximize.png" alt="最大化">
+        <span class="iconText">最大化</span>
+        </div> -->
+        <div>
+          <div id="maxOpen" class="max-size" v-show="resultTabActiveName == 0">
+            <div id="iconImg" class="iconImg" alt="最大化" @click="maxOpen" />
+            <div id="iconImg-huifu" class="iconImg" @click="maxOpen" />
+          </div>
+        </div>
         <el-tabs v-model="resultTabActiveName" type="border-card">
           <el-tab-pane label="数据结果集" name="0">
             <div id="tableArea">
@@ -523,24 +529,26 @@
           :resizable="false"
         >
           <template slot-scope="scope">
+            <!-- @设置参数@ -->
             <el-button
               type="primary"
               v-if="!scope.row.hasParamSet"
-              class="oper-btn setting-1"
+              class="oper-btn setting-param btn-width-md"
+              @click="settingParam(scope.row.nodeId, scope.$index)"
+              style="line-height: normal"
+            />
+          <!-- @修改设置参数@ -->
+            <el-button
+              type="primary"
+              v-if="scope.row.hasParamSet"
+              class="oper-btn edit-setting-param btn-width-md"
               @click="settingParam(scope.row.nodeId, scope.$index)"
               style="line-height: normal"
             />
             <el-button
               type="primary"
               v-if="scope.row.hasParamSet"
-              class="oper-btn setting-2"
-              @click="settingParam(scope.row.nodeId, scope.$index)"
-              style="line-height: normal"
-            />
-            <el-button
-              type="primary"
-              v-if="scope.row.hasParamSet"
-              class="oper-btn delete-4"
+              class="oper-btn delete-param btn-width-md"
               @click="clearSettingParam(scope.row.nodeId, scope.$index)"
               style="line-height: normal"
             />
@@ -569,12 +577,8 @@
         :params-setting="sp_paramsSetting"
       />
       <div slot="footer" v-if="initNodeSettingVue">
-        <el-button @click="nodeParamSettingDialogVisible = false"
-          >取消</el-button
-        >
-        <el-button type="primary" @click="settingParamsCallBack()"
-          >保存</el-button
-        >
+        <el-button @click="nodeParamSettingDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="settingParamsCallBack()">保存</el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -624,6 +628,8 @@
         ref="sqlEditor"
         callType="graphModel"
         :sqlValue="sqlEditorCurSql"
+        @getSqlObj="getSqlObj"
+        :sql-editor-param-obj="sqlEditorParamObj"
       />
       <div v-if="graph.canEditor" slot="footer">
         <el-button @click="sqlEditorDialogVisible = false">取消</el-button>
@@ -794,6 +800,7 @@ export default {
   props: ["graphUuidParam", "openGraphTypeParam", "openTypeParam"],
   data() {
     return {
+      maxormin: true,
       graph: null,
       ownerEditor: null,
       zTreeObj: null,
@@ -879,6 +886,13 @@ export default {
       rightZtreeStyle: "",
       dbType: "", //当前业务库所属的数据库类型，oracle、spark、impala、db2、mysql等
       executeTaskObj: { init: true, executeTask: [], isError: false }, //执行时的任务对象，executeTask：{curNodeId:,taskUUid}
+      modelSql: "",
+      noReplaceModelSql: "",
+      //sql编辑器参数对象
+      sqlEditorParamObj: {},
+      //模型历史表数组
+      modelOriginalTable: [],
+      urlParamStr:''
     };
   },
   created() {
@@ -927,6 +941,167 @@ export default {
     }px`;
   },
   methods: {
+    /**
+     * 获取SQL编辑器或图形化编辑器编辑的sql等信息并展示到界面
+     */
+    getSqlObj() {
+      const returnObj = this.$refs.SQLEditor[0].getSaveInfo()
+      if (returnObj == undefined) {
+        return
+      }
+      // 转换参数格式 重置参数对象属性，因为SQL编辑器是移植的，因此兼容那边的数据格式，因此对数据格式进行转换
+      const params = this.changeParamDataFormat(returnObj.params, 1)
+      // 转换列格式 处理sql编辑器返回的列数据信息，拼接成该界面能识别的格式
+      const column = this.changeColumnDataFormat(returnObj.columnNames, returnObj.columnTypes)
+      // 处理历史表
+      const modelOriginalTable = this.changeOriginalTable(returnObj.modelOriginalTable)
+      const sqlObj = {
+        sqlValue: returnObj.sqlValue,
+        params: params,
+        column: column,
+        modelChartSetup: returnObj.modelChartSetup,
+        modelOriginalTable: modelOriginalTable
+      }
+      this.form.sqlValue = sqlObj.sqlValue
+      this.form.graphUuid = ""
+      // 初始化默认参数
+      // 初始化参数默认值界面界面
+      // if (returnObj.params.length != 0) {
+      //   this.paramShowVIf = true
+      //   this.sqlEditorParam = returnObj.params
+      // } else {
+      //   this.paramShowVIf = false
+      // }
+      this.sqlEditorParamObj = {arr: returnObj.params}//给sql编辑器的参数对象赋值，编辑使用
+      // region 初始化固定列
+      const columnData = []
+      for (let i = 0; i < sqlObj.column.length; i++) {
+        const columnDataObj = {
+          outputColumnName: sqlObj.column[i].columnName,
+          columnType: sqlObj.column[i].columnType
+        }
+        columnData.push(columnDataObj)
+      }
+      // endregion
+      // 列数据
+      // this.columnData = columnData
+      // 模型SQL用到的数据表
+      this.modelOriginalTable = sqlObj.modelOriginalTable
+      // 处理图表JSON
+      // this.modelChartSetup = sqlObj.modelChartSetup
+      // this.form.locationName = returnObj.locationName
+      // this.form.locationUuid = returnObj.locationUuid
+    },
+    /**
+     *相互转换param数据格式
+     * @param paramObj 参数对象
+     * @param type 1、获取sql编辑器时候需要的
+     */
+    changeParamDataFormat(paramObj, type) {
+      if (paramObj == undefined || paramObj == null) {
+        return
+      }
+      if (type == 1) {
+        // SQL编辑器参数对象转编辑界面参数对象
+        const params = []
+        for (let i = 0; i < paramObj.length; i++) {
+          const obj = {
+            ammParamUuid: paramObj[i].moduleParamId,
+            paramName: paramObj[i].name,
+            copyParamId: paramObj[i].copyParamId,
+            description: '',
+            paramValue: ''
+          }
+          params.push(obj)
+        }
+        return params
+      } else if (type == 2) {
+        // 参数界面编辑对象转SQL编辑器参数对象
+        var returnObj = {'arr': []}
+        for (let b = 0; b < paramObj.length; b++) {
+          const id = '{#' + paramObj[b].ammParamUuid + '#}'
+          const name = paramObj[b].paramName
+          const moduleParamId = paramObj[b].linkParamUuid
+          const allowedNull = typeof paramObj[b].ammParamChoice.allowedNull !== 'undefined' ? paramObj[b].ammParamChoice.allowedNull : 1
+          var obj = {
+            id: id,
+            name: name,
+            moduleParamId: moduleParamId,
+            copyParamId: id,
+            allowedNull: allowedNull
+          }
+          returnObj.arr.push(obj)
+        }
+        return returnObj
+      }
+    },
+    /**
+     *转换列对象
+     * @param columnNames 列名称
+     * @param columnType 列类型
+     */
+    changeColumnDataFormat(columnNames, columnType) {
+      // [{ columnName: 'AUDIT_ITEM_UUID', columnType: 'varchar' }, { columnName: 'AUDIT_ITEM_NAME', columnType: 'varchar' }]
+      const returnObj = []
+      for (let i = 0; i < columnNames.length; i++) {
+        var obj = {
+          columnName: columnNames[i],
+          columnType: columnType[i]
+        }
+        returnObj.push(obj)
+      }
+      return returnObj
+    },
+    /**
+     * 转换列对象
+     * @param originalTableObj 历史表对象
+     */
+    changeOriginalTable(originalTableObj) {
+      const resultObj = []
+      for (let i = 0; i < originalTableObj.length; i++) {
+        const obj = {
+          originalTableName: originalTableObj[i].tableName,
+          executionType: originalTableObj[i].tableType
+        }
+        resultObj.push(obj)
+      }
+      return resultObj
+    },
+    maxOpen() {
+      if (this.maxormin == true) {
+        $("#geResultContainer").css({
+          position: "fixed",
+          width: 100 + "%",
+          top: 0,
+          left: 0,
+          height: 100 + "%",
+          "z-index": 10000,
+        });
+        $("#tableArea").css({
+          height: "100%",
+        });
+        $("#iconImg").css("display", "none");
+        $("#iconImg-huifu").css("display", "block");
+        this.maxormin = false;
+      } else {
+        $("#geResultContainer").css({
+          position: "",
+          width: "100%",
+          "z-index": 1,
+          bottom: 0,
+          top: "",
+          background: "#FFF",
+          overflow: "hidden",
+          height: "290px",
+        });
+        $("#tableArea").css({
+          height: "225px",
+        });
+        $("#iconImg").css("display", "block");
+        $("#iconImg-huifu").css("display", "none");
+        this.maxormin = true;
+      }
+    },
     init() {
       if (typeof getParams().graphUuid === "undefined") {
         this.graphUuid = this.graphUuidParam;
@@ -1287,6 +1462,7 @@ export default {
                           //如果有汉化字段则用中文加汉化字段
                           let columnName =
                             item.colName + "(" + item.chnName + ")";
+                            // item.chnName
                           nodeList.push({
                             id: treeNode.name + "_" + this,
                             name: columnName,
@@ -1305,6 +1481,8 @@ export default {
                     }
                   });
                 }
+              }else{
+
               }
             },
           },
@@ -1356,6 +1534,12 @@ export default {
               //     response.data[i].name = response.data[i].name+'('+response.data[i].nameCn+')'
               //   }
               // }
+              for(let i=0;i<response.data.length;i++){
+                if(response.data[i].nameCn&&(response.data[i].type=='view'|| response.data[i].type=='table')){
+                  response.data[i].english = response.data[i].name
+                  response.data[i].name = response.data[i].nameCn
+                }
+              }
               indexJs.replaceNodeType(response.data);
               obj.zTreeObj = $.fn.zTree.init(
                 $(obj.$refs.ztree_datasource_ref),
@@ -1472,7 +1656,8 @@ export default {
             const sysInfoAreaHtml = $($this.$refs.sysInfoArea).html();
             const nodeExcuteStatus =
               graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus;
-            if (nodeExcuteStatus === 1 || nodeExcuteStatus === 2) {
+              //多节点全部执行暂处理
+            if (nodeExcuteStatus === 1 || nodeExcuteStatus === 2 || nodeExcuteStatus === 3 ) {
               //只处理未执行或执行中的状态
               switch (executeSQLObj.state) {
                 case "2": //执行成功
@@ -1727,8 +1912,7 @@ export default {
             });
           }, 100);
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     openGraph() {
       indexJs.openGraph();
@@ -1836,8 +2020,8 @@ export default {
           // let i = nodes[0].name.indexOf('(')
           // const nodeName = i==-1?nodes[0].name:nodes[0].name.slice(0,i);
           // const resultTableName = nodeName;
-          const nodeName = nodes[0].name;
-          const resultTableName = nodes[0].name;
+          const nodeName = nodes[0].name ;
+          const resultTableName = typeof nodes[0].english === 'undefined'? nodes[0].name : nodes[0].english;
           const isRoleTable = true;
           this.initData();
           this.$nextTick(() => {
@@ -1943,34 +2127,42 @@ export default {
         } else {
           this.graphListDialogVisible = false;
           this.$nextTick(() => {
-            var urlParamStr = "";
+            this.urlParamStr = "";
             if (returnObj.graphType === 3) {
               if (returnObj.publicType === 1) {
                 // 场景查询
-                urlParamStr =
+                this.urlParamStr =
                   "?graphUuid=" + returnObj.graphUuid + "&openGraphType=3";
               } else {
                 // 个人场景查询
-                urlParamStr =
+                this.urlParamStr =
                   "?graphUuid=" + returnObj.graphUuid + "&openGraphType=2";
               }
             } else {
               // 个人图形
-              urlParamStr =
+              this.urlParamStr =
                 "?graphUuid=" + returnObj.graphUuid + "&openGraphType=1";
+            }
+            let repath = this.$route.path
+            if(repath == "/analysis/editormodelnew")  {
+              // 个人图形
+              this.urlParamStr =
+                  "?graphUuid=" + returnObj.graphUuid + "&openGraphType=4";
             }
             //路由代换来刷新页面
             this.$router.replace("/nopermission");
             let _this = this;
             setTimeout(function () {
-              _this.$store.commit("aceState/setRightFooterTags", {
-                type: "active",
-                val: {
-                  name: "编辑图形",
-                  path: `/graphtool/tooldic${urlParamStr}&openType=${_this.openType}`,
-                },
-              });
-            }, 100);
+              console.log(_this.urlParamStr)
+              _this.$router.replace(`${repath}${_this.urlParamStr}&openType=${_this.openType}`);
+              // _this.$store.commit("aceState/setRightFooterTags", {
+              //   type: "active",
+              //   val: {
+              //     name: "编辑图形",
+              //     path: `/graphtool/tooldic${_this.urlParamStr}&openType=${_this.openType}`,
+              //   },
+              // });
+            }, 200);
           });
         }
       } else {
@@ -2064,7 +2256,7 @@ export default {
      * 接口：获取节点参数信息
      */
     getParamsArr() {
-      return indexJs.getParamsArr();
+       return indexJs.getParamsArr();
     },
     /**
      * 接口：获取中间、最终结果表的输出列信息
@@ -2083,3 +2275,9 @@ export default {
 </script>
 <!--引入图形化工具专用CSS样式-->
 <style scoped src="@/api/graphtool/css/index.css"></style>
+<style>
+.mloading-bar a{
+  color: #1890ff;
+  text-decoration: underline!important;
+}
+</style>

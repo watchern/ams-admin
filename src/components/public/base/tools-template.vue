@@ -28,8 +28,8 @@
             </el-tooltip>
           </div>
         </div>
-        <div class="title-label" style="margin-top: 15px">自定义快捷菜单</div>
-        <div class="lately-use-box flex a-center j-start flex-row">
+        <div class="title-label" style="margin-top: 15px;display:none;">自定义快捷菜单</div>
+        <div class="lately-use-box flex a-center j-start flex-row" style="display:none;">
           <div
             v-for="(item,index) in latelyFastList"
             :key="index"
@@ -77,7 +77,7 @@
 
       <div class="newest-item">
         <div class="title-label">执行任务</div>
-        <div class="newest-item-box">
+        <div class="newest-item-box" style="background: #353A43 !important;">
           <div>
             <ul>
               <li v-for="(item , index) in list" :key="index">
@@ -88,7 +88,7 @@
                 <span style="color:#eaeaea;font-size:11px;padding:2px;cursor:pointer;" class="tools-box-name" @click="toUrl(item.taskUrl)" v-text="item.taskName" />
               </li>
             </ul>
-            <span type="primary" style="color:#4e6ef2;float:right;bottom:-22px;font-size:10px;cursor:pointer;" @click="moreTask">更多</span>
+            <span type="primary" style="color:#4e6ef2;position: absolute;:w bottom: 10px; right: 15px;font-size:10px;cursor:pointer;" @click="moreTask">更多</span>
           </div>
         </div>
       </div>
@@ -610,7 +610,6 @@ export default {
      */
     getWebSocket() {
       var userId = this.$store.getters.personuuid
-      // const wsuri = 'ws://' + window.location.host+ '/websocket?' + userId + 'systemTask'// 连接地址，可加参数// 连接地址，可加参数
       const wsuri = this.AmsWebsocket.getWSBaseUrl(this.AmsModules.BASE) + userId + 'systemTask'// 连接地址，可加参数// 连接地址，可加参数
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(wsuri) // 建立与服务端的连接

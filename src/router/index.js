@@ -10,11 +10,18 @@ import baseRouter from './modules/base/base'
 import etlschedulerRouter from './modules/etlscheduler/etlscheduler'
 import analysisRouter from './modules/analysis/analysis'
 import graphRouter from './modules/graphtool/graphtool'
+
 const AmsRoutes = [
+  {
+    path: '/test',
+    name: '审计模型',
+    component: () => import('@/views/test')
+    // component: () => import('@/views/analysis/auditmodel/boemodel/modellisttable')
+  },
   {
     path: '/dowork',
     name: '工作流',
-    component: (resolve) => require(['@/portal/' + process.env.VUE_APP_BASE_SKIN + '/index'], resolve),
+    component: (resolve) => require(['@/portal/' + (process.env.VUE_APP_BASE_MENU === 'withmenu'?'withmenu/' + process.env.VUE_APP_BASE_SKIN:'withoutmenu') + '/index'], resolve),
     meta: {
     },
     children: [
@@ -77,7 +84,7 @@ const AmsRoutes = [
   {
     path: '/ams',
     name: 'ams',
-    component: (resolve) => require(['@/portal/' + process.env.VUE_APP_BASE_SKIN + '/index'], resolve),
+    component: (resolve) => require(['@/portal/' + (process.env.VUE_APP_BASE_MENU === 'withmenu'?'withmenu/' + process.env.VUE_APP_BASE_SKIN:'withoutmenu') + '/index'], resolve),
     children: [
       {
         path: '',
@@ -126,7 +133,7 @@ const AmsRoutes = [
   {
     path: '/datamining',
     name: '数据挖掘',
-    component: (resolve) => require(['@/portal/' + process.env.VUE_APP_BASE_SKIN + '/index'], resolve),
+    component: (resolve) => require(['@/portal/' + (process.env.VUE_APP_BASE_MENU === 'withmenu'?'withmenu/' + process.env.VUE_APP_BASE_SKIN:'withoutmenu') + '/index'], resolve),
     children: [{
       path: '/datamining/index',
       name: '数据挖掘',

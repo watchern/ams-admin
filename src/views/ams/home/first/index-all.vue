@@ -8,7 +8,7 @@
           </div>
           <div class="top-card-right">
             <div class="title skin-wordColor">待办事项</div>
-            <div class="des" v-for="(item,index) in TopTodo">
+            <div class="des" v-for="(item,index) in TopTodo" v-if="item<5">
               <span class="skin-wordColor">{{item.name}}</span>
               <span v-if="item.icon" :style="{color:item.iconColor}" class="icon">{{ item.icon }}</span>
             </div>
@@ -181,7 +181,7 @@ export default {
         }
       ],
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 5,
       },
@@ -476,10 +476,11 @@ export default {
         box-shadow: 17px 17px 34px 0 rgba(0,0,0,0.10);
         border-radius: 25.2px;
         padding: 27px;
+        padding-bottom: 37px;
         width: 479px;
         position: relative;
         margin:5px;
-        height: 218px;
+        height: 230px;
         &-left{
           background: #FFFFFF;
           border: 1px solid #D8D8D8;

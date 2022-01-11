@@ -1,8 +1,5 @@
 <template>
-  <div
-      class="query-field"
-      :class="skinMisalignment?(componentMisalignment?'re-or':'ab-or'):'re-or'"
-  >
+  <div class="query-field" :class="skinMisalignment?(componentMisalignment?'re-or':'ab-or'):'re-or'">
     <el-form :inline="true" :model="query" label-position="bottom">
       <div class="switch-btn">
         <img :src="this.switchImg" @click="onSwitchWith">
@@ -16,8 +13,8 @@
           <el-option v-for="opt in fd.data" :label="opt.name" :value="opt.value" />
         </el-select>
         <template v-if="fd.type==='timePeriod'">
-          <el-date-picker v-model="query[fd.name+'Start']" type="date" placeholder="开始时间" :style="timeStyle"/>
-          <el-date-picker v-model="query[fd.name+'End']" type="date" placeholder="结束时间" :style="timeStyle"/>
+          <el-date-picker v-model="query[fd.name+'Start']" :type="dateType" placeholder="开始时间" :style="timeStyle"/>
+          <el-date-picker v-model="query[fd.name+'End']" :type="dateType" placeholder="结束时间" :style="timeStyle"/>
         </template>
       </el-form-item>
 
@@ -45,6 +42,10 @@ export default {
     formData: {
       type: Array,
       default: []
+    },
+    dateType:{
+      type: String,
+      default: 'date'
     }
   },
   data() {
@@ -104,7 +105,7 @@ export default {
           setTimeout(function(){
             that.timer = false;
             that.contentWidthChange();//执行自己的逻辑
-          },400)
+          },1000/60)
         }
       },
       immediate:true,
@@ -236,7 +237,7 @@ export default {
         }
       }
       // 判断应该减少宽度的情况
-      if (this.screenWidth < 1920 && widthCount >= 4) {
+      if (this.screenWidth < 1920 && widthCount >= 3) {
         // 如果减少宽度仍旧不够 则放开限制 自动换行
         if (this.screenWidth >= 1400 && this.screenWidth< 1920) {
           let inPutWords = (30 * (1920 - this.screenWidth) / 520).toFixed(1)
@@ -248,7 +249,7 @@ export default {
         } else {
           this.textWidth = 90
           this.selectWidth = 100
-          this.timePeriodWidth = 115
+          this.timePeriodWidth = 125
           this.componentMisalignment = true
         }
       } else {

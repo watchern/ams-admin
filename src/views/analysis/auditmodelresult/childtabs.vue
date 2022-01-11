@@ -1,6 +1,7 @@
 <template>
   <!-- childTabs是子页签组件 -->
-  <el-tabs type="border-card" class="child-taps-top">
+  <!-- 主页面大页签（模型列表等）执行结果 -->
+  <el-tabs type="border-card" class="child-taps-top" v-model="selectTabName">
     <el-tab-pane v-if="useType==='modelRunResult'?true:false" style="height:calc(100% - 60px)" :label="useType === 'modelRunResult' ? '主表' : '结果1'"
       ><childTabCons
         :settingInfo="settingInfo"
@@ -17,13 +18,17 @@
         @saveModelResult="saveModelResult"
         ref="onlyChild"
     /></el-tab-pane>
+
+    <!-- 单个模型执行结果页签（主表、辅表） -->
     <el-tab-pane
       v-for="(item, key) in useType==='modelRunResult'?helptables:preValue"
       :key="key"
-      :label="tabsName(key)"
+      :label="tabsName(key,item)"
       class="result-tabs"
       :style="useType==='previewTable'?'height:500px':''"
-      ><childTabCons
+      >
+      <!-- aggrid数据表格渲染 -->
+      <childTabCons
         ref="child"
         :is-model-preview="isModelPreview"
         @addBigTabsModelPreview="addBigTabsModelPreview"
@@ -56,7 +61,9 @@ export default {
     return {
       index:0,
       hasButton:false,
-      paramInfoCopy:{}
+      paramInfoCopy:{},
+      helpTableCounter:0,
+      selectTabName:'0'
     };
   },
   created(){
@@ -82,16 +89,18 @@ export default {
         }
         this.index = 0
       },
-      tabsName(key){
+      tabsName(key, item){
         if(this.useType==='modelRunResult'){
-          return '辅表' + (key)
+          return '辅表' + (key + 1)
         }else if(this.useType==='sqlEditor'||this.useType==='modelPreview'){
-          if(key==0){
-            return '主表'
+          let tabname = '';
+          if (item.type != null && item.type.trim().length > 0) {
+            tabname = item.type =="1"?'主表':'辅助' + (key + 1)
+          } else {
+            tabname = this.preValue.length === key + 1 ? '主表' : '辅助' + (key + 1)
           }
-          else{
-            return '辅助' + (key)
-          }
+          this.selectTabName = tabname === '主表' ? '' + key : this.selectTabName
+          return tabname;
         }else if(this.useType==='previewTable'){
             return '数据详情'
         }else if(this.useType==='graph'){

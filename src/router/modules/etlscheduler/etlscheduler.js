@@ -2,7 +2,7 @@
 
 const etlschedulerRouter = {
   path: '/etlscheduler',
-  component: (resolve) => require(['@/portal/'+ process.env.VUE_APP_BASE_SKIN + '/index'],resolve),
+  component: (resolve) => require(['@/portal/' + (process.env.VUE_APP_BASE_MENU === 'withmenu'?'withmenu/' + process.env.VUE_APP_BASE_SKIN:'withoutmenu') + '/index'], resolve),
   name: 'Etlscheduler',
   meta: {
   },
@@ -82,6 +82,14 @@ const etlschedulerRouter = {
       component: () => import('@ETL/views/etlscheduler/taskmonitor/index'),
       meta: {
         title: 'taskmonitor'
+      }
+    },
+    {
+      path: 'taskmonitor/:processname',
+      name: 'taskmonitor',
+      component: resolve => require(['@ETL/views/etlscheduler/taskmonitor/index'], resolve),
+      meta: {
+        title: '调度监控'
       }
     },
     {

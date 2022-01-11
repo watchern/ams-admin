@@ -32,66 +32,66 @@ Actions.prototype.init = function() {
 	}, null, 'sprite-redo', (!mxClient.IS_WIN) ? Editor.ctrlKey + '+Shift+Z' : Editor.ctrlKey + '+Y');
 	//剪切
 	this.addAction('cut', function() {
-		confirmMsg('提示', '剪切操作会影响所选择节点的后置未剪切节点的节点信息，确定剪切？', "info", function() {
-			cutCells();
-		}, function() {});
+		// confirmMsg('提示', '剪切操作会影响所选择节点的后置未剪切节点的节点信息，确定剪切？', "info", function() {
+		// 	cutCells();
+		// }, function() {});
 	}, null, 'sprite-cut', Editor.ctrlKey + '+X');
 	//复制
 	this.addAction('copy', function() {
-		copyCells();
+		// copyCells();
 	}, null, 'sprite-copy', Editor.ctrlKey + '+C');
 	//粘贴
 	this.addAction('paste', function() {
-		 var cells = mxClipboard.paste(graph);
-		 pasteCells(cells);
-		 if(cells.length > 0){
-			//自动保存图形化
-			autoSaveGraph();
-		 }
+		 // var cells = mxClipboard.paste(graph);
+		 // pasteCells(cells);
+		 // if(cells.length > 0){
+			// //自动保存图形化
+			// autoSaveGraph();
+		 // }
 	}, false, 'sprite-paste', Editor.ctrlKey + '+V');
 	//粘贴到
 	this.addAction('pasteHere', function(evt) {
-		if(graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent())) {
-			graph.getModel().beginUpdate();
-			try {
-				var cells = mxClipboard.paste(graph);
-				pasteCells(cells);
-				if(cells != null) {
-					var includeEdges = true;
-
-					for(var i = 0; i < cells.length && includeEdges; i++) {
-						includeEdges = includeEdges && graph.model.isEdge(cells[i]);
-					}
-
-					var t = graph.view.translate;
-					var s = graph.view.scale;
-					var dx = t.x;
-					var dy = t.y;
-					var bb = null;
-
-					if(cells.length == 1 && includeEdges) {
-						var geo = graph.getCellGeometry(cells[0]);
-
-						if(geo != null) {
-							bb = geo.getTerminalPoint(true);
-						}
-					}
-
-					bb = (bb != null) ? bb : graph.getBoundingBoxFromGeometry(cells, includeEdges);
-
-					if(bb != null) {
-						var x = Math.round(graph.snap(graph.popupMenuHandler.triggerX / s - dx));
-						var y = Math.round(graph.snap(graph.popupMenuHandler.triggerY / s - dy));
-
-						graph.cellsMoved(cells, x - bb.x, y - bb.y);
-					}
-					//自动保存图形化
-					autoSaveGraph();
-				}
-			} finally {
-				graph.getModel().endUpdate();
-			}
-		}
+		// if(graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent())) {
+		// 	graph.getModel().beginUpdate();
+		// 	try {
+		// 		var cells = mxClipboard.paste(graph);
+		// 		pasteCells(cells);
+		// 		if(cells != null) {
+		// 			var includeEdges = true;
+		//
+		// 			for(var i = 0; i < cells.length && includeEdges; i++) {
+		// 				includeEdges = includeEdges && graph.model.isEdge(cells[i]);
+		// 			}
+		//
+		// 			var t = graph.view.translate;
+		// 			var s = graph.view.scale;
+		// 			var dx = t.x;
+		// 			var dy = t.y;
+		// 			var bb = null;
+		//
+		// 			if(cells.length == 1 && includeEdges) {
+		// 				var geo = graph.getCellGeometry(cells[0]);
+		//
+		// 				if(geo != null) {
+		// 					bb = geo.getTerminalPoint(true);
+		// 				}
+		// 			}
+		//
+		// 			bb = (bb != null) ? bb : graph.getBoundingBoxFromGeometry(cells, includeEdges);
+		//
+		// 			if(bb != null) {
+		// 				var x = Math.round(graph.snap(graph.popupMenuHandler.triggerX / s - dx));
+		// 				var y = Math.round(graph.snap(graph.popupMenuHandler.triggerY / s - dy));
+		//
+		// 				graph.cellsMoved(cells, x - bb.x, y - bb.y);
+		// 			}
+		// 			//自动保存图形化
+		// 			autoSaveGraph();
+		// 		}
+		// 	} finally {
+		// 		graph.getModel().endUpdate();
+		// 	}
+		// }
 	});
 
 	function cutCells(){
@@ -273,7 +273,8 @@ Actions.prototype.init = function() {
 						var options = {
 								"id" : cells[i].id,
 								"name" : nodeData.nodeInfo.nodeName,
-								"type" : nodeData.nodeInfo.optType
+								"type" : nodeData.nodeInfo.optType,
+								"english":nodeData.nodeInfo.english||'',
 						};
 						initNodeData(options,true);
 					}

@@ -81,3 +81,37 @@ export function previewSql(data) {
     data
   })
 }
+//传入显示表名的sql获取真实表名的sql
+export function getTrueSql(sqlContent){
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/getTrueSql`,
+    method: 'post',
+    params: {
+      sqlContent: sqlContent
+    }
+  })
+}
+
+//传入真实表名的sql获取显示表名的sql
+export function getShowSql(sqlContent){
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/getShowSql`,
+    method: 'post',
+    params: {
+      sqlContent: sqlContent
+    }
+  })
+}
+//获取真实值和转码值
+export function getSqlRules(sql){
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/getSqlRules`,
+    method: 'post',
+    params: {
+      sql: sql
+    }
+  })
+}

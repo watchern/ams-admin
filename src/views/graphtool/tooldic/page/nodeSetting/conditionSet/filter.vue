@@ -9,7 +9,7 @@
             <el-col :span="8">
                 <label>筛选字段&nbsp;</label>
                 <el-select v-model="select_colms" filterable @change="setSelectColms">
-                    <el-option v-for="selectCol in selectColms" :key="selectCol.newColumnName" :label="selectCol.newColumnName" :value="selectCol.newColumnName">{{ selectCol.displayName }}</el-option>
+                  <el-option v-for="selectCol in selectColms" :key="selectCol.newColumnName" :label="selectCol.newColumnName" :value="selectCol.newColumnName">{{ selectCol.displayName }}</el-option>
                 </el-select>
             </el-col>
             <el-col :span="8">
@@ -137,6 +137,7 @@
                 const isSet = this.nodeData.isSet// 判断当前节点是否已经设置
                 const parent_node = graph.nodeData[parentIds[0]] // one parent
                 this.preNodeName = '【上级节点名称：' + parent_node.nodeInfo.nodeName + '】'
+                console.log(this.$parent.$parent.$parent)
                 this.curColumnsInfo = this.$parent.$parent.$parent.columnsInfoPre
                 const settingFilter = this.initZtreeSetting()
                 if (isSet) {
@@ -147,9 +148,10 @@
                 }
                 Array.from(this.curColumnsInfo, item => {
                     const newColumnName = item.newColumnName
+                    const columnName = item.columnName
                     const displayName = `${newColumnName}(${item.columnType})`
-                    this.selectColms.push({ newColumnName, displayName })
-                    this.compareColumnArr.push({ newColumnName, displayName })
+                    this.selectColms.push({ columnName, newColumnName, displayName })
+                    this.compareColumnArr.push({columnName, newColumnName, displayName })
                 })
             },
             setSelectColms(val) {
@@ -232,8 +234,9 @@
                                 vueObj.select_colms = treeNode.realInfo.select_colms// 反显列
                                 vueObj.select_cz = treeNode.realInfo.select_cz
                                 vueObj.compareObj = typeof treeNode.realInfo.compareObj === 'undefined' ? 'value' : treeNode.realInfo.compareObj
-                                vueObj.ompareColumnSel = treeNode.realInfo.compareColumnSel// 反显筛选对象
-                                vueObj.conn_value = treeNode.realInfo.conn_value// 反显值
+                                vueObj.compareColumnSel = vueObj.compareObj === 'value' ? '' : treeNode.realInfo.compareColumnSel// 反显筛选对象
+                                vueObj.conn_value =  vueObj.compareObj === 'value' ? treeNode.realInfo.conn_value : ''// 反显值
+                                vueObj.showConnValue = vueObj.compareObj === 'value'  ? true:false;//控制输入框或下拉框
                                 vueObj.connType = treeNode.realInfo.filter_conn_type
                                 vueObj.quotes = treeNode.realInfo.quotes
                                 vueObj.blankSpace = treeNode.realInfo.blank_space

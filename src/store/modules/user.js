@@ -67,7 +67,7 @@ const actions = {
         const { data } = response
         commit('SET_ID', data.personUuid)
         commit('SET_NAME', data.username)
-        commit('SET_CODE', data.userid)
+        commit('SET_CODE', data.personCode)
         var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
         if (sysDict == null) {
           cacheDict().then(resp => {

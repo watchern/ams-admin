@@ -1,7 +1,7 @@
 <template>
   <div class="app-container" v-loading="isShowLoading" style="height:62vh; overflow:auto;">
     <el-dialog title="选择模型列表" :close-on-click-modal="false" :fullscreen="true" v-if='selectModelVisible' :visible.sync="selectModelVisible" :append-to-body="true" width="80%">
-      <SelectModels ref="selectModels" :isAuditWarring="true" power="warning"/>
+      <SelectModels ref="selectModels" :isAuditWarning="true" power="warning" style="height: calc(100vh - 109px)"/>
       <div slot="footer" class="dialog-footer">
         <el-button @click="selectModelVisible = false">关闭</el-button>
         <el-button type="primary" @click="selectModel">确定</el-button>
@@ -14,35 +14,48 @@
             <el-input v-model="temp.warningName"  />
           </el-form-item>
           <el-row>
-            <el-col :span="12">
+            <el-col :span="11">
               <el-form-item label="预警类型" >
                 <el-select v-model="temp.warningType" placeholder="请选择预警类型" >
                   <el-option label="模型" :value="1"></el-option>
-                  <el-option label="指标常用分析" :value="2"></el-option>
+                  <!-- <el-option label="指标常用分析" :value="2"></el-option> -->
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="12" :offset="1">
               <el-form-item  label="结果保存地址">
-                <el-input  class="el-input-z" readonly="readonly" v-model="this.auditWarningSave.locationName"/>
-                <span class="btn-z" @click="modelResultSavePathDialog = true">选择</span>
+                <el-row>
+                  <el-col :span="19" >
+                    <el-input readonly="readonly" v-model="this.auditWarningSave.locationName"/>
+                  </el-col>
+                  <el-col :span="2" :offset="1">
+                    <el-button type="primary" @click="modelResultSavePathDialog = true">选择</el-button>
+                  </el-col>
+                </el-row>
               </el-form-item>
             </el-col>
+
           </el-row>
           <el-row>
-            <el-col :span="12">
+            <el-col :span="11">
               <el-form-item label="分配类型" >
                 <el-select v-model="auditWarningSave.distributionType" @change="distributionTypeChange" placeholder="请选择分配类型" >
-                  <el-option label="请选择" :value="0"></el-option>
+                  <!--<el-option label="请选择" :value="0"></el-option>-->
                   <el-option label="分配到人" :value="1"></el-option>
                   <el-option label="分配到项目" :value="2"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="12" :offset="1">
               <el-form-item  label="人员或项目">
-                <el-input  class="el-input-z" readonly="readonly" v-model="auditWarningSave.distributionName"/>
-                <span class="btn-z" @click="distributionButtonClick">选择</span>
+                <el-row>
+                  <el-col :span="19" >
+                    <el-input  readonly="readonly" v-model="auditWarningSave.distributionName"  />
+                  </el-col>
+                  <el-col :span="2" :offset="1">
+                    <el-button type="primary" @click="distributionButtonClick">选择</el-button>
+                  </el-col>
+                </el-row>
               </el-form-item>
             </el-col>
           </el-row>
@@ -54,9 +67,18 @@
             </el-row>
             <el-table key="modelList" v-loading="modelListLoading" ref="modelListTable" align="center" :data="temp.modelList" border fit highlight-current-row>
               <el-table-column label="模型名称"  prop="modelName" />
-              <el-table-column label="平均运行时间"  prop="runTime" />
+              <!-- <el-table-column label="平均运行时间"  prop="runTime" /> -->
               <el-table-column label="模型类型"  prop="modelType" :formatter="modelTypeFormatter" />
               <el-table-column label="审计事项"  prop="auditItemName" />
+              <el-table-column label="模型运行结果名" width="240px" >
+                <template slot-scope="scope">
+                <el-input class="detail-form"
+                style="width: 100%;padding:0!important;"
+                type="text"
+                v-model="scope.row.warningResTbName">
+                </el-input>
+                </template>
+              </el-table-column>
               <el-table-column
                 v-if="!allReadOnly"
                 label="操作"
@@ -111,8 +133,8 @@
       </el-tab-pane>
       <el-tab-pane label="执行信息" name="executeInfo">
         <el-form ref="executeDataForm" :rules="rules" class="detail-form" :model="temp" :disabled="allReadOnly" >
-          <el-form-item label="执行方式" >
-            <el-select v-model="temp.executeMode" placeholder="请选择执行方式">
+          <el-form-item label="执行方式">
+            <el-select v-model="temp.executeMode" placeholder="请选择执行方式" style="width:100%">
               <el-option label="单次执行" :value="1"></el-option>
               <el-option label="多次执行" :value="2"></el-option>
               <el-option label="周期执行" :value="3"></el-option>
@@ -125,6 +147,7 @@
               type="datetime"
               placeholder="选择执行时间"
               align="right"
+              style="width:100%"
               :picker-options="executeTimeOptions">
             </el-date-picker>
           </el-form-item>
@@ -136,6 +159,7 @@
                 v-model="domain.executeTime"
                 placeholder="选择多次执行时间"
                 align="right"
+                style="width:90%"
                 :picker-options="executeTimeOptions">
               </el-date-picker>
               <!--<el-button type="primary" v-if="index==0" @click="addExecuteTime">添加</el-button>-->
@@ -147,7 +171,7 @@
           <!--周期执行时间配置选择-->
           <el-form-item label="" v-if="temp.executeMode == 3"  >
             <el-form-item label="执行周期设置" >
-              <el-select v-model="temp.intervalExecuteTime.intervalType" placeholder="请选择执行周期">
+              <el-select v-model="temp.intervalExecuteTime.intervalType" placeholder="请选择执行周期" style="width:100%">
                 <el-option label="每天" :value="1"></el-option>
                 <el-option label="每周" :value="2"></el-option>
                 <el-option label="每月" :value="3"></el-option>
@@ -202,6 +226,7 @@
                 :picker-options="{
                   selectableRange: '00:00:00 - 23:59:00'
                 }"
+                style="width:100%"
                 placeholder="请输入执行时间">
               </el-time-picker>
             </el-form-item>
@@ -221,7 +246,11 @@
           <!--模型参数配置-->
           <el-form-item label="模型参数配置" v-show="temp.warningType == 1" >
 <!--            <paramDraw v-for="(domain, index) in temp.modelList" v-if="domain.paramObj != undefined && domain.paramObj.length > 0" :myId="domain.modelUuid" :ref="'paramDrawRef'+domain.modelUuid"/>-->
-            <paramDrawNew v-for="(domain, index) in temp.modelList" v-if="domain.paramObj != undefined && domain.paramObj.length > 0" :ref="'paramDrawRef'+domain.modelUuid" :sql="paramSql[index]" :arr="paramArr[index]"></paramDrawNew>
+            <el-row  v-for="(domain,index) in temp.modelList"  :key="index">
+              <h3 v-if="typeof  domain.paramObj !== 'undefined' && domain.paramObj.length > 0" align="middle" >{{domain.modelName}}</h3>
+              <paramDrawNew v-if="typeof  domain.paramObj !== 'undefined' && domain.paramObj.length > 0"  :ref="'paramDrawRef'+domain.modelUuid" :sql="paramSql[index]" :arr="paramArr[index]"></paramDrawNew>
+            </el-row>
+            <!-- <paramDrawNew v-for="(domain, index) in temp.modelList" v-if="domain.paramObj != undefined && domain.paramObj.length > 0" :ref="'paramDrawRef'+domain.modelUuid" :sql="paramSql[index]" :arr="paramArr[index]"></paramDrawNew> -->
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -294,7 +323,6 @@ import paramDrawNew from '@/views/analysis/modelparam/paramdrawnew'
 import {findModelsWithParam, getWarningById,supQuery,bingLieQuery,getCommonlyAnalysisListByIds} from '@/api/analysis/auditwarning'
 import {getOneDict} from "@/utils"
 import paramDraw from '@/views/analysis/modelparam/paramdraw'
-import {replaceNodeParam } from '@/api/analysis/auditparam'
 import dataTree from "@/views/data/role-res/data-tree";
 import commonlyAnalysisList from "../../../components/ams-indicator-admin/src/views/indicator/commonlyAnalysisList";
 import $ from "jquery";
@@ -313,7 +341,12 @@ export default {
     //操作对象uuid
     optionUuid : {
       type: String
+    },
+    //当前页面的用户
+    userInfo : {
+      type: Array
     }
+
   },
   data() {
     return {
@@ -347,11 +380,11 @@ export default {
         //单次执行时间
         singleExecuteTime: '',
         //分配类型   1、人员；2、项目
-        distributionType:0,
+        distributionType:1,
         //分配编号   如果分配类型为1则存储人员编号，为2则存储项目编号
-        distributionUuid:'',
+        distributionUuid:this.userInfo[0].id,
         //分配名称   如果分配类型为1则存储人员名称，为2则存储项目名称
-        distributionName:'',
+        distributionName:this.userInfo[0].name,
         //多次执行时间关联
         manyTimesExecuteTime:[{
           //多次执行的执行时间
@@ -440,11 +473,11 @@ export default {
         //保存结果文件夹名称
         locationName:'',
         //分配类型   1、人员；2、项目
-        distributionType:0,
+        distributionType:1,
         //分配编号   如果分配类型为1则存储人员编号，为2则存储项目编号
-        distributionUuid:'',
+        distributionUuid:this.userInfo[0].id,
         //分配名称   如果分配类型为1则存储人员名称，为2则存储项目名称
-        distributionName:''
+        distributionName:this.userInfo[0].name
       },
       //已经初始化参数的模型
       initedParamModel:[],
@@ -494,6 +527,8 @@ export default {
       this.temp.executeMode = this.auditWarningSave.executeMode
       this.temp.locationUuid = this.auditWarningSave.locationUuid
       this.temp.locationName = this.auditWarningSave.locationName
+
+
       //单次执行
       if(this.auditWarningSave.executeMode == 1){
         this.temp.singleExecuteTime = this.auditWarningSave.warningExecuteTime[0].executeTime
@@ -540,7 +575,7 @@ export default {
             continue
           }
           let settingInfo = JSON.parse(taskRef.settingInfo)
-          taskRef.sqlValue = taskRef.sqlValue
+          // taskRef.sqlValue = taskRef.sqlValue
           taskRef.modelUuid = taskRef.sourceUuid
           if(!settingInfo.paramsArr){
             this.temp.modelList.push(taskRef)
@@ -598,12 +633,16 @@ export default {
           if(isCreated){
             continue
           }
+          // sql param 数据添加
           if(model.paramObj && model.paramObj.length > 0){
             this.initedParamModel.push(model)
             this.paramSql.push(model.sqlValue)
             this.paramArr.push(model.paramObj)
-            this.$refs["paramDrawRef"+model.modelUuid][0].createParamNodeHtml(model.modelUuid,model.modelName+' 参数','auditwarring')
+            this.$refs["paramDrawRef"+model.modelUuid][0].createParamNodeHtml(model.modelUuid,model.modelName+' 参数','auditwarning')
             // this.$refs["paramDrawRef"+model.modelUuid][0].initParamHtmlSS(model.sqlValue, model.paramObj, model.modelName, model.modelUuid)
+          } else {
+            this.paramSql.push([])
+            this.paramArr.push([])
           }
         }
       })
@@ -1019,8 +1058,10 @@ export default {
         });
       }
       else if (projects.length === 1) {
-        this.auditWarningSave.distributionUuid = projects[0].PRJ_PROJECT_UUID
-        this.auditWarningSave.distributionName = projects[0].PRJ_NAME
+        // this.auditWarningSave.distributionUuid = projects[0].PRJ_PROJECT_UUID
+        this.auditWarningSave.distributionUuid = projects[0].prjProjectUuid
+        // this.auditWarningSave.distributionName = projects[0].PRJ_NAME
+        this.auditWarningSave.distributionName = projects[0].prjName
         this.projectDialog = false;
       } else {
         this.$message({
@@ -1040,11 +1081,6 @@ export default {
 }
 </script>
 <style scoped>
-  .el-input-z{
-    width:78%;
-    margin: 0 15px 0 0;
-    cursor:no-drop
-  }
   .btn-z{
     width: 70px;
     height: 36px;

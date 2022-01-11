@@ -5,16 +5,17 @@
     </div>
     <el-row type="flex" class="row-bg">
       <el-col align="right">
-        <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add-1" @click="addThreshValue" />
-        <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit-2" @click="updateThresholdValue" />
-        <el-button type="primary" :disabled="btnState.deleteBtnState" class="oper-btn delete-6" @click="deleteThresholdValue" />
-        <el-dropdown placement="bottom" trigger="click" class="el-dropdown">
-          <el-button type="primary" :disabled="btnState.otherBtn" class="oper-btn more" />
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="">发布</el-dropdown-item>
-            <el-dropdown-item @click.native="">撤销发布</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
+        <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addThreshValue" />
+        <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateThresholdValue" />
+        <el-button type="primary" :disabled="btnState.deleteBtnState" class="oper-btn delete" @click="deleteThresholdValue" />
+              <!--未完善的功能先注释掉-->
+<!--        <el-dropdown placement="bottom" trigger="click" class="el-dropdown">-->
+<!--          <el-button type="primary" :disabled="btnState.otherBtn" class="oper-btn more" />-->
+<!--          <el-dropdown-menu slot="dropdown">-->
+<!--            <el-dropdown-item @click.native="">发布</el-dropdown-item>-->
+<!--            <el-dropdown-item @click.native="">撤销发布</el-dropdown-item>-->
+<!--          </el-dropdown-menu>-->
+<!--        </el-dropdown>-->
       </el-col>
     </el-row>
     <el-table
@@ -117,7 +118,7 @@ export default {
 
   },
   created() {
-    // this.getList({ modelFolderUuid: 1 })
+    this.getList()
   },
   mounted() {
 
@@ -183,6 +184,27 @@ export default {
         this.list = resp.data.records
         this.listLoading = false
       })
+    },
+    /**
+     * 选中的节点
+     * @param data 树节点
+     */
+    SelectNode(data) {
+      for(let i =0;i<this.list.length;i++){
+        if(data.id==this.list[i].thresholdValueUuid){
+          var ifpush = 1
+          for(let j =0;j<this.$refs.modelListTable.selection.length;j++){
+            if(this.$refs.modelListTable.selection[j].thresholdValueUuid == this.list[i].thresholdValueUuid){
+              ifpush = 0
+            }
+          }
+          }
+          if(ifpush==1){
+            this.$refs.modelListTable.selection.length = 0;
+            this.$refs.modelListTable.selection.push(this.list[i])
+            return
+          }
+        }
     },
     /**
      * 设置选中的树节点

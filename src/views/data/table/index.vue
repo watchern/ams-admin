@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <div style="display:flex;">
+    <div style="display:flex;width:100%;">
       <div>
         <el-input v-model="filterText2" placeholder="输入关键字进行过滤" />
         <el-link class="select-link" type="primary" @click="registTable"
@@ -17,7 +17,6 @@
             class="filter-tree"
             highlight-current="true"
             node-key="id"
-            show-checkbox
             @node-click="nodeClick"
           >
             <span slot-scope="{ node, data }" class="custom-tree-node">
@@ -66,7 +65,8 @@
                 <el-button
                   v-if="
                     (data.extMap && data.extMap.folder_type === 'maintained') ||
-                    data.type === 'TABLE'
+                    data.type === 'TABLE'||
+                    data.type === 'VIEW'
                   "
                   type="text"
                   size="mini"
@@ -79,7 +79,7 @@
           </MyElTree>
         </div>
       </div>
-      <div style="margin-left: 50px; max-width:80%; min-width:50%; width:auto;">
+      <div style="margin-left: 50px;width:85%;">
         <tabledatatabs
           v-if="divInfo"
           ref="tabledatatabs"
@@ -144,9 +144,9 @@
       width="600px"
       :close-on-click-modal="false"
     >
-      <el-form ref="folderForm" :model="folderForm" label-width="80px">
-        <el-form-item label="文件夹名称" label-width="120px">
-          <el-input v-model="folderForm.folderName" style="width: 300px" />
+      <el-form ref="folderForm" :model="folderForm" class="detail-form">
+        <el-form-item label="文件夹名称">
+          <el-input v-model="folderForm.folderName"  />
         </el-form-item>
       </el-form>
       <span slot="footer">
@@ -298,7 +298,8 @@ export default {
         );
         return false;
       }
-      this.registTableFlag = true;
+      this.registTableFlag = true
+      this.getTables()
     },
     flagSelectTable() {
       var ckFolder = this.$refs.tree2.getCurrentNode();
@@ -399,7 +400,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          if (data.type === "TABLE") {
+          if (data.type === "TABLE" || data.type === "VIEW" ) {
             delTable(data.id).then((resp) => {
               this.$notify(
                 commonNotify({ type: "success", message: "删除成功！" })
@@ -418,6 +419,10 @@ export default {
         .catch(() => {});
     },
     createFolder() {
+      if(this.folderForm.folderName == null || this.folderForm.folderName.trim().length == 0){
+        this.$message({type:'info',message:"文件夹名不可为空，请重新输入文件夹名！"})
+        return
+      }
       saveFolder(this.folderForm).then((resp) => {
         var childData = {
           id: resp.data,
@@ -434,6 +439,10 @@ export default {
       });
     },
     updateFolder() {
+      if(this.folderForm.folderName == null || this.folderForm.folderName.trim().length == 0){
+        this.$message({type:'info',message:"文件夹名不可为空，请重新输入文件夹名！"})
+        return
+      }
       updateFolder(this.folderForm).then((resp) => {
         this.tempData.label = this.folderForm.folderName;
         this.$refs.tree2.updateKeyChildren(

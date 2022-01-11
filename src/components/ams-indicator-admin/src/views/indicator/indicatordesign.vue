@@ -783,7 +783,6 @@ export default {
           }
           var url = that.contextUrl + "/InCalculationColumn/deleteByPrimaryKey"
           $.post(url, {inCalculationColumnUuid: calculationColId}, function (res) {
-            debugger
             if (res.state == false) {
               that.$message(res.message)
               return

@@ -25,10 +25,10 @@
             </el-tooltip>
           </div>
         </div>
-        <div class="title-label-menu" style="margin-top: 15px">
+        <div class="title-label-menu" style="margin-top: 15px;display:none;">
           自定义快捷菜单
         </div>
-        <div class="lately-use-box flex a-center j-start flex-row">
+        <div class="lately-use-box flex a-center j-start flex-row" style="display:none;">
           <div
             v-for="(item, index) in latelyFastList"
             :key="index"
@@ -41,7 +41,7 @@
           <div
             class="use-box flex a-center j-center use-zy"
             @click="dialogVisible = true"
-            :style="{ background: 'rgb(95, 190, 235)' }"
+            :style="{ background: '#353A43 !important' }"
           >
             <img src="../../public/base/accessIcon/zidingyi.png" />
           </div>
@@ -76,7 +76,7 @@
       <!--      </div>-->
 
       <div class="newest-item">
-        <div class="newest-item-box">
+        <div class="newest-item-box" style="background: #353A43 !important;">
           <div data-v-02dbff7e="" class="title-label-img">
             <img
               data-v-02dbff7e=""
@@ -86,29 +86,32 @@
           </div>
           <div class="title-label">执行任务</div>
           <div class="task-list">
-            <ul>
-              <li v-for="(item, index) in list" :key="index">
-                <span
-                  v-if="item.taskStatus == 2"
-                  style="color: #ffffff"
-                  class="el-icon-success"
-                />
-                <span
-                  v-if="item.taskStatus == 1"
-                  style="color: #ffffff"
-                  class="el-icon-loading"
-                />
-                <span
-                  v-if="item.taskStatus == 3"
-                  style="color: #ffffff"
-                  class="el-icon-error"
-                />
-                <span
+            <div
+              v-for="(item, index) in list"
+              :key="index"
+              @click="toUrl(item.taskUrl)"
+            >
+              <span
+                v-if="item.taskStatus == 2"
+                style="color: #ffffff"
+                class="el-icon-success"
+              />
+              <span
+                v-if="item.taskStatus == 1"
+                style="color: #ffffff"
+                class="el-icon-loading"
+              />
+              <span
+                v-if="item.taskStatus == 3"
+                style="color: #ffffff"
+                class="el-icon-error"
+              />
+              <!-- <span
                   style="color: #ffffff; font-size: 14px; padding: 5px"
                   class="tools-box-name"
                   v-text="item.taskEstimatedTime"
-                />
-                <span
+                /> -->
+              <!-- <span
                   style="
                     color: #ffffff;
                     font-size: 14px;
@@ -118,15 +121,17 @@
                   class="tools-box-name"
                   @click="toUrl(item.taskUrl)"
                   v-text="item.taskName"
-                />
-              </li>
-            </ul>
+                /> -->
+              {{ item.taskEstimatedTime || "" }}
+              {{ item.taskName || "" }}
+            </div>
             <span
               type="primary"
               style="
                 color: #ffffff;
-                float: right;
-                bottom: -22px;
+                position: absolute;
+                bottom: 10px;
+                right: 15px;
                 font-size: 13px;
                 font-weight: bold;
                 cursor: pointer;
@@ -231,19 +236,19 @@ export default {
       ],
       latelyBackList: [
         {
-          bg: "rgb(95,190,235)",
+          bg: "#353A43 !important",
         },
         {
-          bg: "rgb(95,190,235)",
+          bg: "#353A43 !important",
         },
         {
-          bg: "rgb(95,190,235)",
+          bg: "#353A43 !important",
         },
         {
-          bg: "rgb(95,190,235)",
+          bg: "#353A43 !important",
         },
         {
-          bg: "rgb(95,190,235)",
+          bg: "#353A43 !important",
         },
       ],
       latelyUseList: [],
@@ -526,130 +531,153 @@ export default {
     this.init();
     this.initWebSocket();
   },
+  watch: {
+    $route: {
+      handler(val, oldval) {
+        if(oldval.path=='/login'){
+          this.refresh();
+        }
+      },
+      // 深度观察监听
+      deep: true,
+    },
+  },
   mounted() {
-    //最近使用 功能
-    let arry = [];
-    let arryV = [];
-    arry = JSON.parse(localStorage.getItem("userid"));
-    if (!arry) {
-      arry = [];
-    }
-    for (let i = 0; i < arry.length; i++) {
-      arryV.push(arry[i].v);
-    }
-    arryV.sort(function (num1, num2) {
-      return num1 - num2;
-    });
-    for (let x = 1; x < 200; x++) {
-      let Num = eval(arryV[arryV.length - x]);
-      for (let i = 0; i < arry.length; i++) {
-        if (arry[i].v === Num && arry[i].p !== "") {
-          if (this.latelyUseList.indexOf(arry[i].id) === -1) {
-            this.latelyPathList.push(arry[i].p);
-            this.latelyUseList.push(arry[i].id);
-            for (let c = 0; c < this.latelyImgList.length; c++) {
-              if (arry[i].id === this.latelyImgList[c].name) {
-                this.latelyInImgList.push({
-                  image: this.latelyImgList[c].image,
-                });
-              }
-            }
-            break;
-          }
-        }
-      }
-      if (this.latelyUseList.length >= 5) {
-        break;
-      }
-    }
-    for (let i = 0; i < this.latelyInImgList.length; i++) {
-      this.latelyBdInList.push({
-        image: this.latelyInImgList[i].image
-          ? this.latelyInImgList[i].image
-          : require("../../public/base/accessIcon/moxing.png"),
-        bg: this.latelyBackList[i]
-          ? this.latelyBackList[i].bg
-          : "rgb(95,190,235)",
-      });
-    }
-    getQuickMenuList().then((res) => {
-      // latelyImgList中的name与数据库中的name不同  比如latelyImgList中的服务监控
-      for (let i = 0; i < res.data.length; i++) {
-        if (this.latelyFastList.length < 5) {
-          this.latelyFastList.push({
-            id: res.data[i].quickMenuId,
-            name: res.data[i].quickMenuName,
-            path: res.data[i].quickMenuPath,
-            image: require("../../public/base/accessIcon/moxing.png"),
-            bg: this.latelyBackList[i]
-              ? this.latelyBackList[i].bg
-              : "rgb(95,190,235)",
-          });
-        }
-      }
-      for (let i = 0; i < this.latelyFastList.length; i++) {
-        for (let n = 0; n < this.latelyImgList.length; n++) {
-          if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
-            this.latelyFastList[i].image = this.latelyImgList[n].image;
-          }
-        }
-      }
-    });
-    getUserRes()
-      .then((response) => {
-        console.log(response.data.application);
-        response.data.application.forEach((app, index) => {
-          // 设置左侧应用栏数据
-          this.applications.push({
-            img: "",
-            name: app.name,
-            id: app.id,
-            homepage: app.homepage,
-          });
-        });
-        // 设置引用栏弹出二级菜单数据
-        response.data.menugroup.forEach((grp) => {
-          const menuList = [];
-          grp.menuList.forEach((menu) => {
-            menuList.push({
-              id: menu.id,
-              name: menu.name,
-              path: this.getCleanSrc(menu.src),
-            });
-          });
-          if (!this.menugroup[grp.appuuid]) {
-            this.menugroup[grp.appuuid] = [];
-          }
-          this.menugroup[grp.appuuid].push({
-            id: grp.id,
-            name: grp.name,
-            path: grp.navurl,
-            children: menuList,
-          });
-        });
-        let sSTree = [];
-        for (let i = 0; i < this.applications.length; i++) {
-          sSTree.push(this.menugroup[this.applications[i].id]);
-        }
-        let sSLTree = { first: this.applications, second: sSTree };
-        sessionStorage.setItem("shenjiMenuTree", JSON.stringify(sSLTree));
-        let listTree = JSON.parse(sessionStorage.getItem("shenjiMenuTree"));
-        console.log(listTree);
-        this.menugroup = listTree.second;
-        this.menugroupId = listTree.first;
-        this.showmenuGroup = true;
-        var sysDict = JSON.parse(sessionStorage.getItem("sysDict"));
-        if (sysDict == null) {
-          cacheDict().then((resp) => {
-            sessionStorage.setItem("sysDict", JSON.stringify(resp.data));
-          });
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    this.refresh();
   },
   methods: {
+    refresh() {
+      //最近使用 功能
+      let arry = [];
+      let arryV = [];
+      this.applications = [];
+      this.latelyPathList = [];
+      this.latelyUseList = [];
+      this.latelyInImgList = [];
+      this.latelyBdInList = [];
+      this.latelyFastList = [];
+      this.menugroup = [];
+      this.menugroupId = [];
+      arry = JSON.parse(localStorage.getItem("userid"));
+      if (!arry) {
+        arry = [];
+      }
+      for (let i = 0; i < arry.length; i++) {
+        arryV.push(arry[i].v);
+      }
+      arryV.sort(function (num1, num2) {
+        return num1 - num2;
+      });
+      for (let x = 1; x < 200; x++) {
+        let Num = eval(arryV[arryV.length - x]);
+        for (let i = 0; i < arry.length; i++) {
+          if (arry[i].v === Num && arry[i].p !== "") {
+            if (this.latelyUseList.indexOf(arry[i].id) === -1) {
+              this.latelyPathList.push(arry[i].p);
+              this.latelyUseList.push(arry[i].id);
+              break;
+            }
+          }
+        }
+        if (this.latelyUseList.length >= 5) {
+          break;
+        }
+      }
+      for (let i = 0; i < this.latelyUseList.length; i++) {
+        this.latelyInImgList[i] = {
+          image: require("../../public/base/accessIcon/moxing.png"),
+        };
+        let that = this;
+        this.latelyImgList.forEach(function (item) {
+          if (that.latelyUseList[i] == item.name) {
+            that.latelyInImgList[i] = {
+              image: item.image,
+            };
+          }
+        });
+      }
+      for (let i = 0; i < this.latelyInImgList.length; i++) {
+        this.latelyBdInList.push({
+          image: this.latelyInImgList[i].image,
+          bg: this.latelyBackList[i].bg,
+        });
+      }
+
+      getQuickMenuList().then((res) => {
+        // latelyImgList中的name与数据库中的name不同  比如latelyImgList中的服务监控
+        for (let i = 0; i < res.data.length; i++) {
+          if (this.latelyFastList.length < 5) {
+            this.latelyFastList.push({
+              id: res.data[i].quickMenuId,
+              name: res.data[i].quickMenuName,
+              path: res.data[i].quickMenuPath,
+              image: require("../../public/base/accessIcon/moxing.png"),
+              bg: this.latelyBackList[i]
+                ? this.latelyBackList[i].bg
+                : "#353A43 !important",
+            });
+          }
+        }
+        for (let i = 0; i < this.latelyFastList.length; i++) {
+          for (let n = 0; n < this.latelyImgList.length; n++) {
+            if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
+              this.latelyFastList[i].image = this.latelyImgList[n].image;
+            }
+          }
+        }
+      });
+      getUserRes()
+        .then((response) => {
+          response.data.application.forEach((app, index) => {
+            // 设置左侧应用栏数据
+            this.applications.push({
+              img: "",
+              name: app.name,
+              id: app.id,
+              homepage: app.homepage,
+            });
+          });
+          // 设置引用栏弹出二级菜单数据
+          response.data.menugroup.forEach((grp) => {
+            const menuList = [];
+            grp.menuList.forEach((menu) => {
+              menuList.push({
+                id: menu.id,
+                name: menu.name,
+                path: this.getCleanSrc(menu.src),
+              });
+            });
+            if (!this.menugroup[grp.appuuid]) {
+              this.menugroup[grp.appuuid] = [];
+            }
+            this.menugroup[grp.appuuid].push({
+              id: grp.id,
+              name: grp.name,
+              path: grp.navurl,
+              children: menuList,
+            });
+          });
+          let sSTree = [];
+          for (let i = 0; i < this.applications.length; i++) {
+            sSTree.push(this.menugroup[this.applications[i].id]);
+          }
+          let sSLTree = { first: this.applications, second: sSTree };
+          sessionStorage.setItem("shenjiMenuTree", JSON.stringify(sSLTree));
+          let listTree = JSON.parse(sessionStorage.getItem("shenjiMenuTree"));
+          this.menugroup = listTree.second;
+          this.menugroupId = listTree.first;
+          this.showmenuGroup = true;
+          var sysDict = JSON.parse(sessionStorage.getItem("sysDict"));
+          if (sysDict == null) {
+            cacheDict().then((resp) => {
+              sessionStorage.setItem("sysDict", JSON.stringify(resp.data));
+            });
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
     theRouting(index) {
       this.$router.push({ path: this.latelyPathList[index] });
       this.$store.commit("aceState/setRightFooterTags", {
@@ -774,7 +802,7 @@ export default {
                   image: require("../../public/base/accessIcon/moxing.png"),
                   bg: this.latelyBackList[i]
                     ? this.latelyBackList[i].bg
-                    : "rgb(95,190,235)",
+                    : "#353A43 !important",
                 });
               }
             }
@@ -905,7 +933,7 @@ export default {
     }
     .title-label-menu {
       font-size: 20.16px;
-      color: #559ed4;
+      // color: #559ed4;
     }
     .title {
       font-family: BebasNeue;
@@ -970,12 +998,12 @@ export default {
       }
     }
     .newest-item {
-      width: 426px;
+      width: 500px;
       &-box {
         background: #559ed4;
         box-shadow: 10px 10px 20px 0 rgb(95 190 235 / 30%) !important;
         border-radius: 25.2px;
-        padding: 27px;
+        padding: 24px 20px 24px 24px;
         width: 479px;
         position: relative;
         margin: 30px 0px;
@@ -1071,5 +1099,13 @@ export default {
 }
 .task-list {
   margin: 50px 0px 0px 100px;
+  color: #ffffff;
+  font-size: 14px;
+  div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+  }
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" style="width:100%;height:100%;">
     <el-input v-model="filterText1" placeholder="输入关键字进行过滤" />
-    <div style="overflow: auto; height: 60vh">
+    <div style="height: calc(100% - 56px);margin-top: 20px;">
       <!-- :default-expand-all="true" 展开全部节点 -->
       <MyElTree
         ref="tree1"
@@ -103,6 +103,10 @@ export default {
   props: {
     dataUserId: String,
     sceneCode: String,
+    treeHeight:{
+      type: Number,
+      default: 55
+    },
     treeType: {
       type: String,
       default: "common", // common:正常的权限树   save:用于保存数据的文件夹树
@@ -127,6 +131,8 @@ export default {
       treeLoading: false,
       //需要打开的节点
       openlist: ["ROOT"],
+      //暂存的节点的id
+      clickId:''
     };
   },
   computed: {},
@@ -190,10 +196,42 @@ export default {
         // debugger;
       }
     },
-    refresh() {
+    refresh(query) {
       this.treeLoading = true;
       //为防止数据更新的延迟导致的bug在此添加缓冲
-      setTimeout(this.rep(), 500);
+      getResELTree({
+        dataUserId: this.dataUserId,
+        sceneCode: this.sceneCode,
+        type: this.treeType,
+      }).then((resp) => {
+        this.treeLoading = false;
+        this.treeData1 = resp.data;
+        //默认展开所有文件夹
+        this.openlist = ["ROOT"];
+        this.inputopenlist(this.treeData1);
+        if(query){
+          this.clickId = query
+          for(let i = 0;i<resp.data.length;i++){
+            this.findchild(resp.data[i])
+          }
+        }else{
+          return
+        }
+      });
+    },
+    findchild(list){
+      if(list.id==this.clickId){
+        this.$emit("node-click", list, 'pro', '');
+        return
+      }else{
+        if(list.children.length!=0){
+          for(let i =0;i<list.children.length;i++){
+            this.findchild(list.children[i])
+          }
+        }else{
+          return
+        }
+      }
     },
     rep() {
       getResELTree({

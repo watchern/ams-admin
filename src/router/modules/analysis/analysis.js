@@ -2,11 +2,17 @@
 const analysisRouter = {
   path: '/analysis',
   name: '审计分析',
-  component: (resolve) => require(['@/portal/' + process.env.VUE_APP_BASE_SKIN + '/index'], resolve),
+  component: (resolve) => require(['@/portal/' + (process.env.VUE_APP_BASE_MENU === 'withmenu'?'withmenu/' + process.env.VUE_APP_BASE_SKIN:'withoutmenu') + '/index'], resolve),
   meta: {
     // keepAlive: true
   },
   children: [
+    {
+      path: 'check',
+      name: '审计模型',
+      component: () => import('@/views/flowwork/reivewCheck')
+      // component: () => import('@/views/analysis/auditmodel/boemodel/modellisttable')
+    },
     {
       path: 'auditmodel',
       name: '审计模型',
@@ -43,6 +49,14 @@ const analysisRouter = {
       path: 'warningresult',
       name: '审计预警结果',
       component: () => import('@/views/analysis/auditwarningresult/index')
+    },
+    {
+      path: 'warningresult/:runTaskUuid',
+      name: '审计预警结果',
+      component: resolve => require(['@/views/analysis/auditwarningresult/index'], resolve),
+      meta: {
+        title: '审计预警结果'
+      }
     },
     {
       path: 'sqleditor',
