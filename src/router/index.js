@@ -5,6 +5,7 @@ Vue.use(Router)
 
 /* Router Modules */
 import dataRouter from './modules/data'
+import reportRouter from 'ams-data-report-vue/src/router/index'
 import baseRouter from './modules/base/base'
 import etlschedulerRouter from './modules/etlscheduler/etlscheduler'
 import analysisRouter from './modules/analysis/analysis'
@@ -136,7 +137,8 @@ const AmsRoutes = [
   baseRouter,
   analysisRouter,
   etlschedulerRouter,
-  graphRouter
+  graphRouter,
+  reportRouter
 ]
 
 export const constantRoutes = [

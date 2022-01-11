@@ -84,6 +84,7 @@ import axios from 'axios'
 import dataV from '@jiaminghi/data-view'
 import dict from "ams-starflow-vue/src/components/common/dict";
 import common from "ams-starflow-vue/src/components/common/common";
+import commonREP from 'ams-data-report-vue/src/static/inc/commonREP'
 //import VueAxios from 'vue-axios'
 //Vue.use(VueAxios, axios)
 Vue.prototype.$clipboard = clipboard
@@ -92,6 +93,8 @@ Vue.prototype.$axios = axios
 Vue.prototype.axios=axios;
 Vue.prototype.dict = dict;
 Vue.prototype.common = common;
+Vue.prototype.commonREP = commonREP;
+
 Vue.use(dataV)
 Vue.use(VueQriously)
 Vue.mixin({
@@ -123,12 +126,12 @@ Vue.prototype.log_see = "查看";
  * {{ETLSCHEDULER: string, DATA: string, GRAPHTOOL: string, INDICATOR: string, ANALYSIS: string, DATAMAX: string, BASE: string}}
  */
 Vue.prototype.AmsModules = {
-  ANALYSIS:'analysis', 
-  BASE:'base', 
-  DATA: 'data', 
-  ETLSCHEDULER:'etlscheduler', 
+  ANALYSIS:'analysis',
+  BASE:'base',
+  DATA: 'data',
+  ETLSCHEDULER:'etlscheduler',
   DATAMAX:'datamax',
-  INDICATOR:'indicator', 
+  INDICATOR:'indicator',
   GRAPHTOOL:'graphtool'
 }
 
