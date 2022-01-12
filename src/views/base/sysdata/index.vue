@@ -174,6 +174,7 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, save, update, del, inItCode, saveSecond, updateSecond, delSecond } from '@/api/base/sysdata'
 import QueryField from '@/components/public/query-field/index'
+import { cacheDict } from "@/api/base/sys-dict";
 export default {
   components: { Pagination, QueryField },
   data() {
@@ -375,6 +376,7 @@ export default {
               duration: 2000,
               position: 'bottom-right'
             })
+            this.refreshSS();
           })
         }
       })
@@ -404,6 +406,7 @@ export default {
               duration: 2000,
               position: 'bottom-right'
             })
+            this.refreshSS();
           })
         }
       })
@@ -425,6 +428,7 @@ export default {
             duration: 2000,
             position: 'bottom-right'
         })
+        this.refreshSS();
       })
       }).catch(() => {
         //点击取消
@@ -470,6 +474,7 @@ export default {
               duration: 2000,
               position: 'bottom-right'
             })
+            this.refreshSS();
           })
         }
       })
@@ -488,6 +493,7 @@ export default {
               duration: 2000,
               position: 'bottom-right'
             })
+            this.refreshSS();
           })
         }
       })
@@ -509,6 +515,7 @@ export default {
             duration: 2000,
             position: 'bottom-right'
           })
+        this.refreshSS();
         })
       })
     },
@@ -525,6 +532,12 @@ export default {
     getSortClass: function(key) {
       const sort = this.pageQuery.sort
       return sort === `+${key}` ? 'asc' : 'desc'
+    },
+    // 刷新 sessionStorage
+    refreshSS(){
+      cacheDict().then((resp) => {
+        sessionStorage.setItem("sysDict", JSON.stringify(resp.data));
+      });
     }
   }
 }
