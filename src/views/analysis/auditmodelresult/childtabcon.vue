@@ -1740,8 +1740,8 @@ export default {
                         ) {
                           for (var k = 0; k < modelOutputColumn.length; k++) {
                             if (
-                              modelOutputColumn[k].outputColumnName ==
-                              this.nextValue.columnNames[j]
+                              modelOutputColumn[k].outputColumnName.replaceAll('\"','') ==
+                              this.nextValue.columnNames[j].replaceAll('\"','')
                             ) {
                               if (
                                 modelOutputColumn[k].dataCoding != undefined

@@ -409,6 +409,7 @@ export default {
         editBtnState: true,
         deleteBtnState: true,
         previewBtn: true,
+        runBtn: true,
         otherBtn: false,
       },
       ifmanger:0,//是否是管理员
@@ -533,6 +534,9 @@ export default {
     this.initData();
   },
   methods: {
+    startrun(){
+      this.$refs.modelShoppingCartRef.runImmediately()
+    },
     setImportFolder() {
       let selectNode = this.$refs.modelFolderTree.getSelectNode();
       if (selectNode.id == undefined) {
@@ -810,12 +814,14 @@ export default {
         this.btnState.addBtnState = false;
         this.btnState.editBtnState = false;
         this.btnState.previewBtn = false;
+        this.btnState.runBtn = false;
         if(this.disableBtn){
           this.btnState = {
             addBtnState: false,
             editBtnState: true,
             deleteBtnState: true,
             previewBtn: false,
+            runBtn: false,
             otherBtn: true
           }
         }
@@ -830,6 +836,7 @@ export default {
         this.btnState.addBtnState = false;
         this.btnState.editBtnState = true;
         this.btnState.previewBtn = true;
+        this.btnState.runBtn = false;
         if (this.isAuditWarning != true) {
           this.isShowShoppingCart = true;
           this.$refs.modelShoppingCartRef.setMemo(selectObj);
@@ -841,6 +848,7 @@ export default {
         this.btnState.addBtnState = false;
         this.btnState.editBtnState = true;
         this.btnState.previewBtn = true;
+        this.btnState.runBtn = true;
         this.isShowShoppingCart = false;
       }
     },

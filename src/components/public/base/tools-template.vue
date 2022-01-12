@@ -28,8 +28,8 @@
             </el-tooltip>
           </div>
         </div>
-        <div class="title-label" style="margin-top: 15px">自定义快捷菜单</div>
-        <div class="lately-use-box flex a-center j-start flex-row">
+        <div class="title-label" style="margin-top: 15px;display:none;">自定义快捷菜单</div>
+        <div class="lately-use-box flex a-center j-start flex-row" style="display:none;">
           <div
             v-for="(item,index) in latelyFastList"
             :key="index"
@@ -77,7 +77,7 @@
 
       <div class="newest-item">
         <div class="title-label">执行任务</div>
-        <div class="newest-item-box">
+        <div class="newest-item-box" style="background: #353A43 !important;">
           <div>
             <ul>
               <li v-for="(item , index) in list" :key="index">

@@ -30,7 +30,7 @@
     "ag-grid-vue": "^26.0.0",
     "ams-clue-vue": "^0.1.23",
     "ams-datamax": "^1.1.0",
-    "ams-etlscheduler-ui": "^1.5.8",
+    "ams-etlscheduler-ui-hsfs": "1.0.3",
     "ams-starflow-vue": "^0.1.27-tcb",
     "axios": "^0.21.1",
     "codemirror": "^5.58.3",

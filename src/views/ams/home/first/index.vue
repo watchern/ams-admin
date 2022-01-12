@@ -100,7 +100,7 @@ import toolsTemplateIndex from "@/components/public/base/tools-template-index.vu
 import dayjs from 'dayjs'
 export default {
   components: {
-    toolsTemplateIndex,
+    toolsTemplateIndex
   },
   data() {
     return {
@@ -548,7 +548,7 @@ export default {
   bottom: 5px;
   font-family: PingFangSC-Regular;
   font-size: 13.5px;
-  color: #1890ff;
+  color: #353A43 !important;
   letter-spacing: 0;
   text-align: justify;
   line-height: 22px;
