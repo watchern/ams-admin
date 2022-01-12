@@ -5,6 +5,7 @@ import { onAccessSystem } from '@/utils/permission'
 import { cacheDict } from '@/api/base/sys-dict'
 import { getAllScene, getSceneInst } from '@/api/data/scene'
 import Cookies from 'js-cookie'
+import { getEncloseBy } from '@/api/data/scene'
 const state = {
   token: getToken(),
   name: '',
@@ -89,6 +90,9 @@ const actions = {
       }).catch(error => {
         reject(error)
       })
+      getEncloseBy().then(res =>{
+        sessionStorage.setItem("encloseBy", JSON.stringify(res.data));
+      });
     })
   },
 
