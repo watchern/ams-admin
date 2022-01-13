@@ -177,6 +177,14 @@ module.exports = {
           '^/ams-clue/': '/'
         },
       },
+        '/ams-report/': {
+            timeout: 1800000,
+            target: process.env.AMSREPORT_API,
+            changeOrigin: true,
+            pathRewrite: {
+                '^/ams-report/': '/'
+            },
+        },
         '/audit/': {
             timeout: 1800000,
             target: 'http://localhost:89/audit',

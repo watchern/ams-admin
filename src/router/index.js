@@ -5,7 +5,6 @@ Vue.use(Router)
 
 /* Router Modules */
 import dataRouter from './modules/data'
-import reportRouter from 'ams-data-report-vue/src/router/index'
 import baseRouter from './modules/base/base'
 import etlschedulerRouter from './modules/etlscheduler/etlscheduler'
 import analysisRouter from './modules/analysis/analysis'
@@ -140,12 +139,28 @@ const AmsRoutes = [
       component: () => import('@/views/datamining/index')
     }]
   },
+    {
+        path: '/report',
+        name: '审计报告',
+        component: (resolve) => require(['@/portal/' + (process.env.VUE_APP_BASE_MENU === 'withmenu'?'withmenu/' + process.env.VUE_APP_BASE_SKIN:'withoutmenu') + '/index'], resolve),
+        children: [
+            //报告模板管理
+            {
+                path: '/report/reportTemplate',
+                component: () => import('@REPORT/views/reportTemplate/reportTemplateList')
+            },
+            //人保 - 报告生成任务
+            {
+                path: '/report/rbReportTask',
+                component: () => import('@REPORT/views/rbReportTask')
+            },
+        ]
+    },
   dataRouter,
   baseRouter,
   analysisRouter,
   etlschedulerRouter,
-  graphRouter,
-  reportRouter
+  graphRouter
 ]
 
 export const constantRoutes = [
