@@ -28,7 +28,8 @@
     "ag-grid-community": "^26.0.0",
     "ag-grid-enterprise": "^26.0.0",
     "ag-grid-vue": "^26.0.0",
-    "ams-clue-vue": "^0.1.23",
+    "ams-clue-vue": "^0.1.26",
+    "ams-report-vue": "1.0.0",
     "ams-datamax": "^1.1.0",
     "ams-etlscheduler-ui-hsfs": "1.0.3",
     "ams-starflow-vue": "^0.1.27-tcb",
@@ -62,6 +63,7 @@
     "vue-property-decorator": "^9.0.0",
     "vue-router": "^3.2.0",
     "vue-simple-uploader": "^0.7.6",
+    "vue-virtual-scroll-list": "^2.3.3",
     "vuex": "^3.4.0",
     "wangeditor": "^4.6.10",
     "xlsx": "^0.14.1"
