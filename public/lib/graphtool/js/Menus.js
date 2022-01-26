@@ -489,14 +489,14 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt) {
 	graph.curCell = cell;
 	//右键位置是否是空白
 	if(graph.isSelectionEmpty()) {
-		this.addMenuItems(menu, ['selectVertices', 'selectEdges', 'selectAll','-','undo', 'redo'], null, evt);/*, 'pasteHere'*/
+		this.addMenuItems(menu, ['selectVertices', 'selectEdges', 'selectAll','-','undo', 'redo', 'pasteHere'], null, evt);
 	} else {
 		var commonMenu = [];
 		if(cell.vertex) {
 			var nodeMenus = this.createNodeMenus(cell.nodeType,cell.id);
 			this.addMenuItems(menu, nodeMenus, null, evt);
 			if(graph.canEditor){
-                commonMenu = ['-','delete'];/*'cut','copy',*/
+                commonMenu = ['-','cut','copy','delete'];
 			}
 		}
 		if(cell.edge == 1 && graph.canEditor){
