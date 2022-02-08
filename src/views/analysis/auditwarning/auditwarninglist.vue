@@ -93,7 +93,9 @@ export default {
       queryFields: [
         {label: '预警名称', name: 'warningName', type: 'fuzzyText', value: ''},
         {label: '创建人', name: 'createUserName', type: 'fuzzyText'},
-        {label: '创建日期', name: 'createTime', type: 'timePeriod'}
+        { label: '创建日期', name: 'createTime', type: 'timePeriod' },
+        { label: '是否启动', name: 'isStart', type: 'select' ,
+          data: [{ name: '未启动', value: '0' }, { name: '启动', value: '1' }] },
       ],
       //新增，编辑，详情操作参数
       operationObj: {
