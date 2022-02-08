@@ -121,6 +121,18 @@ export function stopById(id) {
 }
 
 /**
+ * 批量停止审计预警
+ * @param ids 审计预警主键
+ */
+export function stopByIds(ids) {
+  return request({
+    baseURL: analysisUrl,
+    url: `/auditWarning/stopByIds/${ids}`,
+    method: 'get'
+  })
+}
+
+/**
  * 启动审计预警
  * @param id 审计预警主键
  * @return {AxiosPromise}
@@ -131,6 +143,18 @@ export function startById(id) {
   return request({
     baseURL: analysisUrl,
     url: `/auditWarning/startById/${id}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 批量启动审计预警
+ * @param ids 审计预警主键
+ */
+export function startByIds(ids) {
+  return request({
+    baseURL: analysisUrl,
+    url: `/auditWarning/startByIds/${ids}`,
     method: 'get'
   })
 }
