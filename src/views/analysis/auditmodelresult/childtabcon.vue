@@ -1916,6 +1916,14 @@ export default {
       this.nextValue = nextValue;
       var col = [];
       var rowData = [];
+      if("websocketClose"=== this.nextValue.state){
+        this.isSee = false;
+        this.modelResultPageIsSee = false;
+        this.modelResultButtonIsShow = false;
+        this.errorMessage ="WebSocket已断开连接";
+        this.isLoading = false;
+        return;
+      }
       if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
         if (this.nextValue.executeSQL.state == "2") {
           if (this.nextValue.executeSQL.type == "Select") {

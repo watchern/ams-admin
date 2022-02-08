@@ -554,7 +554,18 @@
                     }
                 }
                 const func1 = func2.bind(this)
-                this.webSocket.onclose = function(event) {}
+                this.webSocket.onclose = function(event) {
+                    console.log("==websocket连接已断开==")
+                    var closeMsg = {
+                        executeSQL: {
+                            id: null,
+                            state: "websocketClose",
+                            msg: null
+                        }
+                    }
+                    this.$refs.childTabsRef[0].loadTableData(closeMsg);
+
+                }
 
                 // 通信失败
                 this.webSocket.onerror = function(event) {}
