@@ -388,11 +388,9 @@ export default {
             })
           } else {
             this.temp.transColRels = this.sqlRule
-            //获取真实的sql语句
-            getTrueSql(this.temp.sqlContent).then(resp => {
-              this.temp.sqlContent  = resp.data
+            // 查询的SQL语句应对应库中的真实表名，由用户自己控制SQL语句
               //获取初始值和转码值的list
-              getSqlRules(resp.data).then(re =>{
+                getSqlRules(this.temp.sqlContent).then(re => {
                 //声明一个最终赋值给temp的数组
                 const transColRels = [];
                 //遍历返回的data
@@ -424,7 +422,6 @@ export default {
             })
           })
               })
-            })
           }
         }
       })
@@ -435,8 +432,10 @@ export default {
         this.$message({ type: 'info', message: '执行失败！转码规则未填写' })
         return
       }
-      getTrueSql(this.temp.sqlContent).then(resp =>{
-        transCodeObj.sqlContent = resp.data
+      // 查询的SQL语句应对应库中的真实表名，由用户自己控制SQL语句
+      // getTrueSql(this.temp.sqlContent).then(resp =>{
+      // transCodeObj.sqlContent = resp.data
+        transCodeObj.sqlContent = this.temp.sqlContent
 
       previewSql(transCodeObj).then(res => {
         this.transCodeShow = true
@@ -448,8 +447,7 @@ export default {
           this.$refs.childTabs.loadTableData(this.arrSql)
         })
       })
-      })
-
+      // })
     },
     handleUpdate() {
       var rulObj = Object.assign({}, this.selections[0]) // copy obj
@@ -458,16 +456,17 @@ export default {
       selectOne(rulObj).then(res => {
         if (res.data.ruleType === 1) {
         this.resetTemp()
-            getShowSql(res.data.sqlContent).then(resp =>{
+          // 查询的SQL语句应对应库中的真实表名，由用户自己控制SQL语句
+            // getShowSql(res.data.sqlContent).then(resp =>{
         this.temp = res.data
-              this.temp.sqlContent = resp.data
+              this.temp.sqlContent = res.data.sqlContent
           this.colsJson = []
           this.colsJson.push(this.temp.transColRels[0].transValue)
           this.colsJson.push(this.temp.transColRels[0].codeValue)
           this.sqlRule = res.data.transColRels
           this.temp.transColRels = []
           this.transColRelsData = []
-            })
+            // })
         } else {
           this.colsJson = []
           this.resetSqlRule()
@@ -500,11 +499,9 @@ export default {
           // }
           if (this.temp.ruleType === 1) {
             this.temp.transColRels = '';
-            //获取真实的sql语句
-            getTrueSql(this.temp.sqlContent).then(resp => {
-              this.temp.sqlContent = resp.data
+            // 查询的SQL语句应对应库中的真实表名，由用户自己控制SQL语句
               //获取初始值和转码值的list
-              getSqlRules(resp.data).then(re => {
+              getSqlRules(this.temp.sqlContent).then(re => {
                 //声明一个最终赋值给temp的数组
                 const transColRels = [];
                 //遍历返回的data
@@ -538,7 +535,7 @@ export default {
                   })
                 })
               })
-            })
+            // })
           } else {
             this.temp.sqlContent = ''
             this.temp.transColRels = this.transColRelsData
