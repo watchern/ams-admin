@@ -167,7 +167,11 @@
 }
 
 .oper-btn.allocation:after {
-  content: '\e6af  结果分配' !important;
+  content: '\e6af  分配项目' !important;
+}
+
+.oper-btn.resultShare:after{
+  content:'\e6af  分配个人'!important;
 }
 
 .oper-btn.link-bindres:after{
