@@ -285,6 +285,19 @@ export function batchSaveResultDetailProjectRel(data) {
 }
 
 /**
+ * 批量添加人员关联详细表对象
+ * @param {*} data 关联详细表对象数组
+ */
+export function batchSaveResultDetailPersonRel(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/ResultDetailProjectRelController/batchAddResultDetailPersonRel',
+    method: 'post',
+    data
+  })
+}
+
+/**
  * 根据表名查询该表中的主键名称
  * @param {*} data
  */
