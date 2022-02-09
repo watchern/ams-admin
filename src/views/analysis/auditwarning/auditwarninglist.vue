@@ -8,11 +8,13 @@
         <el-button type="primary" class="oper-btn add" @click="add"/>
         <el-button type="primary" class="oper-btn edit" @click="update" :disabled="!isShowSingleBtn"/>
         <el-button type="primary" class="oper-btn delete" @click="deleteWarning" :disabled="!isShowManyBtn"/>
+        <el-button type="primary"  class="oper-btn online" @click="startWarnings"  />
+        <el-button type="primary"  class="oper-btn offline" @click="stopWarnings"  />
       </el-col>
     </el-row>
     <el-table :key="tableKey" ref="auditWarningList" v-loading="listLoading" :data="list" border fit
               highlight-current-row style="width: 100%;"
-              @select="listSelectChange" @select-all="listSelectChange">
+              @select="listSelectChange" @select-all="listSelectChange" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55"/>
       <el-table-column label="预警名称" prop="warningName" width="300px">
         <template slot-scope="scope">
@@ -61,15 +63,7 @@
   </div>
 </template>
 <script>
-import {
-  findAuditWarningList,
-  addWarning,
-  deleteAuditWarning,
-  updateWarning,
-  startById,
-  stopById,
-  judgeName
-} from '@/api/analysis/auditwarning'
+import { findAuditWarningList, addWarning, deleteAuditWarning, updateWarning, startById, stopById, judgeName, startByIds, stopByIds} from '@/api/analysis/auditwarning'
 import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import EditAuditWarning from '@/views/analysis/auditwarning/editauditwarning'
@@ -99,7 +93,9 @@ export default {
       queryFields: [
         {label: '预警名称', name: 'warningName', type: 'fuzzyText', value: ''},
         {label: '创建人', name: 'createUserName', type: 'fuzzyText'},
-        {label: '创建日期', name: 'createTime', type: 'timePeriod'}
+        { label: '创建日期', name: 'createTime', type: 'timePeriod' },
+        { label: '是否启动', name: 'isStart', type: 'select' ,
+          data: [{ name: '未启动', value: '0' }, { name: '启动', value: '1' }] },
       ],
       //新增，编辑，详情操作参数
       operationObj: {
@@ -122,7 +118,8 @@ export default {
       // //当前页面的用户信息
       // userInfo: ''
         //当前页面的用户信息
-        userInfo:[]
+        userInfo:[],
+      selections:[]
     }
   },
   computed: {},
@@ -195,7 +192,76 @@ export default {
         this.getList()
       })
     },
-
+    /**
+     * 启动预警
+     * @param id 审计预警主键
+     */
+    startWarnings(){
+      var ids = [];
+      this.selections.forEach((r, i) => {
+        ids.push(r.auditWarningUuid);
+      })
+      if(ids.length == 0){
+        this.$message({
+          type: 'info',
+          message: '请先选择要启动的预警!'
+        })
+        return
+      }
+      var idsStr = ids.join(',');
+      startByIds(idsStr).then(resp =>{
+        if(resp.code !== 0){
+          this.$message({
+            type: 'error',
+            message: '批量启动预警失败'
+          })
+          return
+        }
+        this.$notify({
+          title:'提示',
+          message:'批量启动预警成功',
+          type:'success',
+          duration:2000,
+          position:'bottom-right'
+        });
+        this.getList()
+      })
+    },
+    /**
+     * 停止预警
+     * @param id 审计预警主键
+     */
+    stopWarnings(id){
+      var ids = [];
+      this.selections.forEach((r, i) => {
+        ids.push(r.auditWarningUuid);
+      })
+      if(ids.length == 0){
+        this.$message({
+          type: 'info',
+          message: '请先选择要停用的预警!'
+        })
+        return
+      }
+      var idsStr = ids.join(',');
+      stopByIds(idsStr).then(resp => {
+        if(resp.code !== 0){
+          this.$message({
+            type: 'error',
+            message: '停止预警失败'
+          })
+          return
+        }
+        this.$notify({
+          title:'提示',
+          message:'停止成功',
+          type:'success',
+          duration:2000,
+          position:'bottom-right'
+        });
+        this.getList()
+      })
+    },
     /**
      * 列选择触发事件
      * @param selection 已选择行
@@ -458,6 +524,10 @@ export default {
       }
       return warningType[row.warningType]
     },
+
+    handleSelectionChange(val) {
+      this.selections = val
+    }
   }
 }
 </script>

@@ -252,6 +252,13 @@
                     >
                   </el-dropdown-menu>
                 </el-dropdown>
+                  <el-button
+                          type="primary"
+                          @click="modelResultOpenDialog()"
+                          class="oper-btn resultShare btn-width-md"
+                          :disabled="modelRunResultBtnIson.resultShare"
+                          style="margin-left: 10px"
+                  />
                 <el-button
                   :disabled="false"
                   type="primary"
@@ -490,9 +497,25 @@
         >
       </span>
     </el-dialog>
+    <el-dialog
+            title="请选择要分享的人员"
+            :visible.sync="resultShareDialogIsSee"
+            width="50%"
+    >
+      <personTree ></personTree>
+      <span slot="footer" class="dialog-footer">
+            <el-button @click="resultShareDialogIsSee = false">取 消</el-button>
+            <el-button type="primary" @click="modelResultShare"
+            >确 定</el-button
+            >
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
+  // eslint-disable-next-line no-unused-vars
+  import personTree from "../../../components/publicpersontree/index";
+  // import $ from 'jquery'
 import { AgCell } from "../../../components/public/new-ag-grid/ag-cell";
 // 引入aggrid及样式文件
 import { AgGridVue } from '@ag-grid-community/vue';
@@ -512,6 +535,7 @@ import {
   selectTable,
   selectByRunResultTableUUid,
   batchSaveResultDetailProjectRel,
+  batchSaveResultDetailPersonRel,
   selectPrimaryKeyByTableName,
   removeResultDetailProjectRel,
   selectConditionShow,
@@ -567,6 +591,7 @@ export default {
     GridLayout,
     GridItem,
     flowItem2,
+    personTree,
   },
 
   computed: {
@@ -609,6 +634,7 @@ export default {
   ],
   data() {
     return {
+      resultShareDialogIsSee: false,
       //工作流相关
       submitData: {
           versionUuid: 'tlLuwUhC',
@@ -694,6 +720,7 @@ export default {
         exportBtn: false,
         chartDisplayBtn: false,
         associatedBtn: true,
+        resultShare: true,
         disassociateBtn: false,
         modelDetailAssBtn: true,
       },
@@ -940,18 +967,21 @@ export default {
         this.modelRunResultBtnIson.exportBtn = false;
         this.modelRunResultBtnIson.chartDisplayBtn = false;
         this.modelRunResultBtnIson.associatedBtn = true;
+        this.modelRunResultBtnIson.resultShare = true;
         this.modelRunResultBtnIson.disassociateBtn = false;
         this.modelRunResultBtnIson.modelDetailAssBtn = true;
       } else if (selectData.length == 1) {
         this.modelRunResultBtnIson.exportBtn = false;
         this.modelRunResultBtnIson.chartDisplayBtn = false;
         this.modelRunResultBtnIson.associatedBtn = false;
+        this.modelRunResultBtnIson.resultShare = false;
         this.modelRunResultBtnIson.disassociateBtn = false;
         this.modelRunResultBtnIson.modelDetailAssBtn = false;
       } else if (selectData.length > 1) {
         this.modelRunResultBtnIson.exportBtn = false;
         this.modelRunResultBtnIson.chartDisplayBtn = false;
         this.modelRunResultBtnIson.associatedBtn = false;
+        this.modelRunResultBtnIson.resultShare = false;
         this.modelRunResultBtnIson.disassociateBtn = false;
         this.modelRunResultBtnIson.modelDetailAssBtn = true;
       }
@@ -1886,6 +1916,14 @@ export default {
       this.nextValue = nextValue;
       var col = [];
       var rowData = [];
+      if("websocketClose"=== this.nextValue.state){
+        this.isSee = false;
+        this.modelResultPageIsSee = false;
+        this.modelResultButtonIsShow = false;
+        this.errorMessage ="WebSocket已断开连接";
+        this.isLoading = false;
+        return;
+      }
       if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
         if (this.nextValue.executeSQL.state == "2") {
           if (this.nextValue.executeSQL.type == "Select") {
@@ -2131,8 +2169,8 @@ export default {
       if (this.useType == "modelRunResult") {
         if (this.modelUuid != undefined) {
           if (this.settingInfo === undefined) {
-            selectPrimaryKeyByTableName().then((resp) => {
-              this.primaryKey = resp.data;
+            selectPrimaryKeyByTableName().then((res) => {
+              this.primaryKey = res.data;
               selectModel(this.modelUuid).then((resp) => {
                 this.modelObj = resp.data;
                 this.modelDetailRelation = resp.data.modelDetailRelation;
@@ -2162,6 +2200,49 @@ export default {
           this.initData();
         }
       }
+    },
+
+    modelResultOpenDialog() {
+      this.resultShareDialogIsSee = true;
+    },
+    /**
+     * 结果明细分配给人员
+     */
+    modelResultShare() {
+      this.getValues();
+      var resultDetailPersonRels = [];
+      selectPrimaryKeyByTableName().then((resp) => {
+                this.primaryKey = resp.data;
+                for (var i = 0; i < this.selectRows.length; i++) {
+                  var resultDetailPersonRel = {
+                    resultDetailProjectRelId: "",
+                    runResultTableUuid: this.nowtable.runResultTableUuid,
+                    runTaskRelUuid: this.nowtable.runTaskRelUuid,
+                    personUuid:this.$store.getters.personuuid,
+                    resultDetailId:
+                            this.selectRows[i][this.primaryKey.toLowerCase()],
+                    personName: this.$store.getters.name,
+                  };
+                  resultDetailPersonRels.push(resultDetailPersonRel);
+                }
+                batchSaveResultDetailPersonRel(resultDetailPersonRels).then(
+                        (resp) => {
+                          if (resp.data == true) {
+                            this.$message({
+                              type: "success",
+                              message: "分配人员成功!",
+                            });
+                            this.resultShareDialogIsSee = false;
+                          } else {
+                            this.$message({
+                              type: "error",
+                              message: "分配人员失败!",
+                            });
+                          }
+                        }
+                );
+              }
+      );
     },
     /**
      * 点击详细打开dialog效果
