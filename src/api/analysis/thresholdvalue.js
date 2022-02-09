@@ -147,7 +147,7 @@ export function handleDataSingleValue(data,thresholdValueRel){
   let backgroundColor = thresholdValueRel.colorInfo.backgroundColor;
   let fontColor = thresholdValueRel.colorInfo.fontColor;
   //数据出来的值
-  let valueOne = data[thresholdValueRel.modelResultColumnName.toLowerCase()]
+  let valueOne = data[thresholdValueRel.modelResultColumnName]
   //要判断的值
   let valueTwo = thresholdValueRel.thresholdValue.filterValue
   //运算符
