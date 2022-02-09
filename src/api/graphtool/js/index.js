@@ -1,6 +1,7 @@
 import { saveGraphInterface,getExecuteNodeInfoPost,importGraphXml,exportGraphXml,deleteExecuteNodes,executeNodeSql,dealReplaceParamSql } from '@/api/graphtool/apiJs/graphList'
 import { progressDownLoad,getPreNodes,changeNodeIcon,nodeCallBack } from '@/api/graphtool/js/common'
 import dayjs from 'dayjs'
+import {getCreateChnViewSqls} from "@/api/analysis/auditmodel";
 
 let graphIndexVue = null//vue实例
 let graph = null
@@ -882,7 +883,9 @@ export async function saveModelGraph(){
             modelSql += "/*原表【" + newNodeData[resultTableNodeId].nodeInfo.nodeName + "】的查询SQL语句*/\n" + newNodeData[resultTableNodeId].nodeInfo.nodeSql + "\n";
         } else {
             // 以模型最终结果表节点为最末级节点，向上寻找所有的节点
-            let lineNodeIdArr = getPreNodes(resultTableNodeId, [resultTableNodeId])
+            // let lineNodeIdArr = getPreNodes(resultTableNodeId, [resultTableNodeId])
+            // 获取顺序节点集合，上面的getPreNodes在遇到-< 分支情况时会混乱
+            let lineNodeIdArr = Object.keys(newNodeData);
             var dataParam = {
                 'openType': graph.openType,
                 'nodeIdList': lineNodeIdArr.join(","),
@@ -898,6 +901,7 @@ export async function saveModelGraph(){
                     message = '模型设计校验图形未通过：存在运行出错的节点'
                 } else {
                     newNodeData = {...{}, ...graph.nodeData}//二次赋值是因为此时的【graph.nodeData】部分值发生了改变
+                    let sourceNodeCreateChnViewSql = '' // 数据表创建中文视图的SQL
                     let dropViewSql = ''//删除视图的SQL语句
                     let dropTableSql = ''//删除表的SQL语句
                     let originalDropViewSql = ''// 没有注释的原始删除视图的SQL语句
@@ -1057,7 +1061,20 @@ export async function saveModelGraph(){
                 //     }
                 //     //替换ID结束
                 // }
-                modelSql = dropViewSql + dropTableSql + modelSql
+                let tableUUIds = []
+                Object.getOwnPropertyNames(newNodeData).forEach(function(key){
+                    if(newNodeData[key].treeNodeId){
+                        tableUUIds.push(newNodeData[key].treeNodeId)
+                    }
+                });
+
+                    if (tableUUIds.length > 0) {
+                        // 根据表ids获取创建中文视图的sql
+                        let result = await getCreateChnViewSqls(tableUUIds.join(","))
+                        sourceNodeCreateChnViewSql = result.data
+                        console.log(sourceNodeCreateChnViewSql+"=====\n")
+                    }
+                modelSql = sourceNodeCreateChnViewSql + dropViewSql + dropTableSql + modelSql
                 }
 
             } else {

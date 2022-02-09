@@ -197,6 +197,20 @@ export function getTableCol(tableMetaUuid) {
 }
 
 /**
+ * 获取创建中文视图的SQL
+ * @param tableMetaUuids
+ * @returns sql
+ */
+export function getCreateChnViewSqls(tableMetaUuids) {
+  return request({
+    baseURL: dataUrl,
+    url: '/tableMeta/getCreateChnViewSqls',
+    method: 'post',
+    params: { tableMetaUuids: tableMetaUuids }
+  })
+}
+
+/**
  * 获取审计事项数据
  * @returns {AxiosPromise}
  */
