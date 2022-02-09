@@ -502,7 +502,7 @@
             :visible.sync="resultShareDialogIsSee"
             width="50%"
     >
-      <personTree ></personTree>
+      <personTree ref="orgPeopleTree"></personTree>
       <span slot="footer" class="dialog-footer">
             <el-button @click="resultShareDialogIsSee = false">取 消</el-button>
             <el-button type="primary" @click="modelResultShare"
@@ -2209,21 +2209,24 @@ export default {
      * 结果明细分配给人员
      */
     modelResultShare() {
+      var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
       this.getValues();
       var resultDetailPersonRels = [];
       selectPrimaryKeyByTableName().then((resp) => {
                 this.primaryKey = resp.data;
                 for (var i = 0; i < this.selectRows.length; i++) {
+                  for (var j = 0; j < selectedNode.length; j++) {
                   var resultDetailPersonRel = {
                     resultDetailProjectRelId: "",
                     runResultTableUuid: this.nowtable.runResultTableUuid,
                     runTaskRelUuid: this.nowtable.runTaskRelUuid,
-                    personUuid:this.$store.getters.personuuid,
+                      personUuid: selectedNode[j].personuuid,
                     resultDetailId:
                             this.selectRows[i][this.primaryKey.toLowerCase()],
-                    personName: this.$store.getters.name,
+                      personName: selectedNode[j].cnname,
                   };
                   resultDetailPersonRels.push(resultDetailPersonRel);
+                }
                 }
                 batchSaveResultDetailPersonRel(resultDetailPersonRels).then(
                         (resp) => {
