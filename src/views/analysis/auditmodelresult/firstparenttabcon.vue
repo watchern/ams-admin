@@ -28,21 +28,21 @@
               class="oper-btn cancel-exec btn-width-md"
               @click="runRelTaskPause"
             />
-            <!-- 分配到项目 -->
-            <el-button
-              type="primary"
-              @click="openProjectDialog"
-              :disabled="buttonIson.disableAssociatedBtn"
-              class="oper-btn allocation btn-width-md"
-            />
-            <!--  @移除分配项目@ -->
-            <el-button
-                type="primary"
-                @click="removeRelationProject()"
-                :disabled="buttonIson.disassociateBtn"
-                class="oper-btn disallocation btn-width-max"
-                title="移除分配项目" />
-
+            <el-dropdown style="margin: auto 10px auto 10px">
+              <el-button
+                      type="primary"
+                      class="oper-btn allocation btn-width-md"
+                      :disabled="buttonIson.disableAssociatedBtn"
+              />
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item @click.native="openProjectDialog"
+                >分配项目</el-dropdown-item
+                >
+                <el-dropdown-item @click.native="removeRelationProject"
+                >移除分配项目</el-dropdown-item
+                >
+              </el-dropdown-menu>
+            </el-dropdown>
             <!--<el-dropdown>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="openProjectDialog">分配项目</el-dropdown-item>
@@ -58,12 +58,12 @@
               @click="openResultSplitDialog"
               style="margin-left: 10px"/>-->
         <!-- 结果分享  -->
-            <!--        <el-button
+          <el-button
           type="primary"
           @click="modelResultOpenDialog()"
           :disabled="buttonIson.disableShareBtn"
-          class="oper-btn allocation btn-width-md"
-        />-->
+            class="oper-btn resultShare btn-width-md"
+          />
             <el-button
               type="primary"
               @click="exportExcel"
