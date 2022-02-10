@@ -14,6 +14,11 @@
                 </el-col>
             </el-row>
             <el-row>
+                <el-form-item label="临时结果表名" prop="graphName">
+                    <el-input v-model="tempResultsTable" style="width: 95%;"/>
+                </el-form-item>
+            </el-row>
+            <el-row>
                 <el-form-item label="节点备注" prop="graphName">
                     <el-input type="textarea" style="width: 95%;" :autosize="{ minRows: 3, maxRows: 5}" placeholder="请输入内容" v-model="nodeDescription"></el-input>
                 </el-form-item>
@@ -32,6 +37,7 @@
             return{
                 nodeData:null,
                 node_name:'',
+                tempResultsTable:'',
                 nodeExcuteStatus:'',
                 statusDisabled:true,
                 nodeDescription:''
@@ -76,11 +82,13 @@
             },
             init_basic: function() {
                 this.node_name = this.nodeData.nodeInfo.nodeName
+                this.tempResultsTable =  this.nodeData.nodeInfo.tempResultsTable
                 this.nodeExcuteStatus = this.conversion(this.nodeData.nodeInfo.nodeExcuteStatus)
                 this.nodeDescription = typeof this.nodeData.nodeInfo.nodeDescription === 'undefined' ? '' : this.nodeData.nodeInfo.nodeDescription
             },
             save_base: function() {
                 this.nodeData.nodeInfo.nodeName = this.node_name
+                this.nodeData.nodeInfo.tempResultsTable = this.tempResultsTable
                 this.nodeData.nodeInfo.nodeDescription = this.nodeDescription
             },
             conversion: function(exe_type) {
