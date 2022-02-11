@@ -119,12 +119,12 @@ export function getByResultDetailIds(data) {
  * 添加结果共享
  * @param data 运行结果共享对象
  */
-export function insertRunResultShare(runTaskRelUuids,personUuids,personNames) {
+export function insertRunResultShare(runTaskRelUuids,runTaskRelCreateUuids,personUuid,personName) {
   return request({
     baseURL: analysisUrl,
     url: '/RunResultShareController/addRunResultShare',
     method: 'post',
-    data:{runTaskRelUuids,personUuids,personNames}
+    data:{runTaskRelUuids,runTaskRelCreateUuids,personUuid,personName}
   })
 }
 /**
