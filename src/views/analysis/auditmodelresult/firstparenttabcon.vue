@@ -1076,20 +1076,38 @@ export default {
      * 结果共享
      */
     modelResultShare() {
-      this.listLoading = true;
-      var runTaskRelUuids = [];
-      var personUuids = [];
-      var personNames = []
-      var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
-      for (var i = 0; i < selectedNode.length; i++) {
-        personUuids.push(selectedNode[i].personuuid);
-        personNames.push(selectedNode[i].cnname);
-      }
-      for (var i = 0; i < this.selected1.length; i++) {
-        runTaskRelUuids.push(this.selected1[i].runTaskRelUuid);
-      }
-      if (personUuids.length > 0) {
-        insertRunResultShare(runTaskRelUuids, personUuids,personNames).then((resp) => {
+      this.$confirm("该操作会覆盖该结果的所有明细分配人员，是否继续？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        this.listLoading = true;
+        var runTaskRelUuids = [];
+        var runTaskRelCreateUuids = [];
+        var personUuid = "";
+        var personName = "";
+        var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
+        if (selectedNode.length < 1) {
+          this.$message({
+            message: "请选择要分配的人员！",
+          });
+          this.listLoading = false;
+          return;
+        } else if (selectedNode.length > 1) {
+          this.$message({
+            message: "只能分配给一个人员！",
+          });
+          this.listLoading = false;
+          return;
+        }
+        personUuid = selectedNode[0].personuuid;
+        personName = selectedNode[0].cnname;
+
+        for (var i = 0; i < this.selected1.length; i++) {
+          runTaskRelUuids.push(this.selected1[i].runTaskRelUuid);
+          runTaskRelCreateUuids.push(this.selected1[i].model.createUserUuid);
+        }
+        insertRunResultShare(runTaskRelUuids, runTaskRelCreateUuids, personUuid, personName).then((resp) => {
           this.listLoading = false;
           if (resp.data == true) {
             this.$message({
@@ -1104,12 +1122,7 @@ export default {
           }
           this.resultShareDialogIsSee = false;
         });
-      } else {
-        this.listLoading = false;
-        this.$message({
-          message: "请选择要分配的人员！",
-        });
-      }
+      });
     },
     /**
      * val是运行结果中的resultTables

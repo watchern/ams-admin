@@ -182,7 +182,7 @@ export default {
       nodes.forEach(node => {
         console.log(node)
         if (this.tableData.filter(data => {
-          return data.userName === node.label
+          return data.unitUuid === node.id
         }).length === 0) {
           this.tableData.push({
             dataRoleUuid: this.roleUuid,
