@@ -13,11 +13,11 @@
                     </el-form-item>
                 </el-col>
             </el-row>
-            <el-row>
+            <!-- <el-row>
                 <el-form-item label="临时结果表名" prop="graphName">
                     <el-input v-model="tempResultsTable" style="width: 95%;"/>
                 </el-form-item>
-            </el-row>
+            </el-row> -->
             <el-row>
                 <el-form-item label="节点备注" prop="graphName">
                     <el-input type="textarea" style="width: 95%;" :autosize="{ minRows: 3, maxRows: 5}" placeholder="请输入内容" v-model="nodeDescription"></el-input>

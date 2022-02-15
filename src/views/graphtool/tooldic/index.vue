@@ -1156,6 +1156,7 @@ export default {
       window.redoResourceZtreeNode = indexJs.redoResourceZtreeNode;
       window.modifyParam = indexJs.modifyParam;
       window.showComparisonTableDetail = indexJs.showComparisonTableDetail;
+      window.promptMsg= this.$prompt;
       window.alertMsg = function (title, msg, type) {
         $this.$message({ type: type, message: msg });
       };
