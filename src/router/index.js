@@ -12,12 +12,6 @@ import graphRouter from './modules/graphtool/graphtool'
 
 const AmsRoutes = [
   {
-    path: '/test',
-    name: '审计模型',
-    component: () => import('@/views/test')
-    // component: () => import('@/views/analysis/auditmodel/boemodel/modellisttable')
-  },
-  {
     path: '/dowork',
     name: '工作流',
     component: (resolve) => require(['@/portal/' + (process.env.VUE_APP_BASE_MENU === 'withmenu'?'withmenu/' + process.env.VUE_APP_BASE_SKIN:'withoutmenu') + '/index'], resolve),
@@ -139,23 +133,6 @@ const AmsRoutes = [
       component: () => import('@/views/datamining/index')
     }]
   },
-    {
-        path: '/report',
-        name: '审计报告',
-        component: (resolve) => require(['@/portal/' + (process.env.VUE_APP_BASE_MENU === 'withmenu'?'withmenu/' + process.env.VUE_APP_BASE_SKIN:'withoutmenu') + '/index'], resolve),
-        children: [
-            //报告模板管理
-            {
-                path: '/report/reportTemplate',
-                component: () => import('@REPORT/views/reportTemplate/reportTemplateList')
-            },
-            //人保 - 报告生成任务
-            {
-                path: '/report/rbReportTask',
-                component: () => import('@REPORT/views/rbReportTask')
-            },
-        ]
-    },
   dataRouter,
   baseRouter,
   analysisRouter,
