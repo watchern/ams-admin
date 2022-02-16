@@ -86,16 +86,16 @@ export default {
   },
   created() {
     this.initDialog();
-    this.tempPath = "根路径";
+    this.tempPath = "模型结果";
     if(this.dataUserId!=undefined){
       this.tempId = this.dataUserId
-      this.modelResultSavePathId = this.dataUserId
+      this.modelResultSavePathId = "modelFolder"
       this.personCode = this.dataUserId
     }else{
       this.tempId = this.$store.getters.datauserid
-      this.modelResultSavePathId = this.$store.getters.datauserid
+      this.modelResultSavePathId = "modelFolder"
     }
-    this.path = "当前执行模型保存路径:根路径"
+    this.path = "当前执行模型保存路径:模型结果"
   },
   beforeUpdate(){
     this.$nextTick(()=>{
