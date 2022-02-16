@@ -91,7 +91,6 @@ import axios from 'axios'
 import dataV from '@jiaminghi/data-view'
 import dict from "ams-starflow-vue/src/components/common/dict";
 import common from "ams-starflow-vue/src/components/common/common";
-import commonREP from 'ams-data-report-vue/src/static/inc/commonREP'
 //import VueAxios from 'vue-axios'
 //Vue.use(VueAxios, axios)
 Vue.prototype.$clipboard = clipboard
