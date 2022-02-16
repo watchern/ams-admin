@@ -12,12 +12,6 @@ import graphRouter from './modules/graphtool/graphtool'
 
 const AmsRoutes = [
   {
-    path: '/test',
-    name: '审计模型',
-    component: () => import('@/views/test')
-    // component: () => import('@/views/analysis/auditmodel/boemodel/modellisttable')
-  },
-  {
     path: '/dowork',
     name: '工作流',
     component: (resolve) => require(['@/portal/' + (process.env.VUE_APP_BASE_MENU === 'withmenu'?'withmenu/' + process.env.VUE_APP_BASE_SKIN:'withoutmenu') + '/index'], resolve),
