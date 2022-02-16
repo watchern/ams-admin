@@ -202,7 +202,7 @@ module.exports = {
     resolve: {
       alias: {
         '@': resolve('src'),
-        '@ETL': 'ams-etlscheduler-ui-hsfs/src',
+        '@ETL': 'ams-etlscheduler-ui/src',
         '@MAX': 'ams-datamax/src'
       }
     },
