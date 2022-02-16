@@ -281,6 +281,7 @@
       width="45%"
       :append-to-body="true"
       :close-on-click-modal="false">
+      <!-- 指标注释 -->
       <commonlyAnalysisList ref="commonlyAnalysisList"/>
       <span slot="footer" class="dialog-footer">
         <el-button @click="selectIndicatorVisble = false">取 消</el-button>
@@ -324,13 +325,15 @@ import {findModelsWithParam, getWarningById,supQuery,bingLieQuery,getCommonlyAna
 import {getOneDict} from "@/utils"
 import paramDraw from '@/views/analysis/modelparam/paramdraw'
 import dataTree from "@/views/data/role-res/data-tree";
-import commonlyAnalysisList from "../../../components/ams-indicator-admin/src/views/indicator/commonlyAnalysisList";
+//指标注释
+import commonlyAnalysisList from "ams-indicator-vue/src/views/indicator/commonlyAnalysisList";
 import $ from "jquery";
 import {Loading} from "element-ui";
 import personTree from '@/components/publicpersontree/index'
 import userProject from "@/views/base/userproject/index";
 export default {
   name:"editAuditWarning",
+  //指标注释
   components: { SelectModels, paramDraw , dataTree,commonlyAnalysisList,paramDrawNew,personTree,userProject},
   props: {
     //操作类型 add添加 update更新 detail详情查看

@@ -18,8 +18,9 @@ Vue.use(VueAnimateNumber)
 // import '@/directive/Ace/scroll.js'
 import components from '@/components/public/index'
 
-import '../src/components/ams-indicator-admin/src/styles/element-variables.scss'
-import '../src/components/ams-indicator-admin/src/styles/index.scss' // global css
+// 指标注释
+import 'ams-indicator-vue/src/styles/element-variables.scss'
+import 'ams-indicator-vue/src/styles/index.scss' // global css
 // import '@ag-grid-community/all-modules/dist/styles/ag-grid.css';
 // import '@ag-grid-community/all-modules/dist/styles/ag-theme-alpine.css';// global css
 Vue.use(components)

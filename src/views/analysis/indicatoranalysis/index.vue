@@ -1,12 +1,15 @@
 <template>
   <div>
+    <!-- 指标注释 -->
     <indicatorAnalysis>  </indicatorAnalysis>
   </div>
 </template>
 <script>
-import indicatorAnalysis from "@/components/ams-indicator-admin/src/views/index";
+//指标注释
+import indicatorAnalysis from "ams-indicator-vue/src/views/index";
 export default {
   components: {
+    //指标注释
     indicatorAnalysis
   },
 };
