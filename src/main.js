@@ -99,7 +99,6 @@ Vue.prototype.$axios = axios
 Vue.prototype.axios=axios;
 Vue.prototype.dict = dict;
 Vue.prototype.common = common;
-Vue.prototype.commonREP = commonREP;
 
 Vue.use(dataV)
 Vue.use(VueQriously)
