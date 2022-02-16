@@ -31,6 +31,8 @@
     "ams-clue-vue": "^0.1.26",
     "ams-datamax": "^1.1.0",
     "ams-etlscheduler-ui-hsfs": "1.0.3",
+    "ams-indicator-vue": "^1.0.0",
+    "ams-report-vue": "1.0.0",
     "ams-starflow-vue": "^0.1.27-tcb",
     "axios": "^0.21.1",
     "codemirror": "^5.58.3",
