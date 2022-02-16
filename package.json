@@ -29,7 +29,6 @@
     "ag-grid-enterprise": "^26.0.0",
     "ag-grid-vue": "^26.0.0",
     "ams-clue-vue": "^0.1.26",
-    "ams-report-vue": "1.0.0",
     "ams-datamax": "^1.1.0",
     "ams-etlscheduler-ui-hsfs": "1.0.3",
     "ams-starflow-vue": "^0.1.27-tcb",
