@@ -12,7 +12,7 @@
     "blank": "vue-cli-service build --mode blank",
     "poc": "vue-cli-service build --mode poc",
     "trial": "vue-cli-service build --mode trial",
-    "yancheng": "vue-cli-service build --mode yancheng",
+    "gzw": "vue-cli-service build --mode gzw",
     "yanchengjingji": "vue-cli-service build --mode yanchengjingji",
     "haian": "vue-cli-service build --mode haian",
     "boe": "vue-cli-service build --mode boe",
