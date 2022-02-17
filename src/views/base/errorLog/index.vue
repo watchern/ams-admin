@@ -73,7 +73,7 @@ export default {
         { label: '操作IP', name: 'opIp', type: 'text' },
         { label: '异常类', name: 'opClass', type: 'text' },
         { label: '异常方法', name: 'opMethod', type: 'text' },
-        { label: '日志时间区间', name: 'logTime', type: 'timePeriod' }
+        { label: '异常时间', name: 'logTime', type: 'timePeriod' }
       ],
       // selectedRowVal:0,
       tableOptions: {
