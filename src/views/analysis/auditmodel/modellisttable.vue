@@ -492,6 +492,7 @@ export default {
         modelUuid: "",
         modelName: "",
         modelFolderUuid: "",
+        modelFolderPath: "",
         auditItemUuid: "",
         riskLevelUuid: "",
         auditIdeas: "",
@@ -772,11 +773,16 @@ export default {
      * @param query 查询条件
      */
     getList(query) {
-      var uuid = null;
-      if(query != null && typeof query !== "undefined" && typeof query.modelFolderUuid !== "undefined") {
-        uuid = query.modelFolderUuid;
+      var path = null;
+      // 点击文件夹时读取modelFolderPath
+      if(query != null && typeof query !== "undefined" && typeof query.modelFolderPath !== "undefined") {
+        path = query.modelFolderPath == null ? '' :query.modelFolderPath.split('/')[0];
       }
-        switch(uuid) {
+      // 点击模型时读取pid
+      if(query != null && typeof query !== "undefined" && typeof query.pid !== "undefined") {
+        path = query.pid == null ? '' :query.pid;
+      }
+        switch(path) {
           case 'xiaxian':
             // 只显示删除
             this.ifBtnShow = {

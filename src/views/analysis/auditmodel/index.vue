@@ -53,7 +53,7 @@ export default {
      */
     refreshModelList(data) {
       let query = {}
-      data.type == "model"? query = { modelUuid: data.id } : query = { modelFolderUuid: data.id }
+      data.type == "model"? query = { modelUuid: data.id ,pid: data.pid } : query = {modelFolderUuid: data.id, modelFolderPath: data.path }
       this.$refs.modelListTable.getList(query)
       this.$refs.modelListTable.setSelectTreeNode(data)
     },
