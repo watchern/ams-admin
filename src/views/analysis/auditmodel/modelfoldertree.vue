@@ -25,7 +25,7 @@
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
         <span> <i :class="data.icon" />{{ node.label }} </span>
-        <span v-if="data.type == 'folder' && power != 'warning' && !isBussinessType">
+        <span v-if="data.type == 'folder' && power != 'warning' && !isBussinessType && data.id != 'gongxiang'&& data.id != 'xiaxian'">
           <el-button
             title="添加模型分类"
             type="text"
@@ -180,6 +180,18 @@ export default {
               findModelFolderTree(true, spaceFolderName, spaceFolderId).then((result) => {
                 this.data = result.data;
               });
+                break;
+              case "copyModel":
+                  this.isBussinessType = true
+                  findModelFolderTree(false, spaceFolderName, spaceFolderId).then((result) => {
+                      // 只保留个人空间下的文件夹
+                      for (let i = 0; i < result.data.length; i++) {
+                          if (result.data[i].id == this.$store.getters.datauserid) {
+                              newData.push(result.data[i]);
+                          }
+                      }
+                      this.data = newData;
+                  });
               break;
             default:
               newData = result.data;

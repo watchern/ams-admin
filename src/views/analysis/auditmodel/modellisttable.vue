@@ -22,12 +22,13 @@
               :disabled="btnState.previewBtn"
               class="oper-btn start"
               @click="previewModel"
+              v-if="ifBtnShow.runBtn"
             />
             <!--            <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />-->
-            <el-dropdown style="margin-right: 10px" v-if="!disableBtn || selectTreeNode == null">
+            <el-dropdown style="margin-right: 10px" v-if="ifBtnShow.addBtnState">
               <el-button
                 type="primary"
-                :disabled="btnState.addBtnState || (ifmanger=='0' && selectTreeNode == null)"
+                :disabled="btnState.addBtnState "
                 @mouseover="mouseOver"
                 @mouseleave="mouseLeave"
                 class="oper-btn add"
@@ -43,48 +44,92 @@
             </el-dropdown>
             <el-button
               type="primary"
-              :disabled="btnState.editBtnState || (ifmanger=='0' && selectTreeNode == null)"
-              v-if="!disableBtn || selectTreeNode == null"
+                    :disabled="btnState.copyBtnState "
+                    v-if="ifBtnShow.copyBtnState"
+                    class="oper-btn copy"
+                    @click="copyModel"
+            />
+
+            <el-button
+              type="primary"
+              :disabled="btnState.editBtnState "
+              v-if="ifBtnShow.editBtnState"
               class="oper-btn edit"
               @click="updateModel"
             />
             <!--            <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateModel1" />-->
             <el-button
               type="primary"
-              :disabled="btnState.deleteBtnState || (ifmanger=='0' && selectTreeNode == null)"
-              v-if="!disableBtn || selectTreeNode == null"
+              :disabled="btnState.deleteBtnState"
+              v-if="ifBtnShow.deleteBtnState"
               class="oper-btn delete"
               @click="deleteModel"
             />
-            <el-dropdown placement="bottom" trigger="click" class="el-dropdown" v-if="!disableBtn || selectTreeNode == null">
+            <el-dropdown placement="bottom" trigger="click" class="el-dropdown" v-if="ifBtnShow.otherBtn.all">
               <el-button
                 type="primary"
-                :disabled="btnState.otherBtn || (ifmanger=='0' && selectTreeNode == null)"
+                :disabled="btnState.otherBtn "
                 class="oper-btn more"
               />
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="exportModel"
+                <el-dropdown-item @click.native="exportModel" v-if="ifBtnShow.otherBtn.exportBtnState"
                   >导出</el-dropdown-item
                 >
-                <el-dropdown-item @click.native="modelFolderTreeDialog = true"
+                <el-dropdown-item @click.native="modelFolderTreeDialog = true" v-if="ifBtnShow.otherBtn.importBtnState"
                   >导入</el-dropdown-item
                 >
-                <el-dropdown-item @click.native="shareModelDialog"
+                <el-dropdown-item @click.native="shareModelDialog" v-if="ifBtnShow.otherBtn.shareBtnState"
                   >共享</el-dropdown-item
                 >
-                <el-dropdown-item @click.native="publicModel('publicModel')"
+                <el-dropdown-item @click.native="publicModelFun('publicModel')" v-if="ifBtnShow.otherBtn.publicBtnState"
                   >发布</el-dropdown-item
                 >
-                <el-dropdown-item @click.native="cancelPublicModel()"
-                  >撤销发布</el-dropdown-item
+                <el-dropdown-item @click.native="cancelPublicModel()" v-if="ifBtnShow.otherBtn.cancelPublicBtnState"
+                  >模型下线</el-dropdown-item
                 >
-                <el-dropdown-item @click.native="moveModel()"
+                <el-dropdown-item @click.native="moveModel()" v-if="ifBtnShow.otherBtn.moveBtnState"
                   >移动</el-dropdown-item
                 >
               </el-dropdown-menu>
             </el-dropdown>
           </el-col>
         </el-row>
+<!--        复制模型弹窗-->
+        <el-dialog
+                :visible.sync="copyTreeVisible"
+                width="600px"
+                :close-on-click-modal="false"
+                title="复制"
+        >
+          <ModelFolderTree ref="modelFolderTree" :power="power"  :spaceFolderName="spaceFolderName" :spaceFolderId="dataUserId" :publicModel="publicModel"/>
+          <span slot="footer">
+        <el-button @click="copyTreeVisible = false">取消</el-button>
+        <el-button type="primary" @click="copyPathSave()">保存</el-button>
+      </span>
+        </el-dialog>
+<!--        复制模型名称输入框-->
+        <el-dialog
+                :close-on-click-modal="false"
+                title="复制"
+                :visible.sync="folderFormVisible"
+                width="600px">
+          <!-- 复制表输入框 -->
+          <el-form ref="folderForm" :model="resourceForm">
+            <el-form-item label="复制模型名称" prop="displayTbName">
+              <el-input
+                      v-model="resourceForm.displayTbName"
+                      style="width: 100%"
+                      class="detail-form"
+              />
+            </el-form-item>
+          </el-form>
+          <span slot="footer">
+            <el-button size="mini" @click="folderFormVisible = false">取消</el-button>
+            <el-button
+                    type="primary"
+                    @click="copyResourceSave()">保存</el-button>
+          </span>
+        </el-dialog>
         <el-dialog
           v-if="modelFolderTreeDialog"
           :close-on-click-modal="false"
@@ -132,12 +177,11 @@
           <el-table-column type="selection" width="55" />
           <el-table-column label="模型名称" width="300px" prop="modelName">
             <template slot-scope="scope">
-              <!-- <el-link
+              <el-link
                 type="primary"
                 @click="selectModelDetail(scope.row.modelUuid)"
                 >{{ scope.row.modelName }}</el-link
-              > -->
-              {{ scope.row.modelName }}
+              >
             </template>
           </el-table-column>
           <el-table-column label="审计事项" prop="auditItemName" />
@@ -321,6 +365,7 @@ import {
   updateModelBasicInfo,
   exportModel,
   setModelSession,
+  copyModel,
 } from "@/api/analysis/auditmodel";
 import { deleteGraphInfoById } from "@/api/graphtool/apiJs/graphList";
 import QueryField from "@/components/public/query-field/index";
@@ -340,6 +385,7 @@ import {getInfo, isAdmin} from '@/api/user'
 import modelshoppingcart from "@/views/analysis/auditmodel/modelshoppingcart";
 import personTree from "@/components/publicpersontree/index";
 import ReviewSubmit from '@/views/flowwork/reviewSubmit.vue';
+import { getArrLength } from "@/utils";
 export default {
   name: "ModelListTable",
   components: {
@@ -403,13 +449,14 @@ export default {
       modelRunTaskList: {},
       // 参数输入界面
       dialogFormVisible: false,
-      // 按钮状态
+      // 按钮状态 （禁用:true）
       btnState: {
-        addBtnState: false,
+        addBtnState: true,
         editBtnState: true,
+        copyBtnState: true,
         deleteBtnState: true,
         previewBtn: true,
-        runBtn: true,
+        // 更多中的导入按钮 点击后会选择位置，所以不用禁用
         otherBtn: false,
       },
       ifmanger:0,//是否是管理员
@@ -477,8 +524,37 @@ export default {
       modelFolderUuid: "",
       modelFolderName: "",
       relationNextValue: {},
-      disableBtn: false,//禁用编辑等按钮
-      ifcancel:0
+      ifcancel:0,
+      copyTreeVisible:false,
+      copySelect: [],
+      treeType: "save",// common:正常的权限树   save:用于保存数据的文件夹树
+      currentSceneUuid: "auditor",
+      folderFormVisible: false,
+      resourceForm: {
+        displayTbName:null,
+      },
+      spaceFolderName: "个人模型",
+      publicModel: "copyModel",
+      // 是否是刚加载完页面的状态（对应点击树后状态）
+      ifDefault: true,
+      // 点击文件夹时是否显示按钮
+      ifBtnShow: {
+        addBtnState: true,
+        editBtnState: true,
+        copyBtnState: true,
+        deleteBtnState: true,
+        previewBtn: true,
+        runBtn: true,
+        otherBtn: {
+          all: true,
+          exportBtnState: true,
+          importBtnState: true,
+          shareBtnState: true,
+          publicBtnState: true,
+          cancelPublicBtnState: true,
+          moveBtnState: true,
+        },
+      },
     };
   },
   computed: {},
@@ -507,27 +583,17 @@ export default {
     editableTabs() {},
   },
   created() {
-    this.getList()
     // 校验用户权限
     isAdmin().then((res) => {
       // 如果是管理员则放开按钮权限
-      if (res) {
+      if (res.data) {
         this.ifmanger = 1
-        this.disableBtn = false
       } else {
         // 禁用按钮权限
         this.ifmanger = 0
-        this.disableBtn = true
-        this.btnState = {
-          addBtnState: false,
-          editBtnState: true,
-          deleteBtnState: true,
-          previewBtn: true,
-          otherBtn: false,
-        }
       }
     })
-    // this.getList({ modelFolderUuid: 1 })
+    this.getList()
   },
   mounted() {
     this.initWebSocket();
@@ -706,6 +772,113 @@ export default {
      * @param query 查询条件
      */
     getList(query) {
+      var uuid = null;
+      if(query != null && typeof query !== "undefined" && typeof query.modelFolderUuid !== "undefined") {
+        uuid = query.modelFolderUuid;
+      }
+        switch(uuid) {
+          case 'xiaxian':
+            // 只显示删除
+            this.ifBtnShow = {
+              addBtnState: false,
+              editBtnState: false,
+              copyBtnState: false,
+              deleteBtnState: true,
+              previewBtn: false,
+              runBtn: false,
+              otherBtn: {
+                all: false,
+                exportBtnState: false,
+                importBtnState: false,
+                shareBtnState: false,
+                publicBtnState: false,
+                cancelPublicBtnState: false,
+                moveBtnState: false,
+              },
+            };
+            break;
+            case 'gongxiang' :
+              // 都不显示
+              this.ifBtnShow = {
+                addBtnState: false,
+                editBtnState: false,
+                copyBtnState: false,
+                deleteBtnState: false,
+                previewBtn: false,
+                runBtn: false,
+                otherBtn: {
+                  all: false,
+                  exportBtnState: false,
+                  importBtnState: false,
+                  shareBtnState: false,
+                  publicBtnState: false,
+                  cancelPublicBtnState: false,
+                  moveBtnState: false,
+                },
+              };
+              break;
+          case 'gonggong' :
+            // 管理员有所有权限，非管理员 只能运行
+                  // 非管理员
+              if(this.ifmanger == 0){
+                this.ifBtnShow = {
+                  addBtnState: false,
+                  editBtnState: false,
+                  copyBtnState: false,
+                  deleteBtnState: false,
+                  previewBtn: false,
+                  runBtn: true,
+                  otherBtn: {
+                    all: false,
+                    exportBtnState: false,
+                    importBtnState: false,
+                    shareBtnState: false,
+                    publicBtnState: false,
+                    cancelPublicBtnState: false,
+                    moveBtnState: false,
+                  },
+                }
+              }else{
+                // 管理员 全部显示
+                this.ifBtnShow = {
+                  addBtnState: true,
+                  editBtnState: true,
+                  copyBtnState: true,
+                  deleteBtnState: true,
+                  previewBtn: true,
+                  runBtn: true,
+                  otherBtn: {
+                    all: true,
+                    exportBtnState: true,
+                    importBtnState: true,
+                    shareBtnState: true,
+                    publicBtnState: true,
+                    cancelPublicBtnState: true,
+                    moveBtnState: true,
+                  },
+                }
+              }
+            break;
+          default:
+            //全都显示
+            this.ifBtnShow = {
+              addBtnState: true,
+              editBtnState: true,
+              copyBtnState: true,
+              deleteBtnState: true,
+              previewBtn: true,
+              runBtn: true,
+              otherBtn: {
+                all: true,
+                exportBtnState: true,
+                importBtnState: true,
+                shareBtnState: true,
+                publicBtnState: true,
+                cancelPublicBtnState: true,
+                moveBtnState: true,
+              },
+            }
+      }
       this.listLoading = true;
       if (query) {
         if(this.isAuditWarning) { query.modelUse = 2}
@@ -735,14 +908,10 @@ export default {
     setSelectTreeNode(data) {
       this.selectTreeNode = data;
       this.editableTabsValue = "modelList"
-      //非管理员公共模型页面按钮隐藏
-      if(data.path.indexOf('gonggong') != -1 && this.ifmanger==0){
-        //禁用
-        this.disableBtn = true
-      }else{
-        //解禁
-        this.disableBtn = false
-      }
+      // 点击左侧树的文件夹后解除对新增按钮的禁用（因未选择左侧树时不能新增）
+      this.btnState.addBtnState = false;
+      // 点击左侧树后，就不是页面刚加载完的状态了
+      this.ifDefault = false;
       getInfo()
     },
     /**
@@ -808,48 +977,122 @@ export default {
     modelTableSelectEvent(selection, row) {
       var selectObj = this.$refs.modelListTable.selection;
       if (selectObj.length == 1) {
-        // 显示全部按钮
-        this.btnState.otherBtn = false;
-        this.btnState.deleteBtnState = false;
-        this.btnState.addBtnState = false;
-        this.btnState.editBtnState = false;
-        this.btnState.previewBtn = false;
-        this.btnState.runBtn = false;
-        if(this.disableBtn){
+        // 选中模型数为1时，默认拥有全部按钮权限
           this.btnState = {
             addBtnState: false,
-            editBtnState: true,
-            deleteBtnState: true,
+          editBtnState: false,
+          copyBtnState: false,
+          deleteBtnState: false,
             previewBtn: false,
-            runBtn: false,
-            otherBtn: true
+          otherBtn: false
           }
-        }
+
         if (this.isAuditWarning != true) {
           this.isShowShoppingCart = true;
           this.$refs.modelShoppingCartRef.setMemo(selectObj);
+        }
+        // 因长度为1 直接使用selectObj[0] 不遍历
+        var modelFolderPath = selectObj[0].modelFolderPath;
+        var folderUuid = modelFolderPath == null ? '' :modelFolderPath.split('/')[0];
+        // 共享模型没有任何权限 ， 下线模型只有删除权限
+        switch(folderUuid){
+          case 'gongxiang':
+            this.btnState = {
+              addBtnState: true,
+              editBtnState: true,
+              copyBtnState: true,
+              deleteBtnState: true,
+              previewBtn: true,
+              otherBtn: true
+            }
+            break;
+          case 'xiaxian':
+            this.btnState = {
+              addBtnState: true,
+              editBtnState: true,
+              copyBtnState: true,
+              deleteBtnState: false,
+              previewBtn: true,
+              otherBtn: true
+            }
+            break;
+          case 'gonggong':
+            if(this.ifmanger == 0){
+              // 是管理员 全部按钮都有权限 （ 默认全是false，此处不用再设置 ）
+              // 不是管理员 只能运行
+              this.btnState = {
+                addBtnState: true,
+                editBtnState: true,
+                copyBtnState: true,
+                deleteBtnState: true,
+                previewBtn: true,
+                otherBtn: true
+              }
+            }
+          break;
         }
       } else if (selectObj.length > 1) {
-        // 只显示删除和添加按钮
-        this.btnState.otherBtn = false;
-        this.btnState.deleteBtnState = false;
-        this.btnState.addBtnState = false;
-        this.btnState.editBtnState = true;
-        this.btnState.previewBtn = true;
-        this.btnState.runBtn = false;
+        // 选多条最大权限是选中模型均在个人空间 (运行、新增、导出（更多）、删除)
+        this.btnState ={
+          addBtnState: false,
+          editBtnState: true,
+          copyBtnState: true,
+          deleteBtnState: false,
+          previewBtn: false,
+          otherBtn: false,
+        };
         if (this.isAuditWarning != true) {
           this.isShowShoppingCart = true;
           this.$refs.modelShoppingCartRef.setMemo(selectObj);
         }
-      } else if (selectObj.length == 0) {
-        // 只显示添加按钮
-        this.btnState.otherBtn = false;
+        // 遍历判断 以最小权限的模型为参考
+        for (var i = 0; i < selectObj.length; i++) {
+          var modelFolderPath1 = selectObj[i].modelFolderPath;
+          var folderUuid1 = modelFolderPath1 == null ? '' : modelFolderPath1.split('/')[0];
+          // 只禁用不放开，就会以最小权限的模型为主，而不会以最后一个选项为主
+          switch (folderUuid1) {
+            case 'gonggong':
+              // 如果是管理员 不处理，直接使用默认选中多条的权限
+              // 如果不是管理员 公共模型只有运行权限（除了运行按钮，其他全禁用）
+              if (this.ifmanger == 0) {
+                this.btnState.addBtnState = true;
         this.btnState.deleteBtnState = true;
-        this.btnState.addBtnState = false;
-        this.btnState.editBtnState = true;
+                this.btnState.otherBtn = true;
+              }
+              break;
+            case 'gongxiang':
+              // 共享模型没有任何按钮权限，只能点击模型名称查看
+              this.btnState.addBtnState = true;
+              this.btnState.deleteBtnState = true;
         this.btnState.previewBtn = true;
-        this.btnState.runBtn = true;
+              this.btnState.otherBtn = true;
+              break;
+            case 'xiaxian':
+              this.btnState.addBtnState = true;
+              // 因为下线模型可被删除，但默认是不禁用，此处就不用给下线模型的删除按钮权限设置为false
+              this.btnState.previewBtn = true;
+              this.btnState.otherBtn = true;
+              break;
+            default:
+          }
+        }
+      } else if (selectObj.length == 0) {
+        // 恢复默认状态
+        this.btnState={
+          addBtnState: true,
+          editBtnState: true,
+          copyBtnState: true,
+          deleteBtnState: true,
+          previewBtn: true,
+          // 更多中的导入按钮 点击后会选择位置，所以不用禁用
+          otherBtn: false,
+        };
         this.isShowShoppingCart = false;
+      }
+
+      // 如果是页面刚加载完的状态（未选中左侧树），没有新增权限 无论选择了多少条数据
+      if(this.ifDefault){
+        this.btnState.addBtnState = true;
       }
     },
     /**
@@ -913,6 +1156,72 @@ export default {
             "&sceneCode=" +
             this.sceneCode,
         },
+      });
+    },
+    copyModel(){
+      var selectObj = this.$refs.modelListTable.selection;
+      if (selectObj.length == 0) {
+        this.$message({ type: "info", message: "最少选择一个模型!" });
+        return;
+      }
+      if (selectObj.length > 1) {
+        this.$message({ type: "info", message: "只能选择一个模型!" });
+        return;
+      }
+      var copyObj = selectObj.filter((obj) => {
+        return obj.type === "folder";
+      });
+      var objTotal = getArrLength(copyObj);
+      if (objTotal > 0) {
+        this.$message({
+          type: "info",
+          message: "复制失败!复制文件夹操作不允许",
+        });
+        return;
+      }
+      this.copyTreeVisible = true;
+
+    },
+    copyPathSave() {
+      let selectObj = JSON.parse(JSON.stringify(this.$refs.modelListTable.selection[0]));
+      let folderObj = this.$refs.modelFolderTree.selectTreeNode;
+      if (folderObj.length == 0) {
+        this.$message({ type: "info", message: "最少选择一个文件夹!" });
+        return;
+      }
+      if (folderObj.length > 1) {
+        this.$message({ type: "info", message: "只能选择一个文件夹!" });
+        return;
+      }
+      this.resourceForm.displayTbName = selectObj.modelName+"_副本";
+      this.copyTreeVisible = false;
+      this.folderFormVisible = true;
+    },
+    copyResourceSave(){
+      var modelNewName = this.resourceForm.displayTbName;
+      if(modelNewName.trim().length == 0){
+        this.$message({ type: "info", message: "请输入模型名称" });
+        return;
+      }
+      let selectObj = JSON.parse(JSON.stringify(this.$refs.modelListTable.selection[0]));
+      let folderObj = this.$refs.modelFolderTree.selectTreeNode;
+      selectObj.modelFolderUuid = folderObj.id;
+      selectObj.modelName = modelNewName;
+      copyModel(selectObj).then(res =>{
+        if(res.code == 0){
+          this.getList(this.query);
+          this.$emit("refreshTree");
+          this.$notify({
+            title: "提示",
+            message: "复制成功",
+            type: "success",
+            duration: 2000,
+            position: "bottom-right",
+          });
+          this.folderFormVisible = false;
+        } else {
+          this.$message({ type: "error", message: res.msg });
+        }
       });
     },
     updateModel() {
@@ -1037,7 +1346,7 @@ export default {
     /**
      * 发布模型
      */
-    publicModel(value) {
+    publicModelFun(value) {
       if (
         this.selectTreeNode == null ||
         this.selectTreeNode.path.indexOf("gonggong") != -1
