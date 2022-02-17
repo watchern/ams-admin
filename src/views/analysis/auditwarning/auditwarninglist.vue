@@ -8,8 +8,8 @@
         <el-button type="primary" class="oper-btn add" @click="add"/>
         <el-button type="primary" class="oper-btn edit" @click="update" :disabled="!isShowSingleBtn"/>
         <el-button type="primary" class="oper-btn delete" @click="deleteWarning" :disabled="!isShowManyBtn"/>
-        <el-button type="primary"  class="oper-btn online" @click="startWarnings"  />
-        <el-button type="primary"  class="oper-btn offline" @click="stopWarnings"  />
+        <el-button type="primary"  class="oper-btn online" @click="startWarnings" :disabled="!isStartBtn" />
+        <el-button type="primary"  class="oper-btn offline" @click="stopWarnings" :disabled="!isStopBtn" />
       </el-col>
     </el-row>
     <el-table :key="tableKey" ref="auditWarningList" v-loading="listLoading" :data="list" border fit
@@ -29,21 +29,19 @@
       <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" align="center"/>
       <el-table-column label="关联类型" prop="warningType" :formatter="warningTypeFormat" align="center"/>
       <el-table-column label="关联模型" prop="sourceCount"/>
-      <el-table-column label="操作" prop="isStart" align="center">
+      <el-table-column label="状态" prop="isStart" align="center" >
         <template slot-scope="scope">
-          <el-link
+          <div
               type="primary"
-              @click="startWarning(scope.row.auditWarningUuid)"
               v-if="scope.row.isStart == 0"
           >
-            启用
-          </el-link>
-          <el-link
-              type="primary"
-              @click="stopWarning(scope.row.auditWarningUuid)"
-              v-if="scope.row.isStart == 1">
             停用
-          </el-link>
+          </div>
+          <div
+              type="primary"
+              v-if="scope.row.isStart == 1">
+            启用
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -85,6 +83,9 @@ export default {
       isShowSingleBtn: false,
       //是否展示删除等多个数据操作按钮
       isShowManyBtn: false,
+      // 是否禁用启用或停用按钮(禁用：false)
+      isStartBtn: false,
+      isStopBtn: false,
       //编辑审计预警dialog标题
       editDialogTitle: "添加审计预警",
       //编辑审计预警dialog是否展现
@@ -94,8 +95,8 @@ export default {
         {label: '预警名称', name: 'warningName', type: 'fuzzyText', value: ''},
         {label: '创建人', name: 'createUserName', type: 'fuzzyText'},
         { label: '创建日期', name: 'createTime', type: 'timePeriod' },
-        { label: '是否启动', name: 'isStart', type: 'select' ,
-          data: [{ name: '未启动', value: '0' }, { name: '启动', value: '1' }] },
+        { label: '启用状态', name: 'isStart', type: 'select' ,
+          data: [{ name: '停用', value: '0' }, { name: '启用', value: '1' }] },
       ],
       //新增，编辑，详情操作参数
       operationObj: {
@@ -270,16 +271,33 @@ export default {
       if (selection && selection.length == 0) {
         this.isShowManyBtn = false
         this.isShowSingleBtn = false
+        this.isStopBtn = false
+        this.isStartBtn = false
       }
       if (selection && selection.length > 0) {
         this.isShowManyBtn = true
       }
       if (selection && selection.length == 1) {
         this.isShowSingleBtn = true
+        if(selection[0].isStart == 1){
+          this.isStopBtn = true
+        }else {
+          this.isStartBtn = true
+        }
       }
       if (selection && selection.length > 1) {
         this.isShowSingleBtn = false
         this.isShowManyBtn = true
+        // 如果选中的预警状态不统一，启用停用按钮全部禁用
+        let isDisBtn;
+        for(let obj of selection){
+          if(obj.isStart != isDisBtn){
+            this.isStartBtn = false
+            this.isStopBtn = false
+          }else{
+            isDisBtn = obj.isStart
+          }
+        }
       }
 
     },
