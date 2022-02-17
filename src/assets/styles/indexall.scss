@@ -1,0 +1,111 @@
+#screenEditor .font-color,
+#screenEditor>>>.el-collapse-item__header,
+#screenEditor>>>.el-tabs__item{
+  @include font-color()
+}
+#screenEditor>>>.el-form-item__label{
+  @include font-color1()
+}
+#screenEditor .background-color{
+  @include background-color()
+}
+#screenEditor>>>.el-slider__stop,
+#screenEditor>>>.el-slider__button{
+  @include element-ui-slider()
+}
+#screenEditor .background-color-top{
+  @include background-color-top()
+}
+#screenEditor>>>.el-collapse-item__header,
+#screenEditor>>>.el-collapse-item__wrap,
+#screenEditor>>>.el-card,
+#screenEditor>>>.el-card__header{
+  @include background-color-left()
+}
+#screenEditor>>>.el-card__header,
+#screenEditor>>>.el-dropdown{
+  @include font-color()
+}
+#screenEditor>>>.el-input-number__decrease,
+#screenEditor>>>.el-input-number__increase,
+#screenEditor>>>.el-input-number.is-controls-right .el-input-number__increase,
+#screenEditor>>>.el-input__inner,
+#screenEditor>>>.el-input__inner::placeholder,
+.theme-box-color{
+  @include element-ui-input()
+}
+#screenEditor .background-color-left{
+  @include background-color-left-shadow()
+}
+#screenEditor .background-color-footer{
+  @include background-color-footer()
+}
+#screenEditor .background-color-chart{
+  @include background-color-chart()
+}
+#screenEditor .background-icon{
+  @include background-color-icon()
+}
+#screenEditor .background-icon:hover{
+  @include background-color-icon-hover()
+}
+#screenEditor>>>.el-tabs__header.is-left{
+  @include background-color-chart-child
+}
+#screenEditor>>>.el-collapse,
+#screenEditor>>>.el-input-number .is-controls-right .el-input-number__decrease{
+  @include border-color()
+}
+#screenEditor .border-color{
+  @include border-color()
+}
+#screenEditor>>>.el-upload--picture-card{
+  @include background-card()
+}
+#screenEditor>>> .el-tabs__nav-wrap::after, .background-header{
+  @include nav-wrap()
+}
+#screenEditor>>>.el-tabs__item.is-active,
+#screenEditor>>>.el-tabs__item:hover{
+  color: #409EFF;
+  cursor: pointer;
+}
+#screenEditor .somespan{
+  @include btn-input()
+}
+#screenEditor .somespan:hover{
+  @include btn-input-hover()
+}
+.choose-border-color{
+  @include small-map()
+}
+#screenEditor .small-map{
+  @include small-map()
+}
+#screenEditor .small-map-on{
+  @include small-map-on()
+}
+#screenEditor .small-cc-div{
+  @include small-cc-div()
+}
+#screenEditor .small-content{
+  @include small-content()
+}
+#screenEditor>>>.ruler{
+  @include ruler()
+}
+#screenEditor .someWidthActive{
+  background-color: rgba(0,186,255,.8)!important;
+  z-index:10;
+}
+#screenEditor .layerRelationActive{
+}
+#screenEditor #SketchRule >>>.line{
+  @include sketch-rule-line()
+}
+.icon-border-color{
+  @include icon-border-color()
+}
+.explainIcon-skin{
+  @include explainIcon-skin()
+}
