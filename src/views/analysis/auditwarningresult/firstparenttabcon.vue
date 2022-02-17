@@ -118,19 +118,29 @@
           >
         </template>
       </el-table-column>
-      <el-table-column
-        label="运行状态"
-        width="100px"
-        align="center"
-        prop="runStatus"
-        :formatter="readStatusFormatter"
-        ><template slot-scope="scope">
-          <i
-            :class="runStatusIconFormatter(scope.row.runStatus)"
-            :style="runStatusStyleFormatter(scope.row.runStatus)"
-          ></i> </template
-      ></el-table-column>
-      <el-table-column
+        <el-table-column
+                label="运行状态"
+                width="100px"
+                align="center"
+                prop="runStatus"
+                :formatter="readStatusFormatter"
+        >
+            <template slot-scope="scope">
+                <el-popover trigger="hover" placement="top" width="500"
+                            :disabled="!(scope.row.runStatus == 4||scope.row.runStatus == '4')">
+                    <el-row>
+                        {{scope.row.runMessage}}
+                    </el-row>
+                    <div slot="reference" class="name-wrapper">
+                        <i
+                                :class="runStatusIconFormatter(scope.row.runStatus)"
+                                :style="runStatusStyleFormatter(scope.row.runStatus)"
+                        ></i>
+                    </div>
+                </el-popover>
+            </template>
+        </el-table-column>
+        <el-table-column
         label="运行人"
         width="100px"
         align="center"
