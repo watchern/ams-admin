@@ -888,9 +888,19 @@ export default {
       this.listLoading = true;
       if (query) {
         if(this.isAuditWarning) { query.modelUse = 2}
+        if((this.selectTreeNode !== null) && (query.modelFolderUuid === undefined || query.modelFolderUuid === null  || query.modelFolderUuid.length === 0)){
+          query.modelFolderUuid = this.selectTreeNode.id
+        }
         this.pageQuery.condition = query;
       } else {
-        if(this.isAuditWarning) { this.pageQuery.condition = {modelUse: 2}}
+        var condition = {};
+        if(this.isAuditWarning) {
+          condition.modelUse = 2
+        }
+        if((this.selectTreeNode !== null && this.selectTreeNode.length >0) && (query.modelFolderUuid === undefined || query.modelFolderUuid === null  || query.modelFolderUuid.length === 0)){
+          condition.modelFolderUuid = this.selectTreeNode.id
+        }
+        this.pageQuery.condition = condition;
       }
       
       findModel(this.pageQuery).then((resp) => {
@@ -918,6 +928,8 @@ export default {
       this.btnState.addBtnState = false;
       // 点击左侧树后，就不是页面刚加载完的状态了
       this.ifDefault = false;
+      //点击左侧树后清空右侧查询框数据
+      this.$refs.queryfield.clearAll();
       getInfo()
     },
     /**
