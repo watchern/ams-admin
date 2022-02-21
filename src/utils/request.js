@@ -47,23 +47,27 @@ service.interceptors.response.use(
 
     // if the custom code is not 0, it is judged as an error.
     if (res.code !== 0 && res.code !== 20000) {
-      Message({
-        message: res.msg || 'Error',
-        type: 'error',
-        duration: 5 * 1000
-      })
+      // Message({
+      //   message: res.msg || 'Error',
+      //   type: 'error',
+      //   duration: 5 * 1000
+      // })
 
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.code === 2012/* || res.code === 50012 || res.code === 50014*/) {
+        // alert("重新登陆")
+        // _this.$route.replace('/')
+        // window.location.href = document.URL.split("/#/")[0] + "/#/"
+        // window.location.reload()
+        // return
         // to re-login
-        MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-          confirmButtonText: 'Re-Login',
-          cancelButtonText: 'Cancel',
-          type: 'warning'
+        MessageBox.alert('由于您长时间未操作,为确保安全,请重新登陆！', '确认注销', {
+          confirmButtonText: '确认',
+          showClose: false,
+          closeOnClickModal: false,
+          type: 'info'
         }).then(() => {
-          store.dispatch('user/resetToken').then(() => {
-            location.reload()
-          })
+          location.reload()
         })
       }
     //code==1993为biz
