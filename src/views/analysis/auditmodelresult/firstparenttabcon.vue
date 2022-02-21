@@ -100,9 +100,18 @@
           </el-table-column>
           <el-table-column label="运行状态" width="100px" align="center" prop="runStatus" :formatter="readStatusFormatter">
             <template slot-scope="scope">
+              <el-popover trigger="hover" placement="top" width="500" :disabled="!(scope.row.runStatus == 4||scope.row.runStatus == '4')">
+                <el-row>
+                  {{scope.row.runMessage}}
+                </el-row>
+                <div slot="reference" class="name-wrapper">
               <i :title="readStatusFormatter(scope.row.runStatus)"
                 :class="runStatusIconFormatter(scope.row.runStatus)"
-                :style="runStatusStyleFormatter(scope.row.runStatus)" style="cursor: pointer;"/> </template></el-table-column>
+                     :style="runStatusStyleFormatter(scope.row.runStatus)" style="cursor: pointer;"/>
+                </div>
+              </el-popover>
+               </template>
+          </el-table-column>
           <el-table-column label="运行人" width="100px" align="center" prop="runTask.runUserName"/>
           <el-table-column label="运行类型" width="100px" align="center" prop="runTask.runType" :formatter="runTypeFormate" />
           <el-table-column label="执行进度" prop="executeProgress" align="center" width="200px">
