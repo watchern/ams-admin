@@ -20,7 +20,7 @@
             <el-button
               type="primary"
               :disabled="btnState.previewBtn"
-              class="oper-btn start"
+              class="oper-btn preview"
               @click="previewModel"
               v-if="ifBtnShow.runBtn"
             />
