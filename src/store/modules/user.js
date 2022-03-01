@@ -5,6 +5,10 @@ import { onAccessSystem } from '@/utils/permission'
 import { cacheDict } from '@/api/base/sys-dict'
 import { getAllScene, getSceneInst } from '@/api/data/scene'
 import Cookies from 'js-cookie'
+import {
+  Message,
+  MessageBox
+} from 'element-ui'
 // import { getEncloseBy } from '@/api/data/scene'
 const state = {
   token: getToken(),
@@ -58,7 +62,6 @@ const mutations = {
     state.datausername = datausername
   }
 }
-
 const actions = {
   // user login
   login({ commit }, userInfo) {
@@ -88,6 +91,13 @@ const actions = {
         })
         resolve()
       }).catch(error => {
+        console.log(error)
+        let repstr = error.toString().split(':')[1];
+        Message({
+          message: repstr,
+          type: 'error',
+          duration: 5 * 1000
+        })
         reject(error)
       })
       // getEncloseBy().then(res =>{
