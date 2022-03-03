@@ -2585,7 +2585,7 @@ var iconDrag = function (treeNode) {
 	var valArr = getDataSourceTable();
 	var isCopy = false;//当前节点是不是重复节点
 	if ($.inArray(treeNode.name, valArr) > -1) {
-		isCopy = true
+		isCopy = true;
 	}
 
 	//生成图形化节点方法
