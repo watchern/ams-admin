@@ -354,6 +354,14 @@
   content: '\e67e' !important;
 }
 
+.oper-btn.draft:after {
+  content: '\e67e  草稿' !important;
+}
+
+.oper-btn.draft-none:after {
+  content: '\e67e' !important;
+}
+
 .oper-btn.chart:after {
   content: '\e6d8  图表' !important;
 }

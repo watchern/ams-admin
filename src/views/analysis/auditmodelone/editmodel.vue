@@ -101,10 +101,10 @@
           </div>
           <div class="modelInfoClass" v-show="useParamDraw" style="position:absolute; height: calc(100% - 125px); overflow:auto">
             <div ref="paramDefaultValue" class="default-value">
-              <div style="font-size: 20px">
-                模型参数
-                <el-tooltip class="item" effect="dark" content="拖拽改变参数展示顺序" placement="top-start">
-                  <i class="el-icon-info"/></el-tooltip>
+              <div  align="right" style="margin:12px">
+                <el-popover trigger="hover" placement="bottom" :content="paramText" class="popover" width="300">
+                  <el-button type="primary" slot="reference"  class="oper-btn" style="width: 77px" @click="viewDialog('param')">功能说明</el-button>
+                </el-popover>
               </div>
               <div id="paramList">
                 <paramshownew ref="apple" v-show="paramShowVIf"></paramshownew>
@@ -114,10 +114,10 @@
           <div class="modelInfoClass " v-show="resultConfigDraw" style="position:absolute; height: calc(100% - 125px); overflow:auto">
             <el-tabs v-model="activeName" :stretch="true" style="width: 92%">
               <el-tab-pane label="模型结果" name="first"><div v-show="!isExecuteSql" align='center' class="notExecuteSqlClass" >执行SQL后才能设置</div><div v-show="isExecuteSql" ref="modelResultOutputCol" class="default-value">
-                <div style="font-size: 20px">
-                  模型结果
-                  <el-tooltip class="item" effect="dark" content="只显示最后的结果列" placement="top-start">
-                    <i class="el-icon-info"/></el-tooltip>
+                <div  align="right" style="margin: 1px 5px -17px 5px">
+                  <el-popover trigger="hover" placement="bottom" :content="resultText" class="popover" width="300">
+                    <el-button type="primary" slot="reference" class="oper-btn" style="width: 77px" @click="viewDialog('result')">功能说明</el-button>
+                  </el-popover>
                 </div>
                 <div class="model-result-output-col detail-form">
                   <el-table ref="columnData" :data="columnData" class="div-width">
@@ -156,20 +156,14 @@
                 </div>
               </div></el-tab-pane>
               <el-tab-pane label="模型关联" name="second"><div v-show="!isExecuteSql" align='center' class="notExecuteSqlClass" >执行SQL后才能设置</div><div v-show="isExecuteSql" id="modelDetailDiv">
-                <div style="font-size: 20px;margin-left: 3%">
-                  模型关联
-                  <el-tooltip class="item" effect="dark" content="在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；
-                  而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，
-                  系统允许用户对多个模型或sql进行关联。
-                  用户通过本功能来创建并维护模型间的关联关系，以满足多模型联合执行分析的业务需求。
-                  通过模型设计器，用户能够为当前的模型建立与其他可访问模型的关联关系，并将其分析结果引入到当前模型设计中。" placement="top-start">
-                    <i class="el-icon-info"/></el-tooltip>
-                </div>
                   <el-row>
-                    <div style="width: 94%" align="right">
+                    <div  align="right">
                       <el-button :disabled="modelRelatedButton.add" type="primary" class="oper-btn add" @click="addModelRelation" />
                       <el-button :disabled="modelRelatedButton.edit" type="primary" class="oper-btn edit" @click="editModelRelation" />
                       <el-button :disabled="modelRelatedButton.delete" type="primary" class="oper-btn delete" @click="deleteModelRelation" />
+                        <el-popover trigger="hover" placement="bottom" :content="relationText" class="popover" width="300" style="margin-left: 11px">
+                            <el-button type="primary" slot="reference"  class="oper-btn" style="width: 77px" @click="viewDialog('relation')">功能说明</el-button>
+                        </el-popover>
                     </div>
                   </el-row>
                   <el-table :data="modelDetails" class="div-width" style="margin-left: 3%" @selection-change="handleSelectionChange">
@@ -185,13 +179,8 @@
               <el-tab-pane label="模型条件" name="third">
                 <div align='center' v-show="!isExecuteSql" class="notExecuteSqlClass" >执行SQL后才能设置</div>
                 <div v-show="isExecuteSql">
-                <div style="font-size: 20px;margin-left: 3%">
-                  模型条件
-                  <el-tooltip class="item" effect="dark" content="" placement="top-start">
-                    <i class="el-icon-info"/></el-tooltip>
-                </div>
                 <el-row>
-                  <div style="width: 94%" align="right">
+                  <div  align="right">
                     <el-button :disabled="thresholdButton.add" type="primary" class="oper-btn add" @click="addthreshold" />
                     <el-button :disabled="thresholdButton.edit" type="primary" class="oper-btn edit" @click="editthreshold" />
                     <el-button :disabled="thresholdButton.delete" type="primary" class="oper-btn delete" @click="deleteThreshold" />
@@ -205,17 +194,23 @@
                   <el-table-column prop="modelResultColumnName" label="阈值字段" width="200"/>
                   <el-table-column prop="operator" label="运算符" width="200"/>
                   <el-table-column prop="thresholdValue.thresholdValueName" label="阈值名称" width="200"/>
+<!--                  <el-table-column prop="backgroundColor" label="背景色" width="100">-->
+<!--                    <Colorpicker v-model="setThreasholdValueObj.thresholdValueRelObj.colorInfoObj.backgroundColor"></Colorpicker>-->
+<!--                  </el-table-column>-->
+<!--                  <el-table-column prop="fontColor" label="字体颜色" width="100">-->
+<!--                    <Colorpicker  v-model="setThreasholdValueObj.thresholdValueRelObj.colorInfoObj.fontColor"></Colorpicker>-->
+<!--                  </el-table-column>-->
                 </el-table>
                 </div>
               </el-tab-pane>
             </el-tabs>
           </div>
           <div class="editmodel-right"><!--v-if="!modifying"-->
-            <div @click="clickModelInfo()"><span :class="changeBtn.one === true?'self-made-btn-a':'self-made-btn'"  class="rightButtonClassa">基础信息</span></div>
+            <el-button type="primary" class="oper-btn" @click="save" style="position: relative;top: 5px;left: -2.5px;width: 41px;height: 30px;margin: 5px"><span >保存</span></el-button>
+            <el-button type="primary" class="oper-btn" @click="closeWinfrom" style="position: relative;top: 10px;left: -2.5px;width: 41px;height: 30px;margin: 0px 5px 10px 5px;"><span >取消</span></el-button>
+            <div @click="clickModelInfo()"><span :class="changeBtn.one === true?'self-made-btn-a':'self-made-btn'"  class="rightButtonClassa" style="top: 10px">基础信息</span></div>
             <div @click="clickUseParam()"><span :class="changeBtn.two === true?'self-made-btn-a':'self-made-btn'" class="rightButtonClassa">已用参数</span></div>
             <div @click="clickResultConfig()"><span :class="changeBtn.three === true?'self-made-btn-a':'self-made-btn'" class="rightButtonClassa">结果展现</span></div>
-            <el-button type="primary" size="small" class="oper-btn save-none" style="position: absolute;bottom: 95px;left: 9px;width: 24px" @click="save" />
-            <el-button type="primary" size="small" class="oper-btn cancel-none" style="position: absolute;bottom: 35px;left: -1px;width: 24px;" @click="closeWinfrom" />
           </div>
           <el-form-item label="模型sql" prop="sqlValue" class="display">
             <el-input v-model="form.sqlValue" type="textarea"/>
@@ -250,6 +245,24 @@
       <div slot="footer">
         <el-button type="primary" @click="thresholdAdd===true?createThreshold():editThresholdDetermine()">确定</el-button>
         <el-button @click="thresholdIsSee=false">取消</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog
+            :append-to-body="true"
+            :close-on-click-modal="false"
+            v-if="detailDialog"
+            title="查看功能说明"
+            :visible.sync="detailDialog"
+    >
+      <el-input
+              :autosize="{ minRows: 2, maxRows: 10 }"
+              type="textarea"
+              :disabled="true"
+              v-model="dialogText"
+      >
+      </el-input>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="detailDialog = false">取 消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -441,7 +454,12 @@ export default {
       selectedThreshold:[],
       isExecuteSql:false,
       // modelDetailIsSeeHeight:"",
-      someHeight: 700
+      someHeight: 700,
+      detailDialog: false,
+      dialogText: '',
+    paramText : "拖拽改变参数展示顺序",
+    resultText : "只显示最后的结果列",
+    relationText : "在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。用户通过本功能来创建并维护模型间的关联关系，以满足多模型联合执行分析的业务需求。通过模型设计器，用户能够为当前的模型建立与其他可访问模型的关联关系，并将其分析结果引入到当前模型设计中。",
     }
   },
   watch: {
@@ -1353,7 +1371,23 @@ export default {
       //}
       // 调用保存图表拖拽布局
       chartAudit.$emit('chartAuditOn');
-    }
+    },
+      viewDialog(param) {
+        switch(param){
+            case 'param':
+                this.dialogText = this.paramText;
+                break;
+            case 'result':
+                this.dialogText = this.resultText;
+                break;
+            case 'relation':
+                this.dialogText = this.relationText;
+                break;
+            default:
+                break;
+        }
+      this.detailDialog = true;
+    },
   }
 }
 </script>
@@ -1556,5 +1590,11 @@ export default {
 }
 .rightButtonClassa:hover{
   background: rgba(0,0,0,0.1)
+}
+.popover{
+  right: 5px;
+}
+.popover:after{
+  font-size: 2px;
 }
 </style>

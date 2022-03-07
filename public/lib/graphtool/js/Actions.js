@@ -836,11 +836,11 @@ Actions.prototype.init = function() {
 	//XX设置，结束
 	//标记为模型辅助结果表
 	this.addAction('markCenterOutput', function(e) {
-		promptMsg('请输入自定义结果表名', '提示', {
-			confirmButtonText: '确定',
-			cancelButtonText: '取消',
-			inputPlaceholder: '非必填'
-		  }).then(({ value }) => {
+		// promptMsg('请输入自定义结果表名', '提示', {
+		// 	confirmButtonText: '确定',
+		// 	cancelButtonText: '取消',
+		// 	inputPlaceholder: '非必填'
+		//   }).then(({ value }) => {
         var resultTableStatus = graph.nodeData[graph.curCell.id].nodeInfo.resultTableStatus;//模型最终结果表状态
         var midTableStatus = graph.nodeData[graph.curCell.id].nodeInfo.midTableStatus;//模型辅助结果表状态
         var nodeExcuteStatus = graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus;//节点的执行状态
@@ -855,7 +855,7 @@ Actions.prototype.init = function() {
             //设置输出图标
             if (midTableStatus === 2) {//若已标记，则去掉标记
                 graph.nodeData[graph.curCell.id].nodeInfo.midTableStatus = 1;
-                graph.nodeData[graph.nodeData[graph.curCell.id].parentIds].nodeInfo.tempResultsTable = value;
+                // graph.nodeData[graph.nodeData[graph.curCell.id].parentIds].nodeInfo.tempResultsTable = value;
 				setNodeOutputTypeIcon(1, 0);
                 //自动保存图形化
                 autoSaveGraph();
@@ -864,25 +864,25 @@ Actions.prototype.init = function() {
                     alertMsg("提示", "该结果表已被标记为模型最终结果表", "info");
                 } else {
                     graph.nodeData[graph.curCell.id].nodeInfo.midTableStatus = 2;
-					graph.nodeData[graph.nodeData[graph.curCell.id].parentIds].nodeInfo.tempResultsTable = value;
+					// graph.nodeData[graph.nodeData[graph.curCell.id].parentIds].nodeInfo.tempResultsTable = value;
                     setNodeOutputTypeIcon(2, 0);
                     //自动保存图形化
                     autoSaveGraph();
                 }
             }
         }
-	}).catch(() => {
-			   
-	});
+	// }).catch(() => {
+	//
+	// });
 	});
 	
 	//标记为模型最终结果表
 	this.addAction('markFinalOutput', function(e) {
-		promptMsg('请输入自定义结果表名', '提示', {
-			confirmButtonText: '确定',
-			cancelButtonText: '取消',
-			inputPlaceholder: '非必填'
-		  }).then(({ value }) => {
+		// promptMsg('请输入自定义结果表名', '提示', {
+		// 	confirmButtonText: '确定',
+		// 	cancelButtonText: '取消',
+		// 	inputPlaceholder: '非必填'
+		//   }).then(({ value }) => {
 		var resultTableStatus = graph.nodeData[graph.curCell.id].nodeInfo.resultTableStatus;//模型最终结果表状态
 		var midTableStatus = graph.nodeData[graph.curCell.id].nodeInfo.midTableStatus;//模型辅助结果表状态
         var nodeExcuteStatus = graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus;//节点的执行状态
@@ -897,7 +897,7 @@ Actions.prototype.init = function() {
             //设置输出图标
             if(resultTableStatus === 2) {//若已标记，则去掉标记
                 graph.nodeData[graph.curCell.id].nodeInfo.resultTableStatus = 1;
-				graph.nodeData[graph.nodeData[graph.curCell.id].parentIds].nodeInfo.tempResultsTable = value;
+				// graph.nodeData[graph.nodeData[graph.curCell.id].parentIds].nodeInfo.tempResultsTable = value;
 				setNodeOutputTypeIcon(1,1);
                 //自动保存图形化
                 autoSaveGraph();
@@ -922,16 +922,16 @@ Actions.prototype.init = function() {
                 }
                 if(verify){
                     graph.nodeData[graph.curCell.id].nodeInfo.resultTableStatus = 2;
-					graph.nodeData[graph.nodeData[graph.curCell.id].parentIds].nodeInfo.tempResultsTable = value;
+					// graph.nodeData[graph.nodeData[graph.curCell.id].parentIds].nodeInfo.tempResultsTable = value;
 					setNodeOutputTypeIcon(2,1);
                     //自动保存图形化
                     autoSaveGraph();
                 }
             }
         }
-	}).catch(() => {
-			   
-	});
+	// }).catch(() => {
+	//
+	// });
 	});
 	
 	//查看节点结果集SQL语句

@@ -640,7 +640,10 @@ export default {
     getSortClass: function(key) {
       const sort = this.pageQuery.sort
       return sort === `+${key}` ? 'asc' : 'desc'
-    }
+    },
+    viewSqlRule() {
+      this.SQLRuleDialog = true;
+    },
   }
 }
 </script>

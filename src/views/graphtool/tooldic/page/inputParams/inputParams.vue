@@ -372,6 +372,7 @@
              * @author JL
              */
             async replaceNodeParam() {
+                let _this = this
                 let returnObj = {
                     'verify': true, // 校验是否通过
                     'message': ''// 提示信息
@@ -469,18 +470,18 @@
                                             }
                                         } else {
                                             if (choiceType === '1') { // 单选
-                                                obj.paramValue = this.paramListValueList[listnum]
+                                                obj.paramValue = _this.paramListValueList[listnum]
                                             } else { // 多选
-                                                obj.paramValue = this.paramListValueList[listnum].join(',')
+                                                obj.paramValue = _this.paramListValueList[listnum].join(',')
                                             }
                                         }
                                         filterArr.push(obj)
                                     } else { // 不允许为空
                                         if (this.paramListValueList[listnum].length !== 0) {
                                             if (choiceType === '1') { // 单选
-                                                obj.paramValue = this.paramListValueList[listnum]
+                                                obj.paramValue = _this.paramListValueList[listnum]
                                             } else {
-                                                obj.paramValue = this.paramListValueList[listnum].join(',')
+                                                obj.paramValue = _this.paramListValueList[listnum].join(',')
                                             }
                                             filterArr.push(obj)
                                         } else {
