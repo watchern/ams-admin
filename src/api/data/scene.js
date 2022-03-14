@@ -78,13 +78,13 @@ export function getSceneInst(sceneCode, sceneInst) {
   })
 }*/
 
-// /***
-//  * 获取配置的 EncloseBy
-//  */
-// export function getEncloseBy() {
-//   return request({
-//     baseURL: baseURL,
-//     url: '/tableMeta/getEncloseBy',
-//     method: 'get'
-//   })
-// }
+/***
+ * 获取配置的 EncloseBy
+ */
+export function getEncloseBy() {
+  return request({
+    baseURL: baseURL,
+    url: '/tableMeta/getEncloseBy',
+    method: 'get'
+  })
+}

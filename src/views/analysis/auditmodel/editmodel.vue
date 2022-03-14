@@ -158,7 +158,7 @@
             <i class="el-icon-info"/></el-tooltip>
         </div>
         <div class="model-result-output-col">
-          <el-table ref="columnData" :data="columnData" class="div-width">
+          <el-table ref="columnData" :data="columnData" stripe class="div-width">
             <el-table-column prop="outputColumnName" label="输出列名" width="180"/>
             <el-table-column prop="dataCoding" label="数据转码" width="180">
               <template slot-scope="scope">
@@ -630,7 +630,7 @@ export default {
     async getModelObj() {
       let allVer = true
       let paramDefaultValue;
-      let columnData = this.$refs.columnData.data
+      let columnData = this.$refs.columnData.data;
       // region 校验基本信息
       let basicInfoVerResult = false
       this.$refs['basicInfoForm'].validate((valid) => {

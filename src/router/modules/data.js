@@ -14,13 +14,19 @@ const dataRouter = {
     }, {
       path: 'table',
       name: '表注册',
-      component: () => import('@/views/data/table/index')
+      component: () => import('@/views/data/table/index'),
+      meta: {
+        title: '数据管理-数据准备-数据表管理'
+      }
     },
     /* 数据角色管理*/
     {
       path: 'directory',
       name: '数据资源目录',
-      component: () => import('@/views/data/directory/index')
+      component: () => import('@/views/data/directory/index'),
+      meta: {
+        title: '数据管理-数据字典'
+      }
     }, {
       path: 'scene',
       name: '业务场景维护',
@@ -36,20 +42,41 @@ const dataRouter = {
     }, {
       path: 'transcode',
       name: '数据转码维护',
-      component: () => import('@/views/data/transcode/index')
+      component: () => import('@/views/data/transcode/index'),
+      meta: {
+        title: '数据管理-数据准备-数据转码'
+      }
     }, {
       path: 'dict',
       name: '数据字典维护',
-      component: () => import('@/views/data/dict/index')
+      component: () => import('@/views/data/dict/index'),
+      meta: {
+        title: '数据管理-数据字典'
+      },
     }, {
       path: 'tblrel',
       name: '表关联关系维护',
-      component: () => import('@/views/data/tblrel/index')
+      component: () => import('@/views/data/tblrel/index'),
+      meta: {
+        title: "数据管理-数据准备-表关系管理"
+      }
     }, {
       path: 'role/:sceneCode',
       name: '数据角色维护',
-      component: () => import('@/views/data/role/index')
-    }, {
+      component: () => import('@/views/data/role/index'),
+      meta: {
+        title: "数据管理-数据授权"
+      }
+    },
+    {
+      path: 'role/auditor',
+      name: '数据授权',
+      component: () => import('@/views/data/role/index'),
+      meta: {
+        title: "数据管理-数据授权"
+      }
+    },
+    {
       path: 'roleRes/:roleUuid',
       name: '数据角色维护-角色资源绑定',
       component: () => import('@/views/data/role-res/index')

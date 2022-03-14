@@ -211,6 +211,10 @@ export function autoSaveGraph() {
             data.executeStatus = getExecuteDetail()
             data.modelSql = graphIndexVue.curModelSql// 临时将模型SQL语句绑在数据串中
             break
+        default:
+            data.executeStatus = getExecuteDetail()
+            data.graphType = 1
+            break;
     }
     saveGraphInterface(data).then(response => {
         if (!response.data) {

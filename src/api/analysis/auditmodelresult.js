@@ -396,13 +396,15 @@ export function replaceParam(filterArr, arr, replaceSql) {
     for (var k = 0; k < arr.length; k++) { // 遍历当前节点绑定的参数
       if (arr[k].copyParamId === moduleParamId) {
         if (typeof filterArr[j].paramValue != undefined) {
-          replaceSql = replaceSql.replaceAll(arr[k].id, filterArr[j].paramValue) // 将参数SQL中的参数ID替换为输入得值
+          replaceSql = replaceSql.replace('/'+arr[k].id+'/g',filterArr[j].paramValue)
+          // replaceSql = replaceSql.replaceAll(arr[k].id, filterArr[j].paramValue) // 将参数SQL中的参数ID替换为输入得值
         }
       }
     }
   }
   for (var n = 0; n < arr.length; n++) { // 再次遍历被关联模型的参数
-    replaceSql = replaceSql.replaceAll(arr[n].id, "") // 如果参数没被替换，证明没有被关联，赋空值
+    replaceSql = replaceSql.replace('/'+arr[n].id+'/g', "")
+    // replaceSql = replaceSql.replaceAll(arr[n].id, "") // 如果参数没被替换，证明没有被关联，赋空值
   }
   return replaceSql
 }

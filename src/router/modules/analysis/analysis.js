@@ -16,7 +16,10 @@ const analysisRouter = {
     {
       path: 'auditmodel',
       name: '审计模型',
-      component: () => import('@/views/analysis/auditmodel/index')
+      component: () => import('@/views/analysis/auditmodel/index'),
+      meta: {
+        title: '模型管理-模型建模-模型列表'
+      }
       // component: () => import('@/views/analysis/auditmodel/boemodel/modellisttable')
     },
     //ps:京东方-新需求路由
@@ -28,7 +31,10 @@ const analysisRouter = {
     {
       path: 'auditmodelresult',
       name: '模型运行结果',
-      component: () => import('@/views/analysis/auditmodelresult/index')
+      component: () => import('@/views/analysis/auditmodelresult/index'),
+      meta: {
+        title: '模型管理-模型结果-模型运行结果'
+      }
     },
     {
       path: 'editormodel',
@@ -38,7 +44,11 @@ const analysisRouter = {
     {
       path: 'auditWarning',
       name: '审计预警',
-      component: () => import('@/views/analysis/auditwarning/auditwarninglist')
+      component: () => import('@/views/analysis/auditwarning/auditwarninglist'),
+      meta: {
+        title: '模型管理-模型运行-运行设置'
+      }
+
     },
     {
       path: 'modelshoppingcart',
@@ -48,7 +58,10 @@ const analysisRouter = {
     {
       path: 'warningresult',
       name: '审计预警结果',
-      component: () => import('@/views/analysis/auditwarningresult/index')
+      component: () => import('@/views/analysis/auditwarningresult/index'),
+      meta: {
+        title: '模型管理-模型结果-定时运行结果'
+      }
     },
     {
       path: 'warningresult/:runTaskUuid',
@@ -62,6 +75,9 @@ const analysisRouter = {
       path: 'sqleditor',
       name: 'SQL编辑器',
       component: () => import('@/views/analysis/sqleditor/index'),
+      meta: {
+        title: '模型管理-模型建模-SQL建模'
+      }
       //2021.6.4 太仓需求sql编辑页保留编辑内容
       // meta: {
       //   keepAlive: true
@@ -70,7 +86,10 @@ const analysisRouter = {
     {
       path: 'editormodelnew',
       name: '模型编(新)',
-      component: () => import('@/views/analysis/auditmodelone/editmodel')
+      component: () => import('@/views/analysis/auditmodelone/editmodel'),
+      meta: {
+        title: '模型编辑'
+      }
     },
     {
       path: 'modelresulthandle',
@@ -101,13 +120,19 @@ const analysisRouter = {
     {
       path: 'threadoldvalue',
       name: '阈值管理',
-      component: () => import('@/views/analysis/thresholdvalue/index')
+      component: () => import('@/views/analysis/thresholdvalue/index'),
+      meta: {
+        title: '模型管理-模型运行-阈值设置'
+      }
     }
     ,
     {
       path: 'parammanagerlist',
       name: '参数管理',
-      component: () => import('@/views/analysis/modelparam/paramManager/parammanagerlist')
+      component: () => import('@/views/analysis/modelparam/paramManager/parammanagerlist'),
+      meta: {
+        title: '模型管理-模型建模-参数管理'
+      }
     }
   ]
 }

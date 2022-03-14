@@ -15,7 +15,10 @@ const graphRouter = {
         {
             path: '/graphtool/tooldic',
             name: '图形化工具',
-            component: () => import('@/views/graphtool/tooldic/index')
+            component: () => import('@/views/graphtool/tooldic/index'),
+            meta: {
+                title: '模型管理-模型建模-图形化建模'
+              }
         },
     ]
 }

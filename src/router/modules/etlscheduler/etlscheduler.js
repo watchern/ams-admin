@@ -49,7 +49,7 @@ const etlschedulerRouter = {
       name: 'processschedule',
       component: () => import('@ETL/views/etlscheduler/processschedule/index'),
       meta: {
-        title: 'processschedule'
+        title: '数据调度-调度管理'
       }
     },
     {
@@ -65,7 +65,7 @@ const etlschedulerRouter = {
       name: 'workflow',
       component: () => import('@ETL/views/etlscheduler/workflow/index'),
       meta: {
-        title: 'workflow'
+        title: '数据调度-调度流程'
       }
     },
     {
@@ -73,7 +73,7 @@ const etlschedulerRouter = {
       name: 'processdefinition',
       component: () => import('@ETL/views/etlscheduler/processdefinition/index'),
       meta: {
-        title: 'processdefinition'
+        title: '数据调度-调度流程'
       }
     },
     {
@@ -81,7 +81,7 @@ const etlschedulerRouter = {
       name: 'taskmonitor',
       component: () => import('@ETL/views/etlscheduler/taskmonitor/index'),
       meta: {
-        title: 'taskmonitor'
+        title: '数据调度-调度监控'
       }
     },
     {
@@ -89,7 +89,7 @@ const etlschedulerRouter = {
       name: 'taskmonitor',
       component: resolve => require(['@ETL/views/etlscheduler/taskmonitor/index'], resolve),
       meta: {
-        title: '调度监控'
+        title: '数据调度-调度监控'
       }
     },
     {
@@ -143,7 +143,7 @@ const etlschedulerRouter = {
       name: 'etlconfigure',
       component: () => import('@ETL/views/etlscheduler/etlconfigure/index'),
       meta: {
-        title: 'etlconfigure'
+        title: '数据调度-调度配置'
       }
     },
     {

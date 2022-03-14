@@ -17,6 +17,12 @@ export function recplaceParams(sql, paramArr){
     dataType : "json",
     data: data,
     async: false,
+    beforeSend: function (XMLHttpRequest) {
+        // XMLHttpRequest.setRequestHeader(
+        //   "TOKEN",
+        //   sessionStorage.getItem("TOKEN")
+        // );
+      },
     success: function (res) {
       result = res
     },

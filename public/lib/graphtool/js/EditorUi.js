@@ -649,6 +649,12 @@ EditorUi = function (editor, container, lightbox) {
 				"tableMetaUuid": treeNode.id,
 				"isEnclose": "1"
 			},
+			beforeSend: function (XMLHttpRequest) {
+				// XMLHttpRequest.setRequestHeader(
+				// 	"TOKEN",
+				// 	sessionStorage.getItem("TOKEN")
+				// );
+			},
 			success: function (e) {
 				var nodeExcuteStatus = 3;//默认执行成功
 				if (e.data == null) {
@@ -2579,7 +2585,6 @@ EditorUi.prototype.rightAreaH_S = function () {
 //主页各个区域的折叠与展开事件，end
 
 var iconDrag = function (treeNode) {
-	let that = this
 	//拖动后真实图形
 	//获取所有的原表
 	var valArr = getDataSourceTable();

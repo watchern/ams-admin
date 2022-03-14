@@ -11,7 +11,7 @@
         <span style="padding-right: 10px;">Error Log</span>
         <el-button size="mini" type="primary" icon="el-icon-delete" @click="clearAll">Clear All</el-button>
       </div>
-      <el-table :data="errorLogs" border>
+      <el-table :data="errorLogs" stripe border>
         <el-table-column label="Message">
           <template slot-scope="{row}">
             <div>

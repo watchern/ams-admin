@@ -13,7 +13,7 @@
       </el-col>
     </el-row>
     <el-table :key="tableKey" ref="auditWarningList" v-loading="listLoading" :data="list" border fit
-              highlight-current-row style="width: 100%;"
+              highlight-current-row style="width: 100%;" stripe
               @select="listSelectChange" @select-all="listSelectChange" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55"/>
       <el-table-column label="预警名称" prop="warningName" width="300px">
