@@ -977,12 +977,20 @@ export async function saveModelGraph(){
                                             modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n "+ preNodeInfo.originalCreateSql + ";\n";
                                             //此句只适用于业务库是DB2数据库（目的是为了实现CREATE TABLE xx AS SELECT……的数据插入）
                                             modelSql += "/*节点【" + preNodeInfo.nodeName + "】的结果表插入数据的SQL语句*/\n INSERT INTO " + tableName + " " + preNodeInfo.originalSelectSql + ";\n";
+                                        }  else if(graphIndexVue.dbType === "sqlserver") {
+                                            modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n select * into  " + tableName + " from (" + selectSql + " ) a;\n";
+                                            //此句只适用于业务库是DB2数据库（目的是为了实现CREATE TABLE xx AS SELECT……的数据插入）
+                                            modelSql += "/*节点【" + preNodeInfo.nodeName + "】的结果表插入数据的SQL语句*/\n INSERT INTO " + tableName + " " + selectSql + ";\n";
                                         } else {
                                             modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE TABLE " + tableName + " AS " + preNodeInfo.originalSelectSql + ";\n";
                                         }
                                     } else {
                                         if (graphIndexVue.dbType === "db2") {//不能移动位置
                                             modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE TABLE " + tableName + " AS (" + selectSql + " ) definition only;\n";
+                                            //此句只适用于业务库是DB2数据库（目的是为了实现CREATE TABLE xx AS SELECT……的数据插入）
+                                            modelSql += "/*节点【" + preNodeInfo.nodeName + "】的结果表插入数据的SQL语句*/\n INSERT INTO " + tableName + " " + selectSql + ";\n";
+                                        } else if(graphIndexVue.dbType === "sqlserver") {
+                                            modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n select * into  " + tableName + " from (" + selectSql + " ) a;\n";
                                             //此句只适用于业务库是DB2数据库（目的是为了实现CREATE TABLE xx AS SELECT……的数据插入）
                                             modelSql += "/*节点【" + preNodeInfo.nodeName + "】的结果表插入数据的SQL语句*/\n INSERT INTO " + tableName + " " + selectSql + ";\n";
                                         } else {
