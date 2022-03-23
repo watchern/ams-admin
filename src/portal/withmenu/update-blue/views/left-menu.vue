@@ -556,7 +556,8 @@ export default {
       font-size: 24px;
       margin-left: 30px;
       font-weight: bold;
-      width: 300px;
+      min-width: 120px;
+      /*width: 320px;*/
       margin-right: 20px;
       overflow: hidden;
       text-overflow: ellipsis;

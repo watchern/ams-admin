@@ -342,6 +342,10 @@
   content: '\e670  授权' !important;
 }
 
+.oper-btn.draft:after{
+  content:'\e67e  草稿'!important;
+}
+
 .oper-btn.save:after {
   content: '\e67e  保存' !important;
 }
