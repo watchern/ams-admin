@@ -2,6 +2,9 @@
  * Copyright (c) 2006-2017, JGraph Ltd
  * Copyright (c) 2006-2017, Gaudenz Alder
  */
+
+// 示例：smartAudit/
+var appname= '';
 var mxClient = {
 	/**
 	 * Class: mxClient
@@ -4746,7 +4749,7 @@ var mxUtils = {
 	createImage: function(src) {
 		var imageNode = null;
 
-		if(mxClient.IS_IE6 && document.compatMode != 'CSS1Compat') {
+		if(mxClient.IS_IE && document.compatMode != 'CSS1Compat') {
 			imageNode = document.createElement(mxClient.VML_PREFIX + ':image');
 			imageNode.setAttribute('src', src);
 			imageNode.style.borderStyle = 'none';
@@ -17107,7 +17110,7 @@ mxUtils.extend(mxSvgCanvas2D, mxAbstractCanvas2D);
  * Capability check for DOM parser.
  */
 (function() {
-	mxSvgCanvas2D.prototype.useDomParser = !mxClient.IS_IE && typeof DOMParser === 'function' && typeof XMLSerializer === 'function';
+	mxSvgCanvas2D.prototype.useDomParser = (!mxClient.IS_IE) && (!mxClient.IS_IE11) && typeof DOMParser === 'function' && typeof XMLSerializer === 'function';
 
 	if(mxSvgCanvas2D.prototype.useDomParser) {
 		// Checks using a generic test text if the parsing actually works. This is a workaround
@@ -17949,17 +17952,33 @@ mxSvgCanvas2D.prototype.image = function(x, y, w, h, src, aspect, flipH, flipV) 
         divDom.style.height = this.format(60 * s.scale) + 'px';
         divDom.setAttribute('class', 'svgNodeImgDiv');
         divDom.setAttribute('nodeId', this.cellId);
+		var innerimg = document.createElementNS('http://www.w3.org/2000/svg','image');
         if(this.root.parentNode.parentNode.parentNode.parentNode.getAttribute('id') === 'geDiagramContainer'){//画布区域的图片均为自定义图片
             centerDiv.style.marginTop = this.format(12 * s.scale) + 'px';
             centerDiv.style.marginLeft = this.format(9 * s.scale) + 'px';
             centerDiv.innerHTML = '<img src="' + src + '"/>';
+			innerimg.href.baseVal = src;
+			innerimg.setAttributeNS(null,'height','30');
+			innerimg.setAttributeNS(null,'width','30');
+			innerimg.setAttributeNS(null,'x','15');
+			innerimg.setAttributeNS(null,'y','15');
         }else{
             centerDiv.style.marginTop = this.format(5 * s.scale) + 'px';
             centerDiv.style.marginLeft = this.format(8 * s.scale) + 'px';
             centerDiv.innerHTML = '<img src="' + src + '" style="width:' + this.format(40 * s.scale) + 'px;height:' + this.format(40 * s.scale) + 'px;"/>';
+			innerimg.href.baseVal = src;
+			innerimg.setAttributeNS(null,'height',this.format(40 * s.scale));
+			innerimg.setAttributeNS(null,'width',this.format(40 * s.scale));
+			innerimg.setAttributeNS(null,'x','15');
+			innerimg.setAttributeNS(null,'y','15');
         }
         fo.appendChild(divDom);
-        svg_g.appendChild(fo);
+		// 测试
+		if(mxClient.IS_IE||mxClient.IS_IE11){
+			svg_g.appendChild(innerimg);
+		}else{
+            svg_g.appendChild(fo);
+		}
         this.root.appendChild(svg_g);
     }
 };
@@ -18058,11 +18077,11 @@ mxSvgCanvas2D.prototype.mark = function(x, y, w, h, cell, aspect, flipH, flipV) 
         var midTableStatus = graph.nodeData[cell.id].nodeInfo.midTableStatus;
         var flag = false;
         if(resultTableStatus === 2) {//当前节点被标记为模型最终结果表
-            src = "../../lib/graphtool/images/finaloutmark.png";
+            src = "../../" + appname + "lib/graphtool/images/finaloutmark.png";
             flag = true;
         }
         if(midTableStatus === 2) {//当前节点被标记为模型辅助结果表
-            src = "../../lib/graphtool/images/centeroutmark.png";
+            src = "../../" + appname + "lib/graphtool/images/centeroutmark.png";
             flag = true;
         }
         if(!flag){
@@ -18364,7 +18383,7 @@ mxSvgCanvas2D.prototype.copyIcon = function(x, y, w, h, cell, aspect, flipH, fli
     if(graph.nodeData[cell.id]) {
         var isCopy = graph.nodeData[cell.id].isCopy;			//是否为复制表
         if(isCopy){
-            src = "../../lib/graphtool/images/copyIcon.png";
+            src = "../../" + appname + "lib/graphtool/images/copyIcon.png";
         }else{
             divDom.style.display = 'none';
         }
@@ -18385,8 +18404,11 @@ mxSvgCanvas2D.prototype.convertHtml = function(val) {
 		var doc = new DOMParser().parseFromString(val, 'text/html');
 
 		if(doc != null) {
-			val = new XMLSerializer().serializeToString(doc.body);
-
+			if(doc.body){
+			    val = new XMLSerializer().serializeToString(doc.body);
+			}else{
+				val = '<body xmlns="http://www.w3.org/1999/xhtml"></body>'
+			}
 			// Extracts body content from DOM
 			if(val.substring(0, 5) == '<body') {
 				val = val.substring(val.indexOf('>', 5) + 1);
@@ -24925,6 +24947,9 @@ mxText.prototype.updateHtmlFilter = function() {
  * Updates the HTML node(s) to reflect the latest bounds and scale.
  */
 mxText.prototype.updateValue = function() {
+	// 测试
+	this.node.style.marginTop = '20px';
+	this.node.style.marginLeft = '20px';
 	if(mxUtils.isNode(this.value)) {
 		this.node.innerHTML = '';
 		this.node.appendChild(this.value);
@@ -24965,6 +24990,7 @@ mxText.prototype.updateValue = function() {
 			// FIXME: Background size in quirks mode for wrapped text
 			var lh = (mxConstants.ABSOLUTE_LINE_HEIGHT) ? (this.size * mxConstants.LINE_HEIGHT) + 'px' :
 				mxConstants.LINE_HEIGHT;
+				//ie渲染图形化图形
 			val = '<div style="zoom:1;' + css + 'display:inline-block;_display:inline;text-decoration:inherit;' +
 				'padding-bottom:1px;padding-right:1px;line-height:' + lh + '">' + val + '</div>';
 		}

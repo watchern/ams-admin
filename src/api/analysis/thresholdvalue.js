@@ -123,7 +123,23 @@ export function batchThresholdValueDel(data){
     data
   })
 }
-
+/**
+ * json对象属性变小写
+ * @param {*} jsonObj
+ */
+export function localtoLowerCase(jsonObj) {
+  let repobj = JSON.parse(JSON.stringify(jsonObj))
+  if (typeof (repobj) == 'object') {
+    for (var key in repobj) {
+      if (key.toLowerCase() != key){
+        repobj[key.toLowerCase()] = repobj[key];
+        delete(repobj[key]);
+      }
+    }
+    return repobj;
+  }
+  return jsonObj;
+}
 /**
  * 处理数据展现颜色  阈值为单值的时候
  * @param data 要处理的数据
@@ -131,6 +147,7 @@ export function batchThresholdValueDel(data){
  * @returns {{"background-color": (string), color: (string)}}
  */
 export function handleDataSingleValue(data,thresholdValueRel){
+  let repdata = localtoLowerCase(data);
   //测试数据 可以用来后续修改用  建议不删 否则每次都得重新查数据
 /*  thresholdValueRel = JSON.parse("{\"modelThresholdValueUuid\":\"\",\"thresholdValueUuid\":\"40281a8177418a3d0177418a3df30000\"," +
     "\"thresholdValueName\":\"单值\",\"colorInfo\":{\"backgroundColor\":\"#000000\",\"fontColor\":\"#ffffff\"}," +
@@ -147,7 +164,7 @@ export function handleDataSingleValue(data,thresholdValueRel){
   let backgroundColor = thresholdValueRel.colorInfo.backgroundColor;
   let fontColor = thresholdValueRel.colorInfo.fontColor;
   //数据出来的值
-  let valueOne = data[thresholdValueRel.modelResultColumnName]
+  let valueOne = repdata[thresholdValueRel.modelResultColumnName.toLowerCase()]
   //要判断的值
   let valueTwo = thresholdValueRel.thresholdValue.filterValue
   //运算符

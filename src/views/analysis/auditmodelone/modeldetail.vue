@@ -41,7 +41,7 @@
             </el-row>
             <div ref="relModelTableDiv" style="display: none;height:200px;overflow-y: scroll">
               <el-button type="primary" size="mini" @click="addRelFilter(1)">添加</el-button>
-              <el-table ref="relModelTable" :data="relModelTable" border fit highlight-current-row>
+              <el-table ref="relModelTable" :data="relModelTable" stripe border fit highlight-current-row>
                 <el-table-column label="原模型字段" align="center">
                   <template slot-scope="scope">
                     <el-select v-model="scope.row.resultColumn" value="-1">
@@ -86,7 +86,7 @@
             </el-row>
             <div ref="relTableDiv" style="display: none">
               <el-button type="primary" size="mini" @click="addRelFilter(2)">添加</el-button>
-              <el-table ref="relTable" :data="relTable" border fit highlight-current-row>
+              <el-table ref="relTable" :data="relTable" stripe border fit highlight-current-row>
                   <el-table-column label="过滤条件" align="center" prop=""  width="450px">
                     <template slot-scope="scope" v-if="!scope.row.noShow">
                       <el-row>

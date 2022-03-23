@@ -110,6 +110,7 @@
               ref="modelListTable"
               v-loading="listLoading"
               style="min-height: 450px; overflow-y: scroll"
+              stripe
               :data="list"
               border
               fit

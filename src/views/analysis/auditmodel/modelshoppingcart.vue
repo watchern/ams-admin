@@ -59,6 +59,7 @@
       <el-table
         ref="modelListTable"
         :data="currentData"
+        stripe
         border
         fit
         highlight-current-row

@@ -197,6 +197,12 @@ export function bingLieQuery(objInList, objDimList) {
     url: url,
     data: {param:JSON.stringify(data)},
     async: false,
+    beforeSend: function (XMLHttpRequest) {
+      // XMLHttpRequest.setRequestHeader(
+      //   "TOKEN",
+      //   sessionStorage.getItem("TOKEN")
+      // );
+    },
     success: function (res) {
       resultObj = res
     },
@@ -229,6 +235,12 @@ export function supQuery(objInList, objDimList) {
     url: url,
     data: {param:JSON.stringify(data)},
     async: false,
+    beforeSend: function (XMLHttpRequest) {
+      // XMLHttpRequest.setRequestHeader(
+      //   "TOKEN",
+      //   sessionStorage.getItem("TOKEN")
+      // );
+    },
     success: function (res) {
       resultObj = res
     },
