@@ -11,3 +11,10 @@ export function querySystemTask(data) {
   })
 }
 
+export function cancelExecution(ids) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/cancelExecution/${ids}`,
+    method: 'put'
+  })
+}

@@ -556,6 +556,13 @@
   content: '提交审核' !important;
 }
 
+.oper-btn.review:after{
+  content:'\e671'!important;
+}
+.oper-btn.review:hover::before{
+  content:'复核'!important;
+}
+
 .oper-btn.help:after{
   content:'\e629'!important;
 }
@@ -600,6 +607,12 @@
 }
 .oper-btn.cancel-exec:hover::before {
   content: '取消执行' !important;
+}
+.oper-btn.refresh:after {
+  content: '\e66e' !important;
+}
+.oper-btn.refresh:hover::before {
+  content: '刷新调度周期' !important;
 }
 //endregion
 

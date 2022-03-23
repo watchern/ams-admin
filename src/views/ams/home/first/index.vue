@@ -19,7 +19,7 @@
             <div class="top-card-right">
               <div class="title">待办事项</div>
               <div v-for="(text, index) in todoData" :key="index" class="line">
-                <span @click="toDoJump()" class="notes-text">{{
+                <span @click="toDoJumpFlow(text,index)" class="notes-text">{{
                   text.applyTitle
                 }}</span>
                 <!-- <span v-if="text.icon" :style="{color:text.iconColor,width:text.width}" class="icon">{{ text.icon }}</span> -->
@@ -156,7 +156,48 @@ export default {
           content: "",
         },
       ],
-      todoData:[{applyTitle:'暂无'}]//待办工作流
+      todoData:[{applyTitle:'暂无'}],//待办工作流
+      //审核信息的状态
+      applyInfo: {
+        //业务主键
+        appDataUuid: "",
+        //版本
+        versionUuid: "",
+        //业务主键批量提交
+        detailUuids: "",
+        //业务审核状态,0未提交，1审核中，2审核中，3审核不通过
+        status: "",
+        //业务方法的成功失败0成功，1失败
+        mstate: "",
+        //流程方法的成功失败0成功，1失败
+        fstate: "",
+        //是否更新业务代码
+        isUpdate: "",
+        //流程方法的成功失败0成功，1失败
+        Newfstate: "",
+        //收回，终止业务方法的成功失败0成功，1失败
+        newMstate: "",
+      },
+      applyDetail: {
+        type: "",
+        isEdit: false,
+      },
+      flowSet: {
+        opinionList: true,
+        opinion: true,
+        nextStep: true,
+        done:false,
+      },
+//初始化审批页面参数
+      flowItem: {
+        wftype: "",
+        applyUuid: "",
+        detailUuids: "",
+        versionUuid: "",
+        workEffortId: "",
+        activityId: "",
+      },
+      projectStatus:"",
     };
   },
   mounted() {
@@ -226,25 +267,99 @@ export default {
         val: item.val,
       });
     },
+    toDoJumpFlow(row,index) {
+        if (row.currentState == "CAL_SENT") {
+          this.updateToAccepted(row);
+          if (!this.partyAssignment) {
+            this.common.alertMsg(4, "数据更新失败");
+            return;
+          }
+        }
+        this.applyInfo.appDataUuid = row.appDataUuid;
+        this.applyInfo.versionUuid = row.versionUuid;
+        this.applyInfo.detailUuids = row.detailUuids;
+        //待办列表里，默认审核状态是审核中value=1
+        this.applyInfo.status = "1";
+        //待办列表里，默认业务方法执行状态是空
+        this.applyInfo.mstate = "";
+        //待办列表里，默认流程方法执行状态是空
+        // this.applyInfo.fstate = "";
+        //待办列表里，默认流程方法执行状态是空
+        this.applyInfo.newFstate = "";
+        //业务数据是否更新过业务代码
+        // this.applyInfo.isUpdate = "";
+        //初始化vuex里的审核状态，或者覆盖之前存储的值
+        this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
+        //跳转页面，name值可以动态获取row.apptype;
+        this.applyDetail.type = row.applyType;
+        this.flowItem.applyUuid = row.applyUuid;
+        this.flowItem.appDataUuid = row.appDataUuid;
+        this.flowItem.versionUuid = row.versionUuid;
+        this.flowItem.detailUuids = row.detailUuids;
+        //用来区分主子项目
+        this.flowItem.planTag = row.temp2;
+        console.log(this.applyDetail.type);
+        this.flowItem.workEffortId = row.workEffortId;
+        this.flowItem.temp1 = row.temp1;
+        this.flowItem.wftype = this.dict.flowValueFun(row.applyType);
+        this.rojectType = row.workflowPackageId;
+        this.$router.push({
+          name: "todoDetail",
+          params: {
+            approvalData: row,
+            applyDetail: this.applyDetail,
+            flowSet: this.flowSet,
+            flowItem: this.flowItem,
+            projectStatus:this.projectStatus,
+          },
+        });
+    },
     toDoJump(data,index) {
       if (index == 0){
-        if (this.cardList[0].des[data].url == null) {
+        // 判断条件增加空判断
+        if (this.cardList[0].des[data].url === "" || this.cardList[0].des[data].url == null) {
           this.dialogFormVisible = true;
           this.PopUpContent = [];
           this.PopUpContent.push({
             text: this.cardList[0].des[data].text,
             content: this.cardList[0].des[data].content,
           });
-          location.reload();
+          // 点击提醒事项会直接刷新页面
+          // location.reload();
         } else {
           this.$router.push({ path: this.cardList[0].des[data].url });
         }
-        updateRemind(this.cardList[0].des[data].Uuid);
+        updateRemind(this.cardList[0].des[data].Uuid).then(result => {
+          if (result.code === 0) {
+            this.getList()
+          } else {
+            this.$notify({ success: '失败', message: '标记已阅失败' })
+          }
+        })
       } else {
         console.log(this.cardList[1].des[data].url)
         this.$router.push({ path: this.cardList[1].des[data].url });
       }
-      
+    },
+    getList() {
+      // 刷新提醒事项
+      getRemindByDescTime().then((resp) => {
+        this.cardList[0].des = [];
+        for (let i = 0; i < 5; i++) {
+          this.cardList[0].des.push({
+            text: resp.data.records[i].remindTitle,
+            iconColor: "#D81020",
+            icon: "",
+            url: resp.data.records[i].modeUrl,
+            content: resp.data.records[i].remindContent,
+            index: i,
+            Uuid: resp.data.records[i].remindUuid,
+          });
+          if (resp.data.records[i].readStatus === 0) {
+            this.cardList[0].des[i].icon = " NEW";
+          }
+        }
+      });
     },
     gettodowork() {
       this.$axios

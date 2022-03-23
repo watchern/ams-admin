@@ -294,6 +294,9 @@
 .oper-btn.restart:after{
   content:'\e66e  重新运行'!important;
 }
+.oper-btn.refresh:after {
+  content: '\e66e  刷新调度周期' !important;
+}
 //endregion @启用、停用、暂停、停止、运行等按钮 end@
 
 //region @删除、清空等按钮 start@
@@ -382,6 +385,10 @@
 
 .oper-btn.commit:after{
   content:'\e671 提交审核' !important;
+}
+
+.oper-btn.review:after{
+  content:'\e671 复核'!important;
 }
 
 //region @所有取消按钮 start@

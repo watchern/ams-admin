@@ -403,6 +403,26 @@ export default {
   props: ["power", "dataUserId", "sceneCode", "isAuditWarning"],
   data() {
     return {
+      //工作流相关
+      flowSet: {
+        opinionList: false,
+        opinion: false,
+        nextStep: true,
+        isSecond: false,
+      },
+      flowItem: {
+        //动态赋值
+        wftype: "modelpublishflow",
+        applyUuid: "",
+        detailUuids: "",
+        applyTitle: "",
+        workEffortId: "",
+        appDataUuid: "",
+        versionUuid: "",
+        isSecond: false,
+        temp1: "",
+      },
+      flowParam: 0,
       // 定义数据列
       columnDefs: [
         {field:"modelName",headerName:"模型名称"},
@@ -412,6 +432,17 @@ export default {
         {field:"modelType",headerName:"模型类型"},
         {field:"createTime",headerName:"创建时间"},
       ],
+      //工作流相关
+      submitData: {
+          versionUuid: 'tlLuwUhC',
+          busTableName: '',  //表名
+          busDatabaseName: 'warehouse',  //数据库名
+          busDatabaseType: '',  //
+          status: '1',  //预警数据状态
+          busdatas: [],
+          commonModelName:'',
+          commonModelUuid:''
+      },
       isShow: false,
       tableKey: "errorUuid",
       // list列表

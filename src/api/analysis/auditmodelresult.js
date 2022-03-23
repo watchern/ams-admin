@@ -79,6 +79,20 @@ export function addCoverResultRelProject(data) {
 }
 
 /**
+ * 关联项目
+ * @param data 要添加的分类对象
+ * @returns {AxiosPromise}
+ */
+export function selectOnlyUuidByStatus(data) {
+  return request({
+    baseURL: '/ams-clue',
+    url: '/applyBusData/selectOnlyUuidByStatus',
+    method: 'post',
+    data
+  })
+}
+
+/**
  * 移除项目关联
  * @param  data 运行结果与项目关联表主键
  */
@@ -110,6 +124,18 @@ export function getByResultDetailIds(data) {
     url: '/ResultDetailProjectRelController/getResultRelProject',
     method: 'post',
     data
+  })
+}
+
+/**
+ * 根据结果明细的onlyUuid查询项目关联表
+ */
+export function getByRunTashRelUuid(RunTaskRelUuid) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/ResultRelProjectController/getResultRelProject',
+    method: 'get',
+    params:{RunTaskRelUuid:RunTaskRelUuid}
   })
 }
 
@@ -495,6 +521,19 @@ export function sendToOA(taskRelUuid, dataUserId, dataUserName) {
     url: '/AnalysisResultController/sendToOA',
     method: 'get',
     params:{taskRelUuid: taskRelUuid, dataUserId: dataUserId, dataUserName: dataUserName}
+  })
+}
+
+/**
+ * 校验模型结果明细提交审批权限
+ * @param {*} data 模型结果id模型结果明细id人员信息
+ */
+export function verificationApprovalAuthority(runTaskRelUuid,onlyUuids,personUuid,personName) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/RunResultShareController/verificationApprovalAuthority',
+    method: 'post',
+    data:{runTaskRelUuid,onlyUuids,personUuid,personName}
   })
 }
 

@@ -6,7 +6,8 @@
       placeholder="输入关键字进行过滤"
       class="tree-search"
     />
-    <!-- default-expand-all elementui 树默认展开全部，2021-9-8应客户要求去掉 -->
+    <!-- default-expand-all elementui 树默认展开全部，2021-9-8应客户要求去掉
+     @node-expand="handleNodeClick"-->
     <MyElTree
       ref="tree"
       :data="data"
@@ -15,8 +16,8 @@
       :expand-on-click-node="false"
       node-key="id"
       check-strictly
+      @check-change="handleNodeClickCheck"
       @node-click="handleNodeClick"
-      @check-change="handleNodeClick1"
       :show-checkbox="
         this.publicModel === 'editorModel' ||
         this.publicModel === 'relationModel' ||
@@ -124,7 +125,7 @@ export default {
     this.getModelFolder();
   },
   methods: {
-    handleNodeClick1(data, checked, node) {
+    handleNodeClickCheck(data, checked, node) {
       if (checked === true) {
         this.checkedId = data.id;
         this.$refs.tree.setCheckedKeys([data.id]);
