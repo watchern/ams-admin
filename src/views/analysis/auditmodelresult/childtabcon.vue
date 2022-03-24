@@ -234,7 +234,8 @@
               >
                 <el-col :span="14">
                   <el-input :readonly="true" value="设置查询条件后此处显示条件内容" v-if="typeof nowSql == 'undefined'"></el-input>
-                  <el-input :readonly="true" :value="nowSql" v-if="typeof nowSql != 'undefined'"></el-input>
+                  <el-input :readonly="true" :value="nowSql" v-if="typeof nowSql == 'undefined'"
+                  ></el-input>
                 </el-col >
                 <el-col :span="10" >
                 <el-dropdown>
