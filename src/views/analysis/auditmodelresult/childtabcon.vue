@@ -1,7 +1,7 @@
 <template>
   <!-- childTabCon.vue是子页签中内容的通用组件 aggrid -->
   <div class="itxst">
-    <el-dialog title="查询条件设置" :visible.sync="dialogVisible" width="30%">
+    <el-dialog title="查询条件设置" :visible.sync="dialogVisible" width="50%">
       <myQueryBuilder
         v-if="dialogVisible"
         ref="myquerybuilder"

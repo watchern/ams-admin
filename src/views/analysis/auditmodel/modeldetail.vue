@@ -2,7 +2,8 @@
   <div>
     <p style="color:red;font-size:large">注意：只显示最后的结果列</p>
     <p style="font-size:large;font-weight:bold">基本信息</p>
-    <p style="color:silver;font-size:large">———————————————————————————</p>
+    <!-- <p style="color:silver;font-size:large">———————————————————————————</p> -->
+    <p style="border-top:2px solid silver;width:100%;height:0px;margin:5px;"></p>
     <el-container style="height: 450px;">
       <div ref="basicInfo">
         <el-form ref="basicInfoForm" :model="form" :rules="rules" class="detail-form" :disabled="isBanEdit">
@@ -21,7 +22,8 @@
             </el-col>
           </el-row>
           <p style="font-size:large;font-weight:bold">关联设置</p>
-          <p style="color:silver;font-size:large">———————————————————————————</p>
+          <!-- <p style="color:silver;font-size:large">———————————————————————————</p> -->
+          <p style="border-top:2px solid silver;width:100%;height:0px;margin:5px;"></p>
           <el-row>
             <el-col :span="24">
               <el-form-item label="关联类型" prop="relationType">

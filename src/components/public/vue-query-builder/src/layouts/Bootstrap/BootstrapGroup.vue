@@ -28,14 +28,8 @@
           </option>
         </select>
 
-        <button
-          v-if="depth > 1"
-          type="button"
-          class="close ml-auto"
-          @click="remove"
-          v-html="labels.removeGroup"
-        >
-        </button>
+        <span data-toggle="tooltip" title="删除" class="oper-btn scheduledelete" style="float:right;margin-right:20px;width:22px;" @click="remove" v-if="depth > 1"
+        ></span>
       </div>
     </div>
 
@@ -55,22 +49,24 @@
             </option>
           </select>
 
-          <button
-            type="button"
+          <el-button
+            type="primary"
             class="btn btn-secondary mr-2"
             @click="addRule"
           >
             {{ labels.addRule }}
-          </button>
+          </el-button>
 
-          <button
+
+          <el-button
             v-if="depth < maxDepth"
-            type="button"
+            type="primary"
             class="btn btn-secondary"
             @click="addGroup"
           >
             {{ labels.addGroup }}
-          </button>
+          </el-button>
+
         </div>
       </div>
 
@@ -154,8 +150,8 @@ export default {
   }
   >>>.vqb-rule{
     border-left: 2px solid #8bc34a;
-    margin-top: 15px;
-    background-color: #efefef;
+    margin-top: 10px;
+    /* background-color: #efefef; */
     height: 60px;
   }
 </style>

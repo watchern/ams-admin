@@ -176,13 +176,8 @@
       </el-autocomplete>
 
       <!-- Remove rule button -->
-      <button
-        type="button"
-        class="close ml-auto"
-        @click="remove"
-        v-html="labels.removeRule"
-      >
-      </button>
+      <span data-toggle="tooltip" title="删除" class="oper-btn scheduledelete" style="margin-left:25px;" @click="remove"
+        ></span>
     </div>
   </div>
 </template>

@@ -1,7 +1,8 @@
 <template>
   <div>
     <p style="font-size:large;font-weight:bold">基本信息</p>
-    <p style="color:silver;font-size:large">———————————————————————————</p>
+    <!-- <p style="color:silver;font-size:large">———————————————————————————</p> -->
+    <p style="border-top:2px solid silver;width:100%;height:0px;margin:5px;"></p>
     <el-container style="height: 450px;">
       <div ref="basicInfo" style="float: left">
         <el-form ref="basicInfoForm" :model="form" :rules="rules" class="detail-form" :disabled="isBanEdit">
@@ -12,7 +13,8 @@
             <el-input v-model="form.filterMemo" type="textarea" />
           </el-form-item>
           <p style="font-size:large;font-weight:bold">条件展示设置</p>
-          <p style="color:silver;font-size:large">———————————————————————————</p>
+          <!-- <p style="color:silver;font-size:large">———————————————————————————</p> -->
+          <p style="border-top:2px solid silver;width:100%;height:0px;margin:5px;"></p>
           <el-row>
             <el-form-item label="过滤条件" prop="filterValue">
               <el-col :span="20">

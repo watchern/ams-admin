@@ -1,6 +1,7 @@
 <template>
   <div class="kongxi">
-    <p style="color: silver; font-size: large">———————————————————————————</p>
+    <!-- <p style="color: silver; font-size: large">———————————————————————————</p> -->
+    <p style="border-top:2px solid silver;width:100%;height:0px;margin:5px;"></p>
     <queryBuilder ref="queryBuilder" v-model="queryJson" :rules="queryRules" />
   </div>
 </template>
