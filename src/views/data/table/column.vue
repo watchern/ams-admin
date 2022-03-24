@@ -45,7 +45,7 @@
         </el-form-item> -->
       </el-form>
     </template>
-    <el-table :data="temp" @selection-change="handleSelectionChange" class="detail-form" style="padding: 20px 0 ;overflow: auto;height: 43vh">
+    <el-table :data="temp" @selection-change="handleSelectionChange" class="detail-form" style="padding: 20px 0 ;overflow: auto;height: 70vh">
       <el-table-column type="selection" width="55" />
       <el-table-column prop="colName" label="字段名称" show-overflow-tooltip >
         <template slot-scope="scope" show-overflow-tooltip >
