@@ -114,7 +114,7 @@
         <ag-grid-vue
           v-if="isSee"
           v-loading="isLoading"
-          style="height: calc(100% - 19px)"
+          style="height: calc(100% - 109px)"
           class="table ag-theme-balham"
           :column-defs="columnDefs"
           :row-data="computedRowData"
@@ -297,7 +297,7 @@
             <ag-grid-vue
               v-if="isSee"
               v-loading="isLoading"
-              style="height: calc(100% - 19px)"
+              style="height: calc(100% - 109px)"
               class="table ag-theme-balham"
               :column-defs="computedColumnDefs"
               :rowData="computedRowData"
