@@ -76,7 +76,8 @@
       <!--      </div>-->
 
       <div class="newest-item">
-        <div class="newest-item-box" style="background: #353A43 !important;">
+<!--        style="background: #353A43 !important;"-->
+        <div class="newest-item-box" >
           <div data-v-02dbff7e="" class="title-label-img">
             <img
               data-v-02dbff7e=""
