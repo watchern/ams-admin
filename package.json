@@ -26,7 +26,7 @@
     "@babel/polyfill": "^7.12.1",
     "@vue/composition-api": "^1.1.1",
     "ag-grid": "^18.1.2",
-    "ag-grid-community": "^26.0.0",
+    "ag-grid-community": "^26.2.1",
     "ag-grid-enterprise": "^26.0.0",
     "ag-grid-vue": "^26.0.0",
     "ams-clue-vue": "^0.1.26",
