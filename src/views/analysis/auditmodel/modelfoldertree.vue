@@ -6,8 +6,24 @@
       placeholder="输入关键字进行过滤"
       class="tree-search"
     />
-    <!-- default-expand-all elementui 树默认展开全部，2021-9-8应客户要求去掉
-     @node-expand="handleNodeClick"-->
+      <div class="controlTreeNode">
+      <el-button
+              title="展开全部节点"
+              type="text"
+              size="mini"
+              class="expandTreeNode"
+              @click="expandAllNodes()"
+      ><span class="expandIcon"></span>
+      </el-button>
+      <el-button
+              title="收起全部节点"
+              type="text"
+              size="mini"
+              class="collapseTreeNode"
+              @click="collapseAllNodes()"
+      ><span class="collapseIcon"></span>
+      </el-button>
+      </div>
     <MyElTree
       ref="tree"
       :data="data"
@@ -26,7 +42,7 @@
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
         <span> <i :class="data.icon" />{{ node.label }} </span>
-        <span v-if="data.type == 'folder' && power != 'warning' && !isBussinessType && data.id != 'gongxiang'&& data.id != 'xiaxian'">
+        <span v-if="data.type == 'folder' && power != 'warning' && !isBussinessType && data.path.indexOf('gongxiang') == -1&& data.id != 'xiaxian'">
           <el-button
             title="添加模型分类"
             type="text"
@@ -42,6 +58,7 @@
             size="mini"
             class="tree-line-btn"
             @click.stop="() => setSelectTreeNode(node, data, 2)"
+            v-if="data.pid != '0'"
             >
             <svg-icon icon-class="icon-edit-1" />
           </el-button>
@@ -51,6 +68,7 @@
             size="mini"
             class="tree-line-btn"
             @click.stop="() => deleteFolder(node, data)"
+            v-if="data.pid != '0'"
             >
             <svg-icon icon-class="icon-delete-1" />
           </el-button>
@@ -83,12 +101,14 @@ import {
   addModelFolder,
   updateModelFolder,
 } from "@/api/analysis/auditmodel";
+import { getInfo, isAdmin } from '@/api/user'
 export default {
   name: "ModelFolderTree",
   components: { MyElTree },
-  props: ["publicModel", "power", "spaceFolderName", "spaceFolderId", "filterId"],
+  props: ["publicModel", "power", "spaceFolderName", "spaceFolderId", "filterId", "selectFolder"],
   data() {
     return {
+      ifExpandAll: false, // 是否展开所有树节点
       filterText: null,
       data: [],
       defaultProps: {
@@ -109,7 +129,8 @@ export default {
       checkedId: "",
       appContainerDivStyle:"",
       isBussinessType:false,  //是否是业务分类
-      isShowModel:true
+      isShowModel:true,
+        ifmanger: 0,
     };
   },
   watch: {
@@ -117,14 +138,45 @@ export default {
       // 搜索树
       this.$refs.tree.filter(val);
     },
+      selectFolder(){
+          this.getModelFolder();
+      }
   },
   created() {
     if(this.publicModel === 'relationModel'){
       this.appContainerDivStyle = "height: 500px;overflow-y: scroll"
     }
     this.getModelFolder();
+      // 校验用户权限
+      isAdmin().then((res) => {
+          // 如果是管理员为1
+          if (res.data) {
+              this.ifmanger = 1;
+          }else{
+              this.ifmanger = 0;
+          }
+      });
   },
   methods: {
+      expandAllNodes(){
+          this.ifExpandAll = true;
+          this.changeTreeNodeStatus(this.$refs.tree.store.root)
+      },
+      collapseAllNodes(){
+          this.ifExpandAll = false;
+          this.changeTreeNodeStatus(this.$refs.tree.store.root)
+      },
+      changeTreeNodeStatus (node) {
+          node.ifExpandAll = this.ifExpandAll
+          for (let i = 0; i < node.childNodes.length; i++) {
+              // 改变节点的自身expanded状态
+              node.childNodes[i].expanded = this.ifExpandAll
+              // 遍历子节点
+              if (node.childNodes[i].childNodes.length > 0) {
+                  this.changeTreeNodeStatus(node.childNodes[i])
+              }
+          }
+      },
     handleNodeClickCheck(data, checked, node) {
       if (checked === true) {
         this.checkedId = data.id;
@@ -185,12 +237,30 @@ export default {
               case "copyModel":
                   this.isBussinessType = true
                   findModelFolderTree(false, spaceFolderName, spaceFolderId).then((result) => {
-                      // 只保留个人空间下的文件夹
+                    var folderPath = this.selectFolder;
+                    var dataUserId = this.$store.getters.datauserid
+                    var orgcode = "";
+                    getInfo().then((resp) => {
+                        orgcode = resp.data.orgcode;
+                    switch(folderPath){
+                        // 如果选中的是公共模型，就能复制到个人和公共模型
+                        case "gonggong":
                       for (let i = 0; i < result.data.length; i++) {
-                          if (result.data[i].id == this.$store.getters.datauserid) {
+                                if (result.data[i].id !== "gongxiang" && result.data[i].id !== "xiaxian") {
                               newData.push(result.data[i]);
                           }
                       }
+                            break;
+                        // 如果选中的是个人模型，只可以复制到个人模型
+                        case this.$store.getters.datauserid :
+                            for (let i = 0; i < result.data.length; i++) {
+                                if (result.data[i].id == dataUserId) {
+                                    newData.push(result.data[i]);
+                                }
+                            }
+                            break;
+                    }
+                    });
                       this.data = newData;
                   });
               break;
@@ -311,6 +381,7 @@ export default {
             icon: "el-icon-folder",
             extMap: { pbScope: this.selectTreeNode.extMap.pbScope },
             type: "folder",
+            path:  this.form.folderPath,
           };
           if (!this.selectTreeNode.children) {
             this.$set(this.selectTreeNode, "children", []);
@@ -422,3 +493,45 @@ export default {
   },
 };
 </script>
+<style>
+  .controlTreeNode{
+    position: absolute;
+    background: #F5F5FE;
+  }
+  .expandTreeNode{
+      position: absolute;
+      border: 1px #656565;
+      top: -50px;
+      left: 200px;
+      height: 25px;
+      width: 25px;
+  }
+  .collapseTreeNode{
+      position: absolute;
+      border: 1px #656565;
+      top: -50px;
+      left: 219px;
+      height: 25px;
+      width: 25px;
+  }
+  .expandIcon{
+      position: absolute;
+      display: inline-block;
+      background-image: url("../../../styles/icons/expandicon.png");
+      height: 25px;
+      width: 25px;
+      background-size: 100%;
+      right: 0px;
+      top: 0px;
+  }
+  .collapseIcon{
+      position: absolute;
+      display: inline-block;
+      background-image: url("../../../styles/icons/collapseicon.png");
+      height: 25px;
+      width: 25px;
+      background-size: 100%;
+      right: 0px;
+      top: 0px;
+  }
+</style>

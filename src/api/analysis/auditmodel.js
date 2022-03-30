@@ -105,6 +105,19 @@ export function updateModel(data) {
     data
   })
 }
+
+/**
+ * 复制模型方法
+ * @param data
+ */
+export function copyModel(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelController/copyModel',
+    method: 'post',
+    data
+  })
+}
 /**
  * 删除模型
  * @param data 要删除的模型
@@ -147,6 +160,19 @@ export function updateModelBasicInfo(data) {
     method: 'post',
     // params 以formData格式传递  后台用RequestParam
     // 直接加data以json格式传递  后台用RequestBody
+    data
+  })
+}
+
+/**
+ * 删除模型的共享数据
+ * @param data
+ */
+export function removeModelShare(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelController/removeModelShare',
+    method: 'post',
     data
   })
 }
@@ -236,7 +262,27 @@ export function shareModel(data) {
   })
 }
 
+export function cancelShareModel(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelController/cancelShareModel',
+    method: 'post',
+   data
+  })
+}
 
+/**
+ * 获取共享模型和人员列表
+ * @param data
+ */
+export function getShareModelList(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelController/getShareModelList',
+    method: 'post',
+    data
+  })
+}
 /**
  * 根据model的id数组查询对应的model集合
  * @param {*} data modelid数组

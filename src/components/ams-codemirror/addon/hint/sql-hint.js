@@ -2,6 +2,8 @@
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 import request from '@/utils/request'
 import store from '@/store'
+import CodeMirror from 'codemirror'
+
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../../mode/sql/sql"));

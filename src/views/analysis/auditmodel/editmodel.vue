@@ -67,9 +67,9 @@
                 <el-input v-model="form.modelFolderUuid" class="display" :disabled="true"/>
                 <el-input v-model="form.modelFolderName" :disabled="true"/>
               </el-col>
-              <el-col :span="2">
-                <el-button ref="businessFolderBtnRef" @click="modelFolderTreeDialog = true" type="primary">选择</el-button>
-              </el-col>
+<!--              <el-col :span="2">-->
+<!--                <el-button ref="businessFolderBtnRef" @click="modelFolderTreeDialog = true" type="primary">选择</el-button>-->
+<!--              </el-col>-->
               <el-col :span="2"></el-col>
             </el-form-item>
           </el-row>

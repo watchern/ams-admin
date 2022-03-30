@@ -1,8 +1,26 @@
 <template>
   <div class="app-container" style="width:100%;height:100%;">
     <el-input v-model="filterText1" placeholder="输入关键字进行过滤" />
-    <div style="height: calc(100% - 56px);margin-top: 20px;">
+    <div style="height: calc(100% - 70px);margin-top: 20px;">
       <!-- :default-expand-all="true" 展开全部节点 -->
+      <div class="controlTreeNode">
+        <el-button
+                title="展开全部节点"
+                type="text"
+                size="mini"
+                class="expandTreeNode"
+                @click="expandAllNodes()"
+        ><span class="expandIcon"></span>
+        </el-button>
+        <el-button
+                title="收起全部节点"
+                type="text"
+                size="mini"
+                class="collapseTreeNode"
+                @click="collapseAllNodes()"
+        ><span class="collapseIcon"></span>
+        </el-button>
+      </div>
       <MyElTree
         ref="tree1"
         v-loading="treeLoading"
@@ -14,9 +32,8 @@
         node-key="id"
         @node-click="nodeClick"
         @node-expand="nodeExpand"
-        lazy
         :load="loadNode"
-        :default-expanded-keys="openlist"
+        :expand-on-click-node="false"
       >
         <span slot-scope="{ node, data }" class="custom-tree-node">
           <i
@@ -114,6 +131,7 @@ export default {
   },
   data() {
     return {
+      ifExpandAll: false, // 是否展开所有树节点
       filterText1: null,
       props: {
         label: "label",
@@ -145,6 +163,25 @@ export default {
     this.refresh();
   },
   methods: {
+    expandAllNodes(){
+      this.ifExpandAll = true;
+      this.changeTreeNodeStatus(this.$refs.tree1.store.root)
+    },
+    collapseAllNodes(){
+      this.ifExpandAll = false;
+      this.changeTreeNodeStatus(this.$refs.tree1.store.root)
+    },
+    changeTreeNodeStatus (node) {
+      node.ifExpandAll = this.ifExpandAll
+      for (let i = 0; i < node.childNodes.length; i++) {
+        // 改变节点的自身expanded状态
+        node.childNodes[i].expanded = this.ifExpandAll
+        // 遍历子节点
+        if (node.childNodes[i].childNodes.length > 0) {
+          this.changeTreeNodeStatus(node.childNodes[i])
+        }
+      }
+    },
     filterNode(value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
@@ -159,7 +196,7 @@ export default {
     appendnode(childData, parentNode) {
       this.$refs.tree1.append(childData, parentNode);
       parentNode.loaded = false;
-      parentNode.expand();
+      // parentNode.expand();
     },
     remove(data, parentNode) {
       data.forEach((r, i) => {
@@ -277,5 +314,45 @@ export default {
 .bottom-btn {
   float: right;
   padding-right: 100px;
+}
+.controlTreeNode{
+  position: absolute;
+  background: #F8F8F8;
+}
+.expandTreeNode{
+  position: absolute;
+  border: 1px #656565;
+  top: -46px;
+  left: 201px;
+  height: 25px;
+  width: 25px;
+}
+.collapseTreeNode{
+  position: absolute;
+  border: 1px #656565;
+  top: -46px;
+  left: 220px;
+  height: 25px;
+  width: 25px;
+}
+.expandIcon{
+  position: absolute;
+  display: inline-block;
+  background-image: url("../../../styles/icons/expandicon.png");
+  height: 25px;
+  width: 25px;
+  background-size: 100%;
+  right: 0px;
+  top: 0px;
+}
+.collapseIcon{
+  position: absolute;
+  display: inline-block;
+  background-image: url("../../../styles/icons/collapseicon.png");
+  height: 25px;
+  width: 25px;
+  background-size: 100%;
+  right: 0px;
+  top: 0px;
 }
 </style>
