@@ -81,6 +81,9 @@
                 <el-dropdown-item @click.native="shareModelDialog" v-if="ifBtnShow.otherBtn.shareBtnState"
                   >共享</el-dropdown-item
                 >
+                <el-dropdown-item @click.native="cancelShareModelDialog" v-if="ifBtnShow.otherBtn.cancelShareBtnState"
+                  >取消共享</el-dropdown-item
+                >
                 <el-dropdown-item @click.native="publicModelFun('publicModel')" v-if="ifBtnShow.otherBtn.publicBtnState"
                   >发布</el-dropdown-item
                 >
@@ -101,7 +104,7 @@
                 :close-on-click-modal="false"
                 title="复制"
         >
-          <ModelFolderTree ref="modelFolderTree" :power="power"  :spaceFolderName="spaceFolderName" :spaceFolderId="dataUserId" :publicModel="publicModel"/>
+          <ModelFolderTree ref="modelFolderTree" :power="power"  :spaceFolderName="spaceFolderName" :spaceFolderId="dataUserId" :publicModel="publicModel" :selectFolder="selectFolder"/>
           <span slot="footer">
         <el-button @click="copyTreeVisible = false">取消</el-button>
         <el-button type="primary" @click="copyPathSave()">保存</el-button>
@@ -208,6 +211,11 @@
             prop="createTime"
             align="center"
             :formatter="dateFormatter"
+          />
+          <el-table-column
+            label="创建人"
+            prop="createUserName"
+            align="center"
           />
           <!-- <el-table-column label="平均运行时间" width="150px" prop="runTime" /> -->
         </el-table>
@@ -352,6 +360,37 @@
         >
       </span>
     </el-dialog>
+    <el-dialog
+            title="请选择要取消分享的模型及人员"
+            :visible.sync="cancelShareModelList"
+            width="30%"
+    >
+      <el-table
+        :data="shareModelList"
+        ref="cancelShareModelList"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column type="selection" width="55" />
+        <el-table-column
+                label="被分享模型名称"
+                align="center"
+                prop="modelname"
+        />
+        <el-table-column
+                label="被分享人员名称"
+                align="center"
+                prop="belongname"
+        />
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="cancelShareModelList = false">取 消</el-button>
+        <el-button type="primary" @click="cancelShareModel()"
+        >确 定</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -363,9 +402,12 @@ import {
   selectModel,
   updateModel,
   updateModelBasicInfo,
+  removeModelShare,
   exportModel,
   setModelSession,
   copyModel,
+  cancelShareModel,
+  getShareModelList,
 } from "@/api/analysis/auditmodel";
 import { deleteGraphInfoById } from "@/api/graphtool/apiJs/graphList";
 import QueryField from "@/components/public/query-field/index";
@@ -403,6 +445,10 @@ export default {
   props: ["power", "dataUserId", "sceneCode", "isAuditWarning"],
   data() {
     return {
+      // 已经被当前人分享的模型列表弹窗
+      cancelShareModelList: false,
+      // 已经被当前人分享的模型列表
+      shareModelList: [],
       //工作流相关
       flowSet: {
         opinionList: false,
@@ -567,6 +613,7 @@ export default {
       },
       spaceFolderName: "个人模型",
       publicModel: "copyModel",
+      selectFolder: "gonggong",
       // 是否是刚加载完页面的状态（对应点击树后状态）
       ifDefault: true,
       // 点击文件夹时是否显示按钮
@@ -582,6 +629,7 @@ export default {
           exportBtnState: true,
           importBtnState: true,
           shareBtnState: true,
+          cancelShareBtnState: true,
           publicBtnState: true,
           cancelPublicBtnState: true,
           moveBtnState: true,
@@ -828,6 +876,7 @@ export default {
                 exportBtnState: false,
                 importBtnState: false,
                 shareBtnState: false,
+                cancelShareBtnState: false,
                 publicBtnState: false,
                 cancelPublicBtnState: false,
                 moveBtnState: false,
@@ -835,19 +884,20 @@ export default {
             };
             break;
             case 'gongxiang' :
-              // 都不显示
+              // 显示运行按钮
               this.ifBtnShow = {
                 addBtnState: false,
                 editBtnState: false,
                 copyBtnState: false,
                 deleteBtnState: false,
                 previewBtn: false,
-                runBtn: false,
+                runBtn: true,
                 otherBtn: {
                   all: false,
                   exportBtnState: false,
                   importBtnState: false,
                   shareBtnState: false,
+                  cancelShareBtnState: false,
                   publicBtnState: false,
                   cancelPublicBtnState: false,
                   moveBtnState: false,
@@ -870,13 +920,36 @@ export default {
                     exportBtnState: false,
                     importBtnState: false,
                     shareBtnState: false,
+                    cancelShareBtnState: false,
                     publicBtnState: false,
                     cancelPublicBtnState: false,
                     moveBtnState: false,
                   },
                 }
               }else{
-                // 管理员 全部显示
+                // 管理员 不能发布
+                this.ifBtnShow = {
+                  addBtnState: true,
+                  editBtnState: true,
+                  copyBtnState: true,
+                  deleteBtnState: true,
+                  previewBtn: true,
+                  runBtn: true,
+                  otherBtn: {
+                    all: true,
+                    exportBtnState: true,
+                    importBtnState: true,
+                    shareBtnState: false,
+                    cancelShareBtnState: false,
+                    publicBtnState: false,
+                    cancelPublicBtnState: true,
+                    moveBtnState: true,
+                  },
+                }
+              }
+            break;
+          case this.$store.getters.datauserid:
+            //个人模型 下线按钮不显示
                 this.ifBtnShow = {
                   addBtnState: true,
                   editBtnState: true,
@@ -889,36 +962,18 @@ export default {
                     exportBtnState: true,
                     importBtnState: true,
                     shareBtnState: true,
+                cancelShareBtnState: true,
                     publicBtnState: true,
-                    cancelPublicBtnState: true,
+                cancelPublicBtnState: false,
                     moveBtnState: true,
                   },
                 }
-              }
             break;
-          default:
-            //全都显示
-            this.ifBtnShow = {
-              addBtnState: true,
-              editBtnState: true,
-              copyBtnState: true,
-              deleteBtnState: true,
-              previewBtn: true,
-              runBtn: true,
-              otherBtn: {
-                all: true,
-                exportBtnState: true,
-                importBtnState: true,
-                shareBtnState: true,
-                publicBtnState: true,
-                cancelPublicBtnState: true,
-                moveBtnState: true,
-              },
-            }
       }
       this.listLoading = true;
       if (query) {
         if(this.isAuditWarning) { query.modelUse = 2}
+        // 添加选中左侧树的条件
         if((this.selectTreeNode !== null) && (query.modelFolderUuid === undefined || query.modelFolderUuid === null  || query.modelFolderUuid.length === 0)){
           query.modelFolderUuid = this.selectTreeNode.id
         }
@@ -928,6 +983,7 @@ export default {
         if(this.isAuditWarning) {
           condition.modelUse = 2
         }
+        // 添加选中左侧树的条件
         if((this.selectTreeNode !== null && this.selectTreeNode.length >0) && (query.modelFolderUuid === undefined || query.modelFolderUuid === null  || query.modelFolderUuid.length === 0)){
           condition.modelFolderUuid = this.selectTreeNode.id
         }
@@ -1122,7 +1178,6 @@ export default {
               this.btnState.previewBtn = true;
               this.btnState.otherBtn = true;
               break;
-            default:
           }
         }
       } else if (selectObj.length == 0) {
@@ -1159,6 +1214,7 @@ export default {
           operationType: 1,
           folderId: this.selectTreeNode.id,
           folderName: this.selectTreeNode.label,
+          folderPath: this.selectTreeNode.path,
         };
       }
       sessionStorage.setItem("operationObj", JSON.stringify(operationObj));
@@ -1191,6 +1247,7 @@ export default {
           operationType: 1,
           folderId: this.selectTreeNode.id,
           folderName: this.selectTreeNode.label,
+          folderPath: this.selectTreeNode.path,
           modelType: selectModelType,
         };
       }
@@ -1209,6 +1266,7 @@ export default {
     },
     copyModel(){
       var selectObj = this.$refs.modelListTable.selection;
+      this.selectFolder = selectObj[0].modelFolderPath.split('/')[0] ;
       if (selectObj.length == 0) {
         this.$message({ type: "info", message: "最少选择一个模型!" });
         return;
@@ -1295,6 +1353,7 @@ export default {
             model: result.data,
             folderId: "",
             folderName: "",
+            folderPath: selectObj[0].modelFolderPath,
           };
           sessionStorage.setItem("operationObj", JSON.stringify(operationObj));
           this.$store.commit("aceState/setRightFooterTags", {
@@ -1386,6 +1445,12 @@ export default {
               duration: 2000,
               position: "bottom-right",
             });
+            let modelUuidList =[];
+            // 将选中模型的分享数据也全部删除
+            for (let i = 0; i < selectObj.length; i++) {
+              modelUuidList.push(selectObj[i].modelUuid);
+            }
+            removeModelShare(modelUuidList);
           } else {
             this.$message({ type: "error", message: "删除失败" });
           }
@@ -1479,15 +1544,15 @@ export default {
         this.selectTreeNode == null ||
         this.selectTreeNode.path.indexOf("gonggong") == -1
       ) {
-        this.$message({ type: "info", message: "只能撤销公共模型下的模型" });
+        this.$message({ type: "info", message: "只能下线公共模型下的模型" });
         return;
       }
       var selectObj = this.$refs.modelListTable.selection;
       if (selectObj == undefined || selectObj.length === 0) {
-        this.$message({ type: "info", message: "请先选择要撤销发布的模型!" });
+        this.$message({ type: "info", message: "请先选择要下线的模型!" });
         return;
       }
-      this.$confirm("是否确定将选中的模型撤销发布?", "提示", {
+      this.$confirm("是否确定将选中的模型下线?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -1496,7 +1561,7 @@ export default {
           for (let i = 0; i < selectObj.length; i++) {
             selectObj[i].modelFolderUuid = "xiaxian";
           }
-          this.updateModelBasicInfo(selectObj, "撤销发布");
+          this.updateModelBasicInfo(selectObj, "下线");
         })
         .catch(() => {});
     },
@@ -1504,7 +1569,7 @@ export default {
      * 修改要发布的模型
      */
     updatePublicModel() {
-      this.$confirm("是否确定将选中的模型发布到公共模型下?", "提示", {
+      this.$confirm("是否确定将选中的模型发布到公共模型下?选中模型将被自动取消所有共享", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -1535,7 +1600,28 @@ export default {
           });
           this.getList(this.query); // 刷新列表
           this.$emit("refreshTree");
-          // 刷新树和列表
+          if(tips == "发布"){
+            let modelUuidList =[];
+            // 如果是发布操作，就将该模型的分享数据全部删除
+            for (let i = 0; i < selectObj.length; i++) {
+              modelUuidList.push(selectObj[i].modelUuid);
+            }
+            removeModelShare(modelUuidList).then((res) => {
+              if (res.code == 0) {
+                this.treeSelectShow = false;
+                this.$notify({
+                  title: "提示",
+                  message: "选中的模型取消所有共享成功",
+                  type: "success",
+                  duration: 2000,
+                  position: "bottom-right",
+                });
+              }else{
+                this.$message({ type: "error", message: "选中的模型取消所有共享失败，请联系管理员" });
+              }
+            });
+          }
+
         } else {
           this.$message({ type: "error", message: tips + "失败" });
         }
@@ -1600,6 +1686,44 @@ export default {
       }
       this.dialogFormVisiblePersonTree = true;
       // 弹出人员选择窗体
+    },
+    /**
+     *取消模型分享弹窗
+     */
+    cancelShareModelDialog() {
+      var selectObj = this.$refs.modelListTable.selection;
+      if (selectObj == undefined || selectObj.length === 0) {
+        this.$message({ type: "info", message: "请先选择要取消共享的模型!" });
+        return;
+      }
+      getShareModelList(this.$refs.modelListTable.selection).then((res) =>{
+        this.shareModelList = res.data;
+      });
+      this.cancelShareModelList = true;
+    },
+    cancelShareModel(){
+      var cancelShareModelList = this.$refs.cancelShareModelList.selection;
+      this.$confirm('确定取消该模型分享?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        cancelShareModel(cancelShareModelList).then((res) => {
+          if(res.data){
+            this.$notify({
+              title: '成功',
+              message: '取消分享成功',
+              type: 'success',
+              duration: 2000,
+              position: 'bottom-right'
+            })
+          this.cancelShareModelList = false;
+          }else{
+            this.$message({ type: "error", message: "取消分享失败" });
+          }
+        })
+      })
     },
     /**
      *共享模型
@@ -1722,7 +1846,6 @@ export default {
      */
     canceltab(){
       this.ifcancel = 1
-      console.log("取消")
     },
     executeSql(obj, selectObj, isExistParam) {
       this.$emit(
