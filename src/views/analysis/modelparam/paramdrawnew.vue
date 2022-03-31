@@ -10,7 +10,7 @@
         <el-col :span="15">
           <!-- 下拉列表类型 -->
           <el-select v-model="paramListValueList[ind]" ref="selectParam"  style="width: 100%;" v-if="paramInfo.inputType === 'lineinp' " 
-              :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable>
+              :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable @change="changeRelationParam(ind)">
             <el-option v-for="item in paramInfo.data" :value="paramInfo.dataType == 'str' ? `'`+ item.value + `'`: item.value" :label="item.name" :key="item.value" >
               <span style="float: left"> {{ item.name}}</span>
               <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value == item.name ? "" : item.value}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -26,12 +26,13 @@
             ref="selectTreeParam"
             :props="{ label:'name',  multiple: paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0', emitPath: false}"
             :options="paramInfo.data"
+            @change="changeRelationParam(ind)"
             multiple
             clearable />
           <!-- <div class="select-div" ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title"></div> -->
           <span  v-if="paramInfo.inputType === 'timeinp'" >
-            <el-date-picker v-if="paramInfo.timeFormat!='other'" ref="paramOption" :index="ind"  :title="paramInfo.title" :type="paramInfo.timeFormat" placeholder="选择日期" :value-format="timeDealFormat(paramInfo.timeFormat)"  v-model="paramInfo.dataDefaultVal" style="width: 98%;"></el-date-picker> 
-            <el-date-picker v-else ref="paramOption" :index="ind"  :title="paramInfo.title" type="date" placeholder="选择日期" :value-format="paramInfo.customizeFormat" v-model="paramInfo.dataDefaultVal" style="width: 98%;"></el-date-picker> 
+            <el-date-picker v-if="paramInfo.timeFormat!='other'" ref="paramOption" :index="ind"  :title="paramInfo.title" :type="paramInfo.timeFormat" placeholder="选择日期" :value-format="timeDealFormat(paramInfo.timeFormat)"  v-model="paramInfo.dataDefaultVal" style="width: 98%;" @change="changeRelationParam(ind)"></el-date-picker> 
+            <el-date-picker v-else ref="paramOption" :index="ind"  :title="paramInfo.title" type="date" placeholder="选择日期" :value-format="paramInfo.customizeFormat" v-model="paramInfo.dataDefaultVal" style="width: 98%;" @change="changeRelationParam(ind)"></el-date-picker> 
           </span>
         </el-col>
         <el-col :span="2" v-show="paramInfo.allowedNull">
@@ -70,6 +71,89 @@ export default {
   beforeDestroy() {
     removeJcCssfile("xm-select.js","js")
   },methods:{
+    async changeRelationParam(ind){
+      console.log(this.paramInfoArr)
+      console.log(this.paramListValueList)
+      for(let i=0;i<this.paramInfoArr.length;i++){
+        if(this.paramInfoArr[i].masterparam && this.paramListValueList[ind]!=''){
+          //找到被关联参数
+        if(this.paramInfoArr[i].masterparam.masterParamUuid == this.paramInfoArr[ind].dataId){
+          //拼sql
+          let paramSql = this.paramInfoArr[i].dataSql + " WHERE " + this.paramInfoArr[i].masterparam.slaveParamCol
+          if(this.paramListValueList[ind].length<2){
+            let rtype = this.paramInfoArr[ind].dataType
+            let rvalue = this.paramListValueList[ind][0]
+            if(this.paramInfoArr[i].masterparam.relationMode==1){
+            }else{
+              let rdata = this.paramInfoArr[ind].data
+              for(let k=0;k<rdata.length;k++){
+                let rv1 = (rdata[k].value.indexOf("'") == -1? ("'"+rdata[k].value+"'"):rdata[k].value)
+                let rv2 = (rvalue.indexOf("'") == -1? ("'"+rvalue+"'"):rvalue)
+                if(rv1 == rv2){
+                  rvalue = rdata[k].name
+                }
+              }
+            }
+            paramSql += "=" 
+            if(rvalue.indexOf("'") != -1){
+              paramSql += rvalue
+            }else{
+              paramSql += "'"+rvalue+"'"
+            }
+          }else{
+            paramSql += " in ("
+            for(let j=0;j<this.paramListValueList[ind].length;j++){
+              let rtype = this.paramInfoArr[ind].dataType
+              let rvalue = this.paramListValueList[ind][j]
+              if(this.paramInfoArr[i].masterparam.relationMode==1){
+                }else{
+                  let rdata = this.paramInfoArr[ind].data
+                  for(let k=0;k<rdata.length;k++){
+                    let rv1 = (rdata[k].value.indexOf("'") == -1? ("'"+rdata[k].value+"'"):rdata[k].value)
+                    let rv2 = (rvalue.indexOf("'") == -1? ("'"+rvalue+"'"):rvalue)
+                    if(rv1 == rv2){
+                      rvalue = rdata[k].name
+                    }
+                  }
+                }
+                if(rvalue.indexOf("'") != -1){
+                  paramSql += rvalue+","
+                }else{
+                  paramSql += "'"+rvalue+"',"
+                }
+                }
+                if(paramSql.charAt(paramSql.length-1)==","){
+                  paramSql = paramSql.substring(0, paramSql.length-1);
+                }
+            paramSql += ")"
+          }
+          
+          const response = await executeParamSql(paramSql)
+          let dataArr = []
+          if(response.data == null){
+            this.$message(`获取参数值的失败`)
+            }else {
+              if (response.data.isError) {
+                this.$message(`获取参数值的失败`)
+              } else {
+                let e = response.data
+                if (e.paramList && e.paramList.length > 0) {
+                  // 给下拉列表赋值
+                  for (let k = 0; k < e.paramList.length; k++) {
+                    dataArr.push({
+                      'name': e.paramList[k].paramName,
+                      'value': e.paramList[k].paramValue
+                    })
+                  }
+                }
+                this.paramInfoArr[i].data = dataArr
+                this.paramListValueList[i] = ''
+              }
+            }
+          }
+        }
+        }
+      },
     async createParamNodeHtml(id,collapseTitle,flag){
       try {
         this.loading = $(this.$refs.inputParamContent).mLoading({ 'text': '正在初始化数据，请稍后……', 'hasCancel': false })
@@ -129,7 +213,8 @@ export default {
         let paramInfoObj = {
           "paramName": copyParamArr[n].paramName,
           "description": '（参数说明：无）',
-          "inputType": copyParamArr[n].inputType//参数类型
+          "inputType": copyParamArr[n].inputType,//参数类型
+          "masterparam": copyParamArr[n].paramRelationList[0]
         }
         if (typeof copyParamArr[n].description !== 'undefined' && copyParamArr[n].description != null) {
           paramInfoObj.description = '（参数说明：' + copyParamArr[n].description + '）'

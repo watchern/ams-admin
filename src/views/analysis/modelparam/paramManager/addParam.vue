@@ -1,6 +1,17 @@
 <template>
   <div class="tab-content">
-    <div id="basicInfo">
+    <el-tabs v-model="baseName">
+      <el-tab-pane label="基本信息" name="base"></el-tab-pane>
+      <el-tab-pane
+        label="关联参数配置"
+        name="relevance"
+        v-if="
+          (activeName == 'SQL' && form.inputType == 'lineinp') ||
+          form.inputType == 'treeinp'
+        "
+      ></el-tab-pane>
+    </el-tabs>
+    <div id="basicInfo" v-if="baseName == 'base'">
       <el-form
         id="ammParamAdd"
         :model="form"
@@ -52,7 +63,13 @@
           </el-col>
           <el-col :span="12" :offset="1">
             <el-form-item label="输入方式" prop="inputType">
-              <el-select v-model="form.inputType" @change="changeInputType" id="inputType" name="inputType" style="width: 100%">
+              <el-select
+                v-model="form.inputType"
+                @change="changeInputType"
+                id="inputType"
+                name="inputType"
+                style="width: 100%"
+              >
                 <el-option value="" key="" label="请选择"></el-option>
                 <el-option
                   v-for="inputType in this.inputTypes"
@@ -192,14 +209,18 @@
                         @click="addStaticData()"
                       />
                     </el-col>
-                    <div v-for="(customStaticValue, index) in this.customStaticValues">
+                    <div
+                      v-for="(customStaticValue, index) in this
+                        .customStaticValues"
+                      :key="'customStaticValues' + index"
+                    >
                       <el-input
                         name="name"
                         v-model="customStaticValue.uuid"
                         v-show="false"
                         autocomplete="off"
                       />
-                        <el-col :span="9">
+                      <el-col :span="9">
                         <el-input
                           name="name"
                           v-model="customStaticValue.names"
@@ -239,12 +260,14 @@
                       type="primary"
                       @click="viewSqlRule(1)"
                       class="btn btn-primary"
-                    >查看SQL规则</el-button>
+                      >查看SQL规则</el-button
+                    >
                     <el-button
                       type="primary"
                       @click="sqlPreview(1)"
                       class="btn btn-primary"
-                      >预览</el-button>
+                      >预览</el-button
+                    >
                   </div>
                 </el-tab-pane>
               </el-tabs>
@@ -269,7 +292,8 @@
             type="primary"
             @click="viewSqlRule(2)"
             class="btn btn-primary"
-          >查看SQL规则</el-button>
+            >查看SQL规则</el-button
+          >
           <el-button
             type="primary"
             @click="sqlPreview(2)"
@@ -321,17 +345,114 @@
         </div>
       </el-dialog>
     </div>
+    <div class="relevanceInfo" v-else>
+      <el-form ref="relevance" :rules="relevancerules" :model="relevanceform">
+        <div @click.stop="choosetree()" style="cursor: pointer !important">
+          <el-form-item label="被关联参数名称" prop="slaveParamName">
+            <!-- @focus="choosetree()" -->
+            <el-input
+              v-model="relevanceform.slaveParamName"
+              placeholder="请选择被关联参数名称"
+            ></el-input>
+          </el-form-item>
+        </div>
+        <el-form-item label="被关联参数值" prop="slaveParamCol">
+          <el-select
+            v-model="relevanceform.slaveParamCol"
+            placeholder="请选择被关联参数值"
+          >
+            <el-option
+              v-for="(item, i) in rvaluelist"
+              :key="'rvalue' + i"
+              :label="item"
+              :value="item"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="关联参数值" prop="relationMode">
+          <el-select
+            v-model="relevanceform.relationMode"
+            placeholder="请选择关联参数值"
+          >
+            <el-option label="真实值" value="1"></el-option>
+            <el-option label="显示值" value="0"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            @click="addrelevance(relevanceform)"
+            type="primary"
+            size="small"
+            style="float: right"
+            plain
+            >保存</el-button
+          >
+        </el-form-item>
+      </el-form>
+
+      <el-table :data="relevanceData" style="width: 100%">
+        <el-table-column prop="slaveParamName" label="被关联参数名称"> </el-table-column>
+        <el-table-column prop="slaveParamCol" label="被关联参数值"> </el-table-column>
+        <el-table-column prop="relationMode" label="关联参数值"> 
+          <template slot-scope="scope">
+            <span v-if="scope.row.relationMode==1">真实值</span>
+            <span v-else>显示值</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-button
+              @click="delrelevance(scope.row,scope.$index)"
+              type="danger"
+              size="small"
+              plain
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+    <el-dialog
+      title="请选择被关联的参数"
+      :visible.sync="opentree"
+      :modal="false"
+      width="50%"
+    >
+      <el-tree
+        :data="treedata"
+        :props="defaultProps"
+        @node-click="treeNodeClick"
+      >
+        <span class="custom-tree-node" slot-scope="{ node, data }">
+          <span class="table-icon" v-if="data.type == 'param'"></span>
+          <span>{{ node.label }}</span>
+        </span>
+      </el-tree>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="opentree = false">取 消</el-button>
+        <el-button type="primary" @click="savetreenode()">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
 import $ from "jquery";
 import seeSqlData from "@/views/analysis/modelparam/paramManager/seesqldata";
 import { getUuid } from "@/api/analysis/common";
-export default{
+import request from "@/utils/request";
+export default {
   props: ["selectTreeNode", "operationObj"],
-  components: {seeSqlData},
+  components: { seeSqlData },
   data() {
-    return{
+    return {
+      treedata: [], //被关联参数名称树
+      checktreenode: {},
+      defaultProps: {
+        children: "children",
+        label: "label",
+      },
+      opentree: false,
+      rvaluelist: [], //被关联参数值列表
       rules: {
         paramName: [
           { required: true, message: "请输入参数名称", trigger: "blur" },
@@ -342,10 +463,28 @@ export default{
         inputType: [
           { required: true, message: "请输入输入方式", trigger: "blur" },
         ],
-        example: [
-          { required: true, message: "请输入示例", trigger: "blur" },
+        example: [{ required: true, message: "请输入示例", trigger: "blur" }],
+      },
+      relevancerules: {
+        slaveParamName: [
+          { required: true, message: "请选择被关联参数名称", trigger: "change" },
+        ],
+        slaveParamCol: [
+          { required: true, message: "请选择被关联参数值", trigger: "change" },
+        ],
+        relationMode: [
+          { required: true, message: "请选择关联参数值", trigger: "change" },
         ],
       },
+      //关联表单
+      relevanceform: {
+        slaveParamUuid: "",
+        slaveParamName: "",
+        slaveParamCol: "",
+        relationMode: "",
+      },
+      //关联列表
+      relevanceData: [],
       //表单属性
       form: {
         paramName: "",
@@ -362,8 +501,9 @@ export default{
         paramChoice: {
           optionsSql: "",
           optionsSqlLine: "",
-        }
+        },
       },
+      baseName: "base",
       //页签属性
       activeName: "custom",
       analysisUrl: "/analysis",
@@ -446,22 +586,75 @@ export default{
       this.displayParamData();
     }
   },
-  methods:{
-    displayParamData(){
+  methods: {
+    treeNodeClick(data) {
+      this.checktreenode = data;
+    },
+    savetreenode() {
+      this.opentree = false;
+      this.relevanceform.slaveParamUuid = this.checktreenode.id;
+      this.relevanceform.slaveParamName = this.checktreenode.name;
+      this.relevanceform.slaveParamCol = ''
+      this.getrvaluelist();
+    },
+    getParamsTreeList() {
+      request({
+        baseURL: "/analysis",
+        url: "/ParamFolderController/getParamsTree?sqlFlag=1",
+        method: "get",
+      }).then((result) => {
+        if (result.data) {
+          this.treedata = result.data.paramNode;
+        }
+      });
+    },
+    getrvaluelist() {
+      request({
+        baseURL: "/analysis",
+        url:
+          "/paramController/getSqlCols?sql=" +
+          this.checktreenode.extMap.OPTIONSSQL,
+        method: "post",
+      }).then((result) => {
+        this.rvaluelist = result.data;
+      });
+    },
+    addrelevance(item) {
+      this.$refs.relevance.validate((valid) => {
+        if (valid) {
+          this.relevanceData.push(JSON.parse(JSON.stringify(item)));
+        } else {
+          return false;
+        }
+      });
+    },
+    delrelevance(item,index) {
+      this.relevanceData.splice(index, 1);
+    },
+    choosetree() {
+      this.getParamsTreeList();
+      this.opentree = true;
+    },
+    displayParamData() {
       let that = this;
       $.post(
         this.analysisUrl + "/paramController/findByUuid",
         { ammParamUuid: this.operationObj.paramUuid },
         function (e) {
           that.updateParamObj = e.data;
-          var data = e.data;//参数基本信息
+          var data = e.data; //参数基本信息
           if (data != null && data != "") {
             that.form.paramName = data.paramName;
             that.form.dataType = data.dataType;
             that.changeValue(data.dataType);
             that.form.inputType = data.inputType;
             that.changeInputType(data.inputType);
-            if(data.inputType == "textinp"){
+            if(data.paramRelationList){
+              that.relevanceData = data.paramRelationList
+            }else{
+              that.relevanceData = []
+            }
+            if (data.inputType == "textinp") {
               that.form.dataLength = data.dataLength;
             }
             that.form.example = data.example;
@@ -572,23 +765,26 @@ export default{
     //   return "格式：SELECT A,B,C FROM 模式.D\n" +
     //           "A:子项真实值，B:子项显示值，C：父项真实值，将使用【A】字段与【C】字段进行父子节点关系匹配，若字段过多（或者存在【*】），则默认只使用前三列进行匹配"
     // },
-    changeInputType(inputTypeValue){
-      if(inputTypeValue != ""){
-        if(inputTypeValue == "timeinp"){//日期选择器
+    changeInputType(inputTypeValue) {
+      if (inputTypeValue != "") {
+        if (inputTypeValue == "timeinp") {
+          //日期选择器
           this.isShowElement.timeIntervalShow = true;
           this.isShowElement.formalTypeShow = false;
           this.isShowElement.alternateValueShow = false;
           this.isShowElement.dataLengthInterValShow = false;
           this.isShowElement.SQLdtreeShow = false;
           this.isShowElement.dateFormatTag = true;
-        }else if(inputTypeValue == "lineinp"){//下拉列表
+        } else if (inputTypeValue == "lineinp") {
+          //下拉列表
           this.isShowElement.timeIntervalShow = false;
           this.isShowElement.formalTypeShow = true;
           this.isShowElement.alternateValueShow = true;
           this.isShowElement.dataLengthInterValShow = false;
           this.isShowElement.SQLdtreeShow = false;
           this.isShowElement.dateFormatTag = false;
-        }else if(inputTypeValue=="treeinp"){//下拉树
+        } else if (inputTypeValue == "treeinp") {
+          //下拉树
           this.isShowElement.timeIntervalShow = false;
           this.isShowElement.formalTypeShow = true;
           this.isShowElement.alternateValueShow = false;
@@ -596,7 +792,8 @@ export default{
           this.isShowElement.SQLdtreeShow = true;
           this.tabsigns = 1;
           this.isShowElement.dateFormatTag = false;
-        }else{//文本
+        } else {
+          //文本
           this.isShowElement.timeIntervalShow = false;
           this.isShowElement.formalTypeShow = false;
           this.isShowElement.alternateValueShow = false;
@@ -606,15 +803,15 @@ export default{
         }
       }
     },
-    changeValue(dataTypeValue){
+    changeValue(dataTypeValue) {
       this.inputTypes = [];
       this.form.inputType = "";
-      for(var i=0;i < this.inputTypeValueStr.length;i++){
+      for (var i = 0; i < this.inputTypeValueStr.length; i++) {
         if (dataTypeValue == "" || dataTypeValue == null) {
           this.inputTypes = [];
-        }else{
+        } else {
           var typesz = this.map_data_input[dataTypeValue].type;
-          if(typesz.indexOf(this.inputTypeValueStr[i].codeValue) > -1){
+          if (typesz.indexOf(this.inputTypeValueStr[i].codeValue) > -1) {
             this.inputTypes.push(this.inputTypeValueStr[i]);
           }
         }
@@ -635,30 +832,35 @@ export default{
         this.tabsigns = 0;
       }
     },
-    addStaticData(){
+    addStaticData() {
       this.customStaticValues.push({ names: "", values: "", uuid: getUuid() });
     },
-    deleteStaticData(index){
+    deleteStaticData(index) {
       this.customStaticValues.splice(index, 1);
     },
-    okBtn(){
-      this.$refs['ruleForm'].validate((valid) => {
+    okBtn() {
+      this.baseName = "base"
+      let _this = this
+      setTimeout(function(){
+        _this.$refs["ruleForm"].validate((valid) => {
         if (valid) {
-      if(this.operationObj.operationType == 1){
-            this.saveParam();
+          if (_this.operationObj.operationType == 1) {
+            _this.saveParam();
           } else {
-            this.updateParam();
-      }
+            _this.updateParam();
+          }
         } else {
           console.log("error submit!!");
           return false;
-      }
+        }
       });
+      },500)
+      
     },
     /**
      * 保存参数
      */
-    saveParam(){
+    saveParam() {
       let that = this;
       var paramName = this.form.paramName;
       var dataType = this.form.dataType;
@@ -680,7 +882,11 @@ export default{
         "paramChoice.allowedNull": allowedNull,
         "param.signForSql": this.tabsigns,
         "param.paramFolderUuid": folderId,
+        "paramRelationList":JSON.stringify(this.relevanceData)
       };
+      if( inputType!='lineinp' && inputType!='treeinp' ){
+        delete dataParam.paramRelationList
+      }
       if (paramName === "") {
         this.$message({ type: "info", message: "参数名不能为空!" });
         return;
@@ -709,21 +915,23 @@ export default{
       if (this.isShowElement.formalTypeShow) {
         dataParam["paramChoice.choiceType"] = this.form.formalType;
       }
-      if(this.isShowElement.SQLdtreeShow){
+      if (this.isShowElement.SQLdtreeShow) {
         dataParam["paramChoice.optionsSql"] = this.form.paramChoice.optionsSql;
       }
-      if(this.isShowElement.alternateValueShow){
-        if(this.activeName === "SQL"){
-          dataParam["paramChoice.optionsSql"] = this.form.paramChoice.optionsSqlLine;
+      if (this.isShowElement.alternateValueShow) {
+        if (this.activeName === "SQL") {
+          dataParam["paramChoice.optionsSql"] =
+            this.form.paramChoice.optionsSqlLine;
         }
         if (this.activeName === "custom") {
+          delete dataParam.paramRelationList
           var names = [];
           var value = [];
           // this.customStaticValues.push(this.defaultExistsCustomStaticValues);
           // 新增参数顺序
-          names.push(this.defaultExistsCustomStaticValues.names)
-          value.push(this.defaultExistsCustomStaticValues.values)
-          for(let i = 0; i < this.customStaticValues.length;i++){
+          names.push(this.defaultExistsCustomStaticValues.names);
+          value.push(this.defaultExistsCustomStaticValues.values);
+          for (let i = 0; i < this.customStaticValues.length; i++) {
             names.push(this.customStaticValues[i].names);
             value.push(this.customStaticValues[i].values);
           }
@@ -733,13 +941,13 @@ export default{
       }
       $.ajax({
         url: this.analysisUrl + "/paramController/addParam",
-        method:"POST",
-        cache:false,
-        dataType:"json",
-        data:dataParam,
-        async:false,
-        success: function(data, textStatus, jqXHR){
-          if(data.code == 0){
+        method: "POST",
+        cache: false,
+        dataType: "json",
+        data: dataParam,
+        async: false,
+        success: function (data, textStatus, jqXHR) {
+          if (data.code == 0) {
             that.$notify({
               title: "成功",
               message: "新建成功！",
@@ -748,8 +956,11 @@ export default{
               position: "bottom-right",
             });
             that.$emit("refshParamList");
-          }else{
-            that.$message({ type: 'error', message: '程序发生异常，请联系管理员!' });
+          } else {
+            that.$message({
+              type: "error",
+              message: "程序发生异常，请联系管理员!",
+            });
           }
         },
         error: function () {
@@ -763,7 +974,7 @@ export default{
     /**
      *修改参数
      */
-    updateParam(){
+    updateParam() {
       let that = this;
       var paramName = this.form.paramName;
       var dataType = this.form.dataType;
@@ -787,7 +998,11 @@ export default{
         "paramChoice.allowedNull": allowedNull,
         "param.signForSql": this.tabsigns,
         "param.paramFolderUuid": folderId,
+        "paramRelationList":JSON.stringify(this.relevanceData)
       };
+      if( inputType!='lineinp' && inputType!='treeinp' ){
+        delete dataParam.paramRelationList
+      }
       if (paramName === "") {
         this.$message({ type: "info", message: "参数名不能为空!" });
         return;
@@ -817,23 +1032,25 @@ export default{
       if (this.isShowElement.formalTypeShow) {
         dataParam["paramChoice.choiceType"] = this.form.formalType;
       }
-      if(this.isShowElement.SQLdtreeShow){
+      if (this.isShowElement.SQLdtreeShow) {
         dataParam["paramChoice.optionsSql"] = this.form.paramChoice.optionsSql;
       }
-      if(this.isShowElement.alternateValueShow){
-        if(this.activeName === "SQL"){
-          dataParam["paramChoice.optionsSql"] = this.form.paramChoice.optionsSqlLine;
+      if (this.isShowElement.alternateValueShow) {
+        if (this.activeName === "SQL") {
+          dataParam["paramChoice.optionsSql"] =
+            this.form.paramChoice.optionsSqlLine;
         }
         if (this.activeName === "custom") {
+          delete dataParam.paramRelationList
           var names = [];
           var value = [];
           var uuids = [];
           // this.customStaticValues.push(this.defaultExistsCustomStaticValues);
           // 修改参数顺序
-          names.push(this.defaultExistsCustomStaticValues.names)
-          value.push(this.defaultExistsCustomStaticValues.values)
+          names.push(this.defaultExistsCustomStaticValues.names);
+          value.push(this.defaultExistsCustomStaticValues.values);
           uuids.push(this.defaultExistsCustomStaticValues.uuid);
-          for(let i = 0; i < this.customStaticValues.length;i++){
+          for (let i = 0; i < this.customStaticValues.length; i++) {
             names.push(this.customStaticValues[i].names);
             value.push(this.customStaticValues[i].values);
             uuids.push(this.customStaticValues[i].uuid);
@@ -846,14 +1063,14 @@ export default{
       }
       $.ajax({
         url: this.analysisUrl + "/paramController/editParam",
-        method:"POST",
-        cache:false,
-        dataType:"json",
-        data:dataParam,
-        async:false,
-        success: function(data, textStatus, jqXHR){
-          if(data.code == 0){
-          that.$notify({
+        method: "POST",
+        cache: false,
+        dataType: "json",
+        data: dataParam,
+        async: false,
+        success: function (data, textStatus, jqXHR) {
+          if (data.code == 0) {
+            that.$notify({
               title: "成功",
               message: "修改成功！",
               type: "success",
@@ -861,13 +1078,19 @@ export default{
               position: "bottom-right",
             });
             that.$emit("refshParamList");
-          }else{
-            that.$message({ type: 'error', message: '程序发生异常，请联系管理员!' });
+          } else {
+            that.$message({
+              type: "error",
+              message: "程序发生异常，请联系管理员!",
+            });
           }
         },
-        error : function() {
-          that.$message({ type: 'error', message: '程序发生异常，请联系管理员!' });
-        }
+        error: function () {
+          that.$message({
+            type: "error",
+            message: "程序发生异常，请联系管理员!",
+          });
+        },
       });
     },
     /**
@@ -889,7 +1112,7 @@ export default{
      * 查看sql规则
      * @param type 1列表 2树
      */
-    viewSqlRule(type){
+    viewSqlRule(type) {
       this.SQLRuleDialog = true;
       this.SQLRuleText = this.getSqlRule(type);
     },
@@ -897,7 +1120,7 @@ export default{
      * 获取sql规则
      * @param type 1列表 2树
      */
-    getSqlRule(type){
+    getSqlRule(type) {
       let sqlRule = "";
       switch (type) {
         case 1:
@@ -914,3 +1137,12 @@ export default{
   },
 };
 </script>
+<style scoped>
+.table-icon {
+  display: inline-block;
+  margin: 0 5px 0 0;
+  width: 16px;
+  height: 16px;
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OUY3NkIwMTMzOTA3MTFFQjg3QjRGMTYwQ0VBMTUzOTkiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OUY3NkIwMTQzOTA3MTFFQjg3QjRGMTYwQ0VBMTUzOTkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo5Rjc2QjAxMTM5MDcxMUVCODdCNEYxNjBDRUExNTM5OSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo5Rjc2QjAxMjM5MDcxMUVCODdCNEYxNjBDRUExNTM5OSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PuV6ScgAAAAGUExURbW1tf///x1VJNcAAAACdFJOU/8A5bcwSgAAABhJREFUeNpiYKAGYAQCJIIYgUFqBkCAAQAvrgBt23pN5QAAAABJRU5ErkJggg==);
+}
+</style>

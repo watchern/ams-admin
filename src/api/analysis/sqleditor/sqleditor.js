@@ -138,7 +138,7 @@ var isFirst = 0
 let sqlEditorVue = null
 
 export const sendSqlEditorVue = ( (this_) => {
-    sqlEditorVue = this_
+  sqlEditorVue = this_
 })
 
 /**
@@ -1144,9 +1144,28 @@ export function initParamTreeNew() {
         }
       },
       onRightClick: function(event, treeId, treeNode) {
-
+        if (!treeNode) {
+          return false
+        }
+        zTreeObj.selectNode(treeNode)
+        var menuId = ''
+        var numm = $(document).height() - event.clientY
+        if (treeNode.type === 'folder') {
+          menuId = 'paramfolderMenu'
+          $('#paramfolderdatabox').val(treeNode)
+        } else {
+          menuId = 'paramMenu'
+          $('#paramdatabox').val(treeNode)
+        }
+        if (menuId !== '') {
+          showRMenu('node', 'paramTree', menuId, event.clientX, numm < $('#' + menuId).height() ? (event.clientY - $('#' + menuId).height()) : event.clientY)
+        } else {
+          return false
+        }
       },
       onExpand: function(event, treeId, treeNode) {
+        $('#paramfolderdatabox').val(treeNode)
+        console.log(treeNode)
 /*        if (!treeNode.children || treeNode.children.length === 0) {
           loadParamChildrenNodes(treeNode)
         }*/
