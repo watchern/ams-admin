@@ -5,10 +5,7 @@
       <el-tab-pane
         label="关联参数配置"
         name="relevance"
-        v-if="
-          (activeName == 'SQL' && form.inputType == 'lineinp') ||
-          form.inputType == 'treeinp'
-        "
+        v-if="form.inputType == 'lineinp' || form.inputType == 'treeinp'"
       ></el-tab-pane>
     </el-tabs>
     <div id="basicInfo" v-if="baseName == 'base'">
@@ -391,18 +388,20 @@
       </el-form>
 
       <el-table :data="relevanceData" style="width: 100%">
-        <el-table-column prop="slaveParamName" label="被关联参数名称"> </el-table-column>
-        <el-table-column prop="slaveParamCol" label="被关联参数值"> </el-table-column>
-        <el-table-column prop="relationMode" label="关联参数值"> 
+        <el-table-column prop="slaveParamName" label="被关联参数名称">
+        </el-table-column>
+        <el-table-column prop="slaveParamCol" label="被关联参数值">
+        </el-table-column>
+        <el-table-column prop="relationMode" label="关联参数值">
           <template slot-scope="scope">
-            <span v-if="scope.row.relationMode==1">真实值</span>
+            <span v-if="scope.row.relationMode == 1">真实值</span>
             <span v-else>显示值</span>
           </template>
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button
-              @click="delrelevance(scope.row,scope.$index)"
+              @click="delrelevance(scope.row, scope.$index)"
               type="danger"
               size="small"
               plain
@@ -467,7 +466,11 @@ export default {
       },
       relevancerules: {
         slaveParamName: [
-          { required: true, message: "请选择被关联参数名称", trigger: "change" },
+          {
+            required: true,
+            message: "请选择被关联参数名称",
+            trigger: "change",
+          },
         ],
         slaveParamCol: [
           { required: true, message: "请选择被关联参数值", trigger: "change" },
@@ -591,11 +594,27 @@ export default {
       this.checktreenode = data;
     },
     savetreenode() {
-      this.opentree = false;
-      this.relevanceform.slaveParamUuid = this.checktreenode.id;
-      this.relevanceform.slaveParamName = this.checktreenode.name;
-      this.relevanceform.slaveParamCol = ''
-      this.getrvaluelist();
+      //获取是否被关联
+      request({
+        baseURL: "/analysis",
+        url: "/paramController/getCountBySalveId?salveParamId=" + this.checktreenode.id,
+        method: "post",
+      }).then((result) => {
+        console.log(result);
+        if (result.code == 0) {
+          if (result.data == 0) {
+            this.opentree = false;
+            this.relevanceform.slaveParamUuid = this.checktreenode.id;
+            this.relevanceform.slaveParamName = this.checktreenode.name;
+            this.relevanceform.slaveParamCol = "";
+            this.getrvaluelist();
+          } else {
+            this.$message("该参数已被关联");
+          }
+        }else{
+          this.$message(result.msg);
+        }
+      });
     },
     getParamsTreeList() {
       request({
@@ -628,7 +647,7 @@ export default {
         }
       });
     },
-    delrelevance(item,index) {
+    delrelevance(item, index) {
       this.relevanceData.splice(index, 1);
     },
     choosetree() {
@@ -649,10 +668,10 @@ export default {
             that.changeValue(data.dataType);
             that.form.inputType = data.inputType;
             that.changeInputType(data.inputType);
-            if(data.paramRelationList){
-              that.relevanceData = data.paramRelationList
-            }else{
-              that.relevanceData = []
+            if (data.paramRelationList) {
+              that.relevanceData = data.paramRelationList;
+            } else {
+              that.relevanceData = [];
             }
             if (data.inputType == "textinp") {
               that.form.dataLength = data.dataLength;
@@ -839,23 +858,22 @@ export default {
       this.customStaticValues.splice(index, 1);
     },
     okBtn() {
-      this.baseName = "base"
-      let _this = this
-      setTimeout(function(){
+      this.baseName = "base";
+      let _this = this;
+      setTimeout(function () {
         _this.$refs["ruleForm"].validate((valid) => {
-        if (valid) {
-          if (_this.operationObj.operationType == 1) {
-            _this.saveParam();
+          if (valid) {
+            if (_this.operationObj.operationType == 1) {
+              _this.saveParam();
+            } else {
+              _this.updateParam();
+            }
           } else {
-            _this.updateParam();
+            console.log("error submit!!");
+            return false;
           }
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
-      });
-      },500)
-      
+        });
+      }, 500);
     },
     /**
      * 保存参数
@@ -882,10 +900,10 @@ export default {
         "paramChoice.allowedNull": allowedNull,
         "param.signForSql": this.tabsigns,
         "param.paramFolderUuid": folderId,
-        "paramRelationList":JSON.stringify(this.relevanceData)
+        paramRelationList: JSON.stringify(this.relevanceData),
       };
-      if( inputType!='lineinp' && inputType!='treeinp' ){
-        delete dataParam.paramRelationList
+      if (inputType != "lineinp" && inputType != "treeinp") {
+        delete dataParam.paramRelationList;
       }
       if (paramName === "") {
         this.$message({ type: "info", message: "参数名不能为空!" });
@@ -924,7 +942,7 @@ export default {
             this.form.paramChoice.optionsSqlLine;
         }
         if (this.activeName === "custom") {
-          delete dataParam.paramRelationList
+          delete dataParam.paramRelationList;
           var names = [];
           var value = [];
           // this.customStaticValues.push(this.defaultExistsCustomStaticValues);
@@ -998,10 +1016,10 @@ export default {
         "paramChoice.allowedNull": allowedNull,
         "param.signForSql": this.tabsigns,
         "param.paramFolderUuid": folderId,
-        "paramRelationList":JSON.stringify(this.relevanceData)
+        paramRelationList: JSON.stringify(this.relevanceData),
       };
-      if( inputType!='lineinp' && inputType!='treeinp' ){
-        delete dataParam.paramRelationList
+      if (inputType != "lineinp" && inputType != "treeinp") {
+        delete dataParam.paramRelationList;
       }
       if (paramName === "") {
         this.$message({ type: "info", message: "参数名不能为空!" });
@@ -1041,7 +1059,7 @@ export default {
             this.form.paramChoice.optionsSqlLine;
         }
         if (this.activeName === "custom") {
-          delete dataParam.paramRelationList
+          delete dataParam.paramRelationList;
           var names = [];
           var value = [];
           var uuids = [];
