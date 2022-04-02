@@ -109,6 +109,13 @@
               class="oper-btn tjsh"
               >提交审核</el-button
             >
+            <!-- <el-button
+              :disabled="false"
+              type="primary"
+              @click="suspectsPutInStorage"
+              class="oper-btn tjsh"
+              >疑点入库</el-button
+            > -->
           </div>
         </div>
         <ag-grid-vue
@@ -226,69 +233,83 @@
             </div>
             <div v-if="myFlag">
               <el-row>
-              <div
-                align="right"
-                :style="
-                  ifopen != 0 ? 'position: absolute;top: -29px;right: 0;' : ''
-                "
-              >
-                <el-col :span="14">
-                  <el-input :readonly="true" value="设置查询条件后此处显示条件内容" v-if="typeof nowSql == 'undefined'"></el-input>
-                  <el-input :readonly="true" :value="nowSql" v-if="typeof nowSql == 'undefined'"
-                  ></el-input>
-                </el-col >
-                <el-col :span="10" >
-                <el-dropdown>
-                  <el-button
-                    type="primary"
-                    class="oper-btn allocation btn-width-md"
-                    :disabled="modelRunResultBtnIson.associatedBtn"
-                  />
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item @click.native="openProjectDialog"
-                      >分配项目</el-dropdown-item
-                    >
-                    <el-dropdown-item @click.native="removeRelated()"
-                      >移除分配项目</el-dropdown-item
-                    >
-                  </el-dropdown-menu>
-                </el-dropdown>
-                  <el-button
-                          type="primary"
-                          @click="modelResultOpenDialog()"
-                          class="oper-btn resultShare btn-width-md"
-                          :disabled="modelRunResultBtnIson.resultShare"
-                          style="margin-left: 10px"
-                  />
-                <el-button
-                  :disabled="false"
-                  type="primary"
-                  @click="queryConditionSetting"
-                  class="oper-btn setting-detail btn-width-md"
-                  style="margin-left: 10px;margin-top:5px;"
-                ></el-button>
-                <el-button
-                  :disabled="false"
-                  type="primary"
-                  @click="reSet"
-                  class="oper-btn reset"
-                ></el-button>
-                <el-button
-                  :disabled="modelRunResultBtnIson.exportBtn"
-                  type="primary"
-                  @click="exportExcel"
-                  class="oper-btn export"
-                ></el-button>
-                <!-- addDetailRel('qwer1', '项目11') -->
-                <el-button
-                  :disabled="false"
-                  type="primary"
-                  @click="toSubmitYc"
-                  class="oper-btn tjsh"
-                  >提交审核</el-button
+                <div
+                  align="right"
+                  :style="
+                    ifopen != 0 ? 'position: absolute;top: -29px;right: 0;' : ''
+                  "
                 >
-                </el-col>
-              </div>
+                  <el-col :span="14">
+                    <el-input
+                      :readonly="true"
+                      value="设置查询条件后此处显示条件内容"
+                      v-if="typeof nowSql == 'undefined'"
+                    ></el-input>
+                    <el-input
+                      :readonly="true"
+                      :value="nowSql"
+                      v-if="typeof nowSql == 'undefined'"
+                    ></el-input>
+                  </el-col>
+                  <el-col :span="10">
+                    <el-dropdown>
+                      <el-button
+                        type="primary"
+                        class="oper-btn allocation btn-width-md"
+                        :disabled="modelRunResultBtnIson.associatedBtn"
+                      />
+                      <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item @click.native="openProjectDialog"
+                          >分配项目</el-dropdown-item
+                        >
+                        <el-dropdown-item @click.native="removeRelated()"
+                          >移除分配项目</el-dropdown-item
+                        >
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                    <el-button
+                      type="primary"
+                      @click="modelResultOpenDialog()"
+                      class="oper-btn resultShare btn-width-md"
+                      :disabled="modelRunResultBtnIson.resultShare"
+                      style="margin-left: 10px"
+                    />
+                    <el-button
+                      :disabled="false"
+                      type="primary"
+                      @click="queryConditionSetting"
+                      class="oper-btn setting-detail btn-width-md"
+                      style="margin-left: 10px; margin-top: 5px"
+                    ></el-button>
+                    <el-button
+                      :disabled="false"
+                      type="primary"
+                      @click="reSet"
+                      class="oper-btn reset"
+                    ></el-button>
+                    <el-button
+                      :disabled="modelRunResultBtnIson.exportBtn"
+                      type="primary"
+                      @click="exportExcel"
+                      class="oper-btn export"
+                    ></el-button>
+                    <!-- addDetailRel('qwer1', '项目11') -->
+                    <el-button
+                      :disabled="false"
+                      type="primary"
+                      @click="toSubmitYc"
+                      class="oper-btn tjsh"
+                      >提交审核</el-button
+                    >
+                    <!-- <el-button
+                      :disabled="false"
+                      type="primary"
+                      @click="suspectsPutInStorage"
+                      class="oper-btn tjsh"
+                      >疑点入库</el-button
+                    > -->
+                  </el-col>
+                </div>
               </el-row>
             </div>
             <!-- useType == 'modelRunResult' && this.modelUuid !== undefined
@@ -499,30 +520,194 @@
       </span>
     </el-dialog>
     <el-dialog
-            title="请选择要分享的人员"
-            :visible.sync="resultShareDialogIsSee"
-            width="50%"
+      title="请选择要分享的人员"
+      :visible.sync="resultShareDialogIsSee"
+      width="50%"
     >
       <personTree ref="orgPeopleTree"></personTree>
       <span slot="footer" class="dialog-footer">
-            <el-button @click="resultShareDialogIsSee = false">取 消</el-button>
-            <el-button type="primary" @click="modelResultShare"
-            >确 定</el-button
+        <el-button @click="resultShareDialogIsSee = false">取 消</el-button>
+        <el-button type="primary" @click="modelResultShare">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog title="疑点入库" :visible.sync="suspectsVisible" width="80%">
+      <div class="suspectstop">
+        <div class="suspectsleft">
+          <h3>疑点库主体信息</h3>
+          <el-table
+            ref="mainTable"
+            :data="suspectsMainData"
+            highlight-current-row
+            @current-change="mainCurrentChange"
+            style="width: 100%"
+          >
+            <el-table-column
+              prop="name"
+              label="字段名称"
+              column-key="name"
+              :filters="suspectsFilterlist1"
+              :filter-method="suspectsfilterHandler1"
             >
+            </el-table-column>
+            <el-table-column
+              prop="describe"
+              label="描述"
+              column-key="describe"
+              :filters="suspectsFilterlist2"
+              :filter-method="suspectsfilterHandler2"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="type"
+              label="数据类型"
+              column-key="type"
+              :filters="suspectsFilterlist3"
+              :filter-method="suspectsfilterHandler3"
+            >
+            </el-table-column>
+          </el-table>
+        </div>
+        <div class="suspectsright">
+          <h3>疑点信息</h3>
+          <el-table
+            ref="secondaryTable"
+            :data="suspectssecondaryData"
+            style="width: 100%"
+          >
+            <el-table-column
+              prop="name"
+              label="字段名称"
+              column-key="name"
+              :filters="suspectsFilterlist4"
+              :filter-method="suspectsfilterHandler4"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="describe"
+              label="描述"
+              column-key="describe"
+              :filters="suspectsFilterlist5"
+              :filter-method="suspectsfilterHandler5"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="type"
+              label="数据类型"
+              column-key="type"
+              :filters="suspectsFilterlist6"
+              :filter-method="suspectsfilterHandler6"
+            >
+            </el-table-column>
+            <el-table-column label="">
+              <template slot-scope="scope">
+                <el-button
+                  @click.native.prevent="
+                    addRelevanceRow(scope.$index, scope.row)
+                  "
+                  size="mini"
+                >
+                 <span style="font-size:18px;"> + </span>
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+      <div class="suspectsmiddle">
+        <div class="redprompt">*注：疑点信息中的字段与疑点库主体进行匹配</div>
+        <div style="float: right">
+          <el-button size="mini" type="primary" @click="autoMatch()"
+            >按字段名自动匹配</el-button
+          >
+          <el-button size="mini" type="primary" @click="matchReset()"
+            >重置</el-button
+          >
+        </div>
+      </div>
+      <div class="suspectsbottom">
+        <el-table
+          ref="mixTable"
+          :data="suspectsRelevanceData"
+          style="width: 100%"
+        >
+          <el-table-column prop="mainName" label="字段名称"> </el-table-column>
+          <el-table-column prop="mainDescribe" label="描述"> </el-table-column>
+          <el-table-column prop="mianType" label="数据类型"> </el-table-column>
+          <el-table-column prop="secondaryName" label="字段名称">
+          </el-table-column>
+          <el-table-column prop="secondaryDescribe" label="描述">
+          </el-table-column>
+          <el-table-column prop="secondaryType" label="数据类型">
+          </el-table-column>
+          <el-table-column fixed="right" label="操作" width="120">
+            <template slot-scope="scope">
+              <el-button
+                @click.native.prevent="
+                  deleteRelevanceRow(scope.$index, suspectsRelevanceData)
+                "
+                type="text"
+                size="small"
+              >
+                移除
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div class="suspectsform">
+        <el-form ref="suspectsform" :model="suspectsform">
+          <el-form-item label="选择项目：">
+            <el-select v-model="suspectsform.project" placeholder="请选择项目">
+              <el-option
+                v-for="(item, i) in projectlist"
+                :key="'project' + i"
+                :label="item.name"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="选择标签：">
+            <el-select v-model="suspectsform.tag" placeholder="请选择标签">
+              <el-option
+                v-for="(item, i) in taglist"
+                :key="'tag' + i"
+                :label="item.name"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="选择方式：">
+            <el-select v-model="suspectsform.way" placeholder="请选择方式">
+              <el-option
+                v-for="(item, i) in waylist"
+                :key="'way' + i"
+                :label="item.name"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+      </div>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="suspectsVisible = false">取 消</el-button>
+        <el-button type="primary" @click="suspectsVisible = false"
+          >保 存</el-button
+        >
       </span>
     </el-dialog>
   </div>
 </template>
 <script>
-  // eslint-disable-next-line no-unused-vars
-  import personTree from "../../../components/publicpersontree/index";
-  // import $ from 'jquery'
+// eslint-disable-next-line no-unused-vars
+import personTree from "../../../components/publicpersontree/index";
+// import $ from 'jquery'
 import { AgCell } from "../../../components/public/new-ag-grid/ag-cell";
 // 引入aggrid及样式文件
-import { AgGridVue } from '@ag-grid-community/vue';
-import { AllModules } from '@ag-grid-enterprise/all-modules';
-import '@ag-grid-community/all-modules/dist/styles/ag-grid.css';
-import '@ag-grid-community/all-modules/dist/styles/ag-theme-balham.css';
+import { AgGridVue } from "@ag-grid-community/vue";
+import { AllModules } from "@ag-grid-enterprise/all-modules";
+import "@ag-grid-community/all-modules/dist/styles/ag-grid.css";
+import "@ag-grid-community/all-modules/dist/styles/ag-theme-balham.css";
 
 import Pagination from "@/components/Pagination/index";
 import JsonExcel from "vue-json-excel";
@@ -600,8 +785,10 @@ export default {
       return this.rotateConfig != null ? this.rotateRowData : this.rowData;
     },
     computedColumnDefs() {
-          return this.rotateConfig!=null ? this.rotateColumnDefs : this.columnDefs;
-    }
+      return this.rotateConfig != null
+        ? this.rotateColumnDefs
+        : this.columnDefs;
+    },
   },
   watch: {
     modelDetailModelResultDialogIsShow(value) {
@@ -620,11 +807,11 @@ export default {
    * sql编辑器模型结果使用变量：useType=sqlEditor 表示是sql编辑器模型结果所用  prePersonalVal：每一个prePersonalVal对应一个childtabcon组件，后续会触发父组件chidltabs中的loadTableData方法来根据prePersonalVal进行aggrid数据的展现
    */
   props: [
-    "nowtable",  // {"id":"xxx","name":null,"sql":"SELECT ID FROM WAREHOUSE.RDM_x","type":null,"sqlParam":null,"customParam":null,"resultName":null,"process":0,"state":null}
+    "nowtable", // {"id":"xxx","name":null,"sql":"SELECT ID FROM WAREHOUSE.RDM_x","type":null,"sqlParam":null,"customParam":null,"resultName":null,"process":0,"state":null}
     "modelUuid",
     "modelTitle",
     "useType",
-    "prePersonalVal",// {"id":"xxx","name":null,"sql":"SELECT ID FROM WAREHOUSE.RDM_x","type":null,"sqlParam":null,"customParam":null,"resultName":null,"process":0,"state":null}
+    "prePersonalVal", // {"id":"xxx","name":null,"sql":"SELECT ID FROM WAREHOUSE.RDM_x","type":null,"sqlParam":null,"customParam":null,"resultName":null,"process":0,"state":null}
     "resultSpiltObjects",
     "modelId",
     "preLength",
@@ -635,15 +822,175 @@ export default {
   ],
   data() {
     return {
+      //打开疑点入库
+      suspectsVisible: false,
+      //疑点主表
+      suspectsMainData: [
+        {
+          name: "字段名1",
+          describe: "描述1",
+          type: "数据类型1",
+        },
+        {
+          name: "字段名2",
+          describe: "描述2",
+          type: "数据类型2",
+        },
+        {
+          name: "字段名3",
+          describe: "描述3",
+          type: "数据类型3",
+        },
+        {
+          name: "字段名4",
+          describe: "描述4",
+          type: "数据类型4",
+        },
+        {
+          name: "字段名5",
+          describe: "描述5",
+          type: "数据类型5",
+        },
+      ],
+      suspectsFilterlist1: [
+        { value: "字段名1", text: "字段名1" },
+        { value: "字段名2", text: "字段名2" },
+      ],
+      suspectsFilterlist2: [
+        { value: "描述1", text: "描述1" },
+        { value: "描述2", text: "描述2" },
+      ],
+      suspectsFilterlist3: [
+        { value: "数据类型1", text: "数据类型1" },
+        { value: "数据类型2", text: "数据类型2" },
+      ],
+      suspectsFilterlist4: [
+        { value: "字段名1", text: "字段名1" },
+        { value: "字段名2", text: "字段名2" },
+      ],
+      suspectsFilterlist5: [
+        { value: "描述1", text: "描述1" },
+        { value: "描述2", text: "描述2" },
+      ],
+      suspectsFilterlist6: [
+        { value: "数据类型1", text: "数据类型1" },
+        { value: "数据类型2", text: "数据类型2" },
+      ],
+      //疑点结果表
+      suspectssecondaryData: [
+        {
+          name: "字段名1",
+          describe: "描述1",
+          type: "数据类型1",
+        },
+        {
+          name: "字段名2",
+          describe: "描述2",
+          type: "数据类型2",
+        },
+        {
+          name: "字段名3",
+          describe: "描述2",
+          type: "数据类型2",
+        },
+        {
+          name: "字段名7",
+          describe: "描述2",
+          type: "数据类型2",
+        },
+        {
+          name: "字段名8",
+          describe: "描述2",
+          type: "数据类型2",
+        },
+        {
+          name: "字段名9",
+          describe: "描述2",
+          type: "数据类型2",
+        },
+      ],
+      //关联关系
+      suspectsRelevanceData: [
+        {
+          mainName: "字段名2",
+          mainDescribe: "描述2",
+          mianType: "数据类型2",
+          secondaryName: "字段名2",
+          secondaryDescribe: "描述2",
+          secondaryType: "数据类型2",
+        },
+        {
+          mainName: "字段名2",
+          mainDescribe: "描述2",
+          mianType: "数据类型2",
+          secondaryName: "字段名2",
+          secondaryDescribe: "描述2",
+          secondaryType: "数据类型2",
+        },
+        {
+          mainName: "字段名2",
+          mainDescribe: "描述2",
+          mianType: "数据类型2",
+          secondaryName: "字段名2",
+          secondaryDescribe: "描述2",
+          secondaryType: "数据类型2",
+        },
+        {
+          mainName: "字段名2",
+          mainDescribe: "描述2",
+          mianType: "数据类型2",
+          secondaryName: "字段名2",
+          secondaryDescribe: "描述2",
+          secondaryType: "数据类型2",
+        },
+        {
+          mainName: "字段名2",
+          mainDescribe: "描述2",
+          mianType: "数据类型2",
+          secondaryName: "字段名2",
+          secondaryDescribe: "描述2",
+          secondaryType: "数据类型2",
+        },
+        {
+          mainName: "字段名2",
+          mainDescribe: "描述2",
+          mianType: "数据类型2",
+          secondaryName: "字段名2",
+          secondaryDescribe: "描述2",
+          secondaryType: "数据类型2",
+        },
+      ],
+      //关联相关表单
+      suspectsform: {
+        project: "",
+        tag: "",
+        way: "",
+      },
+      //
+      projectlist: [
+        { name: "项目1", id: "项目1" },
+        { name: "项目2", id: "项目2" },
+        { name: "项目3", id: "项目3" },
+      ],
+      taglist: [
+        { name: "标签1", id: "标签1" },
+        { name: "标签2", id: "标签2" },
+        { name: "标签3", id: "标签3" },
+      ],
+      waylist: [
+        { name: "全覆盖", id: "全覆盖" },
+        { name: "追加", id: "追加" },
+      ],
+      maincurrentRow:null,
       resultShareDialogIsSee: false,
       //工作流相关
       submitData: {
-          versionUuid: 'tlLuwUhC',
-          busTableName: '',  //表名
-          busDatabaseName: 'warehouse',  //数据库名
-          busDatabaseType: '',  //
-          status: '1',  //预警数据状态
-          busdatas: []
+        versionUuid: "tlLuwUhC",
+        busTableName: "", //表名
+        busDatabaseName: "warehouse", //数据库名
+        busDatabaseType: "", //
+        status: "1", //预警数据状态
+        busdatas: [],
       },
       // 判断是否走工作流
       // yancheng: true,
@@ -772,118 +1119,118 @@ export default {
       sideBar: {
         toolPanels: [
           {
-            id: 'columns',
-            labelDefault: 'Columns',
-            labelKey: 'columns',
-            iconKey: 'columns',
-            toolPanel: 'agColumnsToolPanel',
+            id: "columns",
+            labelDefault: "Columns",
+            labelKey: "columns",
+            iconKey: "columns",
+            toolPanel: "agColumnsToolPanel",
           },
           {
-            id: 'filters',
-            labelDefault: 'Filters',
-            labelKey: 'filters',
-            iconKey: 'filter',
-            toolPanel: 'agFiltersToolPanel'
+            id: "filters",
+            labelDefault: "Filters",
+            labelKey: "filters",
+            iconKey: "filter",
+            toolPanel: "agFiltersToolPanel",
           },
         ],
         position: "right",
         defaultToolPanel: "filters",
       },
       modules: AllModules,
-      localeText:{
-  // for filter panel
-  page: '页',
-  more: '更多',
-  to: '到',
-  /* of: 'daOf', */
-  next: '下一页',
-  last: '最后',
-  first: '第一',
-  previous: '以前的',
-  loadingOoo: '加载中...',
-  // Row:"行",
-  rowGroups: '行分组',
-  // for set filter
-  selectAll: '全部选择',
-  searchOoo: '搜索...',
-  blanks: '空',
-  Column: '列',
-  labels: '标签',
-  // for number filter and text filter
-  filterOoo: '过滤',
-  applyFilter: '过滤中...',
-  equals: '等于',
-  notEqual: '不等于',
-  // for number filter
-  lessThan: '小于',
-  greaterThan: '大于',
-  lessThanOrEqual: '小于等于',
-  greaterThanOrEqual: '大于等于',
-  inRange: '在范围内',
-  // for text filter
-  contains: '包含',
-  notContains: '不包含',
-  startsWith: '开始',
-  endsWith: '结束',
-  // filter conditions
+      localeText: {
+        // for filter panel
+        page: "页",
+        more: "更多",
+        to: "到",
+        /* of: 'daOf', */
+        next: "下一页",
+        last: "最后",
+        first: "第一",
+        previous: "以前的",
+        loadingOoo: "加载中...",
+        // Row:"行",
+        rowGroups: "行分组",
+        // for set filter
+        selectAll: "全部选择",
+        searchOoo: "搜索...",
+        blanks: "空",
+        Column: "列",
+        labels: "标签",
+        // for number filter and text filter
+        filterOoo: "过滤",
+        applyFilter: "过滤中...",
+        equals: "等于",
+        notEqual: "不等于",
+        // for number filter
+        lessThan: "小于",
+        greaterThan: "大于",
+        lessThanOrEqual: "小于等于",
+        greaterThanOrEqual: "大于等于",
+        inRange: "在范围内",
+        // for text filter
+        contains: "包含",
+        notContains: "不包含",
+        startsWith: "开始",
+        endsWith: "结束",
+        // filter conditions
         andCondition: "并且",
         orCondition: "或者",
-        numberFilter:"数字筛选器",
-        textFilter:"文本筛选器",
-        dateFilter:"时间筛选器",
-  // the header of the default group column
-  // group: '分组',
-  // tool panel
-  columns: '列',
-  filters: '过滤器',
-  rowGroupColumns: '行分组',
-  rowGroupColumnsEmptyMessage: '拖拽设置行分组',
-  valueColumns: '列值',
-  pivotMode: '透视模式',
-  groups: '行列组',
-  values: '值',
-  pivots: '列标签',
-  valueColumnsEmptyMessage: '拖拽进行聚合',
-  pivotColumnsEmptyMessage: '拖拽设置列标签',
-  toolPanelButton: '工具按钮',
-  // other
-  noRowsToShow: '暂时没有要展示的数据',
-  // enterprise menu
-  pinColumn: '列位置调整',
-  valueAggregation: '聚合值',
-  autosizeThiscolumn: '自动调整此列大小',
-  autosizeAllColumns: '自动调整所有列的大小',
-  groupBy: '分组',
-  ungroupBy: '取消分组',
-  resetColumns: '重置列',
-  expandAll: '展开所有',
-  collapseAll: '关闭所有',
-  toolPanel: '工具',
-  export: '导出',
-  csvExport: 'CSV 导出',
-  excelExport: 'Excel 导出(.xlsx)',
-  excelXmlExport: 'Excel 导出(.xml)',
-  // enterprise menu pinning
-  PinColumn:"固定",
-  pinLeft: '居左',
-  pinRight: '居右',
-  noPin: '默认',
-  // enterprise menu aggregation and status bar
-  sum: '合计',
-  min: '最小值',
-  max: '最大值',
-  /* none: 'laNone', */
-  count: '计数',
-  average: '平均值',
-  avg : '平均值',
-  // standard menu
-  copy: '复制',
-  copyWithHeaders: '携表头复制',
-  ctrlC: 'ctrl-C',
-  paste: '粘贴',
-  ctrlV: 'ctrl-V'
-},
-      frc: {'ag-cell': AgCell},
+        numberFilter: "数字筛选器",
+        textFilter: "文本筛选器",
+        dateFilter: "时间筛选器",
+        // the header of the default group column
+        // group: '分组',
+        // tool panel
+        columns: "列",
+        filters: "过滤器",
+        rowGroupColumns: "行分组",
+        rowGroupColumnsEmptyMessage: "拖拽设置行分组",
+        valueColumns: "列值",
+        pivotMode: "透视模式",
+        groups: "行列组",
+        values: "值",
+        pivots: "列标签",
+        valueColumnsEmptyMessage: "拖拽进行聚合",
+        pivotColumnsEmptyMessage: "拖拽设置列标签",
+        toolPanelButton: "工具按钮",
+        // other
+        noRowsToShow: "暂时没有要展示的数据",
+        // enterprise menu
+        pinColumn: "列位置调整",
+        valueAggregation: "聚合值",
+        autosizeThiscolumn: "自动调整此列大小",
+        autosizeAllColumns: "自动调整所有列的大小",
+        groupBy: "分组",
+        ungroupBy: "取消分组",
+        resetColumns: "重置列",
+        expandAll: "展开所有",
+        collapseAll: "关闭所有",
+        toolPanel: "工具",
+        export: "导出",
+        csvExport: "CSV 导出",
+        excelExport: "Excel 导出(.xlsx)",
+        excelXmlExport: "Excel 导出(.xml)",
+        // enterprise menu pinning
+        PinColumn: "固定",
+        pinLeft: "居左",
+        pinRight: "居右",
+        noPin: "默认",
+        // enterprise menu aggregation and status bar
+        sum: "合计",
+        min: "最小值",
+        max: "最大值",
+        /* none: 'laNone', */
+        count: "计数",
+        average: "平均值",
+        avg: "平均值",
+        // standard menu
+        copy: "复制",
+        copyWithHeaders: "携表头复制",
+        ctrlC: "ctrl-C",
+        paste: "粘贴",
+        ctrlV: "ctrl-V",
+      },
+      frc: { "ag-cell": AgCell },
       gridApi: null,
       gridColumnApi: null,
       componentParent: null,
@@ -891,26 +1238,38 @@ export default {
       rotateConfigs: [
         {
           /*  ,财报结构（趋势）分析 示例  */
-              modelIds: ["fa2f16c00e335049a0088580362e15db","3acc159b6110564da7698b460eab774f"],  /*  通过UUID匹配的的模型进行行列转置 */
-              mainField:"科目名称",               /*  转置的主列 */
-              colNamesField: "期间值",     /*  以此列值为转置后列头的列 */
-              titleDisplayRules: (thisTitle, colNamesFieldValue)=>{       /*  转置后的显示规则 */
-                  if(thisTitle=='占比'||thisTitle=='环比'||thisTitle=='同比') return colNamesFieldValue+thisTitle;
-                  else if(thisTitle=='期末额') return colNamesFieldValue;
+          modelIds: [
+            "fa2f16c00e335049a0088580362e15db",
+            "3acc159b6110564da7698b460eab774f",
+          ] /*  通过UUID匹配的的模型进行行列转置 */,
+          mainField: "科目名称" /*  转置的主列 */,
+          colNamesField: "期间值" /*  以此列值为转置后列头的列 */,
+          titleDisplayRules: (thisTitle, colNamesFieldValue) => {
+            /*  转置后的显示规则 */
+            if (
+              thisTitle == "占比" ||
+              thisTitle == "环比" ||
+              thisTitle == "同比"
+            )
+              return colNamesFieldValue + thisTitle;
+            else if (thisTitle == "期末额") return colNamesFieldValue;
             else return thisTitle;
-              }
-          },{
+          },
+        },
+        {
           /*  ,财报结构（趋势）分析 示例  */
-              modelIds: ["6f0d96ff5b633543eb59736592c92418"],  /*  通过UUID匹配的的模型进行行列转置 */
-              mainField:"指标名称,指标模块,计算公式",               /*  转置的主列 */
-              colNamesField: "月份",     /*  以此列值为转置后列头的列 */
-              titleDisplayRules: (thisTitle, colNamesFieldValue)=>{       /*  转置后的显示规则 */
-                  if(thisTitle=='计算值') return colNamesFieldValue;
+          modelIds: [
+            "6f0d96ff5b633543eb59736592c92418",
+          ] /*  通过UUID匹配的的模型进行行列转置 */,
+          mainField: "指标名称,指标模块,计算公式" /*  转置的主列 */,
+          colNamesField: "月份" /*  以此列值为转置后列头的列 */,
+          titleDisplayRules: (thisTitle, colNamesFieldValue) => {
+            /*  转置后的显示规则 */
+            if (thisTitle == "计算值") return colNamesFieldValue;
             else return thisTitle;
-              }
-          }
-
-      ]
+          },
+        },
+      ],
     };
   },
   mounted() {
@@ -950,6 +1309,89 @@ export default {
     window.openModelDetailNew = _this.openModelDetailNew;
   },
   methods: {
+    //打开疑点入库
+    suspectsPutInStorage() {
+      this.suspectsVisible = true;
+    },
+    //筛选
+    suspectsfilterHandler1(value, row, column) {
+      const property = column["property"];
+      return row[property] === value;
+    },
+    suspectsfilterHandler2(value, row, column) {
+      const property = column["property"];
+      return row[property] === value;
+    },
+    suspectsfilterHandler3(value, row, column) {
+      const property = column["property"];
+      return row[property] === value;
+    },
+    suspectsfilterHandler4(value, row, column) {
+      const property = column["property"];
+      return row[property] === value;
+    },
+    suspectsfilterHandler5(value, row, column) {
+      const property = column["property"];
+      return row[property] === value;
+    },
+    suspectsfilterHandler6(value, row, column) {
+      const property = column["property"];
+      return row[property] === value;
+    },
+    //选择疑点主体信息
+    mainCurrentChange(val){
+      this.maincurrentRow = val
+    },
+    //选择疑点，添加疑点关联
+    addRelevanceRow(ind, row) {
+      for (let i = 0; i < this.suspectsRelevanceData.length; i++) {
+        if (this.suspectsRelevanceData[i].mainName == row.name) {
+          this.$message({ message: "该字段疑点映射已存在", type: "warning" });
+          return
+        }
+      }
+      if(this.maincurrentRow==null){
+        this.$message({ message: "请选择疑点库主体信息", type: "warning" });
+        return
+      }
+      this.suspectsRelevanceData.push({
+        mainName:this.maincurrentRow.name,
+        mainDescribe:this.maincurrentRow.describe,
+        mianType:this.maincurrentRow.type,
+        secondaryName:row.name,
+        secondaryDescribe:row.describe,
+        secondaryType:row.type
+      })
+       this.$refs.mainTable.setCurrentRow();
+    },
+    //自动匹配
+    autoMatch() {
+      this.suspectsRelevanceData = [];
+      for (let i = 0; i < this.suspectsMainData.length; i++) {
+        let main = this.suspectsMainData[i];
+        for (let j = 0; j < this.suspectssecondaryData.length; j++) {
+          let secondary = this.suspectssecondaryData[j];
+          if (secondary.name == main.name) {
+            this.suspectsRelevanceData.push({
+              mainName: main.name,
+              mainDescribe: main.describe,
+              mianType: main.type,
+              secondaryName: secondary.name,
+              secondaryDescribe: secondary.describe,
+              secondaryType: secondary.type,
+            });
+          }
+        }
+      }
+    },
+    //重置
+    matchReset() {
+      this.suspectsRelevanceData = [];
+    },
+    //移除一条关联
+    deleteRelevanceRow(index, rows) {
+      rows.splice(index, 1);
+    },
     clickBigTab() {
       let _this = this;
       window.openModelDetailNew = _this.openModelDetailNew;
@@ -1393,7 +1835,7 @@ export default {
                         headerName: colNames[i],
                         field: colNames[i],
                         params: { thresholdValueRel, modelResultDetailCol },
-                        cellRenderer: 'ag-cell',
+                        cellRenderer: "ag-cell",
                         checkboxSelection: true,
                       };
                       onlyFlag = true;
@@ -1402,7 +1844,7 @@ export default {
                         headerName: colNames[i],
                         field: colNames[i],
                         params: { thresholdValueRel, modelResultDetailCol },
-                        cellRenderer: 'ag-cell',
+                        cellRenderer: "ag-cell",
                       };
                     }
                   } else {
@@ -1430,9 +1872,9 @@ export default {
                     j++
                   ) {
                     if (
-                      this.modelOutputColumn[
-                        j
-                      ].outputColumnName.replaceAll('\"','').toLowerCase() == colNames[i]
+                      this.modelOutputColumn[j].outputColumnName
+                        .replaceAll('"', "")
+                        .toLowerCase() == colNames[i]
                     ) {
                       if (this.modelOutputColumn[j].isShow == 1) {
                         var rowColom = {};
@@ -1449,8 +1891,11 @@ export default {
                             rowColom = {
                               headerName: this.modelOutputColumn[j].columnAlias,
                               field: colNames[i],
-                              params: {thresholdValueRel, modelResultDetailCol},
-                        cellRenderer: 'ag-cell',
+                              params: {
+                                thresholdValueRel,
+                                modelResultDetailCol,
+                              },
+                              cellRenderer: "ag-cell",
                               checkboxSelection: true,
                             };
                             onlyFlag = true;
@@ -1458,8 +1903,11 @@ export default {
                             rowColom = {
                               headerName: this.modelOutputColumn[j].columnAlias,
                               field: colNames[i],
-                              params: {thresholdValueRel, modelResultDetailCol},
-                        cellRenderer: 'ag-cell',
+                              params: {
+                                thresholdValueRel,
+                                modelResultDetailCol,
+                              },
+                              cellRenderer: "ag-cell",
                             };
                           }
                         } else {
@@ -1517,9 +1965,10 @@ export default {
                     ) {
                       if (this.modelOutputColumn[k].dataCoding != undefined) {
                         var a = da[i][colNames[j]];
-                        da[i][colNames[j]] = this.dataCoding[
-                          this.modelOutputColumn[k].dataCoding
-                        ][a];
+                        da[i][colNames[j]] =
+                          this.dataCoding[this.modelOutputColumn[k].dataCoding][
+                            a
+                          ];
                       }
                     }
                   }
@@ -1538,7 +1987,7 @@ export default {
         // if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
         //   this.gridApi.closeToolPanel()
         // }
-        let _this = this
+        let _this = this;
         setTimeout(function () {
           for (let i = 0; i < col.length; i++) {
             var colType0 = _this.result.columnType[i];
@@ -1721,9 +2170,11 @@ export default {
                     let rowColom = {};
                     for (let n = 0; n < modelOutputColumn.length; n++) {
                       if (
-                          // 此处逻辑：类似于oracle数据库字段增加了前后缀的\" 所以替换后再比较
-                        modelOutputColumn[n].outputColumnName.replaceAll('\"','') ==
-                        this.nextValue.columnNames[j]
+                        // 此处逻辑：类似于oracle数据库字段增加了前后缀的\" 所以替换后再比较
+                        modelOutputColumn[n].outputColumnName.replaceAll(
+                          '"',
+                          ""
+                        ) == this.nextValue.columnNames[j]
                       ) {
                         if (modelOutputColumn[n].isShow == 1) {
                           if (
@@ -1741,8 +2192,11 @@ export default {
                             rowColom = {
                               headerName: modelOutputColumn[n].columnAlias,
                               field: this.nextValue.columnNames[j],
-                              params: {thresholdValueRel, modelResultDetailCol},
-                              cellRenderer: 'ag-cell',
+                              params: {
+                                thresholdValueRel,
+                                modelResultDetailCol,
+                              },
+                              cellRenderer: "ag-cell",
                             };
                           } else {
                             rowColom = {
@@ -1771,8 +2225,11 @@ export default {
                         ) {
                           for (var k = 0; k < modelOutputColumn.length; k++) {
                             if (
-                              modelOutputColumn[k].outputColumnName.replaceAll('\"','') ==
-                              this.nextValue.columnNames[j].replaceAll('\"','')
+                              modelOutputColumn[k].outputColumnName.replaceAll(
+                                '"',
+                                ""
+                              ) ==
+                              this.nextValue.columnNames[j].replaceAll('"', "")
                             ) {
                               if (
                                 modelOutputColumn[k].dataCoding != undefined
@@ -1796,7 +2253,7 @@ export default {
                     }
                     this.rowData = rowData;
                   }
-                  for(let i = 0;i<col.length;i++){
+                  for (let i = 0; i < col.length; i++) {
                     let colType0 = this.result.columnType[i];
                     // colType0 = colType0 ? "": colType0.toUpperCase();
                     // switch (colType0) {
@@ -1836,7 +2293,10 @@ export default {
                   }
                   this.columnDefs = col;
                   this.afterResult = true;
-                  if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
+                  if (
+                    typeof this.gridApi !== "undefined" &&
+                    this.gridApi !== null
+                  ) {
                     this.gridApi.closeToolPanel();
                   }
                 });
@@ -1902,7 +2362,7 @@ export default {
           this.rotateRowData.push(rtObj);
         });
         Object.keys(this.rotateRowData[0]).forEach((k) => {
-          this.rotateColumnDefs.push({ field: k, headerName: k, width:280 });
+          this.rotateColumnDefs.push({ field: k, headerName: k, width: 280 });
         });
       }
     },
@@ -1917,11 +2377,11 @@ export default {
       this.nextValue = nextValue;
       var col = [];
       var rowData = [];
-      if("websocketClose"=== this.nextValue.state){
+      if ("websocketClose" === this.nextValue.state) {
         this.isSee = false;
         this.modelResultPageIsSee = false;
         this.modelResultButtonIsShow = false;
-        this.errorMessage ="WebSocket已断开连接";
+        this.errorMessage = "WebSocket已断开连接";
         this.isLoading = false;
         return;
       }
@@ -1990,7 +2450,6 @@ export default {
               rowData.push(this.nextValue.result[k]);
             }
             for (let i = 0; i < col.length; i++) {
-
               var colType0 = this.result.columnType[i];
               colType0 = colType0 ? "" : colType0.toUpperCase();
               col[i].filter = "agMultiColumnFilter";
@@ -2214,39 +2673,35 @@ export default {
       this.getValues();
       var resultDetailPersonRels = [];
       selectPrimaryKeyByTableName().then((resp) => {
-                this.primaryKey = resp.data;
-                for (var i = 0; i < this.selectRows.length; i++) {
-                  for (var j = 0; j < selectedNode.length; j++) {
-                  var resultDetailPersonRel = {
-                    resultDetailProjectRelId: "",
-                    runResultTableUuid: this.nowtable.runResultTableUuid,
-                    runTaskRelUuid: this.nowtable.runTaskRelUuid,
-                      personUuid: selectedNode[j].personuuid,
-                    resultDetailId:
-                            this.selectRows[i][this.primaryKey.toLowerCase()],
-                      personName: selectedNode[j].cnname,
-                  };
-                  resultDetailPersonRels.push(resultDetailPersonRel);
-                }
-                }
-                batchSaveResultDetailPersonRel(resultDetailPersonRels).then(
-                        (resp) => {
-                          if (resp.data == true) {
-                            this.$message({
-                              type: "success",
-                              message: "分配人员成功!",
-                            });
-                            this.resultShareDialogIsSee = false;
-                          } else {
-                            this.$message({
-                              type: "error",
-                              message: "分配人员失败!",
-                            });
-                          }
-                        }
-                );
-              }
-      );
+        this.primaryKey = resp.data;
+        for (var i = 0; i < this.selectRows.length; i++) {
+          for (var j = 0; j < selectedNode.length; j++) {
+            var resultDetailPersonRel = {
+              resultDetailProjectRelId: "",
+              runResultTableUuid: this.nowtable.runResultTableUuid,
+              runTaskRelUuid: this.nowtable.runTaskRelUuid,
+              personUuid: selectedNode[j].personuuid,
+              resultDetailId: this.selectRows[i][this.primaryKey.toLowerCase()],
+              personName: selectedNode[j].cnname,
+            };
+            resultDetailPersonRels.push(resultDetailPersonRel);
+          }
+        }
+        batchSaveResultDetailPersonRel(resultDetailPersonRels).then((resp) => {
+          if (resp.data == true) {
+            this.$message({
+              type: "success",
+              message: "分配人员成功!",
+            });
+            this.resultShareDialogIsSee = false;
+          } else {
+            this.$message({
+              type: "error",
+              message: "分配人员失败!",
+            });
+          }
+        });
+      });
     },
     /**
      * 点击详细打开dialog效果
@@ -2450,12 +2905,12 @@ export default {
       this.tableData = this.nextValue.result;
       this.json_fields = {};
       for (var i = 0; i < this.nextValue.columnNames.length; i++) {
-        this.json_fields[this.nextValue.columnNames[i]] ={
+        this.json_fields[this.nextValue.columnNames[i]] = {
           field: this.nextValue.columnNames[i],
-          callback: value =>{
+          callback: (value) => {
             return "&nbsp;" + value;
-          }
-        }
+          },
+        };
       }
       this.excelName = "模型结果导出表";
     },
@@ -3176,6 +3631,39 @@ export default {
 };
 </script>
 <style scoped>
+.redprompt {
+  color: red;
+}
+.suspectstop {
+  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
+}
+.suspectsleft {
+  width: 49%;
+  margin-right: 1%;
+  height: 220px;
+  overflow: auto;
+}
+.suspectsright {
+  width: 49%;
+  height: 220px;
+  overflow: auto;
+}
+.suspectsmiddle {
+  height: 50px;
+}
+.suspectsbottom {
+  height: 200px;
+  overflow: auto;
+}
+.suspectsform .el-form-item {
+  width: 33% !important;
+}
+.suspectsform .el-form {
+  display: flex;
+  flex-wrap: wrap;
+}
 .itxst {
   text-align: left;
   height: 100%;
