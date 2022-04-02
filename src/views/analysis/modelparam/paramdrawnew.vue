@@ -72,8 +72,6 @@ export default {
     removeJcCssfile("xm-select.js","js")
   },methods:{
     async changeRelationParam(ind){
-      console.log(this.paramInfoArr)
-      console.log(this.paramListValueList)
       for(let i=0;i<this.paramInfoArr.length;i++){
         if(this.paramInfoArr[i].masterparam && this.paramListValueList[ind]!=''){
           //找到被关联参数
@@ -237,7 +235,6 @@ export default {
         }
         this.paramInfoArr.push(paramInfoObj)
       }
-      console.log(this.paramInfoArr);
       this.$nextTick(() => {
         // this.initParamInputAndSelect()
         this.loading.destroy()
@@ -444,7 +441,18 @@ export default {
               }
               
             }
+          }else{
+            // 下拉树默认值
+            if (paramObj.paramChoice.choiceType === '1'){
+              // 单选
+              // this.paramTreeValueList[index] = list[0]
+              this.paramTreeValueList[index] = ''
+            } else {
+              // 多选
+                this.paramTreeValueList[index] = [] 
+            }
           }
+            
           if(dataArr.length > 0){
             obj.setParamObj.data = dataArr
           }
@@ -641,7 +649,6 @@ export default {
               }
             }
             if (!returnObj.verify) {
-
             } else {
               if (hasAllowedNullParam) { // 如果存在可为空的参数并且为空值，走后台进行空参替换
                 const response = recplaceParams(replaceParamSql, JSON.stringify(arr))
