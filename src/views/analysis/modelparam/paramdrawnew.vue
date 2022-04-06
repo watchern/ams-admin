@@ -24,7 +24,7 @@
             v-if="paramInfo.inputType === 'treeinp'"
             style="width:100%"
             ref="selectTreeParam"
-            :props="{ label:'name',  multiple: paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0', emitPath: false}"
+            :props="{ label:'name',  multiple: paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0', emitPath: false,checkStrictly: true}"
             :options="paramInfo.data"
             @change="changeRelationParam(ind)"
             multiple

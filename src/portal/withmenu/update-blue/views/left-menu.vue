@@ -295,7 +295,7 @@ export default {
               img: require(`../style/images/icon0.png`),
               name: app.name,
               id: app.id,
-              homepage: app.homepage,
+              homepage: app.homepage|| '/ams/first',
             });
           });
           this.menugroup = [];
