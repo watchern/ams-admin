@@ -772,8 +772,9 @@ export default {
           this.modifying = true
           this.changeBtn.one = true
         }
-        return null
+        return "保留部分校验"
       }
+      let message = ""
       if (this.$refs.SQLEditor != undefined) {
         // region 校验sql语句
         let modelDesignVerResult = false
@@ -782,15 +783,14 @@ export default {
             modelDesignVerResult = valid
             message = "请先编写SQL"
           }
+          // if (this.$refs.SQLEditor[0].getSQLIsUpdate()) {
+          //   modelDesignVerResult = false
+          //   message = "请先执行或校验SQL"
+          // }
+          // endregion
+          //获取SQL编辑器参数对象 到下边去处理
         })
-        let message = ""
-        if (this.$refs.SQLEditor[0].getSQLIsUpdate()) {
-          modelDesignVerResult = false
-          message = "请先执行或校验SQL"
-        }
-        // endregion
-        //获取SQL编辑器参数对象 到下边去处理
-        if (this.sqlEditorParamObj.arr.length != 0) {
+        if (this.sqlEditorParamObj && this.sqlEditorParamObj.arr && this.sqlEditorParamObj.arr.length != 0) {
           // paramDefaultValue = this.$refs.apple.getParamSettingArr(this.sqlEditorParamObj.arr);
           paramDefaultValue = this.$refs.apple.getParamsSetting()
           if (!paramDefaultValue.verify) {
@@ -1326,51 +1326,74 @@ export default {
      */
     async save() {
       let modelObj = await this.getModelObj();
-      console.log(modelObj);
+      if(modelObj=="保留部分校验"){
+        return
+      }
+      var editmodel2db = function (_this) {
+
+        if (!_this.isUpdate) {
+          // if (modelObj == null ) {
+          //   _this.$message("请成功运行后保存");
+          //   return;
+          // }
+          saveModel(modelObj).then(result => {
+            _this.editorModelLoading = false
+            if (result.code === 0) {
+              _this.$notify({
+                title: '提示',
+                message: '新增成功',
+                type: 'success',
+                duration: 2000,
+                position: 'bottom-right'
+              });
+              _this.closeWinfrom()
+            } else {
+              _this.$message({type: 'error', message: '新增模型失败!'})
+            }
+          })
+        } else {
+          updateModel(modelObj).then(result => {
+            _this.editorModelLoading = false
+            if (result.code === 0) {
+              _this.$notify({
+                title: '提示',
+                message: '修改成功',
+                type: 'success',
+                duration: 2000,
+                position: 'bottom-right'
+              });
+              _this.closeWinfrom()
+            } else {
+              _this.$message({type: 'error', message: '修改模型失败!'})
+            }
+          })
+        }
+        //}
+        // 调用保存图表拖拽布局
+        chartAudit.$emit('chartAuditOn');
+
+      }
       // 如果是图形化模型 取modelSql
       if (this.form.modelType === "002003002") {
         modelObj.sqlValue = this.modelSql;
-      }
-      if (!this.isUpdate) {
-        if (modelObj == null ) {
-          this.$message("请成功运行后保存");
-          return;
-        }
-        saveModel(modelObj).then(result => {
-          this.editorModelLoading = false
-          if (result.code === 0) {
-            this.$notify({
-              title: '提示',
-              message: '新增成功',
-              type: 'success',
-              duration: 2000,
-              position: 'bottom-right'
-            });
-            this.closeWinfrom()
-          } else {
-            this.$message({type: 'error', message: '新增模型失败!'})
-          }
-        })
+        editmodel2db(this)
       } else {
-        updateModel(modelObj).then(result => {
-          this.editorModelLoading = false
-          if (result.code === 0) {
-            this.$notify({
-              title: '提示',
-              message: '修改成功',
-              type: 'success',
-              duration: 2000,
-              position: 'bottom-right'
-            });
-            this.closeWinfrom()
-          } else {
-            this.$message({type: 'error', message: '修改模型失败!'})
-          }
-        })
+        // modelObj.sqlValue = this.form.sqlValue;
+        // this.getSqlObj()
+
+        await this.$refs.SQLEditor[0].executeSQL2(function (){})
+
+      //   getSqlObj(false);
+      //   this.$emit("getSqlObj");
+      // debugger
+      //   this.setIsUpdate(false);
+
+        this.getSqlObj()
+        editmodel2db(this)
+        console.log("modelObj.sqlValue")
+        console.log(modelObj.sqlValue)
       }
-      //}
-      // 调用保存图表拖拽布局
-      chartAudit.$emit('chartAuditOn');
+
     },
       viewDialog(param) {
         switch(param){
