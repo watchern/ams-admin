@@ -124,6 +124,16 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="使用单引号">
+              <el-radio-group v-model="form.useQuotation">
+                <el-radio id="useQuotation" :label="1" value="1">是</el-radio>
+                <el-radio id="useQuotation" :label="0" value="0">否</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <div
           id="dataLengthInterVal"
           v-show="this.isShowElement.dataLengthInterValShow"
@@ -490,6 +500,7 @@ export default {
       relevanceData: [],
       //表单属性
       form: {
+        useQuotation:0,
         paramName: "",
         dataType: "",
         inputType: "",
@@ -665,6 +676,7 @@ export default {
           if (data != null && data != "") {
             that.form.paramName = data.paramName;
             that.form.dataType = data.dataType;
+            that.form.useQuotation = data.useQuotation||0;
             that.changeValue(data.dataType);
             that.form.inputType = data.inputType;
             that.changeInputType(data.inputType);
@@ -900,6 +912,7 @@ export default {
         "paramChoice.allowedNull": allowedNull,
         "param.signForSql": this.tabsigns,
         "param.paramFolderUuid": folderId,
+        "param.useQuotation":this.form.useQuotation,
         paramRelationList: JSON.stringify(this.relevanceData),
       };
       if (inputType != "lineinp" && inputType != "treeinp") {
@@ -1016,6 +1029,7 @@ export default {
         "paramChoice.allowedNull": allowedNull,
         "param.signForSql": this.tabsigns,
         "param.paramFolderUuid": folderId,
+        "param.useQuotation":this.form.useQuotation,
         paramRelationList: JSON.stringify(this.relevanceData),
       };
       if (inputType != "lineinp" && inputType != "treeinp") {
