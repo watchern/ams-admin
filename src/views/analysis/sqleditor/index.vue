@@ -171,6 +171,7 @@
               ref="childTabsRef"
               :key="result.id"
               :pre-value="currentExecuteSQL"
+              :maintableindex="maintableindex"
               use-type="sqlEditor"
               style="width: 100%"
               :chartModelUuid="modelUuid"
@@ -647,6 +648,7 @@ export default {
       sceneCode: "auditor",
       treeType: "save",
       pushUuid: "",
+      maintableindex:''
     };
   },
   watch: {
@@ -1287,6 +1289,7 @@ export default {
                 lastSqlIndex = result.data.lastSqlIndex;
                 this.executeLoading = false;
                 this.currentExecuteSQL = result.data.executeSQLList;
+                this.maintableindex = result.data.lastSqlIndex||''
                 if (
                   this.currentExecuteSQL != null &&
                   this.currentExecuteSQL.length > 0 &&
@@ -1357,6 +1360,7 @@ export default {
           lastSqlIndex = result.data.lastSqlIndex;
           this.executeLoading = false;
           this.currentExecuteSQL = result.data.executeSQLList;
+          this.maintableindex = result.data.lastSqlIndex||''
           this.modelOriginalTable = result.data.tables;
           this.createTreeNode = result.data.treeNodeInfo;
           this.resultShow.push({ id: 1 });

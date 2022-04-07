@@ -185,6 +185,7 @@
                         :paramInfo="item.runModelConfig"
                         :dataUserId="dataUserId"
                         :sceneCode="sceneCode"
+                        :maintableindex="item.maintableindex"
                         use-type="modelPreview"
                       />
                     </el-col>
@@ -1217,7 +1218,7 @@ export default {
           if (isExistParam) {
             selectObj[0].runModelConfig = obj.runModelConfig;
           }
-          this.addTab(selectObj[0], isExistParam, result.data.executeSQLList);
+          this.addTab(selectObj[0], isExistParam, result.data.executeSQLList,false,result.data.lastSqlIndex);
           //界面渲染完成之后开始执行sql,将sql送入调度
           startExecuteSql(result.data)
             .then((result) => {
@@ -1236,13 +1237,14 @@ export default {
      * @param isExistParam 参数对象
      * @param executeSQLList 执行sql列表
      */
-    addTab(modelObj, isExistParam, executeSQLList, isRelation) {
+    addTab(modelObj, isExistParam, executeSQLList, isRelation,maintableindex) {
       let obj = {
         title: modelObj.modelName + "结果",
         name: modelObj.modelUuid,
         isExistParam: isExistParam,
         executeSQLList: executeSQLList,
         isRelation: isRelation,
+        maintableindex:maintableindex||''
       };
       if (isExistParam) {
         obj.runModelConfig = modelObj.runModelConfig;
