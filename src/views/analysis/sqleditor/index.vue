@@ -916,10 +916,10 @@ export default {
         if (dataObj.listenerType === "onSQLResult") {
           if (dataObj.executeSQL.state == 2) {
             // 如果最后的列索引与当前执行进度一直，说明最后的结果集已经拿到 取出最后一个结果集的列做为模型结果列
-            // if (lastSqlIndex == currentExecuteProgress) {
+            if (lastSqlIndex == currentExecuteProgress) {
               lastResultColumn = dataObj.columnNames;
               lastResultColumnType = dataObj.columnTypes;
-            // }
+            }
             currentExecuteProgress++;
           }
           // 如果当前执行等于总的执行进度  说明sql已经全部执行成功
