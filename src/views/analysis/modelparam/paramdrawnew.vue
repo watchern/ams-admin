@@ -78,31 +78,18 @@ export default {
         if(this.paramInfoArr[i].masterparam.masterParamUuid == this.paramInfoArr[ind].dataId){
           //拼sql
           let paramSql = this.paramInfoArr[i].dataSql + " WHERE " + this.paramInfoArr[i].masterparam.slaveParamCol
-          if(this.paramListValueList[ind].length<2){
-            let rtype = this.paramInfoArr[ind].dataType
-            let rvalue = this.paramListValueList[ind][0]
-            if(this.paramInfoArr[i].masterparam.relationMode==1){
-            }else{
-              let rdata = this.paramInfoArr[ind].data
-              for(let k=0;k<rdata.length;k++){
-                let rv1 = (rdata[k].value.indexOf("'") == -1? ("'"+rdata[k].value+"'"):rdata[k].value)
-                let rv2 = (rvalue.indexOf("'") == -1? ("'"+rvalue+"'"):rvalue)
-                if(rv1 == rv2){
-                  rvalue = rdata[k].name
-                }
-              }
-            }
-            paramSql += "=" 
-            if(rvalue.indexOf("'") != -1){
-              paramSql += rvalue
-            }else{
-              paramSql += "'"+rvalue+"'"
-            }
+          // 单选
+          if(typeof(this.paramListValueList[ind])=='string'){
+            console.log("单选值：" + this.paramListValueList[ind])
+            paramSql += "="
+            paramSql += this.paramListValueList[ind]
           }else{
+            // 多选
+            console.log("多选值：" + this.paramListValueList[ind])
             paramSql += " in ("
             for(let j=0;j<this.paramListValueList[ind].length;j++){
-              let rtype = this.paramInfoArr[ind].dataType
               let rvalue = this.paramListValueList[ind][j]
+              console.log(this.paramListValueList[ind])
               if(this.paramInfoArr[i].masterparam.relationMode==1){
                 }else{
                   let rdata = this.paramInfoArr[ind].data
@@ -324,6 +311,7 @@ export default {
           obj.setParamObj.dataId = paramObj.ammParamUuid
           obj.setParamObj.dataName = paramObj.paramName
           obj.setParamObj.dataChoiceType = paramObj.paramChoice.choiceType
+            console.log(obj)
           if(hasSql){
             obj.setParamObj.dataSql = paramSql
             obj.setParamObj.dataParamArr = paramArr
