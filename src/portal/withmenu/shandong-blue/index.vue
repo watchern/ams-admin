@@ -8,9 +8,9 @@
         <!-- <keep-alive> -->
         <router-view />
         <!-- </keep-alive> -->
-        <el-tooltip content="系统帮助" placement="top" effect="light">
+        <!-- <el-tooltip content="系统帮助" placement="top" effect="light">
           <i class="el-icon-question seat" @click="getHelp()" style="color:rgb(90,195,235)"></i>
-        </el-tooltip>
+        </el-tooltip> -->
       </div>
       <div v-if="isShowRightFooter" class="home-right-footer flex-shrink w100">
         <RightFooter />

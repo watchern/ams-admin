@@ -24,7 +24,7 @@
             v-if="paramInfo.inputType === 'treeinp'"
             style="width:100%"
             ref="selectTreeParam"
-            :props="{ label:'name',  multiple: paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0', emitPath: false}"
+            :props="{ label:'name',  multiple: paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0', emitPath: false,checkStrictly: true}"
             :options="paramInfo.data"
             @change="changeRelationParam(ind)"
             multiple
@@ -78,31 +78,18 @@ export default {
         if(this.paramInfoArr[i].masterparam.masterParamUuid == this.paramInfoArr[ind].dataId){
           //拼sql
           let paramSql = this.paramInfoArr[i].dataSql + " WHERE " + this.paramInfoArr[i].masterparam.slaveParamCol
-          if(this.paramListValueList[ind].length<2){
-            let rtype = this.paramInfoArr[ind].dataType
-            let rvalue = this.paramListValueList[ind][0]
-            if(this.paramInfoArr[i].masterparam.relationMode==1){
-            }else{
-              let rdata = this.paramInfoArr[ind].data
-              for(let k=0;k<rdata.length;k++){
-                let rv1 = (rdata[k].value.indexOf("'") == -1? ("'"+rdata[k].value+"'"):rdata[k].value)
-                let rv2 = (rvalue.indexOf("'") == -1? ("'"+rvalue+"'"):rvalue)
-                if(rv1 == rv2){
-                  rvalue = rdata[k].name
-                }
-              }
-            }
-            paramSql += "=" 
-            if(rvalue.indexOf("'") != -1){
-              paramSql += rvalue
-            }else{
-              paramSql += "'"+rvalue+"'"
-            }
+          // 单选
+          if(typeof(this.paramListValueList[ind])=='string'){
+            console.log("单选值：" + this.paramListValueList[ind])
+            paramSql += "="
+            paramSql += this.paramListValueList[ind]
           }else{
+            // 多选
+            console.log("多选值：" + this.paramListValueList[ind])
             paramSql += " in ("
             for(let j=0;j<this.paramListValueList[ind].length;j++){
-              let rtype = this.paramInfoArr[ind].dataType
               let rvalue = this.paramListValueList[ind][j]
+              console.log(this.paramListValueList[ind])
               if(this.paramInfoArr[i].masterparam.relationMode==1){
                 }else{
                   let rdata = this.paramInfoArr[ind].data
@@ -191,11 +178,14 @@ export default {
               // }
               // 默认值赋值
               if (this.arr[j].defaultVal) {
-                  paramsArr[k].defaultVal = this.arr[j].defaultVal
-                }
+                paramsArr[k].defaultVal = this.arr[j].defaultVal
+              }
+              this.arr[j].useQuotation = paramsArr[k].useQuotation
               copyParamArr.push(paramsArr[k])
               moduleParamArr.push(moduleParamId)
-              break
+              // break
+            }else if(moduleParamId === this.arr[j].moduleParamId){
+              this.arr[j].useQuotation = paramsArr[k].useQuotation
             }
           }
         }
@@ -479,6 +469,7 @@ export default {
      * @author JL
      */
     replaceNodeParam(id) {
+      console.log(this.overallParmaobj[id].paramsArr)
       let returnObj = {
         'verify': true, // 校验是否通过
         'message': '',// 提示信息

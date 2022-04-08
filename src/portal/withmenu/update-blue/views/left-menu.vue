@@ -261,15 +261,6 @@ export default {
         this.webSocket = this.getWebSocket(newv);
       }
     },
-  },
-  created() {
-    // 页面刚进入时开启长连接
-    this.init();
-    if (this.getPersonUuid) {
-      this.webSocket = this.getWebSocket(this.getPersonUuid);
-    }
-  },
-  watch: {
     $route: {
       handler(val, oldval) {
         if (oldval.path == "/login") {
@@ -279,6 +270,13 @@ export default {
       // 深度观察监听
       deep: true,
     },
+  },
+  created() {
+    // 页面刚进入时开启长连接
+    this.init();
+    if (this.getPersonUuid) {
+      this.webSocket = this.getWebSocket(this.getPersonUuid);
+    }
   },
   mounted() {
     console.log("..mounted");
@@ -295,7 +293,7 @@ export default {
               img: require(`../style/images/icon0.png`),
               name: app.name,
               id: app.id,
-              homepage: app.homepage,
+              homepage: app.homepage|| '/ams/first',
             });
           });
           this.menugroup = [];

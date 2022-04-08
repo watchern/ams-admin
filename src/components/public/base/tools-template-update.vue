@@ -77,7 +77,7 @@
 
       <div class="newest-item">
         <div class="title-label">执行任务</div>
-<!--        style="background: #353A43 !important;"-->
+<!--        style="background: #559ed4 !important;"-->
         <div class="newest-item-box">
           <div>
             <ul>
@@ -214,19 +214,19 @@ export default {
       ],
       latelyBackList:[
         {
-          bg: '#353A43 !important'
+          bg: '#559ed4 !important'
         },
         {
-          bg: '#353A43 !important'
+          bg: '#559ed4 !important'
         },
         {
-          bg: '#353A43 !important'
+          bg: '#559ed4 !important'
         },
         {
-          bg: '#353A43 !important'
+          bg: '#559ed4 !important'
         },
         {
-          bg: '#353A43 !important'
+          bg: '#559ed4 !important'
         }
       ],
       latelyUseList: [],
@@ -799,14 +799,14 @@ export default {
       color: #8691A2;
       font-size: 16px;
       .btn-box {
-        background: #353a43;
+        background: #559ed4;
         border-radius: 3px;
         margin-bottom: 10px;
         width: 30px;
         height: 30px;
       }
       .btn-box1{
-        background: #353a43;
+        background: #559ed4;
         border-radius: 3px;
         width: 30px;
         height: 60px;
@@ -886,7 +886,7 @@ export default {
       &-box {
         height: 140px;
         margin-top: 20px;
-        border: 1px solid #353A43 !important;
+        border: 1px solid #559ed4 !important;
         //box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
         border-radius: 8px;
         padding: 10px 20px;

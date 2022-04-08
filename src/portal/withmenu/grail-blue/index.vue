@@ -30,7 +30,7 @@
         <router-view />
         <!-- </keep-alive> -->
         <!-- 暂时注掉 -->
-        <el-tooltip
+        <!-- <el-tooltip
           content="系统帮助"
           placement="top"
           effect="light"
@@ -41,7 +41,7 @@
             @click="getHelp()"
             style="color: rgb(90, 195, 235)"
           ></i>
-        </el-tooltip>
+        </el-tooltip> -->
       </div>
       <div
         v-if="isShowRightFooter"
