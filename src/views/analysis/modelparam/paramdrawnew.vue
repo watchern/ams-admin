@@ -89,7 +89,6 @@ export default {
             paramSql += " in ("
             for(let j=0;j<this.paramListValueList[ind].length;j++){
               let rvalue = this.paramListValueList[ind][j]
-              console.log(this.paramListValueList[ind])
               if(this.paramInfoArr[i].masterparam.relationMode==1){
                 }else{
                   let rdata = this.paramInfoArr[ind].data
@@ -341,6 +340,14 @@ export default {
               }
               
             }
+          }else{
+            if (paramObj.paramChoice.choiceType === '1'){
+              // 单选
+              this.paramListValueList[index] = ''
+            } else {
+              // 多选
+                this.paramListValueList[index] = [] 
+            }
           }
           if(typeof paramObj.paramChoice.allowedNull !== 'undefined' && paramObj.paramChoice.allowedNull != null){
             obj.setParamObj.dataAllowedNull = paramObj.paramChoice.allowedNull
@@ -556,7 +563,6 @@ export default {
                   } else { // 多选
                     obj.paramValue = this.paramListValueList[i].join(',')
                   }
-                  
                 }
                 filterArr.push(obj)
               } else { // 不允许为空
