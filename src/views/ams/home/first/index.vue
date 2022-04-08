@@ -587,7 +587,7 @@ export default {
   .bottom {
     height: 106px;
     width: 90%;
-    background: #353a43;
+    background: #559ed4;
     box-shadow: 10px 10px 20px 0 rgba(0, 0, 0, 0.1);
     border-radius: 15px;
     position: absolute;
@@ -663,7 +663,7 @@ export default {
   bottom: 5px;
   font-family: PingFangSC-Regular;
   font-size: 13.5px;
-  color: #353A43 !important;
+  color: #559ed4 !important;
   letter-spacing: 0;
   text-align: justify;
   line-height: 22px;

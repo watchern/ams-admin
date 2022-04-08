@@ -65,8 +65,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button type="primary" size="mini" @click="closeDialog()" style="color:#353A43;background:#fff;border:none;font-weight:bold;font-size:14px">取消</el-button>
-        <el-button type="primary" size="mini" @click="dialogStatus==='create'?createData():updateData()" style="color:#c8ff8c;background:#353A43">保存</el-button>
+        <el-button type="primary" size="mini" @click="closeDialog()" style="color:#559ed4;background:#fff;border:none;font-weight:bold;font-size:14px">取消</el-button>
+        <el-button type="primary" size="mini" @click="dialogStatus==='create'?createData():updateData()" style="color:#c8ff8c;background:#559ed4">保存</el-button>
       </div>
     </el-dialog>
     <!-- 这是第二个弹窗，用来操作类别下具体的基础数据 -->
