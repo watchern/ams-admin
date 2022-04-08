@@ -41,7 +41,7 @@
           <div
             class="use-box flex a-center j-center use-zy"
             @click="dialogVisible = true"
-            :style="{ background: '#353A43 !important' }"
+            :style="{ background: '#559ed4 !important' }"
           >
             <img src="../../public/base/accessIcon/zidingyi.png" />
           </div>
@@ -76,7 +76,7 @@
       <!--      </div>-->
 
       <div class="newest-item">
-<!--        style="background: #353A43 !important;"-->
+<!--        style="background: #559ed4 !important;"-->
         <div class="newest-item-box" >
           <div data-v-02dbff7e="" class="title-label-img">
             <img
@@ -237,19 +237,19 @@ export default {
       ],
       latelyBackList: [
         {
-          bg: "#353A43 !important",
+          bg: "#559ed4 !important",
         },
         {
-          bg: "#353A43 !important",
+          bg: "#559ed4 !important",
         },
         {
-          bg: "#353A43 !important",
+          bg: "#559ed4 !important",
         },
         {
-          bg: "#353A43 !important",
+          bg: "#559ed4 !important",
         },
         {
-          bg: "#353A43 !important",
+          bg: "#559ed4 !important",
         },
       ],
       latelyUseList: [],
@@ -615,7 +615,7 @@ export default {
               image: require("../../public/base/accessIcon/moxing.png"),
               bg: this.latelyBackList[i]
                 ? this.latelyBackList[i].bg
-                : "#353A43 !important",
+                : "#559ed4 !important",
             });
           }
         }
@@ -803,7 +803,7 @@ export default {
                   image: require("../../public/base/accessIcon/moxing.png"),
                   bg: this.latelyBackList[i]
                     ? this.latelyBackList[i].bg
-                    : "#353A43 !important",
+                    : "#559ed4 !important",
                 });
               }
             }
@@ -909,14 +909,14 @@ export default {
       color: #8691a2;
       font-size: 16px;
       .btn-box {
-        background: #353a43;
+        background: #559ed4;
         border-radius: 3px;
         margin-bottom: 10px;
         width: 30px;
         height: 30px;
       }
       .btn-box1 {
-        background: #353a43;
+        background: #559ed4;
         border-radius: 3px;
         width: 30px;
         height: 60px;
