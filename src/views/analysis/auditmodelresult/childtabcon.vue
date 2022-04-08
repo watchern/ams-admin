@@ -662,7 +662,7 @@
                 v-for="(item, i) in projectlist"
                 :key="'project' + i"
                 :label="item.name"
-                :value="item.value"
+                :value="item"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -911,6 +911,7 @@ export default {
       suspectsform: {
         project: "",
         tag: "",
+        tagid: "",
         way: "",
       },
       //
@@ -1260,6 +1261,7 @@ export default {
   methods: {
     confirmtag(){
       this.suspectsform.tag =  this.treetagvalue.label
+      this.suspectsform.tagid = this.treetagvalue.id
       this.auditItemTree = false
     },
     handleNodeClick(data) {
@@ -1432,8 +1434,10 @@ export default {
       let data =  {
         suspectsRelevanceData: this.suspectsRelevanceData,
         modelId: this.modelId,
-        projectid:this.suspectsform.project,
+        modelTitle : this.modelTitle,
+        project:this.suspectsform.project,
         tag:this.suspectsform.tag,
+        tagid : this.suspectsform.tagid,
         way:this.suspectsform.way,
         modelcolumnlist:this.modelcolumnlist,
         modelresultlist:this.modelresultlist
