@@ -250,6 +250,7 @@
                     :key="1"
                     :pre-value="item.executeSQLList"
                     :paramInfo="item.runModelConfig"
+                    :maintableindex="item.maintableindex"
                     use-type="modelPreview"
                   />
                 </el-col>
@@ -1854,6 +1855,8 @@ export default {
         "正在运行模型'" + selectObj[0].modelName + "',请稍候"
       );
       getExecuteTask(obj, this.dataUserId, this.sceneCode).then((result) => {
+        console.log("======")
+        console.log(result)
         if(this.ifcancel==0){
         if (result.data.isError) {
           this.$message({
@@ -1867,7 +1870,7 @@ export default {
           if (isExistParam) {
             selectObj[0].runModelConfig = obj.runModelConfig;
           }
-          this.addTab(selectObj[0], isExistParam, result.data.executeSQLList,false);
+          this.addTab(selectObj[0], isExistParam, result.data.executeSQLList,false,result.data.lastSqlIndex);
           //界面渲染完成之后开始执行sql,将sql送入调度
           startExecuteSql(result.data)
             .then((result) => {
@@ -1890,13 +1893,14 @@ export default {
      * @param isExistParam 参数对象
      * @param executeSQLList 执行sql列表
      */
-    addTab(modelObj, isExistParam, executeSQLList, isRelation) {
+    addTab(modelObj, isExistParam, executeSQLList, isRelation,maintableindex) {
       let obj = {
         title: modelObj.modelName + "结果",
         name: this.modelId != modelObj.modelUuid ? ++this.tabIndex +'' + modelObj.modelUuid : modelObj.modelUuid,
         isExistParam: isExistParam,
         executeSQLList: executeSQLList,
         isRelation: isRelation,
+        maintableindex:maintableindex||''
       };
       if (isExistParam) {
         obj.runModelConfig = modelObj.runModelConfig;

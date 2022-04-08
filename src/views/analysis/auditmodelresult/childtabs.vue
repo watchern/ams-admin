@@ -90,17 +90,26 @@ export default {
         this.index = 0
       },
       tabsName(key, item){
-        if(this.useType==='modelRunResult'){
-          return '辅表' + (key + 1)
-        }else if(this.useType==='sqlEditor'||this.useType==='modelPreview'){
+        console.log("=======")
+        console.log(this.maintableindex)
+        if(this.useType==='modelRunResult'||this.useType==='sqlEditor'||this.useType==='modelPreview'){
           let tabname = '';
-          if (item.type != null && item.type.trim().length > 0) {
-            tabname = item.type =="1"?'主表':'辅助' + (key + 1)
-          } else {
-            tabname = this.preValue.length === key + 1 ? '主表' : '辅助' + (key + 1)
-          }
-          this.selectTabName = tabname === '主表' ? '' + key : this.selectTabName
-          return tabname;
+          // if(this.maintableindex){
+            if(key==this.maintableindex){
+              tabname = '主表'
+              this.selectTabName = ''+key
+            }else{
+              tabname = '辅助' + (key + 1)
+            }
+          // }else{
+          //   if (item.type != null && item.type.trim().length > 0) {
+          //     tabname = item.type =="1"?'主表':'辅助' + (key + 1)
+          //   } else {
+          //     tabname = this.preValue.length === key + 1 ? '主表' : '辅助' + (key + 1)
+          //   }
+          //   this.selectTabName = tabname === '主表' ? '' + key : this.selectTabName
+          // }
+          return tabname
         }else if(this.useType==='previewTable'){
             return '数据详情'
         }else if(this.useType==='graph'){
@@ -210,7 +219,8 @@ export default {
     "isRelation",
     "paramInfo",
     "dataUserId",
-    "sceneCode"
+    "sceneCode",
+    "maintableindex"
   ],
 };
 </script>
