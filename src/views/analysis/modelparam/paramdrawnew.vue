@@ -178,12 +178,14 @@ export default {
               // }
               // 默认值赋值
               if (this.arr[j].defaultVal) {
-                  paramsArr[k].defaultVal = this.arr[j].defaultVal
-                }
+                paramsArr[k].defaultVal = this.arr[j].defaultVal
+              }
               this.arr[j].useQuotation = paramsArr[k].useQuotation
               copyParamArr.push(paramsArr[k])
               moduleParamArr.push(moduleParamId)
-              break
+              // break
+            }else if(moduleParamId === this.arr[j].moduleParamId){
+              this.arr[j].useQuotation = paramsArr[k].useQuotation
             }
           }
         }
@@ -467,6 +469,7 @@ export default {
      * @author JL
      */
     replaceNodeParam(id) {
+      console.log(this.overallParmaobj[id].paramsArr)
       let returnObj = {
         'verify': true, // 校验是否通过
         'message': '',// 提示信息
