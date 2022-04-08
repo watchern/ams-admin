@@ -180,6 +180,7 @@ export default {
               if (this.arr[j].defaultVal) {
                   paramsArr[k].defaultVal = this.arr[j].defaultVal
                 }
+              this.arr[j].useQuotation = paramsArr[k].useQuotation
               copyParamArr.push(paramsArr[k])
               moduleParamArr.push(moduleParamId)
               break
@@ -311,7 +312,6 @@ export default {
           obj.setParamObj.dataId = paramObj.ammParamUuid
           obj.setParamObj.dataName = paramObj.paramName
           obj.setParamObj.dataChoiceType = paramObj.paramChoice.choiceType
-            console.log(obj)
           if(hasSql){
             obj.setParamObj.dataSql = paramSql
             obj.setParamObj.dataParamArr = paramArr
