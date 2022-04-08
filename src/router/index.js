@@ -123,16 +123,6 @@ const AmsRoutes = [
     name: 'frameto',
     component: () => import('@/views/base/frameto')
   },
-  {
-    path: '/datamining',
-    name: '数据挖掘',
-    component: (resolve) => require(['@/portal/' + (process.env.VUE_APP_BASE_MENU === 'withmenu'?'withmenu/' + process.env.VUE_APP_BASE_SKIN:'withoutmenu') + '/index'], resolve),
-    children: [{
-      path: '/datamining/index',
-      name: '数据挖掘',
-      component: () => import('@/views/datamining/index')
-    }]
-  },
   dataRouter,
   baseRouter,
   analysisRouter,

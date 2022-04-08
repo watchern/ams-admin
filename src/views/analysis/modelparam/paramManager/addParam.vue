@@ -128,8 +128,8 @@
           <el-col :span="12">
             <el-form-item label="使用单引号">
               <el-radio-group v-model="form.useQuotation">
-                <el-radio id="useQuotation" :label="1" value="1">是</el-radio>
-                <el-radio id="useQuotation" :label="0" value="0">否</el-radio>
+                <el-radio id="useQuotation" v-model="form.useQuotation" label="1" >是</el-radio>
+                <el-radio id="useQuotation1" v-model="form.useQuotation" label="0" >否</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -676,7 +676,7 @@ export default {
           if (data != null && data != "") {
             that.form.paramName = data.paramName;
             that.form.dataType = data.dataType;
-            that.form.useQuotation = data.useQuotation||0;
+            that.form.useQuotation = data.useQuotation;
             that.changeValue(data.dataType);
             that.form.inputType = data.inputType;
             that.changeInputType(data.inputType);
