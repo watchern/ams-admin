@@ -216,7 +216,7 @@
         <ul>
           <li @click="updateParamForm()">修改参数</li>
           <li @click="deleteParam()">删除参数</li>
-          <li @click="selectParamModel()">查看参数关联</li>
+          <!-- <li @click="selectParamModel()">查看参数关联</li> -->
           <!--<li onclick="">查看表信息</li>-->
         </ul>
       </div>
