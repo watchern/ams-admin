@@ -109,13 +109,13 @@
               class="oper-btn tjsh"
               >提交审核</el-button
             >
-            <!-- <el-button
+             <el-button
               :disabled="false"
               type="primary"
               @click="suspectsPutInStorage"
               class="oper-btn tjsh"
               >疑点入库</el-button
-            > -->
+            >
           </div>
         </div>
         <ag-grid-vue
@@ -301,13 +301,13 @@
                       class="oper-btn tjsh"
                       >提交审核</el-button
                     >
-                    <!-- <el-button
+                    <el-button
                       :disabled="false"
                       type="primary"
                       @click="suspectsPutInStorage"
                       class="oper-btn tjsh"
                       >疑点入库</el-button
-                    > -->
+                    >
                   </el-col>
                 </div>
               </el-row>
@@ -558,9 +558,9 @@
             >
             </el-table-column>
             <el-table-column
-              prop="type"
+              prop="dataType"
               label="数据类型"
-              column-key="type"
+              column-key="dataType"
               :filters="suspectsFilterlist3"
               :filter-method="suspectsfilterHandler3"
             >
@@ -575,7 +575,7 @@
             style="width: 100%"
           >
             <el-table-column
-              prop="name"
+              prop="columnName"
               label="字段名称"
               column-key="name"
               :filters="suspectsFilterlist4"
@@ -591,7 +591,7 @@
             >
             </el-table-column>
             <el-table-column
-              prop="type"
+              prop="columnType"
               label="数据类型"
               column-key="type"
               :filters="suspectsFilterlist6"
@@ -630,14 +630,14 @@
           :data="suspectsRelevanceData"
           style="width: 100%"
         >
-          <el-table-column prop="mainName" label="字段名称"> </el-table-column>
+          <el-table-column prop="mastName" label="字段名称"> </el-table-column>
           <el-table-column prop="mainDescribe" label="描述"> </el-table-column>
-          <el-table-column prop="mianType" label="数据类型"> </el-table-column>
-          <el-table-column prop="secondaryName" label="字段名称">
+          <el-table-column prop="mastDateType" label="数据类型"> </el-table-column>
+          <el-table-column prop="slaveName" label="字段名称">
           </el-table-column>
           <el-table-column prop="secondaryDescribe" label="描述">
           </el-table-column>
-          <el-table-column prop="secondaryType" label="数据类型">
+          <el-table-column prop="slaveDateType" label="数据类型">
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="120">
             <template slot-scope="scope">
@@ -666,15 +666,24 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="选择标签：">
-            <el-select v-model="suspectsform.tag" placeholder="请选择标签">
-              <el-option
-                v-for="(item, i) in taglist"
-                :key="'tag' + i"
-                :label="item.name"
-                :value="item.value"
-              ></el-option>
-            </el-select>
+<!--          <el-form-item label="选择标签：">-->
+<!--            <el-select v-model="suspectsform.tag" placeholder="请选择标签">-->
+<!--              <el-option-->
+<!--                v-for="(item, i) in taglist"-->
+<!--                :key="'tag' + i"-->
+<!--                :label="item.name"-->
+<!--                :value="item.id"-->
+<!--              ></el-option>-->
+<!--            </el-select>-->
+<!--          </el-form-item>-->
+          <!--标签树-->
+          <el-form-item label="选择标签" prop="auditItemUuid">
+
+            <el-col :span="15">
+<!--              <el-input v-model="form.auditItemUuid" class="display" :disabled="true"/>-->
+              <el-input v-model="suspectsform.tag" :disabled="true"/>
+            </el-col>
+            <el-button @click="showAuditItemTree" type="primary">选择</el-button>
           </el-form-item>
           <el-form-item label="选择方式：">
             <el-select v-model="suspectsform.way" placeholder="请选择方式">
@@ -682,7 +691,7 @@
                 v-for="(item, i) in waylist"
                 :key="'way' + i"
                 :label="item.name"
-                :value="item.value"
+                :value="item.id"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -691,11 +700,21 @@
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="suspectsVisible = false">取 消</el-button>
-        <el-button type="primary" @click="suspectsVisible = false"
+        <el-button type="primary" @click="getModelDataPush"
           >保 存</el-button
         >
       </span>
     </el-dialog>
+
+    <el-dialog v-if="auditItemTree" :destroy-on-close="true" :close-on-click-modal="false" :append-to-body="true" :visible.sync="auditItemTree"
+               title="请选择标签" width="80%">
+      <el-tree :data="treedata" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+      <el-footer>
+        <el-button @click="auditItemTree=false">取消</el-button>
+        <el-button type="primary" @click="confirmtag">确定</el-button>
+      </el-footer>
+    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -713,12 +732,15 @@ import Pagination from "@/components/Pagination/index";
 import JsonExcel from "vue-json-excel";
 import childtabscopy from "@/views/analysis/auditmodelresult/childtabscopy";
 import userProject from "@/views/base/userproject/index";
+//标签树
+import AuditItemTree from '@/views/analysis/auditmodel/auditItemtree'
 import {
   handleDataSingleValue,
   handleDataManyValue,
 } from "@/api/analysis/thresholdvalue";
 import {
   selectTable,
+  findSuspectsRelevanceData,
   selectByRunResultTableUUid,
   batchSaveResultDetailProjectRel,
   batchSaveResultDetailPersonRel,
@@ -771,6 +793,8 @@ export default {
     Pagination,
     myQueryBuilder,
     childtabscopy,
+    //标签树
+    AuditItemTree,
     downloadExcel: JsonExcel,
     mtEditor,
     userProject,
@@ -822,36 +846,39 @@ export default {
   ],
   data() {
     return {
+      defaultProps: {
+        children: 'children',
+        label: 'label'
+      },
+      treedata: [{
+        label: '一级 1',
+        children: [{
+          label: '二级 1-1',
+          children: [{
+            label: '三级 1-1-1'
+          }]
+        }]
+      }, {
+        label: '一级 2',
+        children: [{
+          label: '二级 2-1',
+          children: [{
+            label: '三级 2-1-1'
+          }]
+        }, {
+          label: '二级 2-2',
+          children: [{
+            label: '三级 2-2-1'
+          }]
+        }]
+      },],
+      treetagvalue:'',
+        modelcolumnlist:[],
+      modelresultlist:[],
       //打开疑点入库
       suspectsVisible: false,
       //疑点主表
-      suspectsMainData: [
-        {
-          name: "字段名1",
-          describe: "描述1",
-          type: "数据类型1",
-        },
-        {
-          name: "字段名2",
-          describe: "描述2",
-          type: "数据类型2",
-        },
-        {
-          name: "字段名3",
-          describe: "描述3",
-          type: "数据类型3",
-        },
-        {
-          name: "字段名4",
-          describe: "描述4",
-          type: "数据类型4",
-        },
-        {
-          name: "字段名5",
-          describe: "描述5",
-          type: "数据类型5",
-        },
-      ],
+      suspectsMainData: [],
       suspectsFilterlist1: [
         { value: "字段名1", text: "字段名1" },
         { value: "字段名2", text: "字段名2" },
@@ -877,89 +904,9 @@ export default {
         { value: "数据类型2", text: "数据类型2" },
       ],
       //疑点结果表
-      suspectssecondaryData: [
-        {
-          name: "字段名1",
-          describe: "描述1",
-          type: "数据类型1",
-        },
-        {
-          name: "字段名2",
-          describe: "描述2",
-          type: "数据类型2",
-        },
-        {
-          name: "字段名3",
-          describe: "描述2",
-          type: "数据类型2",
-        },
-        {
-          name: "字段名7",
-          describe: "描述2",
-          type: "数据类型2",
-        },
-        {
-          name: "字段名8",
-          describe: "描述2",
-          type: "数据类型2",
-        },
-        {
-          name: "字段名9",
-          describe: "描述2",
-          type: "数据类型2",
-        },
-      ],
+      suspectssecondaryData: [],
       //关联关系
-      suspectsRelevanceData: [
-        {
-          mainName: "字段名2",
-          mainDescribe: "描述2",
-          mianType: "数据类型2",
-          secondaryName: "字段名2",
-          secondaryDescribe: "描述2",
-          secondaryType: "数据类型2",
-        },
-        {
-          mainName: "字段名2",
-          mainDescribe: "描述2",
-          mianType: "数据类型2",
-          secondaryName: "字段名2",
-          secondaryDescribe: "描述2",
-          secondaryType: "数据类型2",
-        },
-        {
-          mainName: "字段名2",
-          mainDescribe: "描述2",
-          mianType: "数据类型2",
-          secondaryName: "字段名2",
-          secondaryDescribe: "描述2",
-          secondaryType: "数据类型2",
-        },
-        {
-          mainName: "字段名2",
-          mainDescribe: "描述2",
-          mianType: "数据类型2",
-          secondaryName: "字段名2",
-          secondaryDescribe: "描述2",
-          secondaryType: "数据类型2",
-        },
-        {
-          mainName: "字段名2",
-          mainDescribe: "描述2",
-          mianType: "数据类型2",
-          secondaryName: "字段名2",
-          secondaryDescribe: "描述2",
-          secondaryType: "数据类型2",
-        },
-        {
-          mainName: "字段名2",
-          mainDescribe: "描述2",
-          mianType: "数据类型2",
-          secondaryName: "字段名2",
-          secondaryDescribe: "描述2",
-          secondaryType: "数据类型2",
-        },
-      ],
+      suspectsRelevanceData: [],
       //关联相关表单
       suspectsform: {
         project: "",
@@ -967,20 +914,18 @@ export default {
         way: "",
       },
       //
-      projectlist: [
-        { name: "项目1", id: "项目1" },
-        { name: "项目2", id: "项目2" },
-        { name: "项目3", id: "项目3" },
-      ],
+      projectlist: [],
       taglist: [
         { name: "标签1", id: "标签1" },
         { name: "标签2", id: "标签2" },
         { name: "标签3", id: "标签3" },
       ],
       waylist: [
-        { name: "全覆盖", id: "全覆盖" },
-        { name: "追加", id: "追加" },
+        { name: "全覆盖", id: "0" },
+        { name: "追加", id: "1" },
       ],
+      //是否显示标签树
+      auditItemTree: false,
       maincurrentRow:null,
       resultShareDialogIsSee: false,
       //工作流相关
@@ -1284,6 +1229,10 @@ export default {
     }
     this.getRenderTableData();
     this.chartReflexion();
+    this.getSuspectsMainData();
+    //this.getSuspectssecondaryData();
+    this.getProjectlist();
+    this.getTaglist();
     document.addEventListener(
       "dragover",
       function (e) {
@@ -1309,6 +1258,14 @@ export default {
     window.openModelDetailNew = _this.openModelDetailNew;
   },
   methods: {
+    confirmtag(){
+      this.suspectsform.tag =  this.treetagvalue.label
+      this.auditItemTree = false
+    },
+    handleNodeClick(data) {
+      console.log(data);
+      this.treetagvalue = data
+    },
     //打开疑点入库
     suspectsPutInStorage() {
       this.suspectsVisible = true;
@@ -1345,7 +1302,9 @@ export default {
     //选择疑点，添加疑点关联
     addRelevanceRow(ind, row) {
       for (let i = 0; i < this.suspectsRelevanceData.length; i++) {
-        if (this.suspectsRelevanceData[i].mainName == row.name) {
+        console.log(this.suspectsRelevanceData[i].mastName)
+        console.log(this.maincurrentRow.name)
+        if (this.suspectsRelevanceData[i].mastName == this.maincurrentRow.name) {
           this.$message({ message: "该字段疑点映射已存在", type: "warning" });
           return
         }
@@ -1355,12 +1314,12 @@ export default {
         return
       }
       this.suspectsRelevanceData.push({
-        mainName:this.maincurrentRow.name,
+        mastName:this.maincurrentRow.name,
         mainDescribe:this.maincurrentRow.describe,
-        mianType:this.maincurrentRow.type,
-        secondaryName:row.name,
+        mastDateType:this.maincurrentRow.dataType,
+        slaveName:row.columnName,
         secondaryDescribe:row.describe,
-        secondaryType:row.type
+        slaveDateType:row.columnType
       })
        this.$refs.mainTable.setCurrentRow();
     },
@@ -1373,12 +1332,12 @@ export default {
           let secondary = this.suspectssecondaryData[j];
           if (secondary.name == main.name) {
             this.suspectsRelevanceData.push({
-              mainName: main.name,
+              mastName: main.name,
               mainDescribe: main.describe,
-              mianType: main.type,
-              secondaryName: secondary.name,
+              mastDateType: main.dataType,
+              slaveName: secondary.name,
               secondaryDescribe: secondary.describe,
-              secondaryType: secondary.type,
+              slaveDateType: secondary.dataType,
             });
           }
         }
@@ -1428,6 +1387,87 @@ export default {
         this.modelRunResultBtnIson.disassociateBtn = false;
         this.modelRunResultBtnIson.modelDetailAssBtn = true;
       }
+    },
+
+    getSuspectsMainData() {
+      //debugger
+      axios({
+        method: "post",
+        url: "/analysis/modelFixedDefinition/selectModel",
+        responseType: "json"
+      }).then((res) => {
+        this.suspectsMainData = res.data.data;
+        //console.log(res);
+      })
+    },
+    getProjectlist() {
+      //debugger
+      axios({
+        method: "get",
+        url: "/analysis/prjProjectController/getAllPrj",
+        responseType: "json"
+      }).then((res) => {
+        let d = res.data.data;
+        d.forEach((item) => {
+          this.projectlist.push({
+            name: item.prjName,
+            value: item.prjProjectUuid
+          })
+        })
+        //console.log(res);
+      })
+    },
+    getTaglist() {
+      //debugger
+      axios({
+        method: "get",
+        url: "/analysis/modelFixedDefinition/getAllTag",
+        responseType: "json"
+      }).then((res) => {
+        this.treedata = res.data.data
+        console.log(res);
+      })
+    },
+    getModelDataPush() {
+      let data =  {
+        suspectsRelevanceData: this.suspectsRelevanceData,
+        modelId: this.modelId,
+        projectid:this.suspectsform.project,
+        tag:this.suspectsform.tag,
+        way:this.suspectsform.way,
+        modelcolumnlist:this.modelcolumnlist,
+        modelresultlist:this.modelresultlist
+      };
+      debugger
+      if(this.suspectsform.way==null||this.suspectsform.way==""){
+        this.$message({ message: "请选择推送方式", type: "warning" });
+        return
+      }
+      axios({
+        method: "post",
+        url: "/analysis/modelFixedDefinition/pushModelResult",
+        data: data, //传对象
+        responseType: "json"
+      }).then((res) => {
+        console.log(res);
+        this.suspectsVisible = false;
+      })
+    },
+    /**
+     *显示审计事项树
+     */
+    showAuditItemTree() {
+      this.auditItemTree = true
+    },
+    /**
+     * 获取审计事项
+     */
+    getAuditItem() {
+      let tree = this.$refs.auditItemTreeRef.getTree()
+      let currentNode = tree.getCheckedNodes()[0]
+      this.form.auditItemUuid = currentNode.id
+      this.form.auditItemName = currentNode.label
+      this.auditItemTree = false
     },
     /**
      * 导出方法
@@ -1758,10 +1798,26 @@ export default {
         if (typeof sql !== "string") {
           sql = "undefined";
         }
+        findSuspectsRelevanceData().then(
+            (resp) => {
+              debugger
+              let d = resp.data;
+              d.forEach((item) => {
+                this.suspectsRelevanceData.push({
+                  mastName: item.mastName,
+                  mastDateType: item.mastDateType,
+                  slaveName: item.slaveName,
+                  slaveDateType: item.slaveDateType,
+                });
+              })
+        });
+
         selectTable(this.pageQuery, sql, this.resultSpiltObjects).then(
           (resp) => {
             // var modelThre
             var column = resp.data.records[0].columns;
+            this.suspectssecondaryData = resp.data.records[0].columnInfo.columnList;
+            console.log(resp.data.records[0].columns);
             var columnToUppercase = [];
             for (var i = 1; i < column.length; i++) {
               columnToUppercase.push(column[i].toUpperCase());
@@ -1769,6 +1825,8 @@ export default {
             this.result.column = columnToUppercase;
             this.result.id = this.modelObj.modelUuid;
             this.result.name = this.modelObj.modelName;
+            this.modelcolumnlist = resp.data.records[0].columns
+            this.modelresultlist = resp.data.records[0].result
             var chartData = [];
             for (var i = 0; i < resp.data.records[0].result.length; i++) {
               var eachChartData = [];
