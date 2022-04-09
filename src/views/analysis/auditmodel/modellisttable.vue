@@ -1253,15 +1253,15 @@ export default {
         };
       }
       sessionStorage.setItem("operationObj", JSON.stringify(operationObj));
+      // this.$router.push({
+      //   path:  `/analysis/editormodelnew?dataUserId=${dataUserId}&sceneCode=${sceneCode}`
+      // });
       this.$store.commit("aceState/setRightFooterTags", {
         type: "active",
         val: {
           name: "新增模型",
           path:
-            "/analysis/editormodelnew?dataUserId=" +
-            this.dataUserId +
-            "&sceneCode=" +
-            this.sceneCode,
+            "/analysis/editormodelnew?dataUserId=" + this.dataUserId + "&sceneCode=" + this.sceneCode,
         },
       });
     },

@@ -11,6 +11,7 @@
     "hsfs": "vue-cli-service build --mode hsfs",
     "blank": "vue-cli-service build --mode blank",
     "poc": "vue-cli-service build --mode poc",
+    "poc2": "vue-cli-service build --mode poc2",
     "trial": "vue-cli-service build --mode trial",
     "gzw": "vue-cli-service build --mode gzw",
     "yanchengjingji": "vue-cli-service build --mode yanchengjingji",
