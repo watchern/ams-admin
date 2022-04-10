@@ -1332,14 +1332,14 @@ export default {
         let main = this.suspectsMainData[i];
         for (let j = 0; j < this.suspectssecondaryData.length; j++) {
           let secondary = this.suspectssecondaryData[j];
-          if (secondary.name == main.name) {
+          if (secondary.columnName == main.name) {
             this.suspectsRelevanceData.push({
               mastName: main.name,
               mainDescribe: main.describe,
               mastDateType: main.dataType,
-              slaveName: secondary.name,
+              slaveName: secondary.columnName,
               secondaryDescribe: secondary.describe,
-              slaveDateType: secondary.dataType,
+              slaveDateType: secondary.columnType,
             });
           }
         }
@@ -1398,12 +1398,12 @@ export default {
         url: "/analysis/modelFixedDefinition/selectModel",
         responseType: "json"
       }).then((res) => {
+        debugger
         this.suspectsMainData = res.data.data;
         //console.log(res);
       })
     },
     getProjectlist() {
-      //debugger
       axios({
         method: "get",
         url: "/analysis/prjProjectController/getAllPrj",
@@ -1420,7 +1420,6 @@ export default {
       })
     },
     getTaglist() {
-      //debugger
       axios({
         method: "get",
         url: "/analysis/modelFixedDefinition/getAllTag",
@@ -1442,7 +1441,6 @@ export default {
         modelcolumnlist:this.modelcolumnlist,
         modelresultlist:this.modelresultlist
       };
-      debugger
       if(this.suspectsform.way==null||this.suspectsform.way==""){
         this.$message({ message: "请选择推送方式", type: "warning" });
         return
@@ -1453,6 +1451,12 @@ export default {
         data: data, //传对象
         responseType: "json"
       }).then((res) => {
+        if (res.data.code == 0){
+          this.$message.success("保存成功!");
+        }else{
+          this.$message({ message: res.data.msg, type: "warning" });
+          return
+        }
         console.log(res);
         this.suspectsVisible = false;
       })
@@ -1802,7 +1806,7 @@ export default {
         if (typeof sql !== "string") {
           sql = "undefined";
         }
-        findSuspectsRelevanceData().then(
+        findSuspectsRelevanceData(this.modelId).then(
             (resp) => {
               debugger
               let d = resp.data;
