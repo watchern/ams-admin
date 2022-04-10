@@ -5,9 +5,9 @@
     </div>
     <div class="home-right flex1 flex a-start j-start flex-column">
       <div class="home-right-content flex1 w100 skin-home-rc">
-        <keep-alive>
+        <!-- <keep-alive> -->
         <router-view />
-        </keep-alive>
+        <!-- </keep-alive> -->
         <!-- <el-tooltip content="系统帮助" placement="top" effect="light">
           <i class="el-icon-question seat" @click="getHelp()" style="color:rgb(90,195,235)"></i>
         </el-tooltip> -->

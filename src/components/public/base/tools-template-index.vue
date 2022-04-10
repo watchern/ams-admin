@@ -1,3 +1,4 @@
+<!--蓝色版本-->
 <template>
   <div class="tools-template w100 h100 relative" id="tool">
     <div class="tools-content h100 relative">
@@ -25,10 +26,10 @@
             </el-tooltip>
           </div>
         </div>
-        <div class="title-label-menu" style="margin-top: 15px;display:none;">
+        <div class="title-label-menu" style="margin-top: 15px;">
           自定义快捷菜单
         </div>
-        <div class="lately-use-box flex a-center j-start flex-row" style="display:none;">
+        <div class="lately-use-box flex a-center j-start flex-row" >
           <div
             v-for="(item, index) in latelyFastList"
             :key="index"
