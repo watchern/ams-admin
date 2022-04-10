@@ -211,12 +211,13 @@ export function exportRunTaskRel() {
 /**
  * 与疑点库映射关系反显
  */
-export function findSuspectsRelevanceData(data) {
+export function findSuspectsRelevanceData(modelId) {
   return request({
     baseURL: analysisUrl,
     url: '/modelFixedDefinition/returnHistoryRelationList',
     method: 'post',
-    data: data
+    //data: data
+    params: { modelId: modelId }
   })
 }
 
