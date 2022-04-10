@@ -1451,7 +1451,9 @@ export default {
         data: data, //传对象
         responseType: "json"
       }).then((res) => {
-        if(res.data.code ==500){
+        if (res.data.code == 0){
+          this.$message.success("保存成功!");
+        }else{
           this.$message({ message: res.data.msg, type: "warning" });
           return
         }
