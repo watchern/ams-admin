@@ -1332,14 +1332,14 @@ export default {
         let main = this.suspectsMainData[i];
         for (let j = 0; j < this.suspectssecondaryData.length; j++) {
           let secondary = this.suspectssecondaryData[j];
-          if (secondary.name == main.name) {
+          if (secondary.columnName == main.name) {
             this.suspectsRelevanceData.push({
               mastName: main.name,
               mainDescribe: main.describe,
               mastDateType: main.dataType,
-              slaveName: secondary.name,
+              slaveName: secondary.columnName,
               secondaryDescribe: secondary.describe,
-              slaveDateType: secondary.dataType,
+              slaveDateType: secondary.columnType,
             });
           }
         }
@@ -1398,6 +1398,7 @@ export default {
         url: "/analysis/modelFixedDefinition/selectModel",
         responseType: "json"
       }).then((res) => {
+        debugger
         this.suspectsMainData = res.data.data;
         //console.log(res);
       })
