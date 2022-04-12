@@ -883,10 +883,7 @@ export default {
         { value: "字段名1", text: "字段名1" },
         { value: "字段名2", text: "字段名2" },
       ],
-      suspectsFilterlist2: [
-        { value: "描述1", text: "描述1" },
-        { value: "描述2", text: "描述2" },
-      ],
+      suspectsFilterlist2: [],
       suspectsFilterlist3: [
         { value: "数据类型1", text: "数据类型1" },
         { value: "数据类型2", text: "数据类型2" },
@@ -895,10 +892,7 @@ export default {
         { value: "字段名1", text: "字段名1" },
         { value: "字段名2", text: "字段名2" },
       ],
-      suspectsFilterlist5: [
-        { value: "描述1", text: "描述1" },
-        { value: "描述2", text: "描述2" },
-      ],
+      suspectsFilterlist5: [],
       suspectsFilterlist6: [
         { value: "数据类型1", text: "数据类型1" },
         { value: "数据类型2", text: "数据类型2" },
@@ -1392,15 +1386,53 @@ export default {
     },
 
     getSuspectsMainData() {
-      //debugger
       axios({
         method: "post",
         url: "/analysis/modelFixedDefinition/selectModel",
         responseType: "json"
       }).then((res) => {
-        debugger
+        this.suspectsFilterlist1 = []
+        this.suspectsFilterlist3 = []
         this.suspectsMainData = res.data.data;
-        //console.log(res);
+        for(let i =0;i<this.suspectsMainData.length;i++){
+          if (this.suspectsFilterlist1.length === 0){
+            this.suspectsFilterlist1.push({value:this.suspectsMainData[i].name,text:this.suspectsMainData[i].name})
+          }else {
+            let code = 0
+            for (let y = 0; y < this.suspectsFilterlist1.length; y++) {
+              if (this.suspectsFilterlist1[y].value === this.suspectsMainData[i].name) {
+                code = 1
+                break
+              }
+            }
+            if (code == 0) {
+              this.suspectsFilterlist1.push({
+                value: this.suspectsMainData[i].name,
+                text: this.suspectsMainData[i].name
+              })
+            }
+          }
+          if (this.suspectsFilterlist3.length === 0) {
+            this.suspectsFilterlist3.push({
+              value: this.suspectsMainData[i].dataType,
+              text: this.suspectsMainData[i].dataType
+            })
+          } else {
+            let code = 0
+            for (let y = 0; y < this.suspectsFilterlist3.length; y++) {
+              if (this.suspectsFilterlist3[y].value === this.suspectsMainData[i].dataType) {
+                code = 1
+                break
+              }
+            }
+            if (code === 0) {
+              this.suspectsFilterlist3.push({
+                value: this.suspectsMainData[i].dataType,
+                text: this.suspectsMainData[i].dataType
+              })
+            }
+          }
+        }
       })
     },
     getProjectlist() {
@@ -1808,7 +1840,6 @@ export default {
         }
         findSuspectsRelevanceData(this.modelId).then(
             (resp) => {
-              debugger
               let d = resp.data;
               d.forEach((item) => {
                 this.suspectsRelevanceData.push({
@@ -1824,8 +1855,48 @@ export default {
           (resp) => {
             // var modelThre
             var column = resp.data.records[0].columns;
+            this.suspectsFilterlist4 = []
+            this.suspectsFilterlist6 = []
             this.suspectssecondaryData = resp.data.records[0].columnInfo.columnList;
-            console.log(resp.data.records[0].columns);
+            for(let i =0;i<this.suspectsMainData.length;i++){
+              if (this.suspectsFilterlist4.length === 0){
+                this.suspectsFilterlist4.push({value:this.suspectssecondaryData[i].columnName,text:this.suspectssecondaryData[i].columnName})
+              }else {
+                let code = 0
+                for (let y = 0; y < this.suspectsFilterlist4.length; y++) {
+                  if (this.suspectsFilterlist4[y].value === this.suspectssecondaryData[i].columnName) {
+                    code = 1
+                    break
+                  }
+                }
+                if (code == 0) {
+                  this.suspectsFilterlist4.push({
+                    value: this.suspectssecondaryData[i].columnName,
+                    text: this.suspectssecondaryData[i].columnName
+                  })
+                }
+              }
+              if (this.suspectsFilterlist6.length === 0) {
+                this.suspectsFilterlist6.push({
+                  value: this.suspectssecondaryData[i].columnType,
+                  text: this.suspectssecondaryData[i].columnType
+                })
+              } else {
+                let code = 0
+                for (let y = 0; y < this.suspectsFilterlist6.length; y++) {
+                  if (this.suspectsFilterlist6[y].value === this.suspectssecondaryData[i].columnType) {
+                    code = 1
+                    break
+                  }
+                }
+                if (code === 0) {
+                  this.suspectsFilterlist6.push({
+                    value: this.suspectssecondaryData[i].columnType,
+                    text: this.suspectssecondaryData[i].columnType
+                  })
+                }
+              }
+            }
             var columnToUppercase = [];
             for (var i = 1; i < column.length; i++) {
               columnToUppercase.push(column[i].toUpperCase());

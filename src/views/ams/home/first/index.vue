@@ -3,7 +3,7 @@
     <div class="top flex a-center j-between flex-row flex1 flex-shrink">
       <div class="right flex a-end j-center flex-column">
         <div class="bottom-card a-center j-between flex-row">
-          <div class="top-card flex j-start flex-row skin-shadow daiban">
+        <!--  <div class="top-card flex j-start flex-row skin-shadow daiban">
             <div
               class="
                 top-card-left
@@ -22,12 +22,12 @@
                 <span @click="toDoJumpFlow(text,index)" class="notes-text">{{
                   text.applyTitle
                 }}</span>
-                <!-- <span v-if="text.icon" :style="{color:text.iconColor,width:text.width}" class="icon">{{ text.icon }}</span> -->
+                &lt;!&ndash; <span v-if="text.icon" :style="{color:text.iconColor,width:text.width}" class="icon">{{ text.icon }}</span> &ndash;&gt;
               </div>
               <span class="card-more" @click="gotodowork()">更多</span>
             </div>
-          </div>
-          <div class="top-card-box">
+          </div>-->
+<!--          <div class="top-card-box">-->
             <div
               v-for="(item, index) in cardList"
               :key="index"
@@ -37,16 +37,7 @@
                   index === 0 ? 'skin-wbgColor-1' : 'skin-wbgColor-2',
               }"
             >
-              <div
-                class="
-                  top-card-left
-                  flex-shrink
-                  skin-bgColor
-                  flex
-                  a-center
-                  j-center
-                "
-              >
+              <div class="top-card-left flex-shrink skin-bgColor flex a-center j-center">
                 <img :src="item.img" class="img" />
               </div>
               <div class="top-card-right">
@@ -70,7 +61,7 @@
                 <span class="card-more" @click="moreJump(item)">更多</span>
               </div>
             </div>
-          </div>
+<!--          </div>-->
         </div>
       </div>
       <div>
