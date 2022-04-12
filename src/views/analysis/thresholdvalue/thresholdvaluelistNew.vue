@@ -530,7 +530,7 @@ export default {
   color: #c8ff8c;
 }
 .row-all{
-  height: 650px;
+  /* height: 650px; */
   overflow: auto;
 }
 .table{

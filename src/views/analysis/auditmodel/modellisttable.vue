@@ -1253,17 +1253,17 @@ export default {
         };
       }
       sessionStorage.setItem("operationObj", JSON.stringify(operationObj));
-      // this.$router.push({
-      //   path:  `/analysis/editormodelnew?dataUserId=${dataUserId}&sceneCode=${sceneCode}`
-      // });
-      this.$store.commit("aceState/setRightFooterTags", {
-        type: "active",
-        val: {
-          name: "新增模型",
-          path:
-            "/analysis/editormodelnew?dataUserId=" + this.dataUserId + "&sceneCode=" + this.sceneCode,
-        },
+      this.$router.push({
+        path:  `/analysis/editormodelnew?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`
       });
+      // this.$store.commit("aceState/setRightFooterTags", {
+      //   type: "active",
+      //   val: {
+      //     name: "新增模型",
+      //     path:
+      //       "/analysis/editormodelnew?dataUserId=" + this.dataUserId + "&sceneCode=" + this.sceneCode,
+      //   },
+      // });
     },
     copyModel(){
       var selectObj = this.$refs.modelListTable.selection;
@@ -1357,17 +1357,20 @@ export default {
             folderPath: selectObj[0].modelFolderPath,
           };
           sessionStorage.setItem("operationObj", JSON.stringify(operationObj));
-          this.$store.commit("aceState/setRightFooterTags", {
-            type: "active",
-            val: {
-              name: "修改模型",
-              path:
-                "/analysis/editormodelnew?dataUserId=" +
-                this.dataUserId +
-                "&sceneCode=" +
-                this.sceneCode,
-            },
+          this.$router.push({
+            path:  `/analysis/editormodelnew?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`
           });
+          // this.$store.commit("aceState/setRightFooterTags", {
+          //   type: "active",
+          //   val: {
+          //     name: "修改模型",
+          //     path:
+          //       "/analysis/editormodelnew?dataUserId=" +
+          //       this.dataUserId +
+          //       "&sceneCode=" +
+          //       this.sceneCode,
+          //   },
+          // });
         } else {
           this.$message({ type: "error", message: "修改失败" });
         }
@@ -2139,7 +2142,7 @@ export default {
   color: #c8ff8c;
 }
 .row-all {
-  height: 650px;
+  /* height: 650px; */
 }
 .table {
   height: 450px !important;
