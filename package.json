@@ -17,6 +17,7 @@
     "yanchengjingji": "vue-cli-service build --mode yanchengjingji",
     "haian": "vue-cli-service build --mode haian",
     "boe": "vue-cli-service build --mode boe",
+    "qinghai": "vue-cli-service build --mode qinghai",
     "dayawan": "vue-cli-service build --mode dayawan",
     "build:prod": "vue-cli-service build",
     "lint": "vue-cli-service lint"

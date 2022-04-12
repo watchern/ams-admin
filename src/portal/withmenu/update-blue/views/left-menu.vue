@@ -206,6 +206,11 @@ export default {
         },
         {
           icon: "",
+          name: "我的待办",
+          method: this.todowork,
+        },
+        {
+          icon: "",
           name: "帮助",
           method: this.showHelp,
         },
@@ -478,6 +483,9 @@ export default {
     },
     logoutRemind() {
       this.$router.push({ path: "/base/remind" });
+    },
+    todowork() {
+      this.$router.push({ path: "/base/frameto?url=%2Famis%2FworkBench%2FtoApplyMes" });
     },
     showWith(obj) {
       this.isShowToolsList = obj;
