@@ -3310,9 +3310,10 @@ export default {
                 }
               }
               if (this.modelChartSetups.length == 0) {
+                console.log(this.modelChartSetups.length)
                 this.chartConfigs = {
                   chart: [],
-                  layout: [{ x: 0, y: 0, w: 12, h: 10, i: "0" }],
+                  layout: [{ x: 0, y: 0, w: 16, h: 16, i: "0" }],
                 };
               }
               if (this.chartConfigs.chart.length == 0) {
@@ -3920,7 +3921,10 @@ export default {
   float: left;
 }
 .drag-on {
-  height: calc(100% - 40px);
+  height: calc(100vh - 260px);
+}
+.vue-grid-layout{
+  height: 100% !important;
 }
 .drag-on-table {
   position: relative;
@@ -3929,6 +3933,9 @@ export default {
 
 .vue-grid-layout {
   background: transparent;
+}
+.vue-grid-item{
+  height: 100% !important;
 }
 .vue-grid-item:not(.vue-grid-placeholder) {
   background: transparent;

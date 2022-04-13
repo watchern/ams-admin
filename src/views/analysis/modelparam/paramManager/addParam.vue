@@ -1,5 +1,5 @@
 <template>
-  <div class="tab-content">
+  <div class="tab-content addparambox">
     <el-tabs v-model="baseName">
       <el-tab-pane label="基本信息" name="base"></el-tab-pane>
       <el-tab-pane
@@ -7,6 +7,11 @@
         name="relevance"
         v-if="form.inputType == 'lineinp' || form.inputType == 'treeinp'"
       ></el-tab-pane>
+      <!-- <el-tab-pane
+        label="关联条件参数"
+        name="condition"
+        v-if="form.inputType == 'lineinp' || form.inputType == 'treeinp'"
+      ></el-tab-pane> -->
     </el-tabs>
     <div id="basicInfo" v-if="baseName == 'base'">
       <el-form
@@ -352,11 +357,10 @@
         </div>
       </el-dialog>
     </div>
-    <div class="relevanceInfo" v-else>
+    <div class="relevanceInfo" v-if="baseName == 'relevance'">
       <el-form ref="relevance" :rules="relevancerules" :model="relevanceform">
         <div @click.stop="choosetree()" style="cursor: pointer !important">
           <el-form-item label="被关联参数名称" prop="slaveParamName">
-            <!-- @focus="choosetree()" -->
             <el-input
               v-model="relevanceform.slaveParamName"
               placeholder="请选择被关联参数名称"
@@ -421,6 +425,49 @@
         </el-table-column>
       </el-table>
     </div>
+    <div v-if="baseName == 'condition'">
+      <el-tree
+        :data="relevancetreedata"
+        node-key="id"
+        default-expand-all>
+        <div class="custom-tree-node" style="margin-top:5px;" slot-scope="{ node, data }">
+        <span v-if="data.type=='relation'" >
+          <el-button type="primary" plain @click.stop="(data.relation=='与'?data.relation='或':data.relation='与')">{{data.relation}}</el-button>
+          <el-button type="primary" plain size="small" @click.stop="addrelevancetreenode(data,node)">添加组</el-button>
+          <span class="relationaddicon" @click.stop="remrelevancetreenode(data,node)"><i class="el-icon-error"></i></span>
+          <span class="relationaddicon" @click.stop="addrelevancetreechild(data,node)"><i class="el-icon-circle-plus"></i></span>
+        </span>
+        <span v-else>
+          <el-select v-model="data.value.v1" placeholder="请选择">
+    <el-option
+      v-for="item in options"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
+  <el-select v-model="data.value.v2" placeholder="请选择">
+    <el-option
+      v-for="item in options"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
+  <el-select v-model="data.value.v3" placeholder="请选择">
+    <el-option
+      v-for="item in options"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
+  <span class="relationaddicon" @click.stop="remrelevancetreenode(data,node)"><i class="el-icon-error"></i></span>
+        </span>
+        </div>
+        
+      </el-tree>
+    </div>
     <el-dialog
       title="请选择被关联的参数"
       :visible.sync="opentree"
@@ -454,6 +501,12 @@ export default {
   components: { seeSqlData },
   data() {
     return {
+      options:[],
+      relevancetreedata:[{
+          type:"relation",
+          relation:"与",
+          children: []
+        }],
       treedata: [], //被关联参数名称树
       checktreenode: {},
       defaultProps: {
@@ -601,6 +654,40 @@ export default {
     }
   },
   methods: {
+    addrelevancetreenode(data,node){
+        	const newChild = {
+          type:"relation",
+          relation:"与",
+          children: [] };
+        if (!data.children) {
+          this.$set(data, 'children', []);
+        }
+        data.children.push(newChild);
+    },
+    remrelevancetreenode(data,node){
+      if(node.parent.data.children!=null){
+        const parent = node.parent;
+        const children = parent.childNodes;
+        const index = children.findIndex(d => d.id === node.id);
+        parent.data.children.splice(index, 1);
+      }else{
+        this.$message({message:'请不要删除根节点'})
+      }
+    },
+    addrelevancetreechild(data,node){
+      const newChild = {
+          type:"logic",
+          value:{
+                v1:'',
+                v2:'',
+                v3:''
+              }
+          };
+        if (!data.children) {
+          this.$set(data, 'children', []);
+        }
+        data.children.push(newChild);
+    },
     treeNodeClick(data) {
       this.checktreenode = data;
     },
@@ -608,7 +695,7 @@ export default {
       //获取是否被关联
       request({
         baseURL: "/analysis",
-        url: "/paramController/getCountBySalveId?salveParamId=" + this.checktreenode.id,
+        url: "/paramController/getCountBySlaveId?salveParamId=" + this.checktreenode.id,
         method: "post",
       }).then((result) => {
         console.log(result);
@@ -1176,5 +1263,13 @@ export default {
   width: 16px;
   height: 16px;
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OUY3NkIwMTMzOTA3MTFFQjg3QjRGMTYwQ0VBMTUzOTkiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OUY3NkIwMTQzOTA3MTFFQjg3QjRGMTYwQ0VBMTUzOTkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo5Rjc2QjAxMTM5MDcxMUVCODdCNEYxNjBDRUExNTM5OSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo5Rjc2QjAxMjM5MDcxMUVCODdCNEYxNjBDRUExNTM5OSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PuV6ScgAAAAGUExURbW1tf///x1VJNcAAAACdFJOU/8A5bcwSgAAABhJREFUeNpiYKAGYAQCJIIYgUFqBkCAAQAvrgBt23pN5QAAAABJRU5ErkJggg==);
+}
+.relationaddicon{
+  color: #559ed4;
+  font-size:20px;
+  margin-left:5px;
+}
+.addparambox >>>.el-tree-node__content{
+  height: 40px !important;
 }
 </style>

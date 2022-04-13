@@ -1465,7 +1465,7 @@ export default {
   color: #c8ff8c;
 }
 .row-all {
-  height: 650px;
+  /* height: 650px; */
 }
 .table {
   height: 450px !important;
