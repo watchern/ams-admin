@@ -47,4 +47,16 @@ export default {
 .ag-theme-balham .ag-header-cell-label{
   justify-content: center;
 }
+.modal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2000;
+  display: none;
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+  outline: 0;
+}
 </style>
