@@ -1241,6 +1241,77 @@ export default {
      * 执行sql
      */
     executeSQL() {
+      var _this = this
+      this.executeSQL2(function(obj) {
+        // // 界面渲染完成之后开始执行sql,将sql送入调度
+        // startExecuteSql(result.data)
+        //     .then((result) => {
+        //       this.executeLoading = false;
+        //       this.loadText = "";
+        //     })
+        //     .catch((result) => {
+        //       this.executeLoading = false;
+        //     });
+        if (!obj.isExistParam) {
+          // this.executeLoading = true
+          _this.loadText = "正在获取SQL信息...";
+          getExecuteTask(obj, _this.dataUserId, _this.sceneCode1).then(
+              (result) => {
+                //在这如果报错就加一个新页签，如果不报错就显示我的
+                if (result.data.isError) {
+                  _this.isExecuteError = false;
+                  _this.errorMessage = result.data.message;
+                  _this.executeLoading = false;
+                } else {
+                  _this.isExecuteError = true;
+                  _this.executeLoading = false;
+                  _this.loadText = "";
+                  lastSqlIndex = result.data.lastSqlIndex;
+                  _this.executeLoading = false;
+                  _this.currentExecuteSQL = result.data.executeSQLList;
+                  _this.maintableindex = result.data.lastSqlIndex||''
+                  if (
+                      _this.currentExecuteSQL != null &&
+                      _this.currentExecuteSQL.length > 0 &&
+                      lastSqlIndex >= 0
+                  ) {
+                    for (var i = 0; i < _this.currentExecuteSQL.length; i++) {
+                      if (_this.currentExecuteSQL[i].type === null) {
+                        // 等于lastSqlIndex 标记主表，否则辅表
+                        _this.currentExecuteSQL[i].type =
+                            i === lastSqlIndex ? "1" : "2";
+                      }
+                    }
+                  }
+                  _this.modelOriginalTable = result.data.tables;
+                  _this.createTreeNode = result.data.treeNodeInfo;
+                  _this.resultShow.push({ id: 1 });
+                  // if (executeflag === true) {
+                  //   // 界面渲染完成之后开始执行sql,将sql送入调度
+                  startExecuteSql(result.data)
+                      .then((result) => {
+                        _this.executeLoading = false;
+                        _this.loadText = "";
+                      })
+                      .catch((result) => {
+                        _this.executeLoading = false;
+                      });
+                  // } else {
+                  //   setIsUpdate(false);
+                  //   _this.$emit("getSqlObj");
+                  // }
+                }
+              }
+          );
+        } else {
+          _this.openParamDraw(obj);
+        }
+      })
+    },
+    /**
+     * 执行sql
+     */
+    executeSQL2(callback) {
       if (this.tempId === "") {
         this.$message({ type: "info", message: "请选择SQL执行保存路径!" });
         this.modelResultSavePathDialog = true;
@@ -1272,55 +1343,7 @@ export default {
         obj.businessField = "sqleditor";
         obj.modelResultSavePathId = this.modelResultSavePathId;
         obj.pushUuid = this.pushUuid;
-        if (!obj.isExistParam) {
-          // this.executeLoading = true
-          this.loadText = "正在获取SQL信息...";
-          getExecuteTask(obj, this.dataUserId, this.sceneCode1).then(
-            (result) => {
-              //在这如果报错就加一个新页签，如果不报错就显示我的
-              if (result.data.isError) {
-                this.isExecuteError = false;
-                this.errorMessage = result.data.message;
-                this.executeLoading = false;
-              } else {
-                this.isExecuteError = true;
-                this.executeLoading = false;
-                this.loadText = "";
-                lastSqlIndex = result.data.lastSqlIndex;
-                this.executeLoading = false;
-                this.currentExecuteSQL = result.data.executeSQLList;
-                this.maintableindex = result.data.lastSqlIndex||''
-                if (
-                  this.currentExecuteSQL != null &&
-                  this.currentExecuteSQL.length > 0 &&
-                  lastSqlIndex >= 0
-                ) {
-                  for (var i = 0; i < this.currentExecuteSQL.length; i++) {
-                    if (this.currentExecuteSQL[i].type === null) {
-                      // 等于lastSqlIndex 标记主表，否则辅表
-                      this.currentExecuteSQL[i].type =
-                        i === lastSqlIndex ? "1" : "2";
-                    }
-                  }
-                }
-                this.modelOriginalTable = result.data.tables;
-                this.createTreeNode = result.data.treeNodeInfo;
-                this.resultShow.push({ id: 1 });
-                // 界面渲染完成之后开始执行sql,将sql送入调度
-                startExecuteSql(result.data)
-                  .then((result) => {
-                    this.executeLoading = false;
-                    this.loadText = "";
-                  })
-                  .catch((result) => {
-                    this.executeLoading = false;
-                  });
-              }
-            }
-          );
-        } else {
-          this.openParamDraw(obj);
-        }
+        callback(obj)
       });
     },
     /**
