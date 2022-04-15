@@ -105,54 +105,6 @@ module.exports = {
           '^/etlscheduler/': '/'
         }
       },
-      '/AuditAnalysis': {
-        timeout: 1800000,
-        target: process.env.EXTENDAPP_API,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/AuditAnalysis/': '/AuditAnalysis/'
-        }
-      },
-      '/rone/': {
-        timeout: 1800000,
-        target: process.env.EXTENDAPP_API,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/rone/': '/rone/'
-        }
-      },
-      '/psbcaudit/': {
-        timeout: 1800000,
-        target: process.env.EXTENDAPP_API,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/psbcaudit/': '/psbcaudit/'
-        }
-      },
-      '/psbcaudit_pmrs/': {
-        timeout: 1800000,
-        target: process.env.EXTENDAPP_API,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/psbcaudit_pmrs/': '/psbcaudit_pmrs/'
-        }
-      },
-      '/psbcaudit_kn/': {
-        timeout: 1800000,
-        target: process.env.EXTENDAPP_API,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/psbcaudit_kn/': '/psbcaudit_kn/'
-        }
-      },
-      '/psbcaudit_auditobj/': {
-        timeout: 1800000,
-        target: process.env.EXTENDAPP_API,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/psbcaudit_auditobj/': '/psbcaudit_auditobj/'
-        }
-      },
       '/datamax-server/': {
         timeout: 1800000,
         target: process.env.AMSDATAMAX_API,
@@ -175,6 +127,14 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           '^/ams-clue/': '/'
+        },
+      },
+      '/amis': {
+        timeout: 1800000,
+        target: process.env.AMIS_API,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/amis/': '/'
         },
       },
       // ,

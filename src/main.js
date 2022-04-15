@@ -5,7 +5,13 @@ import Vue from 'vue'
 import Cookies from 'js-cookie'
 
 // import 'normalize.css/normalize.css' // a modern alternative to CSS resets  ---
-
+import $ from 'jquery'
+Vue.prototype.$ = $
+import "bootstrap"
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import '../node_modules/bootstrap/dist/js/bootstrap.min.js';
+// import "bootstrap/dist/css/bootstrap.min.css"
+// import "bootstrap/dist/js/bootstrap.min.js"
 import Element from 'element-ui'
 import './styles/element-variables.scss'
 // Ace start
@@ -37,6 +43,7 @@ import './icons' // icon
 import './permission' // permission control
 import './utils/error-log' // error log
 import CommonUtil from "@/utils/common";
+
 Vue.prototype.CommonUtil = CommonUtil;
 
 
