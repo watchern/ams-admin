@@ -109,13 +109,13 @@
               class="oper-btn tjsh"
               >提交审核</el-button
             >
-             <el-button
+            <!-- <el-button
               :disabled="false"
               type="primary"
               @click="suspectsPutInStorage"
               class="oper-btn tjsh"
               >疑点入库</el-button
-            >
+            > -->
           </div>
         </div>
         <ag-grid-vue
@@ -301,13 +301,13 @@
                       class="oper-btn tjsh"
                       >提交审核</el-button
                     >
-                    <el-button
+                    <!-- <el-button
                       :disabled="false"
                       type="primary"
                       @click="suspectsPutInStorage"
                       class="oper-btn tjsh"
                       >疑点入库</el-button
-                    >
+                    > -->
                   </el-col>
                 </div>
               </el-row>
@@ -315,6 +315,7 @@
             <!-- useType == 'modelRunResult' && this.modelUuid !== undefined
                   ? this.renderTable
                   : undefined -->
+            <!-- 预览 -->
             <ag-grid-vue
               v-if="isSee"
               v-loading="isLoading"
@@ -606,7 +607,7 @@
                   "
                   size="mini"
                 >
-                 <span style="font-size:18px;"> + </span>
+                  <span style="font-size: 18px"> + </span>
                 </el-button>
               </template>
             </el-table-column>
@@ -632,9 +633,9 @@
         >
           <el-table-column prop="mastName" label="字段名称"> </el-table-column>
           <el-table-column prop="mainDescribe" label="描述"> </el-table-column>
-          <el-table-column prop="mastDateType" label="数据类型"> </el-table-column>
-          <el-table-column prop="slaveName" label="字段名称">
+          <el-table-column prop="mastDateType" label="数据类型">
           </el-table-column>
+          <el-table-column prop="slaveName" label="字段名称"> </el-table-column>
           <el-table-column prop="secondaryDescribe" label="描述">
           </el-table-column>
           <el-table-column prop="slaveDateType" label="数据类型">
@@ -666,24 +667,25 @@
               ></el-option>
             </el-select>
           </el-form-item>
-<!--          <el-form-item label="选择标签：">-->
-<!--            <el-select v-model="suspectsform.tag" placeholder="请选择标签">-->
-<!--              <el-option-->
-<!--                v-for="(item, i) in taglist"-->
-<!--                :key="'tag' + i"-->
-<!--                :label="item.name"-->
-<!--                :value="item.id"-->
-<!--              ></el-option>-->
-<!--            </el-select>-->
-<!--          </el-form-item>-->
+          <!--          <el-form-item label="选择标签：">-->
+          <!--            <el-select v-model="suspectsform.tag" placeholder="请选择标签">-->
+          <!--              <el-option-->
+          <!--                v-for="(item, i) in taglist"-->
+          <!--                :key="'tag' + i"-->
+          <!--                :label="item.name"-->
+          <!--                :value="item.id"-->
+          <!--              ></el-option>-->
+          <!--            </el-select>-->
+          <!--          </el-form-item>-->
           <!--标签树-->
           <el-form-item label="选择标签" prop="auditItemUuid">
-
             <el-col :span="15">
-<!--              <el-input v-model="form.auditItemUuid" class="display" :disabled="true"/>-->
-              <el-input v-model="suspectsform.tag" :disabled="true"/>
+              <!--              <el-input v-model="form.auditItemUuid" class="display" :disabled="true"/>-->
+              <el-input v-model="suspectsform.tag" :disabled="true" />
             </el-col>
-            <el-button @click="showAuditItemTree" type="primary">选择</el-button>
+            <el-button @click="showAuditItemTree" type="primary"
+              >选择</el-button
+            >
           </el-form-item>
           <el-form-item label="选择方式：">
             <el-select v-model="suspectsform.way" placeholder="请选择方式">
@@ -700,21 +702,29 @@
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="suspectsVisible = false">取 消</el-button>
-        <el-button type="primary" @click="getModelDataPush"
-          >保 存</el-button
-        >
+        <el-button type="primary" @click="getModelDataPush">保 存</el-button>
       </span>
     </el-dialog>
 
-    <el-dialog v-if="auditItemTree" :destroy-on-close="true" :close-on-click-modal="false" :append-to-body="true" :visible.sync="auditItemTree"
-               title="请选择标签" width="80%">
-      <el-tree :data="treedata" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+    <el-dialog
+      v-if="auditItemTree"
+      :destroy-on-close="true"
+      :close-on-click-modal="false"
+      :append-to-body="true"
+      :visible.sync="auditItemTree"
+      title="请选择标签"
+      width="80%"
+    >
+      <el-tree
+        :data="treedata"
+        :props="defaultProps"
+        @node-click="handleNodeClick"
+      ></el-tree>
       <el-footer>
-        <el-button @click="auditItemTree=false">取消</el-button>
+        <el-button @click="auditItemTree = false">取消</el-button>
         <el-button type="primary" @click="confirmtag">确定</el-button>
       </el-footer>
     </el-dialog>
-
   </div>
 </template>
 <script>
@@ -733,7 +743,7 @@ import JsonExcel from "vue-json-excel";
 import childtabscopy from "@/views/analysis/auditmodelresult/childtabscopy";
 import userProject from "@/views/base/userproject/index";
 //标签树
-import AuditItemTree from '@/views/analysis/auditmodel/auditItemtree'
+import AuditItemTree from "@/views/analysis/auditmodel/auditItemtree";
 import {
   handleDataSingleValue,
   handleDataManyValue,
@@ -847,34 +857,48 @@ export default {
   data() {
     return {
       defaultProps: {
-        children: 'children',
-        label: 'label'
+        children: "children",
+        label: "label",
       },
-      treedata: [{
-        label: '一级 1',
-        children: [{
-          label: '二级 1-1',
-          children: [{
-            label: '三级 1-1-1'
-          }]
-        }]
-      }, {
-        label: '一级 2',
-        children: [{
-          label: '二级 2-1',
-          children: [{
-            label: '三级 2-1-1'
-          }]
-        }, {
-          label: '二级 2-2',
-          children: [{
-            label: '三级 2-2-1'
-          }]
-        }]
-      },],
-      treetagvalue:'',
-        modelcolumnlist:[],
-      modelresultlist:[],
+      treedata: [
+        {
+          label: "一级 1",
+          children: [
+            {
+              label: "二级 1-1",
+              children: [
+                {
+                  label: "三级 1-1-1",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          label: "一级 2",
+          children: [
+            {
+              label: "二级 2-1",
+              children: [
+                {
+                  label: "三级 2-1-1",
+                },
+              ],
+            },
+            {
+              label: "二级 2-2",
+              children: [
+                {
+                  label: "三级 2-2-1",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      treetagvalue: "",
+      modelcolumnlist: [],
+      modelresultlist: [],
       //打开疑点入库
       suspectsVisible: false,
       //疑点主表
@@ -921,7 +945,7 @@ export default {
       ],
       //是否显示标签树
       auditItemTree: false,
-      maincurrentRow:null,
+      maincurrentRow: null,
       resultShareDialogIsSee: false,
       //工作流相关
       submitData: {
@@ -1227,7 +1251,7 @@ export default {
     this.getSuspectsMainData();
     //this.getSuspectssecondaryData();
     this.getProjectlist();
-    this.getTaglist();
+    // this.getTaglist();
     document.addEventListener(
       "dragover",
       function (e) {
@@ -1253,14 +1277,14 @@ export default {
     window.openModelDetailNew = _this.openModelDetailNew;
   },
   methods: {
-    confirmtag(){
-      this.suspectsform.tag =  this.treetagvalue.label
-      this.suspectsform.tagid = this.treetagvalue.id
-      this.auditItemTree = false
+    confirmtag() {
+      this.suspectsform.tag = this.treetagvalue.label;
+      this.suspectsform.tagid = this.treetagvalue.id;
+      this.auditItemTree = false;
     },
     handleNodeClick(data) {
       console.log(data);
-      this.treetagvalue = data
+      this.treetagvalue = data;
     },
     //打开疑点入库
     suspectsPutInStorage() {
@@ -1292,32 +1316,34 @@ export default {
       return row[property] === value;
     },
     //选择疑点主体信息
-    mainCurrentChange(val){
-      this.maincurrentRow = val
+    mainCurrentChange(val) {
+      this.maincurrentRow = val;
     },
     //选择疑点，添加疑点关联
     addRelevanceRow(ind, row) {
       for (let i = 0; i < this.suspectsRelevanceData.length; i++) {
-        console.log(this.suspectsRelevanceData[i].mastName)
-        console.log(this.maincurrentRow.name)
-        if (this.suspectsRelevanceData[i].mastName == this.maincurrentRow.name) {
+        console.log(this.suspectsRelevanceData[i].mastName);
+        console.log(this.maincurrentRow.name);
+        if (
+          this.suspectsRelevanceData[i].mastName == this.maincurrentRow.name
+        ) {
           this.$message({ message: "该字段疑点映射已存在", type: "warning" });
-          return
+          return;
         }
       }
-      if(this.maincurrentRow==null){
+      if (this.maincurrentRow == null) {
         this.$message({ message: "请选择疑点库主体信息", type: "warning" });
-        return
+        return;
       }
       this.suspectsRelevanceData.push({
-        mastName:this.maincurrentRow.name,
-        mainDescribe:this.maincurrentRow.describe,
-        mastDateType:this.maincurrentRow.dataType,
-        slaveName:row.columnName,
-        secondaryDescribe:row.describe,
-        slaveDateType:row.columnType
-      })
-       this.$refs.mainTable.setCurrentRow();
+        mastName: this.maincurrentRow.name,
+        mainDescribe: this.maincurrentRow.describe,
+        mastDateType: this.maincurrentRow.dataType,
+        slaveName: row.columnName,
+        secondaryDescribe: row.describe,
+        slaveDateType: row.columnType,
+      });
+      this.$refs.mainTable.setCurrentRow();
     },
     //自动匹配
     autoMatch() {
@@ -1389,125 +1415,134 @@ export default {
       axios({
         method: "post",
         url: "/analysis/modelFixedDefinition/selectModel",
-        responseType: "json"
+        responseType: "json",
       }).then((res) => {
-        this.suspectsFilterlist1 = []
-        this.suspectsFilterlist3 = []
+        this.suspectsFilterlist1 = [];
+        this.suspectsFilterlist3 = [];
         this.suspectsMainData = res.data.data;
-        for(let i =0;i<this.suspectsMainData.length;i++){
-          if (this.suspectsFilterlist1.length === 0){
-            this.suspectsFilterlist1.push({value:this.suspectsMainData[i].name,text:this.suspectsMainData[i].name})
-          }else {
-            let code = 0
+        for (let i = 0; i < this.suspectsMainData.length; i++) {
+          if (this.suspectsFilterlist1.length === 0) {
+            this.suspectsFilterlist1.push({
+              value: this.suspectsMainData[i].name,
+              text: this.suspectsMainData[i].name,
+            });
+          } else {
+            let code = 0;
             for (let y = 0; y < this.suspectsFilterlist1.length; y++) {
-              if (this.suspectsFilterlist1[y].value === this.suspectsMainData[i].name) {
-                code = 1
-                break
+              if (
+                this.suspectsFilterlist1[y].value ===
+                this.suspectsMainData[i].name
+              ) {
+                code = 1;
+                break;
               }
             }
             if (code == 0) {
               this.suspectsFilterlist1.push({
                 value: this.suspectsMainData[i].name,
-                text: this.suspectsMainData[i].name
-              })
+                text: this.suspectsMainData[i].name,
+              });
             }
           }
           if (this.suspectsFilterlist3.length === 0) {
             this.suspectsFilterlist3.push({
               value: this.suspectsMainData[i].dataType,
-              text: this.suspectsMainData[i].dataType
-            })
+              text: this.suspectsMainData[i].dataType,
+            });
           } else {
-            let code = 0
+            let code = 0;
             for (let y = 0; y < this.suspectsFilterlist3.length; y++) {
-              if (this.suspectsFilterlist3[y].value === this.suspectsMainData[i].dataType) {
-                code = 1
-                break
+              if (
+                this.suspectsFilterlist3[y].value ===
+                this.suspectsMainData[i].dataType
+              ) {
+                code = 1;
+                break;
               }
             }
             if (code === 0) {
               this.suspectsFilterlist3.push({
                 value: this.suspectsMainData[i].dataType,
-                text: this.suspectsMainData[i].dataType
-              })
+                text: this.suspectsMainData[i].dataType,
+              });
             }
           }
         }
-      })
+      });
     },
     getProjectlist() {
       axios({
         method: "get",
         url: "/analysis/prjProjectController/getAllPrj",
-        responseType: "json"
+        responseType: "json",
       }).then((res) => {
         let d = res.data.data;
         d.forEach((item) => {
           this.projectlist.push({
             name: item.prjName,
-            value: item.prjProjectUuid
-          })
-        })
+            value: item.prjProjectUuid,
+          });
+        });
         //console.log(res);
-      })
+      });
     },
     getTaglist() {
       axios({
         method: "get",
         url: "/analysis/modelFixedDefinition/getAllTag",
-        responseType: "json"
+        responseType: "json",
       }).then((res) => {
-        this.treedata = res.data.data
+        this.treedata = res.data.data;
         console.log(res);
-      })
+      });
     },
     getModelDataPush() {
-      let data =  {
+      let data = {
         suspectsRelevanceData: this.suspectsRelevanceData,
         modelId: this.modelId,
-        modelTitle : this.modelTitle,
-        project:this.suspectsform.project,
-        tag:this.suspectsform.tag,
-        tagid : this.suspectsform.tagid,
-        way:this.suspectsform.way,
-        modelcolumnlist:this.modelcolumnlist,
-        modelresultlist:this.modelresultlist
+        modelTitle: this.modelTitle,
+        project: this.suspectsform.project,
+        tag: this.suspectsform.tag,
+        tagid: this.suspectsform.tagid,
+        way: this.suspectsform.way,
+        modelcolumnlist: this.modelcolumnlist,
+        modelresultlist: this.modelresultlist,
       };
-      if(this.suspectsform.way==null||this.suspectsform.way==""){
+      if (this.suspectsform.way == null || this.suspectsform.way == "") {
         this.$message({ message: "请选择推送方式", type: "warning" });
-        return
+        return;
       }
       axios({
         method: "post",
         url: "/analysis/modelFixedDefinition/pushModelResult",
         data: data, //传对象
-        responseType: "json"
+        responseType: "json",
       }).then((res) => {
-        if (res.data.code == 0){
+        if (res.data.code == 0) {
           this.$message.success("保存成功!");
-        }else{
+        } else {
           this.$message({ message: res.data.msg, type: "warning" });
-          return
+          return;
         }
         console.log(res);
         this.suspectsVisible = false;
-      })
+      });
     },
     /**
      *显示审计事项树
      */
     showAuditItemTree() {
-      this.auditItemTree = true
+      this.auditItemTree = true;
     },
     /**
      * 获取审计事项
      */
     getAuditItem() {
-      let tree = this.$refs.auditItemTreeRef.getTree()
-      let currentNode = tree.getCheckedNodes()[0]
-      this.form.auditItemUuid = currentNode.id
-      this.form.auditItemName = currentNode.label
-      this.auditItemTree = false
+      let tree = this.$refs.auditItemTreeRef.getTree();
+      let currentNode = tree.getCheckedNodes()[0];
+      this.form.auditItemUuid = currentNode.id;
+      this.form.auditItemName = currentNode.label;
+      this.auditItemTree = false;
     },
     /**
      * 导出方法
@@ -1838,62 +1873,72 @@ export default {
         if (typeof sql !== "string") {
           sql = "undefined";
         }
-        findSuspectsRelevanceData(this.modelId).then(
-            (resp) => {
-              let d = resp.data;
-              d.forEach((item) => {
-                this.suspectsRelevanceData.push({
-                  mastName: item.mastName,
-                  mastDateType: item.mastDateType,
-                  slaveName: item.slaveName,
-                  slaveDateType: item.slaveDateType,
-                });
-              })
-        });
+        // findSuspectsRelevanceData(this.modelId).then(
+        //     (resp) => {
+        //       let d = resp.data;
+        //       d.forEach((item) => {
+        //         this.suspectsRelevanceData.push({
+        //           mastName: item.mastName,
+        //           mastDateType: item.mastDateType,
+        //           slaveName: item.slaveName,
+        //           slaveDateType: item.slaveDateType,
+        //         });
+        //       })
+        // });
 
         selectTable(this.pageQuery, sql, this.resultSpiltObjects).then(
           (resp) => {
             // var modelThre
             var column = resp.data.records[0].columns;
-            this.suspectsFilterlist4 = []
-            this.suspectsFilterlist6 = []
-            this.suspectssecondaryData = resp.data.records[0].columnInfo.columnList;
-            for(let i =0;i<this.suspectsMainData.length;i++){
-              if (this.suspectsFilterlist4.length === 0){
-                this.suspectsFilterlist4.push({value:this.suspectssecondaryData[i].columnName,text:this.suspectssecondaryData[i].columnName})
-              }else {
-                let code = 0
+            this.suspectsFilterlist4 = [];
+            this.suspectsFilterlist6 = [];
+            this.suspectssecondaryData =
+              resp.data.records[0].columnInfo.columnList;
+            for (let i = 0; i < this.suspectsMainData.length; i++) {
+              if (this.suspectsFilterlist4.length === 0) {
+                this.suspectsFilterlist4.push({
+                  value: this.suspectssecondaryData[i].columnName,
+                  text: this.suspectssecondaryData[i].columnName,
+                });
+              } else {
+                let code = 0;
                 for (let y = 0; y < this.suspectsFilterlist4.length; y++) {
-                  if (this.suspectsFilterlist4[y].value === this.suspectssecondaryData[i].columnName) {
-                    code = 1
-                    break
+                  if (
+                    this.suspectsFilterlist4[y].value ===
+                    this.suspectssecondaryData[i].columnName
+                  ) {
+                    code = 1;
+                    break;
                   }
                 }
                 if (code == 0) {
                   this.suspectsFilterlist4.push({
                     value: this.suspectssecondaryData[i].columnName,
-                    text: this.suspectssecondaryData[i].columnName
-                  })
+                    text: this.suspectssecondaryData[i].columnName,
+                  });
                 }
               }
               if (this.suspectsFilterlist6.length === 0) {
                 this.suspectsFilterlist6.push({
                   value: this.suspectssecondaryData[i].columnType,
-                  text: this.suspectssecondaryData[i].columnType
-                })
+                  text: this.suspectssecondaryData[i].columnType,
+                });
               } else {
-                let code = 0
+                let code = 0;
                 for (let y = 0; y < this.suspectsFilterlist6.length; y++) {
-                  if (this.suspectsFilterlist6[y].value === this.suspectssecondaryData[i].columnType) {
-                    code = 1
-                    break
+                  if (
+                    this.suspectsFilterlist6[y].value ===
+                    this.suspectssecondaryData[i].columnType
+                  ) {
+                    code = 1;
+                    break;
                   }
                 }
                 if (code === 0) {
                   this.suspectsFilterlist6.push({
                     value: this.suspectssecondaryData[i].columnType,
-                    text: this.suspectssecondaryData[i].columnType
-                  })
+                    text: this.suspectssecondaryData[i].columnType,
+                  });
                 }
               }
             }
@@ -1904,8 +1949,8 @@ export default {
             this.result.column = columnToUppercase;
             this.result.id = this.modelObj.modelUuid;
             this.result.name = this.modelObj.modelName;
-            this.modelcolumnlist = resp.data.records[0].columns
-            this.modelresultlist = resp.data.records[0].result
+            this.modelcolumnlist = resp.data.records[0].columns;
+            this.modelresultlist = resp.data.records[0].result;
             var chartData = [];
             for (var i = 0; i < resp.data.records[0].result.length; i++) {
               var eachChartData = [];
@@ -1957,7 +2002,10 @@ export default {
             // 生成ag-grid列信息
             if (this.modelUuid != undefined) {
               var onlyFlag = false;
-              if (this.settingInfo != undefined) {
+              if (
+                this.settingInfo != undefined ||
+                this.modelOutputColumn.length == 0
+              ) {
                 for (var i = 0; i < colNames.length; i++) {
                   var rowColom = {};
                   if (
@@ -2127,8 +2175,8 @@ export default {
         let _this = this;
         setTimeout(function () {
           for (let i = 0; i < col.length; i++) {
-            var colType0 = _this.result.columnType[i];
-            colType0 = colType0 ? "" : colType0.toUpperCase();
+            // var colType0 = _this.result.columnType[i];
+            // colType0 = colType0 ? "" : colType0.toUpperCase();
             col[i].filter = "agMultiColumnFilter";
             col[i].filterParams = {
               filters: [
@@ -2305,47 +2353,55 @@ export default {
                   }
                   for (let j = 0; j < this.nextValue.columnNames.length; j++) {
                     let rowColom = {};
-                    for (let n = 0; n < modelOutputColumn.length; n++) {
-                      if (
-                        // 此处逻辑：类似于oracle数据库字段增加了前后缀的\" 所以替换后再比较
-                        modelOutputColumn[n].outputColumnName.replaceAll(
-                          '"',
-                          ""
-                        ) == this.nextValue.columnNames[j]
-                      ) {
-                        if (modelOutputColumn[n].isShow == 1) {
-                          if (
-                            renderColumns.indexOf(
-                              this.nextValue.columnNames[j].toUpperCase()
-                            ) != -1 ||
-                            modelResultDetailCol.indexOf(
-                              this.nextValue.columnNames[j].toUpperCase()
-                            ) != -1
-                          ) {
-                            var thresholdValueRel =
-                              renderObject[
+                    if (modelOutputColumn.length == 0) {
+                      //不运行就保存的情况（大亚湾个性化）
+                      col.push({
+                        headerName: this.nextValue.columnNames[j],
+                        field: this.nextValue.columnNames[j],
+                      });
+                    } else {
+                      for (let n = 0; n < modelOutputColumn.length; n++) {
+                        if (
+                          // 此处逻辑：类似于oracle数据库字段增加了前后缀的\" 所以替换后再比较
+                          modelOutputColumn[n].outputColumnName.replaceAll(
+                            '"',
+                            ""
+                          ) == this.nextValue.columnNames[j]
+                        ) {
+                          if (modelOutputColumn[n].isShow == 1) {
+                            if (
+                              renderColumns.indexOf(
                                 this.nextValue.columnNames[j].toUpperCase()
-                              ];
-                            rowColom = {
-                              headerName: modelOutputColumn[n].columnAlias,
-                              field: this.nextValue.columnNames[j],
-                              params: {
-                                thresholdValueRel,
-                                modelResultDetailCol,
-                              },
-                              cellRenderer: "ag-cell",
-                            };
-                          } else {
-                            rowColom = {
-                              headerName: modelOutputColumn[n].columnAlias,
-                              field: this.nextValue.columnNames[j],
-                            };
+                              ) != -1 ||
+                              modelResultDetailCol.indexOf(
+                                this.nextValue.columnNames[j].toUpperCase()
+                              ) != -1
+                            ) {
+                              var thresholdValueRel =
+                                renderObject[
+                                  this.nextValue.columnNames[j].toUpperCase()
+                                ];
+                              rowColom = {
+                                headerName: modelOutputColumn[n].columnAlias,
+                                field: this.nextValue.columnNames[j],
+                                params: {
+                                  thresholdValueRel,
+                                  modelResultDetailCol,
+                                },
+                                cellRenderer: "ag-cell",
+                              };
+                            } else {
+                              rowColom = {
+                                headerName: modelOutputColumn[n].columnAlias,
+                                field: this.nextValue.columnNames[j],
+                              };
+                            }
                           }
                         }
                       }
-                    }
-                    if (rowColom.field != undefined) {
-                      col.push(rowColom);
+                      if (rowColom.field != undefined) {
+                        col.push(rowColom);
+                      }
                     }
                   }
                   if (datacodes.length > 0) {
@@ -2470,7 +2526,6 @@ export default {
         //  do rotation
         var mainField = this.rotateConfig.mainField;
         var colNamesField = this.rotateConfig.colNamesField;
-        console.log(this.rotateConfig);
         var tempMap = {};
         for (let i = 0; i < rowData.length; i++) {
           var rd = rowData[i];
@@ -3310,7 +3365,6 @@ export default {
                 }
               }
               if (this.modelChartSetups.length == 0) {
-                console.log(this.modelChartSetups.length)
                 this.chartConfigs = {
                   chart: [],
                   layout: [{ x: 0, y: 0, w: 16, h: 16, i: "0" }],
@@ -3923,7 +3977,7 @@ export default {
 .drag-on {
   height: calc(100vh - 260px);
 }
-.vue-grid-layout{
+.vue-grid-layout {
   height: 100% !important;
 }
 .drag-on-table {
@@ -3934,7 +3988,7 @@ export default {
 .vue-grid-layout {
   background: transparent;
 }
-.vue-grid-item{
+.vue-grid-item {
   height: 100% !important;
 }
 .vue-grid-item:not(.vue-grid-placeholder) {

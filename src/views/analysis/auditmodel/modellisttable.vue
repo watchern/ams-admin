@@ -17,10 +17,17 @@
         </div>
         <el-row v-if="power != 'warning'" type="flex" class="row-bg">
           <el-col align="right">
-            <el-button
+            <!-- <el-button
               type="primary"
               :disabled="btnState.previewBtn"
               class="oper-btn preview"
+              @click="previewModel"
+              v-if="ifBtnShow.runBtn"
+            /> -->
+            <el-button
+              type="primary"
+              :disabled="btnState.previewBtn"
+              class="oper-btn start"
               @click="previewModel"
               v-if="ifBtnShow.runBtn"
             />
