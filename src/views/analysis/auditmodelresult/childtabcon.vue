@@ -725,8 +725,8 @@ import { AgCell } from "../../../components/public/new-ag-grid/ag-cell";
 // 引入aggrid及样式文件
 import { AgGridVue } from "@ag-grid-community/vue";
 import { AllModules } from "@ag-grid-enterprise/all-modules";
-import "@ag-grid-community/all-modules/dist/styles/ag-grid.css";
-import "@ag-grid-community/all-modules/dist/styles/ag-theme-balham.css";
+// import "@ag-grid-community/all-modules/dist/styles/ag-grid.css";
+// import "@ag-grid-community/all-modules/dist/styles/ag-theme-balham.css";
 
 import Pagination from "@/components/Pagination/index";
 import JsonExcel from "vue-json-excel";

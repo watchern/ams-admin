@@ -7,11 +7,11 @@
         name="relevance"
         v-if="form.inputType == 'lineinp' || form.inputType == 'treeinp'"
       ></el-tab-pane>
-      <!-- <el-tab-pane
+      <el-tab-pane
         label="关联条件参数"
         name="condition"
         v-if="form.inputType == 'lineinp' || form.inputType == 'treeinp'"
-      ></el-tab-pane> -->
+      ></el-tab-pane>
     </el-tabs>
     <div id="basicInfo" v-if="baseName == 'base'">
       <el-form
@@ -467,7 +467,7 @@
         </div>
         
       </el-tree>
-    </div>
+      </div>
     <el-dialog
       title="请选择被关联的参数"
       :visible.sync="opentree"

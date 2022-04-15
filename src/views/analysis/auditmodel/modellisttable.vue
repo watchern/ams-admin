@@ -1858,8 +1858,6 @@ export default {
         "正在运行模型'" + selectObj[0].modelName + "',请稍候"
       );
       getExecuteTask(obj, this.dataUserId, this.sceneCode).then((result) => {
-        console.log("======")
-        console.log(result)
         if(this.ifcancel==0){
         if (result.data.isError) {
           this.$message({
