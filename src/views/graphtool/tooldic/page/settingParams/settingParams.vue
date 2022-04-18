@@ -60,7 +60,7 @@
                                     :title="scope.row.title"
                                     v-model="scope.row.value"
                                     style="width:90%"
-                                    :props="{ label:'name',  multiple: scope.row.dataChoiceType == 0 || scope.row.dataChoiceType == '0', emitPath: false}"
+                                    :props="{ label:'name',  multiple: scope.row.dataChoiceType == 0 || scope.row.dataChoiceType == '0', emitPath: false, checkStrictly: true}"
                                     :options="scope.row.data"
                                     multiple
                                     clearable />

@@ -201,7 +201,8 @@ export default {
           "paramName": copyParamArr[n].paramName,
           "description": '（参数说明：无）',
           "inputType": copyParamArr[n].inputType,//参数类型
-          "masterparam": copyParamArr[n].paramRelationList[0]
+          "masterparam": copyParamArr[n].paramRelationList[0],
+          "useQuotation":copyParamArr[n].useQuotation
         }
         if (typeof copyParamArr[n].description !== 'undefined' && copyParamArr[n].description != null) {
           paramInfoObj.description = '（参数说明：' + copyParamArr[n].description + '）'
@@ -509,6 +510,9 @@ export default {
               let moduleParamId = paramInfoObj.dataId// 母参数ID
               let allowedNull = typeof paramInfoObj.dataAllowedNull !== 'undefined' ? paramInfoObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
               let paramValue = typeof paramInfoObj.dataDefaultVal !== 'undefined' ? paramInfoObj.dataDefaultVal :''
+              if(paramInfoObj.useQuotation == 1){
+                paramValue = "'" + paramValue + "'"
+              }
               let obj = {
                 'moduleParamId': moduleParamId,
                 'paramValue': $.trim(paramValue), // 处理可能存在的空格

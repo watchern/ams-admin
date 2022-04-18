@@ -1135,6 +1135,8 @@ export function initParamTreeNew() {
           'opt': 1// 参数是否生效（不生效是指在当前SQL编辑中已被删除），0、不生效，1、生效
         }
         paramDivArr.push(divBtnObj)
+        $('#modelDesign').data(paramObj)
+        // console.log($('#modelDesign').data())
       },
       beforeDrag: function(treeId, treeNodes) {
         // 如果是参数 允许拖动 否则不可以
@@ -2103,6 +2105,7 @@ export async function verifySql() {
   if ($.trim(selText) === '') {
     selText = editorObj.getValue()
   }
+  console.log(selText)
   if (paramObj && Object.keys(paramObj).length > 0) {
     var arr = paramObj.arr
     for (var i = 0; i < arr.length; i++) {

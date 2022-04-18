@@ -633,7 +633,7 @@ export default {
       let columnData = this.$refs.columnData.data;
       // region 校验基本信息
       let basicInfoVerResult = false
-      this.$refs['basicInfoForm'].validate((valid) => {
+      this.$refs.basicInfoFo.validate((valid) => {
         if (valid) {
           basicInfoVerResult = valid
         }

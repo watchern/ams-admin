@@ -1105,11 +1105,12 @@ export default {
         return;
       }
       if (getIsUpdate()) {
-        this.$message({
-          type: "info",
-          message: "SQL已经被修改,请重新校验或执行!",
-        });
-        return;
+        //大亚湾个性化
+        // this.$message({
+        //   type: "info",
+        //   message: "SQL已经被修改,请重新校验或执行!",
+        // });
+        // return;
       }
       /*      console.log("当前执行总进度:" + currentExecuteProgress);
                 console.log("是否全部执行成功:" + isAllExecuteSuccess);

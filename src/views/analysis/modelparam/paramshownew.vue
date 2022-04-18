@@ -43,7 +43,7 @@
             <el-cascader
             v-model="setParamObj.value"
             style="width:90%"
-            :props="{ label:'name',  multiple: setParamObj.dataChoiceType == 0 || setParamObj.dataChoiceType == '0', emitPath: false}"
+            :props="{ label:'name',  multiple: setParamObj.dataChoiceType == 0 || setParamObj.dataChoiceType == '0', emitPath: false, checkStrictly: true }"
             :options="setParamObj.data"
             multiple
             clearable />

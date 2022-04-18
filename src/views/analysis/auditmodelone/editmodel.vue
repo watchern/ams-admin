@@ -1,7 +1,7 @@
 <template>
   <div class="app-container" v-loading="editorModelLoading">
     <el-container class="el-container">
-      <div ref="modelDesign" class="div-width">
+      <div ref="modelDesign" class="div-width" id="modelDesign" :data="sqlEditorParamObj">
         <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules" :disabled="isBanEdit">
           <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id" class="sqlEditorParamWidthOn"
                id="graphDiv">
@@ -748,7 +748,7 @@ export default {
      */
     async getModelObj() {
       let allVer = true
-      let paramDefaultValue;
+      let paramDefaultValue = '';
       let columnData = this.$refs.columnData.data
       // region 校验基本信息
       let basicInfoVerResult = false
@@ -790,12 +790,21 @@ export default {
           // endregion
           //获取SQL编辑器参数对象 到下边去处理
         })
+        if(JSON.stringify(this.sqlEditorParamObj)=='{}'){
+          this.sqlEditorParamObj = $('#modelDesign').data()
+          this.$refs.apple.initSetting(this.sqlEditorParamObj)
+        }
         if (this.sqlEditorParamObj && this.sqlEditorParamObj.arr && this.sqlEditorParamObj.arr.length != 0) {
           // paramDefaultValue = this.$refs.apple.getParamSettingArr(this.sqlEditorParamObj.arr);
           paramDefaultValue = this.$refs.apple.getParamsSetting()
-          if (!paramDefaultValue.verify) {
-            this.$message({type: 'info', message: paramDefaultValue.message})
-            return null
+          if(JSON.stringify(paramDefaultValue.paramSettingArr) == '[]'){
+            paramDefaultValue.paramSettingArr = this.sqlEditorParamObj.arr
+          }
+          if (paramDefaultValue) {
+            if(!paramDefaultValue.verify){
+              this.$message({type: 'info', message: paramDefaultValue.message})
+              return null
+            }
           }
         } else {
           this.form.parammModelRel = null

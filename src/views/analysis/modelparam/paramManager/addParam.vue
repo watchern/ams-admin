@@ -693,26 +693,26 @@ export default {
     },
     savetreenode() {
       //获取是否被关联
-      request({
-        baseURL: "/analysis",
-        url: "/paramController/getCountBySlaveId?salveParamId=" + this.checktreenode.id,
-        method: "post",
-      }).then((result) => {
-        console.log(result);
-        if (result.code == 0) {
-          if (result.data == 0) {
+      // request({
+      //   baseURL: "/analysis",
+      //   url: "/paramController/getCountBySlaveId?salveParamId=" + this.checktreenode.id,
+      //   method: "post",
+      // }).then((result) => {
+      //   console.log(result);
+      //   if (result.code == 0) {
+      //     if (result.data == 0) {
             this.opentree = false;
             this.relevanceform.slaveParamUuid = this.checktreenode.id;
             this.relevanceform.slaveParamName = this.checktreenode.name;
             this.relevanceform.slaveParamCol = "";
             this.getrvaluelist();
-          } else {
-            this.$message("该参数已被关联");
-          }
-        }else{
-          this.$message(result.msg);
-        }
-      });
+      //     } else {
+      //       this.$message("该参数已被关联");
+      //     }
+      //   }else{
+      //     this.$message(result.msg);
+      //   }
+      // });
     },
     getParamsTreeList() {
       request({
