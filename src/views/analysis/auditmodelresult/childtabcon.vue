@@ -2231,7 +2231,7 @@ export default {
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
           //executeSQL.state 0,待执行；1,执行中；2,已完成；3,失败；4,取消；
           if (this.nextValue.executeSQL.state == "2") {
-            if (this.nextValue.executeSQL.type == "Select") {
+            if (this.nextValue.executeSQL.type != undefined && (this.nextValue.executeSQL.type == "Select" || this.nextValue.executeSQL.type.toUpperCase().indexOf('SELECT') > 0)){
               if (true) {
                 this.modelResultButtonIsShow = true;
                 this.modelResultPageIsSee = true;
@@ -2579,7 +2579,7 @@ export default {
       }
       if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
         if (this.nextValue.executeSQL.state == "2") {
-          if (this.nextValue.executeSQL.type == "Select") {
+          if (this.nextValue.executeSQL.type != undefined && (this.nextValue.executeSQL.type == "Select" || this.nextValue.executeSQL.type.toUpperCase().indexOf('SELECT') > 0)) {
             this.modelResultButtonIsShow = true;
             this.modelResultPageIsSee = true;
             this.modelResultData = this.nextValue.result;
