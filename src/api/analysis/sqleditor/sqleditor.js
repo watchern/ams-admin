@@ -2080,6 +2080,7 @@ export function useSql(returnObj) {
   sqlDraftObj = returnObj.sqlDraftObj
   $('#sqlDraft').html('当前SQL名称：' + sqlDraftObj.draftTitle).show()
   editorObj.setValue(sqlDraftObj.draftSql)
+  $('#modelDesign').data(JSON.parse(sqlDraftObj.paramJson))
   replaceParam(JSON.parse(sqlDraftObj.paramJson))
 }
 
