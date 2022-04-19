@@ -2,6 +2,7 @@
   <div style="overflow-y: visible;" ref="inputParamContent" class="paramadrawnew">
     <div ref="nodeParam" style="overflow:auto;max-height:62vh" class="detail-form">
       <el-row  v-for="(paramInfo,ind) in paramInfoArr" :key="ind" style="margin: 15px;" >
+        <!-- <div>{{paramInfo}}</div> -->
         <el-col :span="7" style="line-height:36px;padding-right: 10px;">
           <el-tooltip :content="paramInfo.description" placement="bottom">
             <label>{{paramInfo.paramName}}</label>
@@ -17,7 +18,7 @@
             </el-option>
           </el-select>
           <!-- <div class="select-div el-input__inner" ref="selectParam" :index="ind" v-if="paramInfo.inputType === 'lineinp'" :id="paramInfo.id" :title="paramInfo.title"></div> -->
-          <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.dataDefaultVal" class="textParam"></el-input>
+          <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.dataDefaultVal" class="textParam" @change="changeRelationParam(ind)"></el-input>
           <!-- 树类型参数 -->
           <el-cascader
             v-model="paramTreeValueList[ind]"
@@ -73,71 +74,79 @@ export default {
   },methods:{
     async changeRelationParam(ind){
       for(let i=0;i<this.paramInfoArr.length;i++){
-        if(this.paramInfoArr[i].masterparam && this.paramListValueList[ind]!=''){
+        if(this.paramInfoArr[i].paramConditionList){
           //找到被关联参数
-        if(this.paramInfoArr[i].masterparam.masterParamUuid == this.paramInfoArr[ind].dataId){
-          //拼sql
-          let paramSql = this.paramInfoArr[i].dataSql + " WHERE " + this.paramInfoArr[i].masterparam.slaveParamCol
-          // 单选
-          if(typeof(this.paramListValueList[ind])=='string'){
-            console.log("单选值：" + this.paramListValueList[ind])
-            paramSql += "="
-            paramSql += this.paramListValueList[ind]
-          }else{
-            // 多选
-            console.log("多选值：" + this.paramListValueList[ind])
-            paramSql += " in ("
-            for(let j=0;j<this.paramListValueList[ind].length;j++){
-              let rvalue = this.paramListValueList[ind][j]
-              if(this.paramInfoArr[i].masterparam.relationMode==1){
-                }else{
-                  let rdata = this.paramInfoArr[ind].data
-                  for(let k=0;k<rdata.length;k++){
-                    let rv1 = (rdata[k].value.indexOf("'") == -1? ("'"+rdata[k].value+"'"):rdata[k].value)
-                    let rv2 = (rvalue.indexOf("'") == -1? ("'"+rvalue+"'"):rvalue)
-                    if(rv1 == rv2){
-                      rvalue = rdata[k].name
-                    }
-                  }
-                }
-                if(rvalue.indexOf("'") != -1){
-                  paramSql += rvalue+","
-                }else{
-                  paramSql += "'"+rvalue+"',"
-                }
-                }
-                if(paramSql.charAt(paramSql.length-1)==","){
-                  paramSql = paramSql.substring(0, paramSql.length-1);
-                }
-            paramSql += ")"
-          }
-          
-          const response = await executeParamSql(paramSql)
-          let dataArr = []
-          if(response.data == null){
-            this.$message(`获取参数值的失败`)
-            }else {
-              if (response.data.isError) {
-                this.$message(`获取参数值的失败`)
-              } else {
-                let e = response.data
-                if (e.paramList && e.paramList.length > 0) {
-                  // 给下拉列表赋值
-                  for (let k = 0; k < e.paramList.length; k++) {
-                    dataArr.push({
-                      'name': e.paramList[k].paramName,
-                      'value': e.paramList[k].paramValue
-                    })
-                  }
-                }
-                this.paramInfoArr[i].data = dataArr
+          for(let j =0;j<this.paramInfoArr[i].paramConditionList.length;j++){
+            if(this.paramInfoArr[i].paramConditionList[j].relationParamId == this.paramInfoArr[ind].dataId){
+              if(this.paramInfoArr[i].selectNum==1){
+                this.paramListValueList[i] = []
+              }else{
                 this.paramListValueList[i] = ''
               }
+              this.$forceUpdate() 
             }
           }
+          // //拼sql
+          // let paramSql = this.paramInfoArr[i].dataSql + " WHERE " + this.paramInfoArr[i].masterparam.slaveParamCol
+          // // 单选
+          // if(typeof(this.paramListValueList[ind])=='string'){
+          //   console.log("单选值：" + this.paramListValueList[ind])
+          //   paramSql += "="
+          //   paramSql += this.paramListValueList[ind]
+          // }else{
+          //   // 多选
+          //   console.log("多选值：" + this.paramListValueList[ind])
+          //   paramSql += " in ("
+          //   for(let j=0;j<this.paramListValueList[ind].length;j++){
+          //     let rvalue = this.paramListValueList[ind][j]
+          //     if(this.paramInfoArr[i].masterparam.relationMode==1){
+          //       }else{
+          //         let rdata = this.paramInfoArr[ind].data
+          //         for(let k=0;k<rdata.length;k++){
+          //           let rv1 = (rdata[k].value.indexOf("'") == -1? ("'"+rdata[k].value+"'"):rdata[k].value)
+          //           let rv2 = (rvalue.indexOf("'") == -1? ("'"+rvalue+"'"):rvalue)
+          //           if(rv1 == rv2){
+          //             rvalue = rdata[k].name
+          //           }
+          //         }
+          //       }
+          //       if(rvalue.indexOf("'") != -1){
+          //         paramSql += rvalue+","
+          //       }else{
+          //         paramSql += "'"+rvalue+"',"
+          //       }
+          //       }
+          //       if(paramSql.charAt(paramSql.length-1)==","){
+          //         paramSql = paramSql.substring(0, paramSql.length-1);
+          //       }
+          //   paramSql += ")"
+          // }
+          
+          // const response = await executeParamSql(paramSql)
+          // let dataArr = []
+          // if(response.data == null){
+          //   this.$message(`获取参数值的失败`)
+          //   }else {
+          //     if (response.data.isError) {
+          //       this.$message(`获取参数值的失败`)
+          //     } else {
+          //       let e = response.data
+          //       if (e.paramList && e.paramList.length > 0) {
+          //         // 给下拉列表赋值
+          //         for (let k = 0; k < e.paramList.length; k++) {
+          //           dataArr.push({
+          //             'name': e.paramList[k].paramName,
+          //             'value': e.paramList[k].paramValue
+          //           })
+          //         }
+          //       }
+          //       this.paramInfoArr[i].data = dataArr
+          //       this.paramListValueList[i] = ''
+          //     }
+          //   }
         }
-        }
-      },
+      }
+    },
     async createParamNodeHtml(id,collapseTitle,flag){
       try {
         this.loading = $(this.$refs.inputParamContent).mLoading({ 'text': '正在初始化数据，请稍后……', 'hasCancel': false })
@@ -202,7 +211,8 @@ export default {
           "description": '（参数说明：无）',
           "inputType": copyParamArr[n].inputType,//参数类型
           "masterparam": copyParamArr[n].paramRelationList[0],
-          "useQuotation":copyParamArr[n].useQuotation
+          "useQuotation":copyParamArr[n].useQuotation,
+          "paramConditionList":copyParamArr[n].paramConditionList,
         }
         if (typeof copyParamArr[n].description !== 'undefined' && copyParamArr[n].description != null) {
           paramInfoObj.description = '（参数说明：' + copyParamArr[n].description + '）'

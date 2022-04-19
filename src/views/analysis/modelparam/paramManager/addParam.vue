@@ -475,7 +475,10 @@
             ></span>
           </span>
           <span v-else>
-            <el-select v-model="data.value.relationFiled" placeholder="请选择关联字段">
+            <el-select
+              v-model="data.value.relationFiled"
+              placeholder="请选择关联字段"
+            >
               <el-option
                 v-for="item in relationFiledoptions"
                 :key="item"
@@ -484,7 +487,10 @@
               >
               </el-option>
             </el-select>
-            <el-select v-model="data.value.relationLogic" placeholder="请选择关联关系">
+            <el-select
+              v-model="data.value.relationLogic"
+              placeholder="请选择关联关系"
+            >
               <el-option
                 v-for="item in relationLogicoptions"
                 :key="item.value"
@@ -495,7 +501,7 @@
             </el-select>
             <div
               @click.stop="choosetree(data, node)"
-              style="cursor: pointer !important;display: inline-block;"
+              style="cursor: pointer !important; display: inline-block"
             >
               <el-input
                 v-model="data.value.relationParamName"
@@ -565,7 +571,7 @@ export default {
   components: { seeSqlData },
   data() {
     return {
-      nownode:{},
+      nownode: {},
       relationFiledoptions: [],
       relationLogicoptions: [{ value: "=" }, { value: ">" }, { value: "<" }],
       relationParamUuidoptions: [],
@@ -778,10 +784,9 @@ export default {
       this.checktreenode = data;
     },
     savetreenode() {
-      this.nownode.data.value.relationParamName = this.checktreenode.name
-      this.nownode.data.value.relationParamUuid = this.checktreenode.id
-      console.log(this.nownode)
-      this.opentree = false
+      this.nownode.data.value.relationParamName = this.checktreenode.name;
+      this.nownode.data.value.relationParamUuid = this.checktreenode.id;
+      this.opentree = false;
     },
     getParamsTreeList() {
       request({
@@ -817,10 +822,8 @@ export default {
     delrelevance(item, index) {
       this.relevanceData.splice(index, 1);
     },
-    choosetree(data,node) {
-      console.log(data)
-      console.log(node)
-      this.nownode = node
+    choosetree(data, node) {
+      this.nownode = node;
       this.getParamsTreeList();
       this.opentree = true;
     },
@@ -839,8 +842,11 @@ export default {
             that.changeValue(data.dataType);
             that.form.inputType = data.inputType;
             that.changeInputType(data.inputType);
-            // that.relevancetreedata = data.paramCondition;
-            // that.arrangementtree(data.paramCondition)
+            if (data.paramCondition.length > 0) {
+              that.relevancetreedata = [
+                that.arrangementtree(data.paramCondition[0]),
+              ];
+            }
             // if (data.paramRelationList) {
             //   that.relevanceData = data.paramRelationList;
             // } else {
@@ -929,16 +935,30 @@ export default {
       //   "json"
       // );
     },
-    arrangementtree(obj){
-      let rep = {}
-      if(obj.label == "and" || obj.label == "or"){
-        rep.type = "relation"
-        rep.relation = obj.label
-        rep.children = []
+    //整理参数条件树数据
+    arrangementtree(obj) {
+      let rep = {};
+      if (obj.label == "and" || obj.label == "or") {
+        rep.id = obj.id;
+        rep.type = "relation";
+        rep.relation = obj.label;
+        rep.children = [];
+      } else {
+        rep.id = obj.id;
+        rep.type = "logic";
+        rep.value = {
+          relationFiled: obj.extMap.relationFiled,
+          relationLogic: obj.extMap.relationLogic,
+          relationParamUuid: obj.extMap.relationParamUuid,
+          relationParamName: obj.extMap.relationParamName,
+        };
       }
-      if(obj.children){
-
+      if (obj.children) {
+        for (let i = 0; i < obj.children.length; i++) {
+          rep.children.push(this.arrangementtree(obj.children[i]));
+        }
       }
+      return rep;
     },
     setJsonSelectValue(selectId, url) {
       let result;
@@ -1093,11 +1113,11 @@ export default {
         "param.signForSql": this.tabsigns,
         "param.paramFolderUuid": folderId,
         "param.useQuotation": this.form.useQuotation,
-        "paramRelationList":JSON.stringify(this.relevancetreedata)
+        paramConditionList: JSON.stringify(this.relevancetreedata),
         // paramRelationList: JSON.stringify(this.relevanceData),
       };
       if (inputType != "lineinp" && inputType != "treeinp") {
-        delete dataParam.paramRelationList;
+        delete dataParam.paramConditionList;
       }
       if (paramName === "") {
         this.$message({ type: "info", message: "参数名不能为空!" });
@@ -1136,7 +1156,7 @@ export default {
             this.form.paramChoice.optionsSqlLine;
         }
         if (this.activeName === "custom") {
-          delete dataParam.paramRelationList;
+          delete dataParam.paramConditionList;
           var names = [];
           var value = [];
           // this.customStaticValues.push(this.defaultExistsCustomStaticValues);
@@ -1211,11 +1231,11 @@ export default {
         "param.signForSql": this.tabsigns,
         "param.paramFolderUuid": folderId,
         "param.useQuotation": this.form.useQuotation,
-        "paramRelationList":JSON.stringify(this.relevancetreedata)
+        paramConditionList: JSON.stringify(this.relevancetreedata),
         // paramRelationList: JSON.stringify(this.relevanceData),
       };
       if (inputType != "lineinp" && inputType != "treeinp") {
-        delete dataParam.paramRelationList;
+        delete dataParam.paramConditionList;
       }
       if (paramName === "") {
         this.$message({ type: "info", message: "参数名不能为空!" });
@@ -1255,7 +1275,7 @@ export default {
             this.form.paramChoice.optionsSqlLine;
         }
         if (this.activeName === "custom") {
-          delete dataParam.paramRelationList;
+          delete dataParam.paramConditionList;
           var names = [];
           var value = [];
           var uuids = [];
