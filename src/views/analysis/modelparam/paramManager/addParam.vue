@@ -497,7 +497,36 @@
                 :label="item.label"
                 :value="item.value"
               >
-                <span style="float: left">{{ item.value }}</span>
+                <span style="float: left" v-if="item.value=='='">{{item.value}}</span>
+                <span style="float: left" v-else-if="item.value=='<>'">≠</span>
+                <span style="float: left" v-else-if="item.value=='>'">{{item.value}}</span>
+                <span style="float: left" v-else-if="item.value=='>='">≥</span>
+                <span style="float: left" v-else-if="item.value=='<'">{{item.value}}</span>
+                <span style="float: left" v-else-if="item.value=='<='">≤</span>
+                <span style="float: left" v-else-if="item.value=='charindex > 0'">
+                  a<span style="color:green;">b</span>c
+                </span>
+                <span style="float: left" v-else-if="item.value=='charindex < 0'">
+                  a<span style="color:red;">c</span>b
+                </span>
+                <span style="float: left" v-else-if="item.value=='LLike'">
+                  <span style="color:blue;">[</span>a<span style="color:blue;">]</span>b
+                </span>
+                <span style="float: left" v-else-if="item.value=='RLike'">
+                  b<span style="color:blue;">[</span>c<span style="color:blue;">]</span>
+                </span>
+                <span style="float: left" v-else-if="item.value=='AllLike'">
+                  a<span style="color:green;">%</span>b
+                </span>
+                <span style="float: left" v-else-if="item.value=='not like'">
+                  a<span style="color:red;">%</span>b
+                </span>
+                <span style="float: left" v-else-if="item.value=='in'">
+                  <span style="color:green;">ooo</span>
+                </span>
+                <span style="float: left" v-else-if="item.value=='not in'">
+                  <span style="color:red;">ooo</span>
+                </span>
                 <span style="float: right">{{ item.label }}</span>
               </el-option>
             </el-select>
