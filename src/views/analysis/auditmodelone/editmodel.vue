@@ -207,7 +207,7 @@
           </div>
           <div class="editmodel-right"><!--v-if="!modifying"-->
             <el-button type="primary" class="oper-btn" @click="save" style="position: relative;top: 5px;left: -2.5px;width: 41px;height: 30px;margin: 5px"><span >保存</span></el-button>
-            <el-button type="primary" class="oper-btn" @click="closeWinfrom" style="position: relative;top: 10px;left: -2.5px;width: 41px;height: 30px;margin: 0px 5px 10px 5px;"><span >取消</span></el-button>
+            <button type="primary" class="el-button oper-btn el-button--primary el-button--medium" :disabled="false" @click="closeWinfrom" style="position: relative;top: 10px;left: -2.5px;width: 41px;height: 30px;margin: 0px 5px 10px 5px;"><span >取消</span></button>
             <div @click="clickModelInfo()"><span :class="changeBtn.one === true?'self-made-btn-a':'self-made-btn'"  class="rightButtonClassa" style="top: 10px">基础信息</span></div>
             <div @click="clickUseParam()"><span :class="changeBtn.two === true?'self-made-btn-a':'self-made-btn'" class="rightButtonClassa">已用参数</span></div>
             <div @click="clickResultConfig()"><span :class="changeBtn.three === true?'self-made-btn-a':'self-made-btn'" class="rightButtonClassa">结果展现</span></div>

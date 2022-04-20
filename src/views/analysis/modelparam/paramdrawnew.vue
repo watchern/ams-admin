@@ -1,7 +1,7 @@
 <template>
   <div style="overflow-y: visible;" ref="inputParamContent" class="paramadrawnew">
     <div ref="nodeParam" style="overflow:auto;max-height:62vh" class="detail-form">
-      <el-row  v-for="(paramInfo,ind) in paramInfoArr" :key="ind" style="margin: 15px;" >
+      <el-row  v-for="(paramInfo,ind) in paramInfoArr" :key="ind+'main'" style="margin: 15px;" >
         <!-- <div>{{paramInfo}}</div> -->
         <el-col :span="7" style="line-height:36px;padding-right: 10px;">
           <el-tooltip :content="paramInfo.description" placement="bottom">
@@ -11,14 +11,14 @@
         <el-col :span="15">
           <!-- 下拉列表类型 -->
           <el-select v-model="paramListValueList[ind]" ref="selectParam"  style="width: 100%;" v-if="paramInfo.inputType === 'lineinp' " 
-              :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable @change="changeRelationParam(ind)">
-            <el-option v-for="item in paramInfo.data" :value="paramInfo.dataType == 'str' ? `'`+ item.value + `'`: item.value" :label="item.name" :key="item.value" >
+              :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable @change="changeRelationParam(ind)" @click.native="changeparamdata(paramInfo,ind)">
+            <el-option v-for="(item,index) in paramInfo.data" :value="paramInfo.dataType == 'str' ? `'`+ item.value + `'`: item.value" :label="item.name" :key="index+'sec'" >
               <span style="float: left"> {{ item.name}}</span>
               <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value == item.name ? "" : item.value}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
             </el-option>
           </el-select>
           <!-- <div class="select-div el-input__inner" ref="selectParam" :index="ind" v-if="paramInfo.inputType === 'lineinp'" :id="paramInfo.id" :title="paramInfo.title"></div> -->
-          <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.dataDefaultVal" class="textParam" @change="changeRelationParam(ind)"></el-input>
+          <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.dataDefaultVal" class="textParam" @change="changeRelationParam(ind)" @click.native="changeparamdata(paramInfo,ind)"></el-input>
           <!-- 树类型参数 -->
           <el-cascader
             v-model="paramTreeValueList[ind]"
@@ -28,12 +28,13 @@
             :props="{ label:'name',  multiple: paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0', emitPath: false,checkStrictly: true}"
             :options="paramInfo.data"
             @change="changeRelationParam(ind)"
+            @click.native="changeparamdata(paramInfo,ind)"
             multiple
             clearable />
           <!-- <div class="select-div" ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title"></div> -->
           <span  v-if="paramInfo.inputType === 'timeinp'" >
-            <el-date-picker v-if="paramInfo.timeFormat!='other'" ref="paramOption" :index="ind"  :title="paramInfo.title" :type="paramInfo.timeFormat" placeholder="选择日期" :value-format="timeDealFormat(paramInfo.timeFormat)"  v-model="paramInfo.dataDefaultVal" style="width: 98%;" @change="changeRelationParam(ind)"></el-date-picker> 
-            <el-date-picker v-else ref="paramOption" :index="ind"  :title="paramInfo.title" type="date" placeholder="选择日期" :value-format="paramInfo.customizeFormat" v-model="paramInfo.dataDefaultVal" style="width: 98%;" @change="changeRelationParam(ind)"></el-date-picker> 
+            <el-date-picker v-if="paramInfo.timeFormat!='other'" ref="paramOption" :index="ind"  :title="paramInfo.title" :type="paramInfo.timeFormat" placeholder="选择日期" :value-format="timeDealFormat(paramInfo.timeFormat)"  v-model="paramInfo.dataDefaultVal" style="width: 98%;" @change="changeRelationParam(ind)" @click.native="changeparamdata(paramInfo,ind)"></el-date-picker> 
+            <el-date-picker v-else ref="paramOption" :index="ind"  :title="paramInfo.title" type="date" placeholder="选择日期" :value-format="paramInfo.customizeFormat" v-model="paramInfo.dataDefaultVal" style="width: 98%;" @change="changeRelationParam(ind)" @click.native="changeparamdata(paramInfo,ind)"></el-date-picker> 
           </span>
         </el-col>
         <el-col :span="2" v-show="paramInfo.allowedNull">
@@ -46,6 +47,7 @@
   </div>
 </template>
 <script>
+import request from '@/utils/request'
 import '@/components/ams-loading/css/loading.css'
 import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,recplaceParams } from '@/api/graphtool/apiJs/graphList'
 import * as paramCommonJs from '@/api/graphtool/js/paramCommon'
@@ -72,6 +74,52 @@ export default {
   beforeDestroy() {
     removeJcCssfile("xm-select.js","js")
   },methods:{
+    changeparamdata(info,ind){
+      let paramsArr = []
+      if(info.paramConditionList.length>0){
+        console.log('有关联关系')
+        for(let i = 0; i<info.paramConditionList.length;i++){
+          for(let j =0;j<this.paramInfoArr.length;j++){
+            if(info.paramConditionList[i].relationParamId == this.paramInfoArr[j].dataId){
+              let repvalue = this.paramInfoArr[j].inputType == "textinp"?this.paramInfoArr[j].dataDefaultVal:this.paramInfoArr[j].inputType == "lineinp"?(Array.isArray(this.paramListValueList[j])?this.paramListValueList[j].join(','):this.paramListValueList[j]):this.paramInfoArr[j].inputType == "treeinp"?(Array.isArray(this.paramTreeValueList[j])?this.paramTreeValueList[j].join(','):this.paramTreeValueList[j]):this.paramInfoArr[j].dataDefaultVal
+              if(this.paramInfoArr[j].dataType != "int" && this.paramInfoArr[j].inputType != "lineinp"){
+                if(repvalue!=undefined && repvalue!=''){
+                  repvalue = "'" + repvalue + "'"
+                }else{
+                  repvalue = ""
+                }
+              }
+              paramsArr.push({
+                id:info.paramConditionList[i].relationParamId,
+                paramValue:repvalue,
+                useQuotation:this.paramInfoArr[j].useQuotation
+              })
+            }
+          }
+        }
+        request({
+          baseURL: '/analysis',
+          url: '/paramConditionController/getParamConditionSqlResult',
+          method: 'post',
+          data:{
+            "paramId":info.dataId,
+            "paramsArr":paramsArr
+          }
+        }).then(result => {
+          let list = []
+          for(let i =0;i<result.data.paramList.length;i++){
+            list.push(
+              {
+                name:result.data.paramList[i].paramName,
+                value:result.data.paramList[i].paramValue
+              }
+            )
+          }
+          this.paramInfoArr[ind].data = list
+        })
+      }
+      
+    },
     async changeRelationParam(ind){
       for(let i=0;i<this.paramInfoArr.length;i++){
         if(this.paramInfoArr[i].paramConditionList){
@@ -487,7 +535,6 @@ export default {
      * @author JL
      */
     replaceNodeParam(id) {
-      console.log(this.overallParmaobj[id].paramsArr)
       let returnObj = {
         'verify': true, // 校验是否通过
         'message': '',// 提示信息

@@ -494,9 +494,11 @@
               <el-option
                 v-for="item in relationLogicoptions"
                 :key="item.value"
-                :label="item.value"
+                :label="item.label"
                 :value="item.value"
               >
+                <span style="float: left">{{ item.value }}</span>
+                <span style="float: right">{{ item.label }}</span>
               </el-option>
             </el-select>
             <div
@@ -573,7 +575,22 @@ export default {
     return {
       nownode: {},
       relationFiledoptions: [],
-      relationLogicoptions: [{ value: "=" }, { value: ">" }, { value: "<" }],
+      relationLogicoptions: [
+        { value: "=", label: "等于" },
+        { value: "<>", label: "不等于" },
+        { value: ">", label: "大于" },
+        { value: ">=", label: "大于等于" },
+        { value: "<", label: "小于" },
+        { value: "<=", label: "小于等于" },
+        { value: "charindex > 0", label: "包含" },
+        { value: "charindex < 0", label: "不包含" },
+        { value: "LLike", label: "起始于" },
+        { value: "RLike", label: "结束于" },
+        { value: "AllLike", label: "匹配" },
+        { value: "not like", label: "不匹配" },
+        { value: "in", label: "属于任一" },
+        { value: "not in", label: "不属于任一" },
+      ],
       relationParamUuidoptions: [],
       relevancetreedata: [
         {
