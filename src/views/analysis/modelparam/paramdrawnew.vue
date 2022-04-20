@@ -82,7 +82,7 @@ export default {
           for(let j =0;j<this.paramInfoArr.length;j++){
             if(info.paramConditionList[i].relationParamId == this.paramInfoArr[j].dataId){
               let repvalue = this.paramInfoArr[j].inputType == "textinp"?this.paramInfoArr[j].dataDefaultVal:this.paramInfoArr[j].inputType == "lineinp"?(Array.isArray(this.paramListValueList[j])?this.paramListValueList[j].join(','):this.paramListValueList[j]):this.paramInfoArr[j].inputType == "treeinp"?(Array.isArray(this.paramTreeValueList[j])?this.paramTreeValueList[j].join(','):this.paramTreeValueList[j]):this.paramInfoArr[j].dataDefaultVal
-              if(this.paramInfoArr[j].dataType != "int" && this.paramInfoArr[j].inputType != "lineinp"){
+              if(this.paramInfoArr[j].dataType != "int" && this.paramInfoArr[j].inputType != "lineinp" && this.paramInfoArr[j].inputType != "treeinp"){
                 if(repvalue!=undefined && repvalue!=''){
                   repvalue = "'" + repvalue + "'"
                 }else{
