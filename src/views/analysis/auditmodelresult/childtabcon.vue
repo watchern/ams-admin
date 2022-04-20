@@ -1248,7 +1248,7 @@ export default {
     }
     this.getRenderTableData();
     this.chartReflexion();
-    this.getSuspectsMainData();
+    // this.getSuspectsMainData();
     //this.getSuspectssecondaryData();
     this.getProjectlist();
     // this.getTaglist();
