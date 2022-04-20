@@ -106,16 +106,20 @@ export default {
             "paramsArr":paramsArr
           }
         }).then(result => {
-          let list = []
-          for(let i =0;i<result.data.paramList.length;i++){
-            list.push(
-              {
-                name:result.data.paramList[i].paramName,
-                value:result.data.paramList[i].paramValue
-              }
-            )
+          if(result.isError == true){
+            this.$message({type: 'error', message: result.message})
+          }else{
+            let list = []
+            for(let i =0;i<result.data.paramList.length;i++){
+              list.push(
+                {
+                  name:result.data.paramList[i].paramName,
+                  value:result.data.paramList[i].paramValue
+                }
+              )
+            }
+            this.paramInfoArr[ind].data = list
           }
-          this.paramInfoArr[ind].data = list
         })
       }
       
