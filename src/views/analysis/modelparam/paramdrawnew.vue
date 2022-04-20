@@ -106,8 +106,8 @@ export default {
             "paramsArr":paramsArr
           }
         }).then(result => {
-          if(result.isError == true){
-            this.$message({type: 'error', message: result.message})
+          if(result.data.isError == true){
+            this.$message({type: 'error', message: result.data.message})
           }else{
             let list = []
             for(let i =0;i<result.data.paramList.length;i++){
