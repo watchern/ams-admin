@@ -280,12 +280,13 @@
         </el-collapse>
       </el-tab-pane>
     </el-tabs>
-    <modelshoppingcart
+    <!-- 大亚湾注掉 -->
+    <!-- <modelshoppingcart
       :data-user-id="dataUserId"
       :scene-code="sceneCode"
       v-show="isShowShoppingCart"
       ref="modelShoppingCartRef"
-    />
+    /> -->
     <el-dialog
       v-if="treeSelectShow"
       :close-on-click-modal="false"
@@ -689,7 +690,8 @@ export default {
   },
   methods: {
     startrun(){
-      this.$refs.modelShoppingCartRef.runImmediately()
+      //大亚湾注掉
+      // this.$refs.modelShoppingCartRef.runImmediately()
     },
     setImportFolder() {
       let selectNode = this.$refs.modelFolderTree.getSelectNode();
@@ -1102,7 +1104,8 @@ export default {
 
         if (this.isAuditWarning != true) {
           this.isShowShoppingCart = true;
-          this.$refs.modelShoppingCartRef.setMemo(selectObj);
+          //大亚湾注掉
+          // this.$refs.modelShoppingCartRef.setMemo(selectObj);
         }
         // 因长度为1 直接使用selectObj[0] 不遍历
         var modelFolderPath = selectObj[0].modelFolderPath;
@@ -1156,7 +1159,8 @@ export default {
         };
         if (this.isAuditWarning != true) {
           this.isShowShoppingCart = true;
-          this.$refs.modelShoppingCartRef.setMemo(selectObj);
+          //大亚湾注掉
+          // this.$refs.modelShoppingCartRef.setMemo(selectObj);
         }
         // 遍历判断 以最小权限的模型为参考
         for (var i = 0; i < selectObj.length; i++) {
