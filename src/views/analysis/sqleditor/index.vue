@@ -1325,16 +1325,18 @@ export default {
       }
       this.isAllExecute = result.isAllExecute;
       this.loadText = "正在检验SQL是否符合语法规范...";
-      verifySql().then((result) => {
+      //大亚湾跳过校验
+      // verifySql().then((result) => {
         this.executeLoading = false;
         this.loadText = "";
-        if (!result.data.verify) {
-          this.$message({
-            type: "info",
-            message: "SQL不符合语法规范，请重新输入",
-          });
-          return;
-        }
+        //大亚湾跳过校验
+        // if (!result.data.verify) {
+        //   this.$message({
+        //     type: "info",
+        //     message: "SQL不符合语法规范，请重新输入",
+        //   });
+        //   return;
+        // }
         this.resultShow = []; // 清空数据展示对象
         isAllExecuteSuccess = false;
         currentExecuteProgress = 0;
@@ -1345,7 +1347,7 @@ export default {
         obj.modelResultSavePathId = this.modelResultSavePathId;
         obj.pushUuid = this.pushUuid;
         callback(obj)
-      });
+      // });
     },
     /**
      * 打开参数渲染窗体
@@ -1456,15 +1458,17 @@ export default {
       this.isAllExecute = result.isAllExecute;
       this.executeLoading = true;
       this.loadText = "正在校验sql是否符合语法规范...";
-      verifySql().then((verSqlResult) => {
+      //大亚湾跳过校验
+      // verifySql().then((verSqlResult) => {
         this.executeLoading = false;
-        if (!verSqlResult.data.verify) {
-          this.$message({
-            type: "info",
-            message: "SQL不符合语法规范，请重新输入",
-          });
-          return;
-        }
+        //大亚湾跳过校验
+        // if (!verSqlResult.data.verify) {
+        //   this.$message({
+        //     type: "info",
+        //     message: "SQL不符合语法规范，请重新输入",
+        //   });
+        //   return;
+        // }
         this.resultShow = []; // 清空数据展示对象
         isAllExecuteSuccess = false;
         currentExecuteProgress = 0;
@@ -1489,7 +1493,7 @@ export default {
             this.executeLoading = false;
             this.loadText = "";
           });
-      });
+      // });
     },
     /**
      * 获取sql编辑器里的slq是否被修改
@@ -1507,9 +1511,10 @@ export default {
     /**
      * 接口：获取SQL的验证结果
      */
-    async getVerifySqlResult() {
-      return await verifySql();
-    },
+    // async getVerifySqlResult() {
+    //大亚湾跳过校验
+    //   return await verifySql();
+    // },
     /**
      * 查看表关联信息
      */

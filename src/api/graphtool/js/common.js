@@ -1360,8 +1360,9 @@ export function sqlNodeEdit() {
 
 export async function sqlNodeEdit_callBack() {
     let callFun = async function (obj) {
-        let response = await graphIndexVue.$refs.sqlEditor.getVerifySqlResult()
-        if (response.data.verifySelect) {
+        //大亚湾跳过校验
+        // let response = await graphIndexVue.$refs.sqlEditor.getVerifySqlResult()
+        // if (response.data.verifySelect) {
             graphIndexVue.sqlEditorDialogVisible = false
             graph.nodeData[graph.curCell.id].isSet = true
             graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus = 1
@@ -1386,9 +1387,9 @@ export async function sqlNodeEdit_callBack() {
             }
             // 自动保存图形化
             autoSaveGraph()
-        } else {
-            graphIndexVue.$refs.sqlEditor.$message({ "type": "warning", "message": "最末句SQL不是SELECT查询语句，请修改" })
-        }
+        // } else {
+        //     graphIndexVue.$refs.sqlEditor.$message({ "type": "warning", "message": "最末句SQL不是SELECT查询语句，请修改" })
+        // }
     }
     var returnObj = await graphIndexVue.$refs.sqlEditor.saveSqlInfo()
     if (returnObj.isError) {

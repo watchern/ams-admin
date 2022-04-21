@@ -93,7 +93,6 @@ export default {
                 id:info.paramConditionList[i].relationParamId,
                 paramValue:repvalue,
                 useQuotation:this.paramInfoArr[j].useQuotation,
-                example:this.paramInfoArr[j].example,
               })
             }
           }

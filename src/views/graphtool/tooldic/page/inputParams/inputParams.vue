@@ -12,18 +12,20 @@
                         <el-col :span="15">
                             <!-- <div ref="selectParam" :index="ind" v-if="paramInfo.inputType === 'lineinp'" :id="paramInfo.id" :title="paramInfo.title" :nodeId="nodeParamInfo.nodeId" class="xm-select-demo"></div> -->
                             <!-- 下拉列表类型 -->
-                            <el-select v-model="paramListValueList[ind]" ref="selectParam"  style="width: 100%;" v-if="paramInfo.inputType === 'lineinp' " 
+                            <el-select @change="changeRelationParam(index,ind)" @click.native="changeparamdata(index,paramInfo,ind)" v-model="paramListValueList[ind]" ref="selectParam"  style="width: 100%;" v-if="paramInfo.inputType === 'lineinp' " 
                                 :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable>
-                                <el-option v-for="item in paramInfo.data" :value="paramInfo.dataType == 'str' ? `'`+ item.value + `'`: item.value" :label="item.name" :key="item.value" >
+                                <el-option v-for="(item,i) in paramInfo.data" :value="paramInfo.dataType == 'str' ? `'`+ item.value + `'`: item.value" :label="item.name" :key="'oplist'+i" >
                                 <span style="float: left"> {{ item.name }}</span>
                                 <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value == item.name ? "" : item.value}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
                                 </el-option>
                             </el-select>
-                            <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.value" class="textParam"></el-input>
-                            <el-date-picker ref="paramOption" :index="ind"  v-if="paramInfo.inputType === 'timeinp'" :title="paramInfo.title" type="date" placeholder="选择日期" v-model="paramInfo.value" style="width: 100%;" value-format="yyyy-MM-dd"></el-date-picker>
+                            <el-input @change="changeRelationParam(index,ind)" @click.native="changeparamdata(index,paramInfo,ind)" ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.value" class="textParam"></el-input>
+                            <el-date-picker @change="changeRelationParam(index,ind)" @click.native="changeparamdata(index,paramInfo,ind)" ref="paramOption" :index="ind"  v-if="paramInfo.inputType === 'timeinp'" :title="paramInfo.title" type="date" placeholder="选择日期" v-model="paramInfo.value" style="width: 100%;" value-format="yyyy-MM-dd"></el-date-picker>
                             <!-- <div ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title" :nodeId="nodeParamInfo.nodeId" class="xm-select-demo"></div> -->
                             <!-- 树类型参数 -->
                             <el-cascader
+                                @change="changeRelationParam(index,ind)"
+                                @click.native="changeparamdata(index,paramInfo,ind)"
                                 v-model="paramTreeValueList[ind]"
                                 v-if="paramInfo.inputType === 'treeinp'"
                                 style="width:100%"
@@ -44,6 +46,7 @@
 </template>
 
 <script>
+    import request from '@/utils/request'
     import '@/components/ams-loading/css/loading.css'
     import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams  } from '@/api/graphtool/apiJs/graphList'
     import * as paramCommonJs from '@/api/graphtool/js/paramCommon'
@@ -62,6 +65,77 @@
         },
         props:["nodeData","nodeIdArr"],
         methods:{
+            //图形化兼容参数条件
+            changeparamdata(index,info,ind){
+              let paramsArr = []
+              if(info.paramConditionList.length>0){
+                console.log('有关联关系')
+                console.log(info.paramConditionList)
+                for(let i = 0; i<info.paramConditionList.length;i++){
+                    console.log("=====")
+                  for(let j =0;j<this.nodeParamInfoArr[index].paramInfoArr.length;j++){
+                    if(info.paramConditionList[i].relationParamId == this.nodeParamInfoArr[index].paramInfoArr[j].dataId){
+                      console.log(j)
+                      console.log(this.nodeParamInfoArr[index].paramInfoArr[j])
+                      let repvalue = this.nodeParamInfoArr[index].paramInfoArr[j].inputType == "textinp"?this.nodeParamInfoArr[index].paramInfoArr[j].value:this.nodeParamInfoArr[index].paramInfoArr[j].inputType == "lineinp"?(Array.isArray(this.paramListValueList[j])?this.paramListValueList[j].join(','):this.paramListValueList[j]):this.nodeParamInfoArr[index].paramInfoArr[j].inputType == "treeinp"?(Array.isArray(this.paramTreeValueList[j])?this.paramTreeValueList[j].join(','):this.paramTreeValueList[j]):this.nodeParamInfoArr[index].paramInfoArr[j].value
+                      if(this.nodeParamInfoArr[index].paramInfoArr[j].dataType != "int" && this.nodeParamInfoArr[index].paramInfoArr[j].inputType != "lineinp" && this.nodeParamInfoArr[index].paramInfoArr[j].inputType != "treeinp"){
+                        if(repvalue!=undefined && repvalue!=''){
+                          repvalue = "'" + repvalue + "'"
+                        }else{
+                          repvalue = ""
+                        }
+                      }
+                      paramsArr.push({
+                        id:info.paramConditionList[i].relationParamId,
+                        paramValue:repvalue,
+                        useQuotation:this.nodeParamInfoArr[index].paramInfoArr[j].useQuotation,
+                      })
+                    }
+                  }
+                }
+                request({
+                  baseURL: '/analysis',
+                  url: '/paramConditionController/getParamConditionSqlResult',
+                  method: 'post',
+                  data:{
+                    "paramId":info.dataId,
+                    "paramsArr":paramsArr
+                  }
+                }).then(result => {
+                  if(result.data.isError == true){
+                    this.$message({type: 'error', message: result.data.message})
+                  }else{
+                    let list = []
+                    for(let i =0;i<result.data.paramList.length;i++){
+                      list.push(
+                        {
+                          name:result.data.paramList[i].paramName,
+                          value:result.data.paramList[i].paramValue
+                        }
+                      )
+                    }
+                    this.nodeParamInfoArr[index].paramInfoArr[ind].data = list
+                  }
+                })
+              }
+            },
+            async changeRelationParam(index,ind){
+              for(let i=0;i<this.nodeParamInfoArr[index].paramInfoArr.length;i++){
+                if(this.nodeParamInfoArr[index].paramInfoArr[i].paramConditionList){
+                  //找到被关联参数
+                  for(let j =0;j<this.nodeParamInfoArr[index].paramInfoArr[i].paramConditionList.length;j++){
+                    if(this.nodeParamInfoArr[index].paramInfoArr[i].paramConditionList[j].relationParamId == this.nodeParamInfoArr[index].paramInfoArr[ind].dataId){
+                      if(this.nodeParamInfoArr[index].paramInfoArr[i].selectNum==1){
+                        this.paramListValueList[i] = []
+                      }else{
+                        this.paramListValueList[i] = ''
+                      }
+                      this.$forceUpdate() 
+                    }
+                  }
+                }
+              }
+            },
             /**
              * 组织所有待执行节点队列中有参数设置的节点的HTML
              * @author JL
@@ -133,7 +207,10 @@
                             let paramInfoObj = {
                                 "paramName": copyParamArr[k].paramName,
                                 "description": '（参数说明：无）',
-                                "inputType": copyParamArr[k].inputType//参数类型
+                                "inputType": copyParamArr[k].inputType,//参数类型
+                                "useQuotation":copyParamArr[k].useQuotation,
+                                "example":copyParamArr[k].example,
+                                "paramConditionList":copyParamArr[k].paramConditionList,
                             }
                             if (typeof copyParamArr[k].description !== 'undefined' && copyParamArr[k].description != null) {
                                 paramInfoObj.description = '（参数说明：' + copyParamArr[k].description + '）'
