@@ -112,14 +112,16 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-form-item label="示例" prop="example">
+          <el-form-item label="默认值" prop="example">
             <el-input
               name="example"
               id="example"
               v-model="form.example"
               autocomplete="off"
-              placeholder="示例"
+              placeholder="默认值"
+              :disabled="!(form.inputType!='lineinp'&&form.inputType!='treeinp')"
             />
+            <!-- :disabled="form.inputType!=''&&" -->
           </el-form-item>
         </el-row>
         <el-row>
@@ -646,7 +648,6 @@ export default {
         inputType: [
           { required: true, message: "请输入输入方式", trigger: "blur" },
         ],
-        example: [{ required: true, message: "请输入示例", trigger: "blur" }],
       },
       relevancerules: {
         slaveParamName: [
@@ -1141,7 +1142,7 @@ export default {
       var paramName = this.form.paramName;
       var dataType = this.form.dataType;
       var inputType = this.form.inputType;
-      var example = this.form.example;
+      var example = (this.form.inputType!='lineinp'&&this.form.inputType!='treeinp')?this.form.example:'';
       var dataLength = this.form.dataLength;
       var ammParamTypeUuid = this.form.paramName;
       var description = this.form.description;
@@ -1173,9 +1174,6 @@ export default {
         return;
       } else if (inputType === "") {
         this.$message({ type: "info", message: "输入类型不能为空!" });
-        return;
-      } else if (example === "") {
-        this.$message({ type: "info", message: "示例不能为空!" });
         return;
       }
 
@@ -1257,7 +1255,7 @@ export default {
       var paramName = this.form.paramName;
       var dataType = this.form.dataType;
       var inputType = this.form.inputType;
-      var example = this.form.example;
+      var example = (this.form.inputType!='lineinp'&&this.form.inputType!='treeinp')?this.form.example:'';
       var dataLength = this.form.dataLength;
       var ammParamTypeUuid = this.form.paramName;
       var description = this.form.description;
@@ -1291,9 +1289,6 @@ export default {
         return;
       } else if (inputType === "") {
         this.$message({ type: "info", message: "输入类型不能为空!" });
-        return;
-      } else if (example === "") {
-        this.$message({ type: "info", message: "示例不能为空!" });
         return;
       }
 

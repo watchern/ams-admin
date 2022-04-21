@@ -92,7 +92,8 @@ export default {
               paramsArr.push({
                 id:info.paramConditionList[i].relationParamId,
                 paramValue:repvalue,
-                useQuotation:this.paramInfoArr[j].useQuotation
+                useQuotation:this.paramInfoArr[j].useQuotation,
+                example:this.paramInfoArr[j].example,
               })
             }
           }
@@ -237,15 +238,18 @@ export default {
               //   }
               // }
               // 默认值赋值
-              if (this.arr[j].defaultVal) {
+              paramsArr[k].defaultVal = paramsArr[k].example
+              if (this.arr[j].defaultVal || this.arr[j].defaultVal!='') {
                 paramsArr[k].defaultVal = this.arr[j].defaultVal
               }
               this.arr[j].useQuotation = paramsArr[k].useQuotation
+              this.arr[j].example = paramsArr[k].example
               copyParamArr.push(paramsArr[k])
               moduleParamArr.push(moduleParamId)
               // break
             }else if(moduleParamId === this.arr[j].moduleParamId){
               this.arr[j].useQuotation = paramsArr[k].useQuotation
+              this.arr[j].example = paramsArr[k].example
             }
           }
         }
@@ -264,6 +268,7 @@ export default {
           "inputType": copyParamArr[n].inputType,//参数类型
           "masterparam": copyParamArr[n].paramRelationList[0],
           "useQuotation":copyParamArr[n].useQuotation,
+          "example":copyParamArr[n].example,
           "paramConditionList":copyParamArr[n].paramConditionList,
         }
         if (typeof copyParamArr[n].description !== 'undefined' && copyParamArr[n].description != null) {
