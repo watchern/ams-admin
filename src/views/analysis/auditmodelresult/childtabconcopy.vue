@@ -769,7 +769,9 @@ export default {
                 this.primaryKey = resp.data;
                 selectModel(this.modelUuid).then((resp) => {
                   this.modelDetailRelation = resp.data.modelDetailRelation;
-                  this.modelOutputColumn = resp.data.modelOutputColumn;
+                  //大亚湾不启用modelOutputColumn
+                  // this.modelOutputColumn = resp.data.modelOutputColumn;
+                  this.modelOutputColumn = []
                   var datacodes = [];
                   for (var i = 0; i < this.modelOutputColumn.length; i++) {
                     if (this.modelOutputColumn[i].dataCoding != undefined) {

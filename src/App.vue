@@ -59,4 +59,9 @@ export default {
   -webkit-overflow-scrolling: touch;
   outline: 0;
 }
+.bjbutton{
+  background-color:rgb(225, 243, 216);
+  color:rgb(103, 194, 58);
+  border:1px solid rgb(103, 194, 58);
+}
 </style>

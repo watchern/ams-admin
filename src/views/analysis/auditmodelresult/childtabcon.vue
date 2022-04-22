@@ -2315,7 +2315,9 @@ export default {
                       }
                     }
                   }
-                  var modelOutputColumn = resp.data.modelOutputColumn;
+                  //大亚湾不启用modelOutputColumn
+                  // var modelOutputColumn = resp.data.modelOutputColumn;
+                  var modelOutputColumn = []
                   let modelResultDetailCol = [];
                   if (resp.data.modelDetailRelation) {
                     //循环模型详细关联
@@ -2826,7 +2828,9 @@ export default {
               selectModel(this.modelUuid).then((resp) => {
                 this.modelObj = resp.data;
                 this.modelDetailRelation = resp.data.modelDetailRelation;
-                this.modelOutputColumn = resp.data.modelOutputColumn;
+                //大亚湾不启用modelOutputColumn
+                // this.modelOutputColumn = resp.data.modelOutputColumn;
+                this.modelOutputColumn = []
                 var datacodes = [];
                 for (var i = 0; i < this.modelOutputColumn.length; i++) {
                   if (this.modelOutputColumn[i].dataCoding != undefined) {

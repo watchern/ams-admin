@@ -45,6 +45,10 @@ var sqlZtreeObj
  */
 var paramZtree
 /**
+ * 标记树对象
+ */
+var bjZtreeObj
+/**
  * 当前窗体路径
  * @type {string | null | string}
  */
@@ -137,7 +141,7 @@ var isFirst = 0
 
 let sqlEditorVue = null
 
-export const sendSqlEditorVue = ( (this_) => {
+export const sendSqlEditorVue = ((this_) => {
   sqlEditorVue = this_
 })
 
@@ -184,10 +188,10 @@ export function initDragAndDrop() {
   // var left_min = container.clientWidth*0.2
   // var right_max = rightContent.offsetWidth*0.5
   var iT = 0
-  vertical.onmousedown = function(e) {
+  vertical.onmousedown = function (e) {
     var disX = (e || event).clientX
     the_left_all()
-    document.onmousemove = function(e) {
+    document.onmousemove = function (e) {
       var e = e || window.event
       var tarnameb = e.target || e.srcElement
       vertical.style.margin = 0
@@ -200,7 +204,7 @@ export function initDragAndDrop() {
       rightContent.style.width = (container.clientWidth - iT + 76 + tz_path) / container.clientWidth * 100 + '%'
       return false
     }
-    document.onmouseup = function() {
+    document.onmouseup = function () {
       document.onmousemove = null
       document.onmouseup = null
       vertical.releaseCapture && vertical.releaseCapture()
@@ -212,7 +216,7 @@ export function initDragAndDrop() {
   // 单击侧边按钮收起左边栏
   function tree_zy_zhan() {
     var overWidth = document.getElementById('container').clientWidth - 229
-    if (tree_shuju == false && tree_canshu == false && tree_sql == false) {
+    if (tree_shuju == false && tree_canshu == false && tree_sql == false && tree_bj == false) {
       $('#leftPart').stop(true).animate({ 'width': 203 }, 300)
       $('#vertical').delay(300).fadeIn(100).css('left', 11.5 + '%')
       $('#rightPart').stop(true).animate({ 'width': overWidth + 'px', 'left': 0 }, 300)
@@ -222,7 +226,7 @@ export function initDragAndDrop() {
 
   function tree_zy_zhanhe() {
     var overWidth = document.getElementById('container').clientWidth - 34
-    if (tree_shuju == false && tree_canshu == false && tree_sql == false) {
+    if (tree_shuju == false && tree_canshu == false && tree_sql == false && tree_bj == false) {
       $('#vertical').fadeOut(100)
       $('#leftPart').delay(100).stop(true).animate({ 'width': 0 }, 300)
       $('#rightPart').delay(100).stop(true).animate({ 'width': overWidth + 'px', 'left': 15 }, 300)
@@ -235,17 +239,21 @@ export function initDragAndDrop() {
     $('.left-dataTree').fadeOut(0)
     $('.left-paramTree').fadeOut(0)
     $('.left-sqlFunTree').fadeOut(0)
+    $('.left-bjTree').fadeOut(0)
     tree_shuju = false
     tree_canshu = false
     tree_sql = false
+    tree_bj = false
   }
   // 分别显示隐藏三个表
   var tree_shuju = true
   var tree_canshu = false
   var tree_sql = false
+  var tree_bj = false
   $('.left-paramTree').fadeOut(300)
   $('.left-sqlFunTree').fadeOut(300)
-  $('.unfold-shuju').on('click', function() {
+  $('.left-bjTree').fadeOut(300)
+  $('.unfold-shuju').on('click', function () {
     if (tree_shuju == true) {
       $('.left-dataTree').fadeOut(300)
       $(this).removeClass('add-sidiv')
@@ -259,7 +267,7 @@ export function initDragAndDrop() {
       tree_shuju = true
     }
   })
-  $('.unfold-canshu').on('click', function() {
+  $('.unfold-canshu').on('click', function () {
     if (tree_canshu == true) {
       $('.left-paramTree').fadeOut(300)
       $(this).removeClass('add-sidiv')
@@ -273,7 +281,7 @@ export function initDragAndDrop() {
       tree_canshu = true
     }
   })
-  $('.unfold-sql').on('click', function() {
+  $('.unfold-sql').on('click', function () {
     if (tree_sql == true) {
       $('.left-sqlFunTree').fadeOut(300)
       $(this).removeClass('add-sidiv')
@@ -287,17 +295,31 @@ export function initDragAndDrop() {
       tree_sql = true
     }
   })
+  $('.unfold-bj').on('click', function () {
+    if (tree_bj== true) {
+      $('.left-bjTree').fadeOut(300)
+      $(this).removeClass('add-sidiv')
+      tree_bj = false
+      tree_zy_zhanhe()
+    } else if (tree_bj == false) {
+      tree_zy_zhan()
+      tree_zy_all()
+      $('.left-bjTree').fadeIn(300)
+      $(this).addClass('add-sidiv')
+      tree_bj = true
+    }
+  })
 
   // 实现上下拖拽改变大小
   var rightPart = document.getElementById('rightPart')
   var topPart = document.getElementById('sqlEditorDiv')
   var bottomPart = document.getElementById('bottomPart')
   var horizontal = document.getElementById('horizontal')
-  horizontal.onmousedown = function(e) {
+  horizontal.onmousedown = function (e) {
     var disY = (e || event).clientY
     horizontal.top = horizontal.offsetTop
     var grids = $('.ui-jqgrid-bdiv').eq(0)[0]
-    document.onmousemove = function(e) {
+    document.onmousemove = function (e) {
       var iT = horizontal.top + ((e || event).clientY - disY)
       var e = e || window.event; var tarnameb = e.target || e.srcElement
       var maxT = (rightPart.clientHeight == 0 ? rightPart.scrollHeight : rightPart.clientHeight) - horizontal.offsetHeight
@@ -313,7 +335,7 @@ export function initDragAndDrop() {
       }
       return false
     }
-    document.onmouseup = function() {
+    document.onmouseup = function () {
       document.onmousemove = null
       document.onmouseup = null
       horizontal.releaseCapture && horizontal.releaseCapture()
@@ -343,7 +365,7 @@ export function initVariable() {
  * 初始化事件
  */
 export function initEvent() {
-  $('body').mousemove(function(e) {
+  $('body').mousemove(function (e) {
     e = e || window.event
     var scroolX = document.documentElement.scrollLeft || document.body.scrollLeft
     var scroolY = document.documentElement.scrollTop || document.body.scrollTop
@@ -375,20 +397,20 @@ export function initSQLEditor(textarea, relTableMap, expTableMap) {
     }
   })
   // 输入时事件cursorActivity
-  editor.on('cursorActivity', function(cm) { // 光标活动
+  editor.on('cursorActivity', function (cm) { // 光标活动
     if (cm.curOp.focus === false) {
       initHint(editor)
     }
     $('span').removeClass('errorHighlight')
   })
-  editor.on('beforeChange', function(instance, changeObj) { // 改变之前
+  editor.on('beforeChange', function (instance, changeObj) { // 改变之前
     if (changeObj.origin === 'paste' && isFirstPaste) { // 第一次粘贴？？？
       cursor = editor.getCursor() // 获取光标
       checkSqlText = editor.getRange({ ch: 0, line: cursor.line }, { ch: cursor.ch, line: cursor.line })// 光标范围
       isFirstPaste = false
     }
   })
-  editor.on('change', function(instance, changeObj) {
+  editor.on('change', function (instance, changeObj) {
     // 如果第一次加载不做任何校验
     if (isFirst != 0) {
       isUpdate = true
@@ -470,13 +492,13 @@ export function initHint(editor) {
   var cur = editor.getCursor()
   var words = editor.getTokenAt(cur).string
   var shieldString = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')',
-    ' ', ',', '-', '_', '=', '+', '-', '/', ';', '{', '}','\'','\'\'','\'\'\'','|','\\','<','>']
+    ' ', ',', '-', '_', '=', '+', '-', '/', ';', '{', '}', '\'', '\'\'', '\'\'\'', '|', '\\', '<', '>']
   // 如果用户输入空格，则退回
   if ($.trim(words) === '') {
     return
   }
   //判断是否拖拽参数进来，如果是拖拽参数进来则不显示
-  if(words.indexOf("{#") != -1 && words.indexOf("#}") != -1){
+  if (words.indexOf("{#") != -1 && words.indexOf("#}") != -1) {
     return
   }
   if (shieldString.indexOf(words) != -1) {
@@ -499,7 +521,7 @@ export function initHint(editor) {
 export function completeAfter(cm, pred) {
   var cur = cm.getCursor()
   if (!pred || pred()) {
-    setTimeout(function() {
+    setTimeout(function () {
       if (!cm.state.completionActive) {
         cm.showHint({
           completeSingle: false
@@ -549,7 +571,7 @@ export function initTableTree(result) {
     },
     callback: {
       onDrop: onDrop,
-      beforeDrag: function(treeId, treeNodes) {
+      beforeDrag: function (treeId, treeNodes) {
         // 如果是表，视图或者列则允许拖动 否则不可以
         if (treeNodes[0] && (treeNodes[0].type === 'table' || treeNodes[0].type === 'view' || treeNodes[0].type === 'datasource' || treeNodes[0].type === 'column')) {
           return true
@@ -557,7 +579,7 @@ export function initTableTree(result) {
           return false
         }
       },
-      onRightClick: function(event, treeId, treeNode) {
+      onRightClick: function (event, treeId, treeNode) {
         if (!treeNode) {
           return false
         }
@@ -588,7 +610,7 @@ export function initTableTree(result) {
           return false
         }
       },
-      onExpand: function(event, treeId, treeNode) {
+      onExpand: function (event, treeId, treeNode) {
         if ((!treeNode.children || treeNode.children.length === 0) && treeNode.type === 'table' || treeNode.type === 'view' || treeNode.type === 'datasource') {
           zTreeObj.removeChildNodes(treeNode)
           var tableName = treeNode.name
@@ -597,7 +619,7 @@ export function initTableTree(result) {
             baseURL: dataUrl,
             url: '/tableMeta/getCols',
             method: 'post',
-            params: { tableMetaUuid: tableMetaUuid, isEnclose:"1"  }
+            params: { tableMetaUuid: tableMetaUuid, isEnclose: "1" }
           }).then(result => {
             if (result.data == null) {
               this.$message({
@@ -620,7 +642,7 @@ export function initTableTree(result) {
                     'open': false,
                     'type': 'column',
                     'icon': columnIconPath,
-                    'enName':result.data[i].colName
+                    'enName': result.data[i].colName
                   }
                   nodeList.push(node)
                 } else {
@@ -636,7 +658,7 @@ export function initTableTree(result) {
                     'open': false,
                     'type': 'column',
                     'icon': columnIconPath,
-                    'enName':result.data[i].colName
+                    'enName': result.data[i].colName
                   }
                   nodeList.push(node)
                   editorObj.options.hintOptions.tablesTitle[result.data[i].colName] = result.data[i].chnName
@@ -678,7 +700,7 @@ export function initTableTree(result) {
     if (result.data[i].type === 'table') {
       result.data[i].icon = tableIconPath
       result.data[i].enName = result.data[i].name;
-      if(result.data[i].nameCn){
+      if (result.data[i].nameCn) {
         // result.data[i].name = result.data[i].name + "(" + result.data[i].nameCn + ")"
         result.data[i].name = result.data[i].nameCn
       }
@@ -687,7 +709,7 @@ export function initTableTree(result) {
       result.data[i].icon = viewIconPath
       result.data[i].isParent = true
       result.data[i].enName = result.data[i].name;
-      if(result.data[i].nameCn){
+      if (result.data[i].nameCn) {
         // result.data[i].name = result.data[i].name + "(" + result.data[i].nameCn + ")"
         result.data[i].name = result.data[i].nameCn
       }
@@ -738,7 +760,7 @@ export function refushTableTree(treeNodes) {
     },
     callback: {
       onDrop: onDrop,
-      beforeDrag: function(treeId, treeNodes) {
+      beforeDrag: function (treeId, treeNodes) {
         // 如果是表，视图或者列则允许拖动 否则不可以
         if (treeNodes[0] && (treeNodes[0].type === 'table' || treeNodes[0].type === 'view' || treeNodes[0].type === 'datasource' || treeNodes[0].type === 'column')) {
           return true
@@ -746,7 +768,7 @@ export function refushTableTree(treeNodes) {
           return false
         }
       },
-      onRightClick: function(event, treeId, treeNode) {
+      onRightClick: function (event, treeId, treeNode) {
         if (!treeNode) {
           return false
         }
@@ -777,7 +799,7 @@ export function refushTableTree(treeNodes) {
           return false
         }
       },
-      onExpand: function(event, treeId, treeNode) {
+      onExpand: function (event, treeId, treeNode) {
         if ((!treeNode.children || treeNode.children.length === 0) && treeNode.type === 'table' || treeNode.type === 'view' || treeNode.type === 'datasource') {
           zTreeObj.removeChildNodes(treeNode)
           var tableName = treeNode.name
@@ -789,7 +811,7 @@ export function refushTableTree(treeNodes) {
               baseURL: dataUrl,
               url: '/tableMeta/getCols',
               method: 'post',
-              params: { tableMetaUuid: tableMetaUuid, isEnclose:"1" }
+              params: { tableMetaUuid: tableMetaUuid, isEnclose: "1" }
             }).then(result => {
               if (result.data == null) {
                 this.$message({
@@ -810,7 +832,7 @@ export function refushTableTree(treeNodes) {
                   CodeMirror.tableColMapping[tableName] = columns
                   editorObj.options.hintOptions.tables[tableName] = columns
                   var nodeList = []
-                  $(columns).each(function() {
+                  $(columns).each(function () {
                     var node = {
                       'id': tableName + '_' + this,
                       'name': this.toString(),
@@ -829,7 +851,7 @@ export function refushTableTree(treeNodes) {
             })
           } else {
             var nodeList = []
-            $(columns).each(function() {
+            $(columns).each(function () {
               var node = {
                 'id': tableName + '_' + this,
                 'name': this.toString(),
@@ -957,7 +979,7 @@ export function initParamTree() {
       selectedMulti: false
     },
     callback: {
-      onDrop: function(event, treeId, treeNodes) {
+      onDrop: function (event, treeId, treeNodes) {
         // 这是存放参数的数组
         var arr = new Array()
         var selText = editorObj.getSelection()
@@ -1006,14 +1028,14 @@ export function initParamTree() {
         }
         paramDivArr.push(divBtnObj)
       },
-      beforeDrag: function(treeId, treeNodes) {
+      beforeDrag: function (treeId, treeNodes) {
         // 如果是参数 允许拖动 否则不可以
         var thisNode = treeNodes[0]
         if (thisNode.type !== 'paramNode') {
           return false
         }
       },
-      onRightClick: function(event, treeId, treeNode) {
+      onRightClick: function (event, treeId, treeNode) {
         if (!treeNode) {
           return false
         }
@@ -1032,7 +1054,7 @@ export function initParamTree() {
           }
         }
       },
-      onExpand: function(event, treeId, treeNode) {
+      onExpand: function (event, treeId, treeNode) {
         if (!treeNode.children || treeNode.children.length === 0) {
           loadParamChildrenNodes(treeNode)
         }
@@ -1087,7 +1109,7 @@ export function initParamTreeNew() {
       selectedMulti: false
     },
     callback: {
-      onDrop: function(event, treeId, treeNodes) {
+      onDrop: function (event, treeId, treeNodes) {
         // 这是存放参数的数组
         var arr = new Array()
         var selText = editorObj.getSelection()
@@ -1136,16 +1158,15 @@ export function initParamTreeNew() {
         }
         paramDivArr.push(divBtnObj)
         $('#modelDesign').data(paramObj)
-        // console.log($('#modelDesign').data())
       },
-      beforeDrag: function(treeId, treeNodes) {
+      beforeDrag: function (treeId, treeNodes) {
         // 如果是参数 允许拖动 否则不可以
         var thisNode = treeNodes[0]
         if (thisNode.type !== 'param') {
           return false
         }
       },
-      onRightClick: function(event, treeId, treeNode) {
+      onRightClick: function (event, treeId, treeNode) {
         if (!treeNode) {
           return false
         }
@@ -1165,12 +1186,12 @@ export function initParamTreeNew() {
           return false
         }
       },
-      onExpand: function(event, treeId, treeNode) {
+      onExpand: function (event, treeId, treeNode) {
         $('#paramfolderdatabox').val(treeNode)
         console.log(treeNode)
-/*        if (!treeNode.children || treeNode.children.length === 0) {
-          loadParamChildrenNodes(treeNode)
-        }*/
+        /*        if (!treeNode.children || treeNode.children.length === 0) {
+                  loadParamChildrenNodes(treeNode)
+                }*/
       }
     },
     edit: {
@@ -1188,7 +1209,7 @@ export function initParamTreeNew() {
     if (result.data.isError) {
 
     } else {
-      for(let i = 0; i < result.data.paramNode.length;i++) {
+      for (let i = 0; i < result.data.paramNode.length; i++) {
         setIcon(result.data.paramNode[i])
       }
       paramZtree = $.fn.zTree.init($('#paramTree'), paramSetting, result.data.paramNode)
@@ -1200,22 +1221,22 @@ export function initParamTreeNew() {
  * 递归设置参数相关信息
  * @param treeNode 节点
  */
-function setIcon(treeNode){
-    if(typeof (treeNode.children) !== 'undefined' && treeNode.children.length > 0 && treeNode.type == "folder"){
-      for(let i = 0; i < treeNode.children.length;i++){
-        setIcon(treeNode.children[i])
-      }
-    }else{
-      if(treeNode.type == 'param'){
-        //删除Children 防止出现展开伸缩箭头
-        delete treeNode.children;
-        treeNode.icon = paramIconPath
-        treeNode.isParent = false
-      }
-      else if(treeNode.type == 'folder'){
-        treeNode.icon = paramPackageIconPath;
-      }
+function setIcon(treeNode) {
+  if (typeof (treeNode.children) !== 'undefined' && treeNode.children.length > 0 && treeNode.type == "folder") {
+    for (let i = 0; i < treeNode.children.length; i++) {
+      setIcon(treeNode.children[i])
     }
+  } else {
+    if (treeNode.type == 'param') {
+      //删除Children 防止出现展开伸缩箭头
+      delete treeNode.children;
+      treeNode.icon = paramIconPath
+      treeNode.isParent = false
+    }
+    else if (treeNode.type == 'folder') {
+      treeNode.icon = paramPackageIconPath;
+    }
+  }
 }
 $('.ag-theme-balham .ag-header-row').css('background-color', 'white')
 
@@ -1241,13 +1262,13 @@ function onDrop(event, treeId, treeNodes) {
  * 初始化智能提示的数据表
  * @returns {AxiosPromise}
  */
-export function initTableTip(dataUserId,scenecode) {
+export function initTableTip(dataUserId, scenecode) {
   var dataUserId1 = ''
   var sceneCode1 = ''
-  if(dataUserId!=undefined && scenecode!=undefined){
+  if (dataUserId != undefined && scenecode != undefined) {
     dataUserId1 = dataUserId
     sceneCode1 = scenecode
-  }else{
+  } else {
     dataUserId1 = store.getters.datauserid
     sceneCode1 = store.getters.scenecode
   }
@@ -1277,9 +1298,9 @@ function showRMenu(type, containerId, menuId, x, y) {
   if (h_ < $('#' + menuId).height()) {
     y = y - $('#' + menuId).height()
   }
- /* if (w_ < $('#' + menuId).width()) {
-    x = $('#' + containerId).width() - $('#' + menuId).width()
-  }*/
+  /* if (w_ < $('#' + menuId).width()) {
+     x = $('#' + containerId).width() - $('#' + menuId).width()
+   }*/
   $('#' + menuId + ' ul').show()
   $('#' + menuId).css({ 'top': y + 'px', 'left': x + 'px', 'visibility': 'visible' })
   $('body').bind('mousedown', { 'menuId': menuId }, onBodyMouseDown)
@@ -1303,6 +1324,141 @@ function onBodyMouseDown(event) {
     $('#' + event.data.menuId).css({ 'visibility': 'hidden' })
   }
 }
+//初始化标记树
+export function initBJTree() {
+  // 函数树加载,开始
+  var bjSetting = {
+    data: {
+      key: {
+        checked: 'isChecked',
+        name: 'name',
+        title: 'displayName'
+      },
+      // 设置数据格式
+      simpleData: {
+        enable: true,
+        idKey: 'id',
+        PidKey: 'pid'
+      }
+    },
+    check: {
+      enable: false,
+      chkStyle: 'radio',
+      radioType: 'all'
+    },
+    view: {
+      selectedMulti: false
+    },
+    callback: {
+      onDrop: function (event, treeId, treeNodes) {
+        // 这是存放参数的数组
+        var arr = new Array()
+        var selText = editorObj.getSelection()
+        // 如果选中执行等于全部待执行SQL或者没有选中直接执行SQL 则视为满足模型生成条件第一条 即：必须将SQL编译器的内容全部执行才可以保存模型结果 flag为控制标识
+        if ($.trim(selText) === '' || selText === editorObj.getValue()) {
+          selText = editorObj.getValue()
+        }
+        var parArr = selText.split('#')
+        for (var i = 0; i < parArr.length; i++) {
+          if (i % 2 != 0) {
+            arr.push(parArr[i])
+          }
+        }
+        var width = $('.CodeMirror').width()
+        var height = $('#sqlEditorDiv').height()
+        var offLeft = $('.leftCon').width()
+        var offTop = $('.table-view-caption').height()
+        if ((mouseX < (offLeft + 30) || (mouseX > (offLeft + width)) || (mouseY < offTop) || (mouseY > height))) {
+          return
+        }
+        var cursor = editorObj.getCursor()
+        /* 新修改 star*/
+        var id = ''
+        console.log(treeNodes[0].id)
+        if(treeNodes[0].id=="start"){
+          id = '{$'
+        }else{
+          id = '$}'
+        }
+        editorObj.replaceRange(id, cursor, cursor)
+        var dom = $("<button type='button' class='bjbutton' id='" + id + "'>" + treeNodes[0].name + '</buttonn>').get(0)
+        var endCursor = { ch: cursor.ch + id.length, line: cursor.line, sticky: null }
+        editorObj.markText(cursor, endCursor, {
+          replacedWith: dom,
+          className: 'paramBlock'
+        })
+        var obj = {
+          'id': id, // 加上占位符后的复制参数ID
+          'name': treeNodes[0].name// 参数名称
+        }
+        if (Object.keys(paramObj).length === 0) {
+          paramObj.arr = []
+        }
+        var divBtnObj = {
+          'id': id, // 加上占位符后的复制参数ID
+          'opt': 1// 参数是否生效（不生效是指在当前SQL编辑中已被删除），0、不生效，1、生效
+        }
+      },
+      beforeDrag: function (treeId, treeNodes) {
+        // 如果是参数 允许拖动 否则不可以
+        var thisNode = treeNodes[0]
+      }
+    },
+    edit: {
+      enable: true,
+      showRenameBtn: false,
+      showRemoveBtn: false,
+      drag: {
+        prev: false,
+        next: false,
+        inner: false
+      }
+    }
+  }
+  var bjRootNode = {
+    children: [
+      {
+        disable: false,
+        icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA1UlEQVQ4T72T4Q3BUBRGTydgBBuoDWzABtIJ2AAb2IARmIAN1CZsIIf3ktdqm4rE96dN893z7vvubcZbOTAL730fJ6DMgBFwBYZ9K4PvDkwETIHzl8XRXrQBCtsDVsCiA75NAd5pB9iaxVF2WJff1kAFEE98JABzGTcA5qG7CiD1bYBLMGluUyugb6b/AdwAr+SyGVyqSgcaHVtdhutklBCDNZdlfQpHwPlHc1cOdvQxxraCgyeF0/e1lf85xNcq+zN5z0Hf2QWfC5cLiOF0LUwT28zKJ9N4MRHAxdADAAAAAElFTkSuQmCC",
+        id: "start",
+        isParent: false,
+        label: "开始",
+        leaf: false,
+        name: "开始",
+        parent: false,
+        path: "bj/start",
+        pid: "bj",
+        showCheckbox: true,
+        type: "param"
+      },
+      {
+        disable: false,
+        icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA1UlEQVQ4T72T4Q3BUBRGTydgBBuoDWzABtIJ2AAb2IARmIAN1CZsIIf3ktdqm4rE96dN893z7vvubcZbOTAL730fJ6DMgBFwBYZ9K4PvDkwETIHzl8XRXrQBCtsDVsCiA75NAd5pB9iaxVF2WJff1kAFEE98JABzGTcA5qG7CiD1bYBLMGluUyugb6b/AdwAr+SyGVyqSgcaHVtdhutklBCDNZdlfQpHwPlHc1cOdvQxxraCgyeF0/e1lf85xNcq+zN5z0Hf2QWfC5cLiOF0LUwT28zKJ9N4MRHAxdADAAAAAElFTkSuQmCC",
+        id: "end",
+        isParent: false,
+        label: "结束",
+        leaf: false,
+        name: "结束",
+        parent: false,
+        path: "bj/end",
+        pid: "bj",
+        showCheckbox: true,
+        type: "param"
+      }
+    ],
+    length: 2,
+    displayName: "标记",
+    id: "bj",
+    isParent: true,
+    level: 0,
+    name: "标记",
+    open: true,
+    pid: null,
+    type: "rootNode"
+  }
+  bjZtreeObj = $.fn.zTree.init($('#bjTree'), bjSetting, bjRootNode)
+}
+
 
 /**
  * 初始化函数树
@@ -1323,7 +1479,7 @@ export function initFunctionTree() {
     },
     callback: {
       onDrop: funOnDrop,
-      beforeDrag: function(treeId, treeNodes) {
+      beforeDrag: function (treeId, treeNodes) {
         if (!treeNodes[0].type || treeNodes[0].type !== 'funNode') {
           return false
         }
@@ -1760,6 +1916,36 @@ export function sqlFormat() {
  * @param paramObj 所有参数的对象
  */
 function replaceParam(paramObj) {
+  console.log(0)
+  var lines = editorObj.lineCount()// 获取sql行数
+  var indexArrstart = []
+  var indexArrend = []
+  for (var b = 0; b < lines; b++) { // 第二层循环sql编辑器的内容行数
+    indexArrstart = []// 数组清空
+    indexArrend = []
+    var text = editorObj.getLine(b)// 获取当前行的内容
+    indexArrstart = getIndexArr(text, '{$', 0, indexArrstart)// 获取某行内容中参数id字符串出现的位置数组
+    indexArrend = getIndexArr(text, '$}', 0, indexArrend)// 获取某行内容中参数id字符串出现的位置数组
+    for (var i = 0; i < indexArrstart.length; i++) { // 第三层循环获取出来的字符串数组
+      var dom = $("<button type='button' class='bjbutton' id='{$'>开始</buttonn>'").get(0)
+      var startCursor = { ch: indexArrstart[i], line: b, sticky: null }
+      var endCursor = { ch: indexArrstart[i] + 2, line: b, sticky: null }
+      editorObj.markText(startCursor, endCursor, {
+        replacedWith: dom,
+        className: 'paramBlock'
+      })
+    }
+    for (var j = 0; j < indexArrend.length; j++) { // 第三层循环获取出来的字符串数组
+      var dom = $("<button type='button' class='bjbutton' id='$}'>结束</buttonn>'").get(0)
+      var startCursor = { ch: indexArrend[j], line: b, sticky: null }
+      var endCursor = { ch: indexArrend[j] + 2, line: b, sticky: null }
+      editorObj.markText(startCursor, endCursor, {
+        replacedWith: dom,
+        className: 'paramBlock'
+      })
+    }
+  }
+
   if (!paramObj) {
     return
   }
@@ -1904,6 +2090,44 @@ export function selectSqlCancelNotes() {
 }
 
 /**
+ *标记选中行
+ */
+ export function bjSqlNotes() {
+  if (editorObj.somethingSelected()) {
+    var strSelect = editorObj.getSelection()
+    if (strSelect.length >= 2) {
+      // 如果字符串开头不为/*，则可以进行下面操作
+      var fststr = strSelect.substring(0, 2)
+      if (fststr !== '{$') {
+        // 如果字符串最后是*/，则需要替换成
+        var latstr = strSelect.substring(strSelect.length - 2, strSelect.length)
+        if (latstr === '$}') {
+          strSelect = '{$' + strSelect.substring(0, strSelect.length - 2) + '*\\$}'
+        } else {
+          strSelect = '{$' + strSelect + '$}'
+        }
+      }
+    } else {
+      strSelect = '{$' + strSelect + '$}'
+    }
+    editorObj.replaceSelection(strSelect)
+    // 如果有参数，替换显示状态
+    var newParamObj = { 'arr': [] }// 为了调用replaceParam方法申明的变量
+    for (var i = 0; i < paramObj.arr.length; i++) { // 循环有效的参数数组
+      if (strSelect.indexOf(paramObj.arr[i].id) > -1) { // 找出注释SQL语句中所包含的参数
+        newParamObj.arr.push(paramObj.arr[i])
+      }
+    }
+    replaceParam(newParamObj)
+  } else {
+    this.$message({
+      message: '请选择标记内容',
+    });
+    // alert('请选择注释内容')
+  }
+}
+
+/**
  * 获取SQL编辑器里面的对象
  * @returns {{arr: [], flag: (jQuery|string|undefined|*), InfoFlag: jQuery, outColumn: jQuery, flag2: (jQuery|string|undefined), sql: *}}
  */
@@ -1945,7 +2169,7 @@ export function getSelectSql(menuId) {
         baseURL: dataUrl,
         url: '/tableMeta/getCols',
         method: 'post',
-        params: { tableMetaUuid: tableMetaUuid, isEnclose:"1" }
+        params: { tableMetaUuid: tableMetaUuid, isEnclose: "1" }
       }).then(result => {
         if (result.data == undefined || result.data == null) {
           return
@@ -1985,7 +2209,7 @@ export function getSelectSql(menuId) {
  */
 function getSelectSQLByColumns(columns, tableName, oldSql, loading) {
   var sql = 'SELECT '
-  $(columns).each(function(idx) {
+  $(columns).each(function (idx) {
     if (idx !== 0) {
       sql += ',' + this
     } else {
@@ -2188,13 +2412,13 @@ export function startExecuteSql(data) {
  * 获取执行任务
  * @param {*} data 要执行的数据
  */
-export function getExecuteTask(data,dataUserId,sceneCode) {
+export function getExecuteTask(data, dataUserId, sceneCode) {
   var dataUserId1 = ''
   var sceneCode1 = ''
-  if(dataUserId!=undefined && sceneCode!=undefined){
+  if (dataUserId != undefined && sceneCode != undefined) {
     dataUserId1 = dataUserId
     sceneCode1 = sceneCode
-  }else{
+  } else {
     dataUserId1 = store.getters.datauserid
     sceneCode1 = store.getters.scenecode
   }
@@ -2225,7 +2449,7 @@ export function refreshCodeMirror() {
     editorObj.refresh()
   }, 1)// 让编辑器每次在调用的时候进行自动刷新
   // $('#sql').click()
-    $(sqlEditorVue.$refs.sql).click()
+  $(sqlEditorVue.$refs.sql).click()
 }
 
 /**
@@ -2295,32 +2519,32 @@ export function saveSqlEditorExecuteDefaultPath(data) {
   })
 }
 
-export async function getGraphSaveInfo(){
-    var returnObj = {
-        "isError":false,
-        "message":"",
-        "sql":editorObj.getValue(),
-        "isChange":false
-    };
-    //检查SQL语句是否发生变化
-    const response = await compareSql({"oldSql":sqlEditorVue.sqlValue,"newSql":returnObj.sql})
-    if(response.data == null|| response.data.isError){
-        returnObj.isError = true;
-        returnObj.message = "检测SQL语句是否改变发生错误";
-    }else{
-        if(response.data.isChange){
-            returnObj.message = "系统检查到SQL语句已发生改变，可能会影响已配置的参数信息";
-        }
-        returnObj.isChange = response.data.isChange;
+export async function getGraphSaveInfo() {
+  var returnObj = {
+    "isError": false,
+    "message": "",
+    "sql": editorObj.getValue(),
+    "isChange": false
+  };
+  //检查SQL语句是否发生变化
+  const response = await compareSql({ "oldSql": sqlEditorVue.sqlValue, "newSql": returnObj.sql })
+  if (response.data == null || response.data.isError) {
+    returnObj.isError = true;
+    returnObj.message = "检测SQL语句是否改变发生错误";
+  } else {
+    if (response.data.isChange) {
+      returnObj.message = "系统检查到SQL语句已发生改变，可能会影响已配置的参数信息";
     }
-    return returnObj;
+    returnObj.isChange = response.data.isChange;
+  }
+  return returnObj;
 }
 
 /**
  * 获取选中节点
  * @returns {*}
  */
-export function getZtreeSelectNode(){
+export function getZtreeSelectNode() {
   var nodes = zTreeObj.getSelectedNodes()
   return nodes
 }

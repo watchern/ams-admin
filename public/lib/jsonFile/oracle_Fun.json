@@ -1,5 +1,13 @@
 [
 	{
+		"id" : "spFun", "pid" : "function", "name" : "特殊函数", "displayName" : "特殊函数",
+        "level" : 1, "type" : "funFolder", "isParent" : true, "open" : false,
+		"children": [{
+			"id" : "{$x$}", "pid" : "spFun", "name" : "{$x$}", "level" : 2, "type" : "funNode", "isParent" : false, "open" : false,
+			"displayName" : "将“X”标记为查询语句"
+		}]
+	},
+	{
 		"id" : "charFun", "pid" : "function", "name" : "字符函数", "displayName" : "字符函数",
         "level" : 1, "type" : "funFolder", "isParent" : true, "open" : false,
 		"children": [{

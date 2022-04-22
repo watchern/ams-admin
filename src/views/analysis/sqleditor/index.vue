@@ -13,6 +13,9 @@
           <img :src="canshu" /><span>参数</span>
         </div>
         <div class="unfold-sql"><img :src="sql" /><span>函数</span></div>
+        <div class="unfold-bj">
+          <img :src="sql" /><span>标记</span>
+        </div>
       </div>
       <div id="leftPart" class="left-part">
         <div class="left-dataTree">
@@ -56,6 +59,9 @@
             suffix-icon="el-icon-search"
           />
           <ul id="sqlFunTree" class="ztree" style="margin-top: 5px" />
+        </div>
+        <div class="left-bjTree">
+          <ul id="bjTree" class="ztree" style="margin-top: 5px;padding:20px 0 0 30px;" />
         </div>
       </div>
       <div id="rightPart" style="height: 100%">
@@ -122,6 +128,9 @@
                   >
                   <el-dropdown-item @click.native="selectSqlCancelNotes()"
                     >取消注释</el-dropdown-item
+                  >
+                  <el-dropdown-item @click.native="bjSqlNotes()"
+                    >标记</el-dropdown-item
                   >
                 </el-dropdown-menu>
               </el-dropdown>
@@ -426,6 +435,7 @@ import {
   initIcon,
   initTableTree,
   initFunctionTree,
+  initBJTree,
   initEvent,
   initParamTreeNew,
   tableTreeSearch,
@@ -437,6 +447,7 @@ import {
   getExecuteTask,
   selectSqlNotes,
   selectSqlCancelNotes,
+  bjSqlNotes,
   refreshCodeMirror,
   getSaveInfo,
   getSelectSql,
@@ -981,6 +992,7 @@ export default {
       initDragAndDrop();
       initIcon();
       initFunctionTree();
+      initBJTree();
       initVariable();
       initEvent();
       initParamTreeNew();
@@ -1088,6 +1100,12 @@ export default {
      */
     selectSqlCancelNotes() {
       selectSqlCancelNotes();
+    },
+    /**
+     * 标记选中行
+     */
+    bjSqlNotes() {
+      bjSqlNotes();
     },
     /**
      * 获取保存的对象
