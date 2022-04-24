@@ -556,6 +556,7 @@
       :modal="false"
       width="50%"
     >
+      <div style="max-height:62vh;overflow:auto;">
       <el-tree
         :data="treedata"
         :props="defaultProps"
@@ -566,6 +567,7 @@
           <span>{{ node.label }}</span>
         </span>
       </el-tree>
+      </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="opentree = false">取 消</el-button>
         <el-button type="primary" @click="savetreenode()">确 定</el-button>
@@ -754,11 +756,14 @@ export default {
   watch: {
     baseName(val) {
       if ((val = "condition")) {
+        let sql = this.form.paramChoice.optionsSqlLine
+        if(this.isShowElement.SQLdtreeShow){
+          sql = this.form.paramChoice.optionsSql
+        }
         request({
           baseURL: "/analysis",
           url:
-            "/paramController/getSqlCols?sql=" +
-            this.form.paramChoice.optionsSqlLine,
+            "/paramController/getSqlCols?sql=" + sql,
           method: "post",
         }).then((result) => {
           this.relationFiledoptions = result.data;
