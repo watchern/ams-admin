@@ -2,11 +2,16 @@
   <div class="app-container" ref="bigLoading" >
 <!--    v-loading="loading" :element-loading-text="loadText"-->
     <!--模型分类树-->
-    <el-container>
-      <el-aside class="tree-side">
+    <el-container class="content-box">
+      <el-aside class="tree-side" :style="{ width: maxWidth - rightWidth + 'px' }">
         <ModelFolderTree ref="modelFolderTree" :power="power" @refreshModelList="refreshModelList" @refreshModels="refreshModels" :spaceFolderName="thisFolderName" :spaceFolderId="thisDataUserId"/>
       </el-aside>
-      <ModelListTable :isAuditWarning="isAuditWarning" :data-user-id='thisDataUserId' :scene-code='thisSceneCode' ref="modelListTable" :power="power" @loadingSet="loadingSet" @refreshTree="refreshTree"/>
+      <div class="drawer-box" :style="{ width: (rightWidth-36) + 'px' }"  ref="drawerBox">
+        <div class="myxhandle"  style="left:0;"  @mousedown="mouseDown($event)" ><i class="el-icon-d-caret skin-textColor" /></div>
+        <ModelListTable  :isAuditWarning="isAuditWarning" :data-user-id='thisDataUserId' :scene-code='thisSceneCode' ref="modelListTable" :power="power" @loadingSet="loadingSet" @refreshTree="refreshTree"/>
+      </div>
+      
+     
     </el-container>
   </div>
 </template>
@@ -36,8 +41,44 @@ export default {
       //dataSpaceName: sessionStorage.getItem("dataUserName"),
       dataSpaceName: this.$store.getters.datausername,
       loading:false,
-      loadText:""
+      loadText:"",
+      //右侧宽度
+      rightWidth: 1200,
+      lastX: "",
+      changeWidth: 0,
+      maxWidth: 0, // 最大宽度
     }
+  },
+  destroyed() {
+    document.removeEventListener("mouseup", this.mouseUp);
+  },
+  created () {
+    // 打开页面恢复默认状态
+    document.onmousemove = null
+    this.lastX = "";
+    this.maxWidth = document.body.clientWidth;
+    // 右侧宽度默认为最大宽度减去右侧最小宽度
+    this.rightWidth = this.maxWidth -300;
+  },
+  mounted () {
+    // 监听屏幕大小
+    window.onresize = () => {
+      return (() => {
+        this.maxWidth = document.body.clientWidth
+      })()
+    }
+  },
+  watch: {
+    // 屏幕大小改变时修改左右两边的默认宽度
+    maxWidth: {
+      handler: function (val) {
+        if (val) {
+          this.rightWidth = this.maxWidth -300;
+        }
+      },
+      immediate: true,
+      deep:true
+    },
   },
   methods: {
     /**
@@ -85,7 +126,25 @@ export default {
       }else {
         this.bigLoading.destroy()
       }
-    }
+    },
+    mouseDown (event) {
+      let that = this;
+      this.lastX = event.screenX;
+      document.onmousemove = function (e) {
+        let movement = Number(that.lastX - e.screenX);
+        let changeWidth = that.rightWidth + movement;
+        if ((that.maxWidth - changeWidth> 300) && (changeWidth>880)) { // 左侧最小宽度为300，右侧最小宽度为880
+          that.rightWidth = changeWidth;
+        }
+        that.lastX = e.screenX;
+      }
+      document.onmouseup = function () {
+        document.onmousemove = null
+        document.onmouseup = null
+        that.lastX = "";
+      }
+    },
+
   }
 }
 </script>
@@ -95,5 +154,36 @@ export default {
     margin: 9px 10px 9px 9px;
     font-size: 20px;
     font-weight: bold;
+  }
+  .content-box {
+    position: relative;
+  }
+  .drawer-box {
+    position: absolute;
+    right: 0;
+    /* top: 0;
+    bottom: 0; */
+    height: 100%;
+  }
+  .myxhandle {
+    height: 100%;
+    width: 15px;
+    position: absolute;
+    top: 0;
+    bottom: -100px;
+    cursor: w-resize;
+    z-index: 200;
+    background: transparent;
+    display: inline-block;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+  }
+  .myxhandle .el-icon-d-caret {
+    position: relative;
+    top: 50%;
+    left: -20px;
+    font-size: 20px;
+    transform: rotate(90deg);
   }
 </style>

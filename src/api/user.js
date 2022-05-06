@@ -55,3 +55,11 @@ export function getSystemRole(name) {
     method: 'get'
   })
 }
+// 获取用户IP
+export function getPersonIp() {
+  return request({
+    baseURL: baseURL,
+    url: `/personController/getPersonIp`,
+    method: 'get'
+  })
+}

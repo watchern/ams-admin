@@ -28,6 +28,8 @@
 import LeftMenu from './views/left-menu'
 import RightFooter from './views/right-footer'
 import { getHelpByMenuPath } from '@/api/base/helpdocument'
+import Watermark from "@/utils/watermark.js";
+import { getPersonIp} from '@/api/user';
 export default {
   components: {
     LeftMenu,
@@ -48,6 +50,9 @@ export default {
       } else {
         return false
       }
+    },
+    getUserName(){
+      return this.$store.getters.name;
     }
   },
   created() {
@@ -57,6 +62,9 @@ export default {
     window.addEventListener('beforeunload', () => {
       sessionStorage.setItem('store', JSON.stringify(this.$store.state))
     })
+  },
+  activated () {
+    this.setWatermark();
   },
   methods: {
     getHelp () {
@@ -80,6 +88,16 @@ export default {
         }
       })
     },
+    // 设置水印
+    setWatermark () {
+      getPersonIp().then((res) => {
+        Watermark.set(
+          this.getUserName,
+          res.data,
+          ''
+        );
+      }) 
+    }
   }
 }
 </script>
