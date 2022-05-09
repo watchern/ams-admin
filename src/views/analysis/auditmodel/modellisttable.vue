@@ -185,7 +185,7 @@
           @select-all="modelTableSelectEvent"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column label="模型名称" width="300px" prop="modelName">
+          <el-table-column label="模型名称" width="300px" prop="modelName" :sortable="true">
             <template slot-scope="scope">
               <el-link
                 type="primary"
@@ -194,35 +194,40 @@
               >
             </template>
           </el-table-column>
-          <el-table-column label="审计事项" prop="auditItemName" />
+          <el-table-column label="审计事项" prop="auditItemName" :sortable="true" />
           <el-table-column
             label="风险等级"
             prop="riskLevelUuid"
             align="center"
+            :sortable="true"
             :formatter="riskLevelFormatter"
           />
           <el-table-column
             label="模型类型"
             prop="modelType"
             align="center"
+            :sortable="true"
             :formatter="modelTypeFormatter"
           />
           <el-table-column
             label="模型用途"
             prop="modelUse"
             align="center"
+            :sortable="true"
             :formatter="modelUseFormatter"
           />
           <el-table-column
             label="创建时间"
             prop="createTime"
             align="center"
+            :sortable="true"
             :formatter="dateFormatter"
           />
           <el-table-column
             label="创建人"
             prop="createUserName"
             align="center"
+            :sortable="true"
           />
           <!-- <el-table-column label="平均运行时间" width="150px" prop="runTime" /> -->
         </el-table>
