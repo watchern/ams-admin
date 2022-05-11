@@ -159,6 +159,7 @@ import { getMaxMinColumn } from "@/api/graphtool/apiJs/graphList";
       let parent_node = graph.nodeData[parentIds[0]];
       let typeArr = [
         "INTEGER",
+        "INT",
         "DECIMAL",
         "NUMBER",
         "FLOAT",
@@ -173,7 +174,7 @@ import { getMaxMinColumn } from "@/api/graphtool/apiJs/graphList";
                 }
                 if (this.curColumnsInfo.length !== 0) { // 初始化数据源
                     for(let i=0; i<this.curColumnsInfo.length; i++){
-                        if ($.inArray(this.curColumnsInfo[i].columnType.trim(), typeArr) > -1) {
+                        if ($.inArray(this.curColumnsInfo[i].columnType.trim().toUpperCase(), typeArr) > -1) {
             this.hierarchyColumnArr.push({
               newColumnName: this.curColumnsInfo[i].newColumnName,
               columnType: this.curColumnsInfo[i].columnType,
@@ -236,7 +237,7 @@ import { getMaxMinColumn } from "@/api/graphtool/apiJs/graphList";
                              */
                             let dataParam = {
               tableName: parent_node.nodeInfo.resultTableName,
-              openType: graph.openType,
+              openType: 2,
               exeColumns: this.pre_str_column.join(","),
               isRoleTable: isRoleTable,
             };

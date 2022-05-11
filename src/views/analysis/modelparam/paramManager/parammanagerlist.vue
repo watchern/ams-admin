@@ -446,6 +446,12 @@ export default {
         this.loading = false
         this.total = resp.data.total
         this.tableData = resp.data.records
+        // 默认选中点击文件夹下第一个表
+        let _this = this
+        setTimeout(function(){
+          _this.$refs.paramTableList.selection.push(_this.tableData[0])
+          _this.paramTableSelectEvent();
+        },200)
         this.listLoading = false
       })
     },

@@ -96,6 +96,7 @@
     </el-row>
     <el-table
       :key="tableKey"
+      ref="directoryListTable"
       v-loading="listLoading"
       :data="temp"
       border
@@ -1304,6 +1305,12 @@ export default {
         this.temp = this.allList;
         this.total = getArrLength(this.temp);
       }
+      // 默认选中点击文件夹下第一个表
+      let _this = this
+      setTimeout(function(){
+        _this.$refs.directoryListTable.selection.push(_this.temp[0])
+        _this.selections.push(_this.temp[0])
+      },200)
     },
     // 初始化列表页面
     getList(data, node, tree) {
@@ -1333,6 +1340,12 @@ export default {
         tempObj = data;
         this.temp.push(tempObj);
         this.allList.push(tempObj);
+        // 默认选中点击的表
+        let _this = this
+        setTimeout(function(){
+          _this.$refs.directoryListTable.selection.push(tempObj)
+          _this.selections.push(tempObj)
+        },200)
         // 父节点node
         this.total = 1;
       } else {
