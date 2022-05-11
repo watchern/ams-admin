@@ -895,9 +895,11 @@ export default {
             that.form.inputType = data.inputType;
             that.changeInputType(data.inputType);
             if (data.paramCondition.length > 0) {
-              that.relevancetreedata = [
-                that.arrangementtree(data.paramCondition[0]),
-              ];
+              // that.relevancetreedata = [
+              //   that.arrangementtree(data.paramCondition[0]),
+              // ];
+              // 处理关联条件参数数据让其展示形式层级更明显
+              that.relevancetreedata = that.arrangementtreeSort([that.arrangementtree(data.paramCondition[0]),]);
             }
             // if (data.paramRelationList) {
             //   that.relevanceData = data.paramRelationList;
@@ -986,6 +988,29 @@ export default {
       //   },
       //   "json"
       // );
+    },
+    // 修改关联条件参数数据的顺序
+    arrangementtreeSort (relevancetreedata) {
+      const traverse = function(relevancetreedata) {
+        relevancetreedata.map(i => {
+          if (i.children) {
+            let arr = [];
+            i.children.map(j => {
+              if (!j.children) { // 本层及数据优先push
+                arr.unshift(j);
+              } 
+              else { // 子集最后在push
+                arr.push(j);
+              }
+            })
+            i.children = arr;
+            traverse(i.children)
+          } 
+        })
+      };
+      traverse(relevancetreedata);
+      return relevancetreedata
+
     },
     //整理参数条件树数据
     arrangementtree(obj) {

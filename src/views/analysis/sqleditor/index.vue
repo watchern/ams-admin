@@ -371,6 +371,7 @@
       v-if="addParamDialog"
       :title="textMap[dialogStatus]"
       :visible.sync="addParamDialog"
+      class="modelParamsDia"
     >
       <addParam
         :selectTreeNode="selectTreeNode"
@@ -1768,5 +1769,10 @@ div.rightMenu ul li:hover {
 }
 #dataSearch {
   margin: 5px 0 10px 0;
+}
+
+.modelParamsDia >>> .el-dialog {
+  min-width: 850px
+
 }
 </style>
