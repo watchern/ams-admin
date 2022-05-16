@@ -95,7 +95,7 @@
           <el-table-column label="模型名称" width="300px" prop="model.modelName" >
             <template slot-scope="scope">
               <a type="text" style="color: #409eff"
-                @click="getResultTables(scope.row.runResultTables,scope.row.model.modelName,scope.row.model.modelUuid,scope.row.runStatus,resultSpiltObjects)">{{ scope.row.model.modelName }}</a>
+                @click="getResultTables(scope.row.runResultTables,scope.row.model.modelName,scope.row.model.modelUuid,scope.row.runStatus,resultSpiltObjects, scope.row)">{{ scope.row.model.modelName }}</a>
             </template>
           </el-table-column>
           <el-table-column label="运行状态" width="100px" align="center" prop="runStatus" :formatter="readStatusFormatter">
@@ -1137,7 +1137,7 @@ export default {
      * val是运行结果中的resultTables
      * modelName是选中的模型的名字
      */
-    getResultTables(val, modelName, modelUuid, runStatus, resultSpiltObjects) {
+    getResultTables(val, modelName, modelUuid, runStatus, resultSpiltObjects, selectRow) {
       if (runStatus == 3) {
         var assistTables = [];
         var mainTable = null;
@@ -1156,7 +1156,10 @@ export default {
           mainTable,
           modelName,
           modelUuid,
-          resultSpiltObjects
+          resultSpiltObjects,
+          undefined,
+          undefined,
+          selectRow
         );
       } else {
         this.$message({

@@ -287,6 +287,7 @@ export default {
     "prePersonalVal",
     "resultSpiltObjects",
     "projectUuid",
+    "modelType"
   ],
   data() {
     return {
@@ -973,7 +974,7 @@ export default {
           }
           selectModel(this.value).then((resp) => {
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
-            const obj = { sqls: sql, businessField: "modelresultdetail" };
+            const obj = { sqls: sql, businessField: "modelresultdetail", modelType: this.modelType };
             getExecuteTask(obj)
               .then((resp) => {
                 this.currentExecuteSQL = resp.data.executeSQLList;
@@ -1019,7 +1020,7 @@ export default {
           }
         }
         sql = sql + filterSql;
-        const obj = { sqls: sql, businessField: "modelresultdetail" };
+        const obj = { sqls: sql, businessField: "modelresultdetail", modelType: this.modelType };
         getExecuteTask(obj)
           .then((resp) => {
             this.currentExecuteSQL = resp.data.executeSQLList;

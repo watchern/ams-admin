@@ -1824,6 +1824,7 @@ export default {
                 sqls: result.data.modelSql,
                 modelUuid: selectObj[0].modelUuid,
                 businessField: "modellisttable",
+                modelType: this.modelTypeFormatter({modelType:selectObj[0].modelType})
               };
               this.executeSql(obj, selectObj, false);
             } else {
@@ -1831,6 +1832,7 @@ export default {
                 sqls: result.data.sqlValue,
                 modelUuid: selectObj[0].modelUuid,
                 businessField: "modellisttable",
+                modelType: this.modelTypeFormatter({modelType:selectObj[0].modelType})
               };
               this.executeSql(obj, selectObj, false);
             }
@@ -1983,6 +1985,7 @@ export default {
         obj.sqls = obj.sql;
         obj.modelUuid = selectObj[0].modelUuid;
         obj.businessField = "modellisttable";
+        obj.modelType = this.modelTypeFormatter({modelType:selectObj[0].modelType});
         // 合并参数 将输入的值替换到当前界面
         this.currentPreviewModelParamAndSql.paramObj = obj.paramsArr;
         this.dialogFormVisible = false;

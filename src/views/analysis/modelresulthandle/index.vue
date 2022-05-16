@@ -26,6 +26,7 @@
           :resultSpiltObjects="item.resultSpiltObjects"
           useType="modelRunResult"
           :projectUuid="item.projectUuid"
+          :modelType="item.modelType"
         />
       </el-tab-pane>
     </el-tabs>
@@ -34,6 +35,7 @@
 <script>
 import firstParentTabCon from '@/views/analysis/modelresulthandle/firstparenttabcon'
 import childTabs from '@/views/analysis/modelresulthandle/childtabs'
+import { getOneDict } from "@/utils/index";
 export default {
   components: {
     firstParentTabCon,
@@ -56,7 +58,7 @@ export default {
   },
   methods: {
     // 添加页签方法  resultTable:辅表（运行结果表）数组    mainTable:主表（运行结果表对象）   modelname:模型的名称，用来给新页签赋值title属性用
-    addTab(resultTable, mainTable, modelname, modelUuid,resultSpiltObjects,projectUuid) {
+    addTab(resultTable, mainTable, modelname, modelUuid,resultSpiltObjects,projectUuid, selectRow) {
       const newTabName = ++this.tabIndex + ''
       this.mainTable = mainTable
       this.helpTables = resultTable
@@ -67,9 +69,20 @@ export default {
         helpTables: resultTable,
         modeluuid: modelUuid,
         resultSpiltObjects:resultSpiltObjects,
-        projectUuid:projectUuid
+        projectUuid:projectUuid,
+        modelType: this.modelTypeFormatter({modelType: selectRow.model.modelType})
       })
       this.editableTabsValue = newTabName
+    },
+    modelTypeFormatter(row, column) {
+      const modelType = row.modelType;
+      const dicObj = getOneDict(modelType);
+      let value = "";
+      if (dicObj.length == 0) {
+        return "";
+      }
+      value = dicObj[0].codeName;
+      return value;
     },
     // 删除页签方法
     removeTab(targetName) {

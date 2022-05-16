@@ -853,6 +853,7 @@ export default {
     "chartModelUuid",
     "settingInfo",
     "isModelPreview",
+    "modelType"
   ],
   data() {
     return {
@@ -3019,7 +3020,7 @@ export default {
           }
           selectModel(value).then((resp) => {
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
-            const obj = { sqls: sql, businessField: "modelresultdetail" };
+            const obj = { sqls: sql, businessField: "modelresultdetail",modelType: this.modelType };
             detailModel = resp.data;
             getExecuteTask(obj)
               .then((resp) => {
@@ -3079,7 +3080,7 @@ export default {
           }
         }
         sql = sql + filterSql;
-        const obj = { sqls: sql, businessField: "modelresultdetail" };
+        const obj = { sqls: sql, businessField: "modelresultdetail", modelType: this.modelType };
         getExecuteTask(obj)
           .then((resp) => {
             this.currentExecuteSQL = resp.data.executeSQLList;
