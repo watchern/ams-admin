@@ -287,6 +287,7 @@ export default {
     "prePersonalVal",
     "resultSpiltObjects",
     "projectUuid",
+    "modelType"
   ],
   data() {
     return {
@@ -973,7 +974,7 @@ export default {
           }
           selectModel(this.value).then((resp) => {
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
-            const obj = { sqls: sql, businessField: "modelresultdetail" };
+            const obj = { sqls: sql, businessField: "modelresultdetail", modelType: this.getModelType(this.modelType) };
             getExecuteTask(obj)
               .then((resp) => {
                 this.currentExecuteSQL = resp.data.executeSQLList;
@@ -1019,7 +1020,7 @@ export default {
           }
         }
         sql = sql + filterSql;
-        const obj = { sqls: sql, businessField: "modelresultdetail" };
+        const obj = { sqls: sql, businessField: "modelresultdetail", modelType: this.getModelType(this.modelType) };
         getExecuteTask(obj)
           .then((resp) => {
             this.currentExecuteSQL = resp.data.executeSQLList;
@@ -1238,6 +1239,15 @@ export default {
         // 不包含就重新获取
       } else {
         return this.getData();
+      }
+    },
+    getModelType (name) {
+      if(name == 'SQL模型') {
+        return 'sql'
+      } else if (name == '图形化模型') {
+        return 'graph'
+      } else {
+        return name
       }
     },
   },

@@ -1365,6 +1365,7 @@ export default {
         obj.businessField = "sqleditor";
         obj.modelResultSavePathId = this.modelResultSavePathId;
         obj.pushUuid = this.pushUuid;
+        obj.modelType = 'SQL';
         callback(obj)
       // });
     },
@@ -1391,6 +1392,7 @@ export default {
       obj.sqls = obj.sql;
       obj.businessField = "sqleditor";
       obj.pushUuid = this.pushUuid;
+      obj.modelType = 'SQL';
       this.executeLoading = true;
       getExecuteTask(obj, this.dataUserId, this.sceneCode1).then((result) => {
         if (result.data.isError) {

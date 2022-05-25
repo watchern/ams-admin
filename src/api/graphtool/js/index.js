@@ -40,9 +40,10 @@ export function replaceNodeType(e) {
                 this.isParent = true
                 break
         }
-        if (this.pid == null || typeof this.pid === 'undefined' || this.pid === '' || this.pid.toUpperCase() === 'ROOT') {
-            this.open = true
-        }
+        // 关闭默认展开 tq 20220525
+        // if (this.pid == null || typeof this.pid === 'undefined' || this.pid === '' || this.pid.toUpperCase() === 'ROOT') {
+        //     this.open = true
+        // }
     })
 }
 

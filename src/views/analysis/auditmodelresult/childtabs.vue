@@ -17,8 +17,8 @@
         @setNextValue="setNextValue"
         @saveModelResult="saveModelResult"
         ref="onlyChild"
+        :modelType="modelType"
     /></el-tab-pane>
-
     <!-- 单个模型执行结果页签（主表、辅表） -->
     <el-tab-pane
       v-for="(item, key) in useType==='modelRunResult'?helptables:preValue"
@@ -42,6 +42,7 @@
         :modelTitle="modelTitle"
         :prePersonalVal="item"
         :useType="useType"
+        :modelType="modelType"
         :preLength="useType=='sqlEditor'||useType=='modelPreview'?preValue.length:1"
         :myIndex="useType=='sqlEditor'||useType=='modelPreview'?key:1"/>
     </el-tab-pane>
@@ -220,7 +221,8 @@ export default {
     "paramInfo",
     "dataUserId",
     "sceneCode",
-    "maintableindex"
+    "maintableindex",
+    "modelType"
   ],
 };
 </script>

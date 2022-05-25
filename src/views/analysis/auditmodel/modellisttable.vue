@@ -422,6 +422,8 @@ import {
   copyModel,
   cancelShareModel,
   getShareModelList,
+  getExecuteTaskAndQuery,
+  uuid2
 } from "@/api/analysis/auditmodel";
 import { deleteGraphInfoById } from "@/api/graphtool/apiJs/graphList";
 import QueryField from "@/components/public/query-field/index";
@@ -833,6 +835,15 @@ export default {
       }
       value = dicObj[0].codeName;
       return value;
+    },
+    getModelType (name) {
+      if(name == 'SQL模型') {
+        return 'sql'
+      } else if (name == '图形化模型') {
+        return 'graph'
+      } else {
+        return name
+      }
     },
     /**
      * 格式化模型用途
@@ -1817,6 +1828,28 @@ export default {
         if (result.code == 0) {
           if (result.data.parammModelRel.length == 0) {
             let obj = null;
+            let runTask = null;
+            var runTaskUuid = uuid2();
+            var batchUuid = uuid2();
+            var runTaskRelUuid = uuid2();
+            var runTaskRels = [];
+            var selectDetail = result.data;
+
+            var settingInfo = {
+              sql: selectDetail.sqlValue,
+              paramsArr: [],
+            };
+            var runTaskRel = {
+              runTaskRelUuid: runTaskRelUuid,
+              runTaskUuid: runTaskUuid,
+              sourceUuid: selectDetail.modelUuid,
+              settingInfo: JSON.stringify(settingInfo),
+              modelVersion: selectDetail.modelVersion,
+              runRecourceType: 1,
+              isDeleted: 0,
+              runStatus: 1,
+            };
+            runTaskRels.push(runTaskRel);
             //没有参数，判断是图形化还是sql编辑器模型
             if (result.data.graphUuid != null && result.data.graphUuid != "") {
               //调用图形化接口找到sql
@@ -1824,17 +1857,55 @@ export default {
                 sqls: result.data.modelSql,
                 modelUuid: selectObj[0].modelUuid,
                 businessField: "modellisttable",
+                modelType: this.getModelType(this.modelTypeFormatter({modelType:selectObj[0].modelType}))
               };
-              this.executeSql(obj, selectObj, false);
+              runTask = {
+                runTaskUuid: runTaskUuid,
+                batchUuid: batchUuid,
+                runTaskName: "系统添加",
+                runType: 3,
+                timingExecute: '',
+                locationUuid: 'modelFolder',
+                runTaskRels: runTaskRels
+              };
+              // this.executeSql(obj, selectObj, false);
+              var mergeObj = {
+                runTask: runTask,
+                sqls: result.data.sqlValue,
+                modelUuid: selectObj[0].modelUuid,
+                businessField: "modellisttable",
+                modelType: this.getModelType(this.modelTypeFormatter({modelType:selectObj[0].modelType}))
+              }
+              this.executeSql(mergeObj, selectObj, false);
+
             } else {
               obj = {
                 sqls: result.data.sqlValue,
                 modelUuid: selectObj[0].modelUuid,
                 businessField: "modellisttable",
+                modelType: this.getModelType(this.modelTypeFormatter({modelType:selectObj[0].modelType}))
               };
-              this.executeSql(obj, selectObj, false);
+               runTask = {
+                runTaskUuid: runTaskUuid,
+                batchUuid: batchUuid,
+                runTaskName: "系统添加",
+                runType: 3,
+                timingExecute: '',
+                locationUuid: 'modelFolder',
+                runTaskRels: runTaskRels
+              };
+              // this.executeSql(obj, selectObj, false);
+              var mergeObj = {
+                runTask: runTask,
+                // executeTask: obj
+                sqls: result.data.sqlValue,
+                modelUuid: selectObj[0].modelUuid,
+                businessField: "modellisttable",
+                modelType: this.getModelType(this.modelTypeFormatter({modelType:selectObj[0].modelType}))
+              }
+               this.executeSql(mergeObj, selectObj, false);
             }
-          } else {
+          } else {       
             const paramObj = [];
             for (let i = 0; i < result.data.parammModelRel.length; i++) {
               if (result.data.parammModelRel[i].paramValue === "") {
@@ -1868,40 +1939,61 @@ export default {
       this.ifcancel = 1
     },
     executeSql(obj, selectObj, isExistParam) {
+      
       this.$emit(
         "loadingSet",
         true,
         "正在运行模型'" + selectObj[0].modelName + "',请稍候"
       );
-      getExecuteTask(obj, this.dataUserId, this.sceneCode).then((result) => {
-        if(this.ifcancel==0){
-        if (result.data.isError) {
+      // getExecuteTask(obj, this.dataUserId, this.sceneCode).then((result) => {
+      //   if(this.ifcancel==0){
+      //   if (result.data.isError) {
+      //     this.$message({
+      //       type: "error",
+      //       message: result.data.message,
+      //     });
+      //     this.$emit("loadingSet", false, "");
+      //   } else {
+      //     this.$emit("loadingSet", false, "");
+      //     this.modelRunTaskList[obj.modelUuid] = result.data.executeSQLList;
+      //     if (isExistParam) {
+      //       selectObj[0].runModelConfig = obj.runModelConfig;
+      //     }
+      //     this.addTab(selectObj[0], isExistParam, result.data.executeSQLList,false,result.data.lastSqlIndex);
+      //     // 界面渲染完成之后开始执行sql,将sql送入调度
+      //     startExecuteSql(result.data)
+      //       .then((result) => {
+      //         this.executeLoading = false;
+      //         this.loadText = "";
+      //       })
+      //       .catch((result) => {
+      //         this.executeLoading = false;
+      //       });
+
+
+
+
+      //   }
+      //   }else{
+      //     this.ifcancel = 0
+      //   }
+
+      // });
+
+
+      getExecuteTaskAndQuery(obj,this.dataUserId,this.sceneCode).then((result) => {
+        if (result.code == 0) {
+            this.$emit("loadingSet", false, "");
+            this.addTab(selectObj[0], isExistParam, result.data.executeSQLList,false,result.data.lastSqlIndex);
+            this.executeLoading = false;
+            this.loadText = "";
+        } else {
           this.$message({
             type: "error",
             message: result.data.message,
           });
           this.$emit("loadingSet", false, "");
-        } else {
-          this.$emit("loadingSet", false, "");
-          this.modelRunTaskList[obj.modelUuid] = result.data.executeSQLList;
-          if (isExistParam) {
-            selectObj[0].runModelConfig = obj.runModelConfig;
-          }
-          this.addTab(selectObj[0], isExistParam, result.data.executeSQLList,false,result.data.lastSqlIndex);
-          //界面渲染完成之后开始执行sql,将sql送入调度
-          startExecuteSql(result.data)
-            .then((result) => {
-              this.executeLoading = false;
-              this.loadText = "";
-            })
-            .catch((result) => {
-              this.executeLoading = false;
-            });
         }
-        }else{
-          this.ifcancel = 0
-        }
-
       });
     },
     /**
@@ -1983,6 +2075,7 @@ export default {
         obj.sqls = obj.sql;
         obj.modelUuid = selectObj[0].modelUuid;
         obj.businessField = "modellisttable";
+        obj.modelType = this.getModelType(this.modelTypeFormatter({modelType:selectObj[0].modelType}));
         // 合并参数 将输入的值替换到当前界面
         this.currentPreviewModelParamAndSql.paramObj = obj.paramsArr;
         this.dialogFormVisible = false;
@@ -1996,7 +2089,35 @@ export default {
           paramsArr: obj.paramsArr,
         };
         obj.runModelConfig = recplaceed;
-        this.executeSql(obj, selectObj, true);
+        // this.executeSql(obj, selectObj, true);
+
+        var runTaskUuid = uuid2();
+        var batchUuid = uuid2();
+        var runTaskRelUuid = uuid2();
+        var runTaskRels = [];
+        var runTaskRel = {
+          runTaskRelUuid: runTaskRelUuid,
+          runTaskUuid: runTaskUuid,
+          sourceUuid: selectObj[0].modelUuid,
+          settingInfo: JSON.stringify(recplaceed),
+          modelVersion: selectObj[0].modelVersion,
+          runRecourceType: 1,
+          isDeleted: 0,
+          runStatus: 1,
+        };
+        runTaskRels.push(runTaskRel);
+        var runTask = {
+          runTaskUuid: uuid2(),
+          batchUuid: uuid2(),
+          runTaskName: "系统添加",
+          runType: 3,
+          timingExecute: '',
+          locationUuid: 'modelFolder',
+          runTaskRels: runTaskRels
+        };
+        obj.runTask = runTask
+        this.executeSql(obj, selectObj, false);
+        
       } else {
         this.queryModel(this.paramDrawUuid);
       }
@@ -2016,6 +2137,7 @@ export default {
       obj.modelUuid = modelUuid;
       obj.executeSQLList = this.modelRunTaskList[obj.modelUuid];
       obj.businessField = "modellisttable";
+      // obj.modelType = this.getModelType(this.modelTypeFormatter({modelType:selectObj[0].modelType}))
       // 重置数据展现界面数据
       this.$refs[modelUuid][0].reSetTable();
       let paramInfo = {

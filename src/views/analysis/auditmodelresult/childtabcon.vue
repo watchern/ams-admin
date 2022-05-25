@@ -853,6 +853,7 @@ export default {
     "chartModelUuid",
     "settingInfo",
     "isModelPreview",
+    "modelType"
   ],
   data() {
     return {
@@ -2449,7 +2450,7 @@ export default {
                     this.rowData = rowData;
                   }
                   for (let i = 0; i < col.length; i++) {
-                    let colType0 = this.result.columnType[i];
+                    let colType0 = this.result.columnType[i] && this.result.columnType[i] || '';
                     // colType0 = colType0 ? "": colType0.toUpperCase();
                     // switch (colType0) {
                     //   case "NUMBER":
@@ -3019,7 +3020,8 @@ export default {
           }
           selectModel(value).then((resp) => {
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
-            const obj = { sqls: sql, businessField: "modelresultdetail" };
+            const obj = { sqls: sql, businessField: "modelresultdetail",modelType: this.
+getModelType(this.modelType) };
             detailModel = resp.data;
             getExecuteTask(obj)
               .then((resp) => {
@@ -3079,7 +3081,8 @@ export default {
           }
         }
         sql = sql + filterSql;
-        const obj = { sqls: sql, businessField: "modelresultdetail" };
+        const obj = { sqls: sql, businessField: "modelresultdetail", modelType: this.
+getModelType(this.modelType) };
         getExecuteTask(obj)
           .then((resp) => {
             this.currentExecuteSQL = resp.data.executeSQLList;
@@ -3098,17 +3101,37 @@ export default {
      * sql编辑器模型结果点击导出后出发的方法
      */
     modelResultExport() {
-      this.tableData = this.nextValue.result;
-      this.json_fields = {};
-      for (var i = 0; i < this.nextValue.columnNames.length; i++) {
-        this.json_fields[this.nextValue.columnNames[i]] = {
-          field: this.nextValue.columnNames[i],
-          callback: (value) => {
-            return "&nbsp;" + value;
-          },
-        };
+      // this.tableData = this.nextValue.result;
+      // this.json_fields = {};
+      // for (var i = 0; i < this.nextValue.columnNames.length; i++) {
+      //   this.json_fields[this.nextValue.columnNames[i]] = {
+      //     field: this.nextValue.columnNames[i],
+      //     callback: (value) => {
+      //       return "&nbsp;" + value;
+      //     },
+      //   };
+      // }
+      // this.excelName = "模型结果导出表";
+      var exportObj = {
+        result:this.nextValue.result,
+        columnNames: this.nextValue.columnNames
       }
-      this.excelName = "模型结果导出表";
+      axios({
+        method: "post",
+        data: exportObj,
+        url: "/analysis/RunTaskController/exportRunTaskRelTable",
+        responseType: "blob",
+      }).then((res) => {
+        const link = document.createElement("a");
+        const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
+        link.style.display = "none";
+        link.href = URL.createObjectURL(blob);
+          //模型运行结果表日期使用当前日期
+          link.setAttribute("download","模型结果导出表"+".xls");
+          document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
     },
     reSet1() {
       this.isLoading = true;
@@ -3347,7 +3370,6 @@ export default {
         } else if (this.modelId != undefined) {
           getModelChartSetup(this.modelId).then((resp) => {
             //做修改操作
-            console.log("数据情况2");
             if (this.myIndex == 0) {
               this.modelChartSetups = resp.data.modelChartSetups;
               for (var i = 0; i < this.modelChartSetups.length; i++) {
@@ -3823,6 +3845,15 @@ export default {
         });
       this.initData();
     },
+    getModelType (name) {
+      if(name == 'SQL模型') {
+        return 'sql'
+      } else if (name == '图形化模型') {
+        return 'graph'
+      } else {
+        return name
+      }
+    }
   },
 };
 </script>

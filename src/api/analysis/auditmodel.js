@@ -319,6 +319,25 @@ export function addRunTaskAndRunTaskRel(data,dataUserId,sceneCode){
     data
   })
 }
+export function getExecuteTaskAndQuery(data,dataUserId,sceneCode){
+  var dataUserId1 = ''
+  var sceneCode1 = ''
+  if(typeof dataUserId!='undefined' &&typeof sceneCode!='undefined'){
+    dataUserId1 = dataUserId
+    sceneCode1 = sceneCode
+  }else{
+     dataUserId1 = store.getters.datauserid
+     sceneCode1 = store.getters.scenecode
+  }
+  data.sceneCode = sceneCode1;
+  data.dataUserId = dataUserId1;
+  return request({
+    baseURL: analysisUrl,
+    url: '/SQLEditorController/getExecuteTaskAndQuery',
+    method: 'post',
+    data
+  })
+}
 
 export function uuid2() {
   var s = []

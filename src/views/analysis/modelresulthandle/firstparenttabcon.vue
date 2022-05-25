@@ -66,7 +66,8 @@
                     scope.row.model.modelName,
                     scope.row.model.modelUuid,
                     scope.row.runStatus,
-                    resultSpiltObjects
+                    resultSpiltObjects,
+                    scope.row
                   )
                 "
                 >{{ scope.row.model.modelName }}</a
@@ -498,7 +499,7 @@ export default {
      * val是运行结果中的resultTables
      * modelName是选中的模型的名字
      */
-    getResultTables(val, modelName, modelUuid, runStatus, resultSpiltObjects) {
+    getResultTables(val, modelName, modelUuid, runStatus, resultSpiltObjects, selectRow) {
       if (runStatus == 3) {
         var assistTables = [];
         var mainTable = null;
@@ -518,7 +519,8 @@ export default {
           modelName,
           modelUuid,
           resultSpiltObjects,
-          this.projectUuid
+          this.projectUuid,
+          selectRow
         );
       } else {
         this.$message({

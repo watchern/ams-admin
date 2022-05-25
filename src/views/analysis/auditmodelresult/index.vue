@@ -35,6 +35,7 @@
           @addTab="addTab"
           @setNextValue="setNextValue"
           :model-id="item.modelId"
+          :modelType="item.modelType"
           :result-mark="item.currentExecuteSQL===undefined?'modelResult':'modelPreview'"
         />
       </el-tab-pane>
@@ -44,6 +45,7 @@
 <script>
 import firstParentTabCon from '@/views/analysis/auditmodelresult/firstparenttabcon'
 import childTabs from '@/views/analysis/auditmodelresult/childtabs'
+import { getOneDict } from "@/utils/index";
 export default {
   components: {
     firstParentTabCon,
@@ -70,7 +72,7 @@ export default {
      * mainTable:主表（运行结果表对象）
      * modelname:模型的名称，用来给新页签赋值title属性用
      */
-    addTab(resultTable, mainTable, modelname, modelUuid,resultSpiltObjects,usetype,currentExecuteSQL) {
+    addTab(resultTable, mainTable, modelname, modelUuid,resultSpiltObjects,usetype,currentExecuteSQL, selectRow) {
       const newTabName = ++this.tabIndex + ''
       this.mainTable = mainTable
       this.helpTables = resultTable
@@ -83,9 +85,29 @@ export default {
         resultSpiltObjects: resultSpiltObjects,
         useType: usetype,
         currentExecuteSQL: currentExecuteSQL,
-        modelId: modelUuid
+        modelId: modelUuid,
+        modelType: this.getModelType(this.modelTypeFormatter({modelType: selectRow.model.modelType}))
       })
       this.editableTabsValue = newTabName
+    },
+    modelTypeFormatter(row, column) {
+      const modelType = row.modelType;
+      const dicObj = getOneDict(modelType);
+      let value = "";
+      if (dicObj.length == 0) {
+        return "";
+      }
+      value = dicObj[0].codeName;
+      return value;
+    },
+    getModelType (name) {
+      if(name == 'SQL模型') {
+        return 'sql'
+      } else if (name == '图形化模型') {
+        return 'graph'
+      } else {
+        return name
+      }
     },
     setNextValue(val){
       this.$refs.childtabsref[this.editableTabs.length-1].loadTableData(val,'apple')
