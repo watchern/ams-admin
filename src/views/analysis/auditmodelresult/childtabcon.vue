@@ -140,8 +140,7 @@
           :sideBar="true"
           :modules="modules"
         />
-
-        <el-card v-if="!isSee" class="box-card" style="height: 100px">
+        <el-card v-if="!isSee" class="box-card" >
           <div>{{ errorMessage }}</div>
         </el-card>
         <pagination
@@ -339,7 +338,7 @@
             />
             <!-- :sideBar="true"
             :modules="modules"-->
-            <el-card v-if="!isSee" class="box-card" style="height: 100px">
+            <el-card v-if="!isSee" class="box-card">
               <div>{{ errorMessage }}</div>
             </el-card>
             <pagination
