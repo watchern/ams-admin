@@ -883,6 +883,27 @@ export function refushTableTree(treeNodes) {
     }
   }
   if (treeNodes != undefined && treeNodes.length > 0) {
+    for (let i = 0; i < treeNodes.length; i++) {
+      if (treeNodes[i].type === 'table') {
+        treeNodes[i].icon = tableIconPath
+        treeNodes[i].enName = treeNodes[i].name;
+        if (treeNodes[i].nameCn) {
+          // treeNodes[i].name = treeNodes[i].name + "(" + treeNodes[i].nameCn + ")"
+          treeNodes[i].name = treeNodes[i].nameCn
+        }
+        treeNodes[i].isParent = true
+      } else if (treeNodes[i].type === 'view') {
+        treeNodes[i].icon = viewIconPath
+        treeNodes[i].isParent = true
+        treeNodes[i].enName = treeNodes[i].name;
+        if (treeNodes[i].nameCn) {
+          // treeNodes[i].name = treeNodes[i].name + "(" + treeNodes[i].nameCn + ")"
+          treeNodes[i].name = treeNodes[i].nameCn
+        }
+      } else if (treeNodes[i].type === 'folder') {
+        treeNodes[i].isParent = true
+      }
+    }
     tableTreeData = tableTreeData.concat(treeNodes)
     zTreeObj = $.fn.zTree.init($('#dataTree'), setting, tableTreeData)
     for (var i = 0; i < treeNodes.length; i++) {
