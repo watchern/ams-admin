@@ -54,6 +54,7 @@
 </template>
 
 <script>
+    import * as commonJs from "@/api/graphtool/js/common";
     export default {
         name: 'FrequencyAnalysisSet',
         data() {
@@ -78,6 +79,8 @@
         },
         methods: {
             init() {
+                // 打开频次分析时清楚当前节点配置
+                window.refreshFcfx = commonJs.refreshFcfx();
                 const graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
                 if (this.nodeData.isSet) {

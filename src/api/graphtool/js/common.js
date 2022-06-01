@@ -1351,6 +1351,47 @@ export function reSetOptProperty() {
 }
 
 /**
+ * 清除频次分析配置（只有操作节点才有该事件）
+ * */
+export function refreshFcfx () {
+    // 判断是否有结果表
+    var isHaschildren = graph.nodeData[graph.curCell.id].childrenIds;
+    if (isHaschildren.length<=0) {
+        return
+    }
+    var curNodeId = graph.curCell.id
+    var nodeExcuteStatus = graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus
+    // if (nodeExcuteStatus === 2) {
+    //     graphIndexVue.$message({ type: 'warning', message: '当前节点正在执行，不可清除' })
+    //     return
+    // }
+    graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus = 1	// 置节点执行状态为未执行
+    graph.nodeData[curNodeId].nodeInfo.resultTableName = ""
+    if (graph.nodeData[curNodeId].nodeInfo.resultTableNameArr) {
+        graph.nodeData[curNodeId].nodeInfo.resultTableNameArr = []
+    }
+    graph.nodeData[curNodeId].isSet = false// 重置其配置状态，在打开时不读取已配置信息，重新进行配置
+    delete graph.nodeData[curNodeId].hasParam;
+    delete graph.nodeData[curNodeId].paramsSetting;
+    delete graphIndexVue.nodeParamRelArr[curNodeId];
+    // 重置当前操作节点的状态图标
+    changeNodeIcon(1, false, graph.curCell.id)
+    // 更新其结果表的执行状态，与其保持一致
+    var childrenIds = graph.nodeData[graph.curCell.id].childrenIds
+    if (childrenIds && childrenIds.length > 0) {
+        for (var i = 0; i < childrenIds.length; i++) {
+            // 重置结果表节点的配置信息
+            graph.nodeData[childrenIds[i]].nodeInfo.nodeExcuteStatus = 1	// 置节点执行状态为未执行
+            graph.nodeData[childrenIds[i]].isSet = false// 重置其配置状态，在打开时不读取已配置信息，重新进行配置
+            // 重置结果表节点的状态图标
+            changeNodeIcon(1, false, childrenIds[i])
+        }
+    }
+    changeNodeInfo(curNodeId, true)
+    autoSaveGraph()
+}
+
+/**
  * SQL编辑
  */
 export function sqlNodeEdit() {
