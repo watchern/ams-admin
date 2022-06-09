@@ -1234,6 +1234,8 @@ export default {
           },
         },
       ],
+      // 根据系统配置判断预览模式还是执行模式
+      isPreviewAndFunc: false
     };
   },
   mounted() {
@@ -1797,7 +1799,8 @@ export default {
       // });
       // this.gridColumnApi.autoSizeColumns(allColumnIds, skipHeader);
     },
-    initData(sql, nextValue, modelName) {
+    initData(sql, nextValue, modelName, isPreviewAndFunc) {
+      this.isPreviewAndFunc = isPreviewAndFunc
       this.result = {};
       if (this.useType == "modelRunResult") {
         this.isLoading = true;
@@ -3100,37 +3103,44 @@ getModelType(this.modelType) };
      * sql编辑器模型结果点击导出后出发的方法
      */
     modelResultExport() {
-      // this.tableData = this.nextValue.result;
-      // this.json_fields = {};
-      // for (var i = 0; i < this.nextValue.columnNames.length; i++) {
-      //   this.json_fields[this.nextValue.columnNames[i]] = {
-      //     field: this.nextValue.columnNames[i],
-      //     callback: (value) => {
-      //       return "&nbsp;" + value;
-      //     },
-      //   };
-      // }
-      // this.excelName = "模型结果导出表";
-      var exportObj = {
-        result:this.nextValue.result,
-        columnNames: this.nextValue.columnNames
+      // 根据系统配置判断预览模式还是执行模式
+      if (!this.isPreviewAndFunc) {
+        this.tableData = this.nextValue.result;
+        this.json_fields = {};
+        for (var i = 0; i < this.nextValue.columnNames.length; i++) {
+          this.json_fields[this.nextValue.columnNames[i]] = {
+            field: this.nextValue.columnNames[i],
+            callback: (value) => {
+              return "&nbsp;" + value;
+            },
+          };
+        }
+        this.excelName = "模型结果导出表";
+
+      } else {
+        var exportObj = {
+          result:this.nextValue.result,
+          columnNames: this.nextValue.columnNames
+        }
+        axios({
+          method: "post",
+          data: exportObj,
+          url: "/analysis/RunTaskController/exportRunTaskRelTable",
+          responseType: "blob",
+        }).then((res) => {
+          const link = document.createElement("a");
+          const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
+          link.style.display = "none";
+          link.href = URL.createObjectURL(blob);
+            //模型运行结果表日期使用当前日期
+            link.setAttribute("download","模型结果导出表"+".xls");
+            document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        });
+
       }
-      axios({
-        method: "post",
-        data: exportObj,
-        url: "/analysis/RunTaskController/exportRunTaskRelTable",
-        responseType: "blob",
-      }).then((res) => {
-        const link = document.createElement("a");
-        const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
-        link.style.display = "none";
-        link.href = URL.createObjectURL(blob);
-          //模型运行结果表日期使用当前日期
-          link.setAttribute("download","模型结果导出表"+".xls");
-          document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      });
+     
     },
     reSet1() {
       this.isLoading = true;

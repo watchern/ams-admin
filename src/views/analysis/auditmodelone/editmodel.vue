@@ -460,6 +460,10 @@ export default {
     paramText : "拖拽改变参数展示顺序",
     resultText : "只显示最后的结果列",
     relationText : "在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。用户通过本功能来创建并维护模型间的关联关系，以满足多模型联合执行分析的业务需求。通过模型设计器，用户能够为当前的模型建立与其他可访问模型的关联关系，并将其分析结果引入到当前模型设计中。",
+    isConfigList: [],
+    // 控制是否跳过sql校验 默认false校验
+    isJumpSQLCheck: false
+
     }
   },
   watch: {
@@ -489,6 +493,12 @@ export default {
       this.dataUserId = undefined
       this.sceneCode = undefined
     }
+    this.isConfigList = getDictList('001009');
+    this.isConfigList.map(i => {
+      if (i.codeName == '是否跳过SQL校验') {
+        this.isJumpSQLCheck = true
+      }
+    })
   },
   mounted() {
     // this.initEvent()
@@ -1341,10 +1351,13 @@ export default {
       var editmodel2db = function (_this) {
 
         if (!_this.isUpdate) {
-          // if (modelObj == null ) {
-          //   _this.$message("请成功运行后保存");
-          //   return;
-          // }
+          if (!_this.isJumpSQLCheck) { // isJumpSQLCheck为true 时不校验
+            if (modelObj == null ) {
+              _this.$message("请成功运行后保存");
+              return;
+            }
+            
+          }
           saveModel(modelObj).then(result => {
             _this.editorModelLoading = false
             if (result.code === 0) {

@@ -478,7 +478,6 @@ export default {
     }
   },
   mounted() {
-    alert(123)
     this.initEvent()
     this.initData(this.operationObj)
     // 如果为2则反显要修改的数据

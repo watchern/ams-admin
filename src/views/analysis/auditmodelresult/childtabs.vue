@@ -77,8 +77,8 @@ export default {
     /**
      * sql编辑器模型结果用来给子组件aggrid表格赋值
      */
-      loadTableData(nextValue,modelName){
-        this.$refs.child[this.index].initData(null,nextValue,modelName)
+      loadTableData(nextValue,modelName, isPreviewAndFunc){
+        this.$refs.child[this.index].initData(null,nextValue,modelName, isPreviewAndFunc)
         this.index++;
       },
       /**
