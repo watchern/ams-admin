@@ -156,9 +156,11 @@ function initOutputColumn(columnInfo, isCountTr, sign, countType, isInit) {
                 if(columnItem.columnName.indexOf("`") > -1){ //此处单独处理SPARK数据源下的输出字段显示问题
                     const spark_columnName = columnItem.columnName.replace(/`/g,"");
                     // const spark_columnName = columnItem.columnName.replaceAll("`","");
-                    columnItem.newColumnName = "`" + spark_columnName + "_" + countType.name + "`"
+                    // columnItem.newColumnName = "`" + spark_columnName + "_" + countType.name + "`"
+                    columnItem.newColumnName =`\`${spark_columnName}_${countType.name}\``
                 }else{
-                    columnItem.newColumnName = columnItem.columnName + "_" + countType.name;
+                    // columnItem.newColumnName = columnItem.columnName + "_" + countType.name;
+                    columnItem.newColumnName = `"${columnItem.columnName}_${countType.name}"`;
                 }
             }
         }
