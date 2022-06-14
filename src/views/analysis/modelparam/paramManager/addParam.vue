@@ -281,18 +281,34 @@
                       name="optionsSqlline"
                       id="optionsSqlline"
                       autocomplete="off"
+                      :autosize="{ minRows: 3, maxRows: 5 }"
                       :placeholder="getSqlRule(1)"
                     />
-                    <el-button
-                      type="primary"
-                      @click="viewSqlRule(1)"
-                      class="btn btn-primary"
-                      >查看SQL规则</el-button
-                    >
+                    <el-popover
+                      placement="right"
+                      width="500"
+                      trigger="click"
+                      :value="sqlRuleVisible1">
+                      <el-input
+                        :autosize="{ minRows: 4 }"
+                        type="textarea"
+                        :disabled="true"
+                        v-model="SQLRuleText"
+                      >
+                      </el-input>
+                      <el-button
+                        type="primary"
+                        @click="viewSqlRule(1)"
+                        class="btn btn-primary"
+                        slot="reference"
+                        >查看SQL规则</el-button
+                      >
+                    </el-popover>
                     <el-button
                       type="primary"
                       @click="sqlPreview(1)"
                       class="btn btn-primary"
+                      style="margin-left: 15px"
                       >预览</el-button
                     >
                   </div>
@@ -311,20 +327,38 @@
             v-model="form.paramChoice.optionsSql"
             name="optionsSql"
             id="optionsSql"
+            :autosize="{ minRows: 3, maxRows: 5 }"
             autocomp
             lete="off"
             :placeholder="getSqlRule(2)"
+            class="sqlRule-input"
           />
-          <el-button
-            type="primary"
-            @click="viewSqlRule(2)"
-            class="btn btn-primary"
-            >查看SQL规则</el-button
-          >
+        
+          <el-popover
+            placement="right"
+            width="500"
+            trigger="click"
+            :value="sqlRuleVisible2">
+            <el-input
+              :autosize="{ minRows: 4 }"
+              type="textarea"
+              :disabled="true"
+              v-model="SQLRuleText"
+            >
+            </el-input>
+            <el-button
+              type="primary"
+              @click="viewSqlRule(2)"
+              class="btn btn-primary"
+              slot="reference"
+              >查看SQL规则</el-button
+            >
+          </el-popover>
           <el-button
             type="primary"
             @click="sqlPreview(2)"
             class="btn btn-primary"
+            style="margin-left:15px"
             >预览</el-button
           >
         </div>
@@ -359,6 +393,7 @@
         v-if="SQLRuleDialog"
         title="SQL规则"
         :visible.sync="SQLRuleDialog"
+        custom-class="sqlRule-dia"
       >
         <el-input
           :autosize="{ minRows: 2, maxRows: 5 }"
@@ -751,6 +786,8 @@ export default {
         list: "格式：SELECT A,B FROM 模式.C\nA:真实值，B:显示值，若字段过多,则默认只使用前两列进行真实值与显示值的匹配",
         tree: "格式：SELECT A,B,C FROM 模式.D\nA:子项真实值，B:子项显示值，C：父项真实值，将使用【A】字段与【C】字段进行父子节点关系匹配，若字段过多（或者存在【*】），则默认只使用前三列进行匹配",
       },
+      sqlRuleVisible1: true, // 控制SQL规则Popover1显隐
+      sqlRuleVisible2: true, // 控制SQL规则Popover2显隐
     };
   },
   watch: {
@@ -1418,8 +1455,17 @@ export default {
      * @param type 1列表 2树
      */
     viewSqlRule(type) {
-      this.SQLRuleDialog = true;
+      // this.SQLRuleDialog = true;
       this.SQLRuleText = this.getSqlRule(type);
+      this.$nextTick(() => {
+         if (type == 1) {
+          this.sqlRuleVisible1 = !this.sqlRuleVisible1
+          this.sqlRuleVisible2 = false
+        } else {
+          this.sqlRuleVisible2 = !this.sqlRuleVisible2
+          this.sqlRuleVisible1 = false
+        }
+      }) 
     },
     /**
      * 获取sql规则
@@ -1457,5 +1503,16 @@ export default {
 }
 .addparambox >>> .el-tree-node__content {
   height: 40px !important;
+}
+>>> .sqlRule-dia {
+  min-height: 510px;
+}
+>>> .sqlRule-dia .el-textarea {
+  margin-top: 35px;
+
+}
+.sqlRule-input {
+  margin-bottom: 15px;
+
 }
 </style>
