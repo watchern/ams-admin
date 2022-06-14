@@ -1348,16 +1348,15 @@ export default {
       if(modelObj=="保留部分校验"){
         return
       }
+      if (this.isJumpSQLCheck) { // isJumpSQLCheck为true 时不校验
+        if (modelObj == null ) {
+          this.$message("请成功运行后保存");
+          return;
+        }
+      }
       var editmodel2db = function (_this) {
 
         if (!_this.isUpdate) {
-          if (!_this.isJumpSQLCheck) { // isJumpSQLCheck为true 时不校验
-            if (modelObj == null ) {
-              _this.$message("请成功运行后保存");
-              return;
-            }
-            
-          }
           saveModel(modelObj).then(result => {
             _this.editorModelLoading = false
             if (result.code === 0) {
