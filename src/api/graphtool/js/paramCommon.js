@@ -17,7 +17,7 @@ export function organizeSelectTreeData(result) {
         }
         dataArr.push(obj)
     }
-    dataArr = matchingPcRelation(dataArr)// 匹配父子关系
+    dataArr = matchingPcRelation(dataArr,  0)// 匹配父子关系
     return dataArr
 }
 
@@ -39,7 +39,7 @@ export function organizeSelectTreeDataByType(result, dataType) {
         }
         dataArr.push(obj)
     }
-    dataArr = matchingPcRelation(dataArr)// 匹配父子关系
+    dataArr = matchingPcRelation(dataArr, dataType == 'str' ? "'0'" : 0)// 匹配父子关系
     return dataArr
 }
 
@@ -50,85 +50,109 @@ export function organizeSelectTreeDataByType(result, dataType) {
  * @return dataArr
  * @author JL
  */
-function matchingPcRelation(dataArr) {
-    var newDataArr = []
-    var c_code_arr = []// 用来记录执行本次方法的最末级节点集合
-    var hasUsed = false// 此方法是否有效，默认无效
-    for (var i = 0; i < dataArr.length; i++) { // 第一层循环
-        var firstVal = dataArr[i]// 第一层的对象
-        var C_CODE = firstVal.value// 拿到当前值的编码
-        var C_NAME = firstVal.name// 拿到当前值的显示值
-        var P_CODE = firstVal.pValue// 拿到当前值的父编码
-        var sort = firstVal.sort// 拿到当前值的排序号
-        var children = firstVal.children// 拿到当前值的子集
-        var cNum = 0
-        var isBreak = false
-        for (var j = 0; j < dataArr.length; j++) { // 第二层循环
-            var secondVal = dataArr[j]// 第二层的对象
-            var value = secondVal.value// 拿到当前值的编码
-            var pValue = secondVal.pValue// 拿到当前值的父编码
-            if (P_CODE === value && C_CODE !== value && !isBreak) { // 如果firstVal的父编码等于secondVal子编码的值，则说明firstVal不是根节点
-                var obj = {
-                    'name': C_NAME,
-                    'value': C_CODE,
-                    'pValue': P_CODE, // 临时有用
-                    'children': children.length > 0 ? children : null,
-                    'sort': sort
-                }
-                var ifExsit = false
-                for (var k = 0; k < secondVal.children.length; k++) {
-                    if (obj.value === secondVal.children[k].value && obj.pValue === secondVal.children[k].pValue) {
-                        ifExsit = true
-                        break
-                    }
-                }
-                if (!ifExsit) { // 如果不存在,则将firstVal（子节点）加入到secondVal（父节点）的children中
-                    if (secondVal.children.length === 0) {
-                        secondVal.children.push(obj)
-                    } else {
-                        var sortInd = -1
-                        for (var n = 0; n < secondVal.children.length; n++) {
-                            if (secondVal.children[n].sort > sort) {
-                                sortInd = n
-                                break
-                            }
-                        }
-                        if (sortInd === -1) { // 如果当前对象（obj）比children中所有对象的排序值都大，则直接将obj添加至最后一个位置
-                            secondVal.children.push(obj)
-                        } else { // 只要children中的对象存在排序值比obj排序值大的，则将obj插入相应位置
-                            secondVal.children.splice(n, 0, obj)
-                        }
-                    }
-                }
-                hasUsed = true
-                isBreak = true
+function matchingPcRelation(dataArr, rootValue) {
+//     var newDataArr = []
+//     var c_code_arr = []// 用来记录执行本次方法的最末级节点集合
+//     var hasUsed = false// 此方法是否有效，默认无效
+//     for (var i = 0; i < dataArr.length; i++) { // 第一层循环
+//         var firstVal = dataArr[i]// 第一层的对象
+//         var C_CODE = firstVal.value// 拿到当前值的编码
+//         var C_NAME = firstVal.name// 拿到当前值的显示值
+//         var P_CODE = firstVal.pValue// 拿到当前值的父编码
+//         var sort = firstVal.sort// 拿到当前值的排序号
+//         var children = firstVal.children// 拿到当前值的子集
+//         var cNum = 0
+//         var isBreak = false
+//         for (var j = 0; j < dataArr.length; j++) { // 第二层循环
+//             var secondVal = dataArr[j]// 第二层的对象
+//             var value = secondVal.value// 拿到当前值的编码
+//             var pValue = secondVal.pValue// 拿到当前值的父编码
+//             if (P_CODE === value && C_CODE !== value && !isBreak) { // 如果firstVal的父编码等于secondVal子编码的值，则说明firstVal不是根节点
+//                 var obj = {
+//                     'name': C_NAME,
+//                     'value': C_CODE,
+//                     'pValue': P_CODE, // 临时有用
+//                     'children': children.length > 0 ? children : null,
+//                     'sort': sort
+//                 }
+//                 var ifExsit = false
+//                 for (var k = 0; k < secondVal.children.length; k++) {
+//                     if (obj.value === secondVal.children[k].value && obj.pValue === secondVal.children[k].pValue) {
+//                         ifExsit = true
+//                         break
+//                     }
+//                 }
+//                 if (!ifExsit) { // 如果不存在,则将firstVal（子节点）加入到secondVal（父节点）的children中
+//                     if (secondVal.children.length === 0) {
+//                         secondVal.children.push(obj)
+//                     } else {
+//                         var sortInd = -1
+//                         for (var n = 0; n < secondVal.children.length; n++) {
+//                             if (secondVal.children[n].sort > sort) {
+//                                 sortInd = n
+//                                 break
+//                             }
+//                         }
+//                         if (sortInd === -1) { // 如果当前对象（obj）比children中所有对象的排序值都大，则直接将obj添加至最后一个位置
+//                             secondVal.children.push(obj)
+//                         } else { // 只要children中的对象存在排序值比obj排序值大的，则将obj插入相应位置
+//                             secondVal.children.splice(n, 0, obj)
+//                         }
+//                     }
+//                 }
+//                 hasUsed = true
+//                 isBreak = true
+//             }
+//             if (C_CODE !== pValue) { // 本身不作为任何节点的父节点
+//                 cNum++
+//             }
+//         }
+//         if (cNum === dataArr.length) {
+//             c_code_arr.push(firstVal)// 记录本次循环最末级节点的编码数组
+//         }
+//     }
+//     if (hasUsed) {
+//         // 寻找执行本次方法的最末级节点集合
+//         for (var c = 0; c < dataArr.length; c++) {
+//             var num = 0
+//             for (var t = 0; t < c_code_arr.length; t++) {
+//                 if (dataArr[c].value !== c_code_arr[t].value) {
+//                     num++
+//                 }
+//             }
+//             if (num === c_code_arr.length) { // 如果当前编码与已记录的子节点的编码数组中每个对象的编码都不相等
+//                 newDataArr.push(dataArr[c])// 找出不是子节点的对象
+//             }
+//         }
+//         if (newDataArr.length > 0) {
+//             dataArr = matchingPcRelation(newDataArr)
+//         }
+//     }
+//     return dataArr
+
+
+
+    // 通过pValue等于value 递归遍历数据为父子结构
+    // 每层数据通过sort排序
+    var arr = [];
+    dataArr.forEach(item => {
+        if (item.pValue == rootValue) {
+            const children = matchingPcRelation(dataArr, item.value)
+            children.sort((a, b) => {
+                return a.sort - b.sort
+            })
+            if (children.length && children.length>0) {
+                item.children = children
+            } else {
+                delete item.children;
             }
-            if (C_CODE !== pValue) { // 本身不作为任何节点的父节点
-                cNum++
-            }
+            arr.push(item)
+            arr.sort((a, b) => {
+                return a.sort - b.sort
+            })
         }
-        if (cNum === dataArr.length) {
-            c_code_arr.push(firstVal)// 记录本次循环最末级节点的编码数组
-        }
-    }
-    if (hasUsed) {
-        // 寻找执行本次方法的最末级节点集合
-        for (var c = 0; c < dataArr.length; c++) {
-            var num = 0
-            for (var t = 0; t < c_code_arr.length; t++) {
-                if (dataArr[c].value !== c_code_arr[t].value) {
-                    num++
-                }
-            }
-            if (num === c_code_arr.length) { // 如果当前编码与已记录的子节点的编码数组中每个对象的编码都不相等
-                newDataArr.push(dataArr[c])// 找出不是子节点的对象
-            }
-        }
-        if (newDataArr.length > 0) {
-            dataArr = matchingPcRelation(newDataArr)
-        }
-    }
-    return dataArr
+    })
+    return arr;
 }
 
 /**
