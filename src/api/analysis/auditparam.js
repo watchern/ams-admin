@@ -2613,12 +2613,14 @@ export function changeparamdata (info,ind) {
         for(let i =0;i<result.data.paramList.length;i++){
           list.push(
             {
-              name:result.data.paramList[i].paramName,
-              value:result.data.paramList[i].paramValue
+              'name': result.data.paramList[i].C_NAME,
+              'value': result.data.paramList[i].C_CODE,
+              'pValue':result.data.paramList[i].P_CODE,
+              'children': [],
             }
           )
         }
-        settingVue.setParamArr[ind].data = list
+        settingVue.setParamArr[ind].data = paramCommonJs.matchingPcRelation(list, 0, true)
       }
     })
   }
