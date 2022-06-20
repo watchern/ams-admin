@@ -25,7 +25,7 @@
              <!-- 下拉列表类型 -->
              <!-- setParamObj.dataType == 'str' ? `'`+ item.value + `'`:  -->
             <el-select v-model="setParamObj.value" style="width: 90%;" 
-                :multiple="setParamObj.dataChoiceType == 0 || setParamObj.dataChoiceType == '0'" filterable clearable>
+                :multiple="setParamObj.dataChoiceType == 0 || setParamObj.dataChoiceType == '0'" filterable clearable @change="() => changeparamdata(setParamObj,index)">
               <el-option v-for="item in setParamObj.data" :value="item.value" :label="item.name" :key="item.value" >
                 <span style="float: left"> {{ item.name }}</span>
                 <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value == item.name ? "" : item.value}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -33,10 +33,10 @@
             </el-select>
           </td>
           <td v-if="setParamObj.inputType === 'textinp'" ref="textParam">
-            <el-input style="width: 90%;" :title="setParamObj.title" class='paramOption paramTr' v-model="setParamObj.value"></el-input>
+            <el-input style="width: 90%;" :title="setParamObj.title" class='paramOption paramTr' v-model="setParamObj.value" @change="changeparamdata(setParamObj,index)"></el-input>
           </td>
           <td v-if="setParamObj.inputType === 'timeinp'" ref="dataParam">
-            <el-date-picker style="width: 90%;" :title="setParamObj.title" class='paramOption paramTr' type="date" placeholder="选择日期" v-model="setParamObj.value"></el-date-picker>
+            <el-date-picker style="width: 90%;" :title="setParamObj.title" class='paramOption paramTr' type="date" placeholder="选择日期" v-model="setParamObj.value" @change="changeparamdata(setParamObj,index)"></el-date-picker>
           </td>
           <td v-if="setParamObj.inputType === 'treeinp'" ref="selectTreeParam">
             <!-- <div :id="setParamObj.id" :title="setParamObj.title" class='xm-select-demo paramTr'></div> -->
@@ -45,6 +45,7 @@
             style="width:90%"
             :props="{ label:'name',  multiple: setParamObj.dataChoiceType == 0 || setParamObj.dataChoiceType == '0', emitPath: false, checkStrictly: true }"
             :options="setParamObj.data"
+            @change="changeparamdata(setParamObj,index)"
             multiple
             clearable />
           </td>
@@ -75,6 +76,12 @@ data(){
     settingParams.sendSettingVue(this)
   },
   methods:{
+    changeparamdata (info,ind) {
+      settingParams.changeparamdata(info,ind);
+    },
+    async changeRelationParam(ind){
+      settingParams.changeRelationParam(ind);
+    },
     initSetting(paramsSetting){
       this.paramsSetting = paramsSetting
       this.arr = paramsSetting

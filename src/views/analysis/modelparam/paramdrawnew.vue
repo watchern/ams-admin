@@ -22,7 +22,7 @@
           <!-- 树类型参数 -->
           <el-cascader
             v-model="paramTreeValueList[ind]"
-            v-if="paramInfo.inputType === 'treeinp'"
+            v-if="paramInfo.inputType === 'treeinp' && paramInfo.data.length"
             style="width:100%"
             ref="selectTreeParam"
             :props="{ label:'name',  multiple: paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0', emitPath: false,checkStrictly: true}"
@@ -66,7 +66,7 @@ export default {
       collapseTitle:'',
       hasParam:false,
       paramListValueList: [], // 下拉列表参数值集合
-      paramTreeValueList: [] // 下拉树列表参数值集合
+      paramTreeValueList: [], // 下拉树列表参数值集合
     }
   },created(){
     addJsFile('/lib/layui/xm-select.js','xm-select')
@@ -113,12 +113,16 @@ export default {
             for(let i =0;i<result.data.paramList.length;i++){
               list.push(
                 {
-                  name:result.data.paramList[i].paramName,
-                  value:result.data.paramList[i].paramValue
+                  'name': result.data.paramList[i].C_NAME,
+                  'value': result.data.paramList[i].C_CODE,
+                  'pValue':result.data.paramList[i].P_CODE,
+                  'children': [],
                 }
               )
             }
-            this.paramInfoArr[ind].data = list
+            // list =  paramCommonJs.matchingPcRelation(list, 0, true)
+
+            this.paramInfoArr[ind].data = paramCommonJs.matchingPcRelation(list, 0, true)
           }
         })
       }

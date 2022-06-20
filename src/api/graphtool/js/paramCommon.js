@@ -50,7 +50,7 @@ export function organizeSelectTreeDataByType(result, dataType) {
  * @return dataArr
  * @author JL
  */
-function matchingPcRelation(dataArr, rootValue) {
+ export function matchingPcRelation(dataArr, rootValue, unSort) {
 //     var newDataArr = []
 //     var c_code_arr = []// 用来记录执行本次方法的最末级节点集合
 //     var hasUsed = false// 此方法是否有效，默认无效
@@ -134,22 +134,28 @@ function matchingPcRelation(dataArr, rootValue) {
 
     // 通过pValue等于value 递归遍历数据为父子结构
     // 每层数据通过sort排序
+    // unSort 为false的时候需要根据sort字段排序
     var arr = [];
     dataArr.forEach(item => {
         if (item.pValue == rootValue) {
             const children = matchingPcRelation(dataArr, item.value)
-            children.sort((a, b) => {
-                return a.sort - b.sort
-            })
+            if (!unSort) {
+                children.sort((a, b) => {
+                    return a.sort - b.sort
+                })
+            }
             if (children.length && children.length>0) {
                 item.children = children
             } else {
                 delete item.children;
             }
             arr.push(item)
-            arr.sort((a, b) => {
-                return a.sort - b.sort
-            })
+            if (!unSort) {
+                arr.sort((a, b) => {
+                    return a.sort - b.sort
+                })
+            }
+           
         }
     })
     return arr;

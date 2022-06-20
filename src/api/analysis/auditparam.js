@@ -1006,7 +1006,7 @@ function organizeSelectTreeData(result) {
     }
     dataArr.push(obj)
   }
-  dataArr = matchingPcRelation(dataArr) // 匹配父子关系
+  dataArr = matchingPcRelation(dataArr,0) // 匹配父子关系
   return dataArr
 }
 
@@ -1116,85 +1116,109 @@ function getParentUnChecked(checkData, parentUnCheckedArr, dataArr, arr) {
  * @return dataArr
  * @author JL
  */
-function matchingPcRelation(dataArr) {
-  var newDataArr = []
-  var c_code_arr = [] // 用来记录执行本次方法的最末级节点集合
-  var hasUsed = false // 此方法是否有效，默认无效
-  for (var i = 0; i < dataArr.length; i++) { // 第一层循环
-    var firstVal = dataArr[i] // 第一层的对象
-    var C_CODE = firstVal.value // 拿到当前值的编码
-    var C_NAME = firstVal.name // 拿到当前值的显示值
-    var P_CODE = firstVal.pValue // 拿到当前值的父编码
-    var sort = firstVal.sort // 拿到当前值的排序号
-    var children = firstVal.children // 拿到当前值的子集
-    var cNum = 0
-    var isBreak = false
-    for (var j = 0; j < dataArr.length; j++) { // 第二层循环
-      var secondVal = dataArr[j] // 第二层的对象
-      var value = secondVal.value // 拿到当前值的编码
-      var pValue = secondVal.pValue // 拿到当前值的父编码
-      if (P_CODE === value && C_CODE !== value && !isBreak) { // 如果firstVal的父编码等于secondVal子编码的值，则说明firstVal不是根节点
-        var obj = {
-          'name': C_NAME,
-          'value': C_CODE,
-          'pValue': P_CODE, // 临时有用
-          'children': children.length > 0 ? children : null,
-          'sort': sort
-        }
-        var ifExsit = false
-        for (var k = 0; k < secondVal.children.length; k++) {
-          if (obj.value === secondVal.children[k].value && obj.pValue === secondVal.children[k].pValue) {
-            ifExsit = true
-            break
-          }
-        }
-        if (!ifExsit) { // 如果不存在,则将firstVal（子节点）加入到secondVal（父节点）的children中
-          if (secondVal.children.length === 0) {
-            secondVal.children.push(obj)
+function matchingPcRelation(dataArr, rootValue) {
+  // var newDataArr = []
+  // var c_code_arr = [] // 用来记录执行本次方法的最末级节点集合
+  // var hasUsed = false // 此方法是否有效，默认无效
+  // for (var i = 0; i < dataArr.length; i++) { // 第一层循环
+  //   var firstVal = dataArr[i] // 第一层的对象
+  //   var C_CODE = firstVal.value // 拿到当前值的编码
+  //   var C_NAME = firstVal.name // 拿到当前值的显示值
+  //   var P_CODE = firstVal.pValue // 拿到当前值的父编码
+  //   var sort = firstVal.sort // 拿到当前值的排序号
+  //   var children = firstVal.children // 拿到当前值的子集
+  //   var cNum = 0
+  //   var isBreak = false
+  //   for (var j = 0; j < dataArr.length; j++) { // 第二层循环
+  //     var secondVal = dataArr[j] // 第二层的对象
+  //     var value = secondVal.value // 拿到当前值的编码
+  //     var pValue = secondVal.pValue // 拿到当前值的父编码
+  //     if (P_CODE === value && C_CODE !== value && !isBreak) { // 如果firstVal的父编码等于secondVal子编码的值，则说明firstVal不是根节点
+  //       var obj = {
+  //         'name': C_NAME,
+  //         'value': C_CODE,
+  //         'pValue': P_CODE, // 临时有用
+  //         'children': children.length > 0 ? children : null,
+  //         'sort': sort
+  //       }
+  //       var ifExsit = false
+  //       for (var k = 0; k < secondVal.children.length; k++) {
+  //         if (obj.value === secondVal.children[k].value && obj.pValue === secondVal.children[k].pValue) {
+  //           ifExsit = true
+  //           break
+  //         }
+  //       }
+  //       if (!ifExsit) { // 如果不存在,则将firstVal（子节点）加入到secondVal（父节点）的children中
+  //         if (secondVal.children.length === 0) {
+  //           secondVal.children.push(obj)
+  //         } else {
+  //           var sortInd = -1
+  //           for (var n = 0; n < secondVal.children.length; n++) {
+  //             if (secondVal.children[n].sort > sort) {
+  //               sortInd = n
+  //               break
+  //             }
+  //           }
+  //           if (sortInd === -1) { // 如果当前对象（obj）比children中所有对象的排序值都大，则直接将obj添加至最后一个位置
+  //             secondVal.children.push(obj)
+  //           } else { // 只要children中的对象存在排序值比obj排序值大的，则将obj插入相应位置
+  //             secondVal.children.splice(n, 0, obj)
+  //           }
+  //         }
+  //       }
+  //       hasUsed = true
+  //       isBreak = true
+  //     }
+  //     if (C_CODE !== pValue) { // 本身不作为任何节点的父节点
+  //       cNum++
+  //     }
+  //   }
+  //   if (cNum === dataArr.length) {
+  //     c_code_arr.push(firstVal) // 记录本次循环最末级节点的编码数组
+  //   }
+  // }
+  // if (hasUsed) {
+  //   // 寻找执行本次方法的最末级节点集合
+  //   for (var c = 0; c < dataArr.length; c++) {
+  //     var num = 0
+  //     for (var t = 0; t < c_code_arr.length; t++) {
+  //       if (dataArr[c].value !== c_code_arr[t].value) {
+  //         num++
+  //       }
+  //     }
+  //     if (num === c_code_arr.length) { // 如果当前编码与已记录的子节点的编码数组中每个对象的编码都不相等
+  //       newDataArr.push(dataArr[c]) // 找出不是子节点的对象
+  //     }
+  //   }
+  //   if (newDataArr.length > 0) {
+  //     dataArr = matchingPcRelation(newDataArr)
+  //   }
+  // }
+  // console.log(dataArr, '处理好的dataArr')
+
+
+
+  // 通过pValue等于value 递归遍历数据为父子结构
+  // 每层数据通过sort排序
+  var arr = [];
+  dataArr.forEach(item => {
+      if (item.pValue == rootValue) {
+          const children = matchingPcRelation(dataArr, item.value)
+          children.sort((a, b) => {
+              return a.sort - b.sort
+          })
+          if (children.length && children.length>0) {
+              item.children = children
           } else {
-            var sortInd = -1
-            for (var n = 0; n < secondVal.children.length; n++) {
-              if (secondVal.children[n].sort > sort) {
-                sortInd = n
-                break
-              }
-            }
-            if (sortInd === -1) { // 如果当前对象（obj）比children中所有对象的排序值都大，则直接将obj添加至最后一个位置
-              secondVal.children.push(obj)
-            } else { // 只要children中的对象存在排序值比obj排序值大的，则将obj插入相应位置
-              secondVal.children.splice(n, 0, obj)
-            }
+              delete item.children;
           }
-        }
-        hasUsed = true
-        isBreak = true
+          arr.push(item)
+          arr.sort((a, b) => {
+              return a.sort - b.sort
+          })
       }
-      if (C_CODE !== pValue) { // 本身不作为任何节点的父节点
-        cNum++
-      }
-    }
-    if (cNum === dataArr.length) {
-      c_code_arr.push(firstVal) // 记录本次循环最末级节点的编码数组
-    }
-  }
-  if (hasUsed) {
-    // 寻找执行本次方法的最末级节点集合
-    for (var c = 0; c < dataArr.length; c++) {
-      var num = 0
-      for (var t = 0; t < c_code_arr.length; t++) {
-        if (dataArr[c].value !== c_code_arr[t].value) {
-          num++
-        }
-      }
-      if (num === c_code_arr.length) { // 如果当前编码与已记录的子节点的编码数组中每个对象的编码都不相等
-        newDataArr.push(dataArr[c]) // 找出不是子节点的对象
-      }
-    }
-    if (newDataArr.length > 0) {
-      dataArr = matchingPcRelation(newDataArr)
-    }
-  }
-  return dataArr
+  })
+  return arr
 }
 
 /**
@@ -1902,6 +1926,7 @@ export function initSetting() {
  * 初始化参数配置模型编辑新增 模型参数初始化
  */
 export function initSettingParam() {
+  console.log('执行')
   let load = $(settingVue.$refs.settingParamDiv).mLoading({
     'text': '正在加载配置，请稍后……',
     'hasCancel': false
@@ -2389,6 +2414,7 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
   let paramSql = paramObj.paramChoice.optionsSql//拉列表或下拉树的SQL语句
   obj.setParamObj.title = paramObj.paramChoice.allowedNull === 0 ? '不可为空' : '可为空'
   obj.setParamObj.dataType = paramObj.dataType // dataType
+  obj.setParamObj.paramConditionList = paramObj.paramConditionList
   let hasSql = false// 下拉列表或下拉树是非SQL方式或者是SQL方式但值为空
   switch (obj.setParamObj.inputType) {
     case 'lineinp':// 下拉列表
@@ -2541,6 +2567,138 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
       break
   }
   return obj
+}
+
+export function changeparamdata (info,ind) {
+  // console.log(settingVue.setParamArr, 'setParamArrsetParamArrsetParamArr')
+  let paramsArr = []
+  if(info.paramConditionList.length>0){
+    for(let i = 0; i<info.paramConditionList.length;i++){
+      for(let j =0;j<settingVue.setParamArr.length;j++){
+        if(info.paramConditionList[i].relationParamId == settingVue.setParamArr[j].dataId){
+          let repvalue = settingVue.setParamArr[j].inputType == "textinp"?settingVue.setParamArr[j].dataDefaultVal:settingVue.setParamArr[j].inputType == "lineinp"?(Array.isArray(settingVue.setParamArr[j].dataDefaultVal)?info.value.join(','):info.value):settingVue.setParamArr[j].inputType == "treeinp"?(Array.isArray(this.paramTreeValueList[j])?this.paramTreeValueList[j].join(','):this.paramTreeValueList[j]):settingVue.setParamArr[j].dataDefaultVal
+
+          // let repvalue = this.paramInfoArr[j].inputType == "textinp"?this.paramInfoArr[j].dataDefaultVal:this.paramInfoArr[j].inputType == "lineinp"?(Array.isArray(this.paramListValueList[j])?this.paramListValueList[j].join(','):this.paramListValueList[j]):this.paramInfoArr[j].inputType == "treeinp"?(Array.isArray(this.paramTreeValueList[j])?this.paramTreeValueList[j].join(','):this.paramTreeValueList[j]):this.paramInfoArr[j].dataDefaultVal
+
+
+
+          if(settingVue.setParamArr[j].dataType != "int" && settingVue.setParamArr[j].inputType != "lineinp" && settingVue.setParamArr[j].inputType != "treeinp"){
+            if(repvalue!=undefined && repvalue!=''){
+              repvalue = "'" + repvalue + "'"
+            }else{
+              repvalue = ""
+            }
+          }
+          paramsArr.push({
+            id:info.paramConditionList[i].relationParamId,
+            paramValue:repvalue,
+            useQuotation:settingVue.setParamArr[j].useQuotation,
+          })
+        }
+      }
+    }
+    request({
+      baseURL: '/analysis',
+      url: '/paramConditionController/getParamConditionSqlResult',
+      method: 'post',
+      data:{
+        "paramId":info.dataId,
+        "paramsArr":paramsArr
+      }
+    }).then(result => {
+      if(result.data.isError == true){
+        this.$message({type: 'error', message: result.data.message})
+      }else{
+        let list = []
+        for(let i =0;i<result.data.paramList.length;i++){
+          list.push(
+            {
+              name:result.data.paramList[i].paramName,
+              value:result.data.paramList[i].paramValue
+            }
+          )
+        }
+        settingVue.setParamArr[ind].data = list
+      }
+    })
+  }
+
+}
+
+export function changeRelationParam (ind) {
+  for(let i=0;i<settingVue.setParamArr.length;i++){
+    if(settingVue.setParamArr[i].paramConditionList){
+      //找到被关联参数
+      for(let j =0;j<settingVue.setParamArr[i].paramConditionList.length;j++){
+        if(settingVue.setParamArr[i].paramConditionList[j].relationParamId == settingVue.setParamArr[ind].dataId){
+          if(settingVue.setParamArr[i].selectNum==1){
+            // this.paramListValueList[i] = []
+          }else{
+            // this.paramListValueList[i] = ''
+          }
+          // this.$forceUpdate() 
+        }
+      }
+      // //拼sql
+      // let paramSql = this.paramInfoArr[i].dataSql + " WHERE " + this.paramInfoArr[i].masterparam.slaveParamCol
+      // // 单选
+      // if(typeof(this.paramListValueList[ind])=='string'){
+      //   console.log("单选值：" + this.paramListValueList[ind])
+      //   paramSql += "="
+      //   paramSql += this.paramListValueList[ind]
+      // }else{
+      //   // 多选
+      //   console.log("多选值：" + this.paramListValueList[ind])
+      //   paramSql += " in ("
+      //   for(let j=0;j<this.paramListValueList[ind].length;j++){
+      //     let rvalue = this.paramListValueList[ind][j]
+      //     if(this.paramInfoArr[i].masterparam.relationMode==1){
+      //       }else{
+      //         let rdata = this.paramInfoArr[ind].data
+      //         for(let k=0;k<rdata.length;k++){
+      //           let rv1 = (rdata[k].value.indexOf("'") == -1? ("'"+rdata[k].value+"'"):rdata[k].value)
+      //           let rv2 = (rvalue.indexOf("'") == -1? ("'"+rvalue+"'"):rvalue)
+      //           if(rv1 == rv2){
+      //             rvalue = rdata[k].name
+      //           }
+      //         }
+      //       }
+      //       if(rvalue.indexOf("'") != -1){
+      //         paramSql += rvalue+","
+      //       }else{
+      //         paramSql += "'"+rvalue+"',"
+      //       }
+      //       }
+      //       if(paramSql.charAt(paramSql.length-1)==","){
+      //         paramSql = paramSql.substring(0, paramSql.length-1);
+      //       }
+      //   paramSql += ")"
+      // }
+      
+      // const response = await executeParamSql(paramSql)
+      // let dataArr = []
+      // if(response.data == null){
+      //   this.$message(`获取参数值的失败`)
+      //   }else {
+      //     if (response.data.isError) {
+      //       this.$message(`获取参数值的失败`)
+      //     } else {
+      //       let e = response.data
+      //       if (e.paramList && e.paramList.length > 0) {
+      //         // 给下拉列表赋值
+      //         for (let k = 0; k < e.paramList.length; k++) {
+      //           dataArr.push({
+      //             'name': e.paramList[k].paramName,
+      //             'value': e.paramList[k].paramValue
+      //           })
+      //         }
+      //       }
+      //       this.paramInfoArr[i].data = dataArr
+      //       this.paramListValueList[i] = ''
+      //     }
+      //   }
+    }
+  }
 }
 
 
