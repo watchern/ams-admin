@@ -115,13 +115,11 @@ export default {
                 {
                   'name': result.data.paramList[i].C_NAME,
                   'value': result.data.paramList[i].C_CODE,
-                  'pValue':result.data.paramList[i].P_CODE,
+                  'pValue':result.data.paramList[i].P_CODE && result.data.paramList[i].P_CODE || 0,
                   'children': [],
                 }
               )
             }
-            // list =  paramCommonJs.matchingPcRelation(list, 0, true)
-
             this.paramInfoArr[ind].data = paramCommonJs.matchingPcRelation(list, 0, true)
           }
         })
