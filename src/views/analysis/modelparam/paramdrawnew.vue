@@ -22,7 +22,7 @@
           <!-- 树类型参数 -->
           <el-cascader
             v-model="paramTreeValueList[ind]"
-            v-if="paramInfo.inputType === 'treeinp' && paramInfo.data.length"
+            v-if="paramInfo.inputType === 'treeinp' && paramInfo.data && paramInfo.data.length"
             style="width:100%"
             ref="selectTreeParam"
             :props="{ label:'name',  multiple: paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0', emitPath: false,checkStrictly: true}"
