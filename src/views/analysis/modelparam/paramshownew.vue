@@ -25,7 +25,7 @@
              <!-- 下拉列表类型 -->
              <!-- setParamObj.dataType == 'str' ? `'`+ item.value + `'`:  -->
             <el-select v-model="paramListValueList[index]" style="width: 90%;" 
-                :multiple="setParamObj.dataChoiceType == 0 || setParamObj.dataChoiceType == '0'" filterable clearable @change="changeRelationParam(index, paramListValueList[index])" @click.native="changeparamdata(setParamObj,index)">
+                :multiple="setParamObj.dataChoiceType == 0 || setParamObj.dataChoiceType == '0'" filterable clearable @change="changeRelationParam(index, paramListValueList[index], setParamObj.dataType)" @click.native="changeparamdata(setParamObj,index)">
               <el-option v-for="item in setParamObj.data" :value="setParamObj.dataType == 'str' ? `'`+ item.value + `'`: item.value" :label="item.name" :key="item.value" >
                 <span style="float: left"> {{ item.name }}</span>
                 <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value == item.name ? "" : item.value}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -84,8 +84,8 @@ data(){
     changeparamdata (info,ind) {
       settingParams.changeparamdata(info,ind);
     },
-    async changeRelationParam(ind, val){
-      settingParams.changeRelationParam(ind, val);
+    async changeRelationParam(ind, val, dataType){
+      settingParams.changeRelationParam(ind, val, dataType);
     },
     //处理时间格式
     timeDealFormat (val) {

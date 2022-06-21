@@ -2050,7 +2050,6 @@ export function initSettingParam() {
                 if (typeof paramObj.description !== 'undefined' && paramObj.description != null) {
                   setParamObj.description = paramObj.description
                 }
-
                 settingVue.setParamArr.push(setParamObj)
                 break
               }
@@ -2680,9 +2679,18 @@ export function changeparamdata (info,ind) {
   }
 }
 
-export function changeRelationParam (ind, val) {
+export function changeRelationParam (ind, val, dataType) {
+  // val 下拉框、树下拉参数回显
+  // dataType 下拉框 参数类型为字符串时去掉前后引号，以为回显时会手动拼接
   if (val) {
     settingVue.setParamArr[ind].value = val;
+    if (dataType) {
+      if (dataType == 'str') {
+        settingVue.setParamArr[ind].value = val.replace("\'","").replace("\'","");
+      } else {
+        settingVue.setParamArr[ind].value = val;
+      }
+    }
   }
   for(let i=0;i<settingVue.setParamArr.length;i++){
     if(settingVue.setParamArr[i].paramConditionList){
