@@ -11,7 +11,7 @@
         <el-col :span="15">
           <!-- 下拉列表类型 -->
           <el-select v-model="paramListValueList[ind]" ref="selectParam"  style="width: 100%;" v-if="paramInfo.inputType === 'lineinp' " 
-              :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable @change="changeRelationParam(ind)" @click.native="changeparamdata(paramInfo,ind)">
+              :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable @change="changeRelationParam(ind, paramListValueList[ind])" @click.native="changeparamdata(paramInfo,ind)">
             <el-option v-for="(item,index) in paramInfo.data" :value="paramInfo.dataType == 'str' ? `'`+ item.value + `'`: item.value" :label="item.name" :key="index+'sec'" >
               <span style="float: left"> {{ item.name}}</span>
               <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value == item.name ? "" : item.value}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -27,7 +27,7 @@
             ref="selectTreeParam"
             :props="{ label:'name',  multiple: paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0', emitPath: false,checkStrictly: true}"
             :options="paramInfo.data"
-            @change="changeRelationParam(ind)"
+            @change="changeRelationParam(ind, paramTreeValueList[ind])"
             @click.native="changeparamdata(paramInfo,ind)"
             multiple
             clearable />
@@ -54,7 +54,7 @@ import * as paramCommonJs from '@/api/graphtool/js/paramCommon'
 import {removeJcCssfile,addJsFile} from "@/api/analysis/common"
 export default {
   name: "paramdrawnew",
-  props:['arr','sql'],
+  props:['arr','sql', 'paramDrawUuid'],
   data(){
     return{
       loading:null,
@@ -128,7 +128,11 @@ export default {
       }
       
     },
-    async changeRelationParam(ind){
+    async changeRelationParam(ind, val){
+      if (val) {
+        this.paramInfoArr[ind].value = val
+        this.overallParmaobj[this.paramDrawUuid].paramsArr[ind].value = val
+      }
       for(let i=0;i<this.paramInfoArr.length;i++){
         if(this.paramInfoArr[i].paramConditionList){
           //找到被关联参数
@@ -643,8 +647,18 @@ export default {
                 if (this.paramListValueList[i].length !== 0 ) {
                   if (choiceType === '1') { // 单选
                     obj.paramValue = this.paramListValueList[i]
+                    for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                      if (arr[w].moduleParamId === moduleParamId) {
+                        arr[w]['value'] = this.paramListValueList[i]
+                      }
+                    }
                   } else {
                     obj.paramValue = this.paramListValueList[i].join(',')
+                    for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                      if (arr[w].moduleParamId === moduleParamId) {
+                        arr[w]['value'] = this.paramListValueList[i].join(',')
+                      }
+                    }
                   }
                   filterArr.push(obj)
                 } else {
@@ -680,9 +694,20 @@ export default {
                 } else {
                   if (choiceType === '1') { // 单选
                     obj.paramValue = this.paramTreeValueList[treenum]
+                    for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                      if (arr[w].moduleParamId === moduleParamId) {
+                        arr[w]['value'] = this.paramTreeValueList[treenum]
+                      }
+                    }
                   } else { // 多选
                     obj.paramValue = this.paramTreeValueList[treenum].join(',')
+                    for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                      if (arr[w].moduleParamId === moduleParamId) {
+                        arr[w]['value'] = this.paramTreeValueList[treenum].join(',')
+                      }
+                    }
                   }
+                  
                   
                 }
                 filterArr.push(obj)
@@ -690,8 +715,18 @@ export default {
                 if (this.paramTreeValueList[treenum].length !== 0) {
                   if (choiceType === '1') { // 单选
                     obj.paramValue = this.paramTreeValueList[treenum]
+                    for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                      if (arr[w].moduleParamId === moduleParamId) {
+                        arr[w]['value'] = this.paramTreeValueList[treenum]
+                      }
+                    }
                   } else {
                     obj.paramValue = this.paramTreeValueList[treenum].join(',')
+                    for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                      if (arr[w].moduleParamId === moduleParamId) {
+                        arr[w]['value'] = this.paramTreeValueList[treenum].join(',')
+                      }
+                    }
                   }
                   filterArr.push(obj)
                 } else {

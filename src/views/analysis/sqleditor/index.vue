@@ -308,6 +308,7 @@
         v-if="dialogFormVisible"
         :sql="this.executeData.sql"
         :arr="this.executeData.arr"
+        v-bind:paramDrawUuid.sync="paramDrawUuid"
         ref="paramDrawRefNew"
       ></paramDrawNew>
       <div slot="footer" class="dialog-footer">
