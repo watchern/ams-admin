@@ -24,28 +24,29 @@
 
              <!-- 下拉列表类型 -->
              <!-- setParamObj.dataType == 'str' ? `'`+ item.value + `'`:  -->
-            <el-select v-model="setParamObj.value" style="width: 90%;" 
-                :multiple="setParamObj.dataChoiceType == 0 || setParamObj.dataChoiceType == '0'" filterable clearable @change="() => changeparamdata(setParamObj,index)">
-              <el-option v-for="item in setParamObj.data" :value="item.value" :label="item.name" :key="item.value" >
+            <el-select v-model="paramListValueList[index]" style="width: 90%;" 
+                :multiple="setParamObj.dataChoiceType == 0 || setParamObj.dataChoiceType == '0'" filterable clearable @change="changeRelationParam(index, paramListValueList[index])" @click.native="changeparamdata(setParamObj,index)">
+              <el-option v-for="item in setParamObj.data" :value="setParamObj.dataType == 'str' ? `'`+ item.value + `'`: item.value" :label="item.name" :key="item.value" >
                 <span style="float: left"> {{ item.name }}</span>
                 <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value == item.name ? "" : item.value}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
               </el-option>
             </el-select>
           </td>
           <td v-if="setParamObj.inputType === 'textinp'" ref="textParam">
-            <el-input style="width: 90%;" :title="setParamObj.title" class='paramOption paramTr' v-model="setParamObj.value" @change="changeparamdata(setParamObj,index)"></el-input>
+            <el-input style="width: 90%;" :title="setParamObj.title" class='paramOption paramTr' v-model="setParamObj.value" @change="changeRelationParam(index)" @click.native="changeparamdata(setParamObj,index)"></el-input>
           </td>
           <td v-if="setParamObj.inputType === 'timeinp'" ref="dataParam">
-            <el-date-picker style="width: 90%;" :title="setParamObj.title" class='paramOption paramTr' type="date" placeholder="选择日期" v-model="setParamObj.value" @change="changeparamdata(setParamObj,index)"></el-date-picker>
+            <el-date-picker style="width: 90%;" :title="setParamObj.title" class='paramOption paramTr' type="date" placeholder="选择日期" :value-format="timeDealFormat(setParamObj.timeFormat)"  v-model="setParamObj.value" @change="changeRelationParam(index)" @click.native="changeparamdata(setParamObj,index)"></el-date-picker>
           </td>
-          <td v-if="setParamObj.inputType === 'treeinp'" ref="selectTreeParam">
+          <td v-if="setParamObj.inputType === 'treeinp' && setParamObj.data && setParamObj.data.length" ref="selectTreeParam">
             <!-- <div :id="setParamObj.id" :title="setParamObj.title" class='xm-select-demo paramTr'></div> -->
             <el-cascader
-            v-model="setParamObj.value"
+            v-model="paramTreeValueList[index]"
             style="width:90%"
             :props="{ label:'name',  multiple: setParamObj.dataChoiceType == 0 || setParamObj.dataChoiceType == '0', emitPath: false, checkStrictly: true }"
             :options="setParamObj.data"
-            @change="changeparamdata(setParamObj,index)"
+            @change="changeRelationParam(index, paramTreeValueList[index])"
+            @click.native="changeparamdata(setParamObj,index)"
             multiple
             clearable />
           </td>
@@ -69,7 +70,11 @@ data(){
     arr:[],
     setParamArr :[],
     paramsSetting:[],
-    refresh: true
+    refresh: true,
+    paramListValueList: [], // 下拉列表参数值集合
+    paramTreeValueList: [], // 下拉树列表参数值集合
+    selectNum:0,// 用于临时记录参数为下拉列表的个数
+    selectTreeNum:0,// 用于临时记录参数为下拉树的个数
   }
 },
   mounted(){
@@ -79,8 +84,18 @@ data(){
     changeparamdata (info,ind) {
       settingParams.changeparamdata(info,ind);
     },
-    async changeRelationParam(ind){
-      settingParams.changeRelationParam(ind);
+    async changeRelationParam(ind, val){
+      settingParams.changeRelationParam(ind, val);
+    },
+    //处理时间格式
+    timeDealFormat (val) {
+      if(val=="year"){
+        return "yyyy";
+      }else if(val=="month"){
+        return "yyyy-MM";
+      }else{
+        return "yyyy-MM-dd";
+      }
     },
     initSetting(paramsSetting){
       this.paramsSetting = paramsSetting

@@ -136,10 +136,12 @@ export default {
             if(this.paramInfoArr[i].paramConditionList[j].relationParamId == this.paramInfoArr[ind].dataId){
               if(this.paramInfoArr[i].selectNum==1){
                 this.paramListValueList[i] = []
+                this.paramTreeValueList[i] = []
               }else{
                 this.paramListValueList[i] = ''
+                this.paramTreeValueList[i] = ''
               }
-              this.$forceUpdate() 
+              this.$forceUpdate()
             }
           }
           // //拼sql
@@ -393,7 +395,7 @@ export default {
           if(dataArr.length > 0){
             obj.setParamObj.data = dataArr
           }
-          if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
+          if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null && paramObj.defaultVal){
             obj.setParamObj.dataDefaultVal = paramObj.defaultVal
             // 下拉列表默认值
             if (paramObj.paramChoice.choiceType === '1'){
@@ -401,7 +403,7 @@ export default {
               this.paramListValueList[index] = paramObj.dataType == 'str'? `'` + paramObj.defaultVal + `'` : paramObj.defaultVal
             } else {
               // 多选
-              const list = [] 
+              const list = []
               if (paramObj.defaultVal.length > 0){
                 paramObj.defaultVal.forEach(o => {
                   if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
@@ -409,7 +411,6 @@ export default {
                 })
                 this.paramListValueList[index] = list
               }
-              
             }
           }else{
             if (paramObj.paramChoice.choiceType === '1'){
@@ -490,7 +491,7 @@ export default {
             obj.setParamObj.dataParamArr = paramArr
             obj.setParamObj.dataAssociatedParamIdArr = associatedParamIdArr
           }
-          if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
+          if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null && paramObj.defaultVal){
             obj.setParamObj.dataDefaultVal = paramObj.defaultVal
             // 下拉树默认值
             if (paramObj.paramChoice.choiceType === '1'){

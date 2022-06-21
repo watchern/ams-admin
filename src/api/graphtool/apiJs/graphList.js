@@ -342,7 +342,7 @@ export function executeParamSql(sql) {
     return request({
         baseURL: analysisUrl,
         url: '/paramController/executeParamSql',
-        method: 'post',
+        method: 'get',
         async:false,
         params:{sql:sql}
     })
