@@ -1200,25 +1200,48 @@ function matchingPcRelation(dataArr, rootValue) {
 
   // 通过pValue等于value 递归遍历数据为父子结构
   // 每层数据通过sort排序
-  var arr = [];
-  dataArr.forEach(item => {
-      if (item.pValue == rootValue) {
-          const children = matchingPcRelation(dataArr, item.value)
-          children.sort((a, b) => {
-              return a.sort - b.sort
-          })
-          if (children.length && children.length>0) {
-              item.children = children
-          } else {
-              delete item.children;
-          }
-          arr.push(item)
-          arr.sort((a, b) => {
-              return a.sort - b.sort
-          })
-      }
-  })
-  return arr
+  // var arr = [];
+  // dataArr.forEach(item => {
+  //     if (item.pValue == rootValue) {
+  //         const children = matchingPcRelation(dataArr, item.value)
+  //         children.sort((a, b) => {
+  //             return a.sort - b.sort
+  //         })
+  //         if (children.length && children.length>0) {
+  //             item.children = children
+  //         } else {
+  //             delete item.children;
+  //         }
+  //         arr.push(item)
+  //         arr.sort((a, b) => {
+  //             return a.sort - b.sort
+  //         })
+  //     }
+  // })
+  // return arr
+
+
+
+  var  result = [];
+	if (!Array.isArray(dataArr)) {
+		return result
+	}
+	dataArr.forEach(function (item){
+		delete item.children;
+	});
+	var map = {};
+	dataArr.forEach(function (item) {
+		map[item.value] = item;
+	});
+	dataArr.forEach(function (item){
+		var parent = map[item.pValue];
+		if (parent) {
+			(parent.children || (parent.children = [])).push(item);
+		} else {
+			result.push(item);
+		}
+	});
+	return result;
 }
 
 /**
@@ -1816,6 +1839,7 @@ export function createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
  * 初始化参数配置
  */
 export function initSetting() {
+  alert('初始化参数')
   let load = $(settingVue.$refs.settingParamDiv).mLoading({ 'text': '正在加载配置，请稍后……', 'hasCancel': false })
   try {
     let hasSetParamIdArr = []// 存放有效参数集合中已配置过得参数集合
@@ -1981,10 +2005,11 @@ export function initSettingParam() {
           let moduleParamArr = [] // 存储已匹配的母版参数集合
           let copyParamArr = []// 定义所有参数的对象数组（已去重）
           for (let j = 0; j < paramArr.length; j++) { // 遍历有效的参数集合
-            let setParamObj = {
-              dataModuleParamId: paramArr[j].moduleParamId,
-              name: paramArr[j].name,
-            }
+
+            // let setParamObj = {
+            //   dataModuleParamId: paramArr[j].moduleParamId,
+            //   name: paramArr[j].name,
+            // }
             let hasExist = false
             for (let i = 0; i < settingVue.setParamArr.length; i++) {
               if (settingVue.setParamArr[i].dataModuleParamId === paramArr[j].moduleParamId) {
@@ -2023,39 +2048,55 @@ export function initSettingParam() {
                 ...paramList[k]
               }
               if (moduleParamId === paramArr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) { // 匹配复制参数的母版参数ID
-                setParamObj.inputType = paramObj.inputType //参数类型
-                setParamObj.useQuotation = paramObj.useQuotation //参数类型
+                // setParamObj.inputType = paramObj.inputType //参数类型
+                // setParamObj.useQuotation = paramObj.useQuotation //参数类型
                 //设置默认值
-                setParamObj.value = ''
+                // setParamObj.value = ''
                 if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && moduleParamId === paramArr[j].moduleParamId &&
                   paramArr[j].defaultVal && paramArr[j].defaultVal !== '') {
                  
-                  setParamObj.value = paramArr[j].defaultVal
-                  setParamObj.useQuotation = paramArr[j].useQuotation
+                  // setParamObj.value = paramArr[j].defaultVal
+                  // setParamObj.useQuotation = paramArr[j].useQuotation
                   paramObj.defaultVal = paramArr[j].defaultVal
-
+                  paramList[k].defaultVal = paramArr[j].defaultVal
+                  paramList[k].moduleParamId = paramArr[j].moduleParamId
                 }
                 copyParamArr.push(paramList[k])
-                for (let n = 0; n < copyParamArr.length; n++) {
-                  let returnObj = getSettingParamArr(paramObj, setParamObj, null, null, n)
-                  if (!returnObj.isError) {
-                    setParamObj = returnObj.setParamObj
-                  } else {
-                    settingVue.$message.error({
-                      message: returnObj.message
-                    })
-                  }
-                }
                 moduleParamArr.push(moduleParamId)
-                if (typeof paramObj.description !== 'undefined' && paramObj.description != null) {
-                  setParamObj.description = paramObj.description
-                }
-                settingVue.setParamArr.push(setParamObj)
-                break
               }
             }
             
           }
+
+
+
+          for (let n = 0; n < copyParamArr.length; n++) {
+            let setParamObj = {
+              "paramName": copyParamArr[n].paramName,
+              "inputType": copyParamArr[n].inputType,//参数类型
+              "masterparam": copyParamArr[n].paramRelationList[0],
+              "useQuotation":copyParamArr[n].useQuotation,
+              "example":copyParamArr[n].example,
+              "paramConditionList":copyParamArr[n].paramConditionList,
+              value: copyParamArr[n].defaultVal && copyParamArr[n].defaultVal || '',
+              defaultVal: copyParamArr[n].defaultVal,
+              dataModuleParamId: copyParamArr[n].moduleParamId,
+              name: copyParamArr[n].paramName,
+            };
+            let returnObj = getSettingParamArr(copyParamArr[n], setParamObj, null, null, n)
+            if (!returnObj.isError) {
+              setParamObj = returnObj.setParamObj
+            } else {
+              settingVue.$message.error({
+                message: returnObj.message
+              })
+            }
+            if (typeof copyParamArr[n].description !== 'undefined' && copyParamArr[n].description != null) {
+              setParamObj.description = copyParamArr[n].description
+            }
+            settingVue.setParamArr.push(setParamObj)
+          }
+          // break
           $(settingVue.$refs.setParamTbody).sortable().disableSelection()
           settingVue.$nextTick(() => {
             // 第六步：统一初始化参数的html（文本框、下拉列表、下拉树），并反显已配置参数的信息（包括默认值和排序值）
@@ -2463,9 +2504,7 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
                         })
                      }
                    }
-                  if (dataArr.length > 0) {
-                    obj.setParamObj.data = dataArr
-                  }
+                  obj.setParamObj.data = dataArr
                  }
                }
              })
@@ -2566,9 +2605,7 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
                 } else {
                   dataArr = []
                 }
-                if (dataArr.length > 0) {
-                  obj.setParamObj.data = dataArr
-                }
+                obj.setParamObj.data = dataArr
               }
             }
         })
@@ -2668,6 +2705,7 @@ export function changeparamdata (info,ind) {
               'name': result.data.paramList[i].C_NAME,
               'value': result.data.paramList[i].C_CODE,
               'pValue':result.data.paramList[i].P_CODE && result.data.paramList[i].P_CODE || 0,
+              // 'pValue':paramCommonJs.pValueFormat(result.data.paramList[i].P_CODE, info),
               'children': [],
             }
           )

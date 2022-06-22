@@ -135,30 +135,50 @@ export function organizeSelectTreeDataByType(result, dataType) {
     // 通过pValue等于value 递归遍历数据为父子结构
     // 每层数据通过sort排序
     // unSort 为false的时候需要根据sort字段排序
-    var arr = [];
-    dataArr.forEach(item => {
-        if (item.pValue == rootValue) {
-            const children = matchingPcRelation(dataArr, item.value)
-            if (!unSort) {
-                children.sort((a, b) => {
-                    return a.sort - b.sort
-                })
-            }
-            if (children.length && children.length>0) {
-                item.children = children
-            } else {
-                delete item.children;
-            }
-            arr.push(item)
-            if (!unSort) {
-                arr.sort((a, b) => {
-                    return a.sort - b.sort
-                })
-            }
+    // var arr = [];
+    // dataArr.forEach(item => {
+    //     if (item.pValue == rootValue) {
+    //         const children = matchingPcRelation(dataArr, item.value)
+    //         if (!unSort) {
+    //             children.sort((a, b) => {
+    //                 return a.sort - b.sort
+    //             })
+    //         }
+    //         if (children.length && children.length>0) {
+    //             item.children = children
+    //         } else {
+    //             delete item.children;
+    //         }
+    //         arr.push(item)
+    //         if (!unSort) {
+    //             arr.sort((a, b) => {
+    //                 return a.sort - b.sort
+    //             })
+    //         }
            
-        }
-    })
-    return arr;
+    //     }
+    // })
+    // return arr;
+    var  result = [];
+	if (!Array.isArray(dataArr)) {
+		return result
+	}
+	dataArr.forEach(function (item){
+		delete item.children;
+	});
+	var map = {};
+	dataArr.forEach(function (item) {
+		map[item.value] = item;
+	});
+	dataArr.forEach(function (item){
+		var parent = map[item.pValue];
+		if (parent) {
+			(parent.children || (parent.children = [])).push(item);
+		} else {
+			result.push(item);
+		}
+	});
+	return result;
 }
 
 /**

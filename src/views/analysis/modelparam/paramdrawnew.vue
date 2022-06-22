@@ -22,7 +22,7 @@
           <!-- 树类型参数 -->
           <el-cascader
             v-model="paramTreeValueList[ind]"
-            v-if="paramInfo.inputType === 'treeinp' && paramInfo.data && paramInfo.data.length"
+            v-if="paramInfo.inputType === 'treeinp' && paramInfo.data.length>=0"
             style="width:100%"
             ref="selectTreeParam"
             :props="{ label:'name',  multiple: paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0', emitPath: false,checkStrictly: true}"
@@ -55,6 +55,10 @@ import {removeJcCssfile,addJsFile} from "@/api/analysis/common"
 export default {
   name: "paramdrawnew",
   props:['arr','sql', 'paramDrawUuid'],
+  computed: {  
+  },
+  watch: {
+  },
   data(){
     return{
       loading:null,
@@ -115,7 +119,8 @@ export default {
                 {
                   'name': result.data.paramList[i].C_NAME,
                   'value': result.data.paramList[i].C_CODE,
-                  'pValue':result.data.paramList[i].P_CODE && result.data.paramList[i].P_CODE || 0,
+                  'pValue': result.data.paramList[i].P_CODE && result.data.paramList[i].P_CODE || 0,
+                  // 'pValue':paramCommonJs.pValueFormat(result.data.paramList[i].P_CODE, info),
                   'children': [],
                 }
               )
@@ -393,10 +398,7 @@ export default {
             obj.setParamObj.dataParamArr = paramArr
             obj.setParamObj.dataAssociatedParamIdArr = associatedParamIdArr
           }
-          
-          if(dataArr.length > 0){
-            obj.setParamObj.data = dataArr
-          }
+          obj.setParamObj.data = dataArr
           if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null && paramObj.defaultVal){
             obj.setParamObj.dataDefaultVal = paramObj.defaultVal
             // 下拉列表默认值
@@ -410,7 +412,7 @@ export default {
                 paramObj.defaultVal.forEach(o => {
                   if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
                   else {list.push(o) }
-                })
+                })               
                 this.paramListValueList[index] = list
               }
             }
@@ -523,10 +525,7 @@ export default {
                 this.paramTreeValueList[index] = [] 
             }
           }
-            
-          if(dataArr.length > 0){
-            obj.setParamObj.data = dataArr
-          }
+          obj.setParamObj.data = dataArr
           if(typeof paramObj.paramChoice.allowedNull !== 'undefined' && paramObj.paramChoice.allowedNull != null){
             obj.setParamObj.dataAllowedNull = paramObj.paramChoice.allowedNull
           }

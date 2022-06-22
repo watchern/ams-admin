@@ -112,6 +112,7 @@
                             'name': result.data.paramList[i].C_NAME,
                             'value': result.data.paramList[i].C_CODE,
                             'pValue':result.data.paramList[i].P_CODE && result.data.paramList[i].P_CODE || 0,
+                            // 'pValue':paramCommonJs.pValueFormat(result.data.paramList[i].P_CODE, info),
                             'children': [],
                         }
                       )
