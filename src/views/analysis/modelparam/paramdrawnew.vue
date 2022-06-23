@@ -134,10 +134,14 @@ export default {
     async changeRelationParam(ind, val){
       if (val) {
         this.paramInfoArr[ind].value = val
-        this.overallParmaobj[this.paramDrawUuid].paramsArr[ind].value = val
+        if (this.paramDrawUuid && this.overallParmaobj[this.paramDrawUuid]) {
+          this.overallParmaobj[this.paramDrawUuid].paramsArr[ind].value = val
+        }
       } else {
         this.paramInfoArr[ind].value = ''
-        this.overallParmaobj[this.paramDrawUuid].paramsArr[ind].value = ''
+        if (this.paramDrawUuid && this.overallParmaobj[this.paramDrawUuid]) {
+          this.overallParmaobj[this.paramDrawUuid].paramsArr[ind].value = ''
+        }
       }
       for(let i=0;i<this.paramInfoArr.length;i++){
         if(this.paramInfoArr[i].paramConditionList){
