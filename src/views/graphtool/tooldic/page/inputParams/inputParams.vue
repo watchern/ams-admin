@@ -14,7 +14,7 @@
                             <!-- 下拉列表类型 -->
                             <el-select @change="changeRelationParam(index,ind)" @click.native="changeparamdata(index,paramInfo,ind)" v-model="paramListValueList[ind]" ref="selectParam"  style="width: 100%;" v-if="paramInfo.inputType === 'lineinp' " 
                                 :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable>
-                                <el-option v-for="(item,i) in paramInfo.data" :value="paramInfo.dataType == 'str' ? `'`+ item.value + `'`: item.value" :label="item.name" :key="'oplist'+i" >
+                                <el-option v-for="(item,i) in paramInfo.data" :value="item.value" :label="item.name" :key="'oplist'+i" >
                                 <span style="float: left"> {{ item.name }}</span>
                                 <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value == item.name ? "" : item.value}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
                                 </el-option>
@@ -331,13 +331,14 @@
                             // 下拉列表默认值
                             if (paramObj.paramChoice.choiceType === '1'){
                             // 单选
-                            this.paramListValueList[index] = paramObj.dataType == 'str'? `'` + paramObj.defaultVal + `'` : paramObj.defaultVal
+                            this.paramListValueList[index] = paramObj.defaultVal
                             } else {
                             // 多选
                             const list = [] 
                             paramObj.defaultVal.forEach(o => {
-                                if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
-                                else {list.push(o) }
+                                // if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
+                                // else {list.push(o) }
+                                list.push(o)
                             })
                             this.paramListValueList[index] = list
                             }
@@ -423,13 +424,14 @@
                             if (paramObj.paramChoice.choiceType === '1'){
                                 // 单选
                                 // this.paramTreeValueList[index] = list[0]
-                                this.paramTreeValueList[index] = paramObj.dataType == 'str' ? `'` + paramObj.defaultVal + `'` : paramObj.defaultVal
+                                this.paramTreeValueList[index] = paramObj.defaultVal
                             } else {
                                 // 多选
                                 const list = []
                                 paramObj.defaultVal.forEach(o => {
-                                    if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
-                                    else { list.push(o) }
+                                    // if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
+                                    // else { list.push(o) }
+                                    list.push(o)
                                 })
                                 this.paramTreeValueList[index] = list
                             }

@@ -34,6 +34,7 @@
         @node-expand="nodeExpand"
         :load="loadNode"
         :expand-on-click-node="false"
+        lazy
       >
         <span slot-scope="{ node, data }" class="custom-tree-node">
           <i

@@ -1792,7 +1792,8 @@ export default {
                       } else {
                         if (
                           sqlType.toUpperCase() === "CREATE" ||
-                          sqlType.toUpperCase() === "CREATEVIEW"
+                          sqlType.toUpperCase() === "CREATEVIEW" || 
+                          sqlType.toUpperCase() === "INSERTCREATE"
                         ) {
                           flag = true;
                         }

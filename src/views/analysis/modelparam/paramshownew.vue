@@ -26,7 +26,7 @@
              <!-- setParamObj.dataType == 'str' ? `'`+ item.value + `'`:  -->
             <el-select v-model="paramListValueList[index]" style="width: 90%;" 
                 :multiple="setParamObj.dataChoiceType == 0 || setParamObj.dataChoiceType == '0'" filterable clearable @change="changeRelationParam(index, paramListValueList[index], setParamObj.dataType)" @click.native="changeparamdata(setParamObj,index)">
-              <el-option v-for="item in setParamObj.data" :value="setParamObj.dataType == 'str' ? `'`+ item.value + `'`: item.value" :label="item.name" :key="item.value" >
+              <el-option v-for="item in setParamObj.data" :value="item.value" :label="item.name" :key="item.value" >
                 <span style="float: left"> {{ item.name }}</span>
                 <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value == item.name ? "" : item.value}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
               </el-option>
@@ -38,7 +38,7 @@
           <td v-if="setParamObj.inputType === 'timeinp'" ref="dataParam">
             <el-date-picker style="width: 90%;" :title="setParamObj.title" class='paramOption paramTr' type="date" placeholder="选择日期" :value-format="timeDealFormat(setParamObj.timeFormat)"  v-model="setParamObj.value" @change="changeRelationParam(index)" @click.native="changeparamdata(setParamObj,index)"></el-date-picker>
           </td>
-          <td v-if="setParamObj.inputType === 'treeinp' && setParamObj.data && setParamObj.data.length" ref="selectTreeParam">
+          <td v-if="setParamObj.inputType === 'treeinp'" ref="selectTreeParam">
             <!-- <div :id="setParamObj.id" :title="setParamObj.title" class='xm-select-demo paramTr'></div> -->
             <el-cascader
             v-model="paramTreeValueList[index]"

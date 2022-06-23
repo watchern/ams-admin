@@ -12,7 +12,7 @@
           <!-- 下拉列表类型 -->
           <el-select v-model="paramListValueList[ind]" ref="selectParam"  style="width: 100%;" v-if="paramInfo.inputType === 'lineinp' " 
               :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable @change="changeRelationParam(ind, paramListValueList[ind])" @click.native="changeparamdata(paramInfo,ind)">
-            <el-option v-for="(item,index) in paramInfo.data" :value="paramInfo.dataType == 'str' ? `'`+ item.value + `'`: item.value" :label="item.name" :key="index+'sec'" >
+            <el-option v-for="(item,index) in paramInfo.data" :value="item.value" :label="item.name" :key="index+'sec'" >
               <span style="float: left"> {{ item.name}}</span>
               <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value == item.name ? "" : item.value}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
             </el-option>
@@ -135,6 +135,9 @@ export default {
       if (val) {
         this.paramInfoArr[ind].value = val
         this.overallParmaobj[this.paramDrawUuid].paramsArr[ind].value = val
+      } else {
+        this.paramInfoArr[ind].value = ''
+        this.overallParmaobj[this.paramDrawUuid].paramsArr[ind].value = ''
       }
       for(let i=0;i<this.paramInfoArr.length;i++){
         if(this.paramInfoArr[i].paramConditionList){
@@ -144,9 +147,11 @@ export default {
               if(this.paramInfoArr[i].selectNum==1){
                 this.paramListValueList[i] = []
                 this.paramTreeValueList[i] = []
+                this.paramInfoArr[ind].value = ''
               }else{
                 this.paramListValueList[i] = ''
                 this.paramTreeValueList[i] = ''
+                this.paramInfoArr[ind].value = ''
               }
               this.$forceUpdate()
             }
@@ -211,6 +216,15 @@ export default {
           //   }
         }
       }
+      // 把无关的下拉树和下拉列表设为undefined 以便运行时做必填校验判断
+      this.paramInfoArr.map((i, k) => {
+        if (i.inputType == 'lineinp') {
+          this.paramTreeValueList[k] = undefined
+        } else if (i.inputType == 'treeinp') {
+          this.paramListValueList[k] = undefined
+        }
+      })
+
     },
     async createParamNodeHtml(id,collapseTitle,flag){
       try {
@@ -256,6 +270,7 @@ export default {
               }
               this.arr[j].useQuotation = paramsArr[k].useQuotation
               this.arr[j].example = paramsArr[k].example
+              this.arr[j].inputType = paramsArr[k].inputType
               copyParamArr.push(paramsArr[k])
               moduleParamArr.push(moduleParamId)
               // break
@@ -404,14 +419,15 @@ export default {
             // 下拉列表默认值
             if (paramObj.paramChoice.choiceType === '1'){
               // 单选
-              this.paramListValueList[index] = paramObj.dataType == 'str'? `'` + paramObj.defaultVal + `'` : paramObj.defaultVal
+              this.paramListValueList[index] = paramObj.defaultVal
             } else {
               // 多选
               const list = []
               if (paramObj.defaultVal.length > 0){
                 paramObj.defaultVal.forEach(o => {
-                  if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
-                  else {list.push(o) }
+                  // if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
+                  // else {list.push(o) }
+                  list.push(o)
                 })               
                 this.paramListValueList[index] = list
               }
@@ -501,14 +517,15 @@ export default {
             if (paramObj.paramChoice.choiceType === '1'){
               // 单选
               // this.paramTreeValueList[index] = list[0]
-              this.paramTreeValueList[index] = paramObj.dataType == 'str' ? `'` + paramObj.defaultVal + `'` : paramObj.defaultVal
+              this.paramTreeValueList[index] = paramObj.defaultVal
             } else {
               // 多选
               const list = []
               if (paramObj.defaultVal.length > 0){
                 paramObj.defaultVal.forEach(o => {
-                  if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
-                  else {list.push(o) }
+                  // if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
+                  // else {list.push(o) }
+                  list.push(o)
                 })
                 this.paramTreeValueList[index] = list
               }
@@ -641,7 +658,13 @@ export default {
                 }
                 filterArr.push(obj)
               } else { // 不允许为空
-                if (this.paramListValueList[i].length !== 0 ) {
+                var lineinpInd = []
+                for (let k = 0; k < arr.length; k++) {
+                  if (arr[k].inputType == 'lineinp') {
+                    lineinpInd.push(k);
+                  }
+                }
+                if (this.paramListValueList[i].length !=0) {
                   if (choiceType === '1') { // 单选
                     obj.paramValue = this.paramListValueList[i]
                     for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值

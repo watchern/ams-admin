@@ -32,14 +32,14 @@ export function organizeSelectTreeDataByType(result, dataType) {
     for (var i = 0; i < result.length; i++) { // 先把每一条数据转换成xmSelect的数据格式{"name":xx,"value":xx,"children":[]}
         var obj = {
             'name': result[i].C_NAME,
-            'value': dataType == 'str' ? `'` + result[i].C_CODE + `'` : result[i].C_CODE,
-            'pValue': dataType == 'str' ? `'` + result[i].P_CODE +`'` : result[i].P_CODE,
+            'value': result[i].C_CODE,
+            'pValue': result[i].P_CODE,
             'children': [],
             'sort': i
         }
         dataArr.push(obj)
     }
-    dataArr = matchingPcRelation(dataArr, dataType == 'str' ? "'0'" : 0)// 匹配父子关系
+    dataArr = matchingPcRelation(dataArr, 0)// 匹配父子关系
     return dataArr
 }
 

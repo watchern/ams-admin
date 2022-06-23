@@ -1399,22 +1399,10 @@ export default {
         modelObj.sqlValue = this.modelSql;
         editmodel2db(this)
       } else {
-        // modelObj.sqlValue = this.form.sqlValue;
-        // this.getSqlObj()
-
         await this.$refs.SQLEditor[0].executeSQL2(function (){})
-
-      //   getSqlObj(false);
-      //   this.$emit("getSqlObj");
-      // debugger
-      //   this.setIsUpdate(false);
-
         this.getSqlObj()
         editmodel2db(this)
-        console.log("modelObj.sqlValue")
-        console.log(modelObj.sqlValue)
       }
-
     },
       viewDialog(param) {
         switch(param){
