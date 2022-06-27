@@ -999,14 +999,16 @@ function organizeSelectTreeData(result, dataType) {
   for (var i = 0; i < result.length; i++) { // 先把每一条数据转换成xmSelect的数据格式{"name":xx,"value":xx,"children":[]}
     var obj = {
       'name': result[i].C_NAME,
-      'value': result[i].C_CODE,
-      'pValue': result[i].P_CODE,
+      // 'value': result[i].C_CODE,
+      'value': dataType == 'str' ? `'` + result[i].C_CODE + `'` : result[i].C_CODE,
+      // 'pValue': result[i].P_CODE,
+      'pValue': dataType == 'str' ? `'` + result[i].P_CODE +`'` : result[i].P_CODE,
       'children': [],
       'sort': i
     }
     dataArr.push(obj)
   }
-  dataArr = matchingPcRelation(dataArr, 0) // 匹配父子关系
+  dataArr = matchingPcRelation(dataArr) // 匹配父子关系
   return dataArr
 }
 
@@ -2078,6 +2080,7 @@ export function initSetting() {
               // defaultVal: copyParamArr[n].defaultVal,
               dataModuleParamId: copyParamArr[n].moduleParamId,
               name: copyParamArr[n].paramName,
+              description: copyParamArr[n].description && copyParamArr[n].description || ''
             };
             promiseList.push(new Promise(function (resolve, reject) {
               resolve(getSettingParamArr(copyParamArr[n], setParamObj, null, null, n))
@@ -2099,9 +2102,6 @@ export function initSetting() {
           }
           Promise.all(promiseList).then((rspList)=> {
             rspList.map((val)=> {
-              // if (typeof copyParamArr[n].description !== 'undefined' && copyParamArr[n].description != null) {
-              //   setParamObj.description = copyParamArr[n].description
-              // }
               // if (!val.isError) {
               //   settingVue.setParamArr.push(val.setParamObj)
               //   alert('load关闭')
@@ -2856,15 +2856,16 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
           obj.setParamObj.value = obj.setParamObj.dataDefaultVal
           if (paramObj.paramChoice.choiceType === '1'){
             // 单选
-            settingVue.paramListValueList[index] = paramObj.defaultVal
+            // settingVue.paramListValueList[index] = paramObj.defaultVal
+            settingVue.paramListValueList[index] = paramObj.dataType == 'str'? `'` + paramObj.defaultVal + `'` : paramObj.defaultVal
           } else {
             // 多选
             const list = [] 
             if (paramObj.defaultVal.length > 0){
               paramObj.defaultVal.forEach(o => {
-                // if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
-                // else {list.push(o) }
-                list.push(o)
+                if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
+                else {list.push(o) }
+                // list.push(o)
               })
               settingVue.paramListValueList[index] = list
             }
@@ -2908,6 +2909,9 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
         if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
           obj.setParamObj.dataDefaultVal = paramObj.defaultVal
         }
+        //时间类型（年/月/日/其他）
+        obj.setParamObj.timeFormat = paramObj.paramTimes.timeFormat;
+        obj.setParamObj.customizeFormat = paramObj.paramTimes.customizeFormat; 
       }
       break
     case 'treeinp':// 下拉树
@@ -2955,6 +2959,7 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
           // 单选
           // this.paramTreeValueList[index] = list[0]
           settingVue.paramTreeValueList[index] = paramObj.defaultVal
+          // settingVue.paramTreeValueList[index] = paramObj.dataType == 'str' ? `'` + paramObj.defaultVal + `'` : paramObj.defaultVal
         } else {
           // 多选
           const list = []
@@ -3028,8 +3033,8 @@ export function changeparamdata (info,ind) {
           list.push(
             {
               'name': result.data.paramList[i].C_NAME,
-              'value': result.data.paramList[i].C_CODE,
-              'pValue':result.data.paramList[i].P_CODE && result.data.paramList[i].P_CODE || 0,
+              'value': info.dataType == 'str' ? `'` +  result.data.paramList[i].C_CODE + `'` : result.data.paramList[i].C_CODE,
+              'pValue':info.dataType == 'str' ? `'` +  result.data.paramList[i].P_CODE + `'` : result.data.paramList[i].P_CODE,
               // 'pValue':paramCommonJs.pValueFormat(result.data.paramList[i].P_CODE, info),
               'children': [],
             }
@@ -3047,13 +3052,13 @@ export function changeRelationParam (ind, val, dataType) {
   // dataType 下拉框 参数类型为字符串时去掉前后引号，以为回显时会手动拼接
   if (val) {
     settingVue.setParamArr[ind].value = val;
-    // if (dataType) {
-    //   if (dataType == 'str') {
-    //     settingVue.setParamArr[ind].value = val.replace("\'","").replace("\'","");
-    //   } else {
-    //     settingVue.setParamArr[ind].value = val;
-    //   }
-    // }
+    if (dataType) {
+      if (dataType == 'str') {
+        settingVue.setParamArr[ind].value = val.replace("\'","").replace("\'","");
+      } else {
+        settingVue.setParamArr[ind].value = val;
+      }
+    }
   } else {
     settingVue.setParamArr[ind].value = '';
   }

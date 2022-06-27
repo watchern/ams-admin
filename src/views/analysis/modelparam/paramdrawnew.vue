@@ -12,13 +12,13 @@
           <!-- 下拉列表类型 -->
           <el-select v-model="paramListValueList[ind]" ref="selectParam"  style="width: 100%;" v-if="paramInfo.inputType === 'lineinp' " 
               :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable @change="changeRelationParam(ind, paramListValueList[ind])" @click.native="changeparamdata(paramInfo,ind)">
-            <el-option v-for="(item,index) in paramInfo.data" :value="item.value" :label="item.name" :key="index+'sec'" >
+            <el-option v-for="(item,index) in paramInfo.data" :value="paramInfo.dataType == 'str' ? `'`+ item.value + `'`: item.value" :label="item.name" :key="index+'sec'" >
               <span style="float: left"> {{ item.name}}</span>
               <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value == item.name ? "" : item.value}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
             </el-option>
           </el-select>
           <!-- <div class="select-div el-input__inner" ref="selectParam" :index="ind" v-if="paramInfo.inputType === 'lineinp'" :id="paramInfo.id" :title="paramInfo.title"></div> -->
-          <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.dataDefaultVal" class="textParam" @change="changeRelationParam(ind)" @click.native="changeparamdata(paramInfo,ind)"></el-input>
+          <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.dataDefaultVal" class="textParam" @change="changeRelationParam(ind, paramInfo.dataDefaultVal)" @click.native="changeparamdata(paramInfo,ind)"></el-input>
           <!-- 树类型参数 -->
           <el-cascader
             v-model="paramTreeValueList[ind]"
@@ -33,8 +33,8 @@
             clearable />
           <!-- <div class="select-div" ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title"></div> -->
           <span  v-if="paramInfo.inputType === 'timeinp'" >
-            <el-date-picker v-if="paramInfo.timeFormat!='other'" ref="paramOption" :index="ind"  :title="paramInfo.title" :type="paramInfo.timeFormat" placeholder="选择日期" :value-format="timeDealFormat(paramInfo.timeFormat)"  v-model="paramInfo.dataDefaultVal" style="width: 98%;" @change="changeRelationParam(ind)" @click.native="changeparamdata(paramInfo,ind)"></el-date-picker> 
-            <el-date-picker v-else ref="paramOption" :index="ind"  :title="paramInfo.title" type="date" placeholder="选择日期" :value-format="paramInfo.customizeFormat" v-model="paramInfo.dataDefaultVal" style="width: 98%;" @change="changeRelationParam(ind)" @click.native="changeparamdata(paramInfo,ind)"></el-date-picker> 
+            <el-date-picker v-if="paramInfo.timeFormat!='other'" ref="paramOption" :index="ind"  :title="paramInfo.title" :type="paramInfo.timeFormat" placeholder="选择日期" :value-format="timeDealFormat(paramInfo.timeFormat)"  v-model="paramInfo.dataDefaultVal" style="width: 98%;" @change="changeRelationParam(ind, paramInfo.dataDefaultVal)" @click.native="changeparamdata(paramInfo,ind)"></el-date-picker> 
+            <el-date-picker v-else ref="paramOption" :index="ind"  :title="paramInfo.title" type="date" placeholder="选择日期" :value-format="paramInfo.customizeFormat" v-model="paramInfo.dataDefaultVal" style="width: 98%;" @change="changeRelationParam(ind, paramInfo.dataDefaultVal)" @click.native="changeparamdata(paramInfo,ind)"></el-date-picker> 
           </span>
         </el-col>
         <el-col :span="2" v-show="paramInfo.allowedNull">
@@ -118,8 +118,8 @@ export default {
               list.push(
                 {
                   'name': result.data.paramList[i].C_NAME,
-                  'value': result.data.paramList[i].C_CODE,
-                  'pValue': result.data.paramList[i].P_CODE && result.data.paramList[i].P_CODE || 0,
+                  'value': info.dataType == 'str' ? `'` + result.data.paramList[i].C_CODE + `'` : result.data.paramList[i].C_CODE,
+                  'pValue': info.dataType == 'str' ? `'` + result.data.paramList[i].P_CODE + `'` :  result.data.paramList[i].P_CODE,
                   // 'pValue':paramCommonJs.pValueFormat(result.data.paramList[i].P_CODE, info),
                   'children': [],
                 }
@@ -134,11 +134,13 @@ export default {
     async changeRelationParam(ind, val){
       if (val) {
         this.paramInfoArr[ind].value = val
+        this.paramInfoArr[ind].dataDefaultVal = val
         if (this.paramDrawUuid && this.overallParmaobj[this.paramDrawUuid]) {
           this.overallParmaobj[this.paramDrawUuid].paramsArr[ind].value = val
         }
       } else {
         this.paramInfoArr[ind].value = ''
+        this.paramInfoArr[ind].dataDefaultVal = ''
         if (this.paramDrawUuid && this.overallParmaobj[this.paramDrawUuid]) {
           this.overallParmaobj[this.paramDrawUuid].paramsArr[ind].value = ''
         }
@@ -423,15 +425,15 @@ export default {
             // 下拉列表默认值
             if (paramObj.paramChoice.choiceType === '1'){
               // 单选
-              this.paramListValueList[index] = paramObj.defaultVal
+              this.paramListValueList[index] = paramObj.dataType == 'str'? `'` + paramObj.defaultVal + `'` : paramObj.defaultVal
             } else {
               // 多选
               const list = []
               if (paramObj.defaultVal.length > 0){
                 paramObj.defaultVal.forEach(o => {
-                  // if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
-                  // else {list.push(o) }
-                  list.push(o)
+                  if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
+                  else {list.push(o) }
+                  // list.push(o)
                 })               
                 this.paramListValueList[index] = list
               }
@@ -522,6 +524,7 @@ export default {
               // 单选
               // this.paramTreeValueList[index] = list[0]
               this.paramTreeValueList[index] = paramObj.defaultVal
+              //  this.paramTreeValueList[index] = paramObj.dataType == 'str' ? `'` + paramObj.defaultVal + `'` : paramObj.defaultVal
             } else {
               // 多选
               const list = []
@@ -622,7 +625,7 @@ export default {
                 }
                 filterArr.push(obj)
               } else { // 不允许为空
-                if (paramValue !== '') {
+                if (paramValue != '' && paramValue != "''") {
                   filterArr.push(obj)
                 } else {
                   paramNum++
@@ -760,6 +763,77 @@ export default {
              }
            }
           }
+          // 获取参数查询条件（时间选择）
+          // let paramOptionDom = this.$refs.paramOption
+          // if(paramOptionDom && paramOptionDom.length > 0) {
+          //   for(var j = 0; j< this.paramOptionDom.length;j++){
+          //     console.log('执行时间')
+          //     if( typeof this.paramOptionDom[j] !== 'undefined'){
+          //       paramInfoObj = paramOptionDom[j]
+          //       console.log(paramInfoObj, 'paramInfoObjparamInfoObjparamInfoObj')
+          //       let moduleParamId = paramInfoObj.dataId// 母参数ID
+          //       let allowedNull = typeof paramInfoObj.dataAllowedNull !== 'undefined' ? paramInfoObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
+          //       let choiceType = paramInfoObj.dataChoiceType// 当前参数是多选还是单选：0：多选，1、单选
+          //       let obj = {
+          //         'moduleParamId': moduleParamId,
+          //         'paramValue': '',
+          //         'allowedNull': '0'
+          //       }
+          //       if (allowedNull === 1) { // 允许为空
+          //         obj.allowedNull = '1'
+          //         if (this.paramOptionDom[j].length === 0) { // 未选择值
+          //           hasAllowedNullParam = true
+          //           for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+          //             if (arr[w].moduleParamId === moduleParamId) {
+          //               arr[w]['value'] = ''
+          //             }
+          //           }
+          //         } else {
+          //           if (choiceType === '1') { // 单选
+          //             obj.paramValue = this.paramOptionDom[j]
+          //           } else { // 多选
+          //             obj.paramValue = this.paramOptionDom[j].join(',')
+          //           }
+          //         }
+          //         filterArr.push(obj)
+          //       } else { // 不允许为空
+          //         var lineinpInd = []
+          //         for (let k = 0; k < arr.length; k++) {
+          //           if (arr[k].inputType == '') {
+          //             lineinpInd.push(k);
+          //           }
+          //         }
+          //         if (this.paramListValueList[i].length !=0) {
+          //           if (choiceType === '1') { // 单选
+          //             obj.paramValue = this.paramListValueList[i]
+          //             for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+          //               if (arr[w].moduleParamId === moduleParamId) {
+          //                 arr[w]['value'] = this.paramListValueList[i]
+          //               }
+          //             }
+          //           } else {
+          //             obj.paramValue = this.paramListValueList[i].join(',')
+          //             for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+          //               if (arr[w].moduleParamId === moduleParamId) {
+          //                 arr[w]['value'] = this.paramListValueList[i].join(',')
+          //               }
+          //             }
+          //           }
+          //           filterArr.push(obj)
+          //         } else {
+          //           paramNum++
+          //         }
+          //       }
+          //     }
+
+          //   }
+          // }
+
+
+
+
+
+
           if (paramNum !== 0) { // 第一步，先判断是否有必填的参数没有输入值
             returnObj.verify = false
             returnObj.message +='含有未输入值的参数项，请重新输入'
