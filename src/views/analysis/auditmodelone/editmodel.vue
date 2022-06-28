@@ -494,10 +494,12 @@ export default {
       this.dataUserId = undefined
       this.sceneCode = undefined
     }
-    this.isConfigList = getDictList('001009');
+    this.isConfigList = getDictList('009001');
     this.isConfigList.map(i => {
-      if (i.codeName == '是否跳过SQL校验') {
-        this.isJumpSQLCheck = true
+      if (i.codeValue == '009001002') {
+        if (i.codeName == 'skip') {  // 是否跳过SQL校验校验，noSkip为空：不跳过  skip：跳过
+          this.isJumpSQLCheck = true  
+        }
       }
     })
   },
@@ -1357,7 +1359,6 @@ export default {
         }
       }
       var editmodel2db = function (_this) {
-
         if (!_this.isUpdate) {
           saveModel(modelObj).then(result => {
             _this.editorModelLoading = false
