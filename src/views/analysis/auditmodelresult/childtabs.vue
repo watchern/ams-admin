@@ -117,8 +117,8 @@ export default {
           return this.preValue[key].name
         }
       },
-    addBigTabs(resultTable,mainTable,modelname,modelUuid,resultSpiltObjects,useType,currentExecuteSQL){
-        this.$emit('addTab',undefined,undefined,modelname,modelUuid,undefined,useType,currentExecuteSQL)
+    addBigTabs(resultTable,mainTable,modelname,modelUuid,resultSpiltObjects,useType,currentExecuteSQL, detailModel){
+        this.$emit('addTab',undefined,undefined,modelname,modelUuid,undefined,useType,currentExecuteSQL, undefined, detailModel)
     },
     addBigTabsModelPreview(modelName,modelUuid,currentExecuteSQL){
       var modelObj = {modelName:modelName,modelUuid:modelUuid}

@@ -2041,12 +2041,16 @@ export default {
                         headerName: colNames[i],
                         field: colNames[i],
                         checkboxSelection: true,
+                        cellRenderer: "ag-cell",
+                        params: { thresholdValueRel, modelResultDetailCol },
                       };
                       onlyFlag = true;
                     } else {
                       rowColom = {
                         headerName: colNames[i],
                         field: colNames[i],
+                        cellRenderer: "ag-cell",
+                        params: { thresholdValueRel, modelResultDetailCol },
                       };
                     }
                   }
@@ -2104,12 +2108,22 @@ export default {
                               headerName: this.modelOutputColumn[j].columnAlias,
                               field: colNames[i],
                               checkboxSelection: true,
+                              cellRenderer: "ag-cell",
+                              params: {
+                                thresholdValueRel,
+                                modelResultDetailCol,
+                              },
                             };
                             onlyFlag = true;
                           } else {
                             rowColom = {
                               headerName: this.modelOutputColumn[j].columnAlias,
                               field: colNames[i],
+                              cellRenderer: "ag-cell",
+                              params: {
+                                thresholdValueRel,
+                                modelResultDetailCol,
+                              },
                             };
                           }
                         }
@@ -2127,11 +2141,21 @@ export default {
                     headerName: colNames[i],
                     field: colNames[i],
                     checkboxSelection: true,
+                    cellRenderer: "ag-cell",
+                    params: {
+                      thresholdValueRel,
+                      modelResultDetailCol,
+                    },
                   };
                 } else {
                   var rowColom = {
                     headerName: colNames[i],
                     field: colNames[i],
+                    cellRenderer: "ag-cell",
+                    params: {
+                      thresholdValueRel,
+                      modelResultDetailCol,
+                    },
                   };
                 }
                 col.push(rowColom);
@@ -2363,6 +2387,11 @@ export default {
                       col.push({
                         headerName: this.nextValue.columnNames[j],
                         field: this.nextValue.columnNames[j],
+                        cellRenderer: "ag-cell",
+                        params: {
+                          thresholdValueRel,
+                          modelResultDetailCol,
+                        },
                       });
                     } else {
                       for (let n = 0; n < modelOutputColumn.length; n++) {
@@ -2399,6 +2428,11 @@ export default {
                               rowColom = {
                                 headerName: modelOutputColumn[n].columnAlias,
                                 field: this.nextValue.columnNames[j],
+                                cellRenderer: "ag-cell",
+                                params: {
+                                  thresholdValueRel,
+                                  modelResultDetailCol,
+                                },
                               };
                             }
                           }
@@ -2635,6 +2669,7 @@ export default {
                 var rowColom = {
                   headerName: this.nextValue.columnNames[j],
                   field: this.nextValue.columnNames[j],
+                  cellRenderer: "ag-cell",
                 };
                 var key = this.nextValue.columnNames[j];
                 var value = this.nextValue.result[j];
@@ -3039,7 +3074,8 @@ getModelType(this.modelType) };
                       detailModel.modelUuid,
                       undefined,
                       "modelPreview",
-                      this.currentExecuteSQL
+                      this.currentExecuteSQL,
+                      detailModel
                     );
                   } else {
                     this.$emit(

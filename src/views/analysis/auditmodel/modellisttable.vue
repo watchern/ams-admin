@@ -265,6 +265,7 @@
                     :paramInfo="item.runModelConfig"
                     :maintableindex="item.maintableindex"
                     use-type="modelPreview"
+                    :modelType="modelType"
                   />
                 </el-col>
               </div>
@@ -655,7 +656,8 @@ export default {
       // 控制运行还是预览
       isConfigList: [],
       // 默认预览（false 预览 true 运行）
-      isPreviewAndFunc: false
+      isPreviewAndFunc: false,
+      modelType: '', // 运行列表带入modelType
     };
   },
   computed: {},
@@ -696,10 +698,12 @@ export default {
     })
     this.getList()
     // 判断预览/运行
-    this.isConfigList = getDictList('001009');
+    this.isConfigList = getDictList('009001');
     this.isConfigList.map(i => {
-      if (i.codeName == '模型预览方式') {
-        this.isPreviewAndFunc = true
+      if (i.codeValue == '009001001') {
+        if (i.codeName == 'executeModel') { // preview ：预览模式 executeModel ：执行模式
+          this.isPreviewAndFunc = true
+        }
       }
     })
   },
@@ -1817,6 +1821,7 @@ export default {
       this.flag = "notModelPreview";
       this.currentModelIsRun = false;
       var selectObj = this.$refs.modelListTable.selection;
+      this.modelType = this.getModelType(this.modelTypeFormatter({modelType:selectObj[0].modelType}))
       this.modelId = selectObj[0].modelUuid;
       if (selectObj == undefined || selectObj.length === 0) {
         this.$message({ type: "info", message: "请先选择要预览的模型!" });

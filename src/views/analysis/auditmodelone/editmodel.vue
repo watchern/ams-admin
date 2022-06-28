@@ -71,7 +71,7 @@
                   <el-col :span="20">
                     <el-form-item label="模型用途" prop="modelUse">
                       <!-- 模型用途为预警的模型不能编辑模型用途 -->
-                      <el-select v-model="form.modelUse" :disabled="form.modelUse==2" placeholder="请选择模型用途" style="width:100%;">
+                      <el-select v-model="form.modelUse" :disabled="modelUse==2 && operationObj.operationType == 2" placeholder="请选择模型用途" style="width:100%;">
                         <el-option
                           v-for="item in modelUseList"
                           :key="item.value"
@@ -351,6 +351,7 @@ export default {
         modelUse: 1, // 审计用途
         resultTableName: ''
       },
+      modelUse: '', // 记录保存的modelUse（为模型用途为预警的模型不能编辑模型用途）
       //参数模型关联对象
       parammModelRel: {},
       //sql对象
@@ -1211,6 +1212,7 @@ export default {
      * @param model 要反显的数据
      */
     displayData(model) {
+      this.modelUse = model.modelUse;
       // region 处理模型结果列
       const columnData = []
       for (let i = 0; i < model.modelOutputColumn.length; i++) {

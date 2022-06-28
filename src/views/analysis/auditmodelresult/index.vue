@@ -72,7 +72,7 @@ export default {
      * mainTable:主表（运行结果表对象）
      * modelname:模型的名称，用来给新页签赋值title属性用
      */
-    addTab(resultTable, mainTable, modelname, modelUuid,resultSpiltObjects,usetype,currentExecuteSQL, selectRow) {
+    addTab(resultTable, mainTable, modelname, modelUuid,resultSpiltObjects,usetype,currentExecuteSQL, selectRow, detailModel) {
       const newTabName = ++this.tabIndex + ''
       this.mainTable = mainTable
       this.helpTables = resultTable
@@ -86,7 +86,7 @@ export default {
         useType: usetype,
         currentExecuteSQL: currentExecuteSQL,
         modelId: modelUuid,
-        modelType: this.getModelType(this.modelTypeFormatter({modelType: selectRow.model.modelType}))
+        modelType: this.getModelType(this.modelTypeFormatter({modelType: selectRow && selectRow.model.modelType || detailModel.modelType}))
       })
       this.editableTabsValue = newTabName
     },
