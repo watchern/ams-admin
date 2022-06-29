@@ -7,11 +7,11 @@
       </div>
     </div>
      <!-- :gutter="5" -->
-    <el-row style="display:flex;height:90%;">
+    <el-row style="display:flex;height:90%;" :gutter="20">
        <!-- :span="6" -->
       <!-- @原始数据@ -->
 
-      <el-col style="min-width:350px;width:auto;">
+      <el-col :span="8" >
         <el-input v-model="filterText1" placeholder="输入关键字进行过滤" />
         <div class="tree-container databg">
           <MyElTree
@@ -77,13 +77,13 @@
                   "
                 />
               </i>
-              <span :title="node.name">{{ node.label }}</span>
+              <span class="tree-label tree-label-width"  :title="node.label">{{ node.label }}</span>
             </span>
           </MyElTree>
         </div>
       </el-col>
 
-      <el-col :span="2" style="width: 45px; padding-top: 10%;margin-left:10px;">
+      <el-col :span="1" style="display: flex;align-items: center;justify-content: center;">
         <div class="transfer-center">
           <p class="transfer-center-item">
             <el-button
@@ -97,7 +97,7 @@
       </el-col>
        <!-- :span="6" -->
       <!-- @角色数据@ -->
-      <el-col style="min-width:350px;width:auto;">
+      <el-col :span="8" >
         <el-input v-model="filterText2" placeholder="输入关键字进行过滤" />
         <div class="tree-container databg">
           <MyElTree
@@ -161,7 +161,7 @@
                   "
                 />
               </i>
-              <span :title="node.name" @click="onclick2(node)">{{
+              <span class="tree-label" :title="node.label"  @click="onclick2(node)">{{
                 node.label
               }}</span>
               <span v-if="data.id !== 'ROOT'" style="padding-left: 10px">
@@ -173,7 +173,7 @@
                 />
                 <el-checkbox-group
                   v-model="data.accessType"
-                  style="display: inline; float: right"
+                  style="display: inline; float: right;margin-left: 10px"
                 >
                   <!--label="WRITE" 写入 -->
                   <el-checkbox label="WRITE">{{''}}</el-checkbox>
@@ -185,7 +185,7 @@
         </div>
       </el-col>
        <!-- :span="8" -->
-      <el-col style="margin-left: 10px;min-width:300px;width:auto;">
+      <el-col :span="7" >
         <!--<template >
           <span>{{ currentData.label }}</span>
           <div v-if="currentData.type==='table'">
@@ -580,5 +580,20 @@ export default {
 }
 .databg{
   background-color: #6a6a6a16;
+}
+.tree-label {
+  display: inline-block;
+  // width: 65%;
+  width: calc(100% - 80px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tree-label-width {
+  width: 250px;
+}
+.custom-tree-node {
+  display: flex;
+  align-items: center;
 }
 </style>

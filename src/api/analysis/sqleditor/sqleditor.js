@@ -1910,8 +1910,8 @@ export function sqlFormat() {
   request({
     baseURL: analysisUrl,
     url: '/SQLEditorController/formatSql',
-    method: 'get',
-    params: param
+    method: 'post',
+    data: param
   }).then(result => {
     if (result.data.isError) {
       this.$message({
@@ -2245,8 +2245,8 @@ function getSelectSQLByColumns(columns, tableName, oldSql, loading) {
   request({
     baseURL: analysisUrl,
     url: '/SQLEditorController/formatSql',
-    method: 'get',
-    params: { 'sql': sql }
+    method: 'post',
+    data: { 'sql': sql }
   }).then(result => {
     if (result.data.isError) {
       if (loading) {

@@ -2223,7 +2223,7 @@ export default {
       obj.modelUuid = modelUuid;
       obj.executeSQLList = this.modelRunTaskList[obj.modelUuid];
       obj.businessField = "modellisttable";
-      // obj.modelType = this.getModelType(this.modelTypeFormatter({modelType:selectObj[0].modelType}))
+      obj.modelType = 'sql'
       // 重置数据展现界面数据
       this.$refs[modelUuid][0].reSetTable();
       let paramInfo = {

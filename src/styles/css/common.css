@@ -191,7 +191,7 @@ tr::-webkit-scrollbar-track,
 th::-webkit-scrollbar-track,
 div::-webkit-scrollbar-track,
 .scrollbar::-webkit-scrollbar-track{
-    background-color: transparent;
+  background-color: transparent;
 }
 /*滚动条的滑块按钮*/
 textarea::-webkit-scrollbar-thumb,
@@ -224,6 +224,20 @@ div::-webkit-scrollbar-button,
 .scrollbar::-webkit-scrollbar-button{
     height: 0;
     background-color: transparent;
+}
+textarea::-webkit-scrollbar-corner,
+body::-webkit-scrollbar-corner,
+html::-webkit-scrollbar-corner,
+p::-webkit-scrollbar-corner,
+table::-webkit-scrollbar-corner,
+ul::-webkit-scrollbar-corner,
+li::-webkit-scrollbar-corner,
+td::-webkit-scrollbar-corner,
+tr::-webkit-scrollbar-corner,
+th::-webkit-scrollbar-corner,
+div::-webkit-scrollbar-corner,
+.scrollbar::-webkit-scrollbar-corner{
+  height: 0;
 }
 
 .ace-progress-bar{
