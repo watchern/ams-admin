@@ -999,10 +999,10 @@ function organizeSelectTreeData(result, dataType) {
   for (var i = 0; i < result.length; i++) { // 先把每一条数据转换成xmSelect的数据格式{"name":xx,"value":xx,"children":[]}
     var obj = {
       'name': result[i].C_NAME,
-      // 'value': result[i].C_CODE,
-      'value': dataType == 'str' ? `'` + result[i].C_CODE + `'` : result[i].C_CODE,
-      // 'pValue': result[i].P_CODE,
-      'pValue': dataType == 'str' ? `'` + result[i].P_CODE +`'` : result[i].P_CODE,
+      'value': result[i].C_CODE,
+      // 'value': dataType == 'str' ? `'` + result[i].C_CODE + `'` : result[i].C_CODE,
+      'pValue': result[i].P_CODE,
+      // 'pValue': dataType == 'str' ? `'` + result[i].P_CODE +`'` : result[i].P_CODE,
       'children': [],
       'sort': i
     }
@@ -2970,7 +2970,7 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
               list.push(o)
             })
             settingVue.paramTreeValueList[index] = list
-            // settingVue.paramTreeValueList[index] = ["100101"]
+            // settingVue.paramTreeValueList[index] = ["102001"]
           }
           
         }
@@ -3033,8 +3033,10 @@ export function changeparamdata (info,ind) {
           list.push(
             {
               'name': result.data.paramList[i].C_NAME,
-              'value': info.dataType == 'str' ? `'` +  result.data.paramList[i].C_CODE + `'` : result.data.paramList[i].C_CODE,
-              'pValue':info.dataType == 'str' ? `'` +  result.data.paramList[i].P_CODE + `'` : result.data.paramList[i].P_CODE,
+              // 'value': info.dataType == 'str' ? `'` +  result.data.paramList[i].C_CODE + `'` : result.data.paramList[i].C_CODE,
+              'value': result.data.paramList[i].C_CODE,
+              // 'pValue':info.dataType == 'str' ? `'` +  result.data.paramList[i].P_CODE + `'` : result.data.paramList[i].P_CODE,
+              'pValue': result.data.paramList[i].P_CODE,
               // 'pValue':paramCommonJs.pValueFormat(result.data.paramList[i].P_CODE, info),
               'children': [],
             }

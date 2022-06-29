@@ -131,7 +131,42 @@
         <tools-template-update @func="showWith" />
       </div>
     </transition>
-    <div class="page-left" v-if="showHelpWidth">
+    <!-- 帮助内容 -->
+    <el-dialog title="帮助" :visible.sync="showHelpWidth" :modal-append-to-body='false' custom-class="collapse-dia" append-to-body>
+      <el-dialog
+        width="30%"
+        title="新手引导"
+        :visible.sync="showHelpHeight"
+        append-to-body>
+        <div class="help-document">
+          {{helpDocument}}
+        </div>
+
+      </el-dialog>
+      <div class="collapse-box">
+        <el-collapse class="tools-menu-small" v-model="activeName" accordion>
+          <el-collapse-item
+            v-for="(item, index) in moremenugroupId"
+            :title="item.name"
+            :name="index"
+            :key="index"
+          >
+            <el-tree
+              :data="moremenugroup[index]"
+              node-key="id"
+              @node-click="handleNodeClick"
+              ref="tree"
+              highlight-current
+              v-if="activeName === index"
+              :props="defaultProps"
+            >
+            </el-tree>
+          </el-collapse-item>
+        </el-collapse>
+      </div>
+    </el-dialog>
+    <!-- <div class="page-left" v-if="showHelpWidth">
+      <p>1111</p>
       <el-collapse class="tools-menu-small" v-model="activeName" accordion>
         <el-collapse-item
           v-for="(item, index) in moremenugroupId"
@@ -163,7 +198,7 @@
     >
       <div @click="showHelpHeight = false" class="readonlyToX">X</div>
       <div class="readonlyChild" id="readonlyChild"></div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -231,6 +266,7 @@ export default {
       drawer: false,
       loading: false,
       projectname: process.env.VUE_APP_BASE_NAME || "",
+      helpDocument: '', // 新手指导内容
     };
   },
   computed: {
@@ -503,6 +539,7 @@ export default {
       });
     },
     showHelp() {
+      this.activeName = ''; // 默认收起折贴面板
       this.showHelpWidth = !this.showHelpWidth;
     },
     // 父节点不可选中
@@ -517,21 +554,25 @@ export default {
       if (data.id <= 1000) {
       } else {
         this.loading = true;
+        this.helpDocument = '';
         this.showHelpHeight = true;
         let id = data.id;
         getByMenuId(id).then((resp) => {
           if (resp.code === 0 && resp.data !== null) {
             if (resp.data.helpDocument !== "") {
-              document.getElementById("readonlyChild").innerHTML =
-                resp.data.helpDocument;
+              // document.getElementById("readonlyChild").innerHTML =
+              //   resp.data.helpDocument;
+              this.helpDocument = resp.data.helpDocument;
             } else {
-              document.getElementById("readonlyChild").innerHTML =
-                "<p>暂无新手引导</p>";
+              // document.getElementById("readonlyChild").innerHTML =
+              //   "<p>暂无新手引导</p>";
+              this.helpDocument = '暂无新手引导';
             }
             this.loading = false;
           } else if (resp.code === 0 && resp.data === null) {
-            document.getElementById("readonlyChild").innerHTML =
-              "<p>暂无新手引导</p>";
+            // document.getElementById("readonlyChild").innerHTML =
+            //   "<p>暂无新手引导</p>";
+            this.helpDocument = '暂无新手引导';
             this.loading = false;
           }
         });
@@ -964,6 +1005,10 @@ export default {
   z-index: 0;
   background-color: rgba(0, 0, 0, 0.5);
 }
+.collapse-box {
+  height: 300px;
+  overflow: auto;
+}
 .tools-menu-small {
   height: 590px;
   width: 100%;
@@ -988,6 +1033,14 @@ export default {
   padding: 15px;
   animation: whiteIn 0.8s forwards;
   overflow: auto;
+}
+.help-document {
+  min-height: 100px;
+  line-height: 25px;
+  font-size: 14px;
+  max-height: 300px;
+  overflow: auto;
+  letter-spacing: 0.5px;
 }
 @keyframes whiteIn {
   0% {
@@ -1021,5 +1074,8 @@ export default {
       display: none;
     }
   }
+}
+.collapse-dia .el-dialog__header{
+  background: #ccc;
 }
 </style>

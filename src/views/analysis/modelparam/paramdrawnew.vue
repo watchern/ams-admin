@@ -11,7 +11,7 @@
         <el-col :span="15">
           <!-- 下拉列表类型 -->
           <el-select v-model="paramListValueList[ind]" ref="selectParam"  style="width: 100%;" v-if="paramInfo.inputType === 'lineinp' " 
-              :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable @change="changeRelationParam(ind, paramListValueList[ind])" @click.native="changeparamdata(paramInfo,ind)">
+              :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable @change="changeRelationParam(ind, paramListValueList[ind])" @click.native="changeparamdata(paramInfo,ind)"> 
             <el-option v-for="(item,index) in paramInfo.data" :value="paramInfo.dataType == 'str' ? `'`+ item.value + `'`: item.value" :label="item.name" :key="index+'sec'" >
               <span style="float: left"> {{ item.name}}</span>
               <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value == item.name ? "" : item.value}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -118,8 +118,9 @@ export default {
               list.push(
                 {
                   'name': result.data.paramList[i].C_NAME,
-                  'value': info.dataType == 'str' ? `'` + result.data.paramList[i].C_CODE + `'` : result.data.paramList[i].C_CODE,
-                  'pValue': info.dataType == 'str' ? `'` + result.data.paramList[i].P_CODE + `'` :  result.data.paramList[i].P_CODE,
+                  // 'value': info.dataType == 'str' ? `'` + result.data.paramList[i].C_CODE + `'` : result.data.paramList[i].C_CODE,
+                   'value':result.data.paramList[i].C_CODE,
+                  'pValue': result.data.paramList[i].P_CODE,
                   // 'pValue':paramCommonJs.pValueFormat(result.data.paramList[i].P_CODE, info),
                   'children': [],
                 }
