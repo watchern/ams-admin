@@ -61,7 +61,7 @@
                         v-for="state in relModelParam"
                         :key="state.ammParamUuid"
                         :value="state.ammParamUuid"
-                        :label="state.paramName"
+                        :label="state.formatParamValue.name"
                       />
                     </el-select>
                   </template>
@@ -432,6 +432,10 @@ export default {
         }
         this.ModelTreeDialog = false
         // 初始化模型的参数
+       
+        result.data.parammModelRel.map(i => {
+          i.formatParamValue = JSON.parse(i.paramValue)
+        })
         this.relModelParam = result.data.parammModelRel
         if(type == 2) {
           // 编辑切换模型对象时初始化先清空

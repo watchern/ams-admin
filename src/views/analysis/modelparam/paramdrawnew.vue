@@ -427,6 +427,7 @@ export default {
             if (paramObj.paramChoice.choiceType === '1'){
               // 单选
               this.paramListValueList[index] = paramObj.dataType == 'str'? `'` + paramObj.defaultVal + `'` : paramObj.defaultVal
+              // this.paramListValueList[index] = paramObj.defaultVal
             } else {
               // 多选
               const list = []
@@ -721,14 +722,29 @@ export default {
                   }
                 } else {
                   if (choiceType === '1') { // 单选
+                  if (paramInfoObj.dataType == 'str') {
+                    obj.paramValue = "'" + this.paramTreeValueList[treenum] + "'"
+                  } else {
                     obj.paramValue = this.paramTreeValueList[treenum]
+                  }
                     for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
                       if (arr[w].moduleParamId === moduleParamId) {
                         arr[w]['value'] = this.paramTreeValueList[treenum]
                       }
                     }
                   } else { // 多选
-                    obj.paramValue = this.paramTreeValueList[treenum].join(',')
+                   
+                    if (paramInfoObj.dataType == 'str') {
+                      var paramTreeValueList2 = this.paramTreeValueList[treenum].concat(); // 深拷贝paramTreeValueList
+                      var copyParamTreeValueList = [];
+                      for(var item = 0; item<paramTreeValueList2.length; item++) {
+                        copyParamTreeValueList.push(`'${paramTreeValueList2[item]}'`)
+                      }
+                      obj.paramValue =  copyParamTreeValueList.join(',')
+
+                    } else {
+                      obj.paramValue = this.paramTreeValueList[treenum].join(',')
+                    }
                     for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
                       if (arr[w].moduleParamId === moduleParamId) {
                         arr[w]['value'] = this.paramTreeValueList[treenum].join(',')
@@ -742,14 +758,26 @@ export default {
               } else { // 不允许为空
                 if (this.paramTreeValueList[treenum].length !== 0) {
                   if (choiceType === '1') { // 单选
-                    obj.paramValue = this.paramTreeValueList[treenum]
+                    if (paramInfoObj.dataType == 'str') {
+                      obj.paramValue = "'" + this.paramTreeValueList[treenum] + "'"
+                    } else {
+                      obj.paramValue = this.paramTreeValueList[treenum]
+                    }
                     for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
                       if (arr[w].moduleParamId === moduleParamId) {
                         arr[w]['value'] = this.paramTreeValueList[treenum]
                       }
                     }
                   } else {
-                    obj.paramValue = this.paramTreeValueList[treenum].join(',')
+                    if (paramInfoObj.dataType == 'str') {
+                      var copyParamTreeValueList = [];
+                      for(var item = 0; item<this.paramTreeValueList[treenum].length; item++) {
+                        copyParamTreeValueList.push("'" + this.paramTreeValueList[treenum][item] + "'")
+                      }
+                      obj.paramValue =copyParamTreeValueList.join(',')
+                    } else {
+                      obj.paramValue = this.paramTreeValueList[treenum].join(',')
+                    }
                     for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
                       if (arr[w].moduleParamId === moduleParamId) {
                         arr[w]['value'] = this.paramTreeValueList[treenum].join(',')

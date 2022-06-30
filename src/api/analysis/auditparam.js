@@ -2856,16 +2856,16 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
           obj.setParamObj.value = obj.setParamObj.dataDefaultVal
           if (paramObj.paramChoice.choiceType === '1'){
             // 单选
-            // settingVue.paramListValueList[index] = paramObj.defaultVal
-            settingVue.paramListValueList[index] = paramObj.dataType == 'str'? `'` + paramObj.defaultVal + `'` : paramObj.defaultVal
+            settingVue.paramListValueList[index] = paramObj.defaultVal
+            // settingVue.paramListValueList[index] = paramObj.dataType == 'str'? `'` + paramObj.defaultVal + `'` : paramObj.defaultVal
           } else {
             // 多选
-            const list = [] 
+            const list = []
             if (paramObj.defaultVal.length > 0){
               paramObj.defaultVal.forEach(o => {
-                if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
-                else {list.push(o) }
-                // list.push(o)
+                // if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
+                // else {list.push(o) }
+                list.push(o)
               })
               settingVue.paramListValueList[index] = list
             }
@@ -3000,7 +3000,6 @@ export function changeparamdata (info,ind) {
       for(let j =0;j<settingVue.setParamArr.length;j++){
         if(info.paramConditionList[i].relationParamId == settingVue.setParamArr[j].dataId){
           let repvalue = settingVue.setParamArr[j].inputType == "textinp"?settingVue.setParamArr[j].dataDefaultVal:settingVue.setParamArr[j].inputType == "lineinp"?(Array.isArray(settingVue.paramListValueList[j])?settingVue.paramListValueList[j].join(','):settingVue.paramListValueList[j]):settingVue.setParamArr[j].inputType == "treeinp"?(Array.isArray(settingVue.paramTreeValueList[j])?settingVue.paramTreeValueList[j].join(','):settingVue.paramTreeValueList[j]):settingVue.setParamArr[j].dataDefaultVal
-
           if(settingVue.setParamArr[j].dataType != "int" && settingVue.setParamArr[j].inputType != "lineinp" && settingVue.setParamArr[j].inputType != "treeinp"){
             if(repvalue!=undefined && repvalue!=''){
               repvalue = "'" + repvalue + "'"
@@ -3055,11 +3054,12 @@ export function changeRelationParam (ind, val, dataType) {
   if (val) {
     settingVue.setParamArr[ind].value = val;
     if (dataType) {
-      if (dataType == 'str') {
-        settingVue.setParamArr[ind].value = val.replace("\'","").replace("\'","");
-      } else {
-        settingVue.setParamArr[ind].value = val;
-      }
+      // if (dataType == 'str') {
+      //   settingVue.setParamArr[ind].value = val.replace("\'","").replace("\'","");
+      // } else {
+      //   settingVue.setParamArr[ind].value = val;
+      // }
+      settingVue.setParamArr[ind].value = val;
     }
   } else {
     settingVue.setParamArr[ind].value = '';
