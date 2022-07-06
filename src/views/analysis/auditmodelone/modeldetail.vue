@@ -41,7 +41,7 @@
             </el-row>
             <div ref="relModelTableDiv" style="display: none;height:200px;overflow-y: scroll">
               <el-button type="primary" size="mini" @click="addRelFilter(1)">添加</el-button>
-              <el-table ref="relModelTable" :data="relModelTable" stripe border fit highlight-current-row>
+              <el-table ref="relModelTable" :data="relModelTable" stripe border fit highlight-current-row v-loading="relationTableLoading">
                 <el-table-column label="原模型字段" align="center">
                   <template slot-scope="scope">
                     <el-select v-model="scope.row.resultColumn" value="-1">
@@ -53,8 +53,8 @@
                       />
                     </el-select>
                   </template>
-                </el-table-column>
-                <el-table-column label="关联模型参数" align="center">
+                </el-table-column>               
+                <el-table-column label="关联模型参数" align="center">                 
                   <template slot-scope="scope">
                     <el-select v-model="scope.row.ammParamUuid" value="-1">
                       <el-option
@@ -180,8 +180,10 @@ export default {
       dataTableTreeLoading:false,
       //关联模型表数组
       relModelTable: [],
-      //关联模型参数数组
+      //关联模型参数数组（页面展示的已去重）
       relModelParam: [],
+      // 记录原始的关联模型参数数组
+      originalRelModelParam: [],
       //queryBuilderDialog
       queryBuilderDialogVisible:false,
       //queryBuilder列对象
@@ -203,7 +205,9 @@ export default {
         relationType: [
           { required: true, message: '请选择关联类型', trigger: 'change' }
         ]
-      }
+      },
+      // 关联列表加载状态
+      relationTableLoading: false
     }
   },
   created() {
@@ -273,6 +277,8 @@ export default {
         let modelDetailConfig = this.$refs.relModelTable.data
         // 获取非空参数集合
         let paramsList = _.filter(this.relModelParam, function(o) { return JSON.parse(o.paramValue).allowedNull == 0 })
+        // 非空集合根据formatParamValue.moduleParamId 去重
+        paramsList = _.uniqBy(paramsList, 'formatParamValue.moduleParamId')
         // 请设置关联参数
         if( modelDetailConfig.length == 0){
           return { verResult: false, treeId: this.treeId ,message: '请设置关联参数'}
@@ -306,7 +312,7 @@ export default {
           var paramName = []
           if (paramsList.length > 0) {
             paramsList.forEach((r) => { 
-              paramName.push(r.paramName)
+              paramName.push(r.formatParamValue.name)
               if(relParamId.indexOf(r.ammParamUuid) == -1){
                    verResult = false
                  }
@@ -332,7 +338,7 @@ export default {
           return { verResult: false, treeId: this.treeId ,message: '关联表必须设置过滤条件' }
         }
         // 如果为关联表则取表的数据
-        this.form.modelDetailConfig = this.$refs.relTable.data
+        this.form.modelDetailConfig = this.$refs.relTable.data;
       }
       return this.form
     },
@@ -420,6 +426,7 @@ export default {
      * @param type 初始化1，编辑2
      */
     loadParamInfo(modelUuid, type){
+      this.relationTableLoading = true
       selectModel(modelUuid).then(result => {
         this.modelTreeLoading = false
         if (result.data == null) {
@@ -432,22 +439,32 @@ export default {
         }
         this.ModelTreeDialog = false
         // 初始化模型的参数
-       
         result.data.parammModelRel.map(i => {
           i.formatParamValue = JSON.parse(i.paramValue)
+          i.moduleParamId = i.formatParamValue.moduleParamId
         })
-        this.relModelParam = result.data.parammModelRel
+        let parammModelRel = result.data.parammModelRel
+        
+        // 深拷贝parammModelRel提交时备用
+        this.originalRelModelParam = parammModelRel.concat();
+        // parammModelRel 根据resourceUuid 去重
+        let filtered_parammModelRel =  _.uniqBy(result.data.parammModelRel, 'formatParamValue.moduleParamId')
+        this.relModelParam = filtered_parammModelRel
+        // this.relModelParam = result.data.parammModelRel
+        this.relationTableLoading = false
         if(type == 2) {
           // 编辑切换模型对象时初始化先清空
           this.relModelTable = []
         }
         // 必填参数初始化
         this.notNullParamList = _.filter(this.relModelParam, function(o) { return JSON.parse(o.paramValue).allowedNull == 0 })
+        // 输出列根据formatParamValue.moduleParamId去重
+        this.notNullParamList =  _.uniqBy(this.relModelParam, 'formatParamValue.moduleParamId')
         if (this.notNullParamList.length > 0) {
           this.notNullParamList.forEach((r) => { 
             if(typeof _.find(this.relModelTable, ['ammParamUuid', r.ammParamUuid]) == 'undefined' 
               || _.find(this.relModelTable, ['ammParamUuid', r.ammParamUuid]) == null)
-              this.relModelTable.push({ammParamUuid: r.ammParamUuid,resultColumn: null,allowedNull:0})
+              this.relModelTable.push({ammParamUuid: r.ammParamUuid,resultColumn: null,allowedNull:0}) 
             })
         }
         //设置对象

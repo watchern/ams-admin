@@ -71,7 +71,8 @@
                   <el-col :span="20">
                     <el-form-item label="模型用途" prop="modelUse">
                       <!-- 模型用途为预警的模型不能编辑模型用途 -->
-                      <el-select v-model="form.modelUse" :disabled="modelUse==2 && operationObj.operationType == 2" placeholder="请选择模型用途" style="width:100%;">
+                      <!-- :disabled="modelUse==2 && operationObj.operationType == 2" -->
+                      <el-select v-model="form.modelUse" placeholder="请选择模型用途" style="width:100%;">
                         <el-option
                           v-for="item in modelUseList"
                           :key="item.value"

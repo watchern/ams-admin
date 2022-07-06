@@ -1,7 +1,7 @@
 <template>
   <div class="app-container" style="width:100%;height:100%;">
     <el-input v-model="filterText1" placeholder="输入关键字进行过滤" />
-    <div style="height: calc(100% - 70px);margin-top: 20px;">
+    <div class="tree-option" style="height: calc(100% - 70px)">
       <!-- :default-expand-all="true" 展开全部节点 -->
       <div class="controlTreeNode">
         <el-button

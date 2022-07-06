@@ -90,6 +90,28 @@ export default {
   margin-left: 1%;
   height: 100%;
 }
+.tree >>> .filter-tree {
+  margin-top: 0;
+}
+.tree .tree-option {
+  margin-top: 0 !important;
+
+}
+.tree >>> .controlTreeNode {
+  width: 100%;
+  height: 25px;
+  position: unset;
+  position: relative;
+}
+.tree >>> .controlTreeNode .expandTreeNode {
+  top: 0;
+  right: 20px;
+}
+.tree >>> .controlTreeNode .collapseTreeNode {
+  top: 0;
+  right: 36px;
+  left: unset;
+}
 .divContent {
   width: 83%;
 }

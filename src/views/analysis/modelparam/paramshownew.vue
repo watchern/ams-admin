@@ -2,15 +2,16 @@
   <div id="setParam" ref="settingParamDiv">
 <!--    <div class="col-sm-10">-->
     <el-row>
-      <table id="setParamTable" class="table table-bordered detail-form" :key="refresh">
+      <table id="setParamTable" class="table table-bordered detail-form drag-table" :key="refresh" ref="dragTable">
         <thead>
         <tr>
           <th align="center" width="200px">参数名称</th>
           <th align="center" width="300px">默认值设置</th>
           <th align="center">参数说明</th>
+          <th align="center">操作</th>
         </tr>
         </thead>
-        <tbody ref="setParamTbody">
+        <tbody ref="setParamTbody" class="drag-tbody">
         <tr ref="setParamTr" v-if="setParamArr.length == 0">
           <td align="center"></td>
           <td align="left"><span style="padding-left: 61px;">暂无数据</span></td>
@@ -58,6 +59,7 @@
             clearable />
           </td>
           <td>{{setParamObj.description}}</td>
+          <td class="option-btn" ref="dragBtn"><i class="el-icon-top" title="上移" @click="upMove(index)"></i><i class="el-icon-bottom" title="下移" @click="downMove(index)"></i></td>
         </tr>
         </tbody>
       </table>
@@ -82,10 +84,15 @@ data(){
     paramTreeValueList: [], // 下拉树列表参数值集合
     selectNum:0,// 用于临时记录参数为下拉列表的个数
     selectTreeNum:0,// 用于临时记录参数为下拉树的个数
+    fromIndex: 0,
+		toIndex: 0,
   }
 },
   mounted(){
     settingParams.sendSettingVue(this)
+    // this.$nextTick(() => {
+    //   this.rowDrop()
+    // })
   },
   methods:{
     changeparamdata (info,ind) {
@@ -123,7 +130,47 @@ data(){
         return
       }
       return settingParams.getParamsSettingBySave()
-    }
+    },
+     //行拖拽
+    rowDrop() {
+      // const tbody = this.$refs.dragTable.querySelectorAll('tbody') // 元素选择器名称根据实际内容替换
+      const tbody = document.querySelector(".drag-table tbody");
+      const _this = this
+      Sortable.create(tbody, {
+        // sort: true,
+        // // fallbackClass: true,
+        // // handle: '.option-btn', //指定哪个类名的可以拖动
+        // animation: 150,
+        // ghostClass: "blue-background-class",
+        // //handle: '.ant-table-tbody', //使用这个类名则是整行任意位置都可以拖动
+        // //chosenClass: 'sortable-ghost',被选中项的css 类名
+        // //dragClass: 'sortable-drag',正在被拖拽中的css类名
+        // // group: { name: 'name', pull: true, put: true },
+        onEnd({ newIndex, oldIndex }) {
+          console.log(newIndex, oldIndex,'拖动完毕')
+          const currRow = _this.tableData.splice(oldIndex, 1)[0]
+          _this.tableData.splice(newIndex, 0, currRow)
+        },
+      })
+    },
+    upMove (index) {
+      if (index > 0) {
+        this.swapArray(this.setParamArr, index-1, index);
+      } else {
+        this.$message.warning("已经是第一条，不可上移！");
+      }
+    },
+    downMove (index) {
+      if ((index + 1) === this.setParamArr.length){
+        this.$message.warning("已经是最后一条，不可下移！");
+      } else {
+        this.swapArray(this.setParamArr, index, index+1);
+      } 
+    },
+    swapArray(arr, index1, index2) {
+      arr[index1] = arr.splice(index2, 1, arr[index1])[0];
+      return arr;
+    },
   }
 
 }
@@ -153,5 +200,22 @@ div#operators p{
   color: #000000;
   font-size: 15px;
   width: 204px;
+}
+.option-btn {
+  text-align: center;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.option-btn i {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: #bebebe;
+  border-radius: 50%;
+  line-height: 20px;
+  text-align: center;
+  margin-left: 5px;
+  color: #fff;
+  color: #f2f7fd;
 }
 </style>

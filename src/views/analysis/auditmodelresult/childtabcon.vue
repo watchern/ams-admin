@@ -3038,8 +3038,8 @@ export default {
             ) {
               var key =
                 this.modelDetailRelation[i].modelDetailConfig[j].resultColumn;
-              var obj = { moduleParamId: "", paramValue: "" };
-              obj.moduleParamId =
+              var obj = { copyParamId: "", paramValue: "", moduleParamId: "" };
+              obj.copyParamId =
                 this.modelDetailRelation[i].modelDetailConfig[j].ammParamUuid;
               if (this.modelUuid !== undefined) {
                 obj.paramValue = this.rowData[this.rowIndex][key.toLowerCase()];
@@ -3053,12 +3053,59 @@ export default {
         findParamModelRelByModelUuid(value).then((resp) => {
           var arr = [];
           for (var i = 0; i < resp.data.length; i++) {
+            // 1：因为参数关联时进行了去重操作所以到进行2
+            // 2：判断moduleParamId 一样的参数 进行赋值操作，然后拼接SQL
+            // let parseI = JSON.parse(resp.data[i]);
+            // var obj = {
+            //     moduleParamId: parseI.moduleParamId,
+            //     paramValue: parseI.paramValue,
+            //     name: parseI.name,
+            //     key : i,
+            //     example: parseI.example,
+            //     inputType: parseI.inputType,
+            //     useQuotation: parseI.useQuotation,
+            //     value: parseI.value,
+
+            // };
+            // for (var j = 0; j < resp.data.length; j++) {
+            //   let parseJ = JSON.parse(resp.data[j]);
+            //   if (parseI.moduleParamId == parseJ.moduleParamId && i !== j) {
+            //     obj.paramValue  = parseI.paramValue && parseI.paramValue || '' + parseJ.paramValue && parseJ.paramValue || ''
+            //     console.log(parseI.paramValue, 'paramValueparamValueparamValue')
+            //     console.log(obj.paramValue, 'paramValue')
+            //     obj.example  = parseI.example && parseI.example || '' + parseJ.example && parseJ.example || ''
+            //     obj.inputType  = parseI.inputType && parseI.inputType || '' + parseJ.inputType && parseJ.inputType || ''
+            //     obj.useQuotation  = parseI.useQuotation && parseI.useQuotation || '' + parseJ.useQuotation && parseJ.useQuotation || ''
+            //     obj.value  = parseI.value && parseI.value || '' + parseJ.value && parseJ.value || ''
+            //   }
+
+            // }
+            // if (obj.key == i) {
+            //   parseI.paramValue = obj.paramValue
+            //   parseI.example = obj.example
+            //   parseI.inputType = obj.inputType
+            //   parseI.useQuotation = obj.useQuotation
+            //   parseI.value = obj.paramValue
+            // }
             arr.push(JSON.parse(resp.data[i]));
+            // arr.push(parseI);
           }
           selectModel(value).then((resp) => {
+            // 判断参数类型为str时detailValue的paramValue拼接引号
+            detailValue.map(i => {
+              resp.data.parammModelRel.map(j => {
+                j.formatParamValue = JSON.parse(j.paramValue)
+                if (i.copyParamId == j.ammParamUuid) {
+                  i.moduleParamId = j.formatParamValue.moduleParamId;
+                  if (j.dataType == 'str') {
+                    i.paramValue = `'${i.paramValue}'`
+                  }
+                }
+              })
+            })
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
             const obj = { sqls: sql, businessField: "modelresultdetail",modelType: this.
-getModelType(this.modelType) };
+            getModelType(this.modelType) };
             detailModel = resp.data;
             getExecuteTask(obj)
               .then((resp) => {

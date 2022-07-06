@@ -11,9 +11,9 @@
        <!-- :span="6" -->
       <!-- @原始数据@ -->
 
-      <el-col :span="8" >
+      <el-col :span="7" >
         <el-input v-model="filterText1" placeholder="输入关键字进行过滤" />
-        <div class="tree-container databg">
+        <div class="tree-container">
           <MyElTree
             ref="treeTable"
             v-loading="tree1Loading"
@@ -99,7 +99,7 @@
       <!-- @角色数据@ -->
       <el-col :span="8" >
         <el-input v-model="filterText2" placeholder="输入关键字进行过滤" />
-        <div class="tree-container databg">
+        <div class="tree-container">
           <MyElTree
             ref="treeRole"
             :props="props"
@@ -185,7 +185,7 @@
         </div>
       </el-col>
        <!-- :span="8" -->
-      <el-col :span="7" >
+      <el-col :span="8" >
         <!--<template >
           <span>{{ currentData.label }}</span>
           <div v-if="currentData.type==='table'">
@@ -567,7 +567,7 @@ export default {
   overflow: auto;
 }
 .page-container .tree-container .filter-tree {
-  margin-top: 20px;
+  margin-top: 12px;
 }
 .transfer-center-item {
   width: 40px;

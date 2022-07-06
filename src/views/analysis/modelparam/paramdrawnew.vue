@@ -607,9 +607,12 @@ export default {
               let moduleParamId = paramInfoObj.dataId// 母参数ID
               let allowedNull = typeof paramInfoObj.dataAllowedNull !== 'undefined' ? paramInfoObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
               let paramValue = typeof paramInfoObj.dataDefaultVal !== 'undefined' ? paramInfoObj.dataDefaultVal :''
-              if(paramInfoObj.useQuotation == 1){
+              if(paramInfoObj.dataType == 'str') {
                 paramValue = "'" + paramValue + "'"
               }
+              // if(paramInfoObj.useQuotation == 1){
+              //   paramValue = "'" + paramValue + "'"
+              // }
               let obj = {
                 'moduleParamId': moduleParamId,
                 'paramValue': $.trim(paramValue), // 处理可能存在的空格
@@ -629,6 +632,13 @@ export default {
               } else { // 不允许为空
                 if (paramValue != '' && paramValue != "''") {
                   filterArr.push(obj)
+                  // arr[w]['value'] = paramValue
+                  for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                    if (arr[w].moduleParamId === moduleParamId) {
+                      arr[w]['value'] = paramValue
+                    }
+                  }
+                  
                 } else {
                   paramNum++
                 }
@@ -885,6 +895,7 @@ export default {
             } else {
               if (hasAllowedNullParam) { // 如果存在可为空的参数并且为空值，走后台进行空参替换
                 const response = recplaceParams(replaceParamSql, JSON.stringify(arr))
+                
                 //const response = await replaceModelSqlByParams(replaceParamSql, JSON.stringify(arr))
                 if(response.data == null || response.data.isError){// 出错后replaceParamSql的值会在后台置为空
                   returnObj.verify = false

@@ -332,7 +332,11 @@ export default {
             this.chooseTables.push(tableForm);
           });
         // 批量保存
-        batchSaveTable(this.chooseTables).then(() => {
+        batchSaveTable(this.chooseTables).then((res) => {
+          if (res.code!= 0) {
+            this.$message({type:'error', message:res.msg})
+            return
+          }
           // 刷新ROOT节点
           this.refreshNodeBy("ROOT");
           this.$notify(

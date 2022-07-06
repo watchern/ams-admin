@@ -430,13 +430,14 @@ export function findParamModelRelByModelUuid(data) {
  * @param {*} replaceSql 要替换的sql
  */
 export function replaceParam(filterArr, arr, replaceSql) {
-  for (var j = 0; j < filterArr.length; j++) { // 遍历所有母参数信息
-    var moduleParamId = filterArr[j].moduleParamId
-    for (var k = 0; k < arr.length; k++) { // 遍历当前节点绑定的参数
-      if (arr[k].copyParamId === moduleParamId) {
-        if (typeof filterArr[j].paramValue != undefined) {
-          var re = new RegExp(arr[k].id,"g");
-          replaceSql = replaceSql.replace(re,filterArr[j].paramValue)
+  // 根据重复的参数判断moduleParamId相等则赋值
+  for (var j = 0; j < arr.length; j++) { // 遍历所有母参数信息
+    for (var k = 0; k < filterArr.length; k++) { // 遍历当前节点绑定的参数
+      var moduleParamId = filterArr[k].moduleParamId
+      if (arr[j].moduleParamId === moduleParamId) {
+        if (typeof filterArr[k].paramValue != undefined) {
+          var re = new RegExp(arr[j].id,"g");
+          replaceSql = replaceSql.replace(re,filterArr[k].paramValue)
           // replaceSql = replaceSql.replaceAll(arr[k].id, filterArr[j].paramValue) // 将参数SQL中的参数ID替换为输入得值
         }
       }

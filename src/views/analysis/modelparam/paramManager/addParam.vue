@@ -712,7 +712,7 @@ export default {
       relevanceData: [],
       //表单属性
       form: {
-        useQuotation: "0",
+        useQuotation: "1",
         paramName: "",
         dataType: "",
         inputType: "",
