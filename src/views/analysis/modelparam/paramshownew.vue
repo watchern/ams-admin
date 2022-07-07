@@ -8,7 +8,7 @@
           <th align="center" width="200px">参数名称</th>
           <th align="center" width="300px">默认值设置</th>
           <th align="center">参数说明</th>
-          <th align="center">操作</th>
+          <th align="center" style="text-align: center;">操作</th>
         </tr>
         </thead>
         <tbody ref="setParamTbody" class="drag-tbody">
@@ -17,7 +17,7 @@
           <td align="left"><span style="padding-left: 61px;">暂无数据</span></td>
           <td align="center"></td>
         </tr>
-        <tr ref="setParamTr" v-for="(setParamObj,index) in setParamArr" :index="index">
+        <tr ref="setParamTr" v-for="(setParamObj,index) in setParamArr" :index="index" :class="setParamObj.dataId" :key="index">
           <td align="center">{{setParamObj.name}}</td>
           <td v-if="setParamObj.inputType === 'lineinp'" ref="selectParam">
             <!-- {{setParamObj.data.length}} -->
@@ -59,7 +59,9 @@
             clearable />
           </td>
           <td>{{setParamObj.description}}</td>
-          <td class="option-btn" ref="dragBtn"><i class="el-icon-top" title="上移" @click="upMove(index)"></i><i class="el-icon-bottom" title="下移" @click="downMove(index)"></i></td>
+          <td class="option-btn" ref="dragBtn"><i class="fa fa-bars drag-dom" title="拖动"></i></td>
+          <!-- <td class="option-btn" ref="dragBtn"><el-button class="drag-dom" size="mini">拖动</el-button></td> -->
+          
         </tr>
         </tbody>
       </table>
@@ -71,6 +73,7 @@
 <script>
 import * as settingParams from "@/api/analysis/auditparam";
 import '@/components/ams-loading/css/loading.css'
+import Sortable from "sortablejs";
 export default {
 name: "paramshownew",
 data(){
@@ -84,15 +87,11 @@ data(){
     paramTreeValueList: [], // 下拉树列表参数值集合
     selectNum:0,// 用于临时记录参数为下拉列表的个数
     selectTreeNum:0,// 用于临时记录参数为下拉树的个数
-    fromIndex: 0,
-		toIndex: 0,
+    setParamArrIdArr: [], // 拖拽后的id数组
   }
 },
   mounted(){
     settingParams.sendSettingVue(this)
-    // this.$nextTick(() => {
-    //   this.rowDrop()
-    // })
   },
   methods:{
     changeparamdata (info,ind) {
@@ -123,7 +122,10 @@ data(){
     },
     refreshTable(){
       // key值刷新页面
-       this.refresh = !this.refresh
+      this.refresh = !this.refresh
+      this.$nextTick(() => {
+        this.rowDrop();
+      })
     },
     getParamsSetting(){
       if(this.paramsSetting == null){
@@ -131,46 +133,27 @@ data(){
       }
       return settingParams.getParamsSettingBySave()
     },
-     //行拖拽
+    //行拖拽
     rowDrop() {
-      // const tbody = this.$refs.dragTable.querySelectorAll('tbody') // 元素选择器名称根据实际内容替换
-      const tbody = document.querySelector(".drag-table tbody");
-      const _this = this
+     
+      // const tbody = document.querySelector("#setParamTable .drag-tbody");
+      const tbody = this.$refs.setParamTbody; 
+      console.log(tbody, 'tbody')
+      const self = this;
       Sortable.create(tbody, {
+        handle: ".option-btn .drag-dom",
         // sort: true,
-        // // fallbackClass: true,
-        // // handle: '.option-btn', //指定哪个类名的可以拖动
-        // animation: 150,
-        // ghostClass: "blue-background-class",
-        // //handle: '.ant-table-tbody', //使用这个类名则是整行任意位置都可以拖动
-        // //chosenClass: 'sortable-ghost',被选中项的css 类名
-        // //dragClass: 'sortable-drag',正在被拖拽中的css类名
-        // // group: { name: 'name', pull: true, put: true },
-        onEnd({ newIndex, oldIndex }) {
-          console.log(newIndex, oldIndex,'拖动完毕')
-          const currRow = _this.tableData.splice(oldIndex, 1)[0]
-          _this.tableData.splice(newIndex, 0, currRow)
+        animation: 150,
+        onEnd(evt) {
+          if (evt.newIndex != evt.oldIndex) {
+            self.setParamArrIdArr = []
+            Array.from(evt.to.rows).forEach(item => {
+              self.setParamArrIdArr.push(item.getAttribute('class'))
+            })
+          }
         },
       })
-    },
-    upMove (index) {
-      if (index > 0) {
-        this.swapArray(this.setParamArr, index-1, index);
-      } else {
-        this.$message.warning("已经是第一条，不可上移！");
-      }
-    },
-    downMove (index) {
-      if ((index + 1) === this.setParamArr.length){
-        this.$message.warning("已经是最后一条，不可下移！");
-      } else {
-        this.swapArray(this.setParamArr, index, index+1);
-      } 
-    },
-    swapArray(arr, index1, index2) {
-      arr[index1] = arr.splice(index2, 1, arr[index1])[0];
-      return arr;
-    },
+    }
   }
 
 }
@@ -208,14 +191,15 @@ div#operators p{
 }
 .option-btn i {
   display: inline-block;
-  width: 20px;
+  width: 35px;
   height: 20px;
-  background: #bebebe;
-  border-radius: 50%;
+  /* border-radius: 50%; */
   line-height: 20px;
   text-align: center;
   margin-left: 5px;
   color: #fff;
   color: #f2f7fd;
+  background: #559ed4 !important;
+  border-radius: 2px;
 }
 </style>

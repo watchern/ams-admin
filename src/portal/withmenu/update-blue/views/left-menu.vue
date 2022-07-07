@@ -239,16 +239,16 @@ export default {
           count: 0,
           method: this.logoutRemind,
         },
-        {
-          icon: "",
-          name: "我的待办",
-          method: this.todowork,
-        },
-        {
-          icon: "",
-          name: "帮助",
-          method: this.showHelp,
-        },
+        // {
+        //   icon: "",
+        //   name: "我的待办",
+        //   method: this.todowork,
+        // },
+        // {
+        //   icon: "",
+        //   name: "帮助",
+        //   method: this.showHelp,
+        // },
         {
           icon: "",
           name: "修改密码",

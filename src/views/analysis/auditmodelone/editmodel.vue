@@ -286,6 +286,7 @@ import messageTips from '@/views/analysis/auditmodel/message'
 import paramshownew from "@/views/analysis/modelparam/paramshownew";
 import thresholdvaluerel from "@/views/analysis/auditmodelone/thresholdvaluerelOne";
 import chartAudit from "@/api/analysis/chartauditmodel"
+import * as paramCommonJs from "@/api/graphtool/js/paramCommon";
 // import func from 'vue-temp/vue-editor-bridge'
 export default {
   name: 'EditModel',
@@ -470,7 +471,7 @@ export default {
   },
   watch: {
     paramShowVIf(newChild) {
-          this.$refs.apple.initSetting(this.sqlEditorParam)
+      this.$refs.apple.initSetting(this.sqlEditorParam)
     }
   },
   created() {
@@ -1253,7 +1254,7 @@ export default {
       // endregion
       // region 反显参数默认值
       if (returnObj.params.arr.length != 0) {
-        this.sqlEditorParam = displayParamObj
+        this.sqlEditorParam =  paramCommonJs.sortParamArr(displayParamObj)
         this.paramShowVIf = true
       }
       // endregion

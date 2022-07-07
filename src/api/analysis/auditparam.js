@@ -2066,7 +2066,7 @@ export function initSetting() {
                 moduleParamArr.push(moduleParamId)
               }
             }
-            
+
           }
           for (let n = 0; n < copyParamArr.length; n++) {
             let setParamObj = {
@@ -2111,14 +2111,20 @@ export function initSetting() {
               //     message: val.message
               //   })
               // }
+              // 把所有参数的moduleParamId存起来，以便后续排序
+              settingVue.setParamArrIdArr.push(val.setParamObj.dataId) 
               settingVue.setParamArr.push(val.setParamObj)
             });
             settingVue.$nextTick(() => {
+              settingVue.rowDrop();
               load.destroy()
+              console.log('load关闭')
             })
            
         });
-          $(settingVue.$refs.setParamTbody).sortable().disableSelection()
+       
+          // $(settingVue.$refs.setParamTbody).sortable().disableSelection()
+          
          
           // settingVue.$nextTick(() => {
           //   // 第六步：统一初始化参数的html（文本框、下拉列表、下拉树），并反显已配置参数的信息（包括默认值和排序值）
@@ -2395,8 +2401,9 @@ export function getParamsSetting() {
           }
           returnObj.paramSettingArr.push(obj)
       }
-  // 对参数数组的值按照排序值由小到大得顺序进行排序
-  paramCommonJs.sortParamArr(returnObj.paramSettingArr)
+  // 对参数数组的值根据拖拽后重新赋值sortVal
+  // paramCommonJs.sortParamArr(returnObj.paramSettingArr)
+  returnObj.paramSettingArr = paramCommonJs.sortParamArrById(returnObj.paramSettingArr, settingVue.setParamArrIdArr)
   return returnObj
 }
 
@@ -2458,8 +2465,8 @@ export function getParamsSettingBySave() {
     }
     returnObj.paramSettingArr.push(obj)
   }
-  // 对参数数组的值按照排序值由小到大得顺序进行排序
-  paramCommonJs.sortParamArr(returnObj.paramSettingArr)
+  // 对参数数组的值根据拖拽后重新赋值sortVal
+  returnObj.paramSettingArr = paramCommonJs.sortParamArrById(returnObj.paramSettingArr, settingVue.setParamArrIdArr)
   return returnObj
 }
 

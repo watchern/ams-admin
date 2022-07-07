@@ -655,6 +655,25 @@ export function sortParamArr(paramAarr) {
     }
     return paramAarr
 }
+/**
+ * 拖拽后生成的moduleParamId有顺序的数组根据paramAarr 对sortVal赋值
+ * @param paramAarr 待排序得参数数组
+ * @param setParamArrIdArr 拖拽后有顺序的moduleParamId 数组
+ * @description 只适用于参数
+ * @author JL
+ */
+export function sortParamArrById(paramAarr, setParamArrIdArr) {
+    let arrParam = {};
+    paramAarr.map((item)=>{
+        let index = setParamArrIdArr.indexOf(item.moduleParamId);
+        arrParam[index]= item;
+    })
+    // 根据拖拽后的顺序重新赋值sortVal
+    for(let key in arrParam){
+        arrParam[key].sortVal = key;
+    }
+    return Object.values(arrParam)
+}
 
 /**
  * 递归获取当前节点的根节点类型

@@ -671,8 +671,18 @@ export default {
                 } else {
                   if (choiceType === '1') { // 单选
                     obj.paramValue = this.paramListValueList[i]
+                    for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                      if (arr[w].moduleParamId === moduleParamId) {
+                        arr[w]['value'] = this.paramListValueList[i]
+                      }
+                    }
                   } else { // 多选
                     obj.paramValue = this.paramListValueList[i].join(',')
+                    for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                      if (arr[w].moduleParamId === moduleParamId) {
+                        arr[w]['value'] = this.paramListValueList[i].join(',')
+                      }
+                    }
                   }
                 }
                 filterArr.push(obj)
@@ -743,7 +753,6 @@ export default {
                       }
                     }
                   } else { // 多选
-                   
                     if (paramInfoObj.dataType == 'str') {
                       var paramTreeValueList2 = this.paramTreeValueList[treenum].concat(); // 深拷贝paramTreeValueList
                       var copyParamTreeValueList = [];
@@ -775,7 +784,11 @@ export default {
                     }
                     for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
                       if (arr[w].moduleParamId === moduleParamId) {
-                        arr[w]['value'] = this.paramTreeValueList[treenum]
+                        if (paramInfoObj.dataType == 'str') {
+                           arr[w]['value'] = "'" + this.paramTreeValueList[treenum] + "'"
+                        } else {
+                          arr[w]['value'] = this.paramTreeValueList[treenum]
+                        }
                       }
                     }
                   } else {
@@ -790,7 +803,15 @@ export default {
                     }
                     for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
                       if (arr[w].moduleParamId === moduleParamId) {
-                        arr[w]['value'] = this.paramTreeValueList[treenum].join(',')
+                        if (paramInfoObj.dataType == 'str') {
+                          var copyParamTreeValueList = [];
+                          for(var item = 0; item<this.paramTreeValueList[treenum].length; item++) {
+                            copyParamTreeValueList.push("'" + this.paramTreeValueList[treenum][item] + "'")
+                          }
+                          arr[w]['value'] = copyParamTreeValueList.join(',')
+                        } else {
+                          arr[w]['value'] = this.paramTreeValueList[treenum].join(',')
+                        }
                       }
                     }
                   }
