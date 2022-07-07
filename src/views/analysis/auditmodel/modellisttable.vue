@@ -446,6 +446,7 @@ import modelshoppingcart from "@/views/analysis/auditmodel/modelshoppingcart";
 import personTree from "@/components/publicpersontree/index";
 import ReviewSubmit from '@/views/flowwork/reviewSubmit.vue';
 import { getArrLength } from "@/utils";
+import * as paramCommonJs from "@/api/graphtool/js/paramCommon";
 export default {
   name: "ModelListTable",
   components: {
@@ -1966,7 +1967,8 @@ export default {
               );
             }
             this.currentPreviewModelParamAndSql.sqlValue = result.data.sqlValue;
-            this.currentPreviewModelParamAndSql.paramObj = paramObj;
+            // 参数列表根据sortVal排序
+            this.currentPreviewModelParamAndSql.paramObj =  paramCommonJs.sortParamArr(paramObj);
             this.currentPreviewModelParamAndSql.modelUuid =
               selectObj[0].modelUuid;
             // 展现参数输入界面
