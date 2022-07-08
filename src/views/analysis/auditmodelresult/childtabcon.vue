@@ -140,7 +140,7 @@
           :sideBar="true"
           :modules="modules"
         />
-        <el-card v-if="!isSee" class="box-card" >
+        <el-card v-if="!isSee" class="box-card">
           <div>{{ errorMessage }}</div>
         </el-card>
         <pagination
@@ -852,7 +852,7 @@ export default {
     "chartModelUuid",
     "settingInfo",
     "isModelPreview",
-    "modelType"
+    "modelType",
   ],
   data() {
     return {
@@ -1235,7 +1235,7 @@ export default {
         },
       ],
       // 根据系统配置判断预览模式还是执行模式
-      isPreviewAndFunc: false
+      isPreviewAndFunc: false,
     };
   },
   mounted() {
@@ -1800,7 +1800,7 @@ export default {
       // this.gridColumnApi.autoSizeColumns(allColumnIds, skipHeader);
     },
     initData(sql, nextValue, modelName, isPreviewAndFunc) {
-      this.isPreviewAndFunc = isPreviewAndFunc
+      this.isPreviewAndFunc = isPreviewAndFunc;
       this.result = {};
       if (this.useType == "modelRunResult") {
         this.isLoading = true;
@@ -2258,7 +2258,12 @@ export default {
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
           //executeSQL.state 0,待执行；1,执行中；2,已完成；3,失败；4,取消；
           if (this.nextValue.executeSQL.state == "2") {
-            if (this.nextValue.executeSQL.type != undefined && (this.nextValue.executeSQL.type == "Select" || this.nextValue.executeSQL.type.toUpperCase().indexOf('SELECT') > 0)){
+            if (
+              this.nextValue.executeSQL.type != undefined &&
+              (this.nextValue.executeSQL.type == "Select" ||
+                this.nextValue.executeSQL.type.toUpperCase().indexOf("SELECT") >
+                  0)
+            ) {
               if (true) {
                 this.modelResultButtonIsShow = true;
                 this.modelResultPageIsSee = true;
@@ -2344,7 +2349,7 @@ export default {
                   }
                   //大亚湾不启用modelOutputColumn
                   // var modelOutputColumn = resp.data.modelOutputColumn;
-                  var modelOutputColumn = []
+                  var modelOutputColumn = [];
                   let modelResultDetailCol = [];
                   if (resp.data.modelDetailRelation) {
                     //循环模型详细关联
@@ -2486,7 +2491,10 @@ export default {
                     this.rowData = rowData;
                   }
                   for (let i = 0; i < col.length; i++) {
-                    let colType0 = this.result.columnType[i] && this.result.columnType[i] || '';
+                    let colType0 =
+                      (this.result.columnType[i] &&
+                        this.result.columnType[i]) ||
+                      "";
                     // colType0 = colType0 ? "": colType0.toUpperCase();
                     // switch (colType0) {
                     //   case "NUMBER":
@@ -2618,7 +2626,12 @@ export default {
       }
       if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
         if (this.nextValue.executeSQL.state == "2") {
-          if (this.nextValue.executeSQL.type != undefined && (this.nextValue.executeSQL.type == "Select" || this.nextValue.executeSQL.type.toUpperCase().indexOf('SELECT') > 0)) {
+          if (
+            this.nextValue.executeSQL.type != undefined &&
+            (this.nextValue.executeSQL.type == "Select" ||
+              this.nextValue.executeSQL.type.toUpperCase().indexOf("SELECT") >
+                0)
+          ) {
             this.modelResultButtonIsShow = true;
             this.modelResultPageIsSee = true;
             this.modelResultData = this.nextValue.result;
@@ -2868,7 +2881,7 @@ export default {
                 this.modelDetailRelation = resp.data.modelDetailRelation;
                 //大亚湾不启用modelOutputColumn
                 // this.modelOutputColumn = resp.data.modelOutputColumn;
-                this.modelOutputColumn = []
+                this.modelOutputColumn = [];
                 var datacodes = [];
                 for (var i = 0; i < this.modelOutputColumn.length; i++) {
                   if (this.modelOutputColumn[i].dataCoding != undefined) {
@@ -3092,20 +3105,23 @@ export default {
           }
           selectModel(value).then((resp) => {
             // 判断参数类型为str时detailValue的paramValue拼接引号
-            detailValue.map(i => {
-              resp.data.parammModelRel.map(j => {
-                j.formatParamValue = JSON.parse(j.paramValue)
+            detailValue.map((i) => {
+              resp.data.parammModelRel.map((j) => {
+                j.formatParamValue = JSON.parse(j.paramValue);
                 if (i.copyParamId == j.ammParamUuid) {
                   i.moduleParamId = j.formatParamValue.moduleParamId;
-                  if (j.dataType == 'str') {
-                    i.paramValue = `'${i.paramValue}'`
+                  if (j.dataType == "str") {
+                    i.paramValue = `'${i.paramValue}'`;
                   }
                 }
-              })
-            })
+              });
+            });
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
-            const obj = { sqls: sql, businessField: "modelresultdetail",modelType: this.
-            getModelType(this.modelType) };
+            const obj = {
+              sqls: sql,
+              businessField: "modelresultdetail",
+              modelType: this.getModelType(this.modelType),
+            };
             detailModel = resp.data;
             getExecuteTask(obj)
               .then((resp) => {
@@ -3166,8 +3182,11 @@ export default {
           }
         }
         sql = sql + filterSql;
-        const obj = { sqls: sql, businessField: "modelresultdetail", modelType: this.
-getModelType(this.modelType) };
+        const obj = {
+          sqls: sql,
+          businessField: "modelresultdetail",
+          modelType: this.getModelType(this.modelType),
+        };
         getExecuteTask(obj)
           .then((resp) => {
             this.currentExecuteSQL = resp.data.executeSQLList;
@@ -3199,12 +3218,11 @@ getModelType(this.modelType) };
           };
         }
         this.excelName = "模型结果导出表";
-
       } else {
         var exportObj = {
-          result:this.nextValue.result,
-          columnNames: this.nextValue.columnNames
-        }
+          result: this.nextValue.result,
+          columnNames: this.nextValue.columnNames,
+        };
         axios({
           method: "post",
           data: exportObj,
@@ -3212,18 +3230,18 @@ getModelType(this.modelType) };
           responseType: "blob",
         }).then((res) => {
           const link = document.createElement("a");
-          const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
+          const blob = new Blob([res.data], {
+            type: "application/vnd.ms-excel",
+          });
           link.style.display = "none";
           link.href = URL.createObjectURL(blob);
-            //模型运行结果表日期使用当前日期
-            link.setAttribute("download","模型结果导出表"+".xls");
-            document.body.appendChild(link);
+          //模型运行结果表日期使用当前日期
+          link.setAttribute("download", "模型结果导出表" + ".xls");
+          document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
         });
-
       }
-     
     },
     reSet1() {
       this.isLoading = true;
@@ -3937,15 +3955,15 @@ getModelType(this.modelType) };
         });
       this.initData();
     },
-    getModelType (name) {
-      if(name == 'SQL模型') {
-        return 'sql'
-      } else if (name == '图形化模型') {
-        return 'graph'
+    getModelType(name) {
+      if (name == "SQL模型") {
+        return "sql";
+      } else if (name == "图形化模型") {
+        return "graph";
       } else {
-        return name
+        return name;
       }
-    }
+    },
   },
 };
 </script>
@@ -4000,14 +4018,16 @@ getModelType(this.modelType) };
 .delete-pos {
   width: 25px;
   position: absolute;
-  right: 60px;
+  right: 45px;
   z-index: 20;
+  cursor: pointer;
 }
 .change-pos {
   width: 29px;
   position: absolute;
-  right: 35px;
+  right: 20px;
   z-index: 20;
+  cursor: pointer;
 }
 .chartSwitching {
   width: 24px;
@@ -4116,7 +4136,7 @@ getModelType(this.modelType) };
   background: transparent;
 }
 .vue-grid-item {
-  height: 100% !important;
+  /* height: 100% !important; */
 }
 .vue-grid-item:not(.vue-grid-placeholder) {
   background: transparent;
@@ -4185,4 +4205,3 @@ getModelType(this.modelType) };
   width: 100px !important;
 }
 </style>
-
