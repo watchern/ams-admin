@@ -755,6 +755,12 @@ export default {
       this.columnTypeSelect = columnTypeSelect
       // 初始化风险等级
       this.riskLeve = getDictList('002002')
+      // 风险等级默认为中
+      this.riskLeve.map(i => {
+        if (i.codeName == '中') {
+          this.form.riskLevelUuid = i.codeValue
+        }
+      })
       // 初始化审计事项
       this.modelTypeData = getDictList('002003')
     },
@@ -822,7 +828,7 @@ export default {
             }
           }
         } else {
-          this.form.parammModelRel = null
+          this.form.parammModelRel = []
         }
       } else if (this.$refs.graph != undefined) {
         // 获取图形化参数对象  到下边去处理

@@ -1431,6 +1431,7 @@ export default {
           position: "bottom-right",
         });
         this.folderFormVisible = false;
+        this.$emit('refresh', this.clickNode)
       });
     },
     // 预览表结构

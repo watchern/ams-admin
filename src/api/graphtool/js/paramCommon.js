@@ -664,15 +664,29 @@ export function sortParamArr(paramAarr) {
  */
 export function sortParamArrById(paramAarr, setParamArrIdArr) {
     let arrParam = {};
+    let repeatArr = [];
     paramAarr.map((item)=>{
-        let index = setParamArrIdArr.indexOf(item.moduleParamId);
-        arrParam[index]= item;
+        let index = setParamArrIdArr.indexOf(item.copyParamId);
+        // 先把参数不重复的部分提取出来，把重复的参数添加新的数组
+        if (index != -1) {
+            arrParam[index]= item;
+        } else {
+            item.sortVal = '';
+            repeatArr.push(item)
+        }
     })
     // 根据拖拽后的顺序重新赋值sortVal
+    // 重复的参数sortVal 赋值
     for(let key in arrParam){
         arrParam[key].sortVal = key;
+        for(var i = 0; i<repeatArr.length; i++) {
+            if (repeatArr[i].moduleParamId == arrParam[key].moduleParamId){
+                repeatArr[i].sortVal = arrParam[key].sortVal;
+            }
+        }
     }
-    return Object.values(arrParam)
+    let ParamArr = [...Object.values(arrParam), ...repeatArr]
+    return ParamArr
 }
 
 /**
