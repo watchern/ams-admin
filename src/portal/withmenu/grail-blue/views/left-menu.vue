@@ -363,7 +363,6 @@ export default {
     initmounted () {
       getUserRes()
         .then((response) => {
-          console.log(response.data)
           this.applications = [];
           response.data.application.forEach((app, index) => {
             // 设置左侧应用栏数据

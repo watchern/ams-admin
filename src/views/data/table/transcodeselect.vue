@@ -69,11 +69,11 @@
 </template>
 
 <script>
-import { listByPage, selectById } from '@/api/data/transCode'
+import {  selectById } from '@/api/data/transCode'
 export default {
   name: 'SelectTransCode',
   // eslint-disable-next-line vue/require-prop-types
-  props: ['transuuid', 'openType'],
+  props: ['transuuid', 'openType', "transJson"],
   data() {
     return {
       selectTransId: '',
@@ -85,16 +85,16 @@ export default {
         select: '查看数据转码信息'
       },
       transRuleUuid: [],
-      transJson: [],
+      // transJson: [],
       tempRule: [],
       pageQuery: {}
     }
   },
   created() {
     this.selectTransId = this.transuuid
-    listByPage(this.pageQuery).then(resp => {
-      this.transJson = resp.data.records
-    })
+    // listByPage(this.pageQuery).then(resp => {
+    //   this.transJson = resp.data.records  
+    // })
   },
   methods: {
     seleteTransCode(ruleId) {

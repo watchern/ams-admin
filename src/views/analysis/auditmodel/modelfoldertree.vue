@@ -147,15 +147,16 @@ export default {
       this.appContainerDivStyle = "height: 500px;overflow-y: scroll"
     }
     this.getModelFolder();
-      // 校验用户权限
-      isAdmin().then((res) => {
-          // 如果是管理员为1
-          if (res.data) {
-              this.ifmanger = 1;
-          }else{
-              this.ifmanger = 0;
-          }
-      });
+      // 校验用户权限（没有使用接口内容，无效操作）
+      // isAdmin().then((res) => {
+      //     // 如果是管理员为1
+      //     alert('此处调用')
+      //     if (res.data) {
+      //         this.ifmanger = 1;
+      //     }else{
+      //         this.ifmanger = 0;
+      //     }
+      // });
   },
   methods: {
       expandAllNodes(){

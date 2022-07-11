@@ -114,7 +114,8 @@
           </div>
           <div class="modelInfoClass " v-show="resultConfigDraw" style="position:absolute; height: calc(100% - 125px); overflow:auto">
             <el-tabs v-model="activeName" :stretch="true" style="width: 92%">
-              <el-tab-pane label="模型结果" name="first"><div v-show="!isExecuteSql" align='center' class="notExecuteSqlClass" >执行SQL后才能设置</div><div v-show="isExecuteSql" ref="modelResultOutputCol" class="default-value">
+              <!-- 大亚湾注释掉模型结果 -->
+              <!-- <el-tab-pane label="模型结果" name="first"><div v-show="!isExecuteSql" align='center' class="notExecuteSqlClass" >执行SQL后才能设置</div><div v-show="isExecuteSql" ref="modelResultOutputCol" class="default-value">
                 <div  align="right" style="margin: 1px 5px -17px 5px">
                   <el-popover trigger="hover" placement="bottom" :content="resultText" class="popover" width="300">
                     <el-button type="primary" slot="reference" class="oper-btn" style="width: 77px" @click="viewDialog('result')">功能说明</el-button>
@@ -125,7 +126,7 @@
                     <el-table-column prop="outputColumnName" label="输出列名" width="180"/>
                     <el-table-column prop="dataCoding" label="数据转码" width="180">
                       <template slot-scope="scope">
-                        <SelectTransCode ref="SelectTransCode" :transuuid.sync="scope.row.dataCoding"/>
+                        <SelectTransCode ref="SelectTransCode" :transuuid.sync="scope.row.dataCoding" :transJson="transJson"/>
                       </template>
                     </el-table-column>
                     <el-table-column prop="columnName" label="是否显示" width="80">
@@ -136,18 +137,6 @@
                         </el-select>
                       </template>
                     </el-table-column>
-<!--                    <el-table-column prop="columnName" label="对应业务字段" width="180">-->
-<!--                      <template slot-scope="scope">-->
-<!--                        <el-select v-model="scope.row.businessFieldUuid" value="-1" :disabled="isBanEdit">-->
-<!--                          <el-option-->
-<!--                            v-for="state in businessColumnSelect"-->
-<!--                            :key="state.attrCode"-->
-<!--                            :value="state.attrCode"-->
-<!--                            :label="state.attrName"-->
-<!--                          />-->
-<!--                        </el-select>-->
-<!--                      </template>-->
-<!--                    </el-table-column>-->
                     <el-table-column prop="columnName" label="别名" width="180">
                       <template slot-scope="scope">
                         <el-input v-model="scope.row.columnAlias" placeholder="请输入别名" :disabled="isBanEdit"/>
@@ -155,7 +144,7 @@
                     </el-table-column>
                   </el-table>
                 </div>
-              </div></el-tab-pane>
+              </div></el-tab-pane> -->
               <el-tab-pane label="模型关联" name="second"><div v-show="!isExecuteSql" align='center' class="notExecuteSqlClass" >执行SQL后才能设置</div><div v-show="isExecuteSql" id="modelDetailDiv">
                   <el-row>
                     <div  align="right">
@@ -207,7 +196,7 @@
             </el-tabs>
           </div>
           <div class="editmodel-right"><!--v-if="!modifying"-->
-            <el-button type="primary" class="oper-btn" @click="save" style="position: relative;top: 5px;left: -2.5px;width: 41px;height: 30px;margin: 5px"><span >保存</span></el-button>
+            <el-button type="primary" class="oper-btn" @click="save" style="position: relative;top: 5px;left: -2.5px;width: 41px;height: 30px;margin: 5px" :disabled="saveLoading"><span >保存</span></el-button>
             <button type="primary" class="el-button oper-btn el-button--primary el-button--medium" :disabled="false" @click="closeWinfrom" style="position: relative;top: 10px;left: -2.5px;width: 41px;height: 30px;margin: 0px 5px 10px 5px;"><span >取消</span></button>
             <div @click="clickModelInfo()"><span :class="changeBtn.one === true?'self-made-btn-a':'self-made-btn'"  class="rightButtonClassa" style="top: 10px">基础信息</span></div>
             <div @click="clickUseParam()"><span :class="changeBtn.two === true?'self-made-btn-a':'self-made-btn'" class="rightButtonClassa">已用参数</span></div>
@@ -288,6 +277,7 @@ import thresholdvaluerel from "@/views/analysis/auditmodelone/thresholdvaluerelO
 import chartAudit from "@/api/analysis/chartauditmodel"
 import * as paramCommonJs from "@/api/graphtool/js/paramCommon";
 // import func from 'vue-temp/vue-editor-bridge'
+import { listByPage } from '@/api/data/transCode'
 export default {
   name: 'EditModel',
   components: {
@@ -309,7 +299,7 @@ export default {
   data() {
     return {
       modelDetailIsSee:false,
-      activeName: 'first',
+      activeName: 'second',
       modifying:false,
       modelInfoDraw:false,
       useParamDraw:false,
@@ -465,8 +455,10 @@ export default {
     relationText : "在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。用户通过本功能来创建并维护模型间的关联关系，以满足多模型联合执行分析的业务需求。通过模型设计器，用户能够为当前的模型建立与其他可访问模型的关联关系，并将其分析结果引入到当前模型设计中。",
     isConfigList: [],
     // 控制是否跳过sql校验 默认false校验
-    isJumpSQLCheck: false
-
+    isJumpSQLCheck: false,
+    // 保存时loading状态
+    saveLoading: false,
+    transJson: [], // 数据转码选项列表
     }
   },
   watch: {
@@ -531,6 +523,10 @@ export default {
     // 自适应高度
     let windowHeight = document.getElementsByClassName("app-container")[0]
     this.someHeight = windowHeight.offsetHeight
+    // 获取数据转码选项列表
+    listByPage({}).then(resp => {
+      this.transJson = resp.data.records  
+    })
   },
   methods: {
     editThresholdDetermine(){
@@ -1356,20 +1352,27 @@ export default {
      * 保存模型
      */
     async save() {
+      this.saveLoading = true;
+      this.editorModelLoading = true;
       let modelObj = await this.getModelObj();
       if(modelObj=="保留部分校验"){
+        this.saveLoading = false;
+        this.editorModelLoading = false;
         return
       }
       if (this.isJumpSQLCheck) { // isJumpSQLCheck为true 时不校验
         if (modelObj == null ) {
           this.$message("请成功运行后保存");
+          this.saveLoading = false;
+          this.editorModelLoading = false;
           return;
         }
       }
       var editmodel2db = function (_this) {
         if (!_this.isUpdate) {
           saveModel(modelObj).then(result => {
-            _this.editorModelLoading = false
+            // _this.editorModelLoading = false
+
             if (result.code === 0) {
               _this.$notify({
                 title: '提示',
@@ -1379,13 +1382,17 @@ export default {
                 position: 'bottom-right'
               });
               _this.closeWinfrom()
+              _this.saveLoading = false;
+              _this.editorModelLoading = false;
             } else {
               _this.$message({type: 'error', message: '新增模型失败!'})
+              _this.saveLoading = false;
+              _this.editorModelLoading = false;
             }
           })
         } else {
           updateModel(modelObj).then(result => {
-            _this.editorModelLoading = false
+            // _this.editorModelLoading = false
             if (result.code === 0) {
               _this.$notify({
                 title: '提示',
@@ -1395,10 +1402,14 @@ export default {
                 position: 'bottom-right'
               });
               _this.closeWinfrom()
+              _this.saveLoading = false;
+              _this.editorModelLoading = false;
             } else {
               _this.$message({type: 'error', message: '修改模型失败!'})
+              _this.saveLoading = false;
+              _this.editorModelLoading = false;
             }
-          })
+          })  
         }
         //}
         // 调用保存图表拖拽布局
