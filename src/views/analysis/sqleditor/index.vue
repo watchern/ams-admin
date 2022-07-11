@@ -13,9 +13,9 @@
           <img :src="canshu" /><span>参数</span>
         </div>
         <div class="unfold-sql"><img :src="sql" /><span>函数</span></div>
-        <div class="unfold-bj">
+        <!-- <div class="unfold-bj">
           <img :src="sql" /><span>标记</span>
-        </div>
+        </div> -->
       </div>
       <div id="leftPart" class="left-part">
         <div class="left-dataTree">
@@ -129,9 +129,9 @@
                   <el-dropdown-item @click.native="selectSqlCancelNotes()"
                     >取消注释</el-dropdown-item
                   >
-                  <el-dropdown-item @click.native="bjSqlNotes()"
+                  <!-- <el-dropdown-item @click.native="bjSqlNotes()"
                     >标记</el-dropdown-item
-                  >
+                  > -->
                 </el-dropdown-menu>
               </el-dropdown>
               <label
@@ -918,10 +918,12 @@ export default {
                 isExist: 0,
                 isParent: true,
                 name: treeNodeInfo[i].displayTbName,
+                enName: treeNodeInfo[i].displayTbName,
                 personNode: false,
                 pid: treeNodeInfo[i].folderUuid,
                 timeColNum: 0,
-                type: "table",
+                // type: "table",
+                type: dataObj.listenerType === 'afterTaskChangeTable' ? 'table' : 'view'
               };
               treeNodes.push(treeNode);
             }

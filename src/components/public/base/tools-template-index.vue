@@ -628,57 +628,59 @@ export default {
           }
         }
       });
-      getUserRes()
-        .then((response) => {
-          response.data.application.forEach((app, index) => {
-            // 设置左侧应用栏数据
-            this.applications.push({
-              img: "",
-              name: app.name,
-              id: app.id,
-              homepage: app.homepage,
-            });
-          });
-          // 设置引用栏弹出二级菜单数据
-          response.data.menugroup.forEach((grp) => {
-            const menuList = [];
-            grp.menuList.forEach((menu) => {
-              menuList.push({
-                id: menu.id,
-                name: menu.name,
-                path: this.getCleanSrc(menu.src),
-              });
-            });
-            if (!this.menugroup[grp.appuuid]) {
-              this.menugroup[grp.appuuid] = [];
-            }
-            this.menugroup[grp.appuuid].push({
-              id: grp.id,
-              name: grp.name,
-              path: grp.navurl,
-              children: menuList,
-            });
-          });
-          let sSTree = [];
-          for (let i = 0; i < this.applications.length; i++) {
-            sSTree.push(this.menugroup[this.applications[i].id]);
-          }
-          let sSLTree = { first: this.applications, second: sSTree };
-          sessionStorage.setItem("shenjiMenuTree", JSON.stringify(sSLTree));
-          let listTree = JSON.parse(sessionStorage.getItem("shenjiMenuTree"));
-          this.menugroup = listTree.second;
-          this.menugroupId = listTree.first;
-          this.showmenuGroup = true;
-          var sysDict = JSON.parse(sessionStorage.getItem("sysDict"));
-          if (sysDict == null) {
-            cacheDict().then((resp) => {
-              sessionStorage.setItem("sysDict", JSON.stringify(resp.data));
-            });
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      // 注释首页内容区域重复调用菜单接口
+      // getUserRes()
+      //   .then((response) => {
+      //     console.log(response, 'responseresponse')
+      //     response.data.application.forEach((app, index) => {
+      //       // 设置左侧应用栏数据
+      //       this.applications.push({
+      //         img: "",
+      //         name: app.name,
+      //         id: app.id,
+      //         homepage: app.homepage,
+      //       });
+      //     });
+      //     // 设置引用栏弹出二级菜单数据
+      //     response.data.menugroup.forEach((grp) => {
+      //       const menuList = [];
+      //       grp.menuList.forEach((menu) => {
+      //         menuList.push({
+      //           id: menu.id,
+      //           name: menu.name,
+      //           path: this.getCleanSrc(menu.src),
+      //         });
+      //       });
+      //       if (!this.menugroup[grp.appuuid]) {
+      //         this.menugroup[grp.appuuid] = [];
+      //       }
+      //       this.menugroup[grp.appuuid].push({
+      //         id: grp.id,
+      //         name: grp.name,
+      //         path: grp.navurl,
+      //         children: menuList,
+      //       });
+      //     });
+      //     let sSTree = [];
+      //     for (let i = 0; i < this.applications.length; i++) {
+      //       sSTree.push(this.menugroup[this.applications[i].id]);
+      //     }
+      //     let sSLTree = { first: this.applications, second: sSTree };
+      //     sessionStorage.setItem("shenjiMenuTree", JSON.stringify(sSLTree));
+      //     let listTree = JSON.parse(sessionStorage.getItem("shenjiMenuTree"));
+      //     this.menugroup = listTree.second;
+      //     this.menugroupId = listTree.first;
+      //     this.showmenuGroup = true;
+      //     var sysDict = JSON.parse(sessionStorage.getItem("sysDict"));
+      //     if (sysDict == null) {
+      //       cacheDict().then((resp) => {
+      //         sessionStorage.setItem("sysDict", JSON.stringify(resp.data));
+      //       });
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     console.error(error);
+      //   });
     },
     theRouting(index) {
       this.$router.push({ path: this.latelyPathList[index] });

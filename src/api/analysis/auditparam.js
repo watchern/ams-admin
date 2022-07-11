@@ -2061,6 +2061,7 @@ export function initSetting() {
                   // if (paramList[k].inputType == '')
                   paramList[k].defaultVal = paramArr[j].defaultVal
                   paramList[k].moduleParamId = paramArr[j].moduleParamId
+                  paramList[k].copyParamId = paramArr[j].copyParamId   
                 }
                 copyParamArr.push(paramList[k])
                 moduleParamArr.push(moduleParamId)
@@ -2080,7 +2081,8 @@ export function initSetting() {
               // defaultVal: copyParamArr[n].defaultVal,
               dataModuleParamId: copyParamArr[n].moduleParamId,
               name: copyParamArr[n].paramName,
-              description: copyParamArr[n].description && copyParamArr[n].description || ''
+              description: copyParamArr[n].description && copyParamArr[n].description || '',
+              copyParamId: copyParamArr[n].copyParamId,
             };
             promiseList.push(new Promise(function (resolve, reject) {
               resolve(getSettingParamArr(copyParamArr[n], setParamObj, null, null, n))
@@ -2112,7 +2114,7 @@ export function initSetting() {
               //   })
               // }
               // 把所有参数的moduleParamId存起来，以便后续排序
-              settingVue.setParamArrIdArr.push(val.setParamObj.dataId) 
+              settingVue.setParamArrIdArr.push(val.setParamObj.copyParamId) 
               settingVue.setParamArr.push(val.setParamObj)
             });
             settingVue.$nextTick(() => {
@@ -2795,6 +2797,8 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
   let paramSql = paramObj.paramChoice.optionsSql//拉列表或下拉树的SQL语句
   obj.setParamObj.title = paramObj.paramChoice.allowedNull === 0 ? '不可为空' : '可为空'
   obj.setParamObj.dataType = paramObj.dataType // dataType
+  obj.setParamObj.paramConditionList = paramObj.paramConditionList
+  obj.setParamObj.copyParamId = paramObj.copyParamId
   obj.setParamObj.paramConditionList = paramObj.paramConditionList
   let hasSql = false// 下拉列表或下拉树是非SQL方式或者是SQL方式但值为空
   switch (obj.setParamObj.inputType) {

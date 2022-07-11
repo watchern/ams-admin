@@ -17,7 +17,7 @@
           <td align="left"><span style="padding-left: 61px;">暂无数据</span></td>
           <td align="center"></td>
         </tr>
-        <tr ref="setParamTr" v-for="(setParamObj,index) in setParamArr" :index="index" :class="setParamObj.dataId" :key="index">
+        <tr ref="setParamTr" v-for="(setParamObj,index) in setParamArr" :index="index" :class="setParamObj.copyParamId" :key="index">
           <td align="center">{{setParamObj.name}}</td>
           <td v-if="setParamObj.inputType === 'lineinp'" ref="selectParam">
             <!-- {{setParamObj.data.length}} -->
@@ -138,7 +138,6 @@ data(){
      
       // const tbody = document.querySelector("#setParamTable .drag-tbody");
       const tbody = this.$refs.setParamTbody; 
-      console.log(tbody, 'tbody')
       const self = this;
       Sortable.create(tbody, {
         handle: ".option-btn .drag-dom",
