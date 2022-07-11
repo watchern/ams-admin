@@ -502,6 +502,18 @@ export function updateModelChartSetup(data) {
     data
   })
 }
+/**
+ * 批量修改模型图表配置
+ * @param {*} data 图表配置对象
+ */
+ export function overallUpdateModelChartSetup(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelChartSetupController/overallUpdateModelChartSetup',
+    method: 'post',
+    data
+  })
+}
 
 
 /**
