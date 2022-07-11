@@ -764,6 +764,7 @@ import {
   getModelChartSetup,
   updateModelChartSetup,
   deleteModelChartSetup,
+  overallUpdateModelChartSetup,
   sendToOA,
   getByResultDetailIds,
 } from "@/api/analysis/auditmodelresult";
@@ -3735,7 +3736,6 @@ export default {
           modelUuid: modelUuid,
         };
         this.modelChartSetups.push(modelChartSetup);
-
         addModelChartSetup(modelChartSetup).then((resp) => {
           if (resp.data) {
             this.$notify({
@@ -3767,6 +3767,7 @@ export default {
     },
     saveChartsAll() {
       if (this.modelChartSetups.length != 0) {
+        let arr = [];
         for (let i = 0; i < this.modelChartSetups.length; i++) {
           let modelChartSetupZ = {};
           let json = JSON.parse(this.modelChartSetups[i].chartJson);
@@ -3780,21 +3781,24 @@ export default {
                 modelUuid: this.modelChartSetups[i].modelUuid,
                 chartSetupUuid: this.modelChartSetups[i].chartSetupUuid,
               };
-              updateModelChartSetup(modelChartSetupZ).then((resp) => {
-                if (resp.data) {
-                  this.$notify({
-                    title: this.$t("提示"),
-                    message: this.$t("保存图表布局成功"),
-                    type: "success",
-                    duration: 2000,
-                    position: "bottom-right",
-                  });
-                }
-              });
+              arr.push(modelChartSetupZ);
               break;
             }
           }
         }
+        let formData = new FormData();
+        formData.append("ModelChartSetupList", arr);
+        overallUpdateModelChartSetup({ModelChartSetupList:arr}).then((resp) => {
+          if (resp.data) {
+            this.$notify({
+              title: this.$t("提示"),
+              message: this.$t("保存图表布局成功"),
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+          }
+        });
       }
     },
     // /**
