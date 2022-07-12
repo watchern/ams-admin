@@ -330,7 +330,7 @@
               @grid-ready="onGridReady"
               @rowSelected="rowChange"
               :default-col-def="defaultColDef"
-              :sideBar="true"
+              :sideBar="false"
               :modules="modules"
               :locale-text="localeText"
               :frameworkComponents="frc"
@@ -1079,7 +1079,7 @@ export default {
         enablePivot: true,
         sortable: true,
         filter: true,
-        floatingFilter: true, //列头过滤器 启动
+        floatingFilter: false, //列头过滤器 启动
       },
       sideBar: {
         toolPanels: [
