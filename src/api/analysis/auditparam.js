@@ -1602,7 +1602,7 @@ function executeParamSql(sql) {
   return request({
     baseURL: analysisUrl,
     url: '/paramController/executeParamSql',
-    method: 'get',
+    method: 'post',
     async:false,
     params:{sql:sql}
   })
