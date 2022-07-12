@@ -3680,6 +3680,7 @@ export default {
       ) {
         mouseInGrid = true;
       }
+      
       if (mouseInGrid === true) {
         let node = {
           id: new Date().valueOf(),
@@ -4202,8 +4203,9 @@ export default {
   overflow-y: scroll;
 }
 >>> .vue-grid-item.vue-grid-placeholder {
-  background: #46a6ff !important;
+  background: #fff !important;
   opacity: 0.2 !important;
+  pointer-events: none;
 }
 .tjsh {
   width: 100px !important;
