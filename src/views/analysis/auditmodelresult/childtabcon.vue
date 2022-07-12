@@ -137,7 +137,7 @@
           @grid-ready="onGridReady"
           @rowSelected="rowChange"
           :defaultColDef="defaultColDef"
-          :sideBar="true"
+          :sideBar="false"
           :modules="modules"
         />
         <el-card v-if="!isSee" class="box-card">
