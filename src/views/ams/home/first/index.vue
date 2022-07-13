@@ -524,7 +524,7 @@ export default {
         border-radius: 25.2px;
         padding: 27px;
         width: 23vw;
-        min-width: 250px;
+        min-width: 450px;
         position: relative;
         margin: 20px;
         height: 230px;
