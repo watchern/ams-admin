@@ -13,13 +13,14 @@
         <el-button type="primary" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
         <el-button type="primary" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
         <el-button type="primary" size="mini" class="oper-btn link-bindres btn-width-md" :disabled="selections.length !== 1" @click="bindRes()" />
-        <el-button type="primary" size="mini" class="oper-btn auth" :disabled="selections.length === 0" @click="authentic()" />
+        <el-button type="primary" size="mini" class="oper-btn auth" :disabled="selections.length !== 1" @click="authentic()" />
       </el-col>
     </el-row>
     <el-table
       :key="tableKey"
       v-loading="listLoading"
       :data="list"
+      stripe
       border
       fit
       highlight-current-row
@@ -29,14 +30,25 @@
     >
       <el-table-column type="selection" width="55" />
       <el-table-column label="数据角色名称" width="200px" prop="dataRoleName" />
-      <el-table-column label="创建时间" width="300px" align="center" :formatter="formatCreateTime" prop="createTime" />
+      <el-table-column
+        label="创建时间"
+        width="300px"
+        align="center"
+        prop="createTime"
+      />
       <el-table-column label="授权方式" width="100px" align="center" prop="authenType" :formatter="formatAuthenType" />
       <!-- <el-table-column label="数据筛选" style="width: 50px" align="center">
         <template slot-scope="scope">
           <el-button type="primary" class="oper-btn preview" size="mini" @click="openFilterPanel(scope.row.dataRoleUuid)" />
         </template>
       </el-table-column> -->
-      <el-table-column label="数据有效期" align="center" prop="timeDuring" :formatter="formatDuring" style="width : 400px" />
+      <el-table-column
+        label="数据有效期"
+        align="center"
+        prop="timeDuring"
+        :formatter="formatDuring"
+        style="width: 400px;"
+      />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
 
@@ -249,10 +261,21 @@ export default {
       })
     },
     createData() {
-      var starDate = new Date(this.temp.startTime)
-      this.temp.startTime = starDate
-      var endDate = new Date(this.temp.endTime)
-      this.temp.endTime = endDate
+      if (this.temp.startTime > this.temp.endTime) {
+        this.$notify({
+          title: '警告',
+          message: '开始时间要小于结束时间',
+          type: 'warning',
+          duration: 2000,
+          position: 'bottom-right',
+        })
+        return
+      }
+
+      // var starDate = new Date(this.temp.startTime)
+      // this.temp.startTime = starDate
+      // var endDate = new Date(this.temp.endTime)
+      // this.temp.endTime = endDate
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           save(this.temp).then(() => {
@@ -271,22 +294,22 @@ export default {
     },
     handleUpdate() {
       this.temp = Object.assign({}, this.selections[0]) // copy obj
-      var startTime = new Date(this.temp.startTime)
-      this.temp.startTime = startTime.getFullYear() + '-' + (startTime.getMonth() + 1) + '-' + startTime.getDate() + ' ' + startTime.getHours() + ':' + startTime.getMinutes() + ':' + startTime.getSeconds()
-      var endTime = new Date(this.temp.endTime)
-      this.temp.endTime = endTime.getFullYear() + '-' + (endTime.getMonth() + 1) + '-' + endTime.getDate() + ' ' + endTime.getHours() + ':' + endTime.getMinutes() + ':' + endTime.getSeconds()
+      // var startTime = new Date(this.temp.startTime)
+      // this.temp.startTime = startTime.getFullYear() + '-' + (startTime.getMonth() + 1) + '-' + startTime.getDate() + ' ' + startTime.getHours() + ':' + startTime.getMinutes() + ':' + startTime.getSeconds()
+      // var endTime = new Date(this.temp.endTime)
+      // this.temp.endTime = endTime.getFullYear() + '-' + (endTime.getMonth() + 1) + '-' + endTime.getDate() + ' ' + endTime.getHours() + ':' + endTime.getMinutes() + ':' + endTime.getSeconds()
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    formatCreateTime(row, column) {
-      // 拼接日期规格为YYYY-MM-DD hh:mm:ss
-      var createTime = new Date(row.createTime)
-      var createTimeRow = createTime.getFullYear() + '-' + (createTime.getMonth() + 1) + '-' + createTime.getDate() + ' ' + createTime.getHours() + ':' + createTime.getMinutes() + ':' + createTime.getSeconds()
-      return createTimeRow
-    },
+    // formatCreateTime(row, column) {
+    //   // 拼接日期规格为YYYY-MM-DD hh:mm:ss
+    //   var createTime = new Date(row.createTime)
+    //   var createTimeRow = createTime.getFullYear() + '-' + (createTime.getMonth() + 1) + '-' + createTime.getDate() + ' ' + createTime.getHours() + ':' + createTime.getMinutes() + ':' + createTime.getSeconds()
+    //   return createTimeRow
+    // },
     formatAuthenType(row, column) {
       var data = getDictList('004001')
       var authenObj = data.filter(obj => { return obj.codeValue === row.authenType })
@@ -295,17 +318,18 @@ export default {
       }
     },
     formatDuring(row, column) {
-      var startDate = new Date(row.startTime)
-      var rowStart = startDate.getFullYear() + '-' + (startDate.getMonth() + 1) + '-' + startDate.getDate() + ' ' + startDate.getHours() + ':' + startDate.getMinutes() + ':' + startDate.getSeconds()
-      var endDate = new Date(row.endTime)
-      var rowEnd = endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate() + ' ' + endDate.getHours() + ':' + endDate.getMinutes() + ':' + endDate.getSeconds()
-      return rowStart + '至' + rowEnd
+      return row.startTime + '至' + row.endTime
+      // var startDate = new Date(row.startTime)
+      // var rowStart = startDate.getFullYear() + '-' + (startDate.getMonth() + 1) + '-' + startDate.getDate() + ' ' + startDate.getHours() + ':' + startDate.getMinutes() + ':' + startDate.getSeconds()
+      // var endDate = new Date(row.endTime)
+      // var rowEnd = endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate() + ' ' + endDate.getHours() + ':' + endDate.getMinutes() + ':' + endDate.getSeconds()
+      // return rowStart + '至' + rowEnd
     },
     updateData() {
-      var starDate = new Date(this.temp.startTime)
-      this.temp.startTime = starDate
-      var endDate = new Date(this.temp.endTime)
-      this.temp.endTime = endDate
+      // var starDate = new Date(this.temp.startTime)
+      // this.temp.startTime = starDate
+      // var endDate = new Date(this.temp.endTime)
+      // this.temp.endTime = endDate
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)

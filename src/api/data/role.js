@@ -38,6 +38,15 @@ export function del(ids) {
   })
 }
 
+// 根据id查找
+export function getById(id) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/getById/${id}`,
+    method: 'get'
+  })
+}
+
 /* 维护角色下的filter*/
 export function getSceneFilter(roleUuid, sceneCode) {
   return request({

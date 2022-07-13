@@ -10,29 +10,41 @@
             :value="scene.sceneUuid"
           />
         </el-select>
-        <el-tabs v-model="grpUuid" @tab-click="tabClick" ref="eltab">
+        <div class="org-box" v-loading="orgLoading">
+          <el-tabs v-model="grpUuid" @tab-click="tabClick" ref="eltab" v-if="currentScene && currentScene.groups.length>0">
           <el-tab-pane v-for="grp in currentScene.groups" :key="grp.sceneGrpUuid" :label="grp.grpName" :name="grp.sceneGrpUuid">
-            <el-input
+              <!-- <el-input
               v-model="filterText"
               placeholder="输入关键字进行过滤"
-            />
+              /> -->
+              <div class="orgTree-box">
+                <div v-if="orglistLoading" class="orglistLoadingDia"></div>
             <MyElTree
               :ref="'A'+grp.sceneGrpUuid"
               v-loading="treeLoading"
               :props="props"
               class="filter-tree left-tree"
               :highlight-current="true"
-              :data="currentTreeData"
+                  :data="orgTreeData"
               node-key="id"
               :filter-node-method="filterNode"
               show-checkbox
+                  :lazy="true"
+                  :load="loadNode"
+                  @node-expand="handleNodeClick"
             >
               <span slot-scope="{ node, data }" class="custom-tree-node">
                 <span>{{ node.label }}</span>
               </span>
             </MyElTree>
+
+              </div>
+
           </el-tab-pane>
         </el-tabs>
+
+        </div>
+
       </el-col>
 
       <el-col :span="2" style="width: 45px; padding-top: 10%">
@@ -79,10 +91,13 @@
           </el-table-column>
           <el-table-column label="使用期限" width="200px" align="center">
             <template slot-scope="scope">
-              <span v-if="scope.row.startTime==null && scope.row.endTime==null">无限制</span>
+              <span v-if="role.startTime==null && role.endTime==null">无限制</span>
               <span v-else>
-                {{ scope.row.startTime==null?' - ':scope.row.startTime }} 至
-                {{ scope.row.endTime==null?' - ':scope.row.endTime }}
+                 {{
+                  role.startTime == null ? " - " : role.startTime
+                }}
+                至
+                {{ role.endTime == null ? " - " : role.endTime }}
               </span>
             </template>
           </el-table-column>
@@ -104,8 +119,8 @@
 
 <script>
 import MyElTree from '@/components/public/tree/src/tree.vue'
-import { getAllScene, initSceneTree } from '@/api/data/scene'
-import { saveRoleGrp, getRoleGrp } from '@/api/data/role'
+import { getAllScene, initSceneTree, queryOrgTree } from '@/api/data/scene'
+import { saveRoleGrp, getRoleGrp, getById } from '@/api/data/role'
 import { commonNotify } from '@/utils'
 
 export default {
@@ -123,12 +138,16 @@ export default {
       treeData: {},
       listLoading: false,
       props: {
-        label: 'label',
+        label: 'name',
         isLeaf: 'leaf'
       },
       userMap: {},
       tableData: [],
-      selections: []
+      selections: [],
+      role: {},
+      loadTree: [],//左边树懒加载的数据
+      orgTreeData: [],
+      orglistLoading: false
     }
   },
   computed: {
@@ -137,20 +156,29 @@ export default {
     },
     currentScene() {
       return this.allScene.filter(e => { return e.sceneUuid === this.currentSceneUuid })[0]
+    },
+    orgLoading () {
+      if(this.currentScene && this.currentScene.groups.length) {
+        return false
+      } else {
+        return true
+      }
     }
   },
   watch: {
     filterText(val) {
-      this.$refs['A' + this.grpUuid].filter(val)
+      this.$refs['A' + this.grpUuid][0].filter(val)
     }
 
   },
   created() {
+    // 获取树列表
+    this.getOrgTree();
     getAllScene().then(resp => {
       this.allScene = resp.data
       if (this.allScene.length > 0) this.currentSceneUuid = this.allScene[0].sceneUuid
-      //根据param设置默认scene
-      console.log("设置默认scene  "+this.paramSceneCode);
+      // //根据param设置默认scene
+      // console.log("设置默认scene  "+this.paramSceneCode);
       if(this.paramSceneCode){
         this.allScene.forEach(s=>{
           if(this.paramSceneCode===s.sceneCode){
@@ -159,16 +187,53 @@ export default {
         })
       }
     })
+    getById(this.roleUuid).then((resp) => {
+      this.role = resp.data;
+    });
     getRoleGrp(this.roleUuid).then(resp => {
       this.tableData = resp.data
     })
   },
   mounted(){
     setTimeout(()=>{
+      if (this.currentScene && this.currentScene.groups) {
       document.getElementById('tab-'+this.currentScene.groups[0].sceneGrpUuid).click();
+      }
     }, 1000)
   },
   methods: {
+    // 获取机构或人员列表
+    getOrgTree() {
+      this.treeLoading = true
+      queryOrgTree('').then((res) => {
+        this.orgTreeData = res.data;
+        this.treeLoading = false
+      })
+    },
+    loadNode (node, resolve) {
+      if (node.level === 0) {
+        return resolve(this.orgTreeData);
+      }
+      if (node.data.children && node.data.children != '') {
+        return resolve(node.data.children);
+      } else {
+        setTimeout(() => {
+          resolve(this.loadTree);
+        }, 500);
+      }
+
+    },
+    handleNodeClick(data, obj, node) {
+      this.getLoadTree(data, obj, node)
+    },
+    //展开树形结构进行懒加载的方法 data该节点所对应的对象、obj节点对应的 Node、node节点组件本身
+    getLoadTree(datas, obj, node) {
+      this.orglistLoading = true
+      queryOrgTree(datas.id).then((res) => {
+        this.loadTree = res.data;
+        this.orglistLoading = false
+      })
+    },
     filterNode(value, data) {
       if (!value) return true
       return data.label.indexOf(value) !== -1
@@ -187,7 +252,7 @@ export default {
           this.tableData.push({
             dataRoleUuid: this.roleUuid,
             sceneGrpUuid: this.grpUuid,
-            userName: node.label,
+            userName: node.name,
             userType: node.type,
             grpInstUuid: node.type == 1 ? node.id : 'null',
             unitUuid: node.type == 2 ? node.id : 'null',
@@ -241,15 +306,18 @@ export default {
     },
 
     tabClick(tab, event) {
-      if (!this.currentTreeData) {
-        var grpUuid = tab.paneName
-        this.treeLoading = true
-        initSceneTree(grpUuid).then(resp => {
-          this.treeLoading = false
-          console.log(resp)
-          this.$set(this.treeData, 'A' + this.grpUuid, resp.data)
-        })
-      }
+      // if (!this.currentTreeData) {
+      //   var grpUuid = tab.paneName
+      //   this.treeLoading = true
+      //   initSceneTree(grpUuid).then(resp => {
+      //     this.treeLoading = false
+      //     console.log(resp)
+      //     resp.data.map(i => {
+      //       i.children = []
+      //     })
+      //     this.$set(this.treeData, 'A' + this.grpUuid, resp.data)
+      //   })
+      // }
     },
 
     handleSelectionChange(val) {
@@ -267,8 +335,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .org-box {
+    width: 100%;
+    height: 70vh;
+  }
+  .orgTree-box {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    .orglistLoadingDia {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      z-index: 9999;
+    }
+  }
   .filter-tree {
-    margin-top: 20px;
+    // margin-top: 20px;
   }
   .transfer-center-item{
     width: 40px;
@@ -277,6 +362,7 @@ export default {
   .page-container .left-tree{
     height: 70vh;
     overflow: scroll;
+    padding-top: 10px;
   }
   .bottom-btn{
     float: right;
