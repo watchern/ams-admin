@@ -666,7 +666,7 @@ export function sortParamArrById(paramAarr, setParamArrIdArr) {
     let arrParam = {};
     let repeatArr = [];
     paramAarr.map((item)=>{
-        let index = setParamArrIdArr.indexOf(item.copyParamId);
+        let index = setParamArrIdArr.indexOf(item.id);
         // 先把参数不重复的部分提取出来，把重复的参数添加新的数组
         if (index != -1) {
             arrParam[index]= item;

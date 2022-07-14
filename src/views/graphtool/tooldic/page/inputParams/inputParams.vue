@@ -14,7 +14,7 @@
                             <!-- 下拉列表类型 -->
                             <el-select @change="changeRelationParam(index,ind)" @click.native="changeparamdata(index,paramInfo,ind)" v-model="paramListValueList[ind]" ref="selectParam"  style="width: 100%;" v-if="paramInfo.inputType === 'lineinp' " 
                                 :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable>
-                                <el-option v-for="(item,i) in paramInfo.data" :value="paramInfo.dataType == 'str' ? `'`+ item.value + `'`: item.value" :label="item.name" :key="'oplist'+i" >
+                                <el-option v-for="(item,i) in paramInfo.data" :value="item.value" :label="item.name" :key="'oplist'+i" >
                                 <span style="float: left"> {{ item.name }}</span>
                                 <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value == item.name ? "" : item.value}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
                                 </el-option>
@@ -78,7 +78,7 @@
                       console.log(j)
                       console.log(this.nodeParamInfoArr[index].paramInfoArr[j])
                       let repvalue = this.nodeParamInfoArr[index].paramInfoArr[j].inputType == "textinp"?this.nodeParamInfoArr[index].paramInfoArr[j].value:this.nodeParamInfoArr[index].paramInfoArr[j].inputType == "lineinp"?(Array.isArray(this.paramListValueList[j])?this.paramListValueList[j].join(','):this.paramListValueList[j]):this.nodeParamInfoArr[index].paramInfoArr[j].inputType == "treeinp"?(Array.isArray(this.paramTreeValueList[j])?this.paramTreeValueList[j].join(','):this.paramTreeValueList[j]):this.nodeParamInfoArr[index].paramInfoArr[j].value
-                      if(this.nodeParamInfoArr[index].paramInfoArr[j].dataType != "int" && this.nodeParamInfoArr[index].paramInfoArr[j].inputType != "lineinp" && this.nodeParamInfoArr[index].paramInfoArr[j].inputType != "treeinp"){
+                      if(this.nodeParamInfoArr[index].paramInfoArr[j].useQuotation == "1" ){
                         if(repvalue!=undefined && repvalue!=''){
                           repvalue = "'" + repvalue + "'"
                         }else{
@@ -332,12 +332,12 @@
                             if (paramObj.paramChoice.choiceType === '1'){
                             // 单选
                             // this.paramListValueList[index] = paramObj.defaultVal
-                            this.paramListValueList[index] = paramObj.dataType == 'str'? `'` + paramObj.defaultVal + `'` : paramObj.defaultVal
+                            this.paramListValueList[index] = paramObj.useQuotation == '1'? `'` + paramObj.defaultVal + `'` : paramObj.defaultVal
                             } else {
                             // 多选
                             const list = [] 
                             paramObj.defaultVal.forEach(o => {
-                                if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
+                                if(paramObj.useQuotation == '1') { list.push(`'` + o + `'`) }
                                 else {list.push(o) }
                                 // list.push(o)
                             })
@@ -426,12 +426,12 @@
                                 // 单选
                                 // this.paramTreeValueList[index] = list[0]
                                 // this.paramTreeValueList[index] = paramObj.defaultVal
-                                this.paramTreeValueList[index] = paramObj.dataType == 'str' ? `'` + paramObj.defaultVal + `'` : paramObj.defaultVal
+                                this.paramTreeValueList[index] = paramObj.useQuotation == '1' ? `'` + paramObj.defaultVal + `'` : paramObj.defaultVal
                             } else {
                                 // 多选
                                 const list = []
                                 paramObj.defaultVal.forEach(o => {
-                                    if(paramObj.dataType == 'str') { list.push(`'` + o + `'`) }
+                                    if(paramObj.useQuotation == '1') { list.push(`'` + o + `'`) }
                                     else { list.push(o) }
                                     // list.push(o)
                                 })

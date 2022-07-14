@@ -349,6 +349,9 @@
 .oper-btn.save:after {
   content: '\e67e  保存' !important;
 }
+.oper-btn.save1:after {
+  content: '\e67e  保存模型结果' !important;
+}
 
 .oper-btn.save-none:after {
   content: '\e67e' !important;
