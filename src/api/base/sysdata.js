@@ -1,7 +1,6 @@
 import request from '@/utils/request'
 
 const baseURL = '/base'
-const controllerName = 'zhBaseDataSortInfo'
 
 export function listByPage(data) {
   return request({
@@ -16,7 +15,7 @@ export function listByPage(data) {
 export function save(data) {
   return request({
     baseURL: baseURL,
-    url: `/${controllerName}/save`,
+    url: `/zhBaseDataSortInfo/save`,
     method: 'post',
     data
   })
@@ -25,7 +24,7 @@ export function save(data) {
 export function update(data) {
   return request({
     baseURL: baseURL,
-    url: `/${controllerName}/update`,
+    url: `/zhBaseDataSortInfo/update`,
     method: 'put',
     data
   })
@@ -34,7 +33,7 @@ export function update(data) {
 export function del(ids) {
   return request({
     baseURL: baseURL,
-    url: `/${controllerName}/delete/${ids}`,
+    url: `/zhBaseDataSortInfo/delete/${ids}`,
     method: 'delete'
   })
 }
@@ -83,6 +82,17 @@ export function loadchildnodeOne(data) {
     url: `/zhBaseCodeInfo/search`,
     method: 'post',
     data
+  })
+}
+
+/**
+ * 基础数据，2022.05.05迁移代码（from sys-dict.js）
+ */
+export function cacheDict() {
+  return request({
+    baseURL: baseURL,
+    url: `/zhBaseCodeInfo/allBaseCode`,
+    method: 'get'
   })
 }
 

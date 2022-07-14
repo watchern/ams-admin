@@ -691,8 +691,8 @@ export default {
         // 禁用按钮权限
         this.ifmanger = 0
       }
-    })
     this.getList()
+    })
     // 判断预览/运行
     this.isConfigList = getDictList('009001');
     this.isConfigList.map(i => {
@@ -1008,6 +1008,12 @@ export default {
                   },
                 }
             break;
+          // 刚进入模型列表的时候
+          default:
+            if(this.ifmanger == 0){
+              this.btnState.otherBtn =  true
+            }
+            break;
       }
       this.listLoading = true;
       if (query) {
@@ -1170,7 +1176,7 @@ export default {
                 editBtnState: true,
                 copyBtnState: true,
                 deleteBtnState: true,
-                previewBtn: true,
+                previewBtn: false,
                 otherBtn: true
               }
             }

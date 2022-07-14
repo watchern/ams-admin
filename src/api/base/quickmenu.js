@@ -25,3 +25,18 @@ export function saveQuickMenuList(data) {
     data
   })
 }
+
+/**
+ * 删除快捷菜单
+ * @param data
+ * @returns {AxiosPromise}
+ */
+export function deleteQuickMenuById(id) {
+  return request({
+    baseURL: baseURL,
+    url: `/quickMenu/deleteById/${id}`,
+    method: 'post',
+  })
+}
+
+

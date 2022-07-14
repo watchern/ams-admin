@@ -10013,7 +10013,7 @@ var mxEvent = {
  */
 function mxXmlRequest(url, params, method, async, username, password) {
 	this.url = url;
-	this.params = params;
+	this.params = params && params || {};
 	this.method = method || 'POST';
 	this.async = (async != null) ? async : true;
 	this.username = username;

@@ -81,6 +81,8 @@ export default {
     changeparamdata(info,ind){
       let paramsArr = []
       if(info.paramConditionList.length>0){
+        this.paramInfoArr[ind].data = []
+        console.log('有关联关系')
         for(let i = 0; i<info.paramConditionList.length;i++){
           for(let j =0;j<this.paramInfoArr.length;j++){
             if(info.paramConditionList[i].relationParamId == this.paramInfoArr[j].dataId){
