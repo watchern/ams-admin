@@ -43,6 +43,7 @@ export function getUserRes() {
 }
 export function logout() {
   return request({
+    baseURL: baseURL,
     url: '/logout',
     method: 'post'
   })

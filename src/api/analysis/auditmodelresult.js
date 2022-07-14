@@ -115,6 +115,19 @@ export function getProjects() {
   })
 }
 
+
+/**
+ * 海安将分配项目数据合并到sess
+ */
+export function copyAndCreateTableData(data) {
+  return request({
+    baseURL: '/sess',
+    url: '/clueDisposal/copyAndCreateTableData',
+    method: 'post',
+    data
+  })
+}
+
 /**
  * 根据结果明细的onlyUuid查询项目关联表
  */
@@ -207,20 +220,6 @@ export function exportRunTaskRel() {
     method: 'post',
   })
 }
-
-/**
- * 与疑点库映射关系反显
- */
-export function findSuspectsRelevanceData(modelId) {
-  return request({
-    baseURL: analysisUrl,
-    url: '/modelFixedDefinition/returnHistoryRelationList',
-    method: 'post',
-    //data: data
-    params: { modelId: modelId }
-  })
-}
-
 /**
  * 取消执行模型
  * @param {*} id 
@@ -348,6 +347,20 @@ export function selectPrimaryKeyByTableName() {
   })
 }
 
+export function getRunTimeKey() {
+  return request({
+    baseURL: analysisUrl,
+    url: '/ResultDetailProjectRelController/getRunTimeKey',
+    method: 'post'
+  })
+}
+export function getHandleStatusKey() {
+  return request({
+    baseURL: analysisUrl,
+    url: '/ResultDetailProjectRelController/getHandleStatusKey',
+    method: 'post'
+  })
+}
 /**
  * 运行结果详细界面移除关联
  * @param {*} data 运行结果详细与项目关联表主键

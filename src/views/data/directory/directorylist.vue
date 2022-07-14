@@ -389,7 +389,7 @@
       :close-on-click-modal="false"
     >
       <template>
-        <div style="height: 62vh; overflow: auto">
+        <div>
           <el-button/>
           <el-row>
             <el-col>

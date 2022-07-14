@@ -1,12 +1,11 @@
 import request from '@/utils/request'
 
 const baseURL = '/base'
-const controllerName = 'systemTask'
 
 export function querySystemTask(data) {
   return request({
     baseURL: baseURL,
-    url: `/${controllerName}/querySystemTask`,
+    url: `/systemTask/querySystemTask`,
     method: 'post'
   })
 }
@@ -14,7 +13,7 @@ export function querySystemTask(data) {
 export function cancelExecution(ids) {
   return request({
     baseURL: baseURL,
-    url: `/${controllerName}/cancelExecution/${ids}`,
+    url: `/systemTask/cancelExecution/${ids}`,
     method: 'put'
   })
 }

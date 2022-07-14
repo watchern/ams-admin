@@ -28,7 +28,8 @@
               class="oper-btn cancel-exec btn-width-md"
               @click="runRelTaskPause"
             />
-            <el-dropdown style="margin: auto 10px auto 10px">
+            <!-- 注释掉分配项目 -->
+            <!-- <el-dropdown style="margin: auto 10px auto 10px">
               <el-button
                       type="primary"
                       class="oper-btn allocation btn-width-md"
@@ -42,7 +43,7 @@
                 >移除分配项目</el-dropdown-item
                 >
               </el-dropdown-menu>
-            </el-dropdown>
+            </el-dropdown> -->
             <!--<el-dropdown>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="openProjectDialog">分配项目</el-dropdown-item>
@@ -58,12 +59,13 @@
               @click="openResultSplitDialog"
               style="margin-left: 10px"/>-->
         <!-- 结果分享  -->
-          <el-button
+        <!-- 注释掉分配个人 -->
+          <!-- <el-button
           type="primary"
           @click="modelResultOpenDialog()"
           :disabled="buttonIson.disableShareBtn"
             class="oper-btn resultShare btn-width-md"
-          />
+          /> -->
             <el-button
               type="primary"
               @click="exportExcel"

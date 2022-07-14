@@ -67,7 +67,8 @@
               ifopen != 0 ? 'position: absolute;top: -29px;right: 0;' : ''
             "
           >
-            <el-dropdown>
+          <!-- 注释掉分配项目 -->
+            <!-- <el-dropdown>
               <el-button
                 type="primary"
                 class="oper-btn allocation btn-width-md"
@@ -81,7 +82,7 @@
                   >移除分配项目</el-dropdown-item
                 >
               </el-dropdown-menu>
-            </el-dropdown>
+            </el-dropdown> -->
             <el-button
               :disabled="false"
               type="primary"
@@ -250,8 +251,9 @@
                       v-if="typeof nowSql == 'undefined'"
                     ></el-input>
                   </el-col>
-                  <el-col :span="10">
-                    <el-dropdown>
+                  <el-col :span="10" style="width:unset">
+                    <!-- 注释掉分配项目 -->
+                    <!-- <el-dropdown>
                       <el-button
                         type="primary"
                         class="oper-btn allocation btn-width-md"
@@ -265,14 +267,15 @@
                           >移除分配项目</el-dropdown-item
                         >
                       </el-dropdown-menu>
-                    </el-dropdown>
-                    <el-button
+                    </el-dropdown> -->
+                    <!-- 注释掉分配个人 -->
+                    <!-- <el-button
                       type="primary"
                       @click="modelResultOpenDialog()"
                       class="oper-btn resultShare btn-width-md"
                       :disabled="modelRunResultBtnIson.resultShare"
                       style="margin-left: 10px"
-                    />
+                    /> -->
                     <el-button
                       :disabled="false"
                       type="primary"
@@ -4209,5 +4212,8 @@ export default {
 }
 .tjsh {
   width: 100px !important;
+}
+.ag-center-cols-viewport {
+  overflow-y: auto;
 }
 </style>

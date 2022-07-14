@@ -88,3 +88,10 @@ export function getEncloseBy() {
     method: 'get'
   })
 }
+export function queryOrgTree(OrgUuid) {
+  return request({
+    baseURL: '/base',
+    url:  `/orgController/queryOrgTree?OrgUuid=${OrgUuid}`,
+    method: 'get'
+  })
+}

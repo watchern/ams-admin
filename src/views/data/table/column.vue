@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-row>
+    <el-row >
       <el-col
         v-if="openType !== 'showTable' && openType !== 'tableRegister'"
         align="right"
@@ -45,7 +45,7 @@
         </el-form-item> -->
       </el-form>
     </template>
-    <el-table :data="temp" @selection-change="handleSelectionChange" class="detail-form" style="padding: 20px 0 ;overflow: auto;height: 70vh">
+    <el-table :data="temp" @selection-change="handleSelectionChange" class="detail-form" style="padding: 0"  height="250">
       <el-table-column type="selection" width="55" />
       <el-table-column prop="colName" label="字段名称" show-overflow-tooltip >
         <template slot-scope="scope" show-overflow-tooltip >
