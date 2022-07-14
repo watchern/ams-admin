@@ -1188,7 +1188,7 @@ export default {
           editBtnState: true,
           copyBtnState: true,
           deleteBtnState: false,
-          previewBtn: true,
+          previewBtn: false,
           otherBtn: false,
         };
         if (this.isAuditWarning != true) {

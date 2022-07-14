@@ -184,6 +184,7 @@ Vue.prototype.AmsWebsocket = {
   }
 }
 
+Vue.prototype.hasMenu = process.env["VUE_APP_BASE_MENU"] ? process.env["VUE_APP_BASE_MENU"] !== 'withoutmenu':true
 Vue.prototype.contextUrl = "indicator";
 Vue.prototype.dataContextUrl = "data";
 Vue.prototype.baseContextUrl = "base";

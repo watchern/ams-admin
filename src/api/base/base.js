@@ -71,7 +71,7 @@ export function getUnReadRemind(data) {
 export function getRemindByDescTime(data) {
   return request({
     baseURL: baseURL,
-    url: '/remindController/getRemindByDescTime/5',
+    url: '/remindController/getRemindByDescTime/999',
     method: 'get',
     params: data
   })
@@ -85,5 +85,21 @@ export function updateReminds(ids) {
     method: 'put',
     // params 以formData格式传递  后台用RequestParam
     // 直接加data以json格式传递  后台用RequestBody
+  })
+}
+
+export function getUditDataList(data) {
+  return request({
+    baseURL: baseURL,
+    url: '/remindController/getUnReadRemind',
+    method: 'get',
+  })
+}
+export function getListByPagepyP(data) {
+  return request({
+    baseURL: baseURL,
+    url: '/remindController/listByPagepyP',
+    method: 'post',
+    data: data
   })
 }

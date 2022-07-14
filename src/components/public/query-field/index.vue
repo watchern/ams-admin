@@ -1,9 +1,9 @@
 <template>
   <div class="query-field" :class="skinMisalignment?(componentMisalignment?'re-or':'ab-or'):'re-or'">
     <el-form :inline="true" :model="query" label-position="bottom">
-      <div class="switch-btn">
-        <img :src="this.switchImg" @click="onSwitchWith">
-      </div>
+<!--      <div class="switch-btn">-->
+<!--        <img :src="this.switchImg" @click="onSwitchWith">-->
+<!--      </div>-->
 
       <el-form-item v-for="fd in formData" v-if="searchBar == '0'" :label="fd.label">
         <el-input v-if="fd.type==='text'" v-model="query[fd.name]" :style="textStyle"/>
