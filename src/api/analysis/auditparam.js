@@ -3007,6 +3007,7 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
 export function changeparamdata (info,ind) {
   let paramsArr = []
   if(info.paramConditionList.length>0){
+    settingVue.setParamArr[ind].data = []
     for(let i = 0; i<info.paramConditionList.length;i++){
       for(let j =0;j<settingVue.setParamArr.length;j++){
         if(info.paramConditionList[i].relationParamId == settingVue.setParamArr[j].dataId){
