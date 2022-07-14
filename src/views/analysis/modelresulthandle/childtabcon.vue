@@ -1260,7 +1260,7 @@ export default {
 }
 
 .thechard-z {
-  margin-right: 20px;
+  margin-right: 66px;
 }
 
 .paging-z {

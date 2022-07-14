@@ -2006,7 +2006,6 @@ export function initSetting() {
           let copyParamArr = []// 定义所有参数的对象数组（已去重）
           let promiseList = []
           for (let j = 0; j < paramArr.length; j++) { // 遍历有效的参数集合
-
             // let setParamObj = {
             //   dataModuleParamId: paramArr[j].moduleParamId,
             //   name: paramArr[j].name,
@@ -2052,9 +2051,10 @@ export function initSetting() {
                 // setParamObj.useQuotation = paramObj.useQuotation //参数类型
                 //设置默认值
                 // setParamObj.value = ''
+                // 添加不重复的id以便后续排序
+                paramList[k].sortId = paramArr[j].id 
                 if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && moduleParamId === paramArr[j].moduleParamId &&
                   paramArr[j].defaultVal && paramArr[j].defaultVal !== '') {
-                 
                   // setParamObj.value = paramArr[j].defaultVal
                   // setParamObj.useQuotation = paramArr[j].useQuotation
                   paramObj.defaultVal = paramArr[j].defaultVal
@@ -2062,6 +2062,7 @@ export function initSetting() {
                   paramList[k].defaultVal = paramArr[j].defaultVal
                   paramList[k].moduleParamId = paramArr[j].moduleParamId
                   paramList[k].copyParamId = paramArr[j].copyParamId   
+                  paramList[k].sortId = paramArr[j].id 
                 }
                 copyParamArr.push(paramList[k])
                 moduleParamArr.push(moduleParamId)
@@ -2083,6 +2084,7 @@ export function initSetting() {
               name: copyParamArr[n].paramName,
               description: copyParamArr[n].description && copyParamArr[n].description || '',
               copyParamId: copyParamArr[n].copyParamId,
+              sortId: copyParamArr[n].sortId,
             };
             promiseList.push(new Promise(function (resolve, reject) {
               resolve(getSettingParamArr(copyParamArr[n], setParamObj, null, null, n))
@@ -3011,7 +3013,7 @@ export function changeparamdata (info,ind) {
       for(let j =0;j<settingVue.setParamArr.length;j++){
         if(info.paramConditionList[i].relationParamId == settingVue.setParamArr[j].dataId){
           let repvalue = settingVue.setParamArr[j].inputType == "textinp"?settingVue.setParamArr[j].dataDefaultVal:settingVue.setParamArr[j].inputType == "lineinp"?(Array.isArray(settingVue.paramListValueList[j])?settingVue.paramListValueList[j].join(','):settingVue.paramListValueList[j]):settingVue.setParamArr[j].inputType == "treeinp"?(Array.isArray(settingVue.paramTreeValueList[j])?settingVue.paramTreeValueList[j].join(','):settingVue.paramTreeValueList[j]):settingVue.setParamArr[j].dataDefaultVal
-          if(settingVue.setParamArr[j].dataType != "int" && settingVue.setParamArr[j].inputType != "lineinp" && settingVue.setParamArr[j].inputType != "treeinp"){
+          if(settingVue.setParamArr[j].useQuotation == '1' ){
             if(repvalue!=undefined && repvalue!=''){
               repvalue = "'" + repvalue + "'"
             }else{

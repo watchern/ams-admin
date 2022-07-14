@@ -32,7 +32,7 @@
       </div>
       <div class="el-btn-no-colorz" v-if="isModelPreview" @click="saveResult()">
         <span>
-          <i class="oper-btn save"></i>
+          <i class="oper-btn save1"></i>
         </span>
       </div>
       <div
@@ -3114,7 +3114,7 @@ export default {
                 j.formatParamValue = JSON.parse(j.paramValue);
                 if (i.copyParamId == j.ammParamUuid) {
                   i.moduleParamId = j.formatParamValue.moduleParamId;
-                  if (j.dataType == "str") {
+                  if (j.useQuotation == "1") {
                     i.paramValue = `'${i.paramValue}'`;
                   }
                 }
@@ -4014,7 +4014,7 @@ export default {
   height: 100%;
 }
 .thechard-z {
-  margin-right: 20px;
+  margin-right: 66px;
 }
 .paging-z {
   font-weight: bold;

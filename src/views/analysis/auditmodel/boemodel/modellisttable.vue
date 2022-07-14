@@ -1454,7 +1454,7 @@ export default {
 .btn-show {
   position: absolute;
   top: 39px;
-  right: 153px;
+  right: 203px;
   z-index: 3;
   padding: 3px 8px 4px 8px !important;
 }

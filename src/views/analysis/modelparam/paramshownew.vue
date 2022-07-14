@@ -17,7 +17,7 @@
           <td align="left"><span style="padding-left: 61px;">暂无数据</span></td>
           <td align="center"></td>
         </tr>
-        <tr ref="setParamTr" v-for="(setParamObj,index) in setParamArr" :index="index" :class="setParamObj.copyParamId" :key="index">
+        <tr ref="setParamTr" v-for="(setParamObj,index) in setParamArr" :index="index" :class="setParamObj.sortId" :key="index">
           <td align="center">{{setParamObj.name}}</td>
           <td v-if="setParamObj.inputType === 'lineinp'" ref="selectParam">
             <!-- {{setParamObj.data.length}} -->
@@ -41,10 +41,6 @@
             <el-date-picker v-if="setParamObj.timeFormat!='other'" ref="paramOption" :index="index"  :title="setParamObj.title" :type="setParamObj.timeFormat" placeholder="选择日期" :value-format="timeDealFormat(setParamObj.timeFormat)"  v-model="setParamObj.value" style="width: 98%;" @change="changeRelationParam(index, setParamObj.value)" @click.native="changeparamdata(setParamObj,index)"></el-date-picker> 
            
             <el-date-picker v-else ref="paramOption" :index="index"  :title="setParamObj.title" type="date" placeholder="选择日期" :value-format="setParamObj.customizeFormat" v-model="setParamObj.value" style="width: 98%;" @change="changeRelationParam(index, setParamObj.value)" @click.native="changeparamdata(setParamObj,index)"></el-date-picker> 
-
-
-
-
           </td>
           <td v-if="setParamObj.inputType === 'treeinp'" ref="selectTreeParam">
             <!-- <div :id="setParamObj.id" :title="setParamObj.title" class='xm-select-demo paramTr'></div> -->
