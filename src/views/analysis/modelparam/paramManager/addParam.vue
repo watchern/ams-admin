@@ -800,8 +800,9 @@ export default {
         request({
           baseURL: "/analysis",
           url:
-            "/paramController/getSqlCols?sql=" + sql,
+            "/paramController/getSqlCols",
           method: "post",
+          data: {sql: sql}
         }).then((result) => {
           this.relationFiledoptions = result.data;
         });
@@ -891,10 +892,11 @@ export default {
     getrvaluelist() {
       request({
         baseURL: "/analysis",
-        url:
-          "/paramController/getSqlCols?sql=" +
-          this.checktreenode.extMap.OPTIONSSQL,
+        url: "/paramController/getSqlCols",
         method: "post",
+        data: {
+          sql: this.checktreenode.extMap.OPTIONSSQL
+        }
       }).then((result) => {
         this.rvaluelist = result.data;
       });
