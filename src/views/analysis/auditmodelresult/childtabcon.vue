@@ -1255,7 +1255,7 @@ export default {
         },
       ],
       // 根据系统配置判断预览模式还是执行模式 true 为执行 不加水印 false 为预览加水印
-      isPreviewAndFunc: true,
+      isPreviewAndFunc: false,
     };
   },
   mounted() {
