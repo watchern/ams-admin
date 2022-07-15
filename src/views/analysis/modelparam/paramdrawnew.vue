@@ -161,6 +161,7 @@ export default {
                 this.paramTreeValueList[i] = ''
                 this.paramInfoArr[ind].value = ''
               }
+              this.changeparamdata(this.paramInfoArr[i],i)
               this.$forceUpdate()
             }
           }
