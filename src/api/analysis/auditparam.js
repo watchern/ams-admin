@@ -3076,6 +3076,7 @@ export function changeRelationParam (ind, val, dataType) {
       settingVue.setParamArr[ind].value = val;
     }
   } else {
+    this.changeparamdata(settingVue.setParamArr[ind],ind)
     settingVue.setParamArr[ind].value = '';
   }
   for(let i=0;i<settingVue.setParamArr.length;i++){

@@ -146,6 +146,7 @@ export default {
         if (this.paramDrawUuid && this.overallParmaobj[this.paramDrawUuid]) {
           this.overallParmaobj[this.paramDrawUuid].paramsArr[ind].value = ''
         }
+        this.changeparamdata(this.paramInfoArr[ind],ind)
       }
       for(let i=0;i<this.paramInfoArr.length;i++){
         if(this.paramInfoArr[i].paramConditionList){

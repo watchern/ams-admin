@@ -244,6 +244,9 @@
                         // this.initParamInputAndSelect()
                         this.loading.destroy()
                     })
+                    for (let n = 0; n < this.nodeParamInfoArr.length; n++){
+                      this.changeparamdata(this.nodeParamInfoArr[n],n)
+                    }
                 }catch (e) {
                     this.loading.destroy()
                     console.info(e)
