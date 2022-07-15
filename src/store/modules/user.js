@@ -4,6 +4,7 @@ import router, { resetRouter } from '@/router'
 import { onAccessSystem } from '@/utils/permission'
 import { cacheDict } from '@/api/base/sys-dict'
 import { getAllScene, getSceneInst } from '@/api/data/scene'
+import { getPersonIp} from '@/api/user';
 import Cookies from 'js-cookie'
 import {
   Message,
@@ -21,7 +22,8 @@ const state = {
   scenecode: '',
   scenename: '',
   datauserid: '',
-  datausername: ''
+  datausername: '',
+  personIp: ''
 }
 
 const mutations = {
@@ -60,6 +62,9 @@ const mutations = {
   },
   SET_DATAUSERNAME: (state, datausername) => {
     state.datausername = datausername
+  },
+  SET_PERSONIP: (state, personIp) => {
+    state.personIp = personIp
   }
 }
 const actions = {
@@ -179,6 +184,14 @@ const actions = {
       commit('SET_SCENENAME', payload.sceneName)
       commit('SET_DATAUSERID', payload.dataUserId)
       commit('SET_DATAUSERNAME', payload.dataUserName)
+      resolve()
+    })
+  },
+  savePersonIp ({ commit }) {
+    return new Promise(resolve => {
+      getPersonIp().then(response => {
+        commit('SET_PERSONIP', response.data)
+      })
       resolve()
     })
   }

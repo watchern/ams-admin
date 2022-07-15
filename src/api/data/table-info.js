@@ -202,7 +202,7 @@ export function getResByRole(roleUuid) {
 export function getRoleCols(roleUuid, tableUuid) {
   return request({
     baseURL: baseURL,
-    url: `/${controller3}/getRoleCols?roleUuid=${roleUuid}&tableMetaUuid=${tableUuid}`,
+    url: `/${controller3}/getRoleCols/${roleUuid}/${tableUuid}`,
     method: 'get'
   })
 }

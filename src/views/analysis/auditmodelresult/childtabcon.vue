@@ -333,7 +333,7 @@
               @grid-ready="onGridReady"
               @rowSelected="rowChange"
               :default-col-def="defaultColDef"
-              :sideBar="false"
+              :sideBar="true"
               :modules="modules"
               :locale-text="localeText"
               :frameworkComponents="frc"
@@ -742,6 +742,10 @@ import { AllModules } from "@ag-grid-enterprise/all-modules";
 
 import Pagination from "@/components/Pagination/index";
 import JsonExcel from "vue-json-excel";
+// import * as ExcelJS from exceljs/dist/exceljs
+// import ExcelJS from 'exceljs'
+var ExcelJS = require("exceljs");
+import {saveAs} from 'file-saver';
 import childtabscopy from "@/views/analysis/auditmodelresult/childtabscopy";
 import userProject from "@/views/base/userproject/index";
 //标签树
@@ -773,7 +777,7 @@ import {
 } from "@/api/analysis/auditmodelresult";
 import axios from "axios";
 import VueAxios from "vue-axios";
-import AV from "leancloud-storage";
+import AV, { debug } from "leancloud-storage";
 import myQueryBuilder from "@/views/analysis/auditmodelresult/myquerybuilder";
 import { string } from "jszip/lib/support";
 import {
@@ -825,6 +829,12 @@ export default {
       return this.rotateConfig != null
         ? this.rotateColumnDefs
         : this.columnDefs;
+    },
+    getUserName(){
+      return this.$store.getters.name;
+    },
+    personIp(){
+      return this.$store.getters.personIp;
     },
   },
   watch: {
@@ -1082,7 +1092,7 @@ export default {
         enablePivot: true,
         sortable: true,
         filter: true,
-        floatingFilter: false, //列头过滤器 启动
+        floatingFilter: true, //列头过滤器 启动
       },
       sideBar: {
         toolPanels: [
@@ -1238,8 +1248,8 @@ export default {
           },
         },
       ],
-      // 根据系统配置判断预览模式还是执行模式
-      isPreviewAndFunc: false,
+      // 根据系统配置判断预览模式还是执行模式 true 为执行 不加水印 false 为预览加水印
+      isPreviewAndFunc: true,
     };
   },
   mounted() {
@@ -3114,7 +3124,7 @@ export default {
                 j.formatParamValue = JSON.parse(j.paramValue);
                 if (i.copyParamId == j.ammParamUuid) {
                   i.moduleParamId = j.formatParamValue.moduleParamId;
-                  if (j.formatParamValue.useQuotation == "1") {
+                  if (j.useQuotation == "1") {
                     i.paramValue = `'${i.paramValue}'`;
                   }
                 }
@@ -3205,12 +3215,81 @@ export default {
       this.initWebSocket();
       // this.modelDetailModelResultDialogIsShow = true;
     },
+    setWatermark (str,str1,str2) {
+      let id = '1.23452384164.123412416';
+ 
+      if (document.getElementById(id) !== null) {
+        document.body.removeChild(document.getElementById(id));
+      }
+      // 创建一个画布
+      let can = document.createElement('canvas');
+      // 设置画布的长宽
+      can.width = 500;
+      can.height = 420;
+      let cans = can.getContext('2d');
+      // 旋转角度
+      cans.rotate(-25 * Math.PI / 180);
+      // 设置字体大小
+      cans.font = "800 40px Microsoft JhengHei";
+      // 设置填充绘画的颜色、渐变或者模式
+      cans.fillStyle = "rgba(130, 142, 162, 0.2)";
+      // 设置文本内容的当前对齐方式
+      cans.textAlign = 'center';
+      // 设置在绘制文本时使用的当前文本基线
+      cans.textBaseline = 'Middle';
+      cans.fillText((str+'   '+str1) , 180, 350);
+      const dataURL = can.toDataURL('image/png');
+      return dataURL;
+
+    },
+    createWsSheet () {
+      // 创建工作簿
+      const workbook = new ExcelJS.Workbook();
+      // 获取水印
+      const base64 = this.setWatermark(this.getUserName, this.personIp);
+      // base64 = base64.replace(/^data:image\/(png|jpg);base64,/, "")
+      const imageId1 = workbook.addImage({ base64, extension: 'png' });
+      // 创建带有红色标签颜色的工作表
+      const worksheet = workbook.addWorksheet('模型结果导出表', { properties: { tabColor: { argb: 'FFC0000' } } });
+      const columns = []
+      this.nextValue.columnNames.map((i) => {
+        columns.push({
+          key: i,
+          header: i,
+          name: i
+        })
+      })
+      const rows = [];
+      this.nextValue.result.map(i => {
+        let rowItem = [];
+        columns.map(j => {
+          if (!i[j.key]) {
+            this.$set(i, j.key, '')
+          }
+          // console.log()
+          rowItem.push(i[j.key])
+        })
+        rows.push(rowItem)
+      })
+      // 添加背景图片
+      worksheet.addBackgroundImage(imageId1);
+      // 添加数据
+      worksheet.addTable({
+        name: '模型结果导出表.xlsx',
+        ref: 'A1',// 表格左上角位置
+        columns,
+        rows
+      });
+      workbook.xlsx.writeBuffer().then((res) => {
+        saveAs(new Blob([res], { type: 'application/octet-stream' }), '模型结果导出表.xlsx')
+      });
+    },
     /**
      * sql编辑器模型结果点击导出后出发的方法
      */
     modelResultExport() {
       // 根据系统配置判断预览模式还是执行模式
-      if (!this.isPreviewAndFunc) {
+      if (this.isPreviewAndFunc) {
         this.tableData = this.nextValue.result;
         this.json_fields = {};
         for (var i = 0; i < this.nextValue.columnNames.length; i++) {
@@ -3223,28 +3302,30 @@ export default {
         }
         this.excelName = "模型结果导出表";
       } else {
-        var exportObj = {
-          result: this.nextValue.result,
-          columnNames: this.nextValue.columnNames,
-        };
-        axios({
-          method: "post",
-          data: exportObj,
-          url: "/analysis/RunTaskController/exportRunTaskRelTable",
-          responseType: "blob",
-        }).then((res) => {
-          const link = document.createElement("a");
-          const blob = new Blob([res.data], {
-            type: "application/vnd.ms-excel",
-          });
-          link.style.display = "none";
-          link.href = URL.createObjectURL(blob);
-          //模型运行结果表日期使用当前日期
-          link.setAttribute("download", "模型结果导出表" + ".xls");
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        });
+        // var exportObj = {
+        //   result: this.nextValue.result,
+        //   columnNames: this.nextValue.columnNames,
+        // };
+        // axios({
+        //   method: "post",
+        //   data: exportObj,
+        //   url: "/analysis/RunTaskController/exportRunTaskRelTable",
+        //   responseType: "blob",
+        // }).then((res) => {
+        //   const link = document.createElement("a");
+        //   const blob = new Blob([res.data], {
+        //     type: "application/vnd.ms-excel",
+        //   });
+        //   link.style.display = "none";
+        //   link.href = URL.createObjectURL(blob);
+        //   //模型运行结果表日期使用当前日期
+        //   link.setAttribute("download", "模型结果导出表" + ".xls");
+        //   document.body.appendChild(link);
+        //   link.click();
+        //   document.body.removeChild(link);
+        // });
+        // 修改为前端导出加水印
+        this.createWsSheet();
       }
     },
     reSet1() {

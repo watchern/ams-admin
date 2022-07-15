@@ -53,7 +53,10 @@ export default {
     },
     getUserName(){
       return this.$store.getters.name;
-    }
+    },
+    personIp(){
+      return this.$store.getters.personIp;
+    },
   },
   created() {
     if (sessionStorage.getItem('store')) {
@@ -64,7 +67,11 @@ export default {
     })
   },
   activated () {
-    this.setWatermark();
+    this.$store.dispatch("user/savePersonIp").then(() => {
+      this.setWatermark();
+    })
+   
+    
   },
   methods: {
     getHelp () {
@@ -90,19 +97,19 @@ export default {
     },
     // 设置水印
     setWatermark () {
-      getPersonIp().then((res) => {
+      // getPersonIp().then((res) => {
         Watermark.set(
           this.getUserName,
-          res.data,
+          this.personIp,
           ''
         );
-      }) 
+      // }) 
     }
   }
 }
 </script>
 
-<style lang="scss" scoped >
+<style lang="scss" scoped>
 .home{
   height: 100vh;
   background: #fff url('style/images/bg.png') no-repeat left center fixed;
