@@ -63,6 +63,7 @@
         >查看SQL规则</el-button
         >
          <div v-if="temp.ruleType === 1" :data="sqlRule">
+         <el-table>
           <el-table-column prop="codeValue" label="真实值">
             <template slot-scope="scope">
               <el-select ref="codeValue" v-model="scope.row.codeValue" placeholder="请选择真实值">
@@ -87,6 +88,7 @@
               </el-select>
             </template>
           </el-table-column>
+         </el-table>
         </div>
         <!-- 执行预览弹窗 -->
         <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px" :modal="false">
@@ -112,31 +114,35 @@
 <!--        <el-link size="mini" type="primary">导入</el-link>-->
 <!--        <span style="font-size:2px;color:red">(请选择xls或者xlsx格式,导入第一列为真实值,第二列为转码值)</span>-->
 
-      <el-table v-if="temp.ruleType === 2" :data="transColRelsData" height="calc(100% - 260px)" class="detail-form">
+      <el-table v-if="temp.ruleType === 2" :data="transColRelsData" height="calc(100% - 260px)" class="detail-form" style="margin-bottom: 10px">
         <el-table-column prop="codeValue" label="真实值" show-overflow-tooltip>
           <template slot-scope="scope">
-            <el-input v-if="scope.row.start !='0' || scope.row.start == undefined" v-model="scope.row.codeValue" style="width:90%;" />
-            <el-input v-if="scope.row.start =='0'" v-model="tableInput.transColRels.codeValue" style="width:90%;" />
+<!--            v-if="scope.row.start !='0' || scope.row.start == undefined"-->
+            <el-input v-model="scope.row.codeValue" style="width:90%;" />
+<!--            <el-input v-if="scope.row.start =='0'" v-model="tableInput.transColRels.codeValue" style="width:90%;" />-->
           </template>
         </el-table-column>
         <el-table-column prop="transValue" label="转码值" show-overflow-tooltip>
           <template slot-scope="scope">
-            <el-input v-if="scope.row.start !='0' || scope.row.start == undefined" v-model="scope.row.transValue" style="width:90%;" />
-            <el-input v-if="scope.row.start =='0'" v-model="tableInput.transColRels.transValue" style="width:90%;" />
+<!--            v-if="scope.row.start !='0' || scope.row.start == undefined"-->
+            <el-input v-model="scope.row.transValue" style="width:90%;" />
+<!--            <el-input v-if="scope.row.start =='0'" v-model="tableInput.transColRels.transValue" style="width:90%;" />-->
           </template>
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
+<!--            scope.row.start !='0' || scope.row.start == undefined-->
             <el-link
-              v-if="scope.row.start !='0' || scope.row.start == undefined"
+              v-if="transColRelsData.length != 1"
               size="mini"
               type="danger"
+              style="margin-right:10px"
               @click="lineDelete(scope.$index,'transColRels')"
             >
               删除
             </el-link>
             <el-link
-              v-if="scope.row.start =='0'"
+              v-if="scope.$index == transColRelsData.length - 1"
               size="mini"
               type="primary"
               @click="lineAdd(scope.$index,'transColRels')"
@@ -279,20 +285,17 @@ export default {
     lineAdd(index, ipTable) {
       switch (ipTable) {
         case 'transColRels':
-          if (this.tableInput.transColRels.codeValue == null) {
+          var codeValue = this.transColRelsData[index].codeValue
+          var transValue = this.transColRelsData[index].transValue
+          if (codeValue == null || codeValue == '') {
             this.$message.error('请填写真实值')
             return
           }
-          if (this.tableInput.transColRels.transValue == null) {
+          if (transValue==null || transValue == '') {
             this.$message.error('请填转码值')
             return
           }
-          var tempRow = JSON.parse(JSON.stringify(this.tableInput.transColRels))
-          tempRow.start = '1'
-          this.transColRelsData.splice(-1, 0, tempRow)
-          this.transColRelsData[this.transColRelsData.length - 1].codeValue = null
-          this.transColRelsData[this.transColRelsData.length - 1].transValue = null
-          this.transColRelsData[this.transColRelsData.length - 1].start = '0'
+          this.transColRelsData.push( { codeValue: null, transValue: null ,start: '0'})
           break
       }
     },
@@ -363,10 +366,17 @@ export default {
     },
     // 添加
     createData() {
-      // 先移除有空数据的输入行
-      if (this.transColRelsData.length > 0) {
-        if (this.transColRelsData[this.transColRelsData.length - 1].start === '0' && this.transColRelsData[this.transColRelsData.length - 1].codeValue === null) {
-          this.transColRelsData.splice(this.transColRelsData.length - 1, 1)
+      // 空值检验
+      if (this.transColRelsData.length > 0 && this.temp.ruleType === 2) {
+        var codeValue = this.transColRelsData[this.transColRelsData.length - 1].codeValue
+        var transValue = this.transColRelsData[this.transColRelsData.length - 1].transValue
+        if (codeValue == null || codeValue == '') {
+          this.$message({ type: 'error', message: '请填写真实值' })
+          return
+        }
+        if (transValue==null || transValue == '') {
+          this.$message({ type: 'error', message: '请填转码值' })
+          return
         }
       }
       this.$refs['dataForm'].validate((valid) => {
@@ -486,10 +496,17 @@ export default {
       })
     },
     updateData() {
-      // 先移除输入行
-      if (this.transColRelsData.length > 0) {
-        if (this.transColRelsData[this.transColRelsData.length - 1].start === '0' && this.transColRelsData[this.transColRelsData.length - 1].codeValue === null) {
-          this.transColRelsData.splice(this.transColRelsData.length - 1, 1)
+      // 空值检验
+      if (this.transColRelsData.length > 0 && this.temp.ruleType === 2) {
+        var codeValue = this.transColRelsData[this.transColRelsData.length - 1].codeValue
+        var transValue = this.transColRelsData[this.transColRelsData.length - 1].transValue
+        if (codeValue == null || codeValue == '') {
+          this.$message({ type: 'error', message: '请填写真实值' })
+          return
+        }
+        if (transValue==null || transValue == '') {
+          this.$message({ type: 'error', message: '请填转码值' })
+          return
         }
       }
       this.$refs['dataForm'].validate((valid) => {
