@@ -261,10 +261,12 @@
                     :maintableindex="item.maintableindex"
                     use-type="modelPreview"
                     :modelType="modelType"
+                    :modelData="item"
+                    @triggerSearch="loadParamDraw"
                   />
                 </el-col>
               </div>
-              <el-col :span="2">
+              <!-- <el-col :span="2">
                 <el-button
                   v-if="item.isExistParam"
                   type="primary"
@@ -276,7 +278,7 @@
                     >查询</span
                   >
                 </el-button>
-              </el-col>
+              </el-col> -->
             </el-row>
           </el-collapse-item>
         </el-collapse>

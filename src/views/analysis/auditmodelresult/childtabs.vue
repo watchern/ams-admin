@@ -18,6 +18,8 @@
         @saveModelResult="saveModelResult"
         ref="onlyChild"
         :modelType="modelType"
+        :modelData="modelData"
+        @triggerSearch="triggerSearch"
     /></el-tab-pane>
     <!-- 单个模型执行结果页签（主表、辅表） -->
     <el-tab-pane
@@ -44,7 +46,9 @@
         :useType="useType"
         :modelType="modelType"
         :preLength="useType=='sqlEditor'||useType=='modelPreview'?preValue.length:1"
-        :myIndex="useType=='sqlEditor'||useType=='modelPreview'?key:1"/>
+        :myIndex="useType=='sqlEditor'||useType=='modelPreview'?key:1"
+        :modelData="modelData"
+        @triggerSearch="triggerSearch"/>
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -197,6 +201,9 @@ export default {
           }
         });
       }
+    },
+    triggerSearch (val) {
+      this.$emit('triggerSearch',val)
     }
   },
   /**
@@ -222,7 +229,8 @@ export default {
     "dataUserId",
     "sceneCode",
     "maintableindex",
-    "modelType"
+    "modelType",
+    "modelData"
   ],
 };
 </script>

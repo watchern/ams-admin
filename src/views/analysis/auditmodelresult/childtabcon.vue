@@ -35,6 +35,11 @@
           <i class="oper-btn save1"></i>
         </span>
       </div>
+      <div class="el-btn-no-colorz search-box" v-if="modelData.isExistParam" @click="loadParamDraw(modelData.name)">
+        <span>
+          <i class="oper-btn search"></i>
+        </span>
+      </div>
       <div
         v-if="(useType == 'sqlEditor' || myFlag) && !chartSwitching"
         v-for="(item, index) in chartsResource.menuData"
@@ -867,6 +872,7 @@ export default {
     "settingInfo",
     "isModelPreview",
     "modelType",
+    "modelData"
   ],
   data() {
     return {
@@ -3215,9 +3221,9 @@ export default {
       this.initWebSocket();
       // this.modelDetailModelResultDialogIsShow = true;
     },
+    // 导出添加水印方法
     setWatermark (str,str1,str2) {
       let id = '1.23452384164.123412416';
- 
       if (document.getElementById(id) !== null) {
         document.body.removeChild(document.getElementById(id));
       }
@@ -3247,7 +3253,6 @@ export default {
       const workbook = new ExcelJS.Workbook();
       // 获取水印
       const base64 = this.setWatermark(this.getUserName, this.personIp);
-      // base64 = base64.replace(/^data:image\/(png|jpg);base64,/, "")
       const imageId1 = workbook.addImage({ base64, extension: 'png' });
       // 创建带有红色标签颜色的工作表
       const worksheet = workbook.addWorksheet('模型结果导出表', { properties: { tabColor: { argb: 'FFC0000' } } });
@@ -3266,7 +3271,6 @@ export default {
           if (!i[j.key]) {
             this.$set(i, j.key, '')
           }
-          // console.log()
           rowItem.push(i[j.key])
         })
         rows.push(rowItem)
@@ -4053,6 +4057,10 @@ export default {
         return name;
       }
     },
+    loadParamDraw(modelUuid) {
+      // 触发父页面查询方法
+      this.$emit("triggerSearch", modelUuid);
+    },
   },
 };
 </script>
@@ -4296,5 +4304,8 @@ export default {
 }
 .ag-center-cols-viewport {
   overflow-y: auto;
+}
+.search-box {
+  margin-right: 57px;
 }
 </style>
