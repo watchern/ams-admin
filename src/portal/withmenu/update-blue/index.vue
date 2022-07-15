@@ -67,8 +67,11 @@ export default {
     })
   },
   activated () {
-    this.$store.dispatch("user/savePersonIp").then(() => {
-      this.setWatermark();
+    this.$store.dispatch("user/savePersonIp").then((res) => {
+      if (res.data) {
+        this.setWatermark();
+      }
+      
     })
    
     

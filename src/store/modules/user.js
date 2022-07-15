@@ -191,8 +191,9 @@ const actions = {
     return new Promise(resolve => {
       getPersonIp().then(response => {
         commit('SET_PERSONIP', response.data)
+        resolve(response)
       })
-      resolve()
+     
     })
   }
 }

@@ -35,7 +35,7 @@
           <i class="oper-btn save1"></i>
         </span>
       </div>
-      <div class="el-btn-no-colorz search-box" v-if="modelData.isExistParam" @click="loadParamDraw(modelData.name)">
+      <div class="el-btn-no-colorz search-box" v-if="modelData && modelData.isExistParam" @click="loadParamDraw(modelData.name)">
         <span>
           <i class="oper-btn search"></i>
         </span>
@@ -3130,7 +3130,7 @@ export default {
                 j.formatParamValue = JSON.parse(j.paramValue);
                 if (i.copyParamId == j.ammParamUuid) {
                   i.moduleParamId = j.formatParamValue.moduleParamId;
-                  if (j.useQuotation == "1") {
+                  if (j.formatParamValue.useQuotation == "1") {
                     i.paramValue = `'${i.paramValue}'`;
                   }
                 }
@@ -3246,7 +3246,6 @@ export default {
       cans.fillText((str+'   '+str1) , 180, 350);
       const dataURL = can.toDataURL('image/png');
       return dataURL;
-
     },
     createWsSheet () {
       // 创建工作簿
