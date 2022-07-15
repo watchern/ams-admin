@@ -993,7 +993,7 @@ export default {
         // 发送消息
       let _this = this;
         this.webSocketCopy.onmessage = function (res) {
-          if("true" == res){
+          if("true" == res.data){
             _this.$notify({
               title: "成功",
               message: "复制表成功",
