@@ -134,6 +134,7 @@
                       }else{
                         this.paramListValueList[i] = ''
                       }
+                      this.changeparamdata(this.nodeParamInfoArr[index].paramInfoArr[i],i)
                       this.$forceUpdate() 
                     }
                   }

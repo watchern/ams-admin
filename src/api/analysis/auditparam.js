@@ -3092,6 +3092,7 @@ export function changeRelationParam (ind, val, dataType) {
             settingVue.paramTreeValueList[i] = ''
             settingVue.setParamArr[i].value = '';
           }
+          this.changeparamdata(settingVue.setParamArr[i],i)
           settingVue.$forceUpdate() 
         }
       }
