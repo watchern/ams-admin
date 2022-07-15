@@ -630,6 +630,12 @@ export default {
                       arr[w]['value'] = ''
                     }
                   }
+                } else {
+                  for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                    if (arr[w].moduleParamId === moduleParamId) {
+                      arr[w]['value'] = paramValue
+                    }
+                  }
                 }
                 filterArr.push(obj)
               } else { // 不允许为空
@@ -641,7 +647,6 @@ export default {
                       arr[w]['value'] = paramValue
                     }
                   }
-                  
                 } else {
                   paramNum++
                 }

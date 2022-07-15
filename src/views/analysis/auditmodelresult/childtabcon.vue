@@ -3255,7 +3255,7 @@ export default {
       const base64 = this.setWatermark(this.getUserName, this.personIp);
       const imageId1 = workbook.addImage({ base64, extension: 'png' });
       // 创建带有红色标签颜色的工作表
-      const worksheet = workbook.addWorksheet('模型结果导出表', { properties: { tabColor: { argb: 'FFC0000' } } });
+      const worksheet = workbook.addWorksheet('Sheet1', { properties: { tabColor: { argb: '1fbb7d' } } });
       const columns = []
       this.nextValue.columnNames.map((i) => {
         columns.push({
@@ -3285,7 +3285,7 @@ export default {
         rows
       });
       workbook.xlsx.writeBuffer().then((res) => {
-        saveAs(new Blob([res], { type: 'application/octet-stream' }), '模型结果导出表.xlsx')
+        saveAs(new Blob([res], { type: 'application/octet-stream' }), `${this.modelData.title}_模型结果.xlsx`)
       });
     },
     /**
