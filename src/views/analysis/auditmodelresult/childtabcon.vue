@@ -3114,7 +3114,7 @@ export default {
                 j.formatParamValue = JSON.parse(j.paramValue);
                 if (i.copyParamId == j.ammParamUuid) {
                   i.moduleParamId = j.formatParamValue.moduleParamId;
-                  if (j.useQuotation == "1") {
+                  if (j.formatParamValue.useQuotation == "1") {
                     i.paramValue = `'${i.paramValue}'`;
                   }
                 }
