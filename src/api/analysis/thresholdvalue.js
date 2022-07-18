@@ -143,11 +143,14 @@ export function localtoLowerCase(jsonObj) {
 /**
  * 处理数据展现颜色  阈值为单值的时候
  * @param data 要处理的数据
- * @param thresholdValueRel 过滤条件对象
- * @returns {{"background-color": (string), color: (string)}}
+ * @param modelThresholdValues 过滤条件对象组
+ * @returns {{"background-color": string, color: string}}
  */
-export function handleDataSingleValue(data,thresholdValueRel){
+export function handleDataSingleValue(data,modelThresholdValues){
   let repdata = localtoLowerCase(data);
+  // hn-因为会同时添加多个阈值，所以需要将过滤条件对象组（阈值组）传入并遍历
+  for (let i = 0; i < modelThresholdValues.length; i++) {
+    let thresholdValueRel = modelThresholdValues[i]
   //测试数据 可以用来后续修改用  建议不删 否则每次都得重新查数据
 /*  thresholdValueRel = JSON.parse("{\"modelThresholdValueUuid\":\"\",\"thresholdValueUuid\":\"40281a8177418a3d0177418a3df30000\"," +
     "\"thresholdValueName\":\"单值\",\"colorInfo\":{\"backgroundColor\":\"#000000\",\"fontColor\":\"#ffffff\"}," +
@@ -210,6 +213,7 @@ export function handleDataSingleValue(data,thresholdValueRel){
     if(valueOne.length >= valueTwo.length && valueOne.substring(valueOne.length - valueTwo.length,valueOne.length) === valueTwo){
       return {"background-color":backgroundColor,"color":fontColor}
     }
+  }
   }
 }
 

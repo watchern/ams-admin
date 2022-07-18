@@ -2813,10 +2813,11 @@ export default {
             let colorInfo = JSON.parse(modelThresholdValues[i].colorInfo);
             modelThresholdValues[i].colorInfo = colorInfo;
           }
-          //判断颜色等信息
-          return handleDataSingleValue(params.data, thresholdValueRel);
         }
       }
+      // hn-因为modelThresholdValues会有多个阈值，遍历并将json处理完成后再判断颜色等信息
+      //判断颜色等信息
+      return handleDataSingleValue(params.data, modelThresholdValues);
     },
     /**
      * 渲染表格，将颜色渲染上去
@@ -2842,10 +2843,11 @@ export default {
             let colorInfo = JSON.parse(modelThresholdValues[i].colorInfo);
             modelThresholdValues[i].colorInfo = colorInfo;
           }
-          //判断颜色等信息
-          return handleDataSingleValue(params.data, thresholdValueRel);
         }
       }
+      // hn-因为modelThresholdValues会有多个阈值，遍历并将json处理完成后再判断颜色等信息
+      //判断颜色等信息
+      return handleDataSingleValue(params.data, modelThresholdValues);
     },
     /*changeCellColor(params, thresholdValueRel, modelResultDetailCol) {
       if (thresholdValueRel) {
