@@ -1,26 +1,32 @@
 <template>
   <div class="app-container" style="width:100%;height:100%;">
-    <el-input v-model="filterText1" placeholder="输入关键字进行过滤" />
+    <el-row width="100%" style="margin-bottom: 10px">
+      <el-col :span="18">
+        <el-input v-model="filterText1" placeholder="输入关键字进行过滤"/>
+      </el-col>
+      <el-col :span="6">
+        <div class="controlTreeNode">
+          <el-button
+                  title="展开全部节点"
+                  type="text"
+                  size="mini"
+                  class="expandTreeNode"
+                  @click="expandAllNodes()"
+          ><span class="expandIcon"></span>
+          </el-button>
+          <el-button
+                  title="收起全部节点"
+                  type="text"
+                  size="mini"
+                  class="collapseTreeNode"
+                  @click="collapseAllNodes()"
+          ><span class="collapseIcon"></span>
+          </el-button>
+        </div>
+      </el-col>
+    </el-row>
     <div class="tree-option" style="height: calc(100% - 70px)">
       <!-- :default-expand-all="true" 展开全部节点 -->
-      <div class="controlTreeNode">
-        <el-button
-                title="展开全部节点"
-                type="text"
-                size="mini"
-                class="expandTreeNode"
-                @click="expandAllNodes()"
-        ><span class="expandIcon"></span>
-        </el-button>
-        <el-button
-                title="收起全部节点"
-                type="text"
-                size="mini"
-                class="collapseTreeNode"
-                @click="collapseAllNodes()"
-        ><span class="collapseIcon"></span>
-        </el-button>
-      </div>
       <MyElTree
         ref="tree1"
         v-loading="treeLoading"
@@ -317,22 +323,22 @@ export default {
   padding-right: 100px;
 }
 .controlTreeNode{
-  position: absolute;
-  background: #F8F8F8;
+  width: 100%;
+  height: 36px;
+  background: #F4F5FD;
 }
 .expandTreeNode{
-  position: absolute;
+  position: relative;
   border: 1px #656565;
-  top: -46px;
-  left: 201px;
+  top: 2px;
+  left: 5px;
   height: 25px;
   width: 25px;
 }
 .collapseTreeNode{
-  position: absolute;
+  position: relative;
   border: 1px #656565;
-  top: -46px;
-  left: 220px;
+  top: 2px;
   height: 25px;
   width: 25px;
 }
