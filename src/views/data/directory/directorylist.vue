@@ -817,13 +817,14 @@ export default {
       console.log(this.currTreeNode);
       console.log("**************currTreeNode");
       var type = this.currTreeNode.type;
+      var personcode = '' + this.$store.getters.personcode
       // var accessType = this.currTreeNode.extMap.accessType;
       // 个人空间，判断根节点有没有sceneInstUuid
       //在分享数据、模型结果、图形化临时结果文件夹（"shareFolder","modelFolder","graphFolder"）禁用新增表，导入表，新增文件夹操作
       var id = this.currTreeNode.id;
       this.disAddDir = type === "folder" &&  id != "shareFolder" && id != "modelFolder" && id != "graphFolder" && id != 'ocrFolder' ? false : true;
-      this.disImportTable = type === "folder" &&  id != "shareFolder" && id != "modelFolder" && id != "graphFolder" && id != 'ocrFolder' ? false : true;
-      this.disAddTable = type === "folder" &&  id != "shareFolder" && id != "modelFolder" && id != "graphFolder" && id != 'ocrFolder' ? false : true;
+      this.disImportTable = type === "folder" &&  id != "shareFolder" && id != "modelFolder" && id != "graphFolder" && id != 'ocrFolder' && id != personcode ? false : true;
+      this.disAddTable = type === "folder" &&  id != "shareFolder" && id != "modelFolder" && id != "graphFolder" && id != 'ocrFolder' && id != personcode ? false : true;
       this.disCopyTable =  this.selections.length == 1 ? false : true;
       this.disDeleteTable = this.selections.length > 0 ? this.disDeleteTable : true;
       this.disEditTable = this.selections.length == 1 ? this.disEditTable : true;
