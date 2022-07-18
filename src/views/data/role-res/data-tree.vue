@@ -331,7 +331,7 @@ export default {
   position: relative;
   border: 1px #656565;
   top: 2px;
-  left: 5px;
+  left: 10px;
   height: 25px;
   width: 25px;
 }
@@ -339,6 +339,7 @@ export default {
   position: relative;
   border: 1px #656565;
   top: 2px;
+  left: 5px;
   height: 25px;
   width: 25px;
 }
