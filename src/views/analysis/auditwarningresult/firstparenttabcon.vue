@@ -209,12 +209,29 @@
               </el-popover>
             </template>
           </el-table-column>
-      <el-table-column
-        label="运行参数"
-        prop="settingInfo"
-        width="200px"
-        :formatter="settingInfoParamsArrFormatter"
-      />
+        <el-table-column
+                label="运行参数"
+                prop="settingInfo"
+                width="200px"
+        >
+            <template slot-scope="scope">
+                <el-popover trigger="hover" placement="top" width="500" v-if="(JSON.parse(scope.row.settingInfo).paramsArr!== undefined && JSON.parse(scope.row.settingInfo).paramsArr!== null && JSON.parse(scope.row.settingInfo).paramsArr.length>0)">
+                    <el-row  v-for="item in JSON.parse(scope.row.settingInfo).paramsArr">
+                        <el-col :span="10">
+                            <label>
+                                {{item.name}}
+                            </label>
+                        </el-col>
+                        <el-col :span="10">
+                            {{item.paramValue}}
+                        </el-col>
+                    </el-row>
+                    <div slot="reference" class="name-wrapper">
+                        <el-link  type="primary" @click="selectParam(scope.row)">查看参数</el-link>
+                    </div>
+                </el-popover>
+            </template>
+        </el-table-column>
       <el-table-column
         label="运行信息"
         prop="runMessage"
@@ -236,6 +253,25 @@
       />
     </el-table>
    </el-main>
+         <el-dialog
+                 v-if="paramInfoDialog"
+                 :visible.sync="paramInfoDialog"
+                 title="参数信息"
+                 width="50%"
+         >
+             <div disabled  style="min-height: 200px; padding: 10px" >
+                 <el-row  v-for="item in paramsArr">
+                     <el-col :span="10">
+                         <label>
+                             {{item.name}}:
+                         </label>
+                     </el-col>
+                     <el-col :span="10">
+                         {{item.paramValue}}
+                     </el-col>
+                 </el-row>
+             </div>
+         </el-dialog>
     <el-dialog
           title="请选择要分享的人员"
           :visible.sync="resultShareDialogIsSee"
@@ -405,6 +441,8 @@ export default {
       resultShareDialogIsSee: false, //点击模型结果关联按钮控制人员dialog显示
       warringResultType:1, //存储预警结果的类型
       projectDialogIsSee: false, //关联项目dialog是否可见
+      paramsArr: [], // 模型参数
+      paramInfoDialog: false, // 参数dialog是否可见
     };
   },
   created() {
@@ -415,6 +453,15 @@ export default {
     this.getLikeList(query)
   },
   methods: {
+      /**
+       * 查看参数
+       * @param row 查看的sql行
+       * @returns {string}
+       */
+      selectParam(row) {
+          this.paramsArr = JSON.parse(row.settingInfo).paramsArr;
+          this.paramInfoDialog = true;
+      },
     determineProject(){
       var projects = this.$refs.userproject.getSelectValue();
 
