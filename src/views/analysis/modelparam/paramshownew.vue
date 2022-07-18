@@ -120,7 +120,10 @@ data(){
       // key值刷新页面
       this.refresh = !this.refresh
       this.$nextTick(() => {
-        this.rowDrop();
+        // 表格加载完成执行拖拽事件
+        if (this.$refs.dragTable) {
+          this.rowDrop();
+        }
       })
     },
     getParamsSetting(){

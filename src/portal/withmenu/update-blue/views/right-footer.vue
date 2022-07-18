@@ -10,7 +10,7 @@
         @click="select(item)"
         @contextmenu.prevent="contextmenu(item,$event,index)"
       >
-        <span class="name">{{ item.name }}</span>
+        <span class="name" :title="item.name">{{ item.name }}</span>
         <span class="close" @click.stop.prevent="close(item)">x</span>
       </div>
       <div v-if="isShowPopover" class="popover" :style="computedStyle">
@@ -160,6 +160,10 @@ export default {
     .name {
       display: inline-block;
       margin-right: 6px;
+      max-width: 70px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .close{
       display: inline-block;

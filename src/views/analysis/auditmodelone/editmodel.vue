@@ -1136,8 +1136,21 @@ export default {
       }
       return returnObj
     },
-    closeWinfrom() {
+    closeWinfrom(modelObj, type) {
       this.$router.push({ path: "/analysis/auditmodel" })
+      this.$store.commit("aceState/setRightFooterTags", {
+        type: "close",
+        val: {
+          name: type == 'edit' ? modelObj.modelName : '新增模型',
+        },
+      });
+      this.$store.commit("aceState/setRightFooterTags", {
+        type: "active",
+        val: {
+          name: '审计模型',
+          path: '/analysis/auditmodel',
+        },
+      });
     },
     /**
      * 转换列对象
@@ -1385,7 +1398,7 @@ export default {
                 duration: 2000,
                 position: 'bottom-right'
               });
-              _this.closeWinfrom()
+              _this.closeWinfrom(modelObj, 'add')
               _this.saveLoading = false;
               _this.editorModelLoading = false;
             } else {
@@ -1405,7 +1418,7 @@ export default {
                 duration: 2000,
                 position: 'bottom-right'
               });
-              _this.closeWinfrom()
+              _this.closeWinfrom(modelObj, 'edit')
               _this.saveLoading = false;
               _this.editorModelLoading = false;
             } else {

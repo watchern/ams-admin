@@ -2116,13 +2116,12 @@ export function initSetting() {
               //   })
               // }
               // 把所有参数的moduleParamId存起来，以便后续排序
-              settingVue.setParamArrIdArr.push(val.setParamObj.copyParamId) 
+              settingVue.setParamArrIdArr.push(val.setParamObj.sortId)
               settingVue.setParamArr.push(val.setParamObj)
             });
             settingVue.$nextTick(() => {
               settingVue.rowDrop();
               load.destroy()
-              console.log('load关闭')
             })
            
         });

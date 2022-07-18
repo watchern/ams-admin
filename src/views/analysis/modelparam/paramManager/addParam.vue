@@ -802,7 +802,7 @@ export default {
           url:
             "/paramController/getSqlCols",
           method: "post",
-          data: {sql: sql}
+          params: {sql: sql}
         }).then((result) => {
           this.relationFiledoptions = result.data;
         });
@@ -894,7 +894,7 @@ export default {
         baseURL: "/analysis",
         url: "/paramController/getSqlCols",
         method: "post",
-        data: {
+        params: {
           sql: this.checktreenode.extMap.OPTIONSSQL
         }
       }).then((result) => {
