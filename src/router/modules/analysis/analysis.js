@@ -84,7 +84,7 @@ const analysisRouter = {
       // },
     },
     {
-      path: 'editormodelnew/:id',
+      path: 'editormodelnew',
       name: '模型编(新)',
       component: () => import('@/views/analysis/auditmodelone/editmodel'),
       meta: {

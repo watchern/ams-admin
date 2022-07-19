@@ -1305,17 +1305,20 @@ export default {
         };
       }
       sessionStorage.setItem("operationObj", JSON.stringify(operationObj));
-      this.$router.push({
-        path:  `/analysis/editormodelnew/add?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`
+        this.$router.push({
+        path:  `/analysis/editormodelnew?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`
       });
-      this.$store.commit("aceState/setRightFooterTags", {
-        type: "active",
-        val: {
-          name: "新增模型",
-          path:
-            "/analysis/editormodelnew/add?dataUserId=" + this.dataUserId + "&sceneCode=" + this.sceneCode,
-        },
-      });
+      // this.$router.push({
+      //   path:  `/analysis/editormodelnew/add?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`
+      // });
+      // this.$store.commit("aceState/setRightFooterTags", {
+      //   type: "active",
+      //   val: {
+      //     name: "新增模型",
+      //     path:
+      //       "/analysis/editormodelnew/add?dataUserId=" + this.dataUserId + "&sceneCode=" + this.sceneCode,
+      //   },
+      // });
     },
     copyModel(){
       var selectObj = this.$refs.modelListTable.selection;
@@ -1410,19 +1413,22 @@ export default {
           };
           sessionStorage.setItem("operationObj", JSON.stringify(operationObj));
           this.$router.push({
-            path:  `/analysis/editormodelnew/${selectObj[0].modelUuid}?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`
+            path:  `/analysis/editormodelnew?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`
           });
-          this.$store.commit("aceState/setRightFooterTags", {
-            type: "active",
-            val: {
-              name: selectObj[0].modelName,
-              path:
-                "/analysis/editormodelnew/"+ selectObj[0].modelUuid +"?dataUserId=" +
-                this.dataUserId +
-                "&sceneCode=" +
-                this.sceneCode,
-            },
-          });
+          // this.$router.push({
+          //   path:  `/analysis/editormodelnew/${selectObj[0].modelUuid}?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`
+          // });
+          // this.$store.commit("aceState/setRightFooterTags", {
+          //   type: "active",
+          //   val: {
+          //     name: selectObj[0].modelName,
+          //     path:
+          //       "/analysis/editormodelnew/"+ selectObj[0].modelUuid +"?dataUserId=" +
+          //       this.dataUserId +
+          //       "&sceneCode=" +
+          //       this.sceneCode,
+          //   },
+          // });
         } else {
           this.$message({ type: "error", message: "修改失败" });
         }
@@ -1454,14 +1460,25 @@ export default {
           this.$store.commit("aceState/setRightFooterTags", {
             type: "active",
             val: {
-              name: selectObj[0].modelName,
+              name: '修改模型',
               path:
-                "/analysis/editormodelnew/"+selectObj[0].modelUuid+"?dataUserId=" +
+                "/analysis/editormodelnew?dataUserId=" +
                 this.dataUserId +
                 "&sceneCode=" +
                 this.sceneCode,
             },
           });
+          // this.$store.commit("aceState/setRightFooterTags", {
+          //   type: "active",
+          //   val: {
+          //     name: selectObj[0].modelName,
+          //     path:
+          //       "/analysis/editormodelnew/"+selectObj[0].modelUuid+"?dataUserId=" +
+          //       this.dataUserId +
+          //       "&sceneCode=" +
+          //       this.sceneCode,
+          //   },
+          // });
         } else {
           this.$message({ type: "error", message: "修改失败" });
         }
@@ -2292,7 +2309,8 @@ export default {
             formName: result.data.modelName + "详细",
           };
           sessionStorage.setItem("operationObj", JSON.stringify(operationObj));
-          this.$router.push(`/analysis/editormodelnew/${modelUuid}`)
+          this.$router.push(`/analysis/editormodelnew`)
+          // this.$router.push(`/analysis/editormodelnew/${modelUuid}`)
           // this.$store.commit("aceState/setRightFooterTags", {
           //   type: "active",
           //   val: {

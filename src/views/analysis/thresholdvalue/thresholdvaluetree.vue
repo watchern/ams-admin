@@ -5,6 +5,7 @@
       v-model="filterText"
       placeholder="输入关键字进行过滤"
       class="tree-search"
+      @click.stop.native
     />
     <MyElTree
       ref="tree"
