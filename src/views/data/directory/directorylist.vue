@@ -46,12 +46,13 @@
           :disabled="disAddTable"
           @click="uploadTable"
         />
-        <el-button
+        <!--   新增文件夹     -->
+        <!--<el-button
           type="primary"
           class="oper-btn add-directory btn-width-max"
           :disabled="disAddDir"
           @click="createFolder"
-        />
+        />-->
         <el-button
           type="primary"
           class="oper-btn edit"
@@ -197,12 +198,13 @@
     >
       <dataTree
         style="overflow: auto; height: 62vh"
-        v-if="personcode !== ''"
+        v-if="personcode !== '' && moveTreeVisible"
         ref="dataTree"
         :data-user-id="personcode"
         :scene-code="currentSceneUuid"
         tree-type="move"
         @node-click="nodeclick"
+        @handle-check="handleCheck"
       />
       <span slot="footer">
         <el-button @click="moveTreeVisible = false">取消</el-button>
@@ -340,7 +342,7 @@
         </el-col>
       </el-row>
       <span slot="footer">
-        <el-button v-if="uploadStep === 1" type="primary" @click="nextImport"
+        <el-button v-if="uploadStep === 1" :disabled="clickNextImport" type="primary" @click="nextImport"
           >下一步</el-button
         >
         <el-button v-if="uploadStep === 2" type="primary" @click="importTable"
@@ -624,8 +626,8 @@ export default {
       clickFullPath: [],
       allList: [],
       selections: [],
-      // 要移动的数据集合
-      moveSelect: [],
+      // 要移动到的文件夹
+      moveSelect: null,
       resourceForm: {
         displayTbName:null,
         folderUuid: null,
@@ -726,7 +728,9 @@ export default {
       webSocketCopy: null,
       //导入表websocket对象
       webSocketImport: null,
-      onlyImport:false
+      onlyImport:false,
+      clickNextImport: false,
+      personalTitle: '审计人员场景'
     };
   },
   created() {
@@ -784,12 +788,14 @@ export default {
             var accessType = item.extMap.accessType;
             // 判断是否拥有预览权限
             if (!this.disPreviewData && accessType.indexOf(this.CommonUtil.DataPrivAccessType.FETCH_TABLE_DATA.value) < 0) {
-              this.disPreviewData = false
+              this.disPreviewData = true
             }
-            var paths = item.path.split("/");
-            var isPersonalSpace = paths[0].indexOf("场景") > -1;
-            // 判断 数据权限
-            if (accessType.indexOf(this.CommonUtil.DataPrivAccessType.SAVE_TO_FOLDER.value) > 0) {
+            // 之前没有考虑path为空的情况，修改日期2022-5-31
+            var paths = this.currTreeNode.path != null ? this.currTreeNode.path.split("/") : [''];
+            // 个人空间的标识，若个人空间的标识为场景，请替换关键字
+            var isPersonalSpace = paths[0].indexOf(this.personalTitle) > -1;
+            // 判断 数据权限，不存在某个权限禁用
+            if (accessType.indexOf(this.CommonUtil.DataPrivAccessType.SAVE_TO_FOLDER.value) < 0) {
               this.disDeleteTable = true
               this.disEditTable = true
               this.disLinkData = true
@@ -798,7 +804,7 @@ export default {
               if (!this.disShareTable && !isPersonalSpace) {
                 this.disShareTable = true
               }
-            } else {
+            /*else {
               if (!isPersonalSpace) {
                 this.disDeleteTable = true
                 this.disEditTable = true
@@ -807,6 +813,23 @@ export default {
                 this.disRenameTable = true
                 this.disShareTable = true
               }
+            }*/
+            // 个人空间模型结果和分享数据按钮操作禁用
+            if (
+                    item.pid == 'shareFolder' ||
+                    item.pid == 'modelFolder' ||
+                    item.pid == 'graphFolder' ||
+                    item.pid == 'ocrFolder'
+            ) {
+              this.disDeleteTable = true
+              // this.disCopyTable = true
+              this.disEditTable = true
+              this.disLinkData = true
+              // this.disMoveTable = true
+              this.disRenameTable = true
+              // 个人空间可分享
+              this.disShareTable = false
+            }
             }
             }
           }
@@ -898,6 +921,10 @@ export default {
       this.uploadtemp.tableFileName = data
     },
     formatTableType(row) {
+      // 视图类型展示
+      if (row.extMap.tblType == 'V') {
+        return '视图'
+      }
       if (row.type === "") {
         return "";
       }
@@ -916,17 +943,17 @@ export default {
             });
             flag = false;
           }
-          var foldObj = this.allList.filter((obj) => {
-            return obj.label === r.label;
-          });
-          var objTotal = getArrLength(foldObj[0].children);
+          // var foldObj = this.allList.filter((obj) => {
+          //   return obj.label === r.label
+          // })
+          var objTotal = getArrLength(r.children)
           if (objTotal > 0) {
             this.$message({
               type: "info",
               message:
-                "删除失败！文件夹：" + foldObj[0].label + "不为空无法删除",
-            });
-            flag = false;
+                '删除失败！文件夹：' + r.label + '不为空无法删除',
+            })
+            flag = false
           }
         }
         ids.push(r);
@@ -946,6 +973,10 @@ export default {
               duration: 2000,
               position: "bottom-right",
             });
+            // 单选
+            if (this.selections.length == 1 && this.currTreeNode.type == 'table') {
+              this.temp = []
+            }
             // this.$emit("remove", this.selections, this.clickNode);
             this.$emit("refresh", this.clickId);
           });
@@ -954,6 +985,14 @@ export default {
     },
     // 复制资源(只允许复制数据表，不允许复制文件夹)
     copyResource() {
+      // 视图不允许复制操作
+      if (this.selections[0].extMap.tblType == 'V') {
+        this.$message({
+          type: 'info',
+          message: '复制失败！视图不支持复制操作',
+        })
+        return
+      }
       if (this.selections[0].type === "folder") {
         this.$message({ type: "info", message: "所选资源为文件夹而非数据表!" });
         return;
@@ -1026,6 +1065,16 @@ export default {
     },
     // 执行下一步 读取文件列信息
     nextImport() {
+      // 判断文件是否上传
+      if (typeof this.uploadtemp.tableFileName == 'undefined' || this.uploadtemp.tableFileName == '') {
+        this.$message({
+          type: 'error',
+          message: '请在文件上传成功后进行下一步操作！',
+        })
+        this.clickNextImport = false
+        return
+      }
+      this.clickNextImport = true;
       judgeName(this.uploadtemp.displayTbName).then((resf) => {
         if (resf.code == 0) {
           this.uploadtemp.folderUuid = this.currTreeNode.id;
@@ -1034,6 +1083,7 @@ export default {
               getSqlType().then((resp) => {
                 this.options = resp.data;
                 nextUpload(this.uploadtemp).then((res) => {
+                  if(res.code == 0) {
                   this.uploadStep = 2;
                   this.uploadtempInfo = res.data;
                   if (this.uploadtempInfo.colMetas.length >0 ){
@@ -1042,6 +1092,14 @@ export default {
                       this.uploadtempInfo.colMetas[i].dataLengthText = 255;
                       this.changeDataType(this.uploadtempInfo.colMetas[i])
                     }
+                  }
+                  }else{
+                    this.$message({
+                      type: "error",
+                      message: "读取数据列头发生异常，请检查导入数据！",
+                    });
+                    this.clickNextImport = false;
+                    return;
                   }
                 });
               });
@@ -1052,6 +1110,7 @@ export default {
             type: "error",
             message: resf.msg,
           });
+          this.clickNextImport = false;
           return;
         }
       });
@@ -1081,53 +1140,85 @@ export default {
       importTable(this.uploadtempInfo).then((res) => {
         this.dialoading = false;
         this.uploadVisible = false;
-        if (res.data.resCode === true) {
-          var childData = {
-            id: res.data.importTable.tableMetaUuid,
-            label: res.data.importTable.displayTbName,
-            pid: res.data.importTable.folderUuid,
-            type: "table",
-            extMap: {
-              accessType: ["FETCH_TABLE_DATA", "BASIC_PRIV"],
-              createTime: res.data.importTable.createTime,
-              tableName: res.data.importTable.displayTbName,
-              tbSizeByte: 0,
-              tblType: "T",
-            },
-          };
-          // 添加节点
-          this.$emit("append-node", childData, this.currTreeNode);
-          this.$emit("refresh", this.clickId);
+        if (res.data.resCode === true || res.data.isSuccess == true) {
+          // var childData = {
+          //   id: res.data.importTable.tableMetaUuid,
+          //   label: res.data.importTable.displayTbName,
+          //   pid: res.data.importTable.folderUuid,
+          //   type: "table",
+          //   extMap: {
+          //     accessType: ["FETCH_TABLE_DATA", "BASIC_PRIV"],
+          //     createTime: res.data.importTable.createTime,
+          //     tableName: res.data.importTable.displayTbName,
+          //     tbSizeByte: 0,
+          //     tblType: "T",
+          //   },
+          // };
+          // // 添加节点
+          // this.$emit("append-node", childData, this.currTreeNode);
+          // this.$emit("refresh", this.clickId);
           this.$notify({
             title: "成功",
-            message: "表创建成功，正在导入中...",
+            message: "数据正在导入中...",
             type: "info",
             duration: 2000,
             position: "bottom-right",
           });
         } else {
+          // 数据格式校验保错信息
+          if(typeof res.data.errrMsg !== "undefined" || res.data.errrMsg != null) {
           this.$message({
-            type: "error",
-            message: "表创建失败",
-          });
+              type: 'error',
+              message: res.data.errrMsg,
+              duration: 2000,
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: '数据导入失败',
+            })
+          }
         }
       })
       let _this = this;
       this.webSocketImport.onmessage = function (event) {
         const res = JSON.parse(event.data);
+        var resMsg = _this.CommonUtil.isNotBlank(res.message) ? res.message : res.result;
         if (res.isSuccess === true) {
           _this.$notify({
             title: "成功",
-            message: res.result,
+            message: resMsg,
             type: "success",
             duration: 2000,
             position: "bottom-right",
           });
+          // 表导入成功同步列表和树
+          if ( typeof res.newTableMeta !== "undefined" && res.newTableMeta != null) {
+            const table = res.newTableMeta
+            var childData = {
+              id: table.tableMetaUuid,
+              label: table.displayTbName,
+              pid: table.folderUuid,
+              type: 'table',
+              extMap: {
+                accessType: ['FETCH_TABLE_DATA', 'BASIC_PRIV'],
+                createTime: table.createTime,
+                tableName: table.displayTbName,
+                tbSizeByte: 0,
+                tblType: 'T',
+              },
+            }
+            // 添加节点
+            _this.$emit('append-node', childData, _this.currTreeNode)
+            _this.$emit('refresh', _this.clickId)
+          }
         }else{
           _this.$message({
-            type: "error",
-            message: res.result,
-          });
+            type: 'error',
+            duration: 2000,
+            dangerouslyUseHTMLString: true,
+            message: '<div style="max-height: 150px;overflow: scroll">' + resMsg + '</div>'
+          })
         }
       };
       // 通信失败
@@ -1154,7 +1245,7 @@ export default {
     },
     // 不允许重命名系统文件夹
     renameResource() {
-      this.resourceForm.displayTbName = "";
+      this.resourceForm.displayTbName = this.selections[0].label
       if (this.selections[0].type === "folder") {
         if (this.selections[0].extMap.folderType === "virtual") {
           this.$message({
@@ -1172,17 +1263,36 @@ export default {
         this.folderFormVisible = true;
       }
     },
+    // 文件夹单选
+    handleCheck(data,check){
+      this.moveSelect = null
+      if (check) this.moveSelect = data
+    },
     // 移动资源
     nodeclick(data, node, tree) {
-      var pathArr = [];
-      var newNode = node.parent;
-      while (newNode.parent != null) {
-        pathArr.push(newNode.data.label);
-        if (newNode.parent != null) {
-          newNode = newNode.parent;
+      if (data.label == this.personalTitle && data.pid == 'ROOT' ) {
+        this.$message({
+          type: 'info',
+          message: this.personalTitle + '跟目录没有操作权限！',
+        })
+        return
         }
+      if (data.disable) {
+        this.$message({
+          type: 'info',
+          message: '该文件夹没有操作权限，请联系系统管理员！',
+        })
+        return
       }
-      this.moveSelect = data;
+      // var pathArr = [];
+      // var newNode = node.parent;
+      // while (newNode.parent != null) {
+      //   pathArr.push(newNode.data.label);
+      //   if (newNode.parent != null) {
+      //     newNode = newNode.parent;
+      //   }
+      // }
+      // this.moveSelect = data;
       // this.$emit("nodeclick",data, node, tree)
     },
     movePath() {
@@ -1200,6 +1310,13 @@ export default {
       this.moveTreeVisible = true;
     },
     movePathSave() {
+      if (this.moveSelect == null) {
+        this.$message({
+          type: 'info',
+          message: '移动失败!请先选择文件夹',
+        })
+        return
+      }
       var ids = [];
       this.selections.forEach((r, i) => {
         r.pid = this.moveSelect.id;
@@ -1261,6 +1378,15 @@ export default {
     },
     // 新增表
     addTable() {
+      // 个人空间根目录禁止新增和导入操作,'ROOT'和'个人空间'是数据中写死的，若修改pid标识和个人空间名称需修改此处
+      var addFlag = this.currTreeNode.pid == 'ROOT' && this.currTreeNode.title == this.personalTitle
+      if(addFlag) {
+        this.$message({
+          type: 'info',
+          message: this.personalTitle + '需新建目录后才能新增表',
+        })
+        return
+      }
       this.openType = "addTable";
       this.tableColumnVisible = true;
       this.tabShow = "column";
@@ -1268,13 +1394,31 @@ export default {
     },
     // 上传表
     uploadTable() {
+      // 个人空间根目录禁止新增和导入操作,'ROOT'和'个人空间'是数据中写死的，若修改pid标识和个人空间名称需修改此处
+      var addFlag = this.currTreeNode.pid == 'ROOT' && this.currTreeNode.title == this.personalTitle
+      if(addFlag) {
+        this.$message({
+          type: 'info',
+          message: this.personalTitle + '需新建目录后才能导入表',
+        })
+        return
+      }
       this.uploadtemp = {};
       this.uploadtempInfo = [];
       this.uploadStep = 1;
       this.uploadVisible = true;
+      this.clickNextImport = false;
     },
     // 表结构维护
     updateTable() {
+      // 视图类型不支持编辑展示
+      if (this.selections[0].extMap.tblType == 'V') {
+        this.$message({
+          type: 'info',
+          message: '编辑失败！视图不支持编辑操作',
+        })
+        return
+      }
       if (this.selections[0].type === "folder") {
         this.$message({ type: "info", message: "编辑失败!编辑文件夹操作不允许"});
         return;
@@ -1386,6 +1530,28 @@ export default {
       this.resourceForm.resourceName = "";
       this.folderFormVisible = true;
     },
+    // 左侧树创建文件夹
+    createFolderByTree(node) {
+      this.clickNode = node
+      this.currTreeNode = node.data
+      this.createFolder()
+    },
+    // 左侧树重命名
+    renameResourceByTree(node){
+      this.clickNode = node
+      this.currTreeNode = node.data
+      this.selections = []
+      this.selections[0] = node.data
+      this.renameResource()
+    },
+    // 左侧树删除文件夹
+    delDataByTree(node) {
+      this.clickId = node.data.id
+      this.currTreeNode = node.data
+      this.selections = []
+      this.selections[0] = node.data
+      this.delData()
+    },
     // 保存新建文件夹
     createFolderSave() {
       if (
@@ -1401,11 +1567,13 @@ export default {
         });
         return;
       }
+      this.resourceForm.fullPath = this.clickFullPath.reverse().join("/");
       if ( typeof this.currTreeNode.extMap !== 'undefined' && typeof this.currTreeNode.extMap.sceneInstUuid !== 'undefined') {
         this.resourceForm.sceneInstUuid = this.currTreeNode.extMap.sceneInstUuid;
+      } else {
+        this.resourceForm.fullPath = "数据集/" + this.resourceForm.fullPath
       }
       this.resourceForm.parentFolderUuid = this.currTreeNode.id;
-      this.resourceForm.fullPath = this.clickFullPath.reverse().join("/");
       this.resourceForm.folderName = this.resourceForm.resourceName;
       this.resourceForm.createUserUuid = this.$store.state.user.code;
       if(this.resourceForm.folderName == null || this.resourceForm.folderName.trim().length == 0){
@@ -1450,7 +1618,7 @@ export default {
     preview() {
       this.loading = true;
       preview(this.selections[0]).then((res) => {
-        if (res.data.code === 200) {
+        if (res.data.code === '200' || res.data.code === 200 || res.data.isSuccess == true) {
           this.executeSQLList = res.data.executeTask.executeSQL;
           this.arrSql = res.data;
           this.previewVisible = true;

@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container" v-loading="isShowLoading" style="height:62vh; overflow:auto;">
+  <div class="" v-loading="isShowLoading" style="height:62vh; overflow:auto;">
     <el-dialog title="选择模型列表" :close-on-click-modal="false" :fullscreen="true" v-if='selectModelVisible' :visible.sync="selectModelVisible" :append-to-body="true" width="80%">
       <SelectModels ref="selectModels" :isAuditWarning="true" power="warning" style="height: calc(100vh - 109px)"/>
       <div slot="footer" class="dialog-footer">
@@ -163,8 +163,8 @@
                 :picker-options="executeTimeOptions">
               </el-date-picker>
               <!--<el-button type="primary" v-if="index==0" @click="addExecuteTime">添加</el-button>-->
-              <el-link type="primary" v-if="index==0" @click="addExecuteTime">添加&nbsp;</el-link>
-              <el-link type="primary" v-if="temp.manyTimesExecuteTime.length > 1" @click="removeExecuteTime(domain)">删除</el-link>
+              <el-link type="primary" v-if="index==0 && !option == 'detail'" @click="addExecuteTime">添加&nbsp;</el-link>
+              <el-link type="primary" v-if="temp.manyTimesExecuteTime.length > 1 && !option == 'detail'" @click="removeExecuteTime(domain)">删除</el-link>
               <!--<el-button type="primary" v-if="temp.manyTimesExecuteTime.length > 1" @click="removeExecuteTime(domain)">删除</el-button>-->
             </el-form-item>
           </el-form-item>
@@ -257,6 +257,7 @@
     </el-tabs>
     <el-dialog
       title="选择模型结果保存路径"
+      v-if="modelResultSavePathDialog"
       :visible.sync="modelResultSavePathDialog"
       width="30%"
       :append-to-body="true"
@@ -267,9 +268,10 @@
         :scene-code="sceneCode"
         :tree-type="treeType"
         @node-click="handleClick"
+        @handle-check="handleCheck"
       />
       <span slot="footer" class="dialog-footer">
-        <el-button @click="modelResultSavePathDialog = false">取 消</el-button>
+        <el-button @click="cancelSave">取 消</el-button>
         <el-button type="primary" @click="modelResultSavePathDetermine"
           >确 定</el-button
         >
@@ -493,7 +495,14 @@ export default {
       sceneCode: "auditor",
       treeType: "save",
       paramArr:[],
-      paramSql:[]
+      paramSql:[],
+      personalTitle: '审计人员场景',
+      // 暂存结果保存路径
+      savePath: {
+        nodeType : null,
+        tempId : null,
+        tempPath : null,
+      }
     }
   },
   created() {
@@ -970,26 +979,64 @@ export default {
       return value
     },
     handleClick(data, node, tree) {
-      this.tempPath = data.label;
-      this.tempId = data.id;
-      this.auditWarningSave.locationUuid = this.tempId
-      this.auditWarningSave.locationName = this.tempPath
-      this.nodeType = data.type;
+      // this.tempPath = data.label;
+      // this.tempId = data.id;
+      // this.auditWarningSave.locationUuid = this.tempId
+      // this.auditWarningSave.locationName = this.tempPath
+      // this.nodeType = data.type;
+      if (data.label == this.personalTitle && data.pid == 'ROOT' ) {
+        this.$message({
+          type: 'info',
+          message: this.personalTitle + '跟目录没有操作权限！',
+        })
+        return
+      }
+      if (data.disable) {
+        this.$message({
+          type: 'info',
+          message: '该文件夹没有操作权限，请联系系统管理员！',
+        })
+        return
+      }
     },
-
+    handleCheck(data, check){
+      this.savePath = {
+        nodeType : null,
+        tempId : null,
+        tempPath : null,
+      }
+      if (check) {
+        this.savePath.nodeType = data.type;
+        this.savePath.tempId = data.id;
+        this.savePath.tempPath = data.label;
+      }
+    },
+    cancelSave(){
+      this.modelResultSavePathDialog = false
+      this.savePath = {
+        nodeType : null,
+        tempId : null,
+        tempPath : null,
+      }
+    },
     modelResultSavePathDetermine() {
-      if (this.nodeType == "folder") {
+      if (this.savePath.nodeType == "folder") {
+        this.tempPath = this.savePath.tempPath;
+        this.tempId = this.savePath.tempId;
+        this.auditWarningSave.locationUuid = this.tempId
+        this.auditWarningSave.locationName = this.tempPath
+        this.nodeType = this.savePath.nodeType;
         // this.path = "当前执行sql保存路径:" + this.tempPath;
         // this.modelResultSavePathId = this.tempId;
         this.modelResultSavePathDialog = false;
-      } else if (this.nodeType == "") {
+      } else if (this.savePath.nodeType == "") {
         this.$message({
           message: "请选择路径",
           type: "warning",
         });
       } else {
         this.$message({
-          message: "只能选择文件夹",
+          message: "请选择文件夹",
           type: "warning",
         });
       }

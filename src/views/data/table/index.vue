@@ -433,12 +433,13 @@ export default {
       this.dialogStatus = "update";
       this.folderForm.folderUuid = data.id;
       this.folderForm.folderName = data.label;
-      let fullPath = [];
+      // 修改为使用后台拼接，原因path.label取得是修改之前的label
+      // let fullPath = [];
       // 拼接全路径（从ROOT节点开始一直到自己）
-      this.$refs.tree2.getNodePath(data).forEach((path) => {
-        fullPath.push(path.label);
-      });
-      this.folderForm.fullPath = fullPath.join("/");
+      // this.$refs.tree2.getNodePath(data).forEach((path) => {
+      //   fullPath.push(path.label);
+      // });
+      // this.folderForm.fullPath = fullPath.join("/");
       this.folderFormVisible = true;
     },
     handleRemove(node, data) {

@@ -4,32 +4,32 @@
       <el-col :span="18">
         <el-input v-model="filterText1" placeholder="输入关键字进行过滤"/>
       </el-col>
-      <el-col :span="6">
-        <div class="controlTreeNode">
-          <el-button
-                  title="展开全部节点"
-                  type="text"
-                  size="mini"
-                  class="expandTreeNode"
-                  @click="expandAllNodes()"
-          ><span class="expandIcon"></span>
-          </el-button>
-          <el-button
-                  title="收起全部节点"
-                  type="text"
-                  size="mini"
-                  class="collapseTreeNode"
-                  @click="collapseAllNodes()"
-          ><span class="collapseIcon"></span>
-          </el-button>
-        </div>
-      </el-col>
+<!--      <el-col :span="6">-->
+<!--        <div class="controlTreeNode">-->
+<!--          <el-button-->
+<!--                  title="展开全部节点"-->
+<!--                  type="text"-->
+<!--                  size="mini"-->
+<!--                  class="expandTreeNode"-->
+<!--                  @click="expandAllNodes()"-->
+<!--          ><span class="expandIcon"></span>-->
+<!--          </el-button>-->
+<!--          <el-button-->
+<!--                  title="收起全部节点"-->
+<!--                  type="text"-->
+<!--                  size="mini"-->
+<!--                  class="collapseTreeNode"-->
+<!--                  @click="collapseAllNodes()"-->
+<!--          ><span class="collapseIcon"></span>-->
+<!--          </el-button>-->
+<!--        </div>-->
+<!--      </el-col>-->
     </el-row>
-    <div class="tree-option" style="height: calc(100% - 70px)">
+    <div class="tree-option" style="height: calc(100% - 70px)"
+         v-loading="treeLoading">
       <!-- :default-expand-all="true" 展开全部节点 -->
       <MyElTree
         ref="tree1"
-        v-loading="treeLoading"
         :props="props"
         class="filter-tree"
         :highlight-current="true"
@@ -41,6 +41,10 @@
         :load="loadNode"
         :expand-on-click-node="false"
         lazy
+        :show-checkbox = "treeType == 'move' || treeType == 'save'"
+        @check="handleCheck"
+        :check-strictly="true"
+        :check-on-click-node="true"
       >
         <span slot-scope="{ node, data }" class="custom-tree-node">
           <i
@@ -105,6 +109,22 @@
             />
           </i>
           <span :title="data.title">{{ node.label }}</span>
+          <span style="margin-left: 10px" v-if="folderShow && node.data.type=='folder' && isRead(node)">
+            <!--添加： 根节点以及手工维护的节点-->
+            <el-button type="text" size="mini"  @click="handleCreateFolder(node)">
+              <i class="el-icon-circle-plus"
+              /></el-button>
+            <!--修改： 手工维护的节点，个人空间根目录名称不可编辑 -->
+            <el-button type="text" size="mini" @click="handleRenameResource(node)"
+                       v-if="!(node.data.pid == 'ROOT' && node.data.label == personalTitle)">
+              <i class="el-icon-edit" />
+            </el-button>
+            <!--删除： 手工维护的节点，个人空间根目录名称不可删除-->
+            <el-button  type="text" size="mini" @click="handleDelData(node)"
+                        v-if="!(node.data.pid == 'ROOT' && node.data.label == personalTitle)">
+              <i class="el-icon-delete" />
+            </el-button>
+          </span>
         </span>
       </MyElTree>
     </div>
@@ -135,6 +155,10 @@ export default {
       type: String,
       default: "common", // common:正常的权限树   save:用于保存数据的文件夹树
     },
+    folderShow: {
+      type: Boolean,
+      default: false // 左侧树操作按钮是否显示
+    },
   },
   data() {
     return {
@@ -143,6 +167,7 @@ export default {
       props: {
         label: "label",
         isLeaf: "leaf",
+        disabled: "disable"
       },
       tableIconPath: "../../images/ico/table_1.png",
       accessForm: {
@@ -157,7 +182,8 @@ export default {
       //需要打开的节点
       openlist: ["ROOT"],
       //暂存的节点的id
-      clickId:''
+      clickId:'',
+      personalTitle: '审计人员场景'
     };
   },
   computed: {},
@@ -199,6 +225,12 @@ export default {
     nodeClick(data, node, tree) {
       this.$emit("node-click", data, node, tree);
     },
+    handleCheck(data,checkIds) {
+      if (checkIds.checkedKeys.length > 0) {
+        this.$refs.tree1.setCheckedKeys([data.id]);
+      }
+      this.$emit("handle-check", data ,checkIds.checkedKeys.length > 0);
+    },
     nodeExpand() {},
     appendnode(childData, parentNode) {
       this.$refs.tree1.append(childData, parentNode);
@@ -239,6 +271,28 @@ export default {
       } else {
         // debugger;
       }
+    },
+    // 是否可读
+    isRead(node) {
+      if(node.data.extMap.accessType.indexOf(
+              this.CommonUtil.DataPrivAccessType.SAVE_TO_FOLDER.value,
+      ) >-1) {
+        if (node.data.id == 'modelFolder' || node.data.id == 'graphFolder' || node.data.id == 'shareFolder' || node.data.id == 'ocrFolder')  return false
+        return true
+      }
+      return false
+    },
+    // 新增文件夹
+    handleCreateFolder(node) {
+      this.$emit("create-folder", node);
+    },
+    // 重命名文件夹
+    handleRenameResource(node) {
+      this.$emit("rename-resource", node);
+    },
+    // 删除文件夹
+    handleDelData(node) {
+      this.$emit("del-data", node);
     },
     refresh(query) {
       this.treeLoading = true;
