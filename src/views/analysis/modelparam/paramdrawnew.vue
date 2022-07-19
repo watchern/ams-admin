@@ -329,6 +329,9 @@ export default {
         }
         this.paramInfoArr.push(paramInfoObj)
       }
+      for (let i = 0; i < this.paramInfoArr.length; i++){
+          this.changeparamdata(this.paramInfoArr[i],i)
+      }
       this.$nextTick(() => {
         // this.initParamInputAndSelect()
         this.loading.destroy()

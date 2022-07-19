@@ -2119,6 +2119,9 @@ export function initSetting() {
               settingVue.setParamArrIdArr.push(val.setParamObj.sortId)
               settingVue.setParamArr.push(val.setParamObj)
             });
+            for (let i = 0;i<settingVue.setParamArr.length;i++){
+              this.changeparamdata(settingVue.setParamArr[i],i)
+            }
             settingVue.$nextTick(() => {
               settingVue.rowDrop();
               load.destroy()
