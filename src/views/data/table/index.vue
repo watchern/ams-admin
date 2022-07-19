@@ -2,7 +2,31 @@
   <div class="page-container">
     <div style="display:flex;width:100%;">
       <div>
-        <el-input v-model="filterText2" placeholder="输入关键字进行过滤" />
+        <el-row width="100%" style="margin-bottom: 10px">
+          <el-col :span="18">
+            <el-input v-model="filterText2" placeholder="输入关键字进行过滤" />
+          </el-col>
+          <el-col :span="6">
+            <div class="controlTreeNode">
+              <el-button
+                      title="展开全部节点"
+                      type="text"
+                      size="mini"
+                      class="expandTreeNode"
+                      @click="expandAllNodes()"
+              ><span class="expandIcon"></span>
+              </el-button>
+              <el-button
+                      title="收起全部节点"
+                      type="text"
+                      size="mini"
+                      class="collapseTreeNode"
+                      @click="collapseAllNodes()"
+              ><span class="collapseIcon"></span>
+              </el-button>
+            </div>
+          </el-col>
+        </el-row>
         <el-link class="select-link" type="primary" @click="registTable"
           >注册资源</el-link
         >
@@ -176,6 +200,7 @@ export default {
   components: { MyElTree, tabledatatabs },
   data() {
     return {
+      ifExpandAll: false, // 是否展开所有树节点
       tabShow: "basicinfo",
       tableId: "",
       registTableFlag: false,
@@ -236,6 +261,25 @@ export default {
   },
   created() {},
   methods: {
+      expandAllNodes(){
+          this.ifExpandAll = true;
+          this.changeTreeNodeStatus(this.$refs.tree2.store.root)
+      },
+      collapseAllNodes(){
+          this.ifExpandAll = false;
+          this.changeTreeNodeStatus(this.$refs.tree2.store.root)
+      },
+      changeTreeNodeStatus (node) {
+          node.ifExpandAll = this.ifExpandAll
+          for (let i = 0; i < node.childNodes.length; i++) {
+              // 改变节点的自身expanded状态
+              node.childNodes[i].expanded = this.ifExpandAll
+              // 遍历子节点
+              if (node.childNodes[i].childNodes.length > 0) {
+                  this.changeTreeNodeStatus(node.childNodes[i])
+              }
+          }
+      },
     filterNode(value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
@@ -556,5 +600,46 @@ export default {
     background-image: url("../../../styles/icons/view.png");
     vertical-align: top;
     *vertical-align: middle;
+}
+.controlTreeNode{
+  width: 100%;
+  height: 36px;
+  background: #F4F5FD;
+}
+.expandTreeNode{
+  position: relative;
+  border: 1px #656565;
+  top: 2px;
+  left: 10px;
+  height: 25px;
+  width: 25px;
+}
+.collapseTreeNode{
+  position: relative;
+  border: 1px #656565;
+  top: 2px;
+  left: 5px;
+  height: 25px;
+  width: 25px;
+}
+.expandIcon{
+  position: absolute;
+  display: inline-block;
+  background-image: url("../../../styles/icons/expandicon.png");
+  height: 25px;
+  width: 25px;
+  background-size: 100%;
+  right: 0px;
+  top: 0px;
+}
+.collapseIcon{
+  position: absolute;
+  display: inline-block;
+  background-image: url("../../../styles/icons/collapseicon.png");
+  height: 25px;
+  width: 25px;
+  background-size: 100%;
+  right: 0px;
+  top: 0px;
 }
 </style>

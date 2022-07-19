@@ -97,21 +97,6 @@ export default {
   margin-top: 0 !important;
 
 }
-.tree >>> .controlTreeNode {
-  width: 100%;
-  height: 25px;
-  position: unset;
-  position: relative;
-}
-.tree >>> .controlTreeNode .expandTreeNode {
-  top: 0;
-  right: 20px;
-}
-.tree >>> .controlTreeNode .collapseTreeNode {
-  top: 0;
-  right: 36px;
-  left: unset;
-}
 .divContent {
   width: 83%;
 }
