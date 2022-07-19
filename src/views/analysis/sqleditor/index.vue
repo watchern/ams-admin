@@ -318,6 +318,7 @@
     </el-dialog>
     <el-dialog
       title="选择SQL结果保存路径"
+      v-if="modelResultSavePathDialog"
       :visible.sync="modelResultSavePathDialog"
       width="30%"
       :append-to-body="true"
@@ -328,9 +329,10 @@
         :tree-type="treeType"
         style="height: 500px; overflow-y: scroll"
         @node-click="handleClick"
+        @handle-check="handleCheck"
       />
       <span slot="footer" class="dialog-footer">
-        <el-button @click="modelResultSavePathDialog = false">取 消</el-button>
+        <el-button @click="cancelSave">取 消</el-button>
         <el-button type="primary" @click="modelResultSavePathDetermine"
           >确 定</el-button
         >
@@ -586,6 +588,7 @@ export default {
       },
       dialogStatus: "create",
       selectTreeNode: null,
+      savePath: null,
       openTypeOne: "showTable",
       selectTableRelInfoDialog: false,
       selectTableRelInfoTableId: "",
@@ -661,7 +664,8 @@ export default {
       sceneCode: "auditor",
       treeType: "save",
       pushUuid: "",
-      maintableindex:''
+      maintableindex:'',
+      personalTitle: '审计人员场景',
     };
   },
   watch: {
@@ -1441,15 +1445,50 @@ export default {
       maxOpenOne();
     },
     handleClick(data, node, tree) {
-      this.tempPath = data.label;
-      this.tempId = data.id;
-      this.nodeType = data.type;
+      // this.tempPath = data.label
+      // this.tempId = data.id
+      // this.nodeType = data.type
+      if (data.label == this.personalTitle && data.pid == 'ROOT' ) {
+        this.$message({
+          type: 'info',
+          message: this.personalTitle + '跟目录没有操作权限！',
+        })
+        return
+      }
+      if (data.disable) {
+        this.$message({
+          type: 'info',
+          message: '该文件夹没有操作权限，请联系系统管理员！',
+        })
+        return
+      }
+    },
+    handleCheck(data, check){
+      this.savePath = null
+      if (check) {
+        this.savePath = data
+      }
+    },
+    cancelSave(){
+      this.modelResultSavePathDialog = false
+      this.savePath == null
     },
     modelResultSavePathDetermine() {
-      if (this.nodeType == "folder") {
-        this.path = "当前执行SQL保存路径:" + this.tempPath;
-        this.modelResultSavePathId = this.tempId;
-        this.modelResultSavePathDialog = false;
+      if (this.savePath == null) {
+        this.$message({
+          type: 'info',
+          message: '请选择文件夹',
+        })
+        return
+      } else {
+        this.tempPath = this.savePath.label
+        this.tempId = this.savePath.id
+        this.nodeType = this.savePath.type
+      }
+      if (this.nodeType == 'folder') {
+        this.path = '当前执行SQL保存路径:' + this.tempPath
+        this.modelResultSavePathId = this.tempId
+        this.modelResultSavePathDialog = false
         // 选择完成之后更新数据库
         let data = {};
         if (this.defaultSqlLocation == null) {

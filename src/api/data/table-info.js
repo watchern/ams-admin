@@ -202,8 +202,12 @@ export function getResByRole(roleUuid) {
 export function getRoleCols(roleUuid, tableUuid) {
   return request({
     baseURL: baseURL,
-    url: `/${controller3}/getRoleCols/${roleUuid}/${tableUuid}`,
-    method: 'get'
+    url: `/${controller3}/getRoleCols`,
+    method: 'post',
+    data: {
+      roleUuid: roleUuid,
+      tableMetaUuid: tableUuid
+    }
   })
 }
 export function saveRoleTable(roleUuid, rfolders, rtables, rcols) {

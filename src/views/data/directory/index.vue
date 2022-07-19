@@ -13,7 +13,9 @@
           </el-select>
         </el-col>
       </el-row> -->
-      <dataTree v-if="isTreeShow" ref="dataTree" :data-user-id="directyDataUserId" :scene-code="directySceneCode" @node-click="nodeclick" />
+      <dataTree v-if="isTreeShow" ref="dataTree" :data-user-id="directyDataUserId" :scene-code="directySceneCode"
+                @node-click="nodeclick" :folder-show="true" @create-folder="createFolder" @rename-resource="renameResource"
+                @del-data="delData"/>
     </div>
     <div class="divContent">
       <BaseDirectoryList ref="listData" :data-user-id="directyDataUserId" :scene-code="directySceneCode" @append-node="appendnode" @remove="remove" @refresh="refresh" />
@@ -70,6 +72,18 @@ export default {
     },
     nodeclick(data, node, tree) {
       this.$refs.listData.getList(data, node, tree)
+    },
+    //创建文件夹
+    createFolder(node) {
+      this.$refs.listData.createFolderByTree(node)
+    },
+    // 重命名文件夹
+    renameResource(node) {
+      this.$refs.listData.renameResourceByTree(node)
+    },
+    // 删除文件夹
+    delData(node){
+      this.$refs.listData.delDataByTree(node)
     },
     appendnode(childData, parentNode) {
       this.$refs.dataTree.appendnode(childData, parentNode)

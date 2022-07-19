@@ -22,6 +22,7 @@
             :default-expanded-keys="['ROOT']"
             :highlight-current="true"
             :data="treeData1"
+            :check-strictly="true"
             node-key="id"
             :expand-on-click-node="false"
             :filter-node-method="filterNode"
@@ -65,6 +66,18 @@
                 v-else-if="data.type === 'column'"
                 class="el-icon-c-scale-to-original"
               />
+               <i  v-else-if="data.extMap.tblType == 'V'">
+                <img
+                  src="../../../assets/img/table_2.png"
+                  style="
+                    height: 16px;
+                    width: 16px;
+                    margin-right: 2px;
+                    vertical-align: top;
+                    *vertical-align: middle;
+                  "
+                />
+              </i>
               <i v-else>
                 <img
                   src="../../../assets/img/table_2.png"
@@ -90,7 +103,7 @@
               type="primary"
               icon="el-icon-arrow-right"
               circle
-              @click="addRoleTable"
+              @click="addRoleCheck"
             />
           </p>
         </div>
@@ -103,13 +116,15 @@
           <MyElTree
             ref="treeRole"
             :props="props"
+            v-loading="tree2Loading"
+            :default-expand-all="true"
+            :render-after-expand="false"
             class="filter-tree"
             :highlight-current="true"
             :data="treeData2"
             node-key="id"
             :default-expanded-keys="['ROOT']"
             :expand-on-click-node="false"
-            show-checkbox
           >
             <span
               slot-scope="{ node, data }"
@@ -149,6 +164,18 @@
                 v-else-if="data.type === 'column'"
                 class="el-icon-c-scale-to-original"
               />
+               <i v-else-if="data.type === 'view'">
+                <img
+                  src="../../../assets/img/table_2.png"
+                  style="
+                    height: 16px;
+                    width: 16px;
+                    margin-right: 2px;
+                    vertical-align: top;
+                    *vertical-align: middle;
+                  "
+                />
+              </i>
               <i v-else>
                 <img
                   src="../../../assets/img/table_2.png"
@@ -169,15 +196,20 @@
                   type="text"
                   size="mini"
                   icon="el-icon-remove"
+                  v-if="data.checkedType !== 'children'"
                   @click="() => remove(node, data)"
                 />
+                <transition name="fade">
                 <el-checkbox-group
+                    v-if="data.isShowCheck"
                   v-model="data.accessType"
                   style="display: inline; float: right;margin-left: 10px"
+                    @change="(val) => handleCheckChange(val, data)"
                 >
                   <!--label="WRITE" 写入 -->
                   <el-checkbox label="WRITE">{{''}}</el-checkbox>
                 </el-checkbox-group>
+                </transition>
               </span>
               <span v-if="data.id === 'ROOT'" class="xieru">写入</span>
             </span>
@@ -306,6 +338,7 @@ import {
   getAccessType,
 } from "@/api/data/table-info";
 import { commonNotify } from "@/utils";
+import _ from 'lodash'
 
 export default {
   components: { MyElTree },
@@ -315,6 +348,7 @@ export default {
       filterText1: null,
       filterText2: null,
       tree1Loading: false,
+      tree2Loading: false,
       listLoading: false,
       props: {
         label: "label",
@@ -326,14 +360,17 @@ export default {
           id: "ROOT",
           label: "角色数据",
           children: [],
+          isShowCheck: true, // 设置是否显示右侧多选框默认值
         },
       ],
+      oldRoleData: [], // 原始数据
       options: [ {label: "未加密", value: "NONE"}, {label: "中间加密", value: "MIDDLE"}, {label: "两边加密", value: "SIDE"}],
       currentData: null, // 当前选中的数据表
       currentSelection: [],
       accessTypeArray: [],
       selectList: [],
-      checkedNode: []
+      checkedNode: [],
+      writeNode: [] // 拥有写权限的数据
     };
   },
   computed: {},
@@ -347,30 +384,138 @@ export default {
   },
   created() {
     this.tree1Loading = true;
-    getResELTree({ dataUserId: "master", sceneCode: "" }).then((resp) => {
-      this.treeData1 = resp.data;
-      this.tree1Loading = false;
-    });
+    this.tree2Loading = true;
+    // getResELTree({ dataUserId: "master", sceneCode: "" }).then((resp) => {
+    //   this.treeData1 = resp.data;
+    //   this.tree1Loading = false;
+    // });
+    // getResByRole(this.$route.params.roleUuid).then((resp) => {
+    //   resp.data.forEach((item) => {
+    //     this.treeData2[0].children.push(item);
+    //   });
+    //   // 设置主树的checkBox
+    //   this.tree1Checked(resp.data);
+    // });
     getResByRole(this.$route.params.roleUuid).then((resp) => {
-      resp.data.forEach((item) => {
-        this.treeData2[0].children.push(item);
-      });
+      let treeData2 = resp.data;
+      this.oldRoleData = resp.data;
       // 设置主树的checkBox
-      this.tree1Checked(resp.data);
+      this.tree1Checked(treeData2);
+      getResELTree({ dataUserId: "master", sceneCode: "auditor" }).then((resp) => {
+        this.treeData1 = resp.data;
+        this.tree1Loading = false;
+        let _this = this;
+        setTimeout(function(){
+          // 给右侧树赋权
+          _this.findWriteTree(_this.oldRoleData)
+          setTimeout(function(){
+            _this.addRoleCheck()
+          },100)
+          _this.tree2Loading = false;
+        },100)
+      });
     });
     getAccessType().then((resp) => {
       this.accessTypeArray = resp.data;
     });
   },
   methods: {
+    // 找到所有有写权限的节点
+    findWriteTree(nodes){
+      nodes.map(i => {
+        if (i.accessType && i.accessType.includes('WRITE')) {
+          this.writeNode.push(i)
+        }
+        if (i.children && i.children.length > 0) {
+          this.findWriteTree(i.children,this.writeNode)
+        }
+      })
+    },
+    // 权限勾选情况
+    initSetCheckStatus(nodes,treeData2){
+      treeData2.map(i => {
+        if (treeData2.id == 'ROOT') {
+          this.initSetCheckStatus(nodes,i.children)
+        } else{
+          // 拥有写的权限
+          const hasNode = _.findIndex(nodes, v => v.id === i.id,v => v.label === i.label)
+          if (hasNode > -1) {
+            i.accessType = nodes[hasNode].accessType
+            this.handleCheckChange (i.accessType, i)
+          }
+          if (i.children && i.children.length > 0) {
+            this.initSetCheckStatus(nodes,i.children)
+          }
+        }
+
+      })
+    },
+    // 获取选中值得所有子集，并且设置isShowCheck值，控制右侧多选框动态显隐
+    deepGetchildren (treeData2, data, isShowCheck) {
+      let _this = this
+      const traverse = function(treeData2, data) {
+        treeData2.map(i => {
+          if (i.id == data.id) {
+          const targetFun = function (i, isShowCheck) {
+            if (i.children) {
+              i.children.map(j => {
+                j.isShowCheck = isShowCheck;
+                if (j.type == 'view') {
+                  j.isShowCheck = false;
+                }
+                // 复选框隐藏后设为不勾选状态
+                if (!isShowCheck) {
+                  let accessType = j.accessType.filter(item => {
+                    return item != 'WRITE'
+                  })
+                  j.accessType = accessType
+                    const hasNode = _.findIndex(_this.writeNode, v => v.id === j.id,v => v.label === j.label)
+                    if (hasNode > -1 ) {
+                      _this.writeNode.splice(hasNode, 1)
+                    }
+                }
+                targetFun(j, isShowCheck)
+              })
+            } else {
+              return
+            }
+          }
+          targetFun(i,isShowCheck)
+          i = targetFun(i,isShowCheck)
+          } else {
+            traverse(i.children, data);
+          }
+        })
+      };
+      traverse(treeData2, data);
+    },
+    handleCheckChange (value, data) {
+      if (value.includes('WRITE')) { // 选中的状态 子集隐藏选择框 并且取消勾选
+        const hasNode = _.findIndex(this.writeNode, v => v.id === data.id,v => v.label === data.label)
+        if (hasNode < 0 ) {
+          this.writeNode.push(data)
+        }
+        this.deepGetchildren(this.treeData2,data, false )
+      } else { // 未选中的状态 子集不隐藏选择框
+        const hasNode = _.findIndex(this.writeNode, v => v.id === data.id,v => v.label === data.label)
+        if (hasNode > -1 ) {
+          this.writeNode.splice(hasNode, 1)
+        }
+        this.deepGetchildren(this.treeData2,data, true )
+      }
+      this.$forceUpdate();
+    },
     // 将已经被授权的节点在主树中勾上checkBox
     tree1Checked(datas){
       for(var i in datas){
-        if (datas[i].type==="table"){
+        if (datas[i].type==="table" && datas[i].accessType.includes('SHOW')){
           this.checkedNode.push(datas[i].id)
         }
         if(datas[i].children){
           this.tree1Checked(datas[i].children);
+          if (datas[i].accessType.includes('READ') && datas[i].accessType.includes('SHOW')) {
+            this.checkedNode.push(datas[i].id)
+          }
         }
       }
     },
@@ -388,12 +533,64 @@ export default {
           }
         }
       },
+    // 获取选中节点的子节点
+    getCheckNodesChildrenNodes(leftCheckNode,rightTreeNode,type){
+      for (var i=0;i<leftCheckNode.length;i++) {
+        leftCheckNode[i].checkedType = type
+        rightTreeNode.push(leftCheckNode[i])
+        if (leftCheckNode[i].children) {
+          this.getCheckNodesChildrenNodes(leftCheckNode[i].children,rightTreeNode,'children')
+        }
+      }
+    },
+    // 获取选中节点的父节点
+    getCheckNodesParentNodes(leftCheckNode,checkedParentNodes,type){
+      for (var i=0;i<leftCheckNode.length;i++) {
+        // 查找当前节点的父节点
+        const parent = this.$refs.treeTable.getNode(leftCheckNode[i]).parent
+        if (parent) {
+          parent.data.checkedType = type
+          checkedParentNodes.push(parent.data)
+          // 'ROOT'为跟节点不需要再找上级
+          if (parent.data.pid != 'ROOT') {
+            const parentAarr = []
+            parentAarr.push(parent)
+            this.getCheckNodesParentNodes(parentAarr, checkedParentNodes,'parent')
+          }
+        }
+      }
+    },
+    // 获取数据并赋权
+    addRoleCheck(){
+      this.addRoleTable()
+      let _this = this
+      setTimeout(function(){
+        _this.initSetCheckStatus(_this.writeNode,_this.treeData2)
+      },100)
+    },
+    clearWriteNode(){
+      let leftCheckNode = this.$refs.treeTable.getCheckedNodes(false, false)
+      this.writeNode.map(i => {
+        const hasNode = _.findIndex(leftCheckNode, v => v.id === i.id,v => v.label === i.label)
+        if (hasNode < 0 && i.accessType.includes('SHOW')) this.writeNode.remove(i)
+      })
+    },
     addRoleTable() {
+      this.clearWriteNode()
+      this.treeData2 =  [{ id: "ROOT", label: "角色数据", children: [],isShowCheck: true,// 设置是否显示右侧多选框默认值
+         }]
+      // 获取左侧选中节点
+      let leftCheckNode = this.$refs.treeTable.getCheckedNodes(false, false)
       this.changeTreeNodeStatus(this.$refs.treeRole.getAllNodes()[0],true)
       let _this = this
       setTimeout(function(){
         /* 先对选中节点以pid为key做hashmap */
-      var ckTbs = _this.$refs.treeTable.getCheckedNodes(false, true);
+      // var ckTbs = _this.$refs.treeTable.getCheckedNodes(false, true);
+        var ckTbs = []
+        // 获取父节点
+        _this.getCheckNodesParentNodes(leftCheckNode,ckTbs,'parent')
+        // 获取子节点
+        _this.getCheckNodesChildrenNodes(leftCheckNode,ckTbs,'checked')
       if (ckTbs.length == 0) {
         ckTbs.push(_this.$refs.treeTable.getCurrentNode());
       }
@@ -401,6 +598,11 @@ export default {
       ckTbs.forEach((item) => {
         //默认即可读取
         item.accessType = ["READ"];
+        if (item.checkedType == 'parent') { item.accessType = ["SHOW"];}
+        if (item.checkedType == 'checked') { item.accessType = ["SHOW","READ"];}
+        const hasNode = _.findIndex(leftCheckNode, v => v.id === item.id,v => v.path === item.path)
+        item.isShowCheck = hasNode > -1; // 左侧选中可以给写入单选框
+        if (item.checkedType == 'children')  item.isShowCheck = true
         var assItem = Object.assign({}, item);
         assItem.children = [];
         if (!ckTbsMap[item.pid]) ckTbsMap[item.pid] = [];
@@ -419,6 +621,11 @@ export default {
                 return node.id === c.id;
               }).length === 0
             ) {
+              // 从左侧树添加到右侧树view修改类型
+              if (c.extMap.tblType == 'V') {
+                c.isShowCheck = false
+                c.type = 'view'
+              }
               treeNode.children.push(c);
             }
           });
@@ -442,7 +649,33 @@ export default {
       const index = children.findIndex((d) => d.id === data.id);
       children.splice(index, 1);
       // 取消主树的checkBox
+      // this.$refs.treeTable.setChecked(data,false,true)
+      this.removeChild(data)
+      // 若父节点没有任何其它子节点则删除父节点
+      this.removeParent(data,'check')
+    },
+    // 取消选中子节点
+    removeChild(data){
       this.$refs.treeTable.setChecked(data,false,true)
+      if (data.children){
+        for(var i=0;i<data.children.length;i++) {
+          this.removeChild(data.children[i])
+        }
+      }
+    },
+    // 取消选中父节点
+    removeParent(data,type,parentArr){
+      this.$refs.treeTable.setChecked(data,false,true)
+      const parent = this.$refs.treeRole.getNode(data).parent
+      if (parent) {
+        if ((type == 'check' && data.pid !== 'ROOT') || (type == 'parent' && data.data.pid !== 'ROOT')) {
+          // 有且只有当前这一个要删除的节点,'check'情况节点已移除，所以子节点个数为0
+          if((parent.data.children.length == 1 && type=='parent') || (parent.data.children.length == 0 && type=='check')) {
+            this.removeParent(parent,'parent')
+            this.$refs.treeRole.remove(parent)
+          }
+        }
+      }
     },
     //所有子集禁用
     witerData(node, data) {
@@ -513,13 +746,13 @@ export default {
         if (data.id !== "ROOT") {
           if (!data.accessType) data.accessType = [];
           var accType1 = data.accessType.join(",");
-          if (data.type === "folder") {
+          if (data.type === "folder" && (data.checkedType !== 'children' || data.accessType.includes('WRITE'))) {
             folders.push({
               dataRoleUuid: this.roleUuid,
               folderUuid: data.id,
               accessType: accType1,
             });
-          } else if (data.type === "table") {
+          } else if (data.type === "table" && (data.checkedType == 'checked' || data.accessType.includes('WRITE'))) {
             tables.push({
               dataRoleUuid: this.roleUuid,
               tableMetaUuid: data.id,
