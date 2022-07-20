@@ -163,7 +163,7 @@
             </div>
             <div class="iconText">去重</div>
           </div>
-          <div class="graphIcon">
+          <!-- <div class="graphIcon">
             <div
               id="graphNode_layering"
               class="graphIconElRow"
@@ -175,7 +175,7 @@
               />
             </div>
             <div class="iconText">分层</div>
-          </div>
+          </div> -->
           <div class="graphIcon">
             <div
               id="graphNode_groupCount"

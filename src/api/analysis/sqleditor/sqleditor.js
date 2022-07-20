@@ -140,6 +140,10 @@ var isUpdate = false
 var isFirst = 0
 
 let sqlEditorVue = null
+let settingVue = null
+export const sendSettingVue = ( (_this) => {
+  settingVue = _this
+})
 
 export const sendSqlEditorVue = ((this_) => {
   sqlEditorVue = this_
@@ -420,9 +424,9 @@ export function initSQLEditor(textarea, relTableMap, expTableMap) {
       isUpdate = true
     }
     isFirst++
-    if (!changeObj.origin) {
-      return
-    }
+    // if (!changeObj.origin) {
+    //   return
+    // }
     var changeText = ''
     var opt = 1// 默认有效
     var selectTextArr = changeObj.text// 这个值是个数组，有默认值（为长度为1的空串）
@@ -473,6 +477,8 @@ export function initSQLEditor(textarea, relTableMap, expTableMap) {
       }
       isFirstPaste = true
     }
+    // sql编译器修改时实时刷新已用参数
+    settingVue.$emit("getSqlObj");
   })
   // 设置脚本展示tab的上面编辑器高度
   editor.setSize('auto', ($(document).height() * 0.5 - 40) + 'px')
@@ -2157,7 +2163,6 @@ export function selectSqlCancelNotes() {
  * @returns {{arr: [], flag: (jQuery|string|undefined|*), InfoFlag: jQuery, outColumn: jQuery, flag2: (jQuery|string|undefined), sql: *}}
  */
 export function getSaveInfo() {
-  //
   // 组装对象
   var returnObj = {
     sqlValue: editorObj.getValue(),

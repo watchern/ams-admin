@@ -1272,7 +1272,7 @@ export default {
     this.chartReflexion();
     // this.getSuspectsMainData();
     //this.getSuspectssecondaryData();
-    this.getProjectlist();
+    // this.getProjectlist();
     // this.getTaglist();
     document.addEventListener(
       "dragover",
@@ -4104,7 +4104,9 @@ export default {
   height: 100%;
 }
 .thechard-z {
-  margin-right: 66px;
+  /* margin-right: 66px; */
+  position: absolute;
+  right: 66px;
 }
 .paging-z {
   font-weight: bold;

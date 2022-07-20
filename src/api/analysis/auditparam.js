@@ -1949,7 +1949,7 @@ export function initSetting() {
 /**
  * 初始化参数配置模型编辑新增 模型参数初始化
  */
- export function initSettingParam() {
+ export async function initSettingParam() {
   let load = $(settingVue.$refs.settingParamDiv).mLoading({
     'text': '正在加载配置，请稍后……',
     'hasCancel': false
@@ -1989,7 +1989,7 @@ export function initSetting() {
       }
     }
     // 第四步：获取数据库所有母参数信息
-    findParamsAndModelRelParams().then(response => {
+    await findParamsAndModelRelParams().then(response => {
       if (response.data == null) {
         load.hide()
         settingVue.$message.error('获取参数信息失败')
@@ -2033,13 +2033,14 @@ export function initSetting() {
                 hasExist = true
               }
             }
+            
 
-            if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && hasExist) { // 过滤掉有效参数集合中已经配置过的参数
-              continue
-            }
-            if ($.inArray(paramArr[j].moduleParamId, moduleParamArr) > -1) { // 过滤掉有效参数集合中母参重复的复制参数
-              continue
-            }
+            // if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && hasExist) { // 过滤掉有效参数集合中已经配置过的参数
+            //   continue
+            // }
+            // if ($.inArray(paramArr[j].moduleParamId, moduleParamArr) > -1) { // 过滤掉有效参数集合中母参重复的复制参数
+            //   continue
+            // }
             for (let k = 0; k < paramList.length; k++) { // 循环所有母版参数
               let moduleParamId = paramList[k].ammParamUuid
               let paramObj = {
@@ -2105,6 +2106,8 @@ export function initSetting() {
             // load.hide()
           }
           Promise.all(promiseList).then((rspList)=> {
+            settingVue.setParamArrIdArr = [];
+            settingVue.setParamArr = [];
             rspList.map((val)=> {
               // if (!val.isError) {
               //   settingVue.setParamArr.push(val.setParamObj)
@@ -2123,7 +2126,9 @@ export function initSetting() {
               this.changeparamdata(settingVue.setParamArr[i],i)
             }
             settingVue.$nextTick(() => {
-              settingVue.rowDrop();
+              if (settingVue.$refs.dragTable) {
+                settingVue.rowDrop();
+              }
               load.destroy()
             })
            
