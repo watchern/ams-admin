@@ -18,7 +18,7 @@ export const AgCell =  Vue.extend({
     mounted() {
         this.parent = this.params.context.componentParent
         // thresholdValueRel, modelResultDetailCol
-        this.changeCellColor(this.params, this.params.colDef.params.thresholdValueRel, this.params.colDef.params.modelResultDetailCol, )
+        this.changeCellColor(this.params, this.params.colDef.params && this.params.colDef.params.thresholdValueRel || '', this.params.colDef.params && this.params.colDef.params.modelResultDetailCol || '', )
     },
     methods: {
         openModelDetailNew(param) {

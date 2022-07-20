@@ -330,7 +330,18 @@ export default {
         this.paramInfoArr.push(paramInfoObj)
       }
       for (let i = 0; i < this.paramInfoArr.length; i++){
-          this.changeparamdata(this.paramInfoArr[i],i)
+        this.changeparamdata(this.paramInfoArr[i],i)
+        if (this.paramInfoArr[i].inputType == 'lineinp') {
+          this.paramTreeValueList[i] = undefined
+          if (this.paramListValueList[i] == undefined) {
+            this.paramListValueList[i] = ''
+          }
+        } else if (this.paramInfoArr[i].inputType == 'treeinp') {
+          this.paramListValueList[i] = undefined
+          if (this.paramTreeValueList[i] == undefined) {
+            this.paramTreeValueList[i] = ''
+          }
+        }
       }
       this.$nextTick(() => {
         // this.initParamInputAndSelect()
@@ -661,7 +672,7 @@ export default {
           if(selectParamDom && selectParamDom.length > 0) {
             for(var i = 0; i< this.paramListValueList.length;i++){
              if( typeof this.paramListValueList[i] !== 'undefined'){
-               paramInfoObj = paramInfoArr[i]
+              paramInfoObj = paramInfoArr[i]
               let moduleParamId = paramInfoObj.dataId// 母参数ID
               let allowedNull = typeof paramInfoObj.dataAllowedNull !== 'undefined' ? paramInfoObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
               let choiceType = paramInfoObj.dataChoiceType// 当前参数是多选还是单选：0：多选，1、单选
@@ -726,9 +737,8 @@ export default {
                     lineinpInd.push(k);
                   }
                 }
-                if (this.paramListValueList[i].length !=0) {
+                if (this.paramListValueList[i] && this.paramListValueList[i].length !=0 && this.paramTreeValueList[treenum] != '') {
                   if (choiceType === '1') { // 单选
-
                     obj.paramValue = this.paramListValueList[i]
                     for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
                       if (arr[w].moduleParamId === moduleParamId) {
@@ -777,9 +787,9 @@ export default {
           if(selectTreeParamDom && selectTreeParamDom.length > 0) {
             for(var treenum = 0; treenum< this.paramTreeValueList.length;treenum++){
              if( typeof this.paramTreeValueList[treenum] !== 'undefined'){
-               paramInfoObj = paramInfoArr[treenum]
+              paramInfoObj = paramInfoArr[treenum]
               let moduleParamId = paramInfoObj.dataId// 母参数ID
-              let allowedNull = typeof paramInfoObj.dataAllowedNull !== 'undefined' ? paramInfoObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
+              let allowedNull = typeof paramInfoObj.dataAllowedNull !== 'undefined' ? paramInfoObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空           
               let choiceType = paramInfoObj.dataChoiceType// 当前参数是多选还是单选：0：多选，1、单选
               let obj = {
                 'moduleParamId': moduleParamId,
@@ -841,7 +851,7 @@ export default {
                 }
                 filterArr.push(obj)
               } else { // 不允许为空
-                if (this.paramTreeValueList[treenum].length !== 0) {
+                if (this.paramTreeValueList[treenum] && this.paramTreeValueList[treenum].length !== 0 && this.paramTreeValueList[treenum] != '') {
                   if (choiceType === '1') { // 单选
                     if (paramInfoObj.useQuotation == '1') {
                       obj.paramValue = "'" + this.paramTreeValueList[treenum] + "'"
@@ -954,12 +964,6 @@ export default {
 
           //   }
           // }
-
-
-
-
-
-
           if (paramNum !== 0) { // 第一步，先判断是否有必填的参数没有输入值
             returnObj.verify = false
             returnObj.message +='含有未输入值的参数项，请重新输入'
@@ -1014,7 +1018,6 @@ export default {
           }
           returnObj.paramsArr = arr
       }
-
       return returnObj
     }
   }

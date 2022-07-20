@@ -476,6 +476,7 @@ import {
   getGraphSaveInfo,
   getZtreeSelectNode,
   hideRMenu,
+  sendSettingVue
 } from "@/api/analysis/sqleditor/sqleditor";
 import sqlDraftList from "@/views/analysis/sqleditor/sqldraftlist";
 import { updateDraft } from "@/api/analysis/sqleditor/sqldraft";
@@ -550,6 +551,7 @@ export default {
       this.personCode = this.dataUserId;
       this.sceneCode = this.sceneCode1;
     }
+    sendSettingVue(this);
   },
   data() {
     return {
@@ -1123,13 +1125,15 @@ export default {
       if (this.callType != "editorModel" && this.callType != "graphModel") {
         return;
       }
-      if (!this.isAllExecute) {
-        return;
-      }
+      // 大亚湾模型不用运行获取操作参数 start
+      // if (!this.isAllExecute) {
+      //   return;
+      // }
       // 如果当前执行进度与要执行的sql数量相等 则证明数据已经全部拿到，允许保存
-      if (currentExecuteProgress != this.currentExecuteSQL.length) {
-        return;
-      }
+      // if (currentExecuteProgress != this.currentExecuteSQL.length) {
+      //   return;
+      // }
+      // end
       if (getIsUpdate()) {
         //大亚湾个性化
         // this.$message({
