@@ -4,26 +4,26 @@
       <el-col :span="18">
         <el-input v-model="filterText1" placeholder="输入关键字进行过滤"/>
       </el-col>
-<!--      <el-col :span="6">-->
-<!--        <div class="controlTreeNode">-->
-<!--          <el-button-->
-<!--                  title="展开全部节点"-->
-<!--                  type="text"-->
-<!--                  size="mini"-->
-<!--                  class="expandTreeNode"-->
-<!--                  @click="expandAllNodes()"-->
-<!--          ><span class="expandIcon"></span>-->
-<!--          </el-button>-->
-<!--          <el-button-->
-<!--                  title="收起全部节点"-->
-<!--                  type="text"-->
-<!--                  size="mini"-->
-<!--                  class="collapseTreeNode"-->
-<!--                  @click="collapseAllNodes()"-->
-<!--          ><span class="collapseIcon"></span>-->
-<!--          </el-button>-->
-<!--        </div>-->
-<!--      </el-col>-->
+      <el-col :span="6">
+        <div class="controlTreeNode">
+          <el-button
+                  title="展开全部节点"
+                  type="text"
+                  size="mini"
+                  class="expandTreeNode"
+                  @click="expandAllNodes()"
+          ><img class="expandIcon" src="../../../styles/icons/expandicon.png"/>
+          </el-button>
+          <el-button
+                  title="收起全部节点"
+                  type="text"
+                  size="mini"
+                  class="collapseTreeNode"
+                  @click="collapseAllNodes()"
+          ><img class="collapseIcon" src="../../../styles/icons/collapseicon.png"/>
+          </el-button>
+        </div>
+      </el-col>
     </el-row>
     <div class="tree-option" style="height: calc(100% - 70px)"
          v-loading="treeLoading">
@@ -111,18 +111,17 @@
           <span :title="data.title">{{ node.label }}</span>
           <span style="margin-left: 10px" v-if="folderShow && node.data.type=='folder' && isRead(node)">
             <!--添加： 根节点以及手工维护的节点-->
-            <el-button type="text" size="mini"  @click="handleCreateFolder(node)">
-              <i class="el-icon-circle-plus"
-              /></el-button>
+            <el-button type="text" size="mini"  @click="handleCreateFolder(node)" class="tree-line-btn">
+              <svg-icon icon-class="icon-add-1" /></el-button>
             <!--修改： 手工维护的节点，个人空间根目录名称不可编辑 -->
-            <el-button type="text" size="mini" @click="handleRenameResource(node)"
+            <el-button type="text" size="mini" @click="handleRenameResource(node)" class="tree-line-btn"
                        v-if="!(node.data.pid == 'ROOT' && node.data.label == personalTitle)">
-              <i class="el-icon-edit" />
+              <svg-icon icon-class="icon-edit-1" />
             </el-button>
             <!--删除： 手工维护的节点，个人空间根目录名称不可删除-->
-            <el-button  type="text" size="mini" @click="handleDelData(node)"
+            <el-button  type="text" size="mini" @click="handleDelData(node)" class="tree-line-btn"
                         v-if="!(node.data.pid == 'ROOT' && node.data.label == personalTitle)">
-              <i class="el-icon-delete" />
+              <svg-icon icon-class="icon-delete-1" />
             </el-button>
           </span>
         </span>
@@ -379,42 +378,57 @@ export default {
 .controlTreeNode{
   width: 100%;
   height: 36px;
-  background: #F4F5FD;
+  text-align: center;
 }
 .expandTreeNode{
   position: relative;
   border: 1px #656565;
-  top: 2px;
+  top: 6px;
   left: 10px;
   height: 25px;
   width: 25px;
+  display: inline-block;
+  background: #559ED4;
+  &:active{
+    background: #5ac3eb !important;
+  }
+  &:hover{
+    background: #5ac3eb !important;
+  }
+  &:focus{
+    background: #5ac3eb !important;
+  }
 }
 .collapseTreeNode{
   position: relative;
   border: 1px #656565;
-  top: 2px;
+  top: 6px;
   left: 5px;
   height: 25px;
   width: 25px;
+  display: inline-block;
+  background: #559ED4;
+  &:active{
+    background: #5ac3eb !important;
+  }
+  &:hover{
+    background: #5ac3eb !important;
+  }
+  &:focus{
+    background: #5ac3eb !important;
+  }
 }
 .expandIcon{
-  position: absolute;
-  display: inline-block;
-  background-image: url("../../../styles/icons/expandicon.png");
-  height: 25px;
-  width: 25px;
-  background-size: 100%;
-  right: 0px;
-  top: 0px;
+  height: 12px;
+  z-index: 100;
+  position: relative;
 }
 .collapseIcon{
-  position: absolute;
-  display: inline-block;
-  background-image: url("../../../styles/icons/collapseicon.png");
-  height: 25px;
-  width: 25px;
-  background-size: 100%;
-  right: 0px;
-  top: 0px;
+  height: 12px;
+  z-index: 100;
+  position: relative;
+}
+.tree-line-btn{
+  background: rgba(255,255,255,0) !important;
 }
 </style>

@@ -6,8 +6,9 @@
         <el-input
                 v-model="filterText"
                 placeholder="输入关键字进行过滤"
-                class="tree-search"
         />
+        <!--        【模型左侧树搜索框】该class为圆角黑色加粗边框，修改为和数据资源目录和数据表注册一致的形式（直角细边框，鼠标悬浮变色）-->
+        <!--        class="tree-search"-->
       </el-col>
       <el-col :span="6">
         <div class="controlTreeNode">
@@ -17,7 +18,7 @@
                   size="mini"
                   class="expandTreeNode"
                   @click="expandAllNodes()"
-          ><span class="expandIcon"></span>
+          ><img class="expandIcon" src="../../../styles/icons/expandicon.png"/>
           </el-button>
           <el-button
                   title="收起全部节点"
@@ -25,7 +26,7 @@
                   size="mini"
                   class="collapseTreeNode"
                   @click="collapseAllNodes()"
-          ><span class="collapseIcon"></span>
+          ><img class="collapseIcon" src="../../../styles/icons/collapseicon.png"/>
           </el-button>
         </div>
       </el-col>
@@ -500,46 +501,61 @@ export default {
   },
 };
 </script>
-<style>
+<style lang="scss" scoped>
   .controlTreeNode{
     width: 100%;
     height: 36px;
-    background: #F4F5FD;
+    text-align: center;
   }
   .expandTreeNode{
     position: relative;
     border: 1px #656565;
-    top: 2px;
+    top: 6px;
     left: 10px;
     height: 25px;
     width: 25px;
+    display: inline-block;
+    background: #559ED4;
+    &:active{
+      background: #5ac3eb !important;
+    }
+    &:hover{
+      background: #5ac3eb !important;
+    }
+    &:focus{
+      background: #5ac3eb !important;
+    }
   }
   .collapseTreeNode{
     position: relative;
     border: 1px #656565;
-    top: 2px;
+    top: 6px;
     left: 5px;
     height: 25px;
     width: 25px;
+    display: inline-block;
+    background: #559ED4;
+    &:active{
+      background: #5ac3eb !important;
+    }
+    &:hover{
+      background: #5ac3eb !important;
+    }
+    &:focus{
+      background: #5ac3eb !important;
+    }
   }
   .expandIcon{
-      position: absolute;
-      display: inline-block;
-      background-image: url("../../../styles/icons/expandicon.png");
-      height: 25px;
-      width: 25px;
-      background-size: 100%;
-      right: 0px;
-      top: 0px;
+    height: 12px;
+    z-index: 100;
+    position: relative;
   }
   .collapseIcon{
-      position: absolute;
-      display: inline-block;
-      background-image: url("../../../styles/icons/collapseicon.png");
-      height: 25px;
-      width: 25px;
-      background-size: 100%;
-      right: 0px;
-      top: 0px;
+    height: 12px;
+    z-index: 100;
+    position: relative;
+  }
+  .tree-line-btn{
+    background: rgba(255,255,255,0) !important;
   }
 </style>

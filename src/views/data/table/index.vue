@@ -14,7 +14,7 @@
                       size="mini"
                       class="expandTreeNode"
                       @click="expandAllNodes()"
-              ><span class="expandIcon"></span>
+              ><img class="expandIcon" src="../../../styles/icons/expandicon.png"/>
               </el-button>
               <el-button
                       title="收起全部节点"
@@ -22,7 +22,7 @@
                       size="mini"
                       class="collapseTreeNode"
                       @click="collapseAllNodes()"
-              ><span class="collapseIcon"></span>
+              ><img class="collapseIcon" src="../../../styles/icons/collapseicon.png"/>
               </el-button>
             </div>
           </el-col>
@@ -73,17 +73,18 @@
                   "
                   type="text"
                   size="mini"
+                  class="tree-line-btn"
                   @click.stop="() => handleCreateFolder(node, data)"
-                  ><i class="el-icon-circle-plus"
-                /></el-button>
+                  ><svg-icon icon-class="icon-add-1" /></el-button>
                 <!--修改： 手工维护的节点-->
                 <el-button
                   v-if="data.extMap && data.extMap.folder_type === 'maintained'"
                   type="text"
                   size="mini"
+                  class="tree-line-btn"
                   @click.stop="() => handleUpdateFolder(node, data)"
                 >
-                  <i class="el-icon-edit" />
+                 <svg-icon icon-class="icon-edit-1" />
                 </el-button>
                 <!--删除： 手工维护的节点-->
                 <el-button
@@ -94,9 +95,10 @@
                   "
                   type="text"
                   size="mini"
+                  class="tree-line-btn"
                   @click.stop="() => handleRemove(node, data)"
                 >
-                  <i class="el-icon-delete" />
+                  <svg-icon icon-class="icon-delete-1" />
                 </el-button>
               </span>
             </span>
@@ -605,42 +607,57 @@ export default {
 .controlTreeNode{
   width: 100%;
   height: 36px;
-  background: #F4F5FD;
+  text-align: center;
 }
 .expandTreeNode{
   position: relative;
   border: 1px #656565;
-  top: 2px;
+  top: 6px;
   left: 10px;
   height: 25px;
   width: 25px;
+  display: inline-block;
+  background: #559ED4;
+  &:active{
+    background: #5ac3eb !important;
+  }
+  &:hover{
+    background: #5ac3eb !important;
+  }
+  &:focus{
+    background: #5ac3eb !important;
+  }
 }
 .collapseTreeNode{
   position: relative;
   border: 1px #656565;
-  top: 2px;
+  top: 6px;
   left: 5px;
   height: 25px;
   width: 25px;
+  display: inline-block;
+  background: #559ED4;
+  &:active{
+    background: #5ac3eb !important;
+  }
+  &:hover{
+    background: #5ac3eb !important;
+  }
+  &:focus{
+    background: #5ac3eb !important;
+  }
 }
 .expandIcon{
-  position: absolute;
-  display: inline-block;
-  background-image: url("../../../styles/icons/expandicon.png");
-  height: 25px;
-  width: 25px;
-  background-size: 100%;
-  right: 0px;
-  top: 0px;
+  height: 12px;
+  z-index: 100;
+  position: relative;
 }
 .collapseIcon{
-  position: absolute;
-  display: inline-block;
-  background-image: url("../../../styles/icons/collapseicon.png");
-  height: 25px;
-  width: 25px;
-  background-size: 100%;
-  right: 0px;
-  top: 0px;
+  height: 12px;
+  z-index: 100;
+  position: relative;
+}
+.tree-line-btn{
+  background: rgba(255,255,255,0) !important;
 }
 </style>

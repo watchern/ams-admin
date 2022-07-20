@@ -297,6 +297,7 @@
       :visible.sync="treeSelectShow"
       title="发布模型"
       width="50%"
+      class="publicDialogClass"
     >
       <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
       <div slot="footer">
@@ -1040,7 +1041,7 @@ export default {
         }
         this.pageQuery.condition = condition;
       }
-      
+
       findModel(this.pageQuery).then((resp) => {
         this.total = resp.data.total;
         this.list = resp.data.records;
@@ -1980,7 +1981,7 @@ export default {
               // }
               //  this.executeSql(mergeObj, selectObj, false);
             }
-          } else {       
+          } else {
             const paramObj = [];
             for (let i = 0; i < result.data.parammModelRel.length; i++) {
               if (result.data.parammModelRel[i].paramValue === "") {
@@ -2015,7 +2016,7 @@ export default {
       this.ifcancel = 1
     },
     executeSql(obj, selectObj, isExistParam) {
-      
+
       this.$emit(
         "loadingSet",
         true,
@@ -2056,7 +2057,7 @@ export default {
             this.ifcancel = 0
           }
         });
-       
+
       } else {
         getExecuteTaskAndQuery(obj,this.dataUserId,this.sceneCode).then((result) => {
           if (result.code == 0) {
@@ -2073,7 +2074,7 @@ export default {
           }
         });
 
-      } 
+      }
     },
     /**
      * 添加页签
@@ -2229,7 +2230,7 @@ export default {
         // };
         // obj.runTask = runTask
         // this.executeSql(obj, selectObj, false);
-        
+
       } else {
         this.queryModel(this.paramDrawUuid);
       }
@@ -2340,6 +2341,16 @@ export default {
 </script>
 
 <style scoped>
+.publicDialogClass >>> .el-dialog {
+  height: 500px;
+  overflow: scroll;
+}
+.publicDialogClass >>> .el-dialog .el-dialog__body {
+  height: 70%;
+}
+.publicDialogClass >>> .el-dialog .el-dialog__footer {
+  margin-top: 47px;
+}
 .el-dropdown {
   margin-left: 10px;
 }
