@@ -2030,6 +2030,9 @@ export default {
                 this.modelOutputColumn.length == 0
               ) {
                 for (var i = 0; i < colNames.length; i++) {
+                  if (colNames[i] == 'onlyuuid'){
+                    break
+                  }
                   var rowColom = {};
                   if (
                     renderColumns.indexOf(colNames[i].toUpperCase()) != -1 ||
@@ -2078,6 +2081,9 @@ export default {
                 }
               } else {
                 for (var i = 0; i < colNames.length; i++) {
+                  if (colNames[i] == 'onlyuuid'){
+                    break
+                  }
                   loop: for (
                     var j = 0;
                     j < this.modelOutputColumn.length;
