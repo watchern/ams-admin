@@ -16,11 +16,11 @@ export function findOrgTree() {
 /**
  * 根据组织uuid获取该组织下的所有人员
  */
-export function findPeopleByOrgId(OrgUuid) {
+export function findPeopleByOrgId(orgUuid) {
   return request({
     baseURL: baseURL,
     url: '/personController/findPeopleByOrgId',
     method: 'get',
-    params:{OrgUuid:OrgUuid}
+    params:{orgUuid:orgUuid}
   })
 }
