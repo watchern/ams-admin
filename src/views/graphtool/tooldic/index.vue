@@ -574,6 +574,7 @@
         ref="settingParams"
         :graph="graph"
         :node-id="sp_nodeId"
+        :modelFolderPath="modelFolderPath"
         :params-setting="sp_paramsSetting"
       />
       <div slot="footer" v-if="initNodeSettingVue">
@@ -797,7 +798,7 @@ export default {
     SqlEditor,
     AnalysisDetailData,
   },
-  props: ["graphUuidParam", "openGraphTypeParam", "openTypeParam"],
+  props: ["graphUuidParam", "openGraphTypeParam", "openTypeParam","modelFolderPath"],
   data() {
     return {
       maxormin: true,

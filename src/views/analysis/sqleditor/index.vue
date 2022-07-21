@@ -545,6 +545,7 @@ export default {
     "dataUserId",
     "sceneCode1",
     "callType",
+    'modelFolderPath',
   ],
   created() {
     if (this.dataUserId != undefined && this.sceneCode1 != undefined) {
@@ -1005,7 +1006,7 @@ export default {
       initBJTree();
       initVariable();
       initEvent();
-      initParamTreeNew();
+      initParamTreeNew(this.modelFolderPath);
       this.executeLoading = true;
       this.loadText = "正在初始化数据表...";
       initTableTip(this.dataUserId, this.sceneCode1)

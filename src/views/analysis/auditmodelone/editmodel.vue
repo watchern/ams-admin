@@ -5,11 +5,11 @@
         <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules" :disabled="isBanEdit">
           <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id" class="sqlEditorParamWidthOn"
                id="graphDiv">
-            <SQLEditor :data-user-id='dataUserId' :scene-code1='sceneCode' :modelUuid='form.modelUuid'
+            <SQLEditor :data-user-id='dataUserId' :scene-code1='sceneCode' :modelUuid='form.modelUuid':modelFolderPath='operationObj.folderPath'
                        @getSqlObj="getSqlObj" v-if="state.id==sqlEditorStr" ref="SQLEditor"
                        :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel"
                        :locationUuid="form.locationUuid" :locationName="form.locationName" :style="{height: someHeight + 'px'}"/>
-            <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" @getGraphObj="getGraphObj" openTypeParam="2" :refreshGraph="refreshAppleTable"
+            <graph ref="graph" :graphUuidParam="form.graphUuid" :modelFolderPath='operationObj.folderPath' openGraphTypeParam="4" @getGraphObj="getGraphObj" openTypeParam="2" :refreshGraph="refreshAppleTable"
                    v-if="state.id==graphEditorStr"></graph>
           </div>
           <div class="modelInfoClass" v-show="modelInfoDraw" style="position:absolute; height: calc(100% - 125px); overflow:auto">
@@ -330,6 +330,7 @@ export default {
         modelName: '',
         modelFolderUuid: '',
         modelFolderName: '',
+        modelFolderPath: '',
         auditItemUuid: '',
         riskLevelUuid: '',
         auditIdeas: '',
@@ -740,6 +741,7 @@ export default {
       if (operationObj.folderId != "") {
         this.form.modelFolderUuid = operationObj.folderId
         this.form.modelFolderName = operationObj.folderName
+        this.form.modelFolderPath = operationObj.folderPath
       }
       // 初始化业务字段列表
       getBusinessAttribute().then(result => {
