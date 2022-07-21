@@ -3272,6 +3272,8 @@ export default {
           if (!i[j.key]) {
             this.$set(i, j.key, '')
           }
+          // 将数值类型转成字符串以防导出后数字默认为科学计数法
+          i[j.key] = "\t" + i[j.key].toString()
           rowItem.push(i[j.key])
         })
         rows.push(rowItem)
