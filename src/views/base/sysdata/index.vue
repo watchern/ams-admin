@@ -66,7 +66,7 @@
       </el-form>
       <div slot="footer">
         <el-button type="primary" size="mini" @click="closeDialog()" style="color:#559ed4;background:#fff;border:none;font-weight:bold;font-size:14px">取消</el-button>
-        <el-button type="primary" size="mini" @click="dialogStatus==='create'?createData():updateData()" style="color:#c8ff8c;background:#559ed4">保存</el-button>
+        <el-button type="primary" size="mini" @click="dialogStatus==='create'?createData():updateDataBefore()" style="color:#c8ff8c;background:#559ed4">保存</el-button>
       </div>
     </el-dialog>
     <!-- 这是第二个弹窗，用来操作类别下具体的基础数据 -->
@@ -135,7 +135,7 @@
         </el-form-item>
       </el-form>
       <el-button type="primary" class="oper-btn delete" size="mini" :disabled="selectionSecond.length === 0" @click="deleteDataSecond()" style="float:right;margin:0 15px 0 10px"></el-button>
-      <el-button type="primary" class="oper-btn edit" size="mini" :disabled="selectionSecond.length !== 1" @click="updateDataSecond()" style="float:right"></el-button>
+      <el-button type="primary" class="oper-btn edit" size="mini" :disabled="selectionSecond.length !== 1" @click="updateDataSecondBefore()" style="float:right"></el-button>
       <el-button type="primary" class="oper-btn reset" size="mini" @click="resetTempSecond()" style="float:right"></el-button>
       <el-button type="primary" class="oper-btn add" size="mini" @click="addSecondCode()" style="float:right"></el-button>
 
@@ -381,6 +381,31 @@ export default {
         }
       })
     },
+    updateDataBefore(){
+      const index = this.list.findIndex(v => v.dataSortUuid === this.temp.dataSortUuid)
+      const tempData = Object.assign({}, this.temp)
+      if (this.list[index].dataSortValue != tempData.dataSortValue) {
+        this.$confirm(
+                '系统参数编码不能随便修改，确定继续修改吗?',
+                '提示',
+                {
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  type: 'warning'
+                }
+        ).then(() => {
+          this.updateData()
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消修改'
+          })
+          return false
+        });
+      } else {
+        this.updateData()
+      }
+    },
     updateCode() {
       this.temp = Object.assign({}, this.selections[0]) // copy obj
       this.temp.extendTag = Number(this.temp.extendTag)
@@ -478,6 +503,31 @@ export default {
           })
         }
       })
+    },
+    updateDataSecondBefore(){
+      const index = this.listSecond.findIndex(v => v.codeUuid === this.tempSecond.codeUuid)
+      const tempDataSecond = Object.assign({}, this.tempSecond)
+      if (this.listSecond[index].codeValue != tempDataSecond.codeValue) {
+        this.$confirm(
+                '系统参数编码不能随便修改，确定继续修改吗?',
+                '提示',
+                {
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  type: 'warning'
+                }
+        ).then(() => {
+          this.updateDataSecond()
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消修改'
+          })
+          return false
+        });
+      } else {
+        this.updateDataSecond()
+      }
     },
     updateDataSecond() {
       this.$refs['dataSecondForm'].validate((valid) => {

@@ -4,33 +4,33 @@
       <span class="title">操作</span>
     </div>
     <div>
-      <el-form 
+      <el-form
         ref="dataForm"
-        :model="formCodeData" 
-        :rules="rules" 
+        :model="formCodeData"
+        :rules="rules"
         class="detail-form">
         <el-row>
           <el-col :span="11">
-          <el-form-item 
-            label="类型名称" 
+          <el-form-item
+            label="类型名称"
             prop="codeName" >
-            <el-input 
-              v-model="formCodeData.codeName" 
+            <el-input
+              v-model="formCodeData.codeName"
               class="input" />
           </el-form-item>
-            <el-form-item 
-              v-if="show=false" 
-              label="uuid" 
+            <el-form-item
+              v-if="show=false"
+              label="uuid"
               prop="codeUuid">
-              <el-input 
-                v-model="formCodeData.codeUuid" 
+              <el-input
+                v-model="formCodeData.codeUuid"
                 placeholder="请输入数字"
                 class="input" />
           </el-form-item>
           </el-col>
           <el-col :span="11" :offset="2">
-          <el-form-item 
-              label="类型编码" 
+          <el-form-item
+              label="类型编码"
               prop="codeValue" >
             <el-input
                 v-model="formCodeData.codeValue"
@@ -43,8 +43,8 @@
         </el-row>
         <el-row>
           <el-col :span="11">
-          <el-form-item 
-            label="排序号" 
+          <el-form-item
+            label="排序号"
             prop="codeIndex" >
             <el-input
               v-model="formCodeData.codeIndex"
@@ -55,11 +55,11 @@
           </el-form-item>
           </el-col>
         </el-row>
-          <el-form-item 
-            label="类型描述" 
+          <el-form-item
+            label="类型描述"
             prop="codeDesc" >
-            <el-input 
-              v-model="formCodeData.codeDesc" 
+            <el-input
+              v-model="formCodeData.codeDesc"
               type="textarea" />
           </el-form-item>
       </el-form>
@@ -197,45 +197,77 @@ export default {
         console.log(error)
       })
     },
-    // 修改
-    editCodeData(sortUuid, parentCodeUuid) {
+    // 修改前的校验
+    editCodeDataBefore(sortUuid, parentCodeUuid) {
       if (
-        this.formCodeData.codeName === undefined ||
-        this.formCodeData.codeName === null ||
-        this.formCodeData.codeName === ''
+              this.formCodeData.codeName === undefined ||
+              this.formCodeData.codeName === null ||
+              this.formCodeData.codeName === ''
       ) {
         this.$message.warning(`请输入类型名称(必填)`)
         return false
       }
       if (
-        this.formCodeData.codeDesc === undefined ||
-        this.formCodeData.codeDesc === null ||
-        this.formCodeData.codeDesc === ''
+              this.formCodeData.codeDesc === undefined ||
+              this.formCodeData.codeDesc === null ||
+              this.formCodeData.codeDesc === ''
       ) {
         this.$message.warning(`请输入类型描述(必填)`)
         return false
       }
       if (
-        this.formCodeData.codeIndex === undefined ||
-        this.formCodeData.codeIndex === null ||
-        this.formCodeData.codeIndex === ''
+              this.formCodeData.codeIndex === undefined ||
+              this.formCodeData.codeIndex === null ||
+              this.formCodeData.codeIndex === ''
       ) {
         this.$message.warning(`请输入排序号(必填)`)
         return false
       }
-      this.$confirm(
-        '不可以修改类型编码，编码将保持不变，是否确认修改其他信息?',
-        '提示',
-        {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }
-      ).then(() => {
+      if (
+              this.formCodeData.codeValue === undefined ||
+              this.formCodeData.codeValue === null ||
+              this.formCodeData.codeValue === ''
+      ) {
+        this.$message.warning(`请输入类型编码(必填)`)
+        return false
+      }
+      if (this.editCodeValue != this.formCodeData.codeValue) {
+        this.$confirm(
+            '系统参数编码不能随便修改，确定继续修改吗?',
+            '提示',
+            {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }
+        ).then(() => {
+          this.editCodeData(sortUuid, parentCodeUuid)
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消修改'
+          })
+          return false
+        });
+      } else {
+        this.editCodeData(sortUuid, parentCodeUuid)
+      }
+    },
+    // 修改
+    editCodeData(sortUuid, parentCodeUuid) {
+      // this.$confirm(
+      //   '不可以修改类型编码，编码将保持不变，是否确认修改其他信息?',
+      //   '提示',
+      //   {
+      //     confirmButtonText: '确定',
+      //     cancelButtonText: '取消',
+      //     type: 'warning'
+      //   }
+      // ).then(() => {
         this.formCodeData.dataSortUuid = sortUuid
         this.formCodeData.parentCodeUuid = parentCodeUuid
         this.formCodeData.delTag = '0'
-        this.formCodeData.codeValue = this.editCodeValue
+        // this.formCodeData.codeValue = this.editCodeValue
         updateSecond(this.formCodeData).then(response => {
           this.$emit('closeMain')
           this.resetForm()
@@ -251,7 +283,7 @@ export default {
             console.log(error)
           })
         })
-      })
+      // })
     }
   }
 }
