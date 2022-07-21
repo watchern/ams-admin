@@ -986,7 +986,7 @@ export function maxOpenOne() {
 /**
  * 初始化参数树
  */
-export function initParamTree() {
+export function initParamTree(modelFolderPath) {
   var paramSetting = {
     data: {
       key: {
@@ -1106,6 +1106,14 @@ export function initParamTree() {
     if (result.data.isError) {
 
     } else {
+      if (modelFolderPath.indexOf('gonggong') != -1){
+        for(let i = 0; i < result.data.paramNode.length;i++) {
+          if('个人参数' == result.data.paramNode[i].label){
+            result.data.paramNode.splice(i,1);
+            i--
+          }
+        }
+      }
       result.data.paramNode.open = true
       // 'open': true,
       paramZtree = $.fn.zTree.init($('#paramTree'), paramSetting, result.data.paramNode)
@@ -1116,7 +1124,7 @@ export function initParamTree() {
 /**
  * 初始化参数树
  */
-export function initParamTreeNew() {
+export function initParamTreeNew(modelFolderPath) {
   var paramSetting = {
     data: {
       key: {
@@ -1240,6 +1248,14 @@ export function initParamTreeNew() {
     if (result.data.isError) {
 
     } else {
+      if (modelFolderPath.indexOf('gonggong') != -1){
+        for(let i = 0; i < result.data.paramNode.length;i++) {
+          if('个人参数' == result.data.paramNode[i].label){
+            result.data.paramNode.splice(i,1);
+            i--
+          }
+        }
+      }
       for (let i = 0; i < result.data.paramNode.length; i++) {
         setIcon(result.data.paramNode[i])
       }

@@ -124,7 +124,7 @@
                     {"name":"包含","value":"IN"}],
             }
         },
-        props:["graph","nodeId","paramsSetting"],
+        props:["graph","nodeId","paramsSetting","modelFolderPath"],
         mounted(){
             settingParams.sendSettingVue(this)
             this.initSqlEditor(347)//初始化文本编辑器

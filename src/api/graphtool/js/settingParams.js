@@ -18,6 +18,15 @@ export async function init(nodeId) {
     await initNodeZtree(nodeId)
     // 初始化参数树
     getParamsTree().then(result => {
+        var modelFolderPath = settingVue.modelFolderPath
+        if (modelFolderPath.indexOf('gonggong') != -1){
+            for(let i = 0; i < result.data.paramNode.length;i++) {
+                if('个人参数' == result.data.paramNode[i].label){
+                    result.data.paramNode.splice(i,1);
+                    i--
+                }
+            }
+        }
         settingVue.paramZtreeObj = $.fn.zTree.init($(settingVue.$refs.paramZtreeRef), settingVue.initZtreeSetting('paramZtree'), result.data.paramNode)
         // paramManager = result.data.paramManager
         // developManager = result.data.developManager
