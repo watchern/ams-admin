@@ -463,7 +463,8 @@ export default {
   },
   watch: {
     paramShowVIf(newChild) {
-      this.$refs.apple.initSetting(this.sqlEditorParam)
+      // 注释此处调用已用参数初始化方法
+      // this.$refs.apple.initSetting(this.sqlEditorParam)
     }
   },
   created() {
@@ -478,7 +479,10 @@ export default {
     this.paramShowVIf = true
     if (this.operationObj.model != undefined){
       this.form.graphUuid = this.operationObj.model.graphUuid
-      this.isExecuteSql = true
+      // 这里判断保存模型的列信息有的话则显示结果展现
+      if (this.operationObj.model.modelOutputColumn.length>0) {
+        this.isExecuteSql = true
+      }
       this.modelTypeChangeEvent(this.operationObj.model.modelType)
     }
     if (this.$route.query.dataUserId != 'undefined' && this.$route.query.sceneCode != 'undefined') {
@@ -933,67 +937,105 @@ export default {
     /**
      * 获取SQL编辑器或图形化编辑器编辑的sql等信息并展示到界面
      */
-    getSqlObj() {
+    getSqlObj(isOnlyUpdateParams) {
       //const returnObj = this.$refs.SQLEditor.getSaveInfo()
       this.$nextTick(() => {
         const returnObj = this.$refs.SQLEditor[0].getSaveInfo()
         if (returnObj == undefined) {
           return
         }
-        // 转换参数格式 重置参数对象属性，因为SQL编辑器是移植的，因此兼容那边的数据格式，因此对数据格式进行转换
-        const params = this.changeParamDataFormat(returnObj.params, 1)
-        // 转换列格式 处理sql编辑器返回的列数据信息，拼接成该界面能识别的格式
-        const column = this.changeColumnDataFormat(returnObj.columnNames, returnObj.columnTypes)
-        // 处理历史表
-        const modelOriginalTable = this.changeOriginalTable(returnObj.modelOriginalTable)
-        const sqlObj = {
-          sqlValue: returnObj.sqlValue,
-          params: params,
-          column: column,
-          modelChartSetup: returnObj.modelChartSetup,
-          modelOriginalTable: modelOriginalTable
-        }
-        this.form.sqlValue = sqlObj.sqlValue
-        this.form.graphUuid = ""
-        // 初始化默认参数
-        // 初始化参数默认值界面界面
-        if (returnObj.params.length != 0) {
-          this.sqlEditorParam = returnObj.params
-          this.$refs.apple.initSetting(this.sqlEditorParam)
-          this.sqlEditorParamObj = {arr: returnObj.params} //给sql编辑器的参数对象赋值，编辑使用
-        } else {
-          // 编辑时清空参数的情况
-          this.$refs.apple.removeParam()
-          this.sqlEditorParamObj = {arr: []}// 清空参数
-        }
-        // region 初始化固定列
-        const columnData = []
-        for (let i = 0; i < sqlObj.column.length; i++) {
-          const columnDataObj = {
-            outputColumnName: sqlObj.column[i].columnName,
-            columnType: sqlObj.column[i].columnType
+        // 如果sql 编译器触发则只更新已用参数，这里不再判断是否展示结果展示
+        if(isOnlyUpdateParams) {
+          // 转换参数格式 重置参数对象属性，因为SQL编辑器是移植的，因此兼容那边的数据格式，因此对数据格式进行转换
+          const params = this.changeParamDataFormat(returnObj.params, 1)
+          // 转换列格式 处理sql编辑器返回的列数据信息，拼接成该界面能识别的格式
+          const column = this.changeColumnDataFormat(returnObj.columnNames, returnObj.columnTypes)
+          // 处理历史表
+          const modelOriginalTable = this.changeOriginalTable(returnObj.modelOriginalTable)
+          const sqlObj = {
+            sqlValue: returnObj.sqlValue,
+            params: params,
+            column: column,
+            modelChartSetup: returnObj.modelChartSetup,
+            modelOriginalTable: modelOriginalTable
           }
-          columnData.push(columnDataObj)
+          this.form.sqlValue = sqlObj.sqlValue
+          this.form.graphUuid = ""
+          // 初始化默认参数
+          // 初始化参数默认值界面界面
+          if (returnObj.params.length != 0) {
+            this.sqlEditorParam = returnObj.params
+            this.$refs.apple.initSetting(this.sqlEditorParam)
+            this.sqlEditorParamObj = {arr: returnObj.params} //给sql编辑器的参数对象赋值，编辑使用
+          } else {
+            // 编辑时清空参数的情况
+            this.$refs.apple.removeParam()
+            this.sqlEditorParamObj = {arr: []}// 清空参数
+          }
+          // 模型SQL用到的数据表
+          this.modelOriginalTable = sqlObj.modelOriginalTable
+          // 处理图表JSON
+          this.modelChartSetup = sqlObj.modelChartSetup
+          this.form.locationName = returnObj.locationName
+          this.form.locationUuid = returnObj.locationUuid
+        } else {
+           // 转换参数格式 重置参数对象属性，因为SQL编辑器是移植的，因此兼容那边的数据格式，因此对数据格式进行转换
+          const params = this.changeParamDataFormat(returnObj.params, 1)
+          // 转换列格式 处理sql编辑器返回的列数据信息，拼接成该界面能识别的格式
+          const column = this.changeColumnDataFormat(returnObj.columnNames, returnObj.columnTypes)
+          // 处理历史表
+          const modelOriginalTable = this.changeOriginalTable(returnObj.modelOriginalTable)
+          const sqlObj = {
+            sqlValue: returnObj.sqlValue,
+            params: params,
+            column: column,
+            modelChartSetup: returnObj.modelChartSetup,
+            modelOriginalTable: modelOriginalTable
+          }
+          this.form.sqlValue = sqlObj.sqlValue
+          this.form.graphUuid = ""
+          // 初始化默认参数
+          // 初始化参数默认值界面界面
+          if (returnObj.params.length != 0) {
+            this.sqlEditorParam = returnObj.params
+            this.$refs.apple.initSetting(this.sqlEditorParam)
+            this.sqlEditorParamObj = {arr: returnObj.params} //给sql编辑器的参数对象赋值，编辑使用
+          } else {
+            // 编辑时清空参数的情况
+            this.$refs.apple.removeParam()
+            this.sqlEditorParamObj = {arr: []}// 清空参数
+          }
+          // region 初始化固定列
+          const columnData = []
+          for (let i = 0; i < sqlObj.column.length; i++) {
+            const columnDataObj = {
+              outputColumnName: sqlObj.column[i].columnName,
+              columnType: sqlObj.column[i].columnType
+            }
+            columnData.push(columnDataObj)
+          }
+          // endregion
+          // 列数据
+          this.columnData = columnData
+          if (this.columnData.length==0){
+            this.isExecuteSql = false
+          }else if (this.columnData.length>0){
+            this.isExecuteSql = true
+          }
+          this.setThreasholdValueObj.columns = []
+          for (var i = 0;i<columnData.length;i++){
+            this.setThreasholdValueObj.columns.push(columnData[i].outputColumnName)
+          }
+          // 模型SQL用到的数据表
+          this.modelOriginalTable = sqlObj.modelOriginalTable
+          // 处理图表JSON
+          this.modelChartSetup = sqlObj.modelChartSetup
+          this.form.locationName = returnObj.locationName
+          this.form.locationUuid = returnObj.locationUuid
+
         }
-        // endregion
-        // 列数据
-        this.columnData = columnData
-        if (this.columnData.length==0){
-          this.isExecuteSql = false
-        }else if (this.columnData.length>0){
-          this.isExecuteSql = true
-        }
-        this.setThreasholdValueObj.columns = []
-        for (var i = 0;i<columnData.length;i++){
-          this.setThreasholdValueObj.columns.push(columnData[i].outputColumnName)
-        }
-        // 模型SQL用到的数据表
-        this.modelOriginalTable = sqlObj.modelOriginalTable
-        // 处理图表JSON
-        this.modelChartSetup = sqlObj.modelChartSetup
-        this.form.locationName = returnObj.locationName
-        this.form.locationUuid = returnObj.locationUuid
-        }) 
+         
+      })
     },
     // 刷新参数列表
     refreshAppleTable(){

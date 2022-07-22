@@ -335,6 +335,18 @@ export function findParamsAndModelRelParams() {
 }
 
 /**
+ * 获取参数关联关系
+ */
+export function paramTreeByParamId(data) {
+    return request({
+        baseURL: analysisUrl,
+        url: '/paramConditionController/ParamTreeByParamIds',
+        method: 'post',
+        params: data
+    })
+}
+
+/**
  * 执行当前参数SQL语句
  * @param {*} data   SQL语句
  */

@@ -1595,6 +1595,19 @@ export function findParamsAndModelRelParams() {
 }
 
 /**
+ * 获取参数关联关系
+ */
+
+ export function paramTreeByParamId(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/paramConditionController/ParamTreeByParamIds',
+    method: 'post',
+    params: data
+  })
+}
+
+/**
  * 执行当前参数SQL语句
  * @param {*} data   SQL语句
  */
@@ -2004,6 +2017,7 @@ export function initSetting() {
           // 第五步：找出有效参数集合中未配置的参数,并追加TR行
           let moduleParamArr = [] // 存储已匹配的母版参数集合
           let copyParamArr = []// 定义所有参数的对象数组（已去重）
+          let ammParamUuidArr = []; // 获取参数ammParamUuid 以便获取参数关联关系
           let promiseList = []
           for (let j = 0; j < paramArr.length; j++) { // 遍历有效的参数集合
             // let setParamObj = {
@@ -2065,86 +2079,66 @@ export function initSetting() {
                   paramList[k].copyParamId = paramArr[j].copyParamId   
                   paramList[k].sortId = paramArr[j].id 
                 }
+                ammParamUuidArr.push(paramList[k].ammParamUuid)
                 copyParamArr.push(paramList[k])
                 moduleParamArr.push(moduleParamId)
               }
             }
 
           }
-          for (let n = 0; n < copyParamArr.length; n++) {
-            let setParamObj = {
-              "paramName": copyParamArr[n].paramName,
-              "inputType": copyParamArr[n].inputType,//参数类型
-              "masterparam": copyParamArr[n].paramRelationList[0],
-              "useQuotation":copyParamArr[n].useQuotation,
-              "example":copyParamArr[n].example,
-              "paramConditionList":copyParamArr[n].paramConditionList,
-              value: copyParamArr[n].defaultVal && copyParamArr[n].defaultVal || '',
-              // defaultVal: copyParamArr[n].defaultVal,
-              dataModuleParamId: copyParamArr[n].moduleParamId,
-              name: copyParamArr[n].paramName,
-              description: copyParamArr[n].description && copyParamArr[n].description || '',
-              copyParamId: copyParamArr[n].copyParamId,
-              sortId: copyParamArr[n].sortId,
-            };
-            promiseList.push(new Promise(function (resolve, reject) {
-              resolve(getSettingParamArr(copyParamArr[n], setParamObj, null, null, n))
-            }))
-            
-            // if (!returnObj.isError) {
-            //   setParamObj = returnObj.setParamObj
-            // } else {
-            //   settingVue.$message.error({
-            //     message: returnObj.message
-            //   })
-            // }
-            // if (typeof copyParamArr[n].description !== 'undefined' && copyParamArr[n].description != null) {
-            //   setParamObj.description = copyParamArr[n].description
-            // }
-            // settingVue.setParamArr.push(setParamObj)
-            // settingVue.$forceUpdate();
-            // load.hide()
-          }
-          Promise.all(promiseList).then((rspList)=> {
-            settingVue.setParamArrIdArr = [];
-            settingVue.setParamArr = [];
-            rspList.map((val)=> {
-              // if (!val.isError) {
-              //   settingVue.setParamArr.push(val.setParamObj)
-              //   alert('load关闭')
-              //   load.destroy()
-              // } else {
-              //   settingVue.$message.error({
-              //     message: val.message
-              //   })
-              // }
-              // 把所有参数的moduleParamId存起来，以便后续排序
-              settingVue.setParamArrIdArr.push(val.setParamObj.sortId)
-              settingVue.setParamArr.push(val.setParamObj)
-            });
-            for (let i = 0;i<settingVue.setParamArr.length;i++){
-              this.changeparamdata(settingVue.setParamArr[i],i)
+          // 1：根据编辑的参数获取参数关联关系；2：默认只加载不被关联的数据
+          let ammParamUuid = {paramUuids: ammParamUuidArr.join(',')}
+          paramTreeByParamId(ammParamUuid).then((res) => {
+            settingVue.relationParams= res.data;
+            for (let n = 0; n < copyParamArr.length; n++) {
+              let setParamObj = {
+                "paramName": copyParamArr[n].paramName,
+                "inputType": copyParamArr[n].inputType,//参数类型
+                "masterparam": copyParamArr[n].paramRelationList[0],
+                "useQuotation":copyParamArr[n].useQuotation,
+                "example":copyParamArr[n].example,
+                "paramConditionList":copyParamArr[n].paramConditionList,
+                value: copyParamArr[n].defaultVal && copyParamArr[n].defaultVal || '',
+                // defaultVal: copyParamArr[n].defaultVal,
+                dataModuleParamId: copyParamArr[n].moduleParamId,
+                name: copyParamArr[n].paramName,
+                description: copyParamArr[n].description && copyParamArr[n].description || '',
+                copyParamId: copyParamArr[n].copyParamId,
+                sortId: copyParamArr[n].sortId,
+              };
+              promiseList.push(new Promise(function (resolve, reject) {
+                resolve(getSettingParamArr(copyParamArr[n], setParamObj, null, null, n, res.data))
+              }))
             }
-            settingVue.$nextTick(() => {
-              if (settingVue.$refs.dragTable) {
-                settingVue.rowDrop();
+            Promise.all(promiseList).then((rspList)=> {
+              settingVue.setParamArrIdArr = [];
+              settingVue.setParamArr = [];
+              rspList.map((val)=> {
+                // if (!val.isError) {
+                //   settingVue.setParamArr.push(val.setParamObj)
+                //   alert('load关闭')
+                //   load.destroy()
+                // } else {
+                //   settingVue.$message.error({
+                //     message: val.message
+                //   })
+                // }
+                // 把所有参数的moduleParamId存起来，以便后续排序
+                settingVue.setParamArrIdArr.push(val.setParamObj.sortId)
+                settingVue.setParamArr.push(val.setParamObj)
+              });
+              // 判断关联参数有选择值得话加载被关联参数的下拉数据
+              for (let i = 0;i<settingVue.setParamArr.length;i++){
+                this.changeparamdata(settingVue.setParamArr[i],i, 'noCheck')
               }
-              load.destroy()
-            })
-           
-        });
-       
-          // $(settingVue.$refs.setParamTbody).sortable().disableSelection()
-          
-         
-          // settingVue.$nextTick(() => {
-          //   // 第六步：统一初始化参数的html（文本框、下拉列表、下拉树），并反显已配置参数的信息（包括默认值和排序值）
-          //   // initParam(paramArr, hasSetParamIdArr)
-          //   // 第七步：刷新SQL值，将已编写的SQL赋值给sql
-           
-          //   // alert('关闭')
-          //   load.destroy()
-          // })  
+              settingVue.$nextTick(() => {
+                if (settingVue.$refs.dragTable) {
+                  settingVue.rowDrop();
+                }
+                load.destroy()
+              })
+            });
+          })  
         }
       }
     })
@@ -2792,7 +2786,7 @@ export function getParamsSettingBySave() {
  * @param selectTreeNum 下拉树参数的个数
  * @param setParamObj 待返回的参数对象
  */
-export async function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeNum, index){
+export async function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeNum, index, paramsRelation){
   let obj = {
     "selectNum":selectNum,
     "selectTreeNum":selectTreeNum,
@@ -2800,6 +2794,8 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
     "isError": false,
     "message": ""
   }
+  // 获取关联参数的id
+  var paramUuids = paramsRelation.map(i => i.extMap.paramUuid)
   let dataArr = []// 下拉列表或下拉树的数据的数组
   let paramArr = []// 影响当前参数的主参集合
   let associatedParamIdArr = []// 受当前参数影响的被关联参数ID集合
@@ -2827,7 +2823,8 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
            }
          })
       } else { // 执行备选sql
-        if (paramSql !== '') {
+        // 没被关联的参数获取数据; 关联参数有已选值得花加载数据
+        if (paramSql !== '' && (paramUuids.length == 0 || paramObj.ammParamUuid.indexOf(paramUuids) == -1)) {
           hasSql = true// 下拉列表是SQL方式
           // if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
            let response = await executeParamSql(paramSql)
@@ -2935,10 +2932,14 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
       }
       break
     case 'treeinp':// 下拉树
-      if (paramSql !== '') { // 执行备选SQL
+      // 没被关联的参数获取数据
+      console.log(paramObj, '树的参数111')
+      if (paramSql !== '' && (paramUuids.length == 0 || paramObj.ammParamUuid.indexOf(paramUuids) == -1)) { // 执行备选SQL
         hasSql = true
         // if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
         let resp = await getSelectTreeData(paramSql)
+        console.log(paramObj, '树的参数')
+        console.log(resp, '树参数返回')
         if (resp.data == null) {
           obj.isError = true
           obj.message = `获取参数【${paramObj.paramName}】的值的失败`
@@ -3013,14 +3014,29 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
   return obj
 }
 
-export function changeparamdata (info,ind) {
+/**
+ * @param isCheck 是否点击时进行校验选择关联参数的值（默认调用时不校验）
+ * @param isRequest 是否加载被关联参数的数据（关联参数选择时加载 点击时不进行加载 默认加载）
+ */
+export function changeparamdata (info,ind, isCheck, isRequest) {
   let paramsArr = []
+  let isHasVal = false // 判断关联参数是否有选中值，有的话获取被关联参数数据
   if(info.paramConditionList.length>0){
-    settingVue.setParamArr[ind].data = []
+    // console.log('有关联关系')
+    
     for(let i = 0; i<info.paramConditionList.length;i++){
       for(let j =0;j<settingVue.setParamArr.length;j++){
         if(info.paramConditionList[i].relationParamId == settingVue.setParamArr[j].dataId){
-          let repvalue = settingVue.setParamArr[j].inputType == "textinp"?settingVue.setParamArr[j].dataDefaultVal:settingVue.setParamArr[j].inputType == "lineinp"?(Array.isArray(settingVue.paramListValueList[j])?settingVue.paramListValueList[j].join(','):settingVue.paramListValueList[j]):settingVue.setParamArr[j].inputType == "treeinp"?(Array.isArray(settingVue.paramTreeValueList[j])?settingVue.paramTreeValueList[j].join(','):settingVue.paramTreeValueList[j]):settingVue.setParamArr[j].dataDefaultVal
+          let repvalue = settingVue.setParamArr[j].inputType == "textinp"?settingVue.setParamArr[j].dataDefaultVal:settingVue.setParamArr[j].inputType == "lineinp"?(Array.isArray(settingVue.paramListValueList[j])?settingVue.paramListValueList[j].join(','):settingVue.paramListValueList[j]):settingVue.setParamArr[j].inputType == "treeinp"?(Array.isArray(settingVue.paramTreeValueList[j])?settingVue.paramTreeValueList[j].join(','):settingVue.paramTreeValueList[j]):settingVue.setParamArr[j].dataDefaultVal;
+          // 判断被关联参数是否有已选值
+          // 判断是否为被关联字段如果关联字段没有选择值提示
+          if (repvalue) {
+            isHasVal = true
+          } else if (!repvalue && !isCheck) { // 关联参数有值时默认加载被关联下拉数据时不触发校验
+            settingVue.setParamArr[ind].data = []
+            settingVue.$message({type: 'warning', message: `请先选择${settingVue.setParamArr[j].name}`})
+            settingVue.$forceUpdate()
+          }
           if(settingVue.setParamArr[j].useQuotation == '1' ){
             if(repvalue!=undefined && repvalue!=''){
               repvalue = "'" + repvalue + "'"
@@ -3036,36 +3052,40 @@ export function changeparamdata (info,ind) {
         }
       }
     }
-    request({
-      baseURL: '/analysis',
-      url: '/paramConditionController/getParamConditionSqlResult',
-      method: 'post',
-      data:{
-        "paramId":info.dataId,
-        "paramsArr":paramsArr
-      }
-    }).then(result => {
-      if(result.data.isError == true){
-        this.$message({type: 'error', message: result.data.message})
-      }else{
-        let list = []
-        for(let i =0;i<result.data.paramList.length;i++){
-          list.push(
-            {
-              'name': result.data.paramList[i].C_NAME,
-              // 'value': info.dataType == 'str' ? `'` +  result.data.paramList[i].C_CODE + `'` : result.data.paramList[i].C_CODE,
-              'value': result.data.paramList[i].C_CODE,
-              // 'pValue':info.dataType == 'str' ? `'` +  result.data.paramList[i].P_CODE + `'` : result.data.paramList[i].P_CODE,
-              'pValue': result.data.paramList[i].P_CODE,
-              // 'pValue':paramCommonJs.pValueFormat(result.data.paramList[i].P_CODE, info),
-              'children': [],
-            }
-          )
+    // 判断关联参数有值时并且为选择关联参数时才加载数据
+    if (isHasVal && !isRequest) {
+      settingVue.setParamArr[ind].data = []
+      request({
+        baseURL: '/analysis',
+        url: '/paramConditionController/getParamConditionSqlResult',
+        method: 'post',
+        data:{
+          "paramId":info.dataId,
+          "paramsArr":paramsArr
         }
-        settingVue.setParamArr[ind].data = paramCommonJs.matchingPcRelation(list, 0, true)
-        settingVue.$forceUpdate()
-      }
-    })
+      }).then(result => {
+        if(result.data.isError == true){
+          this.$message({type: 'error', message: result.data.message})
+        }else{
+          let list = []
+          for(let i =0;i<result.data.paramList.length;i++){
+            list.push(
+              {
+                'name': result.data.paramList[i].C_NAME,
+                // 'value': info.dataType == 'str' ? `'` +  result.data.paramList[i].C_CODE + `'` : result.data.paramList[i].C_CODE,
+                'value': result.data.paramList[i].C_CODE,
+                // 'pValue':info.dataType == 'str' ? `'` +  result.data.paramList[i].P_CODE + `'` : result.data.paramList[i].P_CODE,
+                'pValue': result.data.paramList[i].P_CODE,
+                // 'pValue':paramCommonJs.pValueFormat(result.data.paramList[i].P_CODE, info),
+                'children': [],
+              }
+            )
+          }
+          settingVue.setParamArr[ind].data = paramCommonJs.matchingPcRelation(list, 0, true)
+          settingVue.$forceUpdate()
+        }
+      })
+    }
   }
 }
 
@@ -3100,7 +3120,9 @@ export function changeRelationParam (ind, val, dataType) {
             settingVue.paramTreeValueList[i] = ''
             settingVue.setParamArr[i].value = '';
           }
-          this.changeparamdata(settingVue.setParamArr[i],i)
+          if (val) {
+            this.changeparamdata(settingVue.setParamArr[i],i)
+          }
           settingVue.$forceUpdate() 
         }
       }

@@ -11,14 +11,14 @@
         <el-col :span="15">
           <!-- 下拉列表类型 -->
           <el-select v-model="paramListValueList[ind]" ref="selectParam"  style="width: 100%;" v-if="paramInfo.inputType === 'lineinp' " 
-              :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable @change="changeRelationParam(ind, paramListValueList[ind])" @click.native="changeparamdata(paramInfo,ind)"> 
+              :multiple="paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0'" filterable clearable @change="changeRelationParam(ind, paramListValueList[ind])" @click.native="changeparamdata(paramInfo,ind,false, true)"> 
             <el-option v-for="(item,index) in paramInfo.data" :value="item.value" :label="item.name" :key="index+'sec'" >
               <span style="float: left"> {{ item.name}}</span>
               <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value == item.name ? "" : item.value}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
             </el-option>
           </el-select>
           <!-- <div class="select-div el-input__inner" ref="selectParam" :index="ind" v-if="paramInfo.inputType === 'lineinp'" :id="paramInfo.id" :title="paramInfo.title"></div> -->
-          <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.dataDefaultVal" class="textParam" @change="changeRelationParam(ind, paramInfo.dataDefaultVal)" @click.native="changeparamdata(paramInfo,ind)"></el-input>
+          <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.dataDefaultVal" class="textParam" @change="changeRelationParam(ind, paramInfo.dataDefaultVal)" @click.native="changeparamdata(paramInfo,ind,false,true)"></el-input>
           <!-- 树类型参数 -->
           <el-cascader
             v-model="paramTreeValueList[ind]"
@@ -28,13 +28,13 @@
             :props="{ label:'name',  multiple: paramInfo.dataChoiceType == 0 || paramInfo.dataChoiceType == '0', emitPath: false,checkStrictly: true}"
             :options="paramInfo.data"
             @change="changeRelationParam(ind, paramTreeValueList[ind])"
-            @click.native="changeparamdata(paramInfo,ind)"
+            @click.native="changeparamdata(paramInfo,ind, false, true)"
             multiple
             clearable />
           <!-- <div class="select-div" ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title"></div> -->
           <span  v-if="paramInfo.inputType === 'timeinp'" >
-            <el-date-picker v-if="paramInfo.timeFormat!='other'" ref="paramOption" :index="ind"  :title="paramInfo.title" :type="paramInfo.timeFormat" placeholder="选择日期" :value-format="timeDealFormat(paramInfo.timeFormat)"  v-model="paramInfo.dataDefaultVal" style="width: 98%;" @change="changeRelationParam(ind, paramInfo.dataDefaultVal)" @click.native="changeparamdata(paramInfo,ind)"></el-date-picker> 
-            <el-date-picker v-else ref="paramOption" :index="ind"  :title="paramInfo.title" type="date" placeholder="选择日期" :value-format="paramInfo.customizeFormat" v-model="paramInfo.dataDefaultVal" style="width: 98%;" @change="changeRelationParam(ind, paramInfo.dataDefaultVal)" @click.native="changeparamdata(paramInfo,ind)"></el-date-picker> 
+            <el-date-picker v-if="paramInfo.timeFormat!='other'" ref="paramOption" :index="ind"  :title="paramInfo.title" :type="paramInfo.timeFormat" placeholder="选择日期" :value-format="timeDealFormat(paramInfo.timeFormat)"  v-model="paramInfo.dataDefaultVal" style="width: 98%;" @change="changeRelationParam(ind, paramInfo.dataDefaultVal)" @click.native="changeparamdata(paramInfo,ind,false,true)"></el-date-picker> 
+            <el-date-picker v-else ref="paramOption" :index="ind"  :title="paramInfo.title" type="date" placeholder="选择日期" :value-format="paramInfo.customizeFormat" v-model="paramInfo.dataDefaultVal" style="width: 98%;" @change="changeRelationParam(ind, paramInfo.dataDefaultVal)" @click.native="changeparamdata(paramInfo,ind, false, true)"></el-date-picker> 
           </span>
         </el-col>
         <el-col :span="2" v-show="paramInfo.allowedNull">
@@ -49,7 +49,7 @@
 <script>
 import request from '@/utils/request'
 import '@/components/ams-loading/css/loading.css'
-import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,recplaceParams } from '@/api/graphtool/apiJs/graphList'
+import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,recplaceParams,paramTreeByParamId } from '@/api/graphtool/apiJs/graphList'
 import * as paramCommonJs from '@/api/graphtool/js/paramCommon'
 import {removeJcCssfile,addJsFile} from "@/api/analysis/common"
 export default {
@@ -78,11 +78,11 @@ export default {
   beforeDestroy() {
     removeJcCssfile("xm-select.js","js")
   },methods:{
-    changeparamdata(info,ind){
+    changeparamdata(info,ind,isCheck, isRequest){
       let paramsArr = []
+      let isHasVal = false // 判断关联参数是否有选中值，有的话获取被关联参数数据
       if(info.paramConditionList.length>0){
-        this.paramInfoArr[ind].data = []
-        console.log('有关联关系')
+        // this.paramInfoArr[ind].data = []
         for(let i = 0; i<info.paramConditionList.length;i++){
           for(let j =0;j<this.paramInfoArr.length;j++){
             if(info.paramConditionList[i].relationParamId == this.paramInfoArr[j].dataId){
@@ -94,6 +94,12 @@ export default {
                   repvalue = ""
                 }
               }
+              if (repvalue) {
+                isHasVal = true
+              } else if (!repvalue && !isCheck) { // 关联参数有值时默认加载被关联下拉数据时不触发校验
+                this.paramInfoArr[ind].data = []
+                this.$message({type: 'warning', message: `请先选择${this.paramInfoArr[j].paramName}`})
+              }
               paramsArr.push({
                 id:info.paramConditionList[i].relationParamId,
                 paramValue:repvalue,
@@ -102,34 +108,41 @@ export default {
             }
           }
         }
-        request({
-          baseURL: '/analysis',
-          url: '/paramConditionController/getParamConditionSqlResult',
-          method: 'post',
-          data:{
-            "paramId":info.dataId,
-            "paramsArr":paramsArr
-          }
-        }).then(result => {
-          if(result.data.isError == true){
-            this.$message({type: 'error', message: result.data.message})
-          }else{
-            let list = []
-            for(let i =0;i<result.data.paramList.length;i++){
-              list.push(
-                {
-                  'name': result.data.paramList[i].C_NAME,
-                  // 'value': info.dataType == 'str' ? `'` + result.data.paramList[i].C_CODE + `'` : result.data.paramList[i].C_CODE,
-                   'value':result.data.paramList[i].C_CODE,
-                  'pValue': result.data.paramList[i].P_CODE,
-                  // 'pValue':paramCommonJs.pValueFormat(result.data.paramList[i].P_CODE, info),
-                  'children': [],
-                }
-              )
+        // 判断关联参数有值时并且为选择关联参数时才加载数据
+        if (isHasVal && !isRequest) {
+          this.paramInfoArr[ind].data = []
+          request({
+            baseURL: '/analysis',
+            url: '/paramConditionController/getParamConditionSqlResult',
+            method: 'post',
+            data:{
+              "paramId":info.dataId,
+              "paramsArr":paramsArr
             }
-            this.paramInfoArr[ind].data = paramCommonJs.matchingPcRelation(list, 0, true)
-          }
-        })
+          }).then(result => {
+            if(result.data.isError == true){
+              this.$message({type: 'error', message: result.data.message})
+            }else{
+              let list = []
+              for(let i =0;i<result.data.paramList.length;i++){
+                list.push(
+                  {
+                    'name': result.data.paramList[i].C_NAME,
+                    // 'value': info.dataType == 'str' ? `'` + result.data.paramList[i].C_CODE + `'` : result.data.paramList[i].C_CODE,
+                    'value':result.data.paramList[i].C_CODE,
+                    'pValue': result.data.paramList[i].P_CODE,
+                    // 'pValue':paramCommonJs.pValueFormat(result.data.paramList[i].P_CODE, info),
+                    'children': [],
+                  }
+                )
+              }
+              this.paramInfoArr[ind].data = paramCommonJs.matchingPcRelation(list, 0, true)
+              this.$forceUpdate()
+            }
+          })
+
+        }
+       
       }
       
     },
@@ -162,7 +175,9 @@ export default {
                 this.paramTreeValueList[i] = ''
                 this.paramInfoArr[ind].value = ''
               }
-              this.changeparamdata(this.paramInfoArr[i],i)
+              if (val) {
+                this.changeparamdata(this.paramInfoArr[i],i)
+              }
               this.$forceUpdate()
             }
           }
@@ -258,6 +273,7 @@ export default {
       }
       let moduleParamArr = []// 母参数数组（去重用）
       let copyParamArr = []// 定义所有参数的对象数组（已去重）
+      let ammParamUuidArr = []; // 获取参数ammParamUuid 以便获取参数关联关系
         for (let j = 0; j < this.arr.length; j++) {
           for (let k = 0; k < paramsArr.length; k++) {
             let moduleParamId = paramsArr[k].ammParamUuid
@@ -281,6 +297,7 @@ export default {
               this.arr[j].useQuotation = paramsArr[k].useQuotation
               this.arr[j].example = paramsArr[k].example
               this.arr[j].inputType = paramsArr[k].inputType
+              ammParamUuidArr.push(paramsArr[k].ammParamUuid)
               copyParamArr.push(paramsArr[k])
               moduleParamArr.push(moduleParamId)
               // break
@@ -298,59 +315,64 @@ export default {
           'paramsArr': this.arr
         }
         this.overallParmaobj[id] = eachParamObj
-      for (let n = 0; n < copyParamArr.length; n++) {
-        let paramInfoObj = {
-          "paramName": copyParamArr[n].paramName,
-          "description": '（参数说明：无）',
-          "inputType": copyParamArr[n].inputType,//参数类型
-          "masterparam": copyParamArr[n].paramRelationList[0],
-          "useQuotation":copyParamArr[n].useQuotation,
-          "example":copyParamArr[n].example,
-          "paramConditionList":copyParamArr[n].paramConditionList,
-        }
-        if (typeof copyParamArr[n].description !== 'undefined' && copyParamArr[n].description != null) {
-          paramInfoObj.description = '（参数说明：' + copyParamArr[n].description + '）'
-        }
-        let returnObj = await this.initParamHtml(copyParamArr[n], paramInfoObj, this.selectNum, this.selectTreeNum, n)
-        if (typeof returnObj.selectNum !== 'undefined') {
-          this.selectNum = returnObj.selectNum
-          paramInfoObj.selectNum = returnObj.selectNum
-        }
-        if (typeof returnObj.selectTreeNum !== 'undefined') {
-          this.selectTreeNum = returnObj.selectTreeNum
-          paramInfoObj.selectTreeNum = returnObj.selectTreeNum
-        }
-        if (returnObj.isError) {
-          this.$message.error(returnObj.message)
-          return
-        } else {
-          paramInfoObj = {...paramInfoObj, ...returnObj.setParamObj}
-          paramInfoObj.description += `${paramInfoObj.title}`
-        }
-        this.paramInfoArr.push(paramInfoObj)
-      }
-      for (let i = 0; i < this.paramInfoArr.length; i++){
-        this.changeparamdata(this.paramInfoArr[i],i)
-        if (this.paramInfoArr[i].inputType == 'lineinp') {
-          this.paramTreeValueList[i] = undefined
-          if (this.paramListValueList[i] == undefined) {
-            this.paramListValueList[i] = ''
+        // 1：根据编辑的参数获取参数关联关系；2：默认只加载不被关联的数据
+        let ammParamUuid = {paramUuids: ammParamUuidArr.join(',')}
+        let paramsRelation = await paramTreeByParamId(ammParamUuid)
+        for (let n = 0; n < copyParamArr.length; n++) {
+          let paramInfoObj = {
+            "paramName": copyParamArr[n].paramName,
+            "description": '（参数说明：无）',
+            "inputType": copyParamArr[n].inputType,//参数类型
+            "masterparam": copyParamArr[n].paramRelationList[0],
+            "useQuotation":copyParamArr[n].useQuotation,
+            "example":copyParamArr[n].example,
+            "paramConditionList":copyParamArr[n].paramConditionList,
           }
-        } else if (this.paramInfoArr[i].inputType == 'treeinp') {
-          this.paramListValueList[i] = undefined
-          if (this.paramTreeValueList[i] == undefined) {
-            this.paramTreeValueList[i] = ''
+          if (typeof copyParamArr[n].description !== 'undefined' && copyParamArr[n].description != null) {
+            paramInfoObj.description = '（参数说明：' + copyParamArr[n].description + '）'
+          }
+
+          let returnObj = await this.initParamHtml(copyParamArr[n], paramInfoObj, this.selectNum, this.selectTreeNum, n, paramsRelation.data)
+          if (typeof returnObj.selectNum !== 'undefined') {
+            this.selectNum = returnObj.selectNum
+            paramInfoObj.selectNum = returnObj.selectNum
+          }
+          if (typeof returnObj.selectTreeNum !== 'undefined') {
+            this.selectTreeNum = returnObj.selectTreeNum
+            paramInfoObj.selectTreeNum = returnObj.selectTreeNum
+          }
+          if (returnObj.isError) {
+            this.$message.error(returnObj.message)
+            return
+          } else {
+            paramInfoObj = {...paramInfoObj, ...returnObj.setParamObj}
+            paramInfoObj.description += `${paramInfoObj.title}`
+          }
+          this.paramInfoArr.push(paramInfoObj)
+        }
+        for (let i = 0; i < this.paramInfoArr.length; i++){
+          this.changeparamdata(this.paramInfoArr[i],i,'noCheck')
+          if (this.paramInfoArr[i].inputType == 'lineinp') {
+            this.paramTreeValueList[i] = undefined
+            if (this.paramListValueList[i] == undefined) {
+              this.paramListValueList[i] = ''
+            }
+          } else if (this.paramInfoArr[i].inputType == 'treeinp') {
+            this.paramListValueList[i] = undefined
+            if (this.paramTreeValueList[i] == undefined) {
+              this.paramTreeValueList[i] = ''
+            }
           }
         }
-      }
-      this.$nextTick(() => {
-        // this.initParamInputAndSelect()
-        this.loading.destroy()
-        let nodeParamDom = this.$refs.nodeParam
-        // if (nodeParamDom.$children.length===0){
-        //   this.hasParam = true
-        // }
-      })
+        this.$nextTick(() => {
+          // this.initParamInputAndSelect()
+          this.loading.destroy()
+          let nodeParamDom = this.$refs.nodeParam
+          // if (nodeParamDom.$children.length===0){
+          //   this.hasParam = true
+          // }
+        })
+     
       }catch (e) {
         this.loading.destroy()
         console.info(e)
@@ -363,9 +385,10 @@ export default {
      * @param setParamObj 待返回的参数对象
      * @param selectNum 下拉列表参数的个数
      * @param selectTreeNum 下拉树参数的个数
+     * @param paramsRelation 参数关联信息
      * @author JL
      */
-    async initParamHtml(paramObj, setParamObj, selectNum, selectTreeNum, index) {
+    async initParamHtml(paramObj, setParamObj, selectNum, selectTreeNum, index, paramsRelation) {
       let obj = {
         "selectNum":selectNum,
         "selectTreeNum":selectTreeNum,
@@ -373,6 +396,8 @@ export default {
         "isError": false,
         "message": ""
       }
+      // 获取关联参数的id
+      var paramUuids = paramsRelation.map(i => i.extMap.paramUuid)
       let dataArr = []// 下拉列表或下拉树的数据的数组
       let paramArr = []// 影响当前参数的主参集合
       let associatedParamIdArr = []// 受当前参数影响的被关联参数ID集合
@@ -395,7 +420,7 @@ export default {
               }
             })
           } else { // 执行备选sql
-            if (paramSql !== '') {
+            if (paramSql !== '' && (paramUuids.length == 0 || paramObj.ammParamUuid.indexOf(paramUuids) == -1)) {
               hasSql = true// 下拉列表是SQL方式
                // 初始化默认执行sql
                 const response = await executeParamSql(paramSql)
@@ -503,7 +528,7 @@ export default {
           }
           break
         case 'treeinp':// 下拉树
-          if (paramSql !== '') { // 执行备选SQL
+          if (paramSql !== '' && (paramUuids.length==0 || paramObj.ammParamUuid.indexOf(paramUuids) == -1)) { // 执行备选SQL
             hasSql = true
             const response = await getSelectTreeData(paramSql)
               if(response.data == null){

@@ -477,8 +477,8 @@ export function initSQLEditor(textarea, relTableMap, expTableMap) {
       }
       isFirstPaste = true
     }
-    // sql编译器修改时实时刷新已用参数
-    settingVue.$emit("getSqlObj");
+    // sql编译器修改时实时刷新已用参数 (仅更新已用参数信息)
+    settingVue.$emit("getSqlObj", 'onlyUpdateParams');
   })
   // 设置脚本展示tab的上面编辑器高度
   editor.setSize('auto', ($(document).height() * 0.5 - 40) + 'px')

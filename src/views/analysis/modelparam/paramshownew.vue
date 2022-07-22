@@ -26,7 +26,7 @@
              <!-- 下拉列表类型 -->
              <!-- setParamObj.dataType == 'str' ? `'`+ item.value + `'`:  -->
             <el-select v-model="paramListValueList[index]" style="width: 90%;" 
-                :multiple="setParamObj.dataChoiceType == 0 || setParamObj.dataChoiceType == '0'" filterable clearable @change="changeRelationParam(index, paramListValueList[index], setParamObj.dataType)" @click.native="changeparamdata(setParamObj,index)">
+                :multiple="setParamObj.dataChoiceType == 0 || setParamObj.dataChoiceType == '0'" filterable clearable @change="changeRelationParam(index, paramListValueList[index], setParamObj.dataType)" @click.native="changeparamdata(setParamObj,index, false, true)">
               <el-option v-for="(item, index) in setParamObj.data" :value="item.value" :label="item.name" :key="index" >
                 <span style="float: left"> {{ item.name }}</span>
                 <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value == item.name ? "" : item.value}}  &nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -50,7 +50,7 @@
             :props="{ label:'name',  multiple: setParamObj.dataChoiceType == 0 || setParamObj.dataChoiceType == '0', emitPath: false, checkStrictly: true }"
             :options="setParamObj.data"
             @change="changeRelationParam(index, paramTreeValueList[index])"
-            @click.native="changeparamdata(setParamObj,index)"
+            @click.native="changeparamdata(setParamObj,index, false, true)"
             multiple
             clearable />
           </td>
@@ -84,6 +84,7 @@ data(){
     selectNum:0,// 用于临时记录参数为下拉列表的个数
     selectTreeNum:0,// 用于临时记录参数为下拉树的个数
     setParamArrIdArr: [], // 拖拽后的id数组
+    relationParams: [], // 关联参数信息
   }
 },
   mounted(){

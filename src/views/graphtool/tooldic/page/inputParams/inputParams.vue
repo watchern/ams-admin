@@ -69,7 +69,7 @@
             changeparamdata(index,info,ind){
               let paramsArr = []
               if(info.paramConditionList.length>0){
-                console.log('有关联关系')
+                // console.log('有关联关系')
                 this.nodeParamInfoArr[index].paramInfoArr[ind].data = []
                 console.log(info.paramConditionList)
                 for(let i = 0; i<info.paramConditionList.length;i++){
