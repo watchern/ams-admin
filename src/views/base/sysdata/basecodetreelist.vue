@@ -118,7 +118,7 @@ export default {
         })
         return false
       }
-      this.$refs.baseCodeOperate.editCodeData(sortUuid, parentCodeUuid)
+      this.$refs.baseCodeOperate.editCodeDataBefore(sortUuid, parentCodeUuid)
     },
     // 删除
     delCodeData() {

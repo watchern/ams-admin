@@ -331,7 +331,7 @@
       :visible.sync="dialogFormVisiblePersonTree"
       :append-to-body="true"
     >
-      <personTree ref="personTree" />
+      <personTree ref="personTree" style="max-height: 500px;overflow: auto"/>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisiblePersonTree = false">关闭</el-button>
         <el-button type="primary" @click="shareModel">确定</el-button>

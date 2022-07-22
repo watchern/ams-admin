@@ -15,6 +15,7 @@
           ref="tree"
         ></el-tree>
       </el-aside>
+      <div>
       <el-table
         v-loading="listLoading"
         :data="list"
@@ -26,27 +27,28 @@
         <el-table-column type="selection" width="55" />
         <el-table-column
           label="人员名称"
-          width="100px"
+          width="150px"
           align="center"
           prop="cnname"
         />
         <el-table-column
           label="组织名称"
-          width="150px"
+          width="200px"
           align="center"
           prop="org.cnname"
         />
       </el-table>
+      <el-pagination
+          :current-page="page"
+          :page-sizes="[10, 20, 30, 50]"
+          :page-size="limit"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+      />
+      </div>
     </el-container>
-    <el-pagination
-      :current-page="page"
-      :page-sizes="[10, 20, 30, 50]"
-      :page-size="limit"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-    />
   </div>
 </template>
 
