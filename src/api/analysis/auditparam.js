@@ -2933,13 +2933,10 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
       break
     case 'treeinp':// 下拉树
       // 没被关联的参数获取数据
-      console.log(paramObj, '树的参数111')
       if (paramSql !== '' && (paramUuids.length == 0 || paramObj.ammParamUuid.indexOf(paramUuids) == -1)) { // 执行备选SQL
         hasSql = true
         // if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
         let resp = await getSelectTreeData(paramSql)
-        console.log(paramObj, '树的参数')
-        console.log(resp, '树参数返回')
         if (resp.data == null) {
           obj.isError = true
           obj.message = `获取参数【${paramObj.paramName}】的值的失败`
