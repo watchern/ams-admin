@@ -34,13 +34,13 @@
             </el-select>
           </td>
           <td v-if="setParamObj.inputType === 'textinp'" ref="textParam">
-            <el-input style="width: 90%;" :title="setParamObj.title" class='paramOption paramTr' v-model="setParamObj.value" @change="changeRelationParam(index, setParamObj.value)" @click.native="changeparamdata(setParamObj,index)" clearable></el-input>
+            <el-input style="width: 90%;" :title="setParamObj.title" class='paramOption paramTr' v-model="setParamObj.value" @change="changeRelationParam(index, setParamObj.value)" @click.native="changeparamdata(setParamObj,index,false,true)" clearable></el-input>
           </td>
           <td v-if="setParamObj.inputType === 'timeinp'" ref="dataParam">
             <!-- <el-date-picker style="width: 90%;" :title="setParamObj.title" class='paramOption paramTr' type="date" placeholder="选择日期" :value-format="timeDealFormat(setParamObj.timeFormat)"  v-model="setParamObj.value" @change="changeRelationParam(index, setParamObj.value)" @click.native="changeparamdata(setParamObj,index)"></el-date-picker> -->
-            <el-date-picker v-if="setParamObj.timeFormat!='other'" ref="paramOption" :index="index"  :title="setParamObj.title" :type="setParamObj.timeFormat" placeholder="选择日期" :value-format="timeDealFormat(setParamObj.timeFormat)"  v-model="setParamObj.value" style="width: 98%;" @change="changeRelationParam(index, setParamObj.value)" @click.native="changeparamdata(setParamObj,index)"></el-date-picker> 
+            <el-date-picker v-if="setParamObj.timeFormat!='other'" ref="paramOption" :index="index"  :title="setParamObj.title" :type="setParamObj.timeFormat" placeholder="选择日期" :value-format="timeDealFormat(setParamObj.timeFormat)"  v-model="setParamObj.value" style="width: 98%;" @change="changeRelationParam(index, setParamObj.value)" @click.native="changeparamdata(setParamObj,index,false,true)"></el-date-picker> 
            
-            <el-date-picker v-else ref="paramOption" :index="index"  :title="setParamObj.title" type="date" placeholder="选择日期" :value-format="setParamObj.customizeFormat" v-model="setParamObj.value" style="width: 98%;" @change="changeRelationParam(index, setParamObj.value)" @click.native="changeparamdata(setParamObj,index)"></el-date-picker> 
+            <el-date-picker v-else ref="paramOption" :index="index"  :title="setParamObj.title" type="date" placeholder="选择日期" :value-format="setParamObj.customizeFormat" v-model="setParamObj.value" style="width: 98%;" @change="changeRelationParam(index, setParamObj.value)" @click.native="changeparamdata(setParamObj,index,false,true)"></el-date-picker> 
           </td>
           <td v-if="setParamObj.inputType === 'treeinp'" ref="selectTreeParam">
             <!-- <div :id="setParamObj.id" :title="setParamObj.title" class='xm-select-demo paramTr'></div> -->
@@ -91,8 +91,8 @@ data(){
     settingParams.sendSettingVue(this)
   },
   methods:{
-    changeparamdata (info,ind) {
-      settingParams.changeparamdata(info,ind);
+    changeparamdata (info,ind, isCheck, isRequest) {
+      settingParams.changeparamdata(info,ind, isCheck, isRequest);
     },
     async changeRelationParam(ind, val, dataType){
       settingParams.changeRelationParam(ind, val, dataType);
