@@ -2067,7 +2067,8 @@ export function initSetting() {
                 //设置默认值
                 // setParamObj.value = ''
                 // 添加不重复的id以便后续排序
-                paramList[k].sortId = paramArr[j].id 
+                paramList[k].sortId = paramArr[j].id
+                paramList[k].allowedNull = paramArr[j].allowedNull
                 if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && moduleParamId === paramArr[j].moduleParamId &&
                   paramArr[j].defaultVal && paramArr[j].defaultVal !== '') {
                   // setParamObj.value = paramArr[j].defaultVal
@@ -2105,6 +2106,7 @@ export function initSetting() {
                 description: copyParamArr[n].description && copyParamArr[n].description || '',
                 copyParamId: copyParamArr[n].copyParamId,
                 sortId: copyParamArr[n].sortId,
+                allowedNull: copyParamArr[n].paramChoice.allowedNull
               };
               promiseList.push(new Promise(function (resolve, reject) {
                 resolve(getSettingParamArr(copyParamArr[n], setParamObj, null, null, n, res.data))
@@ -3018,6 +3020,7 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
 export function changeparamdata (info,ind, isCheck, isRequest) {
   let paramsArr = []
   let isHasVal = false // 判断关联参数是否有选中值，有的话获取被关联参数数据
+  let relationAllowedNull = false // 关联参数是否必填
   if(info.paramConditionList.length>0){
     // console.log('有关联关系')
     
@@ -3025,11 +3028,15 @@ export function changeparamdata (info,ind, isCheck, isRequest) {
       for(let j =0;j<settingVue.setParamArr.length;j++){
         if(info.paramConditionList[i].relationParamId == settingVue.setParamArr[j].dataId){
           let repvalue = settingVue.setParamArr[j].inputType == "textinp"?settingVue.setParamArr[j].dataDefaultVal:settingVue.setParamArr[j].inputType == "lineinp"?(Array.isArray(settingVue.paramListValueList[j])?settingVue.paramListValueList[j].join(','):settingVue.paramListValueList[j]):settingVue.setParamArr[j].inputType == "treeinp"?(Array.isArray(settingVue.paramTreeValueList[j])?settingVue.paramTreeValueList[j].join(','):settingVue.paramTreeValueList[j]):settingVue.setParamArr[j].dataDefaultVal;
+          // 关联参数是否必填标识
+          if (settingVue.setParamArr[j].allowedNull == 0) {
+            relationAllowedNull = true;
+          }
           // 判断被关联参数是否有已选值
-          // 判断是否为被关联字段如果关联字段没有选择值提示
+          // 判断是否为被关联字段如果关联字段没有选择值并且必填时提示
           if (repvalue) {
             isHasVal = true
-          } else if (!repvalue && !isCheck) { // 关联参数有值时默认加载被关联下拉数据时不触发校验
+          } else if (!isCheck && (relationAllowedNull && !repvalue)) { // 关联参数有值时默认加载被关联下拉数据时不触发校验
             settingVue.setParamArr[ind].data = []
             settingVue.$message({type: 'warning', message: `请先选择${settingVue.setParamArr[j].name}`})
             settingVue.$forceUpdate()
@@ -3049,8 +3056,13 @@ export function changeparamdata (info,ind, isCheck, isRequest) {
         }
       }
     }
-    // 判断关联参数有值时并且为选择关联参数时才加载数据
-    if (isHasVal && !isRequest) {
+  
+    // 判断关联参数必填没有值时不请求数据
+    if (relationAllowedNull && !isHasVal) {
+      return;
+    }
+    // 进入页面和关联参数change时加载数据，点击时不再加载
+    if (!isRequest) {
       settingVue.setParamArr[ind].data = []
       request({
         baseURL: '/analysis',
@@ -3100,7 +3112,7 @@ export function changeRelationParam (ind, val, dataType) {
       settingVue.setParamArr[ind].value = val;
     }
   } else {
-    this.changeparamdata(settingVue.setParamArr[ind],ind)
+    // this.changeparamdata(settingVue.setParamArr[ind],ind)
     settingVue.setParamArr[ind].value = '';
   }
   for(let i=0;i<settingVue.setParamArr.length;i++){
@@ -3119,8 +3131,10 @@ export function changeRelationParam (ind, val, dataType) {
           }
           if (val) {
             this.changeparamdata(settingVue.setParamArr[i],i)
+          } else {
+            this.changeparamdata(settingVue.setParamArr[i],i, true)
           }
-          settingVue.$forceUpdate() 
+          settingVue.$forceUpdate()
         }
       }
       // //拼sql

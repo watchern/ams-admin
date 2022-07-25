@@ -2,7 +2,6 @@
   <div style="overflow-y: visible;" ref="inputParamContent" class="paramadrawnew">
     <div ref="nodeParam" style="overflow:auto;max-height:62vh" class="detail-form">
       <el-row  v-for="(paramInfo,ind) in paramInfoArr" :key="ind+'main'" style="margin: 15px;" >
-        <!-- <div>{{paramInfo}}</div> -->
         <el-col :span="7" style="line-height:36px;padding-right: 10px;">
           <el-tooltip :content="paramInfo.description" placement="bottom">
             <label>{{paramInfo.paramName}}</label>
@@ -71,6 +70,7 @@ export default {
       hasParam:false,
       paramListValueList: [], // 下拉列表参数值集合
       paramTreeValueList: [], // 下拉树列表参数值集合
+      relationParams: [], // 关联参数信息
     }
   },created(){
     addJsFile('/lib/layui/xm-select.js','xm-select')
@@ -81,12 +81,17 @@ export default {
     changeparamdata(info,ind,isCheck, isRequest){
       let paramsArr = []
       let isHasVal = false // 判断关联参数是否有选中值，有的话获取被关联参数数据
+      let relationAllowedNull = false // 关联参数是否必填
       if(info.paramConditionList.length>0){
         // this.paramInfoArr[ind].data = []
         for(let i = 0; i<info.paramConditionList.length;i++){
           for(let j =0;j<this.paramInfoArr.length;j++){
             if(info.paramConditionList[i].relationParamId == this.paramInfoArr[j].dataId){
               let repvalue = this.paramInfoArr[j].inputType == "textinp"?this.paramInfoArr[j].dataDefaultVal:this.paramInfoArr[j].inputType == "lineinp"?(Array.isArray(this.paramListValueList[j])?this.paramListValueList[j].join(','):this.paramListValueList[j]):this.paramInfoArr[j].inputType == "treeinp"?(Array.isArray(this.paramTreeValueList[j])?this.paramTreeValueList[j].join(','):this.paramTreeValueList[j]):this.paramInfoArr[j].dataDefaultVal
+              // 关联参数是否必填标识
+              if (this.paramInfoArr[j].allowedNull == true) {
+                relationAllowedNull = true;
+              }
               if(this.paramInfoArr[j].useQuotation == "1"){
                 if(repvalue!=undefined && repvalue!=''){
                   repvalue = "'" + repvalue + "'"
@@ -96,7 +101,7 @@ export default {
               }
               if (repvalue) {
                 isHasVal = true
-              } else if (!repvalue && !isCheck) { // 关联参数有值时默认加载被关联下拉数据时不触发校验
+              } else if (!isCheck&& (relationAllowedNull && !repvalue)) { // 关联参数有值时默认加载被关联下拉数据时不触发校验
                 this.paramInfoArr[ind].data = []
                 this.$message({type: 'warning', message: `请先选择${this.paramInfoArr[j].paramName}`})
               }
@@ -108,8 +113,12 @@ export default {
             }
           }
         }
-        // 判断关联参数有值时并且为选择关联参数时才加载数据
-        if (isHasVal && !isRequest) {
+        // 判断关联参数必填没有值时不请求数据
+        if (relationAllowedNull && !isHasVal) {
+          return;
+        }
+        // 进入页面和关联参数change时加载数据，点击时不再加载
+        if (!isRequest) {
           this.paramInfoArr[ind].data = []
           request({
             baseURL: '/analysis',
@@ -140,11 +149,8 @@ export default {
               this.$forceUpdate()
             }
           })
-
         }
-       
-      }
-      
+      } 
     },
     async changeRelationParam(ind, val){
       if (val) {
@@ -159,7 +165,7 @@ export default {
         if (this.paramDrawUuid && this.overallParmaobj[this.paramDrawUuid]) {
           this.overallParmaobj[this.paramDrawUuid].paramsArr[ind].value = ''
         }
-        this.changeparamdata(this.paramInfoArr[ind],ind)
+        // this.changeparamdata(this.paramInfoArr[ind],ind, true)
       }
       for(let i=0;i<this.paramInfoArr.length;i++){
         if(this.paramInfoArr[i].paramConditionList){
@@ -177,6 +183,8 @@ export default {
               }
               if (val) {
                 this.changeparamdata(this.paramInfoArr[i],i)
+              } else {
+                this.changeparamdata(this.paramInfoArr[i],i, true)
               }
               this.$forceUpdate()
             }
@@ -318,6 +326,7 @@ export default {
         // 1：根据编辑的参数获取参数关联关系；2：默认只加载不被关联的数据
         let ammParamUuid = {paramUuids: ammParamUuidArr.join(',')}
         let paramsRelation = await paramTreeByParamId(ammParamUuid)
+        this.relationParams= paramsRelation.data;
         for (let n = 0; n < copyParamArr.length; n++) {
           let paramInfoObj = {
             "paramName": copyParamArr[n].paramName,
