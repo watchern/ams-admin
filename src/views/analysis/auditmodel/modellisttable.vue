@@ -259,10 +259,11 @@
                     :pre-value="item.executeSQLList"
                     :paramInfo="item.runModelConfig"
                     :maintableindex="item.maintableindex"
-                    use-type="modelPreview"
+                    :use-type="item.useType ? item.usetype :  'modelPreview'"
                     :modelType="modelType"
                     :modelData="item"
                     @triggerSearch="loadParamDraw"
+                    :modelUuid="item.modelUuid"
                   />
                 </el-col>
               </div>

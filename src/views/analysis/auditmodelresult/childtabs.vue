@@ -33,6 +33,7 @@
       <childTabCons
         ref="child"
         :is-model-preview="isModelPreview"
+        :model-uuid="tabsName(key,item) == '主表' && modelUuid || undefined"
         @addBigTabsModelPreview="addBigTabsModelPreview"
         @addBigTabs="addBigTabs"
         @setNextValue="setNextValue"
