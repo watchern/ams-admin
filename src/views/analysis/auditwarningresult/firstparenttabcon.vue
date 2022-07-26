@@ -754,7 +754,7 @@ export default {
       this.notShare.splice(0, this.notShare.length);
       // 把共享过来的运行结果放进share数组，自己的运行结果放进notShare数组
       for (var i = 0; i < val.length; i++) {
-        if (val[i].runResultShare.runResultShareUuid != null) {
+        if (val[i].runResultShare.runResultShareUuid != null && val[i].runTask.runUserUuid != val[i].runResultShare.userUuid) {
           this.share.push(val[i]);
         } else {
           this.notShare.push(val[i]);
