@@ -1,10 +1,10 @@
 <template>
   <div class="app-container" style="width:100%;height:100%;">
     <el-row width="100%" style="margin-bottom: 10px">
-      <el-col :span="18">
+      <el-col style="width: calc(100% - 64px)">
         <el-input v-model="filterText1" placeholder="输入关键字进行过滤"/>
       </el-col>
-      <el-col :span="6">
+      <el-col style="width: 64px">
         <div class="controlTreeNode">
           <el-button
                   title="展开全部节点"
