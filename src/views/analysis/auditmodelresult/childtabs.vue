@@ -241,7 +241,7 @@ export default {
     line-height:32px!important;
 }
 >>>.el-tabs__content{
-  height: calc(100% - 60px);
+  height: calc(100% - 25px);
   overflow-y: auto!important;
   padding:0px!important;
 }
@@ -249,6 +249,6 @@ export default {
   height:100%
 }
 .child-taps-top{
-  height:100%
+  height:100%;
 }
 </style>
