@@ -1248,7 +1248,7 @@ export function initParamTreeNew(modelFolderPath) {
     if (result.data.isError) {
 
     } else {
-      if (modelFolderPath.indexOf('gonggong') != -1){
+      if (modelFolderPath && modelFolderPath.indexOf('gonggong') != -1){
         for(let i = 0; i < result.data.paramNode.length;i++) {
           if('个人参数' == result.data.paramNode[i].label){
             result.data.paramNode.splice(i,1);
