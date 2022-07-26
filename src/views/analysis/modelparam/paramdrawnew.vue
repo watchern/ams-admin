@@ -429,7 +429,7 @@ export default {
               }
             })
           } else { // 执行备选sql
-            if (paramSql !== '' && (paramUuids.length == 0 || paramObj.ammParamUuid.indexOf(paramUuids) == -1)) {
+            if (paramSql !== '' && (paramUuids.length == 0 || paramUuids.indexOf(paramObj.ammParamUuid) == -1)) {
               hasSql = true// 下拉列表是SQL方式
                // 初始化默认执行sql
                 const response = await executeParamSql(paramSql)
@@ -537,7 +537,7 @@ export default {
           }
           break
         case 'treeinp':// 下拉树
-          if (paramSql !== '' && (paramUuids.length==0 || paramObj.ammParamUuid.indexOf(paramUuids) == -1)) { // 执行备选SQL
+          if (paramSql !== '' && (paramUuids.length==0 || paramUuids.indexOf(paramObj.ammParamUuid) == -1)) { // 执行备选SQL
             hasSql = true
             const response = await getSelectTreeData(paramSql)
               if(response.data == null){
@@ -878,10 +878,7 @@ export default {
                         }
                       }
                     }
-                  
-                  }
-                  
-                  
+                  } 
                 }
                 filterArr.push(obj)
               } else { // 不允许为空

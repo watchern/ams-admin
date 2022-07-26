@@ -2090,7 +2090,6 @@ export function initSetting() {
           // 1：根据编辑的参数获取参数关联关系；2：默认只加载不被关联的数据
           let ammParamUuid = {paramUuids: ammParamUuidArr.join(',')}
           paramTreeByParamId(ammParamUuid).then((res) => {
-            console.log(res.data, '参数关联关系')
             settingVue.relationParams= res.data;
             for (let n = 0; n < copyParamArr.length; n++) {
               let setParamObj = {
@@ -2130,7 +2129,6 @@ export function initSetting() {
                 settingVue.setParamArrIdArr.push(val.setParamObj.sortId)
                 settingVue.setParamArr.push(val.setParamObj)
               });
-              console.log(settingVue.setParamArr, '参数列表')
               // 判断关联参数有选择值得话加载被关联参数的下拉数据
               for (let i = 0;i<settingVue.setParamArr.length;i++){
                 this.changeparamdata(settingVue.setParamArr[i],i, 'noCheck')
@@ -2800,7 +2798,6 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
   }
   // 获取关联参数的id
   var paramUuids = paramsRelation.map(i => i.extMap.paramUuid)
-  console.log(paramUuids, '被关联参数paramUuid')
   let dataArr = []// 下拉列表或下拉树的数据的数组
   let paramArr = []// 影响当前参数的主参集合
   let associatedParamIdArr = []// 受当前参数影响的被关联参数ID集合
@@ -2829,9 +2826,7 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
          })
       } else { // 执行备选sql
         // 没被关联的参数获取数据; 关联参数有已选值得花加载数据
-        console.log(paramObj,paramObj.ammParamUuid.indexOf(paramUuids), '查看参数是否被关联')
-        if (paramSql !== '' && (paramUuids.length == 0 || paramObj.ammParamUuid.indexOf(paramUuids) == -1)) {
-          console.log(paramObj, '默认获取数据参数')
+        if (paramSql !== '' && (paramUuids.length == 0 || paramUuids.indexOf(paramObj.ammParamUuid) == -1)) {
           hasSql = true// 下拉列表是SQL方式
           // if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
            let response = await executeParamSql(paramSql)
@@ -2940,9 +2935,7 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
       break
     case 'treeinp':// 下拉树
       // 没被关联的参数获取数据
-      console.log(paramObj,paramObj.ammParamUuid.indexOf(paramUuids), '查看参数是否被关联')
-      if (paramSql !== '' && (paramUuids.length == 0 || paramObj.ammParamUuid.indexOf(paramUuids) == -1)) { // 执行备选SQL
-        console.log(paramObj, '默认获取数据参数')
+      if (paramSql !== '' && (paramUuids.length == 0 || paramUuids.indexOf(paramObj.ammParamUuid) == -1)) { // 执行备选SQL
         hasSql = true
         // if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
         let resp = await getSelectTreeData(paramSql)
