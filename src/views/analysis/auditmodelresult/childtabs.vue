@@ -241,7 +241,7 @@ export default {
     line-height:32px!important;
 }
 >>>.el-tabs__content{
-  height: calc(100% - 25px);
+  height: calc(100% - 60px);
   overflow-y: auto!important;
   padding:0px!important;
 }
