@@ -384,6 +384,7 @@
       >
         <seeSqlData :seeDataSql="seeDataSql" ref="seeSqlData"></seeSqlData>
         <div slot="footer" class="dialog-footer">
+          <el-button @click="loadNewData2()">加载更多</el-button>
           <el-button @click="seeSqlDataDialog = false">取 消</el-button>
         </div>
       </el-dialog>
@@ -834,6 +835,9 @@ export default {
     }
   },
   methods: {
+    loadNewData2(){
+      this.$refs['seeSqlData'].loadNewData()
+    },
     addrelevancetreenode(data, node) {
       const newChild = {
         type: "relation",
