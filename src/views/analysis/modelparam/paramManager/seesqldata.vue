@@ -11,13 +11,18 @@ import $ from 'jquery'
 export default {
   props:['seeDataSql'],
   mounted() {
+    this.pageNum = 1
     var that = this
     var url = this.analysisUrl + "/paramController/getColumnList";
     this.loading = true
     $.ajax({
       type: "post",
       url: url,
-      data: {sql:this.seeDataSql},
+      data: {
+          sql:this.seeDataSql,
+          pageSize:this.pageSize,
+          pageNum:this.pageNum
+      },
       async: true,
       dataType: "json",
       success: function (res) {
@@ -41,8 +46,43 @@ export default {
       tableData: [],
       columnData:[],
       analysisUrl: '/analysis',
-      loading:false
+      loading:false,
+      pageSize:30,
+      pageNum:1
     }
-  }
+  },
+    methods: {
+        loadNewData() {
+            this.pageNum = this.pageNum+1
+            var that = this
+            var url = this.analysisUrl + "/paramController/getColumnList";
+            this.loading = true
+            $.ajax({
+                type: "post",
+                url: url,
+                data: {
+                    sql:this.seeDataSql,
+                    pageSize:this.pageSize,
+                    pageNum:this.pageNum
+                },
+                async: true,
+                dataType: "json",
+                success: function (res) {
+                    that.loading = false
+                    if(res.data.verify == false){
+                        that.$message({info:"error",message:res.data.message})
+                    }
+                    else{
+                        for (let i = 0 ;i < res.data.result.result.length;i++){
+                            that.tableData.push(res.data.result.result[i])
+                        }
+                    }
+                },
+                error:function(res){
+                    that.$message({info:"error",message:"数据读取出错!"})
+                }
+            });
+        },
+    }
 }
 </script>
