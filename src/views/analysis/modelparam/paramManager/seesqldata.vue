@@ -47,7 +47,7 @@ export default {
       columnData:[],
       analysisUrl: '/analysis',
       loading:false,
-      pageSize:100,
+      pageSize:30,
       pageNum:1
     }
   },
