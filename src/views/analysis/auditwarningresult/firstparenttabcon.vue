@@ -232,12 +232,20 @@
                 </el-popover>
             </template>
         </el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         label="运行信息"
         prop="runMessage"
         width="200px"
         :show-overflow-tooltip="true"
-      />
+      /> -->
+      <el-table-column
+        label="运行信息"
+        prop="runMessage"
+        width="200px">
+        <template slot-scope="scope">
+          <el-link type="primary" @click="selectrunMessage(scope.row)">{{runMessageFormatter(scope.row)}}</el-link>
+        </template>
+      </el-table-column>
       <el-table-column
         label="关联项目"
         prop="projectName"
@@ -357,7 +365,16 @@
     />
     </el-footer>
     </el-container>
-     </el-container>
+    </el-container>
+    <el-dialog
+      v-if="runMessageInfoDialog"
+      :visible.sync="runMessageInfoDialog"
+      title="运行信息"
+      width="50%"
+    >
+      <el-input disabled type="textarea" :rows="15" v-model="runMessageInfo">
+      </el-input>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -443,6 +460,8 @@ export default {
       projectDialogIsSee: false, //关联项目dialog是否可见
       paramsArr: [], // 模型参数
       paramInfoDialog: false, // 参数dialog是否可见
+      runMessageInfo: '', // 运行信息内容
+      runMessageInfoDialog: false, // 运行信息弹框
     };
   },
   created() {
@@ -1259,6 +1278,26 @@ export default {
         }
       }
       return dataCount;
+    },
+    // 查看运行信息
+    selectrunMessage (row) {
+      if (row.runMessage == null) {
+        return "";
+      } else {
+        var runMessage = row.runMessage;
+        this.runMessageInfo = runMessage;
+        this.runMessageInfoDialog = true;
+      }
+    },
+    runMessageFormatter(row, column) {
+      if (row.runMessage == null) {
+        return "";
+      } else {
+        var runMessage = row.runMessage;
+        runMessage = runMessage.substring(0, 4);
+        runMessage = runMessage + "...";
+        return runMessage;
+      }
     },
   },
 };
