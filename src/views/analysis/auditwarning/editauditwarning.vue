@@ -163,8 +163,8 @@
                 :picker-options="executeTimeOptions">
               </el-date-picker>
               <!--<el-button type="primary" v-if="index==0" @click="addExecuteTime">添加</el-button>-->
-              <el-link type="primary" v-if="index==0 && !option == 'detail'" @click="addExecuteTime">添加&nbsp;</el-link>
-              <el-link type="primary" v-if="temp.manyTimesExecuteTime.length > 1 && !option == 'detail'" @click="removeExecuteTime(domain)">删除</el-link>
+              <el-link type="primary" v-if="index==0 && option !== 'detail'" @click="addExecuteTime">添加&nbsp;</el-link>
+              <el-link type="primary" v-if="temp.manyTimesExecuteTime.length > 1 && option !== 'detail'" @click="removeExecuteTime(domain)">删除</el-link>
               <!--<el-button type="primary" v-if="temp.manyTimesExecuteTime.length > 1" @click="removeExecuteTime(domain)">删除</el-button>-->
             </el-form-item>
           </el-form-item>
