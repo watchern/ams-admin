@@ -35,7 +35,7 @@ export default {
       return this.folderName ? this.folderName:'个人模型';
     }
   },
-  props:['power','dataUserId','sceneCode','isAuditWarning','folderName'],
+  props:['power','dataUserId','sceneCode','isAuditWarning','folderName','width'],
   data() {
     return {
       //dataSpaceName: sessionStorage.getItem("dataUserName"),
@@ -56,7 +56,13 @@ export default {
     // 打开页面恢复默认状态
     document.onmousemove = null
     this.lastX = "";
-    this.maxWidth = document.body.clientWidth;
+    // 模型预警选择模型时弹框展示此页面最大宽度为80%
+    if (this.width) {
+      this.maxWidth = document.body.clientWidth;
+      this.maxWidth = this.maxWidth * 0.8
+    } else {
+      this.maxWidth = document.body.clientWidth;
+    }
     // 右侧宽度默认为最大宽度减去右侧最小宽度
     this.rightWidth = this.maxWidth -300;
   },
@@ -64,7 +70,12 @@ export default {
     // 监听屏幕大小
     window.onresize = () => {
       return (() => {
-        this.maxWidth = document.body.clientWidth
+        if (this.width) {
+          this.maxWidth = document.body.clientWidth;
+          this.maxWidth = this.maxWidth * 0.8
+        } else {
+          this.maxWidth = document.body.clientWidth;
+        }
       })()
     }
   },

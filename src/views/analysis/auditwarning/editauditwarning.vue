@@ -1,7 +1,7 @@
 <template>
   <div class="" v-loading="isShowLoading" style="height:62vh; overflow:auto;">
-    <el-dialog title="选择模型列表" :close-on-click-modal="false" :fullscreen="true" v-if='selectModelVisible' :visible.sync="selectModelVisible" :append-to-body="true" width="80%">
-      <SelectModels ref="selectModels" :isAuditWarning="true" power="warning" style="height: calc(100vh - 109px)"/>
+    <el-dialog title="选择模型列表" :close-on-click-modal="false" v-if='selectModelVisible' :visible.sync="selectModelVisible" :append-to-body="true" width="80%">
+      <SelectModels ref="selectModels" :width="true" :isAuditWarning="true" power="warning" style="height: calc(100vh - 109px)"/>
       <div slot="footer" class="dialog-footer">
         <el-button @click="selectModelVisible = false">关闭</el-button>
         <el-button type="primary" @click="selectModel">确定</el-button>
