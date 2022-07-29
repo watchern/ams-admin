@@ -455,8 +455,8 @@ export default {
         //判断模型结果名是否存在 返回""证明不存在，返回其他字符串证明存在，且字符串本身为结果名
         judgeName(nameList).then(re => {
             //遍历模型列表
-            for (var addItem in nameList) {
-              var addWarResTbName = nameList[addItem];
+            for (var addItem in re.data) {
+              var addWarResTbName = re.data[addItem];
               //将填入的模型运行结果名赋值给formData
               fromData.warningTaskRel[addItem].warningResTbName = addWarResTbName;
             }
