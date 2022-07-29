@@ -104,6 +104,7 @@
 import MyElTree from "@/components/public/tree/src/tree.vue";
 import {
   findModelFolderTree,
+  findAuditWarningModelFolderTree,
   deleteModelFolder,
   addModelFolder,
   updateModelFolder,
@@ -279,9 +280,15 @@ export default {
           }
         });
       } else {
-        findModelFolderTree(true, spaceFolderName, spaceFolderId).then((result) => {
-          this.data = result.data;
-        });
+        if (this.power === 'warning'){
+          findAuditWarningModelFolderTree(true, spaceFolderName, spaceFolderId).then((result) => {
+            this.data = result.data;
+          });
+        }else {
+          findModelFolderTree(true, spaceFolderName, spaceFolderId).then((result) => {
+            this.data = result.data;
+          });
+        }
       }
     },
     deleteModelData(newData) {

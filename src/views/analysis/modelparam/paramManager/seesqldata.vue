@@ -13,7 +13,7 @@ export default {
   mounted() {
     this.pageNum = 1
     var that = this
-    var url = this.analysisUrl + "/paramController/getColumnList";
+    var url = this.analysisUrl + "/paramController/dywGetColumnList";
     this.loading = true
     $.ajax({
       type: "post",
@@ -55,7 +55,7 @@ export default {
         loadNewData() {
             this.pageNum = this.pageNum+1
             var that = this
-            var url = this.analysisUrl + "/paramController/getColumnList";
+            var url = this.analysisUrl + "/paramController/dywGetColumnList";
             this.loading = true
             $.ajax({
                 type: "post",

@@ -443,18 +443,20 @@ export default {
             this.$message.warning("模型运行结果名不可为空！");
             return;
           }
+          for (var i in nameList){
+            if (nameList[i] == addTbName){
+              this.$message.warning("模型运行结果名'"+addTbName+"'重复！请修改后保存");
+              return;
+            }
+          }
           //将填入的模型运行结果名赋值给list
           nameList.push(addTbName);
         }
         //判断模型结果名是否存在 返回""证明不存在，返回其他字符串证明存在，且字符串本身为结果名
         judgeName(nameList).then(re => {
-          if (re.data != "") {
-            this.$message.warning("模型运行结果名：" + re.data + " 已存在，请重新输入！");
-            return;
-          } else {
             //遍历模型列表
-            for (var addItem in editModelListAdd) {
-              var addWarResTbName = editModelListAdd[addItem].warningResTbName;
+            for (var addItem in nameList) {
+              var addWarResTbName = nameList[addItem];
               //将填入的模型运行结果名赋值给formData
               fromData.warningTaskRel[addItem].warningResTbName = addWarResTbName;
             }
@@ -477,7 +479,6 @@ export default {
               this.editDialogVisible = false
               this.getList()
             })
-          }
         })
       } else if (this.operationObj.option == "update") {
         //获取表单数据中的模型列表
@@ -491,18 +492,24 @@ export default {
             this.$message.warning("模型运行结果名不可为空！");
             return;
           }
+          for (var i in nameListU){
+            if (nameListU[i] == addTbNameU){
+              this.$message.warning("模型运行结果名'"+addTbNameU+"'重复！请修改后保存");
+              return;
+            }
+          }
           //将填入的模型运行结果名赋值给list
           nameListU.push(addTbNameU);
         }
         //判断模型结果名是否存在 返回""证明不存在，返回其他字符串证明存在，且字符串本身为结果名
         judgeName(nameListU).then(re => {
-          var result = re.data;
-          //并且不存在原结果表名
-          var ifExists = nameListU.indexOf(result);
-          if (result != "" && ifExists == -1) {
-            this.$message.warning("模型运行结果名：" + result + " 已存在，请重新输入！");
-            return;
-          } else {
+          // var result = re.data;
+          // //并且不存在原结果表名
+          // var ifExists = nameListU.indexOf(result);
+          // if (result != "" && ifExists == -1) {
+          //   this.$message.warning("模型运行结果名：" + result + " 已存在，请重新输入！");
+          //   return;
+          // } else {
             //遍历模型列表
             for (var updateItem in editModelListUpdate) {
               var updateWarResTbName = editModelListUpdate[updateItem].warningResTbName;
@@ -527,7 +534,7 @@ export default {
               this.editDialogVisible = false
               this.getList()
             })
-          }
+          // }
         })
       }
     },
