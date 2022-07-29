@@ -443,6 +443,12 @@ export default {
             this.$message.warning("模型运行结果名不可为空！");
             return;
           }
+          for (var i in nameList){
+            if (nameList[i] == addTbName){
+              this.$message.warning("模型运行结果名'"+addTbName+"'重复！请修改后保存");
+              return;
+            }
+          }
           //将填入的模型运行结果名赋值给list
           nameList.push(addTbName);
         }
@@ -490,6 +496,12 @@ export default {
           if (addTbNameU == null || addTbNameU == "") {
             this.$message.warning("模型运行结果名不可为空！");
             return;
+          }
+          for (var i in nameListU){
+            if (nameListU[i] == addTbNameU){
+              this.$message.warning("模型运行结果名'"+addTbNameU+"'重复！请修改后保存");
+              return;
+            }
           }
           //将填入的模型运行结果名赋值给list
           nameListU.push(addTbNameU);
