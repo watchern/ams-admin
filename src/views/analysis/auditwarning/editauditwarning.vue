@@ -1,6 +1,6 @@
 <template>
   <div class="" v-loading="isShowLoading" style="height:62vh; overflow:auto;">
-    <el-dialog title="选择模型列表" :close-on-click-modal="false" v-if='selectModelVisible' :visible.sync="selectModelVisible" :append-to-body="true" width="80%">
+    <el-dialog title="选择模型列表" :close-on-click-modal="false" v-if='selectModelVisible' :visible.sync="selectModelVisible" :append-to-body="true" width="80%" class="dialogClass" >
       <SelectModels ref="selectModels" :width="true" :isAuditWarning="true" power="warning" style="height: calc(100vh - 109px)"/>
       <div slot="footer" class="dialog-footer">
         <el-button @click="selectModelVisible = false">关闭</el-button>
@@ -1131,6 +1131,11 @@ export default {
 }
 </script>
 <style scoped>
+  .dialogClass >>> .el-dialog{
+    height: 99% !important;
+    overflow: hidden !important;
+    margin-top: 0vh !important;
+  }
   .btn-z{
     width: 70px;
     height: 36px;
