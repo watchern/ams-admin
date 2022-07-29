@@ -17,6 +17,19 @@ export function findModelFolderTree(isShowModel, name, id) {
 }
 
 /**
+ * 获取当前登录人模型分类树
+ * @returns {AxiosPromise}
+ */
+export function findAuditWarningModelFolderTree(isShowModel, name, id) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelFolderController/findAuditWarningModelFolderTree',
+    method: 'get',
+    params: { isShowModel: isShowModel, spaceFolderName: name, spaceFolderId: id }
+  })
+}
+
+/**
  * 查找模型列表
  * @param data 要过滤的数据
  * @returns {AxiosPromise}
