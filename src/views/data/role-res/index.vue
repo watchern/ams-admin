@@ -22,7 +22,7 @@
             :default-expanded-keys="['ROOT']"
             :highlight-current="true"
             :data="treeData1"
-            :check-strictly="true"
+            :check-strictly="false"
             node-key="id"
             :expand-on-click-node="false"
             :filter-node-method="filterNode"
