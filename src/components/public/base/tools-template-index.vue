@@ -33,11 +33,16 @@
           <div
             v-for="(item, index) in latelyFastList"
             :key="index"
-            class="use-box flex a-center j-center use-zy"
-            @click="theRoutingIn(item)"
+            class="use-box flex a-center j-center use-zy function-item"
+           
             :style="{ background: item.bg }"
           >
-            <img :src="item.image" />
+            <transition name="fade">
+              <span class="fun-delate" @click="functionDel(item,index)">
+                <i class="el-icon-error" ></i>
+              </span>
+            </transition>
+            <img  @click="theRoutingIn(item)" :src="item.image" />
           </div>
           <div
             class="use-box flex a-center j-center use-zy"
@@ -194,7 +199,7 @@
 import { cacheDict } from "@/api/base/sys-dict";
 import { querySystemTask } from "@/api/base/systemtask";
 import { getUserRes } from "@/api/user";
-import { saveQuickMenuList, getQuickMenuList } from "@/api/base/quickmenu";
+import { saveQuickMenuList, getQuickMenuList, deleteQuickMenuById } from "@/api/base/quickmenu";
 export default {
   data() {
     return {
@@ -628,6 +633,11 @@ export default {
           }
         }
       });
+      // 获取菜单数据
+      let listTree = JSON.parse(sessionStorage.getItem("shenjiMenuTree"));
+      this.menugroup = listTree.second;
+      this.menugroupId = listTree.first;
+      this.showmenuGroup = true;
       // 注释首页内容区域重复调用菜单接口
       // getUserRes()
       //   .then((response) => {
@@ -829,6 +839,56 @@ export default {
       } else {
         return false;
       }
+    },
+    // 单个功能删除
+    functionDel (item,index) {
+      this.$confirm('确定删除此功能, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        var id = item.id;
+        deleteQuickMenuById(id).then(res => {
+          if (res.code != 0) {
+            this.$message({
+              type: "error",
+              message: "删除失败!",
+            });
+            return;
+          }else{
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+            this.latelyFastList = [];
+            getQuickMenuList().then((res) => {
+              for (let i = 0; i < res.data.length; i++) {
+                if (this.latelyFastList.length < 5) {
+                  this.latelyFastList.push({
+                    id: res.data[i].quickMenuId,
+                    name: res.data[i].quickMenuName,
+                    path: res.data[i].quickMenuPath,
+                    image: require("../../public/base/accessIcon/moxing.png"),
+                    bg: this.latelyBackList[i]
+                        ? this.latelyBackList[i].bg
+                        : "#559ed4 !important",
+                  });
+                }
+              }
+              for (let i = 0; i < this.latelyFastList.length; i++) {
+                for (let n = 0; n < this.latelyImgList.length; n++) {
+                  if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
+                    this.latelyFastList[i].image = this.latelyImgList[n].image;
+                  }
+                }
+              }
+            });
+          }
+        })
+      }).catch(() => {
+
+      });
+
     },
   },
 };
@@ -1112,4 +1172,25 @@ export default {
     cursor: pointer;
   }
 }
+.function-item {
+  position: relative;
+  .fun-delate {
+    position: absolute;
+    top: -19px;
+    right: -6px;
+    cursor: pointer;
+    display: none;
+    i {
+      color: #ee5163;
+      font-size: 22px;
+    }
+  }
+  &:hover {
+    .fun-delate {
+      display: block !important;
+      transition: all 1s linear 1s;
+    }
+  }
+}
+
 </style>
