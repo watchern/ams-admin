@@ -1537,7 +1537,7 @@ export default {
               //   }
               // }
               for(let i=0;i<response.data.length;i++){
-                if(response.data[i].nameCn&&(response.data[i].type=='view'|| response.data[i].type=='table')){
+                if (response.data[i].nameCn && (response.data[i].type == 'view' || response.data[i].type == 'table') && response.data[i].name != response.data[i].nameCn) {
                   response.data[i].english = response.data[i].name
                   response.data[i].name = response.data[i].name + "(" + response.data[i].nameCn + ")"
                 }
