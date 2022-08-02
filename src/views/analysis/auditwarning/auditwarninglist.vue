@@ -502,7 +502,7 @@ export default {
           nameListU.push(addTbNameU);
         }
         // 对比原模型结果名称与新模型结果名称是否完全相同，相同返回不相同的下角标用于对比新的表名是否重复
-       var modifiedSubscriptList = this.$refs['edit'].getModifiedSubscript(nameListU)
+       var modifiedSubscriptList = this.$refs['edit'].getModifiedSubscript()
         //判断模型结果名是否存在 返回""证明不存在，返回其他字符串证明存在，且字符串本身为结果名
         judgeNameTimestamp(nameListU).then(re => {
             for (let modifiedSubscript in modifiedSubscriptList) {

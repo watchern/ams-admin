@@ -966,22 +966,39 @@ export default {
       return isSubmit
     },
     // 返回被修改的模型结果名下角标
-    getModifiedSubscript(newName){
+    getModifiedSubscript(){
       var oldName = this.oldModelList
+      var newName = this.temp.modelList
       var modifiedSubscriptList = []
-      var modifiedSubscript = {
-        subscript:'',
-        oldName:'',
-        newName:''
-      }
-      for (let i = 0 ; i < oldName.length ; i++){
-        if (oldName[i].warningResTbName != newName[i]){
+      for (let i = 0 ; i < newName.length ; i++){
+        let judge = true
+        for (let y = 0 ; y < oldName.length ; y++){
+          if (oldName[y].warningTaskRelUuid == newName[i].warningTaskRelUuid) {
+            if (oldName[y].warningResTbName != newName[i].warningResTbName) {
+              var modifiedSubscript = {
+                subscript: '',
+                oldName: '',
+                newName: ''
+              }
+              modifiedSubscript.subscript = i
+              modifiedSubscript.oldName = oldName[y].warningResTbName
+              modifiedSubscript.newName = newName[i].warningResTbName
+              modifiedSubscriptList.push(modifiedSubscript)
+            }
+            judge = false
+            break
+          }
+        }
+        if (judge){
+          var modifiedSubscript = {
+            subscript: '',
+            oldName: '',
+            newName: ''
+          }
           modifiedSubscript.subscript = i
-          modifiedSubscript.oldName = oldName[i].warningResTbName
-          modifiedSubscript.newName = newName[i]
+          modifiedSubscript.newName = newName[i].warningResTbName
           modifiedSubscriptList.push(modifiedSubscript)
         }
-
       }
       return modifiedSubscriptList
     },

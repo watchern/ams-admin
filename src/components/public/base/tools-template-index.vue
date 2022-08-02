@@ -860,11 +860,11 @@ export default {
               type: 'success',
               message: '删除成功!'
             });
-            this.latelyFastList = [];
+            let latelyFastList = [];
             getQuickMenuList().then((res) => {
               for (let i = 0; i < res.data.length; i++) {
-                if (this.latelyFastList.length < 5) {
-                  this.latelyFastList.push({
+                if (latelyFastList.length < 5) {
+                  latelyFastList.push({
                     id: res.data[i].quickMenuId,
                     name: res.data[i].quickMenuName,
                     path: res.data[i].quickMenuPath,
@@ -875,13 +875,14 @@ export default {
                   });
                 }
               }
-              for (let i = 0; i < this.latelyFastList.length; i++) {
+              for (let i = 0; i < latelyFastList.length; i++) {
                 for (let n = 0; n < this.latelyImgList.length; n++) {
                   if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
-                    this.latelyFastList[i].image = this.latelyImgList[n].image;
+                    latelyFastList[i].image = this.latelyImgList[n].image;
                   }
                 }
               }
+              this.latelyFastList = latelyFastList;
             });
           }
         })
