@@ -533,6 +533,11 @@ export default {
       },
     };
   },
+  computed:{
+    menuData(){
+      return this.$store.getters.meauData;
+    },
+  },
   created() {
     // 页面刚进入时开启长连接
     this.init();
@@ -635,8 +640,8 @@ export default {
       });
       // 获取菜单数据
       let listTree = JSON.parse(sessionStorage.getItem("shenjiMenuTree"));
-      this.menugroup = listTree.second;
-      this.menugroupId = listTree.first;
+      this.menugroup = this.menuData.second;
+      this.menugroupId = this.menuData.first;
       this.showmenuGroup = true;
       // 注释首页内容区域重复调用菜单接口
       // getUserRes()

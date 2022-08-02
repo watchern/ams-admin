@@ -8,7 +8,8 @@ const state = {
   },
   device: 'desktop',
   language: getLanguage(),
-  size: Cookies.get('size') || 'medium'
+  size: Cookies.get('size') || 'medium',
+  meauData: {}
 }
 
 const mutations = {
@@ -36,6 +37,10 @@ const mutations = {
   SET_SIZE: (state, size) => {
     state.size = size
     Cookies.set('size', size)
+  },
+  SET_MEAU_DATA: (state, data) => {
+    state.meauData = data
+
   }
 }
 
@@ -54,6 +59,9 @@ const actions = {
   },
   setSize({ commit }, size) {
     commit('SET_SIZE', size)
+  },
+  setMenuData({commit}, data) {
+    commit('SET_MEAU_DATA', data)
   }
 }
 

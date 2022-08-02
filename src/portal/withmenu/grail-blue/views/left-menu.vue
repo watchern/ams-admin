@@ -411,6 +411,7 @@ export default {
           let sSLTree = { first: this.applications, second:second  };
           console.log(sSLTree)
           sessionStorage.setItem("shenjiMenuTree", JSON.stringify(sSLTree));
+          this.$store.dispatch('app/setMenuData',sSLTree )
           let listTree = JSON.parse(sessionStorage.getItem("shenjiMenuTree"));
           this.moremenugroup = listTree.second;
           this.moremenugroupId = listTree.first;
