@@ -2596,7 +2596,7 @@ var iconDrag = function (treeNode) {
 	//生成图形化节点方法
 	var funct = function (graph, evt, target, x, y) {
 		var nodeImgPath = createCellShape(treeNode.type, isCopy)
-		var cell = new mxCell(treeNode.name, new mxGeometry(0, 0, 60, 80), nodeImgPath);
+		var cell = new mxCell(treeNode.english ? treeNode.english : treeNode.name, new mxGeometry(0, 0, 60, 80), nodeImgPath);
 		cell.vertex = true;
 		cell.nodeType = treeNode.type;
 		//初始化节点配置信息,start
@@ -2704,7 +2704,7 @@ var iconDrag = function (treeNode) {
 //初始化节点信息
 var initNodeData = function (options, changeIcon) {
 	var setting = { "settingId": new UUIDGenerator().id }, isSet = false, isChangeSource = false;
-	var nodeInfo = { "nodeId": options.id, "nodeName": options.name, "optType": options.type, "isCreateTable": 0, "nodeExcuteStatus": 1, "nodeDescription": "", "resultTableName": "" };
+	var nodeInfo = { "nodeId": options.id, "nodeName": options.english ? options.english : options.name, "optType": options.type, "isCreateTable": 0, "nodeExcuteStatus": 1, "nodeDescription": "", "resultTableName": "" };
 	switch (options.type) {
 		case "datasource":
 			isSet = true;
