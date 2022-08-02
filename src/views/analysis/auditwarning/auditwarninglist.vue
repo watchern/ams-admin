@@ -61,7 +61,7 @@
   </div>
 </template>
 <script>
-import { findAuditWarningList, addWarning, deleteAuditWarning, updateWarning, startById, stopById, judgeName, startByIds, stopByIds} from '@/api/analysis/auditwarning'
+import { findAuditWarningList, addWarning, deleteAuditWarning, updateWarning, startById, stopById, judgeName, startByIds, stopByIds, judgeNameTimestamp} from '@/api/analysis/auditwarning'
 import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import EditAuditWarning from '@/views/analysis/auditwarning/editauditwarning'
@@ -453,7 +453,7 @@ export default {
           nameList.push(addTbName);
         }
         //判断模型结果名是否存在 返回""证明不存在，返回其他字符串证明存在，且字符串本身为结果名
-        judgeName(nameList).then(re => {
+        judgeNameTimestamp(nameList).then(re => {
             //遍历模型列表
             for (var addItem in re.data) {
               var addWarResTbName = re.data[addItem];
@@ -501,15 +501,14 @@ export default {
           //将填入的模型运行结果名赋值给list
           nameListU.push(addTbNameU);
         }
+        // 对比原模型结果名称与新模型结果名称是否完全相同，相同返回不相同的下角标用于对比新的表名是否重复
+       var modifiedSubscriptList = this.$refs['edit'].getModifiedSubscript(nameListU)
         //判断模型结果名是否存在 返回""证明不存在，返回其他字符串证明存在，且字符串本身为结果名
-        judgeName(nameListU).then(re => {
-          // var result = re.data;
-          // //并且不存在原结果表名
-          // var ifExists = nameListU.indexOf(result);
-          // if (result != "" && ifExists == -1) {
-          //   this.$message.warning("模型运行结果名：" + result + " 已存在，请重新输入！");
-          //   return;
-          // } else {
+        judgeNameTimestamp(nameListU).then(re => {
+            for (let modifiedSubscript in modifiedSubscriptList) {
+              let subscript = modifiedSubscriptList[modifiedSubscript].subscript
+              editModelListUpdate[subscript].warningResTbName = re.data[subscript]
+            }
             //遍历模型列表
             for (var updateItem in editModelListUpdate) {
               var updateWarResTbName = editModelListUpdate[updateItem].warningResTbName;
