@@ -125,7 +125,7 @@ import { addTable, updateTable } from "@/api/data/directory";
 import _ from "lodash"
 export default {
   // eslint-disable-next-line vue/require-prop-types
-  props: ["tableId", "openType", "forderId", "getTree"],
+  props: ["tableId", "openType", "forderId", "getTree" ,"clickId","isEdit"],
   data() {
     return {
       copyColObj: {},
@@ -339,7 +339,8 @@ export default {
             // 添加节点
             this.$emit("table-show", this.show);
             this.$emit("append-node", childData, this.clickNode);
-            this.$emit("saveTableInfoHelp"); 
+            this.$emit("saveTableInfoHelp");
+            this.$emit("refresh", this.clickId);
           }
         })
         .catch((result) => {});
@@ -420,7 +421,8 @@ export default {
             });
           }
           this.$emit("table-show", this.show);
-          this.$emit("saveTableInfoHelp"); 
+          this.$emit("saveTableInfoHelp");
+          this.$emit("refresh", this.clickId);
         })
         .catch((result) => {
           console.error(result)
