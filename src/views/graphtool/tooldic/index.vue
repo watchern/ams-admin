@@ -1704,14 +1704,23 @@ export default {
                               parentIds.length > 0 &&
                               childrenIds.length === 0
                             ) {
-                              resultNodeIdArr.push(nodeIdArr[i]);
+                              // 判断resultNodeIdArr之前是否添加过该节点
+                              let index = resultNodeIdArr.findIndex(
+                                      (item) => item === nodeIdArr[i]
+                              );
+                              if (index < 0) resultNodeIdArr.push(nodeIdArr[i]);
                             }
                             //第二种，是否被标记为辅助结果表或最终结果表
                             if (
                               midTableStatus === 2 ||
                               resultTableStatus === 2
                             ) {
-                              resultNodeIdArr.push(nodeIdArr[i]);
+                              console.log("====123123==")
+                              // 判断resultNodeIdArr之前是否添加过该节点
+                              let index = resultNodeIdArr.findIndex(
+                                      (item) => item === nodeIdArr[i]
+                              );
+                              if (index < 0) resultNodeIdArr.push(nodeIdArr[i]);
                             }
                           }
                         }
