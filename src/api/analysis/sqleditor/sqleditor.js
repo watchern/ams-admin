@@ -710,7 +710,7 @@ export function initTableTree(result) {
     if (result.data[i].type === 'table') {
       result.data[i].icon = tableIconPath
       result.data[i].enName = result.data[i].name;
-      if (result.data[i].nameCn) {
+      if (result.data[i].nameCn && result.data[i].name != result.data[i].nameCn) {
         result.data[i].name = result.data[i].name + "(" + result.data[i].nameCn + ")"
         // result.data[i].name = result.data[i].nameCn
       }
@@ -719,7 +719,7 @@ export function initTableTree(result) {
       result.data[i].icon = viewIconPath
       result.data[i].isParent = true
       result.data[i].enName = result.data[i].name;
-      if (result.data[i].nameCn) {
+      if (result.data[i].nameCn && result.data[i].name != result.data[i].nameCn) {
         result.data[i].name = result.data[i].name + "(" + result.data[i].nameCn + ")"
         // result.data[i].name = result.data[i].nameCn
       }
