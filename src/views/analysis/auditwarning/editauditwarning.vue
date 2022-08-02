@@ -502,7 +502,8 @@ export default {
         nodeType : null,
         tempId : null,
         tempPath : null,
-      }
+      },
+      oldModelList:[]
     }
   },
   created() {
@@ -591,11 +592,13 @@ export default {
           taskRef.modelUuid = taskRef.sourceUuid
           if(!settingInfo.paramsArr){
             this.temp.modelList.push(taskRef)
+            this.oldModelList = JSON.parse(JSON.stringify(this.temp.modelList));
             continue
           }
           //有参数配置信息则转换为json对象
           taskRef.paramObj = settingInfo.paramsArr
           this.temp.modelList.push(taskRef)
+          this.oldModelList = JSON.parse(JSON.stringify(this.temp.modelList));
         }
       }
       else{
@@ -961,6 +964,26 @@ export default {
         }
       })
       return isSubmit
+    },
+    // 返回被修改的模型结果名下角标
+    getModifiedSubscript(newName){
+      var oldName = this.oldModelList
+      var modifiedSubscriptList = []
+      var modifiedSubscript = {
+        subscript:'',
+        oldName:'',
+        newName:''
+      }
+      for (let i = 0 ; i < oldName.length ; i++){
+        if (oldName[i].warningResTbName != newName[i]){
+          modifiedSubscript.subscript = i
+          modifiedSubscript.oldName = oldName[i].warningResTbName
+          modifiedSubscript.newName = newName[i]
+          modifiedSubscriptList.push(modifiedSubscript)
+        }
+
+      }
+      return modifiedSubscriptList
     },
     /**
      * 格式化模型类型
