@@ -711,8 +711,8 @@ export function initTableTree(result) {
       result.data[i].icon = tableIconPath
       result.data[i].enName = result.data[i].name;
       if (result.data[i].nameCn) {
-        // result.data[i].name = result.data[i].name + "(" + result.data[i].nameCn + ")"
-        result.data[i].name = result.data[i].nameCn
+        result.data[i].name = result.data[i].name + "(" + result.data[i].nameCn + ")"
+        // result.data[i].name = result.data[i].nameCn
       }
       result.data[i].isParent = true
     } else if (result.data[i].type === 'view') {
@@ -720,8 +720,8 @@ export function initTableTree(result) {
       result.data[i].isParent = true
       result.data[i].enName = result.data[i].name;
       if (result.data[i].nameCn) {
-        // result.data[i].name = result.data[i].name + "(" + result.data[i].nameCn + ")"
-        result.data[i].name = result.data[i].nameCn
+        result.data[i].name = result.data[i].name + "(" + result.data[i].nameCn + ")"
+        // result.data[i].name = result.data[i].nameCn
       }
     } else if (result.data[i].type === 'folder') {
       result.data[i].isParent = true
