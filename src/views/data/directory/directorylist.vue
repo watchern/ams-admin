@@ -402,7 +402,10 @@
                 :open-type="openType"
                 :tab-show.sync="tabShow"
                 :get-tree="getTree"
+                :clickId="clickId"
+                :is-edit="isEdit"
                 @append-node="appendnode"
+                @refresh="refreshlog"
                 @table-show="tableshow"
                 @saveTableInfoHelp="saveTableInfoHelp"
                 @changeDataType="changeDataType"
@@ -1331,8 +1334,11 @@ export default {
           duration: 2000,
           position: "bottom-right",
         });
-        this.$emit("refresh");
+        this.$emit("refresh", this.clickId);
       });
+    },
+    refreshlog(query){
+      this.$emit('refresh',query);
     },
     //现在右侧只显示表，排除对文件夹的提示信息
     // 重命名资源名称

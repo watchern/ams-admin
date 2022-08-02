@@ -976,13 +976,10 @@ export default {
           if (oldName[y].warningTaskRelUuid == newName[i].warningTaskRelUuid) {
             if (oldName[y].warningResTbName != newName[i].warningResTbName) {
               var modifiedSubscript = {
-                subscript: '',
-                oldName: '',
-                newName: ''
+                subscript: i,
+                oldName: oldName[y].warningResTbName,
+                newName: newName[i].warningResTbName
               }
-              modifiedSubscript.subscript = i
-              modifiedSubscript.oldName = oldName[y].warningResTbName
-              modifiedSubscript.newName = newName[i].warningResTbName
               modifiedSubscriptList.push(modifiedSubscript)
             }
             judge = false
@@ -991,12 +988,10 @@ export default {
         }
         if (judge){
           var modifiedSubscript = {
-            subscript: '',
+            subscript: i,
             oldName: '',
-            newName: ''
+            newName: newName[i].warningResTbName
           }
-          modifiedSubscript.subscript = i
-          modifiedSubscript.newName = newName[i].warningResTbName
           modifiedSubscriptList.push(modifiedSubscript)
         }
       }
