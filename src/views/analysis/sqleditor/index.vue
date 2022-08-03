@@ -164,7 +164,7 @@
 
         <!-- 结果展示和参数输入区域 -->
         <div id="bottomPart" lay-filter="result-data">
-          <div id="maxOpen" class="max-size">
+          <div id="maxOpen" class="max-size" ref="maxSize">
             <div id="iconImg" class="iconImg" alt="最大化" @click="maxOpen" />
             <div id="iconImg-huifu" class="iconImg" @click="maxOpen" />
             <!-- <div id="iconImg-save" class="iconImg" @click="outTable"></div>
@@ -702,6 +702,8 @@ export default {
     this.initData();
     this.initWebSocket();
     sendSqlEditorVue(this);
+    // 默认隐藏放大按钮
+    this.$refs.maxSize.style.display = "none"
   },
   methods: {
     /**
