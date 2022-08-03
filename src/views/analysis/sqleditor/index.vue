@@ -1408,6 +1408,8 @@ export default {
       obj.pushUuid = this.pushUuid;
       obj.modelType = 'SQL';
       this.executeLoading = true;
+      // 显示最大化按钮
+      $('.max-size').show()
       getExecuteTask(obj, this.dataUserId, this.sceneCode1).then((result) => {
         if (result.data.isError) {
           this.$message({

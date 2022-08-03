@@ -2396,8 +2396,6 @@ export async function verifySql() {
  * 执行SQL
  */
 export function executeSQL() {
-  // 显示最大化按钮
-  $('.max-size').show()
   // 这是存放参数的数组
   var arr = new Array()
   var selText = editorObj.getSelection()
