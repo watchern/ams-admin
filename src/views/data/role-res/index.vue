@@ -656,6 +656,8 @@ export default {
       this.removeChild(data)
       // 若父节点没有任何其它子节点则删除父节点
       this.removeParent(data,'check')
+      // 右侧删除节点时把左侧勾选状态取消
+      this.deepGetChildren(this.$refs.treeTable.getNode(node.data).data, true)
     },
     // 取消选中子节点
     removeChild(data){
