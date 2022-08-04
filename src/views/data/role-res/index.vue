@@ -407,6 +407,11 @@ export default {
         this.tree1Loading = false;
         let _this = this;
         setTimeout(function(){
+          // 给右侧勾选的父节点下的子节点隐藏勾选框
+          _this.checkedNode.map(i => {
+            console.log( _this.deepGetChildren(_this.$refs.treeTable.getNode(i).data, '111'))
+            _this.deepGetChildren(_this.$refs.treeTable.getNode(i).data, false)
+          })
           // 给右侧树赋权
           _this.findWriteTree(_this.oldRoleData)
           setTimeout(function(){
