@@ -22,12 +22,13 @@
             :default-expanded-keys="['ROOT']"
             :highlight-current="true"
             :data="treeData1"
-            :check-strictly="false"
+            :check-strictly="true"
             node-key="id"
             :expand-on-click-node="false"
             :filter-node-method="filterNode"
             :default-checked-keys = checkedNode
             show-checkbox
+            @check="setCheckedNodes"
           >
             <span slot-scope="{ node, data }" class="custom-tree-node">
               <i
@@ -90,7 +91,7 @@
                   "
                 />
               </i>
-              <span class="tree-label tree-label-width"  :title="node.label">{{ node.label }}</span>
+              <span class="tree-label tree-label-width"  :title="node.label">{{ node.label }}<i v-if="data.showReverseBtn" class="fa fa-minus-square" title="反向选中" style="margin-left: 15px; color: #559ed4" @click="reverseCheck(data)"></i></span>
             </span>
           </MyElTree>
         </div>
@@ -570,9 +571,11 @@ export default {
     },
     clearWriteNode(){
       let leftCheckNode = this.$refs.treeTable.getCheckedNodes(false, false)
-      this.writeNode.map(i => {
+      this.writeNode.map((i,k) => {
         const hasNode = _.findIndex(leftCheckNode, v => v.id === i.id,v => v.label === i.label)
-        if (hasNode < 0 && i.accessType.includes('SHOW')) this.writeNode.remove(i)
+        if (hasNode < 0 && i.accessType.includes('SHOW')) {
+           this.writeNode.splice(k,1);
+        }
       })
     },
     addRoleTable() {
@@ -656,6 +659,11 @@ export default {
     },
     // 取消选中子节点
     removeChild(data){
+      // 拥有写的权限
+      const hasNode = _.findIndex(this.writeNode, v => v.id === data.id)
+      if(hasNode > -1) {
+        this.writeNode.splice(hasNode,1)
+      }
       this.$refs.treeTable.setChecked(data,false,true)
       if (data.children){
         for(var i=0;i<data.children.length;i++) {
@@ -665,6 +673,11 @@ export default {
     },
     // 取消选中父节点
     removeParent(data,type,parentArr){
+      // 拥有写的权限
+      const hasNode = _.findIndex(this.writeNode, v => v.id === data.id)
+      if(hasNode > -1) {
+        this.writeNode.splice(hasNode,1)
+      }
       this.$refs.treeTable.setChecked(data,false,true)
       const parent = this.$refs.treeRole.getNode(data).parent
       if (parent) {
@@ -700,13 +713,11 @@ export default {
         } else {
           this.listLoading = true;
           getRoleCols(this.roleUuid, node.data.id).then((resp) => {
-            console.log(resp)
             this.listLoading = false;
             node.data.cols = resp.data;
             this.currentData = node.data;
             // if(!this.currentData.extMap) this.$set(this.currentData, 'extMap', null);
             this.currentData.cols.forEach((d) => {
-              console.log(d)
               if (d.roleCol === null ) {
                 d.roleCol={encryptType:'NONE'}
               }
@@ -781,6 +792,111 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
+    // 递归获取子节点并设置属性
+    deepGetChildren (node, flag) {
+      node.children.map(i => {
+        // 判断隐藏勾选框的时候所有子集取消选中
+        this.$refs.treeTable.setChecked(i, false)
+        this.$set(i, 'showCheckbox', flag);
+        if (i.children) {
+          this.deepGetChildren(i, flag)
+        }
+      })
+    },
+    deepSetUncheck (node, flag) {
+      node.children.map(i => {
+        this.$refs.treeTable.setChecked(i, false)
+        if (i.children) {
+          this.deepSetUncheck(i, flag)
+        }
+      })
+    },
+    findAncestry(arr, id) {
+      var temp = []
+      var forFn = function (list, id) {
+        for (var i = 0; i < list.length; i++) {
+          var item = list[i]
+          if (item.id === id) {
+            temp.unshift(item.id)
+            forFn(arr, item.parentId)
+            break
+          } else {
+            if (item.children) {
+              forFn(item.children, id)
+            }
+          }
+        }
+      }
+      forFn(arr, id)
+      temp.unshift('0')
+      return temp
+    },
+    // 递归获取对应的父节点根据本节点id
+    deepGetParentById(list,pid) {
+      let pData = {}
+      let that = this;
+      var forFn = function (list, pid) {
+        for (var i = 0; i < list.length; i++) {
+          var item = list[i];
+          if (item.id === pid) {
+            pData = item;
+            // item.showReverseBtn = true
+            that.$set(item, 'showReverseBtn', true)
+            forFn(list, item.pid)
+            break
+          } else {
+            if (item.children) {
+              forFn(item.children, pid)
+            }
+          }
+        }
+      }
+      forFn(list, pid)
+      return pData
+    },
+    // 左侧树节点选中事件
+    setCheckedNodes (node, isChecked) {
+      if (isChecked.checkedKeys.includes(node.id)) {
+        // 选中状态
+        // 如果此节点勾选的话找到对应的父节点设置显示反选按钮
+        // 此节点点击时对应的父节点展示反选按钮
+        this.deepGetParentById(this.treeData1,node.pid)
+        // 所有子节点隐藏勾选框
+        if (node.children) {
+          this.deepGetChildren(node, false)
+          // 父元素勾选时隐藏反选按钮
+          this.$set(node, 'showReverseBtn', false)
+        }
+      } else {
+        // 没选中状态
+        // 所有子节点显示勾选框
+        if (node.children) {
+          this.deepGetChildren(node, true)
+        }
+      }
+    },
+    // 反向选中
+    reverseCheck (data) {
+      // 当前选中的节点
+      let currentCheckedNodes = this.$refs.treeTable.getCheckedNodes();
+      // 当前层级选中的id
+      let currentCheckedId = [];
+      if (data.children && data.children.length>0) {
+        data.children.map(i => {
+          currentCheckedNodes.map(j => {
+            if (i.id == j.id) {
+              currentCheckedId.push(i.id);
+              // 当前层级已选中的话取消勾选
+              this.$refs.treeTable.setChecked(i, false)
+            }
+          })
+          // 当前层级未选中的话执行勾选
+          if (currentCheckedId.indexOf(i.id) == -1) {
+            this.$refs.treeTable.setChecked(i, true)
+          }
+        })
+      }
+    }
   }, // 注册
 };
 </script>
