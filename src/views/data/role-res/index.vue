@@ -893,6 +893,15 @@ export default {
           // 当前层级未选中的话执行勾选
           if (currentCheckedId.indexOf(i.id) == -1) {
             this.$refs.treeTable.setChecked(i, true)
+            if (i.children.length>0) {
+              // 如果节点勾选有子集的话把子集的复选框隐藏
+              this.deepGetChildren(i, false)
+
+            }
+          }
+          // 如果节点未勾选有子集的话把子集的复选框展示
+          if (i.children.length>0 && currentCheckedId.indexOf(i.id) > -1) {
+            this.deepGetChildren(i, true)
           }
         })
       }
