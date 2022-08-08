@@ -514,7 +514,7 @@ export default {
     // 将已经被授权的节点在主树中勾上checkBox
     tree1Checked(datas){
       for(var i in datas){
-        if (datas[i].type==="table" && datas[i].accessType.includes('SHOW')){
+        if ((datas[i].type==="table" ||datas[i].type==="view" ) && datas[i].accessType.includes('SHOW')){
           this.checkedNode.push(datas[i].id)
         }
         if(datas[i].children){
@@ -770,7 +770,7 @@ export default {
               folderUuid: data.id,
               accessType: accType1,
             });
-          } else if (data.type === "table" && (data.checkedType == 'checked' || data.accessType.includes('WRITE'))) {
+          } else if ((data.type === "table" && (data.checkedType == 'checked' || data.accessType.includes('WRITE')))|| (data.type === "view" && data.checkedType == 'checked')) {
             tables.push({
               dataRoleUuid: this.roleUuid,
               tableMetaUuid: data.id,
