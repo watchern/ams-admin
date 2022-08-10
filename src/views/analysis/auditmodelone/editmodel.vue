@@ -114,8 +114,8 @@
           </div>
           <div class="modelInfoClass " v-show="resultConfigDraw" style="position:absolute; height: calc(100% - 125px); overflow:auto">
             <el-tabs v-model="activeName" :stretch="true" style="width: 92%" ref="tabs">
-              <!-- 大亚湾注释掉模型结果 -->
-              <el-tab-pane label="模型结果" name="first" v-show="false"><div v-show="!isExecuteSql" align='center' class="notExecuteSqlClass" >执行SQL后才能设置</div><div v-show="isExecuteSql" ref="modelResultOutputCol" class="default-value">
+              <!-- 演示环境放开模型结果 -->
+              <el-tab-pane label="模型结果" name="first"><div v-show="!isExecuteSql" align='center' class="notExecuteSqlClass" >执行SQL后才能设置</div><div v-show="isExecuteSql" ref="modelResultOutputCol" class="default-value">
                 <div  align="right" style="margin: 1px 5px -17px 5px">
                   <el-popover trigger="hover" placement="bottom" :content="resultText" class="popover" width="300">
                     <el-button type="primary" slot="reference" class="oper-btn" style="width: 77px" @click="viewDialog('result')">功能说明</el-button>
@@ -532,10 +532,10 @@ export default {
     listByPage({}).then(resp => {
       this.transJson = resp.data.records  
     })
-    // 隐藏结果展现的模型结果页签
-    this.$nextTick(() => {
-      this.$refs.tabs.$children[0].$refs.tabs[0].style.display = 'none';
-    })
+    // 取消隐藏结果展现的模型结果页签
+    // this.$nextTick(() => {
+    //   this.$refs.tabs.$children[0].$refs.tabs[0].style.display = 'none';
+    // })
   },
   methods: {
     editThresholdDetermine(){
@@ -1722,7 +1722,8 @@ export default {
 .popover:after{
   font-size: 2px;
 }
-.modelInfoClass >>> .el-tabs__active-bar {
-  width: 50% !important;
-}
+/*模型结果页签宽度*/
+/*.modelInfoClass >>> .el-tabs__active-bar {*/
+/*  width: 50% !important;*/
+/*}*/
 </style>

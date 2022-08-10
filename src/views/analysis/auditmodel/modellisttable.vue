@@ -285,13 +285,13 @@
         </el-collapse>
       </el-tab-pane>
     </el-tabs>
-    <!-- 大亚湾注掉 -->
-    <!-- <modelshoppingcart
+<!--    演示环境放开-->
+    <modelshoppingcart
       :data-user-id="dataUserId"
       :scene-code="sceneCode"
       v-show="isShowShoppingCart"
       ref="modelShoppingCartRef"
-    /> -->
+    />
     <el-dialog
       v-if="treeSelectShow"
       :close-on-click-modal="false"
@@ -727,8 +727,8 @@ export default {
       }
     },
     startrun(){
-      //大亚湾注掉
-      // this.$refs.modelShoppingCartRef.runImmediately()
+      // 演示环境放开
+      this.$refs.modelShoppingCartRef.runImmediately()
     },
     setImportFolder() {
       let selectNode = this.$refs.modelFolderTree.getSelectNode();
@@ -1157,8 +1157,8 @@ export default {
 
         if (this.isAuditWarning != true) {
           this.isShowShoppingCart = true;
-          //大亚湾注掉
-          // this.$refs.modelShoppingCartRef.setMemo(selectObj);
+          // 演示环境放开
+          this.$refs.modelShoppingCartRef.setMemo(selectObj);
         }
         // 因长度为1 直接使用selectObj[0] 不遍历
         var modelFolderPath = selectObj[0].modelFolderPath;
@@ -1212,8 +1212,8 @@ export default {
         };
         if (this.isAuditWarning != true) {
           this.isShowShoppingCart = true;
-          //大亚湾注掉
-          // this.$refs.modelShoppingCartRef.setMemo(selectObj);
+          // 演示环境放开
+          this.$refs.modelShoppingCartRef.setMemo(selectObj);
         }
         // 遍历判断 以最小权限的模型为参考
         for (var i = 0; i < selectObj.length; i++) {
