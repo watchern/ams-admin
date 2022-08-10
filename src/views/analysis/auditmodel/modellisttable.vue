@@ -710,12 +710,22 @@ export default {
   mounted() {
     this.initWebSocket();
     this.initData();
+    window.addEventListener('visibilitychange', e => this.visibilitychange(e)) 
   },
   // 编辑页面返回重新刷新页面
   activated () {
     this.getList()
   },
+  destroyed() {
+    window.removeEventListener('visibilitychange', e => this.visibilitychange(e))
+  },
   methods: {
+    // 进入页面更新模型列表
+     visibilitychange(e) {
+      if (document.visibilityState === 'visible') {
+        this.getList();
+      }
+    },
     startrun(){
       //大亚湾注掉
       // this.$refs.modelShoppingCartRef.runImmediately()
@@ -1307,9 +1317,10 @@ export default {
         };
       }
       sessionStorage.setItem("operationObj", JSON.stringify(operationObj));
-        this.$router.push({
+      let routeUrl = this.$router.resolve({
         path:  `/analysis/editormodelnew?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`
       });
+      window.open(routeUrl.href, '_blank');
       // this.$router.push({
       //   path:  `/analysis/editormodelnew/add?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`
       // });
@@ -1413,9 +1424,10 @@ export default {
             folderPath: selectObj[0].modelFolderPath,
           };
           sessionStorage.setItem("operationObj", JSON.stringify(operationObj));
-          this.$router.push({
+          let routeUrl = this.$router.resolve({
             path:  `/analysis/editormodelnew?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`
           });
+          window.open(routeUrl.href, '_blank');
           // this.$router.push({
           //   path:  `/analysis/editormodelnew/${selectObj[0].modelUuid}?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`
           // });
@@ -2310,7 +2322,9 @@ export default {
             formName: result.data.modelName + "详细",
           };
           sessionStorage.setItem("operationObj", JSON.stringify(operationObj));
-          this.$router.push(`/analysis/editormodelnew`)
+          // this.$router.push(`/analysis/editormodelnew`)
+          let routeUrl = this.$router.resolve(`/analysis/editormodelnew?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`)
+          window.open(routeUrl.href, '_blank');
           // this.$router.push(`/analysis/editormodelnew/${modelUuid}`)
           // this.$store.commit("aceState/setRightFooterTags", {
           //   type: "active",
