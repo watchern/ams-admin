@@ -94,6 +94,12 @@ const actions = {
           commit('SET_DATAUSERID', dataUserId)
           commit('SET_DATAUSERNAME', dataUserName)
         })
+        var user =  {
+          userId:data.personUuid,
+          userName:data.username,
+          userLoginName:data.userid
+        }
+        Cookies.set('user', user)
         resolve()
       }).catch(error => {
         console.log(error)
@@ -162,6 +168,7 @@ const actions = {
         resolve()
         Cookies.remove('LTPAToken')
         Cookies.remove('ROLTPAToken')
+        Cookies.remove('user')
       }).catch(error => {
         reject(error)
       })
