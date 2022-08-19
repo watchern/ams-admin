@@ -558,7 +558,12 @@ export default {
       // 当前预览模型参数和sql
       currentPreviewModelParamAndSql: {},
       queryFields: [
-        { label: "模型名称", name: "modelName", type: "fuzzyText", value: "" },
+        {
+          label: "模型名称",
+          name: "modelName",
+          type: "fuzzyText",
+          value: ""
+        },
         {
           label: "审计事项",
           name: "auditItemName",
@@ -569,11 +574,7 @@ export default {
           label: "风险等级",
           name: "riskLevelUuid",
           type: "select",
-          data: [
-            { name: "高", value: "002002001" },
-            { name: "中", value: "002002002" },
-            { name: "低", value: "002002003" },
-          ],
+          data: [],
           default: "-1",
         },
       ],
@@ -614,6 +615,10 @@ export default {
       addModelIsSee: false, //点击添加模型按钮的时候触发选择模型类型dialog
       selectModelType: "", //选择的模型类型
       modelTypeData: [], //模型类型
+      riskLeve: [], //风险等级
+      riskData: [
+
+      ], //风险等级信息
       modelFolderTreeDialog: false,
       modelFolderTreeDialogMove: false,
       moveFolderId: "",
@@ -710,7 +715,7 @@ export default {
   mounted() {
     this.initWebSocket();
     this.initData();
-    window.addEventListener('visibilitychange', e => this.visibilitychange(e)) 
+    window.addEventListener('visibilitychange', e => this.visibilitychange(e))
   },
   // 编辑页面返回重新刷新页面
   activated () {
@@ -755,6 +760,12 @@ export default {
     initData() {
       // 初始化审计事项
       this.modelTypeData = getDictList("002003");
+      this.riskLeve = getDictList('002002');
+      this.riskData = []
+      for (let w = 0; w < this.riskLeve.length; w++) {
+        this.riskData.push({name: this.riskLeve[w].codeName, value: this.riskLeve[w].codeValue})
+      }
+      this.queryFields[2].data = this.riskData
     },
     Toggle: function () {
       this.isShow = !this.isShow;
