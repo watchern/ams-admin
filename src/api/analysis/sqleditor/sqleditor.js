@@ -209,7 +209,7 @@ export function initDragAndDrop() {
         leftPart.style.width = (iT - 86 - tz_path) / container.clientWidth * 100 + '%'
         rightContent.style.width = (container.clientWidth - iT + 76 + tz_path) / container.clientWidth * 100 + '%'
       }
-     
+
       return false
     }
     document.onmouseup = function () {
@@ -404,6 +404,8 @@ export function initSQLEditor(textarea, relTableMap, expTableMap) {
       tablesTitle: expTableMap
     }
   })
+  // codeMirror初始化
+  if (typeof CodeMirror.tableColMapping == 'undefined') CodeMirror.tableColMapping = {}
   // 输入时事件cursorActivity
   editor.on('cursorActivity', function (cm) { // 光标活动
     if (cm.curOp.focus === false) {
@@ -1963,7 +1965,6 @@ export function sqlFormat() {
  * @param paramObj 所有参数的对象
  */
 function replaceParam(paramObj) {
-  console.log(0)
   var lines = editorObj.lineCount()// 获取sql行数
   var indexArrstart = []
   var indexArrend = []
