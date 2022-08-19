@@ -1847,10 +1847,10 @@ export default {
           modelShareRelList.push(obj);
         }
       }
-      /*      if(!verResult){
-        this.$message({ type: 'info', message: '不能共享给自己!' })
-        return
-      }*/
+      if (!verResult) {
+        this.$message({ type: "info", message: "不能共享给自己!" });
+        return;
+      }
       shareModel(modelShareRelList).then((result) => {
         if (result.code == 0) {
           this.$notify({
