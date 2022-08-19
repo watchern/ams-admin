@@ -1459,6 +1459,7 @@ export default {
       // 默认选中点击文件夹下第一个表
       let _this = this
       setTimeout(function(){
+        _this.selections = []
         _this.$refs.directoryListTable.selection.push(_this.temp[0])
         _this.selections.push(_this.temp[0])
       },200)
