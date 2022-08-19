@@ -37,9 +37,12 @@ function getStrBytes(str){
  * @return {boolean}
  */
 function verifyReg(columnName) {
+    // 避免出现 ""gender"_计数" 情况导致语法错误的问题
+    var newColumnName = columnName.replaceAll("\"", "");
+    newColumnName = "\"" + newColumnName + "\"";
     var flag = true;
     var regExpressions = /(^_([a-zA-Z0-9\u4e00-\u9fa5]_?)*$)|(^[`"a-zA-Z\u4e00-\u9fa5#$_](_?[a-zA-Z0-9\u4e00-\u9fa5#$_])*[`"_]?$)/;
-    if (!regExpressions.test(columnName)) {
+    if (!regExpressions.test(newColumnName)) {
         flag = false;
     }
     return flag;
