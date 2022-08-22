@@ -504,15 +504,19 @@
       style="min-width: 1000px"
       title="分享"
     >
+      <div v-loading="floading">
       <el-row>
         <el-col>
           <PersonTree ref="personTree" />
         </el-col>
       </el-row>
+        <div left="50%">
       <span slot="footer">
-        <el-button @click="shareVisible = false">关闭</el-button>
+        <el-button @click="shareVisible = false" style="margin-left: 1280px">关闭</el-button>
         <el-button type="primary" @click="shareTableSave">确定</el-button>
       </span>
+        </div>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -595,6 +599,7 @@ export default {
       total: 0,
       listLoading: false,
       loading: false,
+      floading:false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [{ label: "名称", name: "label", type: "text", value: "" }],
       pageQuery: {
@@ -1656,6 +1661,7 @@ export default {
     shareTableSave() {
       // 获取选中的人员
       // 循环组织对象添加数据
+      this.floading = true;
       var userId = this.$store.getters.personuuid;
       const tableShareRelList = [];
       var verResult = true;
@@ -1684,6 +1690,7 @@ export default {
         return;
       }
       shareTableSave(tableShareRelList).then((result) => {
+        this.floading = true;
         if (result.code === 0) {
           this.$notify({
             title: "提示",
@@ -1692,6 +1699,7 @@ export default {
             duration: 2000,
             position: "bottom-right",
           });
+          this.floading = false;
           this.shareVisible = false;
         } else {
           this.$message({ type: "error", message: "共享模型失败!" });
