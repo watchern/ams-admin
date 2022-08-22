@@ -49,7 +49,7 @@
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
         <span> <i :class="data.icon" />{{ node.label }} </span>
-        <span v-if="data.type == 'folder' && power != 'warning' && !isBussinessType && data.path.indexOf('gongxiang') == -1&& data.id != 'xiaxian'">
+        <span v-if="data.type == 'folder' && isShowButton && power != 'warning' && !isBussinessType && data.path.indexOf('gongxiang') == -1&& data.id != 'xiaxian'">
           <el-button
             title="添加模型分类"
             type="text"
@@ -113,7 +113,7 @@ import { getInfo, isAdmin } from '@/api/user'
 export default {
   name: "ModelFolderTree",
   components: { MyElTree },
-  props: ["publicModel", "power", "spaceFolderName", "spaceFolderId", "filterId", "selectFolder"],
+  props: ["publicModel", "power", "spaceFolderName", "spaceFolderId", "filterId", "selectFolder", "isShowButton"],
   data() {
     return {
       ifExpandAll: false, // 是否展开所有树节点
