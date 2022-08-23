@@ -198,7 +198,7 @@ export default {
               ifpush = 0
             }
           }
-          }
+        }
           if(ifpush==1){
             this.$refs.modelListTable.selection = []
             this.$refs.modelListTable.selection.push(this.list[i])
