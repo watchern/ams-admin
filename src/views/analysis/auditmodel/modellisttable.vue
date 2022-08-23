@@ -731,6 +731,7 @@ export default {
      visibilitychange(e) {
       if (document.visibilityState === 'visible') {
         this.getList();
+        this.$emit("refreshTree");
       }
     },
     startrun(){
