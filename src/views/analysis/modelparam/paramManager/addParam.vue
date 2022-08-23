@@ -112,13 +112,14 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-form-item label="默认值" prop="example">
+          <el-form-item label="示例" prop="example" v-if="this.isShowElement.dataLengthInterValShow"
+          >
             <el-input
               name="example"
               id="example"
               v-model="form.example"
               autocomplete="off"
-              placeholder="默认值"
+              placeholder="示例"
               :disabled="!(form.inputType!='lineinp'&&form.inputType!='treeinp')"
             />
             <!-- :disabled="form.inputType!=''&&" -->
@@ -333,7 +334,7 @@
             :placeholder="getSqlRule(2)"
             class="sqlRule-input"
           />
-        
+
           <el-popover
             placement="right"
             width="500"
@@ -1041,14 +1042,14 @@ export default {
             i.children.map(j => {
               if (!j.children) { // 本层及数据优先push
                 arr.unshift(j);
-              } 
+              }
               else { // 子集最后在push
                 arr.push(j);
               }
             })
             i.children = arr;
             traverse(i.children)
-          } 
+          }
         })
       };
       traverse(relevancetreedata);
@@ -1225,7 +1226,7 @@ export default {
         "param.paramName": paramName,
         "param.dataType": dataType,
         "param.inputType": inputType,
-        "param.example": example,
+        "param.example": this.isShowElement.dataLengthInterValShow ? example : null,
         "param.dataLength": dataLength,
         "param.description": description,
         "param.ammParamTypeUuid": ammParamTypeUuid,
@@ -1340,7 +1341,7 @@ export default {
         "param.paramName": paramName,
         "param.dataType": dataType,
         "param.inputType": inputType,
-        "param.example": example,
+        "param.example": this.isShowElement.dataLengthInterValShow ? example : null,
         "param.dataLength": dataLength,
         "param.description": description,
         "param.ammParamTypeUuid": ammParamTypeUuid,
@@ -1471,7 +1472,7 @@ export default {
           this.sqlRuleVisible2 = !this.sqlRuleVisible2
           this.sqlRuleVisible1 = false
         }
-      }) 
+      })
     },
     /**
      * 获取sql规则

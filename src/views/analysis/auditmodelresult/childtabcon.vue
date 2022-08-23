@@ -332,7 +332,7 @@
               :rowData="computedRowData"
               rowMultiSelectWithClick="true"
               :enable-col-resize="true"
-              :get-row-style="this.renderTableView"
+              :get-row-style="(preLength !== myIndex + 1) && useType == 'modelPreview' ?'': this.renderTableView"
               row-selection="multiple"
               @cellClicked="onCellClicked"
               @grid-ready="onGridReady"
@@ -3082,11 +3082,9 @@ export default {
               var obj = { copyParamId: "", paramValue: "", moduleParamId: "" };
               obj.copyParamId =
                 this.modelDetailRelation[i].modelDetailConfig[j].ammParamUuid;
-              if (this.modelUuid !== undefined) {
-                obj.paramValue = this.rowData[this.rowIndex][key.toLowerCase()];
-              } else {
-                obj.paramValue = this.rowData[this.rowIndex][key.toUpperCase()];
-              }
+              // 忽略字段名大小写问题
+              obj.paramValue = typeof this.rowData[this.rowIndex][key.toLowerCase()] == "undefined" ?
+                      this.rowData[this.rowIndex][key.toUpperCase()] : this.rowData[this.rowIndex][key.toLowerCase()];
               detailValue.push(obj);
             }
           }
@@ -3777,7 +3775,7 @@ export default {
       ) {
         mouseInGrid = true;
       }
-      
+
       if (mouseInGrid === true) {
         let node = {
           id: new Date().valueOf(),
