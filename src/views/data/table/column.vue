@@ -181,11 +181,13 @@ export default {
       return this.$emit("isValidColumn", row);
     },
     initTable(tableId) {
-      this.loading = true;
+      //this.loading = true;
       getSqlType().then((resp) => {
         this.sqlType = resp.data;
       });
+      //在修改模型的时候才有loading
       if (this.openType !== "addTable") {
+        this.loading = true;
         getColsInfo(tableId).then((resp) => {
           this.loading = false;
           // 返回两个新的数组
