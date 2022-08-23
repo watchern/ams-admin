@@ -209,35 +209,35 @@
               </el-popover>
             </template>
           </el-table-column>
-<!--        <el-table-column-->
-<!--                label="运行参数"-->
-<!--                prop="settingInfo"-->
-<!--                width="200px"-->
-<!--        >-->
-<!--            <template slot-scope="scope">-->
-<!--                <el-popover trigger="hover" placement="top" width="500" v-if="(JSON.parse(scope.row.settingInfo).paramsArr!== undefined && JSON.parse(scope.row.settingInfo).paramsArr!== null && JSON.parse(scope.row.settingInfo).paramsArr.length>0)">-->
-<!--                    <el-row  v-for="item in JSON.parse(scope.row.settingInfo).paramsArr">-->
-<!--                        <el-col :span="10">-->
-<!--                            <label>-->
-<!--                                {{item.name}}-->
-<!--                            </label>-->
-<!--                        </el-col>-->
-<!--                        <el-col :span="10">-->
-<!--                            {{item.paramValue}}-->
-<!--                        </el-col>-->
-<!--                    </el-row>-->
-<!--                    <div slot="reference" class="name-wrapper">-->
-<!--                        <el-link  type="primary" @click="selectParam(scope.row)">查看参数</el-link>-->
-<!--                    </div>-->
-<!--                </el-popover>-->
-<!--            </template>-->
-<!--        </el-table-column>-->
-       <el-table-column
+        <el-table-column
+                label="运行参数"
+                prop="settingInfo"
+                width="200px"
+        >
+            <template slot-scope="scope">
+                <el-popover trigger="hover" placement="top" width="500" v-if="(JSON.parse(scope.row.settingInfo).paramsArr!== undefined && JSON.parse(scope.row.settingInfo).paramsArr!== null && JSON.parse(scope.row.settingInfo).paramsArr.length>0)">
+                    <el-row  v-for="item in JSON.parse(scope.row.settingInfo).paramsArr">
+                        <el-col :span="10">
+                            <label>
+                                {{item.name}}
+                            </label>
+                        </el-col>
+                        <el-col :span="10">
+                            {{item.paramValue}}
+                        </el-col>
+                    </el-row>
+                    <div slot="reference" class="name-wrapper">
+                        <el-link  type="primary" @click="selectParam(scope.row)">查看参数</el-link>
+                    </div>
+                </el-popover>
+            </template>
+        </el-table-column>
+      <!-- <el-table-column
         label="运行信息"
         prop="runMessage"
         width="200px"
         :show-overflow-tooltip="true"
-      />
+      /> -->
       <el-table-column
         label="运行信息"
         prop="runMessage"

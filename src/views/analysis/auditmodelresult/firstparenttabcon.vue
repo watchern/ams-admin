@@ -165,29 +165,29 @@
               <el-link type="primary" @click="selectSql(scope.row)">{{settingInfoSqlFormatter(scope.row) }}</el-link>
             </template>
           </el-table-column>
-<!--          <el-table-column-->
-<!--                  label="运行参数"-->
-<!--                  prop="settingInfo"-->
-<!--                  width="200px"-->
-<!--          >-->
-<!--            <template slot-scope="scope">-->
-<!--              <el-popover trigger="hover" placement="top" width="500" v-if="(JSON.parse(scope.row.settingInfo).paramsArr!== undefined && JSON.parse(scope.row.settingInfo).paramsArr!== null && JSON.parse(scope.row.settingInfo).paramsArr.length>0)">-->
-<!--                <el-row  v-for="item in JSON.parse(scope.row.settingInfo).paramsArr">-->
-<!--                  <el-col :span="10">-->
-<!--                    <label>-->
-<!--                      {{item.name}}-->
-<!--                    </label>-->
-<!--                  </el-col>-->
-<!--                  <el-col :span="10">-->
-<!--                    {{item.paramValue}}-->
-<!--                  </el-col>-->
-<!--                </el-row>-->
-<!--                <div slot="reference" class="name-wrapper">-->
-<!--                  <el-link  type="primary" @click="selectParam(scope.row)">查看参数</el-link>-->
-<!--                </div>-->
-<!--              </el-popover>-->
-<!--            </template>-->
-<!--          </el-table-column>-->
+          <el-table-column
+                  label="运行参数"
+                  prop="settingInfo"
+                  width="200px"
+          >
+            <template slot-scope="scope">
+              <el-popover trigger="hover" placement="top" width="500" v-if="(JSON.parse(scope.row.settingInfo).paramsArr!== undefined && JSON.parse(scope.row.settingInfo).paramsArr!== null && JSON.parse(scope.row.settingInfo).paramsArr.length>0)">
+                <el-row  v-for="item in JSON.parse(scope.row.settingInfo).paramsArr">
+                  <el-col :span="10">
+                    <label>
+                      {{item.name}}
+                    </label>
+                  </el-col>
+                  <el-col :span="10">
+                    {{item.paramValue}}
+                  </el-col>
+                </el-row>
+                <div slot="reference" class="name-wrapper">
+                  <el-link  type="primary" @click="selectParam(scope.row)">查看参数</el-link>
+                </div>
+              </el-popover>
+            </template>
+          </el-table-column>
           <el-table-column
             label="运行信息"
             prop="runMessage"
@@ -420,7 +420,7 @@ export default {
         { label: "模型名称", name: "modelName", type: "fuzzyText" },
         { label: "运行人", name: "runUserName", type: "fuzzyText" },
         { label: "运行sql", name: "sql", type: "fuzzyText" },
-        //{ label: "运行参数", name: "param", type: "fuzzyText" },
+        { label: "运行参数", name: "param", type: "fuzzyText" },
         { label: "执行时间范围", name: "runStartTime", type: "timePeriod" },
       ],
       formStyle: {
