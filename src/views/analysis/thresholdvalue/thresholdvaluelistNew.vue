@@ -200,8 +200,9 @@ export default {
           }
           }
           if(ifpush==1){
-            this.$refs.modelListTable.selection.length = 0;
+            this.$refs.modelListTable.selection = []
             this.$refs.modelListTable.selection.push(this.list[i])
+            this.thresholdvalueTableSelectEvent(this.list[i], 1)
             return
           }
         }
