@@ -183,7 +183,11 @@
                 let message = ''
                 for (let i = 0; i < this.columnItems.length; i++) {
                     if (this.columnItems[i].checked) {
-                        const curNewColumnName = this.columnItems[i].newColumnName
+                        let curNewColumnName = this.columnItems[i].newColumnName
+                        // 避免出现 ""gender"_计数" 情况导致语法错误的问题
+                        let newColumnName = curNewColumnName.replaceAll("\"", "");
+                        curNewColumnName = "\"" + newColumnName + "\"";
+                        this.columnItems[i].newColumnName = curNewColumnName;
                         if($.trim(curNewColumnName) === ""){
                             verify = false
                             message = `第${i + 1}行的输出字段的内容不能为空值，请修改`

@@ -4,7 +4,7 @@
     <!--模型分类树-->
     <el-container class="content-box">
       <el-aside class="tree-side" :style="{ width: maxWidth - rightWidth + 'px' }">
-        <ModelFolderTree ref="modelFolderTree" :power="power" @refreshModelList="refreshModelList" @refreshModels="refreshModels" :spaceFolderName="thisFolderName" :spaceFolderId="thisDataUserId"/>
+        <ModelFolderTree ref="modelFolderTree" :isShowButton="isShowButton" :power="power" @refreshModelList="refreshModelList" @refreshModels="refreshModels" :spaceFolderName="thisFolderName" :spaceFolderId="thisDataUserId"/>
       </el-aside>
       <div class="drawer-box" :style="{ width: (rightWidth-36) + 'px' }"  ref="drawerBox">
         <div class="myxhandle"  style="left:0;"  @mousedown="mouseDown($event)" ><i class="el-icon-d-caret skin-textColor" /></div>
@@ -38,6 +38,7 @@ export default {
   props:['power','dataUserId','sceneCode','isAuditWarning','folderName','width'],
   data() {
     return {
+      isShowButton: true,
       //dataSpaceName: sessionStorage.getItem("dataUserName"),
       dataSpaceName: this.$store.getters.datausername,
       loading:false,

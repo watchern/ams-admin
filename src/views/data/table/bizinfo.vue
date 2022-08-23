@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" v-loading="loading">
     <div v-if="isShow">
       <div>
         <el-form
@@ -64,6 +64,7 @@ export default {
   props: ['tableId', 'openType'],
   data() {
     return {
+      loading:true,
       isShow: false,
       tableKey: 'tableMetaUuid',
       isSql: false,
@@ -97,8 +98,10 @@ export default {
   },
   methods: {
     initTable(tableId) {
+      this.loading = true;
       if (this.openType !== 'addTable') {
         listByPage(this.pageQuery).then(resp => {
+          this.loading = false;
           this.bizJson = resp.data.records
         })
         this.isShow = true

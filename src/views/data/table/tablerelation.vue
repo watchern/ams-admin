@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" v-loading="loading">
     <el-row>
       <el-col v-if="openType !== 'showTable' && openType !== 'tableRegister'" align="right">
         <el-button type="primary" size="mini" class="oper-btn add" @click="addCol()" />
@@ -14,6 +14,7 @@
       fit
       highlight-current-row
       style="width: 100%;"
+
     >
       <el-table-column label="表名称" width="150px" prop="tbName" />
       <!-- <el-table-column label="字段名称" width="150px" prop="colName" /> -->
@@ -29,7 +30,7 @@
               </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
-              <!-- <el-tag><i class="el-icon-tickets" /></el-tag> 
+              <el-tag><i class="el-icon-tickets" /></el-tag>
               <el-link :underline="false" type="primary">查看过滤</el-link>
             </div>
           </el-popover>
@@ -149,6 +150,7 @@ export default {
   props: ['tableId', 'openType'],
   data() {
     return {
+      loading:false,
       sceneCode: 'auditor',
       dataUserId: this.$store.getters.personcode,
       columnList: {},
@@ -194,7 +196,8 @@ export default {
       sqlType: {},
       temp: [],
       tempItemInd: 0,
-      curItempItemInd: 0
+      curItempItemInd: 0,
+      //loading:true,
     }
   },
   created() {
@@ -204,8 +207,10 @@ export default {
   },
   methods: {
     initTable(tableId) {
+      this.loading = true
       this.temp = []
       getById(tableId).then(resp => {
+        this.loading = false
         this.temp = resp.data
         console.log(this.temp)
         this.temp.forEach(element => {

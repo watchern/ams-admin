@@ -6,6 +6,7 @@
         :model="temp"
         label-position="right"
         style="width:90%;min-width:500px; margin-left:50px;"
+        v-loading="loading"
       >
         <el-form-item label="表名称" prop="tbName">
           <el-input v-model="temp.displayTbName" readonly />
@@ -43,11 +44,11 @@
 import { getBasicInfo } from '@/api/data/table-info'
 
 export default {
-  // eslint-disable-next-line vue/require-prop-types
   props: ['tableId'],
   data() {
     return {
       temp: {
+        loading:true,
         tableMetaUuid: undefined,
         tbName: '',
         displayTbName:'',
@@ -63,12 +64,14 @@ export default {
   },
   methods: {
     initBasicInfo(tableId) {
+      this.loading = true;
       if (this.openType !== 'addTable') {
         getBasicInfo(tableId).then(resp => {
           this.temp = resp.data
+          this.loading = false
         })
       }
-    }
+    },
   }
 }
 </script>

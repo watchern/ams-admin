@@ -112,7 +112,7 @@
                 :close-on-click-modal="false"
                 title="复制"
         >
-          <ModelFolderTree ref="modelFolderTree" :power="power"  :spaceFolderName="spaceFolderName" :spaceFolderId="dataUserId" :publicModel="publicModel" :selectFolder="selectFolder"/>
+          <ModelFolderTree ref="modelFolderTree" :isShowButton="isShowButton" :power="power"  :spaceFolderName="spaceFolderName" :spaceFolderId="dataUserId" :publicModel="publicModel" :selectFolder="selectFolder"/>
           <span slot="footer">
         <el-button @click="copyTreeVisible = false">取消</el-button>
         <el-button type="primary" @click="copyPathSave()">保存</el-button>
@@ -148,7 +148,7 @@
           title="选择业务分类"
           width="50%"
         >
-          <ModelFolderTree ref="modelFolderTree" public-model="editorModel" />
+          <ModelFolderTree ref="modelFolderTree" public-model="editorModel" :isShowButton="isShowButton"/>
           <div slot="footer">
             <el-button type="primary" @click="setImportFolder">确定</el-button>
             <el-button @click="modelFolderTreeDialog = false">取消</el-button>
@@ -165,6 +165,7 @@
             ref="modelFolderTree"
             public-model="editorModel"
             :filter-id="moveFolderId"
+            :isShowButton="isShowButton"
           />
           <div slot="footer">
             <el-button type="primary" @click="moveModelConfirm">确定</el-button>
@@ -300,7 +301,7 @@
       width="50%"
       class="publicDialogClass"
     >
-      <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
+      <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" :isShowButton="isShowButton" />
       <div slot="footer">
         <el-button type="primary" @click="updatePublicModel">确定</el-button>
         <el-button @click="treeSelectShow = false">取消</el-button>
@@ -463,6 +464,7 @@ export default {
   props: ["power", "dataUserId", "sceneCode", "isAuditWarning"],
   data() {
     return {
+        isShowButton: false,
       // 已经被当前人分享的模型列表弹窗
       cancelShareModelList: false,
       // 已经被当前人分享的模型列表
