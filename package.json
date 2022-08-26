@@ -19,6 +19,7 @@
     "boe": "vue-cli-service build --mode boe",
     "qinghai": "vue-cli-service build --mode qinghai",
     "dayawan": "vue-cli-service build --mode dayawan",
+    "longhua": "vue-cli-service build --mode longhua",
     "build:prod": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
