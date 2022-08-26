@@ -112,6 +112,7 @@
           open-type="tableRegister"
           :table-id="tableId"
           :tab-show.sync="tabShow"
+          :ifShowPlace="true"
         />
       </div>
     </div>
