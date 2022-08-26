@@ -188,7 +188,7 @@
                       label-position="left"
                       :rules="loginRules"
               >
-                <div class="lh-left-container">
+                <div class="lh-title-container">
                   <div class="lh-right-title">用户登录</div>
                 </div>
                 <div class="lh-right-container">
@@ -266,10 +266,10 @@
             </div>
           </div>
         </div>
-        <div class="lh-login-box2-bottom">
-          <div class="lh-login-box2-bottom-text">Copyright © 1996-2022 深圳市龙华区智慧审计管理系统 All Rights Reserved
-            <br/>粤ICP备20030184号-1   </div>
-        </div>
+<!--        <div class="lh-login-box2-bottom">-->
+<!--          <div class="lh-login-box2-bottom-text">Copyright © 1996-2022 深圳市龙华区智慧审计管理系统 All Rights Reserved-->
+<!--            <br/>粤ICP备20030184号-1   </div>-->
+<!--        </div>-->
       </div>
     </div>
   </div>
@@ -286,7 +286,7 @@ export default {
   data() {
     const validateUsername = (rule, value, callback) => {
       if (value.length < 1) {
-        callback(new Error("请输入用户名!"));
+        callback(new Error("请输入账号!"));
       } else {
         callback();
       }
@@ -789,21 +789,23 @@ $cursor: #fff;
     -o-background-size: cover;
     background-size: cover;
 
-    .lh-left-container {
+    .lh-title-container {
       position: relative;
-      float: left;
-      margin-top: 30px !important;
+      padding-left: 40px;
+      /*float: left;*/
+      /*margin-top: 30px !important;*/
     }
     .lh-right-container {
+      padding-left: 40px;
       position: relative;
-      float: left;
+      /*float: left;*/
       background: #FFFFFF;
       /*padding: 76px 70px;*/
       white-space: nowrap;
     }
     .el-input {
       display: inline-block;
-      height: 47px;
+      height: 25px;
       width: 100%;
 
       input {
@@ -813,7 +815,7 @@ $cursor: #fff;
         border-radius: 0px;
         padding: 12px 5px 12px 15px;
         color: $light_gray;
-        height: 47px;
+        height: 25px;
         caret-color: $cursor;
 
         &:-webkit-autofill {
@@ -826,6 +828,10 @@ $cursor: #fff;
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 5px;
       color: #454545;
+      ::v-deep .el-form-item__error {
+        font-size: 8px;
+        padding-top: 1px;
+      }
     }
 
     .lh-title-container {
@@ -850,6 +856,9 @@ $cursor: #fff;
     border: 1px solid transparent !important;
     border-radius: 25px !important;
     color: black;
+    width: 200px;
+    height: 32px;
+    line-height: 32px;
   }
 
   ::v-deep input::-webkit-input-placeholder {
@@ -879,8 +888,8 @@ $cursor: #fff;
     height: 10%;
   }
   .lh-login-box2-top-img{
-    height: 60%;
-    margin: 15px 0 0 30px;
+    height: 70%;
+    margin: 10px 0 0 30px;
   }
   .lh-login-box2-bottom{
     width: 100%;
@@ -904,7 +913,7 @@ $cursor: #fff;
   }
   .lh-login-box2 {
     width: 100%;
-    height: 77%;
+    height: 90%;
     overflow: hidden;
     //new-login本地背景图在这里修改
     background: #fdfdfd url("../../assets/login_img/lhBG.png") no-repeat left center fixed;
@@ -914,14 +923,15 @@ $cursor: #fff;
     background-size: cover;
     // filter: blur(2px);
     .lh-login-box2center {
-      height: 85%;
+      height: 300px;
       width: 1500px;
       margin: 0 auto;
       margin-top: 10%;
       display: flex;
+      /*overflow: hidden;*/
     }
     .lh-login-box2left {
-      width: 600px;
+      width: 520px;
       margin: 50px 0;
       margin-left: 5%;
       margin-right: 10%;
@@ -930,14 +940,16 @@ $cursor: #fff;
     .lh-login-box2right {
       margin: 25px 0;
       margin-left: 50px;
-      width: 700px;
+      width: 300px;
+      height: 300px;
       .lh-right-title {
         color: #00A0E9;
-        font-size: 28px;
-        font-weight: bolder;
+        font-size: 26px;
+        font-weight: 600;
         text-align: left;
-        padding-top: 10px;
-        padding-bottom: 50px;
+        padding-top: 16px;
+        padding-bottom: 20px;
+        letter-spacing: 3px;
       }
     }
     @media screen and (max-device-width: 1600px) {
@@ -956,12 +968,12 @@ $cursor: #fff;
         padding-top: 27px;
       }
       .lh-right-title{
-        padding-bottom: 30px !important;
+        padding-bottom: 10px !important;
       }
       .lh-login-box2button{
-        font-size: 20px;
-        height: 45px;
-        margin-top: 0 !important;
+        font-size: 16px;
+        height: 40px;
+        margin-top: 7px !important;
       }
     }
     @media screen and (max-device-width: 1400px) {
@@ -973,58 +985,59 @@ $cursor: #fff;
         height: 85%;
         width: 1100px;
         margin: 0 auto;
-        margin-top: 4%;
+        margin-top: 5%;
         display: flex;
       }
       .lh-loginbackcolor{
         padding-top: 20px;
+        padding-bottom: 30px;
       }
       .lh-right-title{
-        padding-bottom: 30px !important;
+        padding-bottom: 10px !important;
       }
       .lh-login-box2button{
-        font-size: 20px;
-        height: 45px;
-        margin-top: 0 !important;
+        font-size: 16px;
+        height: 40px;
+        margin-top: 7px !important;
       }
     }
   }
   .lh-login-item {
-    margin-bottom: 15px !important;
+    margin-bottom: 11px !important;
     img {
-      margin: 2px 10px 0 0;
-      height: 23px;
+      margin: 0px 7px 0 0;
+      height: 17px;
       display: inline-block;
     }
   }
   .lh-login-input {
     // background-color: white !important;
     border-radius: 5px;
-    width: 90%;
-    margin-bottom: 5px;
+    width: 70%;
+    /*margin-bottom: 5px;*/
   }
   .lh-loginbackcolor {
-    min-height: 495px;
+    min-height: 300px;
     background-size: contain;
     /*background: url("./style/images/group.png") no-repeat;*/
     background-color: white !important;
     /*background-size: 100% 100%;*/
     /*background-image: linear-gradient(to right, #4db1dc, #57a0d7);*/
-    border-radius: 25px;
+    border-radius: 15px;
     box-shadow: #383737 10px 10px 20px;
-    padding: 30px 100px 150px 95px;
+    /*padding: 30px 100px 150px 95px;*/
   }
   .lh-login-box2button {
-    margin-left: 5%;
-    width: 100%;
-    height: 60px;
+    margin-left: 5px;
+    width: 220px;
+    /*height: 60px;*/
     font-size: 22px;
     font-weight: 400;
-    line-height: 6px;
+    /*line-height: 6px;*/
     border-radius: 50px;
     cursor: pointer;
     margin-top: 20px;
-    margin-bottom: 30px;
+    /*margin-bottom: 30px;*/
     color: white !important;
     background-image: linear-gradient(to right, #00B8FD, #4390FF);
   }
