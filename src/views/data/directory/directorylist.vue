@@ -371,6 +371,7 @@
             :open-type="openType"
             :tab-show.sync="tabShow"
             @table-show="tableshow"
+            :ifShowPlace="false"
           />
         </el-col>
       </el-row>

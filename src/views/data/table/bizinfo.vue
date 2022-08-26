@@ -36,13 +36,14 @@
                 </el-select>
               </template>
             </el-table-column>-->
-            <el-table-column prop="transRuleUuid" label="转码规则" width="260px" :disabled="openType === 'showTable'">
+            <el-table-column class="disabled" prop="transRuleUuid" label="转码规则" width="260px" :disabled="openType === 'showTable'">
               <template slot-scope="scope">
                 <SelectTransCode
                   ref="SelectTransCode"
                   :transuuid.sync="scope.row.transRuleUuid"
                   :open-type="openType"
-                />
+                  :ifShowPlace="ifShowPlace"
+              />
               </template>
             </el-table-column>
           </el-table>
@@ -60,8 +61,7 @@ import SelectTransCode from '@/views/data/table/transcodeselect'
 import { selectById } from '@/api/data/transCode'
 export default {
   components: { SelectTransCode },
-  // eslint-disable-next-line vue/require-prop-types
-  props: ['tableId', 'openType'],
+  props: ['tableId', 'openType','ifShowPlace'],
   data() {
     return {
       loading:true,
@@ -149,6 +149,7 @@ export default {
       }
     }
   }
+
 }
 </script>
 <style scoped lang="scss" rel="stylesheet/scss">

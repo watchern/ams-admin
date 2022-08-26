@@ -36,7 +36,7 @@
         label="业务信息"
         name="bizInfo"
         @click="change">
-        <biz-info :table-id="tableId" :open-type="openType"/>
+        <biz-info :table-id="tableId" :open-type="openType" :ifShowPlace="ifShowPlace"/>
         </el-tab-pane>
     </el-tabs>
   </div>
@@ -51,7 +51,7 @@ import tablerelation from "@/views/data/table/tablerelation";
 export default {
   components: { basicInfo, column, createSql, bizInfo, tablerelation },
   // eslint-disable-next-line vue/require-prop-types
-  props: ["tableId", "tabShow", "openType", "forderId"],
+  props: ["tableId", "tabShow", "openType", "forderId",'ifShowPlace'],
   data() {
     return {
       tabShowName: "",
