@@ -103,12 +103,12 @@ const actions = {
         resolve()
       }).catch(error => {
         console.log(error)
-        let repstr = error.toString().split(':')[1];
-        Message({
-          message: repstr,
-          type: 'error',
-          duration: 5 * 1000
-        })
+        // let repstr = error.toString().split(':')[1];
+        // Message({
+        //   message: repstr,
+        //   type: 'error',
+        //   duration: 5 * 1000
+        // })
         reject(error)
       })
       // getEncloseBy().then(res =>{
@@ -200,7 +200,7 @@ const actions = {
         commit('SET_PERSONIP', response.data)
         resolve(response)
       })
-     
+
     })
   }
 }

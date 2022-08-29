@@ -165,112 +165,142 @@
         </div>
       </div>
     </div>
-    <div class ="lh-login-container" v-else-if="skincontrol == 'lh-login'">
-      <div class="lh-login-container2">
-        <div class="lh-login-box2-top">
-          <img  src="@/assets/img/lh_logo@2x.png" align="left" class="lh-login-box2-top-img"/>
-        </div>
-        <div
-                class="lh-login-box2"
-                :style="
-        backgroundImg ? 'background-image:url(' + backgroundImg + ');' : ''
-      "
-        >
-          <div class="lh-login-box2center">
-            <div class="lh-login-box2left">
+    <div class ="lh-login" v-else-if="skincontrol == 'lh-login'">
+        <div class="login_box">
+            <div class="login_logo_box">
+                <img src="@/assets/img/lh_logo.png" class="logo" alt="">
             </div>
-            <div class="lh-login-box2right">
-              <el-form
-                      ref="loginForm"
-                      :model="loginForm"
-                      class="lh-loginbackcolor"
-                      autocomplete="on"
-                      label-position="left"
-                      :rules="loginRules"
-              >
-                <div class="lh-title-container">
-                  <div class="lh-right-title">用户登录</div>
+            <div class="login_box_bg">
+                <div class="login_box_content">
+                    <div class="box_content_title">用户登录</div>
+                    <div class="content_input_box">
+                        <i class="content_input_icon"></i>
+                        <el-input placeholder="请输入用户名" class="content_input" v-model="loginForm.username"></el-input>
+                    </div>
+                    <div class="content_input_box">
+                        <i class="content_input_icon icon_mm"></i>
+                        <el-input placeholder="请输入密码" type="password" class="content_input" v-model="loginForm.password">
+                        </el-input>
+                    </div>
+                    <div class="content_input_box">
+                        <i class="content_input_icon icon_yzm"></i>
+                        <el-input class="content_input" placeholder="请输入验证码" v-model="loginForm.verificationcode"></el-input>
+                    </div>
+
+                    <el-button class="box_content_btn" @click.native.prevent="handleLogin">{{ $t("login.logIn") }}</el-button>
                 </div>
-                <div class="lh-right-container">
-                  <div class="lh-title-container">
-                  </div>
-
-                  <el-form-item prop="username" class="lh-login-item">
-                    <img src="@/assets/login_img/lh用户名.png" align="top" />
-                    <el-input
-                            ref="usernamenew"
-                            v-model="loginForm.username"
-                            name="username"
-                            type="text"
-                            tabindex="1"
-                            autocomplete="on"
-                            class="lh-login-input"
-                            placeholder="请输入账号"
-                    />
-                  </el-form-item>
-
-                  <el-tooltip
-                          v-model="capsTooltip"
-                          content="Caps lock is On"
-                          placement="right"
-                          manual
-                  >
-                    <el-form-item prop="password" class="lh-login-item">
-                      <img src="@/assets/login_img/lh密码.png" align="top" />
-                      <el-input
-                              :key="passwordType"
-                              ref="passwordnew"
-                              v-model="loginForm.password"
-                              :type="passwordType"
-                              name="password"
-                              tabindex="2"
-                              autocomplete="on"
-                              @keyup.native="checkCapslock"
-                              @blur="capsTooltip = false"
-                              @keyup.enter.native="handleLogin"
-                              class="lh-login-input"
-                              placeholder="请输入密码"
-                      />
-                      <!-- <span class="lh-show-pwd" @click="showPwd">
-                        <svg-icon
-                          :icon-class="
-                            passwordType === 'password' ? 'eye' : 'eye-open'
-                          "
-                        />
-                      </span> -->
-                    </el-form-item>
-                  </el-tooltip>
-
-                  <el-form-item prop="verificationcode" class="lh-login-item">
-                    <img src="@/assets/login_img/lh验证码.png" align="top" />
-                    <el-input
-                            ref="verificationcodenew"
-                            v-model="loginForm.verificationcode"
-                            name="verificationcode"
-                            type="text"
-                            tabindex="1"
-                            autocomplete="on"
-                            class="lh-login-input"
-                            placeholder="请输入验证码"
-                    />
-                  </el-form-item>
-                  <el-button
-                          :loading="loading"
-                          class="lh-login-box2button"
-                          @click.native.prevent="handleLogin"
-                  >
-                    {{ $t("login.logIn") }}
-                  </el-button>
-                </div>
-              </el-form>
             </div>
-          </div>
+            <!-- <div class="logon_footer">
+              <p class="logon_footer_text">
+                Copyright © 1996-2022 深圳市龙华区智慧审计管理系统 All Rights Reserved <br> 粤ICP备20030184号-1
+              </p>
+            </div> -->
         </div>
-<!--        <div class="lh-login-box2-bottom">-->
-<!--          <div class="lh-login-box2-bottom-text">Copyright © 1996-2022 深圳市龙华区智慧审计管理系统 All Rights Reserved-->
-<!--            <br/>粤ICP备20030184号-1   </div>-->
+<!--      <div class="lh-login-container2">-->
+<!--        <div class="lh-login-box2-top">-->
+<!--          <img  src="@/assets/img/lh_logo@2x.png" align="left" class="lh-login-box2-top-img"/>-->
 <!--        </div>-->
-      </div>
+<!--        <div-->
+<!--                class="lh-login-box2"-->
+<!--                :style="-->
+<!--        backgroundImg ? 'background-image:url(' + backgroundImg + ');' : ''-->
+<!--      "-->
+<!--        >-->
+<!--          <div class="lh-login-box2center">-->
+<!--            <div class="lh-login-box2left">-->
+<!--            </div>-->
+<!--            <div class="lh-login-box2right">-->
+<!--              <el-form-->
+<!--                      ref="loginForm"-->
+<!--                      :model="loginForm"-->
+<!--                      class="lh-loginbackcolor"-->
+<!--                      autocomplete="on"-->
+<!--                      label-position="left"-->
+<!--                      :rules="loginRules"-->
+<!--              >-->
+<!--                <div class="lh-title-container">-->
+<!--                  <div class="lh-right-title">用户登录</div>-->
+<!--                </div>-->
+<!--                <div class="lh-right-container">-->
+<!--                  <div class="lh-title-container">-->
+<!--                  </div>-->
+
+<!--                  <el-form-item prop="username" class="lh-login-item">-->
+<!--                    <img src="@/assets/login_img/lh用户名.png" align="top" />-->
+<!--                    <el-input-->
+<!--                            ref="usernamenew"-->
+<!--                            v-model="loginForm.username"-->
+<!--                            name="username"-->
+<!--                            type="text"-->
+<!--                            tabindex="1"-->
+<!--                            autocomplete="on"-->
+<!--                            class="lh-login-input"-->
+<!--                            placeholder="请输入账号"-->
+<!--                    />-->
+<!--                  </el-form-item>-->
+
+<!--                  <el-tooltip-->
+<!--                          v-model="capsTooltip"-->
+<!--                          content="Caps lock is On"-->
+<!--                          placement="right"-->
+<!--                          manual-->
+<!--                  >-->
+<!--                    <el-form-item prop="password" class="lh-login-item">-->
+<!--                      <img src="@/assets/login_img/lh密码.png" align="top" />-->
+<!--                      <el-input-->
+<!--                              :key="passwordType"-->
+<!--                              ref="passwordnew"-->
+<!--                              v-model="loginForm.password"-->
+<!--                              :type="passwordType"-->
+<!--                              name="password"-->
+<!--                              tabindex="2"-->
+<!--                              autocomplete="on"-->
+<!--                              @keyup.native="checkCapslock"-->
+<!--                              @blur="capsTooltip = false"-->
+<!--                              @keyup.enter.native="handleLogin"-->
+<!--                              class="lh-login-input"-->
+<!--                              placeholder="请输入密码"-->
+<!--                      />-->
+<!--                      &lt;!&ndash; <span class="lh-show-pwd" @click="showPwd">-->
+<!--                        <svg-icon-->
+<!--                          :icon-class="-->
+<!--                            passwordType === 'password' ? 'eye' : 'eye-open'-->
+<!--                          "-->
+<!--                        />-->
+<!--                      </span> &ndash;&gt;-->
+<!--                    </el-form-item>-->
+<!--                  </el-tooltip>-->
+
+<!--                  <el-form-item prop="verificationcode" class="lh-login-item">-->
+<!--                    <img src="@/assets/login_img/lh验证码.png" align="top" />-->
+<!--                    <el-input-->
+<!--                            ref="verificationcodenew"-->
+<!--                            v-model="loginForm.verificationcode"-->
+<!--                            name="verificationcode"-->
+<!--                            type="text"-->
+<!--                            tabindex="1"-->
+<!--                            autocomplete="on"-->
+<!--                            class="lh-login-input"-->
+<!--                            placeholder="请输入验证码"-->
+<!--                    />-->
+<!--                  </el-form-item>-->
+<!--                  <el-button-->
+<!--                          :loading="loading"-->
+<!--                          class="lh-login-box2button"-->
+<!--                          @click.native.prevent="handleLogin"-->
+<!--                  >-->
+<!--                    {{ $t("login.logIn") }}-->
+<!--                  </el-button>-->
+<!--                </div>-->
+<!--              </el-form>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--&lt;!&ndash;        <div class="lh-login-box2-bottom">&ndash;&gt;-->
+<!--&lt;!&ndash;          <div class="lh-login-box2-bottom-text">Copyright © 1996-2022 深圳市龙华区智慧审计管理系统 All Rights Reserved&ndash;&gt;-->
+<!--&lt;!&ndash;            <br/>粤ICP备20030184号-1   </div>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+<!--      </div>-->
     </div>
   </div>
 </template>
@@ -404,7 +434,7 @@ export default {
             return false;
           }
         });
-      } else {
+      } else if (this.skincontrol == "old-login") {
         this.$refs.loginForm.validate((valid) => {
           if (valid) {
             this.loading = true;
@@ -425,6 +455,20 @@ export default {
             return false;
           }
         });
+      } else {
+          this.loading = true;
+          this.$store
+              .dispatch("user/login", this.loginForm)
+              .then(() => {
+                  this.$router.push({
+                      path: this.redirect || "/",
+                      query: this.otherQuery,
+                  });
+                  this.loading = false;
+              })
+              .catch(() => {
+                  this.loading = false;
+              });
       }
     },
     getOtherQuery(query) {
@@ -759,286 +803,198 @@ $cursor: #fff;
   border-bottom: 1px solid white;
 }
 </style>
-<style  lang="scss" scoped>
-  $bg: #fdfdfd url("./style/images/login-bg.png") no-repeat left center fixed;
-  $dark_gray: #889aa4;
-  $light_gray: #eee;
-  $cursor: #fff;
-  @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
-    .lh-login-container .el-input input {
-      color: $cursor;
-    }
-  }
-  .login-outbox {
-    height: 100%;
-    width: 100%;
-  }
-  .lh-login-container2{
-    position: absolute;
-    height: 100%;
-    width: 100%;
-  }
-  .lh-login-container {
-    min-height: 100%;
-    width: 100%;
-    //background: $bg;
-    background-color: white !important;
-    overflow: hidden;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
+<style lang="scss" scoped>
+.lh-login{
+    .login_box {
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
 
-    .lh-title-container {
-      position: relative;
-      padding-left: 40px;
-      /*float: left;*/
-      /*margin-top: 30px !important;*/
-    }
-    .lh-right-container {
-      padding-left: 40px;
-      position: relative;
-      /*float: left;*/
-      background: #FFFFFF;
-      /*padding: 76px 70px;*/
-      white-space: nowrap;
-    }
-    .el-input {
-      display: inline-block;
-      height: 25px;
-      width: 100%;
+        .login_logo_box {
+            .logo {
+                display: inline-block;
+                // height: 70px;
+                width: 41vw;
+                min-width: 435px;
+                height: auto;
+                margin: 1vh 2.44vw;
+                flex: 1;
+            }
 
-      input {
-        background: transparent;
-        border: 0px;
-        -webkit-appearance: none;
-        border-radius: 0px;
-        padding: 12px 5px 12px 15px;
-        color: $light_gray;
-        height: 25px;
-        caret-color: $cursor;
-
-        &:-webkit-autofill {
-          box-shadow: 0 0 0px 1000px $bg inset !important;
-          -webkit-text-fill-color: $cursor !important;
         }
-      }
-    }
-    .el-form-item {
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 5px;
-      color: #454545;
-      ::v-deep .el-form-item__error {
-        font-size: 8px;
-        padding-top: 1px;
-      }
+
+        .login_box_bg {
+            height: 100%;
+            width: 100vw;
+            background: url("../../assets/login_img/lhBG.png");
+            background-repeat: no-repeat;
+            background-size: cover;
+
+            .login_box_content {
+                width: 22.7vw;
+                height: 36.8vh;
+                min-width: 322px;
+                min-height: 344px;
+                position: absolute;
+                top: 30vh;
+                right: 12vw;
+                background-color: #fff;
+                padding: 2.5vh 2vw 1vh 2vw;
+                box-shadow: 10px 10px 30px 5px #555353;
+                border-radius: 10px;
+
+                .box_content_title {
+                    font-size: 30px;
+                    font-weight: 600;
+                    color: #00A0E9;
+                    margin-bottom: 20px;
+                    letter-spacing: 3px;
+                }
+
+                .content_input_box {
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 18px;
+
+                    .content_input_icon {
+                        width: 26px;
+                        height: 26px;
+                        margin-right: 11px;
+                        display: inline-block;
+                        background: url("../../assets/login_img/lhUSER.png");
+                        background-repeat: no-repeat;
+                        background-size: cover;
+                    }
+
+                    .icon_mm {
+                        background: url("../../assets/login_img/lhPD.png");
+                        background-size: 100% 100%;
+
+                    }
+
+                    .icon_yzm {
+                        background: url("../../assets/login_img/lhYZM.png");
+                        background-size: 100% 100%;
+
+                    }
+
+
+                    .content_input ::v-deep .el-input__wrapper {
+                        background: #F7F7F7 !important;
+                        border-radius: 49.79px;
+                        border: 0;
+                        min-width: 268px;
+                    }
+
+                    .content_input ::v-deep .el-input__inner {
+                        background: #F7F7F7 !important;
+                        border-radius: 49.79px;
+                        height: 42px;
+                        padding-left: 15px !important;
+                        border: 0;
+                        color: #333;
+                    }
+                    .content_input ::v-deep .el-input__inner::placeholder {
+                        color: #999 !important;
+                        letter-spacing: 1.5px !important;
+                        font-size: 13px !important;
+                    }
+
+                }
+
+                .box_content_btn {
+                    margin-top: 10px;
+                    width: 100%;
+                    background-image: linear-gradient(161deg, #00B8FD 0%, #4390FF 84%);
+                    color: #FFFFFF;
+                    font-size: 18px;
+                    /*line-height: 52px;*/
+                    height: 42px;
+                    border-radius: 50px;
+                    letter-spacing: 3px;
+                }
+            }
+        }
+
+        .logon_footer {
+            width: 100vw;
+            text-align: center;
+
+            .logon_footer_text {
+                width: 100%;
+                text-align: center;
+                margin: 1.77vw 0 0 0;
+                font-size: 16px;
+            }
+        }
     }
 
-    .lh-title-container {
-      position: relative;
+    @media (max-width:1080px) {
+        .login_box {
+            .login_box_bg {
+                .login_box_content {
+
+                    padding: 20px 20px 15px 20px;
+
+                    .box_content_title {
+                        margin-bottom: 15px;
+                        letter-spacing: 3px;
+                    }
+
+                    .content_input_box {
+                        margin-bottom: 15px;
+
+                        .content_input_icon {
+                            display: none;
+                        }
+
+
+
+                        .content_input ::v-deep .el-input__inner {
+                            height: 46px;
+                        }
+                    }
+
+                    .box_content_btn {
+                        margin-top: 10px;
+                    }
+                }
+            }
+        }
+
     }
 
-    .lh-show-pwd {
-      right: 10px;
-      top: 37px;
-      font-size: 16px;
-      color: #889aa4;
-      cursor: pointer;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      position: absolute;
+    .el-input__inner::placeholder {
+        color: #fff;
+        text-align: center;
     }
-  }
-  .lh-login-input ::v-deep .el-input__inner {
-    background-color: #F7F7F7 !important  ;
-    border: 1px solid transparent !important;
-    border-radius: 25px !important;
-    color: black;
-    width: 200px;
-    height: 32px;
-    line-height: 32px;
-  }
 
-  ::v-deep input::-webkit-input-placeholder {
-    -webkit-text-fill-color: #999999;
-    font-weight: 400;
-    font-size: 16px;
-    font-family: PingFangSC-Regular;
-  }
-  ::v-deep input::-moz-input-placeholder {
-    -webkit-text-fill-color: #999999;
-    font-weight: 400;
-    font-size: 16px;
-    font-family: PingFangSC-Regular;
-  }
-  ::v-deep input::-ms-input-placeholder {
-    -webkit-text-fill-color: #999999;
-    font-weight: 400;
-    font-size: 16px;
-    font-family: PingFangSC-Regular;
-  }
+    /* 谷歌 */
+    .el-input__inner::-webkit-input-placeholder {
+        color: #fff;
+        text-align: center;
+    }
 
-  .el-form-item__content {
-    border-bottom: 1px solid white;
-  }
-  .lh-login-box2-top{
-    width: 100%;
-    height: 10%;
-  }
-  .lh-login-box2-top-img{
-    height: 70%;
-    margin: 10px 0 0 30px;
-  }
-  .lh-login-box2-bottom{
-    width: 100%;
-    height: 13%;
-    position: absolute;
-  }
-  .lh-login-box2-bottom-text{
-    text-align: center;
-    width: 500px;
-    height: 50%;
-    color: #666666;
-    line-height: 24px;
-    font-weight: 400;
-    font-family: PingFangSC-Regular;
-    margin: auto;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-  }
-  .lh-login-box2 {
-    width: 100%;
-    height: 90%;
-    overflow: hidden;
-    //new-login本地背景图在这里修改
-    background: #fdfdfd url("../../assets/login_img/lhBG.png") no-repeat left center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-    // filter: blur(2px);
-    .lh-login-box2center {
-      height: 300px;
-      width: 1500px;
-      margin: 0 auto;
-      margin-top: 10%;
-      display: flex;
-      /*overflow: hidden;*/
+    /* 火狐 */
+    .el-input__inner:-moz-placeholder {
+        color: #fff;
+        text-align: center;
     }
-    .lh-login-box2left {
-      width: 520px;
-      margin: 50px 0;
-      margin-left: 5%;
-      margin-right: 10%;
-      margin-left: 100px;
+
+    /*ie*/
+    .el-input__inner:-ms-input-placeholder {
+        color: #fff;
+        text-align: center;
     }
-    .lh-login-box2right {
-      margin: 25px 0;
-      margin-left: 50px;
-      width: 300px;
-      height: 300px;
-      .lh-right-title {
-        color: #00A0E9;
-        font-size: 26px;
-        font-weight: 600;
-        text-align: left;
-        padding-top: 16px;
-        padding-bottom: 20px;
-        letter-spacing: 3px;
-      }
+
+    .ele-logo-bg {
+        width: 60px;
+        height: 50px;
+        // background: url("../assets/logo.png") no-repeat 100%/100% 100%;
+        background: url("../../assets/img/lh_logo.png") no-repeat;
+        background-size: cover;
     }
-    @media screen and (max-device-width: 1600px) {
-      .lh-login-box2left {
-        margin-left: 5%;
-        margin-right: 5%;
-      }
-      .lh-login-box2center {
-        height: 85%;
-        width: 1100px;
-        margin: 0 auto;
-        margin-top: 9%;
-        display: flex;
-      }
-      .lh-loginbackcolor{
-        padding-top: 27px;
-      }
-      .lh-right-title{
-        padding-bottom: 10px !important;
-      }
-      .lh-login-box2button{
-        font-size: 16px;
-        height: 40px;
-        margin-top: 7px !important;
-      }
-    }
-    @media screen and (max-device-width: 1400px) {
-      .lh-login-box2left {
-        margin-left: 5%;
-        margin-right: 5%;
-      }
-      .lh-login-box2center {
-        height: 85%;
-        width: 1100px;
-        margin: 0 auto;
-        margin-top: 5%;
-        display: flex;
-      }
-      .lh-loginbackcolor{
-        padding-top: 20px;
-        padding-bottom: 30px;
-      }
-      .lh-right-title{
-        padding-bottom: 10px !important;
-      }
-      .lh-login-box2button{
-        font-size: 16px;
-        height: 40px;
-        margin-top: 7px !important;
-      }
-    }
-  }
-  .lh-login-item {
-    margin-bottom: 11px !important;
-    img {
-      margin: 0px 7px 0 0;
-      height: 17px;
-      display: inline-block;
-    }
-  }
-  .lh-login-input {
-    // background-color: white !important;
-    border-radius: 5px;
-    width: 70%;
-    /*margin-bottom: 5px;*/
-  }
-  .lh-loginbackcolor {
-    min-height: 300px;
-    background-size: contain;
-    /*background: url("./style/images/group.png") no-repeat;*/
-    background-color: white !important;
-    /*background-size: 100% 100%;*/
-    /*background-image: linear-gradient(to right, #4db1dc, #57a0d7);*/
-    border-radius: 15px;
-    box-shadow: #383737 10px 10px 20px;
-    /*padding: 30px 100px 150px 95px;*/
-  }
-  .lh-login-box2button {
-    margin-left: 5px;
-    width: 220px;
-    /*height: 60px;*/
-    font-size: 22px;
-    font-weight: 400;
-    /*line-height: 6px;*/
-    border-radius: 50px;
-    cursor: pointer;
-    margin-top: 20px;
-    /*margin-bottom: 30px;*/
-    color: white !important;
-    background-image: linear-gradient(to right, #00B8FD, #4390FF);
-  }
+}
 </style>
