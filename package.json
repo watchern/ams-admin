@@ -19,6 +19,7 @@
     "boe": "vue-cli-service build --mode boe",
     "qinghai": "vue-cli-service build --mode qinghai",
     "dayawan": "vue-cli-service build --mode dayawan",
+    "longhua": "vue-cli-service build --mode longhua",
     "build:prod": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
@@ -36,7 +37,7 @@
     "ams-clue-vue": "^0.1.26",
     "ams-datamax": "^1.3.13",
     "ams-etlscheduler-ui": "^1.6.5",
-    "ams-indicator-vue": "^1.0.0",
+    "ams-indicator-vue": "^1.0.1",
     "ams-starflow-vue": "^0.1.1",
     "axios": "^0.21.1",
     "bootstrap": "^3.4.1",

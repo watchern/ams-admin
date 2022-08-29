@@ -28,9 +28,7 @@ import dataTree from '@/views/data/role-res/data-tree'
 import BaseDirectoryList from '@/views/data/directory/directorylist'
 
 export default {
-  // eslint-disable-next-line vue/order-in-components
   components: { dataTree, BaseDirectoryList },
-  // eslint-disable-next-line vue/require-prop-types
   props: ['dataUserId', 'sceneCode'],
   data() {
     return {

@@ -30,7 +30,7 @@
               </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
-              <!-- <el-tag><i class="el-icon-tickets" /></el-tag> 
+              <el-tag><i class="el-icon-tickets" /></el-tag>
               <el-link :underline="false" type="primary">查看过滤</el-link>
             </div>
           </el-popover>

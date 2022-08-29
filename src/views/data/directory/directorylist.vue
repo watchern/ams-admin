@@ -371,6 +371,7 @@
             :open-type="openType"
             :tab-show.sync="tabShow"
             @table-show="tableshow"
+            :ifShowPlace="false"
           />
         </el-col>
       </el-row>
@@ -510,9 +511,9 @@
           <PersonTree ref="personTree" />
         </el-col>
       </el-row>
-        <div left="50%">
+        <div left="50%" style="text-align: right; padding: 5px">
       <span slot="footer">
-        <el-button @click="shareVisible = false" style="margin-left: 1280px">关闭</el-button>
+        <el-button @click="shareVisible = false" >关闭</el-button>
         <el-button type="primary" @click="shareTableSave">确定</el-button>
       </span>
         </div>

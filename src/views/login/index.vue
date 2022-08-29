@@ -165,6 +165,143 @@
         </div>
       </div>
     </div>
+    <div class ="lh-login" v-else-if="skincontrol == 'lh-login'">
+        <div class="login_box">
+            <div class="login_logo_box">
+                <img src="@/assets/img/lh_logo.png" class="logo" alt="">
+            </div>
+            <div class="login_box_bg">
+                <div class="login_box_content">
+                    <div class="box_content_title">用户登录</div>
+                    <div class="content_input_box">
+                        <i class="content_input_icon"></i>
+                        <el-input placeholder="请输入用户名" class="content_input" v-model="loginForm.username"></el-input>
+                    </div>
+                    <div class="content_input_box">
+                        <i class="content_input_icon icon_mm"></i>
+                        <el-input placeholder="请输入密码" type="password" class="content_input" v-model="loginForm.password">
+                        </el-input>
+                    </div>
+                    <div class="content_input_box">
+                        <i class="content_input_icon icon_yzm"></i>
+                        <el-input class="content_input" placeholder="请输入验证码" v-model="loginForm.verificationcode"></el-input>
+                    </div>
+
+                    <el-button class="box_content_btn" @click.native.prevent="handleLogin">{{ $t("login.logIn") }}</el-button>
+                </div>
+            </div>
+            <!-- <div class="logon_footer">
+              <p class="logon_footer_text">
+                Copyright © 1996-2022 深圳市龙华区智慧审计管理系统 All Rights Reserved <br> 粤ICP备20030184号-1
+              </p>
+            </div> -->
+        </div>
+<!--      <div class="lh-login-container2">-->
+<!--        <div class="lh-login-box2-top">-->
+<!--          <img  src="@/assets/img/lh_logo@2x.png" align="left" class="lh-login-box2-top-img"/>-->
+<!--        </div>-->
+<!--        <div-->
+<!--                class="lh-login-box2"-->
+<!--                :style="-->
+<!--        backgroundImg ? 'background-image:url(' + backgroundImg + ');' : ''-->
+<!--      "-->
+<!--        >-->
+<!--          <div class="lh-login-box2center">-->
+<!--            <div class="lh-login-box2left">-->
+<!--            </div>-->
+<!--            <div class="lh-login-box2right">-->
+<!--              <el-form-->
+<!--                      ref="loginForm"-->
+<!--                      :model="loginForm"-->
+<!--                      class="lh-loginbackcolor"-->
+<!--                      autocomplete="on"-->
+<!--                      label-position="left"-->
+<!--                      :rules="loginRules"-->
+<!--              >-->
+<!--                <div class="lh-title-container">-->
+<!--                  <div class="lh-right-title">用户登录</div>-->
+<!--                </div>-->
+<!--                <div class="lh-right-container">-->
+<!--                  <div class="lh-title-container">-->
+<!--                  </div>-->
+
+<!--                  <el-form-item prop="username" class="lh-login-item">-->
+<!--                    <img src="@/assets/login_img/lh用户名.png" align="top" />-->
+<!--                    <el-input-->
+<!--                            ref="usernamenew"-->
+<!--                            v-model="loginForm.username"-->
+<!--                            name="username"-->
+<!--                            type="text"-->
+<!--                            tabindex="1"-->
+<!--                            autocomplete="on"-->
+<!--                            class="lh-login-input"-->
+<!--                            placeholder="请输入账号"-->
+<!--                    />-->
+<!--                  </el-form-item>-->
+
+<!--                  <el-tooltip-->
+<!--                          v-model="capsTooltip"-->
+<!--                          content="Caps lock is On"-->
+<!--                          placement="right"-->
+<!--                          manual-->
+<!--                  >-->
+<!--                    <el-form-item prop="password" class="lh-login-item">-->
+<!--                      <img src="@/assets/login_img/lh密码.png" align="top" />-->
+<!--                      <el-input-->
+<!--                              :key="passwordType"-->
+<!--                              ref="passwordnew"-->
+<!--                              v-model="loginForm.password"-->
+<!--                              :type="passwordType"-->
+<!--                              name="password"-->
+<!--                              tabindex="2"-->
+<!--                              autocomplete="on"-->
+<!--                              @keyup.native="checkCapslock"-->
+<!--                              @blur="capsTooltip = false"-->
+<!--                              @keyup.enter.native="handleLogin"-->
+<!--                              class="lh-login-input"-->
+<!--                              placeholder="请输入密码"-->
+<!--                      />-->
+<!--                      &lt;!&ndash; <span class="lh-show-pwd" @click="showPwd">-->
+<!--                        <svg-icon-->
+<!--                          :icon-class="-->
+<!--                            passwordType === 'password' ? 'eye' : 'eye-open'-->
+<!--                          "-->
+<!--                        />-->
+<!--                      </span> &ndash;&gt;-->
+<!--                    </el-form-item>-->
+<!--                  </el-tooltip>-->
+
+<!--                  <el-form-item prop="verificationcode" class="lh-login-item">-->
+<!--                    <img src="@/assets/login_img/lh验证码.png" align="top" />-->
+<!--                    <el-input-->
+<!--                            ref="verificationcodenew"-->
+<!--                            v-model="loginForm.verificationcode"-->
+<!--                            name="verificationcode"-->
+<!--                            type="text"-->
+<!--                            tabindex="1"-->
+<!--                            autocomplete="on"-->
+<!--                            class="lh-login-input"-->
+<!--                            placeholder="请输入验证码"-->
+<!--                    />-->
+<!--                  </el-form-item>-->
+<!--                  <el-button-->
+<!--                          :loading="loading"-->
+<!--                          class="lh-login-box2button"-->
+<!--                          @click.native.prevent="handleLogin"-->
+<!--                  >-->
+<!--                    {{ $t("login.logIn") }}-->
+<!--                  </el-button>-->
+<!--                </div>-->
+<!--              </el-form>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--&lt;!&ndash;        <div class="lh-login-box2-bottom">&ndash;&gt;-->
+<!--&lt;!&ndash;          <div class="lh-login-box2-bottom-text">Copyright © 1996-2022 深圳市龙华区智慧审计管理系统 All Rights Reserved&ndash;&gt;-->
+<!--&lt;!&ndash;            <br/>粤ICP备20030184号-1   </div>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+<!--      </div>-->
+    </div>
   </div>
 </template>
 
@@ -179,7 +316,7 @@ export default {
   data() {
     const validateUsername = (rule, value, callback) => {
       if (value.length < 1) {
-        callback(new Error("请输入用户名!"));
+        callback(new Error("请输入账号!"));
       } else {
         callback();
       }
@@ -297,7 +434,7 @@ export default {
             return false;
           }
         });
-      } else {
+      } else if (this.skincontrol == "old-login") {
         this.$refs.loginForm.validate((valid) => {
           if (valid) {
             this.loading = true;
@@ -318,6 +455,20 @@ export default {
             return false;
           }
         });
+      } else {
+          this.loading = true;
+          this.$store
+              .dispatch("user/login", this.loginForm)
+              .then(() => {
+                  this.$router.push({
+                      path: this.redirect || "/",
+                      query: this.otherQuery,
+                  });
+                  this.loading = false;
+              })
+              .catch(() => {
+                  this.loading = false;
+              });
       }
     },
     getOtherQuery(query) {
@@ -502,7 +653,7 @@ $cursor: #fff;
   height: 100%;
   overflow: hidden;
   //new-login本地背景图在这里修改
-  background: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixed;
+  background: #fdfdfd url("../../assets/login_img/BG.png") no-repeat left center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -650,5 +801,200 @@ $cursor: #fff;
 }
 .el-form-item__content {
   border-bottom: 1px solid white;
+}
+</style>
+<style lang="scss" scoped>
+.lh-login{
+    .login_box {
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+
+        .login_logo_box {
+            .logo {
+                display: inline-block;
+                // height: 70px;
+                width: 41vw;
+                min-width: 435px;
+                height: auto;
+                margin: 1vh 2.44vw;
+                flex: 1;
+            }
+
+        }
+
+        .login_box_bg {
+            height: 100%;
+            width: 100vw;
+            background: url("../../assets/login_img/lhBG.png");
+            background-repeat: no-repeat;
+            background-size: cover;
+
+            .login_box_content {
+                width: 22.7vw;
+                height: 36.8vh;
+                min-width: 322px;
+                min-height: 344px;
+                position: absolute;
+                top: 30vh;
+                right: 12vw;
+                background-color: #fff;
+                padding: 2.5vh 2vw 1vh 2vw;
+                box-shadow: 10px 10px 30px 5px #555353;
+                border-radius: 10px;
+
+                .box_content_title {
+                    font-size: 30px;
+                    font-weight: 600;
+                    color: #00A0E9;
+                    margin-bottom: 20px;
+                    letter-spacing: 3px;
+                }
+
+                .content_input_box {
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 18px;
+
+                    .content_input_icon {
+                        width: 26px;
+                        height: 26px;
+                        margin-right: 11px;
+                        display: inline-block;
+                        background: url("../../assets/login_img/lhUSER.png");
+                        background-repeat: no-repeat;
+                        background-size: cover;
+                    }
+
+                    .icon_mm {
+                        background: url("../../assets/login_img/lhPD.png");
+                        background-size: 100% 100%;
+
+                    }
+
+                    .icon_yzm {
+                        background: url("../../assets/login_img/lhYZM.png");
+                        background-size: 100% 100%;
+
+                    }
+
+
+                    .content_input ::v-deep .el-input__wrapper {
+                        background: #F7F7F7 !important;
+                        border-radius: 49.79px;
+                        border: 0;
+                        min-width: 268px;
+                    }
+
+                    .content_input ::v-deep .el-input__inner {
+                        background: #F7F7F7 !important;
+                        border-radius: 49.79px;
+                        height: 42px;
+                        padding-left: 15px !important;
+                        border: 0;
+                        color: #333;
+                    }
+                    .content_input ::v-deep .el-input__inner::placeholder {
+                        color: #999 !important;
+                        letter-spacing: 1.5px !important;
+                        font-size: 13px !important;
+                    }
+
+                }
+
+                .box_content_btn {
+                    margin-top: 10px;
+                    width: 100%;
+                    background-image: linear-gradient(161deg, #00B8FD 0%, #4390FF 84%);
+                    color: #FFFFFF;
+                    font-size: 18px;
+                    /*line-height: 52px;*/
+                    height: 42px;
+                    border-radius: 50px;
+                    letter-spacing: 3px;
+                }
+            }
+        }
+
+        .logon_footer {
+            width: 100vw;
+            text-align: center;
+
+            .logon_footer_text {
+                width: 100%;
+                text-align: center;
+                margin: 1.77vw 0 0 0;
+                font-size: 16px;
+            }
+        }
+    }
+
+    @media (max-width:1080px) {
+        .login_box {
+            .login_box_bg {
+                .login_box_content {
+
+                    padding: 20px 20px 15px 20px;
+
+                    .box_content_title {
+                        margin-bottom: 15px;
+                        letter-spacing: 3px;
+                    }
+
+                    .content_input_box {
+                        margin-bottom: 15px;
+
+                        .content_input_icon {
+                            display: none;
+                        }
+
+
+
+                        .content_input ::v-deep .el-input__inner {
+                            height: 46px;
+                        }
+                    }
+
+                    .box_content_btn {
+                        margin-top: 10px;
+                    }
+                }
+            }
+        }
+
+    }
+
+    .el-input__inner::placeholder {
+        color: #fff;
+        text-align: center;
+    }
+
+    /* 谷歌 */
+    .el-input__inner::-webkit-input-placeholder {
+        color: #fff;
+        text-align: center;
+    }
+
+    /* 火狐 */
+    .el-input__inner:-moz-placeholder {
+        color: #fff;
+        text-align: center;
+    }
+
+    /*ie*/
+    .el-input__inner:-ms-input-placeholder {
+        color: #fff;
+        text-align: center;
+    }
+
+    .ele-logo-bg {
+        width: 60px;
+        height: 50px;
+        // background: url("../assets/logo.png") no-repeat 100%/100% 100%;
+        background: url("../../assets/img/lh_logo.png") no-repeat;
+        background-size: cover;
+    }
 }
 </style>

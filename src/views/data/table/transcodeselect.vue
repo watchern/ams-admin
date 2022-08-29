@@ -1,6 +1,8 @@
 <template>
   <div>
-    <el-select ref="transRuleUuid" v-model="selectTransId" clearable :disabled="openType === 'showTable'" style="width:90%" filterable placeholder="请选择转码规则" @change="selectChanged">
+
+
+    <el-select ref="transRuleUuid" v-model="selectTransId" clearable :disabled="openType === 'showTable'" style="width:90%" filterable :placeholder="ifShowPlace?'请选择转码规则':''" @change="selectChanged">
       <el-option
         v-for="item in transJson"
         :key="item.transRuleUuid"
@@ -70,10 +72,10 @@
 
 <script>
 import {  selectById } from '@/api/data/transCode'
+
 export default {
   name: 'SelectTransCode',
-  // eslint-disable-next-line vue/require-prop-types
-  props: ['transuuid', 'openType', "transJson"],
+  props: ['transuuid', 'openType', "transJson",'ifShowPlace'],
   data() {
     return {
       selectTransId: '',
@@ -87,7 +89,7 @@ export default {
       transRuleUuid: [],
       // transJson: [],
       tempRule: [],
-      pageQuery: {}
+      pageQuery: {},
     }
   },
   created() {
@@ -113,6 +115,7 @@ export default {
       })
     },
     selectChanged(value) {
+      //this.$emit子组件向父组件传值
       this.$emit('update:transuuid', value)
     }
   }
