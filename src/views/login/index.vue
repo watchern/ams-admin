@@ -653,7 +653,7 @@ $cursor: #fff;
   height: 100%;
   overflow: hidden;
   //new-login本地背景图在这里修改
-  background: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixed;
+  background: #fdfdfd url("../../assets/login_img/BG.png") no-repeat left center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
