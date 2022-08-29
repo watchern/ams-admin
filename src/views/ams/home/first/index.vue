@@ -1,427 +1,731 @@
 <template>
-  <div class="home w100 h100 flex a-center j-start flex-column homezz">
-    <div class="top flex a-center j-between flex-row flex1 flex-shrink">
-      <div class="right flex a-end j-center flex-column">
-        <div class="bottom-card a-center j-between flex-row">
-        <!--  <div class="top-card flex j-start flex-row skin-shadow daiban">
-            <div
-              class="
-                top-card-left
-                flex-shrink
-                skin-bgColor
-                flex
-                a-center
-                j-center
-              "
-            >
-              <img src="../../../../styles/image/c3.png" class="img" />
-            </div>
-            <div class="top-card-right">
-              <div class="title">待办事项</div>
-              <div v-for="(text, index) in todoData" :key="index" class="line">
-                <span @click="toDoJumpFlow(text,index)" class="notes-text">{{
-                  text.applyTitle
-                }}</span>
-                &lt;!&ndash; <span v-if="text.icon" :style="{color:text.iconColor,width:text.width}" class="icon">{{ text.icon }}</span> &ndash;&gt;
-              </div>
-              <span class="card-more" @click="gotodowork()">更多</span>
-            </div>
-          </div>-->
-<!--          <div class="top-card-box">-->
-            <div
-              v-for="(item, index) in cardList"
-              :key="index"
-              class="top-card flex j-start flex-row skin-shadow"
-              :class="{
-                backgroundColor:
-                  index === 0 ? 'skin-wbgColor-1' : 'skin-wbgColor-2',
-              }"
-            >
-              <div class="top-card-left flex-shrink skin-bgColor flex a-center j-center">
-                <img :src="item.img" class="img" />
-              </div>
-              <div class="top-card-right">
-                <div class="title">{{ item.title }}</div>
-                <div
-                  v-for="(text, i) in item.des"
-                  :key="i"
-                  class="line"
-                >
-                  <span @click="toDoJump(text.index,index)" class="notes-text">{{
-                    text.text
-                  }}</span>
-                  <span
-                    v-if="text.icon"
-                    :style="{ color: text.iconColor, width: text.width }"
-                    class="icon"
-                    >{{ text.icon }}</span
-                  >
-                  <i v-if="text.iconStatus" :class="text.iconStatus" :style="{ color: text.iconColor }"></i>
-                </div>
-                <span class="card-more" @click="moreJump(item)">更多</span>
-              </div>
-            </div>
-<!--          </div>-->
-        </div>
+  <div class="home w100 h100 flex a-center j-start flex-column">
+    <div class="top flex j-between">
+      <div class="index-title">
+        <p class="hi">Hi！</p>
+        <p class="welcome"><span class="bold">欢迎进入</span>智慧审计系统</p>
       </div>
-      <div>
-        <toolsTemplateIndex />
+      <div class="time">
+        <!--<p class="date1">2020年4月18日</p>
+        <p class="date2">10：55<span class="week">周一</span></p>-->
+        <p class="date1" >{{currDateText}}</p>
+        <p class="date2" >{{currTimeText}}<span class="week" >{{currWeekText}}</span></p>
       </div>
     </div>
+    <div class="content-box flex j-between">
+      <div class="index-content flex">
+        <div class="index-item">
+          <el-card class="box-card project-card card-style">
+            <!-- 项目统计 -->
+            <div class="project-statistics project-item"> 
+              <div class="leftArrow">
+                <img src="../../../../assets/img/leftArrow.png" @click="arrowClick('right')" />
+              </div>
+              <el-carousel :interval="2000" arrow="never" :autoplay="false" indicator-position="none" ref="cardShow">
+                <!-- <el-carousel-item v-for="item in 4" :key="item">
+                </el-carousel-item> -->
+                <el-carousel-item>
+                  <div class="statistics-box">
+                    <p class="title">
+                      <span class="name">项目统计</span>
+                      <!-- <span class="more"><i class="el-icon-more"></i></span> -->
+                      <!-- <img src="../../../../assets/img/more.png" alt=""> -->
+                    </p>
+                    <div class="content flex j-center a-center">
+                      <div class="project-num-style">
+                       
+                        <div class="project-middle-bj">
+                          <!-- <div class="project-Vertical-style">
+                            <span class="project-circle-style"></span>
+                          </div> -->
+                         
+                          <div class="inner-circle">
+                            <div class="project-num-box">
+                              <!-- 项目数最多显示三位数 -->
+                              <p class="project-num" v-if="projectList.length < 999">{{projectList.length }}</p>
+                              <p class="project-num" v-else>999</p>
+                              <p class="project-text">项目总数</p>
+                            </div>
+                          </div>
+                        </div>
+                       
+                       
+                      </div>
+                    </div>
+                  </div>
+                </el-carousel-item>
+
+              </el-carousel>
+              <div class="rightArrow">
+                <img src="../../../../assets/img/rightArrow.png" @click="arrowClick('right')" />
+              </div>
+            </div>
+            <!-- 我的项目 -->
+            <div class="my-project project-item">
+              <p class="title">
+                <span class="name">我的项目{{projectList.length>0 && `/${projectList.length}` || ''}}</span>
+                <!-- <span class="more" @click="jumptTo('allProject')"><i class="el-icon-more"></i></span> -->
+                <span class="more" @click="jumptTo('allProject')"><img src="../../../../assets/img/more.png" alt="" class="more-icon"></span>
+              </p>
+              <div class="project-content-box" v-loading="projectLoading">
+                <div class="content flex">
+                  <div class="project-list" v-for="(item, key) in projectList" :key="key">
+                    <div class="project-list-style">
+                      <div class="project-top">
+                        <p class="project-name m-ellipsis" @click="jumptTo('singleProject', item)">{{item.projectName}}</p>
+                        <!-- <p class="project-time">{{item.createTime}}</p> -->
+                      </div>
+                      <div class="cost-box flex j-between">
+                        <div class="circle-dot" :class="{'project-status-0': item.exeStatus == 0,'project-status-1': item.exeStatus == 1,'project-status-2': item.exeStatus == 2,'project-status-3': item.exeStatus == 3,'project-status-4': item.exeStatus == 4,'project-status-5': item.exeStatus == 5,'project-status-5': !item.exeStatus || item.projectExt1 == '归档结项' }"></div>
+                        <!-- <div class="cost-num">
+                          <p class="people-num cost-style">23<span>人</span></p>
+                          <p class="cost-text cost-style">84.23<span>万</span></p>
+                        </div> -->
+                        <div class="project-status"  :class="{'project-status-0': item.exeStatus == 0,'project-status-1': item.exeStatus == 1,'project-status-2': item.exeStatus == 2,'project-status-3': item.exeStatus == 3,'project-status-4': item.exeStatus == 4,'project-status-5': item.exeStatus == 5,'project-status-5': !item.exeStatus || item.projectExt1 == '归档结项'  }">
+                          <p class="project-time">{{item.createTime}}</p>
+                          <p class=" m-ellipsis" >{{item.dealExeStatus}}</p>
+                        </div>
+                      
+                      </div>
+
+                    </div>
+                   
+                  </div>
+                </div>
+              </div>
+            </div>
+          </el-card>
+        </div>
+        <div class="index-item">
+          <!-- 监控预警 -->
+          <div class="monitor-warning func-item">
+            <el-card class="box-card func-card card-style">
+              <p class="title">
+                <span class="name">监控预警</span>
+                <span class="more" @click="jumpWarningresult"><img src="../../../../assets/img/more.png" alt="" class="more-icon"></span>
+              </p>
+              <div class="warning-box " v-loading="auditEarlyWarningLoading">
+                <div class="warning-item flex j-between a-center" v-for="(item, index) in auditEarlyWarningList" :key="index">
+                  <div class="warning-left">
+                    <p class="warning-text s-ellipsis c-pointer" @click="jumpToWarningresult(item)">{{item.model.modelName}}</p>
+                    <p class="warning-date">{{item.dealRunStartTime}}</p>
+                  </div>
+                  <div :class="['warning-right', (item.runStatus == 1|| item.runStatus == 2||item.runStatus == 3)? 'warning-success':'warning-error']">
+                    <!-- <i class="el-icon-caret-bottom"></i> -->
+                    <span class="warning-num" v-if="item.runStatus == 3">{{item.runResultTables[0].dataCount}}</span>
+                    <span class="warning-num" v-else-if="item.runStatus == 1|| item.runStatus == 2">{{0}}</span>
+                    <span class="warning-num" v-else>失败</span>
+                  </div>
+                </div>
+              </div>
+            </el-card>
+          </div>
+          <!-- 常用功能 -->
+          <div class="Common-func func-item">
+            <el-card class="box-card func-card card-style">
+              <p class="title">
+                <span class="name">常用功能11</span>
+                <!-- <span class="more"><i class="el-icon-edit"></i></span> -->
+                <img src="../../../../assets/img/edit-icon.png" alt="" class="function-icon" @click="editFuncClick">
+              </p>
+              <toolsTemplateAdd ref="toolsTemplateAdd" :editFuncFlag="editFuncFlag"></toolsTemplateAdd>
+            </el-card>
+          </div>
+        </div>
+        <div class="index-item my-agency" >
+          <!-- 我的代办 -->
+          <el-card class="box-card  card-style" v-if="activeName == 0">
+            <p class="title">
+              <span class="name">我的待办<span v-if="toDoList.length>0">/{{toDoList.length}}</span></span>
+              <span class="more" @click="tabMoreClick"><img src="../../../../assets/img/more.png" alt="" class="more-icon"></span>
+            </p>
+            <div class="agency-box" v-loading="toDoLoading">
+              <!-- <div class="axis-box">
+                <img src="" alt="">
+              </div>
+              <div class="axiscontent-box"></div> -->
+              <div class="axis-item flex " v-for="(item, key) in  toDoList" :key="key">
+                <div class="axis-left">
+                  <!-- <el-avatar :size="50" shape="square" :src="userLogo"></el-avatar> -->
+                  <img class="user-logo" src="../../../../assets/img/user.png" alt="">
+                  <p class="agency-name">{{item.createPersonName}}</p>
+                  <p class="agency-stage">上一办理人</p>
+                  <p class="axis-line" v-if="toDoList.length>1  && key != toDoList.length-1"></p>
+                </div>
+                <div class="axis-right">
+                  <p class="agency-brief">
+                    <span class="agency-date">{{item.dealApplydate}}</span>
+                    <span class="agency-type s-ellipsis">{{item.TEMP4}}</span>
+                  </p>
+                  <p class="agency-name m-ellipsis">{{item.applyTitle}}</p>
+                  <div class="agencydeal-btn" @click="toHandleClick(item)">前去处理<i class="el-icon-right"></i></div>
+                </div>
+              </div>
+
+
+            </div>
+
+          </el-card>
+          <!-- 我的已办 -->
+          <el-card class="card-style" v-if="activeName == 1">
+            <p class="title">
+              <span class="name">我的已办<span v-if="doneList.length>0">/{{doneList.length}}</span></span>
+              <span class="more" @click="tabMoreClick"><img src="../../../../assets/img/more.png" alt="" class="more-icon"></span>
+            </p>
+            <div class="agency-box" v-loading="doneLoading">
+              <div class="axis-item flex " v-for="(item, key) in  doneList" :key="key">
+                <div class="axis-left">
+                  <img class="user-logo" src="../../../../assets/img/user.png" alt="">
+                  <p class="agency-name">{{item.createPersonName}}</p>
+                  <p class="agency-stage">上一办理人</p>
+                  <p class="axis-line" v-if="doneList.length>1 && key != doneList.length-1 "></p>
+                </div>
+                <div class="axis-right">
+                  <p class="agency-brief">
+                    <span class="agency-date">{{item.dealApplydate}}</span>
+                    <span class="agency-type s-ellipsis">{{item.TEMP4}}</span>
+                  </p>
+                  <p class="agency-name m-ellipsis">{{item.applyTitle}}</p>
+                  <div class="agencydeal-btn" @click="toHandleClick(item)">前去处理<i class="el-icon-right"></i></div>
+                </div>
+              </div>
+            </div>
+          </el-card>
+          <!-- 消息列表 -->
+          <el-card class="card-style" v-if="activeName == 2">
+            <p class="title">
+              <span class="name">消息列表<span v-if="LatestNewsList.length>0">/{{LatestNewsList.length}}</span></span>
+              <span class="more" @click="tabMoreClick"><img src="../../../../assets/img/more.png" alt="" class="more-icon"></span>
+            </p>
+            <div class="agency-box" v-loading="LatestNewsLoading">
+                <div class="axis-item flex" v-for="(item, key) in LatestNewsList" :key="key">
+                  <div class="axis-left">
+                    <img class="user-logo" src="../../../../assets/img/user.png" alt="">
+                    <p class="agency-name">{{item.remindedUserName}}</p>
+                    <!-- <p class="agency-stage">上一办理人</p> -->
+                    <p class="axis-line" v-if="LatestNewsList.length>1 && key != LatestNewsList.length-1"></p>
+                  </div>
+                  <div class="axis-right">
+                    <p class="agency-brief" >
+                      <span class="agency-date">{{item.dealRemindTime}}</span>
+                      <span class="agency-type s-ellipsis">{{item.moduleName}}</span>
+                    </p>
+                    <p class="agency-name m-ellipsis c-pointer" @click="openNewsListDia(item)">{{item.remindTitle}}</p>
+                    <div class="agencydeal-btn c-pointer" v-if="item.modeUrl" @click="toHandleClick(item, 'newsList')">前去处理<i class="el-icon-right"></i></div>
+                  </div>
+                </div>
+            </div>
+          </el-card>
+        </div>
+      </div>
+      <div class="tabs">
+        <div class="tabs-item" :class="[activeName === 0 && 'tabs-item-active']" @click="handleyTabClick(0)">
+          <p><img src="../../../../assets/img/my-agent.png" alt=""></p>
+          <span>我的待办</span>
+        </div>
+        <div class="tabs-item" :class="[activeName === 1 && 'tabs-item-active']" @click="handleyTabClick(1)">
+          <p><img src="../../../../assets/img/my-alreadydone.png" alt=""></p>
+          <span>我的已办</span>
+        </div>
+        <div class="tabs-item" :class="[activeName === 2 && 'tabs-item-active']" @click="handleyTabClick(2)">
+          <p><img src="../../../../assets/img/message-list.png" alt=""></p>
+          <span>消息列表</span>
+        </div>
+      </div>
+
+    </div>
     <el-dialog
+      v-model="temp"
+      :append-to-body="true"
       :visible.sync="dialogFormVisible"
       top="10vh"
       title="消息详情"
       width="50%"
-      v-model="this.PopUpContent"
       :close-on-click-modal="false"
     >
-      <span class="visible-span">消息标题</span>
-      <p class="visible-p1">{{ this.PopUpContent[0].text }}</p>
-      <span class="visible-span">消息内容</span>
-      <p class="visible-p2">{{ this.PopUpContent[0].content }}</p>
+      <el-row>
+        <el-col :span="24"><div class="visible-p1">
+          {{ this.temp.remindTitle }}
+        </div></el-col>
+      </el-row>
+      <el-divider />
+      <el-row>
+        <el-col :span="12"><div class="visible-p2">
+          提醒时间: {{ this.temp.remindTime }}
+        </div></el-col>
+        <el-col :span="12" v-if="temp.remindUserName" ><div class="visible-p4">
+          发送人：{{ this.temp.remindUserName }}
+        </div></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24"><div class="visible-p3">
+          {{ this.temp.remindContent }}
+        </div></el-col>
+      </el-row>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import { getRemindByDescTime, updateRemind } from "@/api/base/base";
+import { getprojectPage, getapplyMesList } from '@/api/project/project.js'
 import { getRunTaskRelByPage } from "@/api/analysis/auditmodelresult";
-import toolsTemplateIndex from "@/components/public/base/tools-template-index.vue";
 import dayjs from 'dayjs'
+import toolsTemplateAdd from "@/components/public/base/tools-template-add.vue"
+import { getQuickMenuList } from "@/api/base/quickmenu";
+// import userLogo from '@/assets/img/user.png'
 export default {
   components: {
-    toolsTemplateIndex
+    toolsTemplateAdd
   },
   data() {
     return {
+      currDateText:'2020年4月18日',
+      currTimeText:'10 : 55',
+      currWeekText:'周一',
       resultSpiltObjects: {},
-      work: [
-        {
-          text: "暂无待办事项",
-        },
-      ],
-      cardList: [
-        {
-          img: require("../../../../styles/image/提醒.png"),
-          title: "提醒事项",
-          path: "",
-          des: [],
-        },
-        {
-          img: require("../../../../styles/image/c1.png"),
-          title: "审计预警",
-          path: "",
-          des: [],
-        },
-      ],
-      TopTodo: [
-        {
-          text: "暂无待办事项",
-          iconColor: "#D81020",
-          icon: "",
-          url: "",
-          title: "",
-          content: "",
-        },
-      ],
       pageQuery: {
         condition: {},
         pageNo: 1,
         pageSize: 5,
       },
-      warningMatters: [
-        {
-          text: "暂无预警事项",
-          iconColor: "#D81020",
-          icon: "",
-          url: "",
-          title: "",
-          content: "",
-        },
-      ],
       dialogFormVisible: false,
-      PopUpContent: [
-        {
-          text: "",
-          content: "",
-        },
-      ],
-      todoData:[{applyTitle:'暂无'}],//待办工作流
-      //审核信息的状态
-      applyInfo: {
-        //业务主键
-        appDataUuid: "",
-        //版本
-        versionUuid: "",
-        //业务主键批量提交
-        detailUuids: "",
-        //业务审核状态,0未提交，1审核中，2审核中，3审核不通过
-        status: "",
-        //业务方法的成功失败0成功，1失败
-        mstate: "",
-        //流程方法的成功失败0成功，1失败
-        fstate: "",
-        //是否更新业务代码
-        isUpdate: "",
-        //流程方法的成功失败0成功，1失败
-        Newfstate: "",
-        //收回，终止业务方法的成功失败0成功，1失败
-        newMstate: "",
+      activeName: 0, // 代办、已办、消息列表显示标识
+      auditEarlyWarningList:[], // 审计预警列表
+      auditEarlyWarningLoading: false,
+      addFuncClick:false,
+      LatestNewsList: [], // 最新消息列表
+      toDoList: [], // 待办列表
+      doneList: [], // 已办列表
+      projectList: [], // 我的项目列表
+      projectLoading: false, // 我的项目加载状态
+      toDoLoading: false, // 待办加载状态
+      doneLoading: false, //已办加载状态
+      LatestNewsLoading: false,// 消息列表加载状态
+      editFuncFlag: false, // 是否编辑常用功能
+      timer: null, // 定时更新待办列表
+      temp: {
+        remindUuid: '',
+        remindTitle: '',
+        remindContent: '',
+        modeUrl: '',
+        moduleName: '',
+        remindUserUuid: '',
+        remindUserName: '',
+        remindTime: '',
+        readStatus: '',
+        remindedUserUuid: '',
+        remindedUserName: '',
+        remindedType: ''
       },
-      applyDetail: {
-        type: "",
-        isEdit: false,
-      },
-      flowSet: {
-        opinionList: true,
-        opinion: true,
-        nextStep: true,
-        done:false,
-      },
-//初始化审批页面参数
-      flowItem: {
-        wftype: "",
-        applyUuid: "",
-        detailUuids: "",
-        versionUuid: "",
-        workEffortId: "",
-        activityId: "",
-      },
-      projectStatus:"",
+
     };
   },
+  created() {
+    // 刷新当前时间
+    this.refreshTime();
+    // 定时刷新待办列表
+    this.refreshTodoList();
+  },
   mounted() {
-    getRemindByDescTime().then((resp) => {
-      this.cardList[0].des = [];
-      for (let i = 0; i < 5; i++) {
-        this.cardList[0].des.push({
-          text: resp.data.records[i].remindTitle,
-          iconColor: "#D81020",
-          icon: "",
-          url: resp.data.records[i].modeUrl,
-          content: resp.data.records[i].remindContent,
-          index: i,
-          Uuid: resp.data.records[i].remindUuid,
-        });
-        if (resp.data.records[i].readStatus === 0) {
-          this.cardList[0].des[i].icon = " NEW";
-        }
-      }
-    });
+    // 获取项目列表
+    this.getMyProjectPage();
+    // 获取最新创建消息列表
+    this.getRemindByDescTime();
+    // 获取待办列表
+    this.getToDoList();
+    // 获取已办列表
+    this.getDoneList();
     let query1 = { runTaskUuid: null };
     query1.runTaskUuid = "1";
     this.pageQuery.condition = query1;
+    this.auditEarlyWarningLoading = true
     getRunTaskRelByPage(this.pageQuery, this.resultSpiltObjects).then(
       (resp) => {
-        // this.warningMatters = resp.data.records;
-        this.cardList[1].des = [];
-        for (let i = 0; i < 5; i++) {
-          this.cardList[1].des.push({
-            text: resp.data.records[i].model.modelName + '—' + dayjs(resp.data.records[i].runStartTime).format('YYYY-MM-DD HH:mm:ss'),
-            url: `/analysis/warningresult/${resp.data.records[i].runTaskUuid}`,
-            content: resp.data.records[i].remindContent,
-            index: i,
-            Uuid: resp.data.records[i].runTaskUuid,
-          });
-          if (resp.data.records[i].runStatus == 1) {
-            this.cardList[1].des[i].iconStatus = "el-icon-video-play"
-            this.cardList[1].des[i].iconColor = "blue"
-          } else if (resp.data.records[i].runStatus == 2) {
-            this.cardList[1].des[i].iconStatus = "el-icon-loading"
-            this.cardList[1].des[i].iconColor = "#666666"
-          } else if (resp.data.records[i].runStatus == 3) {
-            this.cardList[1].des[i].iconStatus = "el-icon-success"
-            this.cardList[1].des[i].iconColor = "green"
-          } else if (resp.data.records[i].runStatus == 5) {
-            this.cardList[1].des[i].iconStatus = "el-icon-circle-close"
-            this.cardList[1].des[i].iconColor = "#ff0000"
+        this.auditEarlyWarningLoading = false
+        this.auditEarlyWarningList = resp.data.records
+        this.auditEarlyWarningList.map(i => {
+          i.dealRunStartTime = dayjs(i.runStartTime).format('YYYY/MM/DD')
+          i.url = `/analysis/warningresult/${i.runTaskUuid}`;
+          i.Uuid = i.runTaskUuid;
+          if (i.runStatus == 1) {
+            i.iconStatus = "el-icon-video-play"
+            i.iconColor = "blue"
+          } else if (i.runStatus == 2) {
+            i.iconStatus = "el-icon-loading"
+            i.iconColor = "#666666"
+          } else if (i.runStatus == 3) {
+            i.iconStatus = "el-icon-success"
+            i.iconColor = "green"
+          } else if (i.runStatus == 5) {
+            i.iconStatus = "el-icon-circle-close"
+            i.iconColor = "#ff0000"
           } else {
-            this.cardList[1].des[i].iconStatus = "el-icon-error"
-            this.cardList[1].des[i].iconColor = "red"
+            i.iconStatus = "el-icon-error"
+            i.iconColor = "red"
           }
-        }
+        })
+        // 监控预警截取前两条数据
+        this.auditEarlyWarningList = this.auditEarlyWarningList.slice(0, 2);
       }
     );
-    this.gettodowork()
+    // this.gettodowork()
+    // 获取功能列表
+    
+  },
+  destroyed () {
+    clearInterval(this.timer);
   },
   methods: {
-    formatter(num) {
-      return num < 10 ? "0" + num.toFixed(0) : num.toFixed(0);
+    // 刷新当前时间
+    refreshTime() {
+      this.getNowTime()
+      var _this = this;
+      setInterval(function () {
+        _this.getNowTime()
+      },100)
     },
-    formatter1(num) {
-      return num.toFixed(1);
+    getNowTime(){
+      var currTime = new Date()
+      this.currDateText = dayjs(currTime).format('YYYY年MM月DD日')
+      this.currTimeText = dayjs(currTime).format('HH : mm')
+      this.currWeekText = dayjs(currTime).day()
+      switch (this.currWeekText) {
+        case 1:this.currWeekText="周一"; break;
+        case 2:this.currWeekText="周二"; break;
+        case 3:this.currWeekText="周三"; break;
+        case 4:this.currWeekText="周四"; break;
+        case 5:this.currWeekText="周五"; break;
+        case 6:this.currWeekText="周六"; break;
+        case 7:this.currWeekText="周日"; break;
+        default:this.currWeekText="--"; break;
+      }
     },
-    activeTags(item) {
+    handleyTabClick (ind) {
+      // 0 我的代办 1 我的已办  2 消息列表
+      this.activeName = ind;
+    },
+    // 监控预警更多点击跳转事件
+    jumpWarningresult () {
+      this.$router.push({ path: "/analysis/auditwarning" });
       this.$store.commit("aceState/setRightFooterTags", {
-        type: item.type,
-        val: item.val,
+        type: "active",
+        val: {
+          name: "预警结果",
+          path: "/analysis/warningresult",
+        },
       });
     },
-    toDoJumpFlow(row,index) {
-        if (row.currentState == "CAL_SENT") {
-          this.updateToAccepted(row);
-          if (!this.partyAssignment) {
-            this.common.alertMsg(4, "数据更新失败");
-            return;
-          }
-        }
-        this.applyInfo.appDataUuid = row.appDataUuid;
-        this.applyInfo.versionUuid = row.versionUuid;
-        this.applyInfo.detailUuids = row.detailUuids;
-        //待办列表里，默认审核状态是审核中value=1
-        this.applyInfo.status = "1";
-        //待办列表里，默认业务方法执行状态是空
-        this.applyInfo.mstate = "";
-        //待办列表里，默认流程方法执行状态是空
-        // this.applyInfo.fstate = "";
-        //待办列表里，默认流程方法执行状态是空
-        this.applyInfo.newFstate = "";
-        //业务数据是否更新过业务代码
-        // this.applyInfo.isUpdate = "";
-        //初始化vuex里的审核状态，或者覆盖之前存储的值
-        this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
-        //跳转页面，name值可以动态获取row.apptype;
-        this.applyDetail.type = row.applyType;
-        this.flowItem.applyUuid = row.applyUuid;
-        this.flowItem.appDataUuid = row.appDataUuid;
-        this.flowItem.versionUuid = row.versionUuid;
-        this.flowItem.detailUuids = row.detailUuids;
-        //用来区分主子项目
-        this.flowItem.planTag = row.temp2;
-        console.log(this.applyDetail.type);
-        this.flowItem.workEffortId = row.workEffortId;
-        this.flowItem.temp1 = row.temp1;
-        this.flowItem.wftype = this.dict.flowValueFun(row.applyType);
-        this.rojectType = row.workflowPackageId;
-        this.$router.push({
-          name: "todoDetail",
-          params: {
-            approvalData: row,
-            applyDetail: this.applyDetail,
-            flowSet: this.flowSet,
-            flowItem: this.flowItem,
-            projectStatus:this.projectStatus,
-          },
-        });
-    },
-    toDoJump(data,index) {
-      if (index == 0){
-        // 判断条件增加空判断
-        if (this.cardList[0].des[data].url === "" || this.cardList[0].des[data].url == null) {
-          this.dialogFormVisible = true;
-          this.PopUpContent = [];
-          this.PopUpContent.push({
-            text: this.cardList[0].des[data].text,
-            content: this.cardList[0].des[data].content,
-          });
-          // 点击提醒事项会直接刷新页面
-          // location.reload();
-        } else {
-          this.$router.push({ path: this.cardList[0].des[data].url });
-        }
-        updateRemind(this.cardList[0].des[data].Uuid).then(result => {
-          if (result.code === 0) {
-            this.getList()
-          } else {
-            this.$notify({ success: '失败', message: '标记已阅失败' })
-          }
-        })
-      } else {
-        console.log(this.cardList[1].des[data].url)
-        this.$router.push({ path: this.cardList[1].des[data].url });
+    jumptTo (type, item) {
+      if (type == 'allProject') {
+        this.$router.push({ path: "/base/frameto?url=/amis/workBench/toProjectList" });
+      } else if (type == 'singleProject') {
+        this.$router.push({ path: `/base/frameto?url=/amis/projectWorkBench/projectWorkBench?projectuuid=${item.projectuuid}`});
       }
+     
     },
-    getList() {
-      // 刷新提醒事项
+    // 新增功能
+    addFunction () {
+      this.addFuncClick = true;
+      this.$refs.toolsTemplateAdd.showTools()
+    },
+    // 转换项目阶段字段
+    dealExeStatus (exeStatus) {
+      if (exeStatus == 0) {
+        return '立项阶段'
+      } else if (exeStatus == 1) {
+        return '审前准备'
+      } else if (exeStatus == 2) {
+        return '现场审计'
+      } else if (exeStatus == 3) {
+        return '报告阶段'
+      } else if (exeStatus == 4) {
+        return '意见出具'
+      } else if (exeStatus == 5) {
+        return '档案管理'
+      } else if (exeStatus == 6) {
+        return '项目结束'
+      } else {
+        return '';
+      }
+
+    },
+    // 获取项目列表
+    getMyProjectPage () {
+      this.projectLoading = true;
+      let ProjectQueryData = new FormData();
+      ProjectQueryData.append('pageSize', 15);
+      getprojectPage(ProjectQueryData).then((res) => {
+        this.projectLoading = false;
+        this.projectList = res.body.result;
+        this.projectList.map(i => {
+          i.createTime = dayjs(i.createTime).format('YYYY-MM-DD');
+          i.dealExeStatus = this.dealExeStatus(i.exeStatus);
+          i.dealExeStatus = this.CommonUtil.isBlank(i.dealExeStatus) ? i.projectExt1 : i.dealExeStatus;
+        })
+      })
+    },
+    // 获取最新消息列表
+    getRemindByDescTime () {
+      this.LatestNewsLoading = true;
       getRemindByDescTime().then((resp) => {
-        this.cardList[0].des = [];
-        for (let i = 0; i < 5; i++) {
-          this.cardList[0].des.push({
-            text: resp.data.records[i].remindTitle,
-            iconColor: "#D81020",
-            icon: "",
-            url: resp.data.records[i].modeUrl,
-            content: resp.data.records[i].remindContent,
-            index: i,
-            Uuid: resp.data.records[i].remindUuid,
-          });
-          if (resp.data.records[i].readStatus === 0) {
-            this.cardList[0].des[i].icon = " NEW";
-          }
+        this.LatestNewsLoading = false;
+        this.LatestNewsList = resp.data.records;
+        this.LatestNewsList.map(i => {
+          i.dealRemindTime = dayjs(i.remindTime).format('YYYY-MM-DD hh:mm:ss')
+        })
+      });
+    },
+    // 获取待办列表
+    getToDoList(isLoading) {
+      if (!isLoading) {
+        this.toDoLoading = true;
+      }
+      let toDoQueryData = new FormData();
+      toDoQueryData.append('pageSize', 999)
+      getapplyMesList(toDoQueryData).then((res) => {
+        this.toDoLoading = false;
+        this.toDoList = res.body.result;
+        this.$store.commit("aceState/changeToDoNum", this.toDoList.length);
+        this.toDoList.map(i => {
+          i.dealApplydate = dayjs(i.applydate).format('YYYY-MM-DD hh:mm:ss')
+        })
+      })
+    },
+    getDoneList () {
+      this.doneLoading = true;
+      let toDoQueryData = new FormData();
+      toDoQueryData.append('pageSize', 999)
+      getapplyMesList(toDoQueryData, 'done').then((res) => {
+        this.doneLoading = false;
+        this.doneList = res.body.result;
+        this.doneList.map(i => {
+          i.dealApplydate = dayjs(i.applydate).format('YYYY-MM-DD hh:mm:ss')
+        })
+      })
+    },
+    // 我的待办、已办、消息列表 更多页面跳转
+    tabMoreClick () {
+      if (this.activeName == 2) { // 消息列表
+        this.$router.push({ path: '/base/remind' });
+      } else { // 已办、待办
+        this.$router.push({ path: "/base/frameto?url=%2Famis%2FworkBench%2FtoApplyMes" });
+      }
+    },
+    // 前去办理
+    toHandleClick (item, type) {
+      if (type) {
+        this.$router.push({ path: item.modeUrl });
+        return;
+      }
+      var isOA='';
+      var ctx = '/base/frameto?url=/amis/';
+      var ApplyFuns = {
+
+        //跳到用印申请界面(审计通知书)
+        toSeapplyApplyState: function (obj) {
+          return ctx + "auditnotice/index?projectuuid=" + obj["TEMP2"] + "&isOA=" + isOA;
+        },
+        //审计报告
+        toSeapplyReport: function (obj) {
+          return ctx + "seApply/addSeApplyForOther?dataUuid=" + obj["TEMP5"] + "&addType=5&projectuuid=" + obj["TEMP2"] + "&isOA=" + isOA;
+        },
+        //整改认定
+        toAddRectifyCognizance: function (obj) {
+          return ctx + "pmRectifyCognizance/toCognizace?pmProblemUuid=&pmRectifyUuid=" + obj["TEMP5"] + "&isOA=" + isOA;
+        },
+        //处分执行
+        toAddExePunishment: function (obj) {
+          return ctx + "exePunishment/toAdd?acPunishmentUuid=" + obj["TEMP5"] + "&isFromProject=" + "&isOA=" + isOA;
+        },
+        //跳到用印页面
+        toSeapplyLoad: function (obj) {
+          return ctx + "seApply" + '/toSealManager?id=' + obj["TEMP5"] + "&isOA=" + isOA;
+        },
+        //跳到整改信息页面
+        toRectifyInfo: function (obj) {
+          var projectUuid = obj["TEMP2"];
+          var problemUuid = obj["TEMP5"];
+          return ctx + "pmRectify/toList?projectUuid=" + projectUuid + "&problemUuid=" + problemUuid + "&isOA=" + isOA;
+        },
+        //跳到整改信息页面
+        toRectifyInfoff: function (obj) {
+          var problemUuid = obj["TEMP5"];
+          problemUuid = problemUuid.substring(0, problemUuid.length - 1);
+          return ctx + "pmRectify/toAdd?pmProblemUuid=" + problemUuid + "&isOA=" + isOA;
+        },
+        // 跳到分析录入信息页面
+        toAddAnalysisInfo: function (obj) {
+          var pmWorkDivideUuid = obj["TEMP5"];
+          return ctx + "analysisResult/toAddAnalysisInfo?pmWorkDivideUuid=" + pmWorkDivideUuid + "&isOA=" + isOA;
+        },
+        toAuditedInfo: function (obj) {
+          var pmAnalysisResultUuid = obj["TEMP5"];
+          return ctx + "doubtAnalysisVerify/toAdd?id=" + pmAnalysisResultUuid + "&isOA=" + isOA;
+        },
+        //跳到监印页面
+        toSeapplyLoadJY: function (obj) {
+          var seApplyUuid = obj["TEMP5"];
+          return ctx + "seApply" + '/toKeepSealManager?id=' + seApplyUuid + "&isOA=" + isOA;
+        },
+        //跳到分析列表
+        toAnaLysisList: function (obj){
+          return ctx + "analysisResult/index?projectuuid="+obj["TEMP2"]+"&isOA="+isOA;
+        },
+        //跳到核实列表
+        toVerifyList:function (obj){
+          return ctx + "verifyResult/index?projectuuid="+obj["TEMP2"]+"&isOA="+isOA;
+        },
+        //跳到被审计机构列表
+        toDoubetVerifyList: function (obj){
+          return ctx + "doubtAnalysisVerify/toList?projectuuid="+obj["TEMP2"]+"&isOA="+isOA;
+        },
+        //跳转到疑点认定列表页
+        toVerifyConfirmList: function (obj){
+          return ctx + "PmVerifyResultConfirm/index?projectuuid="+obj["TEMP2"]+"&isOA="+isOA;
+        },
+        //审批页面
+        toApplyState: function (obj){
+
+          var applyUuid = obj["applyUuid"];
+          //$('#applyUuid').val(applyUuid);
+          var workEffortId = obj["workEffortId"];
+          //$('#workEffortId').val(workEffortId);
+          var workflowActivityId = obj["workflowActivityId"];
+          //$('#workflowActivityId').val(workflowActivityId);
+          var workflowActivityName = obj["workflowActivityName"];
+          //$('#workflowActivityName').val(workflowActivityName);
+          var projectUuid = obj["projectUuid"];
+          //$('#projectUuid').val(projectUuid);
+          var stringEx6 = obj["stringEx6"];
+          //$('#stringEx6').val(stringEx6);
+          var comments = obj["comments"];
+          //$('#comments').val(comments);
+          var applyType = obj["applyType"];
+          //$('#applyType').val(applyType);
+          var applyTitle = obj["applyTitle"];
+
+          var workflowProcessId = obj["workflowProcessId"];
+          //$('#processId').val(workflowProcessId);
+          ApplyFuns.processAccept(workEffortId);
+          return ctx +"workBench/auditApplyMes?applyUuid="+applyUuid+"&workEffortId="+workEffortId+"&workflowActivityId="+workflowActivityId+"&workflowActivityName="+workflowActivityName+"&projectUuid="+projectUuid+"&stringEx6="+stringEx6+"&comments="+comments+"&applyType="+applyType+"&applyTitle="+applyTitle+"&processId="+workflowProcessId+"&isOA="+isOA;
+        },
+        /**
+         *接收待办事项
+         */
+        processAccept: function (workEffortId){
+          // $.ajax({
+          //   type: 'post',
+          //   url: contextPath+"/applyMes/processAccept",
+          //   dataType: "text",
+          //   data:{workEffortId:workEffortId},
+          //   success: function(data) { // data 保存提交后返回的数据，一般为 json 数据
+          //   },
+          //   error: function(data) {
+          //   }
+          // });
         }
-      });
+      }
+
+      var url = '';
+      // var d = item.applyUuid+','+item.workEffortId+','+item.workflowActivityId+','+item.workflowActivityName+','+item.projectUuid+','+item.stringEx6+','+item.comments+','+item.applyType+','+item.workflowProcessId;
+      // var d = "'"+d+"'";
+      var state = item.newApplyState;
+      switch (state) {
+        case '99': // 审计通知书
+            url = ApplyFuns.toSeapplyApplyState(item);
+            break;
+          case '98': // 审计报告
+            url = ApplyFuns.toSeapplyReport(item);
+            break;
+          case '97': //用印审批
+            url = ApplyFuns.toSeapplyLoad(item);
+            break;
+          case '96': //监印审批
+            url = ApplyFuns.toSeapplyLoadJY(item);
+            break;
+          case '88': // 整改认定
+            url = ApplyFuns.toAddRectifyCognizance(item);
+            break;
+          case '87': // 整改认定
+            url = ApplyFuns.toAddExePunishment(item);
+            break;
+          case '50': // 整改代办提醒
+            url = ApplyFuns.toRectifyInfo(item);
+            break;
+          case '51': // 整改分发提醒
+            url = ApplyFuns.toRectifyInfoff(item);
+            break;
+          case '60':  //分析分发提醒
+            url = ApplyFuns.toAddAnalysisInfo(item);
+            break;
+          case '61':  // 提交被审机构提醒
+            url = ApplyFuns.toAuditedInfo(item);
+            break;
+          case '20':   // 分析汇总提醒
+          case '21':   // 分析分工汇总提醒
+            url = ApplyFuns.toAnaLysisList(item);
+            break;
+          case '22': // 核实的代办汇总
+            url = ApplyFuns.toVerifyList(item);
+            break;
+          case '23': // 提交被审计机构核实的提醒汇总
+            url = ApplyFuns.toDoubetVerifyList(item);
+            break;
+          case '24': // 提交被审计机构核实的代办汇总
+            url = ApplyFuns.toDoubetVerifyList(item);
+            break;
+          case '25': // 疑点认定的汇总待办
+            url = ApplyFuns.toVerifyConfirmList(item);
+            break;
+          default:
+            url = ApplyFuns.toApplyState(item);
+            break;
+      }
+      this.$router.push({ path:url});
+      // this.$router.push({ path: `/base/frameto?url=/amis/workBench/auditApplyMes?applyUuid=${item.applyUuid}&workEffortId=${item.workEffortId}&workflowActivityId=${item.workflowActivityId}&workflowActivityName=${item.workflowActivityName}&projectUuid=${item.projectUuid}&stringEx6=${item.stringEx6}&comments=${item.comments}&applyType=${item.applyType}&applyTitle=${item.applyTitle}&processId=${item.processId}` });
     },
-    gettodowork() {
-      this.$axios
-        .get("/starflow/applyMes/sf/apply/auditDataList", {
-          params: {
-            applyTitle: '',
-            applyTypeName: '',
-            pageNo: 1,
-            pageSize: 5,
-          },
-        })
-        .then((response) => {
-          console.log(response);
-          this.todoData = response.data.data.entities;
-          // this.todoTotal = response.data.data.count;
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    },
-    gotodowork() {
-      this.$router.push({
-        path: "/todowork",
-      });
-    },
-    moreJump(data) {
-      if (data.title === "提醒事项") {
-        this.$router.push({ path: "/base/remind" });
-        this.$store.commit("aceState/setRightFooterTags", {
-          type: "active",
-          val: {
-            name: "系统提醒",
-            path: "/base/remind",
-          },
-        });
+
+
+
+    openNewsListDia (item) {
+      // console.log(item, '消息列表打开弹框')
+      // this.temp = item
+      // this.dialogFormVisible = true
+      // 点击提醒事项会直接刷新页面
+      // location.reload();
+      if (item.modeUrl == null || item.modeUrl == '') {
+        this.temp = item
+        this.dialogFormVisible = true
       } else {
-        this.$router.push({ path: "/analysis/auditwarning" });
-        this.$store.commit("aceState/setRightFooterTags", {
-          type: "active",
-          val: {
-            name: "预警结果",
-            path: "/analysis/warningresult",
-          },
-        });
+        this.selectDetail(item)
       }
     },
-    toDoSomeJump() {
+    selectDetail(data) {
+      var remindedType = data.remindedType
+      var url = data.modeUrl
       this.$router.push({
-        path: "/base/frameto?url=psbcaudit/todoInfo/todoInfoList",
-      });
+        path: url
+      })
     },
-    displayItem(data) {
-      let thisItem = document.getElementsByClassName("bottom");
-      for (let i = 0; i < thisItem.length; i++) {
-        thisItem[i].style.zIndex = 1;
-      }
-      thisItem[data].style.zIndex = 10;
+    //  单个预警监控跳转
+    jumpToWarningresult (item) {
+      this.$router.push({ path: `/analysis/warningresult/${item.runTaskUuid}` });
     },
-    action(data, index) {
-      if (data === "before") {
-        if (index + 1 === 4) {
-          index = -1;
-        }
-        this.displayItem(index + 1);
-      } else if (data === "next") {
-        if (index - 1 === -1) {
-          index = 4;
-        }
-        this.displayItem(index - 1);
-      }
+    // 走马灯左右切换
+    arrowClick (type) {
+      console.log(type)
     },
+    // 常用功能编辑
+    editFuncClick () {
+      this.editFuncFlag = !this.editFuncFlag;
+    },
+    // 定时刷新待办列表
+    refreshTodoList () {
+      this.timer = setInterval(() => {
+        this.getToDoList(true);
+      }, 60 * 1000);
+    }
   },
 };
 </script>
@@ -436,215 +740,711 @@ export default {
   // background-size: 82%;
   // background-position-x: -130px;
   // background-position-y: 2px;
-  padding-bottom: 12px;
+  // padding-bottom: 12px;
+  height: 100% !important;
+  padding-left: 35px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+ 
   .top {
-    // background: grey;
-    width: 85%;
-    margin-left: 5%;
-    margin-right: 5%;
-    .left {
-      flex: 1;
-      height: 100%;
-      position: relative;
-      top: -57px;
-      .day-wrap {
-        width: 100%;
-        height: 450px;
-        background: url("../../../../styles/image/bg-home@2x.png") no-repeat
-          center center;
-        background-size: 465px 443px;
-        .num {
-          font-family: BebasNeue;
-          font-size: 236px;
-          color: #d70010;
-          letter-spacing: 7px;
-          text-align: center;
-          text-shadow: 0 15px 12px rgba(138, 0, 11, 0.25);
-        }
-        .text {
-          font-family: PingFangSC-Medium;
-          font-size: 34px;
-          color: #070707;
-          letter-spacing: 0.85px;
-          text-align: center;
-          top: 50%;
-          margin-top: 110px;
-        }
-      }
-      .calendar-wrap {
-        border-radius: 13px;
-        width: 386px;
-        height: 90px;
-        border: 1px solid #eb3a52;
-        margin-top: 20px;
-        .enlarge {
-          top: 10px;
-          right: 10px;
-          height: 12px;
-          width: 12px;
-          cursor: pointer;
-        }
-        .box {
-          width: 37px;
-          height: 56px;
-          font-size: 12px;
-          color: #6b6e76;
-          text-align: center;
-          line-height: 14px;
-          &:not(:last-child) {
-            margin-right: 14px;
-          }
-          &-active {
-            border: 1px solid #ff6599;
-            box-shadow: 0 4px 16px -4px #1a1c1f,
-              inset 1px 1px 3px 0 rgba(0, 0, 0, 0.5);
-            border-radius: 8px;
-            color: #d70010;
-          }
-          .label {
-            font-family: PingFangSC-Light;
-            margin-bottom: 8px;
-          }
-          .value {
-            font-family: Helvetica;
-          }
-        }
-      }
-    }
-    .right {
-      // width: 500px;
-      position: relative;
-      top: -30px;
-      .top-card-box {
-        display: flex;
-      }
-      .top-card {
-        background: #ffffff;
-        box-shadow: 17px 17px 34px 0 rgba(0, 0, 0, 0.1);
-        border-radius: 25.2px;
-        padding: 27px;
-        width: 23vw;
-        min-width: 450px;
-        position: relative;
-        margin: 20px;
-        height: 230px;
-        &-left {
-          background: #ffffff;
-          border: 1px solid #d8d8d8;
-          border-radius: 12.6px;
-          width: 67px;
-          height: 67px;
-          margin-right: 27px;
-          .img {
-            width: 36px;
-          }
-        }
-        &-right {
-          // width: calc(100% - 67px -27px - 27px);
-          .title {
-            font-family: PingFangSC-Regular;
-            font-size: 20.16px;
-            color: #333333;
-            line-height: 26.88px;
-            margin-bottom: 14px;
-          }
-          .des {
-            font-family: PingFangSC-Regular;
-            font-size: 14.7px;
-            color: rgba(51, 51, 51, 0.5);
-            text-align: justify;
-            line-height: 29.57px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-          }
-        }
-      }
-      .bottom-card {
-        width: 50vw;
-        min-width: 600px;
-        margin-top: 40px;
-        position: relative;
-      }
-      .daiban {
-        width: 48vw;
-        min-width: 540px;
-        margin-top: 50px;
-      }
-    }
-  }
-  .bottom {
-    height: 106px;
-    width: 90%;
-    background: #559ed4;
-    box-shadow: 10px 10px 20px 0 rgba(0, 0, 0, 0.1);
-    border-radius: 15px;
-    position: absolute;
-    user-select: none;
-    .line3,
-    .line2 {
-      width: 20%;
-    }
-    .line4 {
-      .btn {
-        background: #c8ff8c;
-        border-radius: 24px;
-        width: 213px;
-        height: 36px;
-        line-height: 36px;
-        text-align: center;
-        font-family: PingFangSC-Medium;
-        font-size: 16px;
-        color: #333333;
-        letter-spacing: 2.8px;
-        cursor: pointer;
-      }
-    }
-    .line1 {
-      padding-left: 30px;
-      width: 30%;
-      .right {
-        .p1 {
-          font-family: PingFangSC-Regular;
-          font-size: 24px;
-          color: #ffffff;
-          line-height: 70px;
-          width: 520px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          text-align: center;
-        }
-        .p2 {
-          font-family: PingFangSC-Semibold;
-          font-size: 14px;
-          color: rgba(255, 255, 255, 0.5);
-          line-height: 20px;
-        }
-      }
-    }
-    .line {
+    width: 100%;
+    height: 110px;
+    align-items: flex-end;
+    .index-title {
       text-align: left;
-      height: 100%;
-      &:not(:last-child) {
-        border-right: 1px solid #21364e;
+      margin-bottom: 30px;
+    }
+    .hi {
+      font-family: Arial-BoldMT;
+      font-size: 18px;
+      color: #529ED4;
+      letter-spacing: 0.39px;
+      line-height: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .welcome {
+      font-family: PingFangHK-Semibold;
+      font-size: 30px;
+      color: #304469;
+      letter-spacing: 0.25px;
+      text-align: right;
+      line-height: 32px;
+      font-weight: 400;
+     
+      .bold {
+        font-weight: 600;
       }
-      .title {
-        font-family: PingFangSC-Semibold;
+    }
+    .time{
+      padding-right: 160px;
+      .date1 {
+        font-family: PingFangSC-Regular;
         font-size: 14px;
-        color: rgba(255, 255, 255, 0.5);
+        color: #4C4F51;
+        letter-spacing: 9px;
+        line-height: 43px;
+        font-weight: 400;
+        padding-left: 2px;
+      }
+      .date2 {
+        font-family: PingFangHK-Semibold;
+        font-size: 48px;
+        color: #31456A;
+        letter-spacing: 1.03px;
+        line-height: 30px;
+        font-weight: 600;
+        .week {
+          font-family: PingFang-SC-Bold;
+          font-size: 12px;
+          color: #4C4F51;
+          letter-spacing: 1.71px;
+          line-height: 43px;
+          font-weight: 700;
+          margin-left: 5px;
+        }
+      }
+    }
+
+
+  }
+  .content-box {
+    width: 100%;
+    max-height: calc(100% - 170px);
+    flex: 1;
+    .index-content {
+      flex: 1;
+      flex-flow: row;
+      .index-item {
+        display: flex;
+        flex-direction: column;
+        margin-left: 40px;
+        box-sizing: border-box;
+        // flex-grow: 1;
+        flex: 1;
+        width: 0;
+        height: 530px;
+        margin-bottom: 20px;
+        // height: calc(100% - 12px);
+        &:first-child {
+          margin-left: 0;
+        }
+        .project-card {
+          ::v-deep .el-card__body {
+            padding: 0;
+            .project-item {
+              height: 50%;
+              width: 100%;
+            }
+            .project-statistics {
+              height: 50% !important;
+              position: relative;
+              // background: #E3EDF7;
+              box-shadow: -7px -5px 15px 0px rgba(255,255,255,1),7px 5px 14px 0px rgba(211,224,236,1);
+              // border-radius: 10px 10px 0px 0px;
+              .leftArrow,.rightArrow {
+                position: absolute;
+                bottom: 45px;
+                cursor: pointer;
+                z-index: 999;
+              }
+              .leftArrow {
+                left: 40px;
+              }
+              .rightArrow {
+                right: 40px;
+              }
+             
+              // 跑马灯高度
+              .el-carousel,.el-carousel__container {
+                height: 100%;
+              }
+              // 跑马灯左右切换按钮
+              .el-carousel__arrow {
+                background: unset;
+                border: none;
+                font-size: 16px;
+                color: #7da0c6;
+                bottom: 45px;
+                top: unset;
+                .el-icon-arrow-left,.el-icon-arrow-right {
+                  font-weight: 900;
+                  // box-shadow: 2px -2px 2px #ccc;
+                }
+              }
+              // 跑马灯索引
+              .el-carousel__indicators {
+                display: none;
+              }
+              .statistics-box {
+                width: 100%;
+                .content {
+                  width: 100%;
+                  text-align: center;
+                  position: absolute;
+                  bottom: 25px;
+                  .project-num-style {
+                    width: 185px;
+                    height: 185px;
+                    border-radius: 50%;
+                    background: #e3edf7;
+                    position: relative; 
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    // box-shadow: 0px 2px 40px 0px rgba(0,0,0,0.1);
+                    // box-shadow: 0px 2px 40px 0px rgba(0,0,0,0.1),0 -2px 40px 0px rgba(0,0,0,0.1),2px 0 40px 0 rgba(0,0,0,0.1),-2px 0 40px 0 rgba(0,0,0,0.1);
+                    box-shadow: 0px 2px 40px 3px rgba(0,0,0,0.1);
+                    background: #e7c8d0;
+                    //  background: radial-gradient( #fff 5%, #e9e1e8 30%, #e7c8d0 60%);
+                    background: linear-gradient(to right,#f07e82 10%, #e3edf7 80%);
+                    background: linear-gradient(to right bottom, #f07e82 30%, #e3edf7 50%);
+                    transform: rotate(-40deg);
+                    .project-middle-bj {
+                      width: 170px;
+                      height: 170px;
+                      border-radius: 50%;
+                      background: #e3edf7;
+                      position: relative; 
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      background: #e7c8d0;
+                      background: linear-gradient(to right bottom,#e7c8d0 16%, #e4e2eb 30%, #e3edf7 50%);
+                      transform: rotate(40deg);
+                      // background: linear-gradient(to right bottom, #e7c8d0 42%, #e4e2eb, #e3edf7 50%);
+                      // transform: rotate(2deg);
+                        background: linear-gradient(to right bottom, #e7c8d0 32%, #e3edf7 50%);
+                        transform: rotate(2deg);
+                    }
+                    .project-Vertical-style {
+                      width: 1px;
+                      height: 26px;
+                      position: absolute;
+                      top: 0;
+                      background: #e5dce5;
+                      background: linear-gradient(to bottom,#e3edf7, #f2f2f5);
+                      // transform: rotate(32deg);
+                      // position: relative;
+                      .project-circle-style {
+                        width: 10px;
+                        height: 10px;
+                        background: #fff;
+                        border-radius: 50%;
+                        display: inline-block;
+                        margin-top: 7px;
+                        margin-left: -4.5px;
+
+                      }
+
+                    }
+                    .inner-circle {
+                      width: 120px;
+                      height: 120px;
+                      border-radius: 50%;
+                      background: #E0EAF3;
+                      box-shadow: 7px 5px 12px 0px rgba(211,224,236,1),-7px -5px 12px 0px rgba(255,255,255,1);
+                      // box-shadow: 7px 5px 12px 0px rgba(211,224,236,1),-7px -1px 22px 0px rgba(255,255,255,1);
+                      transform: rotate(36deg);
+                    }
+                    .project-num-box {
+                      width: 120px;
+                      height: 120px;
+                    } 
+                  }
+                  // .project-num-style::after {
+                  //   position: absolute; 
+                  //   content: '';
+                  //   background: linear-gradient(red, yellow);
+                  //   background-image: linear-gradient(180deg, #F07E82 0%, #E3EDF7 100%);
+                  //   background-image: linear-gradient(to right, #F07E82, #e0eaf3); 
+                  //   bottom: 0; 
+                  //   right: 0;
+                  //   left: 0;
+                  //   top: 0;                              //定义伪元素出现的位置
+                  //   z-index: -1;
+                  //   transform: scale(1.11);               //伪元素放大1.1倍
+                  //   border-radius: 50%;
+                  // }
+                  .project-num {
+                    font-family: DINCondensed-Bold;
+                    font-size: 60px;
+                    color: #D4000F;
+                    letter-spacing: 2.4px;
+                    line-height: 54px;
+                    text-shadow: -1px 1px 4px #9BBBD8;
+                    font-weight: 700;
+                    margin-top: 28px;
+                  }
+                  .project-text {
+                    font-family: PingFangSC-Regular;
+                    font-size: 12px;
+                    color: #8B94A6;
+                    letter-spacing: 0.48px;
+                    font-weight: 400;
+                    margin-top: 7px;
+                  }
+                }
+              }
+            }
+            .my-project {
+              // overflow: auto;
+              position: relative;
+              .title {
+                // padding-bottom: 10px !important;
+              }
+              .project-content-box {
+                width: 100%;
+                margin: 0 auto;
+                box-sizing: border-box;
+                position: absolute;
+                bottom: 10px;
+                height: calc(100% - 68px);
+                .el-loading-mask {
+                  background: #E3EDF7 !important
+                }
+
+              }
+              .content {
+                width: calc(100% - 15px);
+                box-sizing: border-box;
+                overflow-x: auto;
+                padding: 10px;
+                box-sizing: border-box;
+              }
+
+              .project-list {
+                width: 150px;
+                min-width: 150px;
+                // max-width: 130px;
+                height: 170px;
+                // margin-bottom: 10px;
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                // z-index: 100;
+                &:first-child {
+                  margin-left: 0;
+                }
+                .project-top {
+
+                }
+                .project-name {
+                  font-family: PingFang-SC-Bold;
+                  font-size: 14px;
+                  color: #31456A;
+                  letter-spacing: 0.34px;
+                  line-height: 22px;
+                  font-weight: 600;
+                  -webkit-line-clamp: 2;
+                  cursor: pointer;
+                }
+                .project-time {
+                  font-family: PingFang-SC-Bold;
+                  font-size: 10px;
+                  // color: #31456A;
+                  letter-spacing: 0.34px;
+                  font-weight: 600;
+                  // margin-top: 5px;
+                  text-align: right;
+                }
+                .cost-box {
+                  align-items: center;
+                  .circle-dot {
+                    width: 4px;
+                    height: 4px;
+                    color: #1FB57F;
+                    background: #1FB57F;
+                    // background-image: linear-gradient(180deg, #5ADB71 0%, #12AF7E 100%);
+                    box-shadow: 2px 0px 3px 0px rgba(255,255,255,1),0px 1px 4px 0px rgba(155,187,216,1);
+                    // margin-bottom: 10px;
+                    border-radius: 50%;
+                    margin-top: 18px;
+                  }
+                  .project-status {
+                    font-family: PingFang-SC-Bold;
+                    font-size: 18px;
+                    /*color: #31456A;*/
+                    color: #D4000F;
+                    letter-spacing: 0.34px;
+                    // line-height: 22px;
+                    font-weight: 600;
+                    -webkit-line-clamp: 1;
+                    background: unset !important;
+                    text-shadow: -1px 1px 2px #9BBBD8;
+                  }
+                  .project-status-0 {
+                    color: #8d8d8d;
+                    background: #8d8d8d;
+                  }
+                  .project-status-1 {
+                    color: #f4707a;
+                    background: #f4707a;
+                  }
+                  .project-status-2 {
+                    color: #7388e6;
+                    background: #7388e6;
+                  }
+                  .project-status-3 {
+                    color: #d7e673;
+                    background: #d7e673;
+                  }
+                  .project-status-4 {
+                    color: #e69373;
+                    background: #e69373;
+                  }
+                  .project-status-5 {
+                    color: #1FB57F;
+                    background: #1FB57F;
+                  }
+                 
+                  .cost-num {
+                    .cost-style {
+                      font-family: DINCondensed-Bold;
+                      font-size: 24px;
+                      color: #1FB57F;
+                      letter-spacing: 1.2px;
+                      text-align: right;
+                      line-height: 16px;
+                      text-shadow: -1px 1px 4px #9BBBD8;
+                      font-weight: 700;
+                      span{
+                        font-family: SourceHanSansCN-Heavy;
+                        font-size: 14px;
+                        color: #1FB57F;
+                        letter-spacing: 0.56px;
+                        text-align: right;
+                        line-height: 16px;
+                        text-shadow: -1px 1px 4px #9BBBD8;
+                        font-weight: 800;
+                      }
+                    }
+                    .people-num {
+                      margin-bottom: 5px;
+                    }
+                    .cost-text {
+                    }
+                  }
+                }
+              }
+              .project-list:last-child {
+                min-width: 155px;
+                width: 155px;
+              }
+              .project-list-style {
+                height: 165px;
+                width: 130px;
+                border-radius: 12px;
+                background: #E3EDF7;
+                padding: 15px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                box-sizing: border-box;
+                box-shadow: -7px -5px 15px 0px rgba(255,255,255,1),7px 5px 14px 0px rgba(211,224,236,1);
+              }
+            }
+          }
+        }
+        .func-item {
+          width: 100%;
+          height: 50%;
+        }
+        .monitor-warning {
+          height: 48%;
+          .warning-box {
+            margin: 0 15px 0 15px;
+            .warning-item {
+              background: #E3EDF7;
+              box-shadow: -7px -5px 15px 0px rgba(255,255,255,1),7px 5px 14px 0px rgba(211,224,236,1);
+              border-radius: 20px;
+              padding: 7px 15px;
+              margin-bottom: 15px;
+              width: 100%;
+              .warning-left {
+                // flex: 1;
+                width:calc(100% - 60px);
+                .warning-text {
+                  // width: 300px;
+                  font-family: PingFang-SC-Bold;
+                  font-size: 16px;
+                  color: #31456A;
+                  letter-spacing: 0.34px;
+                  line-height: 22px;
+                  font-weight: 700;
+                  width:100%;
+                }
+                .warning-date {
+                  font-family: PingFang-SC-Bold;
+                  font-size: 11px;
+                  color: #7B8499;
+                  letter-spacing: 0.44px;
+                  line-height: 16px;
+                  font-weight: 700;
+                  margin-top: 5px;
+                }
+              }
+              .warning-right {
+                background-image: linear-gradient(180deg, #FB9696 0%, #EA3A52 100%);
+                box-shadow: inset 2px 2px 3px 0px rgba(0,0,0,0.2),-8px -6px 17px 0px rgba(255,255,255,1)8px 6px 15px 0px rgba(211,224,236,1);
+                border-radius: 15px;
+                width: 50px;
+                height: 50px;
+                text-align: center;
+                line-height: 50px;
+                .warning-num {
+                  font-family: DINCondensed-Bold;
+                  font-size: 18px;
+                  color: #FFFFFF;
+                  // letter-spacing: 1.2px;
+                  // font-weight: 700;
+                }
+                i {
+                  color: #FFFFFF;
+                }
+              }
+              .warning-success {
+               background-image: linear-gradient(180deg, #6cd98b 0%, #1db57f 100%);
+              }
+              .warning-error {
+                background-image: linear-gradient(180deg, #FB9696 0%, #EA3A52 100%);
+              }
+            }
+
+          }
+
+        }
+        .Common-func {
+          padding-top: 40px;
+          height: 52%;
+        }
+      }
+      .my-agency {
+        box-sizing: border-box;
+        .agency-box {
+          padding-left:25px;
+          width: calc(100% - 25px);
+          height: calc(100% - 85px);
+          overflow-y: auto;
+          ::v-deep .el-loading-mask {
+            background: #E3EDF7 !important;
+          }
+          .axis-item {
+            margin-bottom: 10px;
+            width: 100%;
+            .axis-left {
+              margin-right: 30px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              width: 50px;
+              ::v-deep .el-avatar {
+                border-radius: 12px;
+              }
+              .agency-name {
+                font-family: PingFangSC-Regular;
+                font-size: 10px;
+                color: #31456A;
+                letter-spacing: -0.73px;
+                font-weight: 400;
+                margin-top: 5px;
+              }
+              .agency-stage {
+                font-family: PingFangSC-Regular;
+                font-size: 10px;
+                color: #AEC5DF;
+                letter-spacing: -0.73px;
+                font-weight: 400;
+                white-space: nowrap;
+              }
+              .axis-line {
+                background: #D1E2F3;
+                box-shadow: inset 1px 1px 4px 0px rgba(198,218,239,1);
+                border-radius: 6.5px;
+                height: 60px;
+                width: 5px;
+              }
+              .user-logo{
+                width: 42px;
+              }
+            }
+            .axis-right {
+              padding-right: 5px;
+              // width: 100%;
+              flex: 1;
+              overflow: hidden;
+              .agency-brief {
+                font-family: PingFang-SC-Bold;
+                font-size: 10px;
+                color: #999999;
+                letter-spacing: 1px;
+                line-height: 14px;
+                font-weight: 700;
+                display: flex;
+                width: 100%;
+                .agency-date {
+                  
+                  // width: 100px;
+                  // overflow: hidden;
+                  width: 50%;
+                  min-width: 125px;
+                }
+                .agency-type {
+                  flex: 1;
+                  // width: 50%;
+                  height: 14px;
+                  margin-left: 20px;
+                  display: inline-block;
+                  // -webkit-line-clamp: 1;
+                }
+              }
+              .agency-name {
+                font-family: PingFangSC-Medium;
+                font-size: 14px;
+                color: #3F99D4;
+                letter-spacing: 0.5px;
+                line-height: 24px;
+                font-weight: 500;
+                margin-top: 10px;
+                max-height: 100px;
+                -webkit-line-clamp: 3;
+              }
+              .agencydeal-btn {
+                cursor: pointer;
+                background: #ABC4DF;
+                box-shadow: -1px -4px 7px 0px rgba(255,255,255,1),6px 5px 7px 0px rgba(209,223,235,1);
+                border-radius: 10px;
+                height: 25px;
+                width: 70px;
+                border-radius: 10px;
+                text-align: center;
+                line-height: 25px;
+                font-family: PingFangSC-Medium;
+                font-size: 10px;
+                color: #FFFFFF;
+                letter-spacing: 0.36px;
+                font-weight: 500;
+                margin-top: 18px;
+                margin-left: 50%;
+                // float: right;
+                // margin-right: 50px;
+              }
+              
+              
+            }
+            
+          }
+        }
+
+      }
+      
+    }
+    .tabs {
+      margin: 0 20px 0 50px;
+      .tabs-item {
+        margin-bottom: 20px;
+        width: 60px;
         text-align: center;
-        line-height: 24px;
+        cursor: pointer;
+        p {
+          background: #E3EDF7;
+          box-shadow: -7px -5px 15px 0px rgba(255,255,255,1),7px 5px 14px 0px rgba(211,224,236,1);
+          border-radius: 15px;
+          width: 60px;
+          height: 60px;
+          text-align: center;
+          line-height: 60px;
+          margin-bottom: 5px;
+          img{
+            // padding: 15px 20px;
+          }
+        }
+        span{
+          font-family: PingFangSC-Regular;
+          font-size: 12px;
+          color: #7B8499;
+          letter-spacing: 0.26px;
+          text-align: right;
+          line-height: 14px;
+          font-weight: 400;
+        }
+        &-active {
+          p {
+            // box-shadow: -7px -5px 15px 0px #B5D0E9,7px 5px 14px 0px #B5D0E9;
+            box-shadow: 8px 8px 20px 0 rgba(55,99,170,.2), -8px -8px 20px 0 #fff;
+          }
+          // span {
+          //   color: #0052d9;
+          // }
+
+        }
+
       }
-      .count-font {
-        font-family: BebasNeue;
-        font-size: 56px;
-        color: #ffffff;
-        height: 60px;
-        line-height: 60px;
+    }
+
+  }
+  // 自定义card 样式
+  .card-style {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    box-shadow: -7px -5px 15px 0px rgba(255,255,255,1),7px 5px 14px 0px rgba(211,224,236,1);
+    border: none;
+    ::v-deep .el-card__body {
+      width: 100%;
+      height: 100%;
+      background: #E3EDF7;
+      padding: 0;
+    }
+  } 
+  // 模块头部标题样式
+  .title {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    height: 68px;
+    align-items: center;
+    // padding: 20px 25px;
+    .name {
+      font-family: PingFang-SC-Bold;
+      font-size: 16px;
+      color: #31456A;
+      letter-spacing: 0.34px;
+      text-align: right;
+      line-height: 68px;
+      font-weight: 700;
+      padding-left: 25px;
+    }
+    .list-num {
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .more { 
+      cursor: pointer;
+      // background: #e0eaf3;
+      // border-radius: 50%;
+      // display: inline-block;
+      // width: 33px;
+      // height: 30px;
+      // line-height: 30px;
+      // text-align: center;
+      // border-radius: 35%;
+      // box-shadow: -7px -5px 15px 0px rgba(255,255,255,1);
+      i {
+        color: #7da0c6;
       }
+    }
+    .function-icon {
+      height: 53px;
+      width: 57px;
+      margin-right: 11px;
+      cursor: pointer;
+    }
+    .more-icon {
+      width: 70px;
+      height: 68px;
     }
   }
 }
@@ -824,4 +1624,58 @@ export default {
   font-weight: bold;
   color: #fff;
 }
+.s-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  -o-text-overflow:ellipsis;
+  -webkit-line-clamp: 1;//显示1行
+  white-space: nowrap;//允许换行
+  text-overflow: ellipsis;//省略号显示超出部分
+}
+.m-ellipsis {
+  overflow: hidden;
+  // -webkit-line-clamp: 3;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+.c-pointer {
+  cursor: pointer;
+}
+.visible-p1{
+  text-align: center;
+  width: 95%;
+  margin:.5% 2.5% 0%;
+  padding: 10px 0px;
+  font-size: 25px;
+  /* border-radius: 6px;  */
+  display: inline-block;
+  font-weight: bold;
+  overflow: unset;
+}
+.visible-p2{
+  text-align: right;
+  width: 95%;
+  margin:.5% 2.5% .5%;
+  padding: 5px;
+  font-size: 16px;
+  border-radius: 6px;
+  display: inline-block;
+  height: unset;
+  overflow: unset;
+}
+.visible-p3{
+  text-indent: 2em;
+  width: 95%;
+  margin:.5% 2.5% 2.5%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  display: inline-block;
+  line-height: 27px;
+  height: 400px;
+  overflow: auto;
+}
+
 </style>

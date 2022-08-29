@@ -20,5 +20,6 @@ const getters = {
   errorLogs: state => state.errorLog.logs,
   personIp: state => state.user.personIp,
   meauData: state => state.app.meauData,
+  getToDoNum: state => state.aceState.toDoNum,
 }
 export default getters

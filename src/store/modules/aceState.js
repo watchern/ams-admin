@@ -4,6 +4,7 @@ export default {
   state: {
     rightFooterTags: [],
     leftMenuShrink: false,
+    toDoNum: 0
   },
   mutations: {
     setRightFooterTags: (state, data) => {
@@ -53,6 +54,9 @@ export default {
     },
     setLeftMenuShrink: (state, data) => {
       state.leftMenuShrink = data
+    },
+    changeToDoNum: (state, data) => {
+      state.toDoNum = data
     }
   },
   actions: {}

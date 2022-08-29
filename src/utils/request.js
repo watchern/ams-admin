@@ -81,7 +81,9 @@ service.interceptors.response.use(
           offset: 100
         })
         return Promise.reject()
-      }else{
+      } else if (res.head && res.head.status == 20) {
+        return res
+      } else {
         Message({
           message: res.msg || res || 'Error',
           type: 'error',
@@ -90,7 +92,7 @@ service.interceptors.response.use(
 
         return Promise.reject(new Error(res.msg || res || 'Error'))
       }
-    } else {
+    }else {
       return res
     }
   },

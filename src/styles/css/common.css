@@ -317,3 +317,22 @@ div::-webkit-scrollbar-corner,
 .el-tree-node__children{
     overflow: visible !important;
 }
+.popover-function {
+  box-shadow: 0 0 20px 0 #888;
+  height: 400px;
+  padding: 0 !important;
+}
+.popover-function .tools-center {
+  box-shadow: unset !important;
+  position: unset !important;
+  max-height: 380px !important;
+}
+.popover-function .tools-menu-small {
+  max-height: 320px !important;
+}
+.popover-option {
+  padding: 0 !important;
+}
+.popover-option .popper__arrow {
+  display: none;
+}
