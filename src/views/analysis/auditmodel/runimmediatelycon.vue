@@ -54,6 +54,7 @@
               :scene-code="sceneCode"
               :tree-type="treeType"
               @node-click="handleClick"
+              @handle-check="handleCheck"
               style="height: 500px;overflow-y: scroll"
             />
             <span slot="footer" class="dialog-footer">
@@ -143,6 +144,7 @@ export default {
       treeType: "save",
       path: "",
       modelResultSavePathId: '',
+      savePath: null,
       tempPath: "",
       nodeType: "",
       tempId: "",
@@ -245,15 +247,41 @@ export default {
       this.tempId = data.id;
       this.nodeType = data.type;
     },
+    handleCheck(data, check){
+      this.savePath = null
+      if (check) {
+        this.savePath = data
+      }
+    },
     modelResultSavePathDetermine() {
+      // if (this.nodeType == "folder") {
+      //   this.path = "当前执行模型保存路径:" + this.tempPath;
+      //   this.modelResultSavePathId = this.tempId;
+      //   this.modelResultSavePathDialog = false;
+      // } else if(this.nodeType == ""){
+      //   this.$message('请选择路径');
+      // }else{
+      //   this.$message('只能选择文件夹');
+      // }
+      if (this.savePath == null) {
+        this.$message({
+          type: 'info',
+          message: '请选择文件夹',
+        })
+        return
+      } else {
+        this.tempPath = this.savePath.label
+        this.tempId = this.savePath.id
+        this.nodeType = this.savePath.type
+      }
       if (this.nodeType == "folder") {
-        this.path = "当前执行模型保存路径:" + this.tempPath;
-        this.modelResultSavePathId = this.tempId;
-        this.modelResultSavePathDialog = false;
+            this.path = "当前执行模型保存路径:" + this.tempPath;
+            this.modelResultSavePathId = this.tempId;
+            this.modelResultSavePathDialog = false;
       } else if(this.nodeType == ""){
         this.$message('请选择路径');
       }else{
-        this.$message('只能选择文件夹');
+      this.$message('只能选择文件夹');
       }
     },
   },
