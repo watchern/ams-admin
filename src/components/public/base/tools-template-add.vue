@@ -386,6 +386,11 @@ export default {
       // 深度观察监听
       deep: true,
     },
+    async menuData (data) {
+      this.menugroup = data.second;
+      this.menugroupId = data.first;
+      this.showmenuGroup = true;
+    }
   },
   mounted() {
     this.refresh();
