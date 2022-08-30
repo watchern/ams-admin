@@ -312,7 +312,7 @@
                   v-model="scope.row.dataType"
                   filterable
                   style="width: 90%; height: 55px"
-                  @change="changeDataType(scope.row)"
+                  @change="changeDataTypelead(scope.row)"
                   placeholder="请选择数据类型"
                 >
                   <el-option
@@ -334,7 +334,7 @@
                   v-model="scope.row.dataLengthText"
                   style="width: 90%; height: 55px"
                   :disabled="!scope.row.enableDataLength"
-                  @change="isValidColumn(scope.row)"
+                  @change="isValidColumnlead(scope.row)"
                 />
               </template>
             </el-table-column>
@@ -410,7 +410,9 @@
                 @table-show="tableshow"
                 @saveTableInfoHelp="saveTableInfoHelp"
                 @changeDataType="changeDataType"
+                @changeDataTypelead="changeDataTypelead"
                 @isValidColumn="isValidColumn"
+                @isValidColumnlead="isValidColumnlead"
                 @get-list="getList"
                 class="detail-form"
               />
@@ -889,8 +891,32 @@ export default {
       }
 
     },
+    //导入的changeDataType
+    changeDataTypelead(row){
+      const currRule = this.CommonUtil.DataTypeRuleslead[row.dataType.toUpperCase().trim()];
+      if (!this.disableEditColumn) {
+        this.$set(row, "enableDataLength", currRule && this.CommonUtil.isNotUndefined(currRule.enableDataLength) ? currRule.enableDataLength : true);
+      } else {
+        this.$set(row, "enableDataLength", false);
+      }
+      if (this.CommonUtil.isNotUndefined(currRule.enableDataLength) && !currRule.enableDataLength) {
+        this.$set(row, "dataLengthText", "");
+      }
+    },
     isValidColumn(row) {
       var currDataType = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
+      if (this.CommonUtil.isNotUndefined(currDataType) && this.CommonUtil.isNotUndefined(currDataType.lengthRule)) {
+        if (!new RegExp(currDataType.lengthRule).test(row.dataLengthText)) {
+          this.$message.error(row.dataType.toUpperCase() + currDataType["checkMsg"]);
+          return false;
+        }
+      }
+
+      return true;
+    },
+    //导入的isValidColumnlead
+    isValidColumnlead(row) {
+      var currDataType = this.CommonUtil.DataTypeRuleslead[row.dataType.toUpperCase().trim()];
       if (this.CommonUtil.isNotUndefined(currDataType) && this.CommonUtil.isNotUndefined(currDataType.lengthRule)) {
         if (!new RegExp(currDataType.lengthRule).test(row.dataLengthText)) {
           this.$message.error(row.dataType.toUpperCase() + currDataType["checkMsg"]);
@@ -1099,7 +1125,7 @@ export default {
                     for(let i=0;i<this.uploadtempInfo.colMetas.length;i++) {
                       //设置默认数据类型长度为255
                       this.uploadtempInfo.colMetas[i].dataLengthText = 255;
-                      this.changeDataType(this.uploadtempInfo.colMetas[i])
+                      this.changeDataTypelead(this.uploadtempInfo.colMetas[i])
                     }
                   }
                   }else{
@@ -1141,7 +1167,7 @@ export default {
           return
         }
         //再判合法
-        if (!this.isValidColumn(obj)) {
+        if (!this.isValidColumnlead(obj)) {
           return;
         }
       }
