@@ -124,7 +124,7 @@
           <div class="Common-func func-item">
             <el-card class="box-card func-card card-style">
               <p class="title">
-                <span class="name">常用功能11</span>
+                <span class="name">常用功能</span>
                 <!-- <span class="more"><i class="el-icon-edit"></i></span> -->
                 <img src="../../../../assets/img/edit-icon.png" alt="" class="function-icon" @click="editFuncClick">
               </p>
