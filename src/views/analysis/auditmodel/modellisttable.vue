@@ -1331,19 +1331,19 @@ export default {
         };
       }
       sessionStorage.setItem("operationObj", JSON.stringify(operationObj));
-      let routeUrl = this.$router.resolve({
+      // let routeUrl = this.$router.resolve({
+      //   path:  `/analysis/editormodelnew?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`
+      // });
+      // window.open(routeUrl.href, '_blank');
+      this.$router.push({
         path:  `/analysis/editormodelnew?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`
       });
-      window.open(routeUrl.href, '_blank');
-      // this.$router.push({
-      //   path:  `/analysis/editormodelnew/add?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`
-      // });
       // this.$store.commit("aceState/setRightFooterTags", {
       //   type: "active",
       //   val: {
       //     name: "新增模型",
       //     path:
-      //       "/analysis/editormodelnew/add?dataUserId=" + this.dataUserId + "&sceneCode=" + this.sceneCode,
+      //       "/analysis/editormodelnew?dataUserId=" + this.dataUserId + "&sceneCode=" + this.sceneCode,
       //   },
       // });
     },
@@ -1438,19 +1438,19 @@ export default {
             folderPath: selectObj[0].modelFolderPath,
           };
           sessionStorage.setItem("operationObj", JSON.stringify(operationObj));
-          let routeUrl = this.$router.resolve({
+          // let routeUrl = this.$router.resolve({
+          //   path:  `/analysis/editormodelnew?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`
+          // });
+          // window.open(routeUrl.href, '_blank');
+          this.$router.push({
             path:  `/analysis/editormodelnew?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`
           });
-          window.open(routeUrl.href, '_blank');
-          // this.$router.push({
-          //   path:  `/analysis/editormodelnew/${selectObj[0].modelUuid}?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`
-          // });
           // this.$store.commit("aceState/setRightFooterTags", {
           //   type: "active",
           //   val: {
           //     name: selectObj[0].modelName,
           //     path:
-          //       "/analysis/editormodelnew/"+ selectObj[0].modelUuid +"?dataUserId=" +
+          //       "/analysis/editormodelnew/"+"?dataUserId=" +
           //       this.dataUserId +
           //       "&sceneCode=" +
           //       this.sceneCode,
@@ -1484,17 +1484,17 @@ export default {
             folderName: "",
           };
           sessionStorage.setItem("operationObj", JSON.stringify(operationObj));
-          this.$store.commit("aceState/setRightFooterTags", {
-            type: "active",
-            val: {
-              name: '修改模型',
-              path:
-                "/analysis/editormodelnew?dataUserId=" +
-                this.dataUserId +
-                "&sceneCode=" +
-                this.sceneCode,
-            },
-          });
+          // this.$store.commit("aceState/setRightFooterTags", {
+          //   type: "active",
+          //   val: {
+          //     name: '修改模型',
+          //     path:
+          //       "/analysis/editormodelnew?dataUserId=" +
+          //       this.dataUserId +
+          //       "&sceneCode=" +
+          //       this.sceneCode,
+          //   },
+          // });
           // this.$store.commit("aceState/setRightFooterTags", {
           //   type: "active",
           //   val: {
@@ -2337,9 +2337,9 @@ export default {
           };
           sessionStorage.setItem("operationObj", JSON.stringify(operationObj));
           // this.$router.push(`/analysis/editormodelnew`)
-          let routeUrl = this.$router.resolve(`/analysis/editormodelnew?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`)
-          window.open(routeUrl.href, '_blank');
-          // this.$router.push(`/analysis/editormodelnew/${modelUuid}`)
+          // let routeUrl = this.$router.resolve(`/analysis/editormodelnew?dataUserId=${this.dataUserId}&sceneCode=${this.sceneCode}`)
+          // window.open(routeUrl.href, '_blank');
+          this.$router.push(`/analysis/editormodelnew`)
           // this.$store.commit("aceState/setRightFooterTags", {
           //   type: "active",
           //   val: {

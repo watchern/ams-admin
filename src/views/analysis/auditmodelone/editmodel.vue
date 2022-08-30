@@ -1187,7 +1187,7 @@ export default {
       return returnObj
     },
     closeWinfrom(modelObj, type) {
-      // this.$router.push({ path: "/analysis/auditmodel" })
+      this.$router.push({ path: "/analysis/auditmodel" })
       // this.$store.commit("aceState/setRightFooterTags", {
       //   type: "close",
       //   val: {
@@ -1202,7 +1202,7 @@ export default {
       //   },
       // });
       // 模型编辑关闭当前窗口
-      window.close()
+      // window.close()
     },
     /**
      * 转换列对象
