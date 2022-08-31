@@ -164,7 +164,7 @@ module.exports = {
     "ag-grid-vue",
     "ams-clue-vue",
     "ams-datamax",
-    "ams-etlscheduler-ui",
+    "ams-etlscheduler-vue",
     "ams-file-vue",
     "ams-starflow-vue",
     "axios",
@@ -219,7 +219,7 @@ module.exports = {
       resolve: {
         alias: {
           '@': resolve('src'),
-          '@ETL': 'ams-etlscheduler-ui/src',
+          '@ETL': 'ams-etlscheduler-vue/src',
         '@MAX': 'ams-datamax/src'
         }
       },
