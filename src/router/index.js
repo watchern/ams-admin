@@ -96,7 +96,7 @@ const AmsRoutes = [
       {
         path: 'first',
         name: 'amsFirst',
-        component: () => import('@/views/ams/home/first/index')
+        component: (resolve) => require(['@/views/ams/home/' + process.env.VUE_APP_INDEX_PAGE + '/index'], resolve),
       },
       {
         path: '/404',
