@@ -1,73 +1,69 @@
 <template>
   <div class="login-outbox">
-    <div class="login-container" v-if="skincontrol == 'old-login'">
-      <el-form
-        ref="loginForm"
-        :model="loginForm"
-        :rules="loginRules"
-        class="login-form skin-bgColor"
-        autocomplete="on"
-        label-position="left"
-      >
-        <div class="left-container">
-          <img src="./style/images/login-logo.png" class="logo-img" />
-          <!--        <span class="login-right">© 2020 中软国际</span>-->
-        </div>
-        <div class="right-container">
-          <div class="title-container">
-            <!--          <lang-select class="set-language" />-->
+    <div class="login-center flex a-center j-end" v-if="skincontrol == 'old-login'">
+      <div class="login-left">
+        <img src="../../assets/img/bg-contend.png" alt="">
+      </div>
+      <div class="login-right-box">
+        <div class="login-right flex a-center">
+          <div class="logo-box">
+            <img src="../../assets/img/login-logo.png" alt="">
           </div>
-
-          <el-form-item prop="username">
-            <span class="input-container"> 用户名 </span>
-            <el-input
-              ref="username"
-              v-model="loginForm.username"
-              name="username"
-              type="text"
-              tabindex="1"
+          <div class="login-form">
+            <el-form
+              ref="loginForm"
+              :model="loginForm"
+              :rules="loginRules"
               autocomplete="on"
-            />
-          </el-form-item>
-
-          <el-tooltip
-            v-model="capsTooltip"
-            content="Caps lock is On"
-            placement="right"
-            manual
-          >
-            <el-form-item prop="password">
-              <span class="input-container"> 密码 </span>
-              <el-input
-                :key="passwordType"
-                ref="password"
-                v-model="loginForm.password"
-                :type="passwordType"
-                name="password"
-                tabindex="2"
-                autocomplete="on"
-                @keyup.native="checkCapslock"
-                @blur="capsTooltip = false"
-                @keyup.enter.native="handleLogin"
-              />
-              <span class="show-pwd" @click="showPwd">
-                <svg-icon
-                  :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
-                />
-              </span>
-            </el-form-item>
-          </el-tooltip>
-
-          <el-button
-            :loading="loading"
-            type="primary"
-            class="login-btn"
-            @click.native.prevent="handleLogin"
-          >
-            {{ $t("login.logIn") }}
-          </el-button>
+              label-position="left"
+            >
+              <el-form-item prop="username" label="账户名称">
+                <el-input
+                  ref="username"
+                  v-model="loginForm.username"
+                  name="username"
+                  type="text"
+                  tabindex="1"
+                  autocomplete="on"
+                  />
+              </el-form-item>
+              <el-tooltip
+                v-model="capsTooltip"
+                content="Caps lock is On"
+                placement="right"
+                manual
+              >
+                <el-form-item prop="password" label="登录密码">
+                  <el-input
+                    :key="passwordType"
+                    ref="password"
+                            v-model="loginForm.password"
+                    :type="passwordType"
+                            name="password"
+                    tabindex="2"
+                    autocomplete="on"
+                    @keyup.native="checkCapslock"
+                    @blur="capsTooltip = false"
+                    @keyup.enter.native="handleLogin"
+                  />
+                  <span class="show-pwd" @click="showPwd">
+                    <svg-icon
+                      :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
+                    />
+                  </span>
+                </el-form-item>
+              </el-tooltip>
+              <el-button
+                :loading="loading"
+                @click.native.prevent="handleLogin"
+              >
+                {{ $t("login.logIn") }}
+              </el-button>
+            </el-form>
+          </div>
         </div>
-      </el-form>
+        <div class="copyright-text">中软国际<span>Corporation版权所有</span></div>
+      </div>
     </div>
     <div
       v-else-if="skincontrol == 'new-login'"
@@ -495,6 +491,98 @@ $cursor: #fff;
 .login-outbox {
   height: 100%;
   width: 100%;
+  background: #f0f3f5;
+  background-image: url(../../assets/img/bg-top.png),url(../../assets/img//bg-bottom.png);
+  background-repeat: no-repeat, no-repeat;
+  background-position: right top, left bottom;
+  min-height: 100%;
+  overflow: hidden;
+  .login-center {
+    height: 100%;
+    width: 100%;
+    // margin-top: 10vh;
+    .login-right-box{
+      margin-right: 270px;
+    }
+    .login-right {
+      background: #E3EDF7;
+      background: #FFFFFF;
+      box-shadow: 5px 8px 14px 0px rgba(147,194,228,0.56);
+      border-radius: 10px;
+      height: 550px;
+      width: 420px;
+      margin-left: -100px;
+      flex-direction: column;
+      .logo-box {
+        margin-top: 90px;
+      }
+      .login-form {
+        margin-top: 43px;
+        ::v-deep .el-form {
+          .el-form-item {
+            margin-bottom: 32px !important;
+          }
+          .el-form-item__label {
+            font-family: MicrosoftYaHei-Bold;
+            font-size: 12px;
+            color: #999999;
+            letter-spacing: -0.88px;
+            line-height: 28px;
+            font-weight: 700;
+          }
+          .el-form-item__content {
+            width: 275px;
+            .el-input {
+              position: relative;
+              .el-input__inner {
+                border: none !important;
+                border-bottom: 1px solid #d1d1d1 !important;
+                outline: none;
+              }
+            }
+            .show-pwd {
+              right: 10px;
+              font-size: 16px;
+              color: #889aa4;
+              cursor: pointer;
+              -webkit-user-select: none;
+              -moz-user-select: none;
+              -ms-user-select: none;
+              user-select: none;
+              position: absolute;
+            }
+          }
+          
+          .el-button {
+            background: #529ED4;
+            border-radius: 19px;
+            width: 270px;
+            height: 38px;
+            font-family: MicrosoftYaHei;
+            font-size: 16px;
+            color: #FFFFFF;
+            letter-spacing: 1.17px;
+            font-weight: 400;
+            margin-top: 12px;
+          }
+        }
+      }
+     
+    }
+    .copyright-text {
+      margin-top: 30px;
+      font-family: PingFangSC-Medium;
+      font-size: 12px;
+      color: #BBBBBB;
+      letter-spacing: 0.26px;
+      text-align: right;
+      font-weight: 500;
+      margin-right: 100px;
+      span {
+        margin-left: 18px;
+      }
+    }
+  }
 }
 .login-container {
   min-height: 100%;
