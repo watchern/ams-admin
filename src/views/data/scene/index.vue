@@ -9,9 +9,9 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreate()" />
-        <el-button type="primary" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" @click="toEdit()" />
-        <el-button type="primary" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
+        <el-button type="primary" class="oper-btn add" @click="handleCreate()" />
+        <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" @click="toEdit()" />
+        <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
       </el-col>
     </el-row>
     <el-table
@@ -71,7 +71,7 @@ export default {
       listLoading: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
-        { label: '业务属性编码', name: 'sceneCode', type: 'text', value: '' },
+        { label: '业务场景编码', name: 'sceneCode', type: 'text', value: '' },
         { label: '业务场景名称', name: 'sceneName', type: 'fuzzyText' },
         // {label: '性别', name:'sex', type: 'select',
         //   data: [{name: '男', value: '1'}, {name: '女', value: '0'}],
