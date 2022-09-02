@@ -212,6 +212,7 @@ export default {
      */
     getFolderTreeObj(){
       let treeObj = this.$refs.Thresholdvaluetree.getSelectNode()
+      //判断所选择的文件夹是否为根目录（个人阈值），根目录文件夹pid为0
       if (treeObj.pid==='0') {
         this.$message({type: 'info', message: '不能选择根目录!',});
         return;
