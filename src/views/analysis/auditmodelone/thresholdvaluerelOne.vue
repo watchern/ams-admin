@@ -27,7 +27,7 @@
             <el-input v-model="thresholdValueRelObj.thresholdValue.thresholdValueUuid" style="display: none" :disabled="true"/>
             <el-select v-model="thresholdValueRelObj.thresholdValue.thresholdValueName" placeholder="请选择" style="width: 100%">
               <el-option :label="thresholdValueRelObj.thresholdValue.thresholdValueName" :value="thresholdValueRelObj.thresholdValue.thresholdValueName" style="height: 250px;overflow: hidden;">
-                <thresholdvaluetree :isShowEdit="false" v-loading="loading" ref="thresholdvaluetree" @thresholdValueClick="setSelectTreeNode"></thresholdvaluetree>
+                <thresholdvaluetree :isShowEdit="false" :isShowValueTree="true" v-loading="loading" ref="thresholdvaluetree" @thresholdValueClick="setSelectTreeNode"></thresholdvaluetree>
               </el-option>
             </el-select>
           </el-form-item>

@@ -3,7 +3,7 @@
     <!--模型分类树-->
     <el-container>
       <el-aside class="tree-side">
-        <Thresholdvaluetree :isShowEdit="true" @refreshThresholdvalue="refreshThresholdvalue" ref="thresholdValueFolderTree" @refreshThresholdvalueList="refreshThresholdvalueList" />
+        <Thresholdvaluetree :isShowEdit="true" :isShowValueTree="true" @refreshThresholdvalue="refreshThresholdvalue" ref="thresholdValueFolderTree" @refreshThresholdvalueList="refreshThresholdvalueList" />
       </el-aside>
       <Thresholdvaluelist ref="thresholdValueListTable" @loadingSet="loadingSet" @refreshTree="refreshTree" />
     </el-container>

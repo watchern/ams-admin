@@ -73,7 +73,7 @@ import {
 export default {
   name: "Thresholdvaluetree",
   components: { MyElTree },
-  props:['isShowEdit'],
+  props:['isShowEdit','isShowValueTree'],
   data() {
     return {
       filterText: null,
@@ -119,8 +119,8 @@ export default {
      *获取阈值分类
      */
     getThresholdValueFolder() {
-      findThresholdValueFolderTree(true).then(result => {
-        this.data = result.data
+      findThresholdValueFolderTree(this.isShowValueTree).then(result => {
+        this.data = result.data;
       }).catch(reason => {
         this.$message({ type: 'error', message: '阈值分类树加载失败!'})
       })
