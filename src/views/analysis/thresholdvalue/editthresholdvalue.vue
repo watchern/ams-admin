@@ -65,7 +65,7 @@
       </div>
     </el-container>
     <el-dialog width="40%" :close-on-click-modal="false" v-if="folderTreeDialog" title="请选择阈值分类" :visible.sync="folderTreeDialog" :append-to-body="true">
-      <Thresholdvaluetree ref="Thresholdvaluetree" style="height: 500px" />
+      <Thresholdvaluetree ref="Thresholdvaluetree" style="height: 500px" :isShowValueTree="false"/>
       <div slot="footer" class="dialog-footer">
         <el-button @click="folderTreeDialog = false">关闭</el-button>
         <el-button type="primary" @click="getFolderTreeObj">确定</el-button>
@@ -212,6 +212,10 @@ export default {
      */
     getFolderTreeObj(){
       let treeObj = this.$refs.Thresholdvaluetree.getSelectNode()
+      if (treeObj.pid==='0') {
+        this.$message({type: 'info', message: '不能选择根目录!',});
+        return;
+      }
       this.thresholdValue.thresholdValueFolderUuid = treeObj.id
       this.thresholdValue.thresholdValueFolderName = treeObj.label
       this.folderTreeDialog = false
