@@ -1,5 +1,6 @@
 <template>
-  <div class="app-container" v-loading="loading">
+<!--  点击详情按钮会出现加载页面-->
+  <div class="app-container" v-loading="businessLoading">
     <div v-if="isShow">
       <div>
         <el-form
@@ -64,7 +65,7 @@ export default {
   props: ['tableId', 'openType','ifShowPlace'],
   data() {
     return {
-      loading:true,
+      businessLoading:true,
       isShow: false,
       tableKey: 'tableMetaUuid',
       isSql: false,
@@ -98,10 +99,10 @@ export default {
   },
   methods: {
     initTable(tableId) {
-      this.loading = true;
+      this.businessLoading = true;
       if (this.openType !== 'addTable') {
         listByPage(this.pageQuery).then(resp => {
-          this.loading = false;
+          this.businessLoading = false;
           this.bizJson = resp.data.records
         })
         this.isShow = true

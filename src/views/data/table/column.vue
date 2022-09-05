@@ -1,5 +1,6 @@
 <template>
-  <div class="app-container" v-loading="loading">
+<!--  点击详情按钮之后会出现加载页面-->
+  <div class="app-container" v-loading="colLoading">
     <el-row>
       <el-col
         v-if="openType !== 'showTable' && openType !== 'tableRegister'"
@@ -128,7 +129,7 @@ export default {
   props: ["tableId", "openType", "forderId", "getTree" ,"clickId","isEdit"],
   data() {
     return {
-      loading: false,
+      colLoading: false,
       copyColObj: {},
       selections: [],
       sqlType: {},
@@ -181,15 +182,14 @@ export default {
       return this.$emit("isValidColumn", row);
     },
     initTable(tableId) {
-      //this.loading = true;
       getSqlType().then((resp) => {
         this.sqlType = resp.data;
       });
       //在修改模型的时候才有loading
       if (this.openType !== "addTable") {
-        this.loading = true;
+        this.colLoading = true;
         getColsInfo(tableId).then((resp) => {
-          this.loading = false;
+          this.colLoading = false;
           // 返回两个新的数组
           this.oldName = resp.data.displayTbName;
           this.tempTable.displayTbName = resp.data.displayTbName;

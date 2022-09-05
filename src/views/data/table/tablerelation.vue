@@ -1,5 +1,6 @@
 <template>
-  <div class="app-container" v-loading="loading">
+<!--  在点击详情按钮之后会出现加载页面-->
+  <div class="app-container" v-loading="relationLoading">
     <el-row>
       <el-col v-if="openType !== 'showTable' && openType !== 'tableRegister'" align="right">
         <el-button type="primary" size="mini" class="oper-btn add" @click="addCol()" />
@@ -150,7 +151,7 @@ export default {
   props: ['tableId', 'openType'],
   data() {
     return {
-      loading:false,
+      relationLoading:false,
       sceneCode: 'auditor',
       dataUserId: this.$store.getters.personcode,
       columnList: {},
@@ -197,7 +198,6 @@ export default {
       temp: [],
       tempItemInd: 0,
       curItempItemInd: 0,
-      //loading:true,
     }
   },
   created() {
@@ -207,10 +207,10 @@ export default {
   },
   methods: {
     initTable(tableId) {
-      this.loading = true
+      this.relationLoading = true
       this.temp = []
       getById(tableId).then(resp => {
-        this.loading = false
+        this.relationLoading = false
         this.temp = resp.data
         console.log(this.temp)
         this.temp.forEach(element => {

@@ -1,12 +1,13 @@
 <template>
   <div class="page-container">
     <div class="detail-form">
+<!--      点击详情按钮之后会出现加载页面-->
       <el-form
         ref="dataForm"
         :model="temp"
         label-position="right"
         style="width:90%;min-width:500px; margin-left:50px;"
-        v-loading="loading"
+        v-loading="baseLoading"
       >
         <el-form-item label="表名称" prop="tbName">
           <el-input v-model="temp.displayTbName" readonly />
@@ -48,7 +49,6 @@ export default {
   data() {
     return {
       temp: {
-        loading:true,
         tableMetaUuid: undefined,
         tbName: '',
         displayTbName:'',
@@ -56,7 +56,8 @@ export default {
         fieldsNum: '',
         rowNum: '',
         tableSize: ''
-      }
+      },
+      baseLoading:true
     }
   },
   created() {
@@ -64,11 +65,11 @@ export default {
   },
   methods: {
     initBasicInfo(tableId) {
-      this.loading = true;
+      this.baseLoading = true;
       if (this.openType !== 'addTable') {
         getBasicInfo(tableId).then(resp => {
           this.temp = resp.data
-          this.loading = false
+          this.baseLoading = false
         })
       }
     },
