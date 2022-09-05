@@ -73,6 +73,7 @@ import {
 export default {
   name: "Thresholdvaluetree",
   components: { MyElTree },
+  // isShowValueTree：子组件用来接收父组件传来的值
   props:['isShowEdit','isShowValueTree'],
   data() {
     return {
@@ -119,6 +120,7 @@ export default {
      *获取阈值分类
      */
     getThresholdValueFolder() {
+      //this.isShowValueTree为boolean类型，用于传给后台getThresholdValueFolderTree方法参数
       findThresholdValueFolderTree(this.isShowValueTree).then(result => {
         this.data = result.data;
       }).catch(reason => {

@@ -312,7 +312,7 @@
                   v-model="scope.row.dataType"
                   filterable
                   style="width: 90%; height: 55px"
-                  @change="changeDataTypelead(scope.row)"
+                  @change="changeDataTypeImport(scope.row)"
                   placeholder="请选择数据类型"
                 >
                   <el-option
@@ -334,7 +334,7 @@
                   v-model="scope.row.dataLengthText"
                   style="width: 90%; height: 55px"
                   :disabled="!scope.row.enableDataLength"
-                  @change="isValidColumnlead(scope.row)"
+                  @change="isValidColumnImport(scope.row)"
                 />
               </template>
             </el-table-column>
@@ -412,7 +412,7 @@
                 @changeDataType="changeDataType"
                 @changeDataTypelead="changeDataTypelead"
                 @isValidColumn="isValidColumn"
-                @isValidColumnlead="isValidColumnlead"
+                @isValidColumnImport="isValidColumnImport"
                 @get-list="getList"
                 class="detail-form"
               />
@@ -894,7 +894,8 @@ export default {
     },
     //导入的changeDataType
     changeDataTypelead(row){
-      const currRule = this.CommonUtil.DataTypeRuleslead[row.dataType.toUpperCase().trim()];
+    //替换成导入功能所需的数据规则
+      const currRule = this.CommonUtil.DataTypeRulesImport[row.dataType.toUpperCase().trim()];
       if (!this.disableEditColumn) {
         this.$set(row, "enableDataLength", currRule && this.CommonUtil.isNotUndefined(currRule.enableDataLength) ? currRule.enableDataLength : true);
       } else {
@@ -916,8 +917,9 @@ export default {
       return true;
     },
     //导入的isValidColumnlead
-    isValidColumnlead(row) {
-      var currDataType = this.CommonUtil.DataTypeRuleslead[row.dataType.toUpperCase().trim()];
+    isValidColumnImport(row) {
+    //替换成导入功能所需的数据规则
+      var currDataType = this.CommonUtil.DataTypeRulesImport[row.dataType.toUpperCase().trim()];
       if (this.CommonUtil.isNotUndefined(currDataType) && this.CommonUtil.isNotUndefined(currDataType.lengthRule)) {
         if (!new RegExp(currDataType.lengthRule).test(row.dataLengthText)) {
           this.$message.error(row.dataType.toUpperCase() + currDataType["checkMsg"]);
@@ -1168,7 +1170,7 @@ export default {
           return
         }
         //再判合法
-        if (!this.isValidColumnlead(obj)) {
+        if (!this.isValidColumnImport(obj)) {
           return;
         }
       }

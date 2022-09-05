@@ -65,6 +65,7 @@
       </div>
     </el-container>
     <el-dialog width="40%" :close-on-click-modal="false" v-if="folderTreeDialog" title="请选择阈值分类" :visible.sync="folderTreeDialog" :append-to-body="true">
+<!--      父组件定义isShowValueTree默认为false，判断是否为左侧树列表-->
       <Thresholdvaluetree ref="Thresholdvaluetree" style="height: 500px" :isShowValueTree="false"/>
       <div slot="footer" class="dialog-footer">
         <el-button @click="folderTreeDialog = false">关闭</el-button>

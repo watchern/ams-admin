@@ -26,7 +26,7 @@ export const DataTypeRules = {
 }
 
 //数据资源目录的导入功能所需的数据规则
-export const DataTypeRuleslead = {
+export const DataTypeRulesImport = {
     CHAR: {value: "CHAR", lengthRule: "^[0-9]{1,4000}$", checkMsg: "类型长度范围:1-4000之间数字"},
     VARCHAR2: {value: "VARCHAR2", lengthRule: "^[1-9][0-9]{0,3}$", checkMsg: "类型长度范围:1-4000之间数字"},
     VARCHAR: {value: "VARCHAR", lengthRule: "^[1-9][0-9]{0,3}$", checkMsg: "类型长度范围:1-4000之间数字"},
@@ -100,7 +100,7 @@ export function isNotBlank(val) {
 
 export default {
     DataTypeRules,
-    DataTypeRuleslead,
+    DataTypeRulesImport,
     DataPrivAccessType,
     isUndefined,
     isNotUndefined,
