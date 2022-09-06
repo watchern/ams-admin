@@ -6,12 +6,10 @@
       <el-aside class="tree-side" :style="{ width: maxWidth - rightWidth + 'px' }">
         <ModelFolderTree ref="modelFolderTree" :isShowButton="isShowButton" :power="power" @refreshModelList="refreshModelList" @refreshModels="refreshModels" :spaceFolderName="thisFolderName" :spaceFolderId="thisDataUserId"/>
       </el-aside>
-      <div class="drawer-box" :style="{ width: (rightWidth-36) + 'px' }"  ref="drawerBox">
+      <div class="drawer-box" :style="{ width: rightWidth + 'px' }"  ref="drawerBox">
         <div class="myxhandle"  style="left:0;"  @mousedown="mouseDown($event)" ><i class="el-icon-d-caret skin-textColor" /></div>
         <ModelListTable  :isAuditWarning="isAuditWarning" :data-user-id='thisDataUserId' :scene-code='thisSceneCode' ref="modelListTable" :power="power" @loadingSet="loadingSet" @refreshTree="refreshTree"/>
       </div>
-      
-     
     </el-container>
   </div>
 </template>
@@ -57,25 +55,30 @@ export default {
     // 打开页面恢复默认状态
     document.onmousemove = null
     this.lastX = "";
-    // 模型预警选择模型时弹框展示此页面最大宽度为80%
-    if (this.width) {
-      this.maxWidth = document.body.clientWidth;
-      this.maxWidth = this.maxWidth * 0.8
-    } else {
-      this.maxWidth = document.body.clientWidth;
-    }
-    // 右侧宽度默认为最大宽度减去右侧最小宽度
-    this.rightWidth = this.maxWidth -300;
+    this.$nextTick(() => {
+      // 模型预警选择模型时弹框展示此页面最大宽度为80%
+      const container = document.getElementsByClassName('content-box')[0];
+      if (this.width) {
+        this.maxWidth = container.clientWidth;
+        this.maxWidth = this.maxWidth * 0.8
+      } else {
+        this.maxWidth = container.clientWidth;
+      }
+      // 右侧宽度默认为最大宽度减去右侧最小宽度
+      this.rightWidth = this.maxWidth -300;
+    })
   },
   mounted () {
     // 监听屏幕大小
     window.onresize = () => {
       return (() => {
+        const container = document.getElementsByClassName('content-box')[0];
+        console.log(container.clientWidth, '盒子宽度按')
         if (this.width) {
-          this.maxWidth = document.body.clientWidth;
+          this.maxWidth = container.clientWidth;
           this.maxWidth = this.maxWidth * 0.8
         } else {
-          this.maxWidth = document.body.clientWidth;
+          this.maxWidth = container.clientWidth;
         }
       })()
     }
@@ -194,7 +197,7 @@ export default {
   .myxhandle .el-icon-d-caret {
     position: relative;
     top: 50%;
-    left: -20px;
+    left: -50%;
     font-size: 20px;
     transform: rotate(90deg);
   }

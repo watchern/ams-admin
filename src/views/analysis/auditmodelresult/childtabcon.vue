@@ -209,6 +209,7 @@
           :i="chartConfigs.layout[0].i"
           drag-allow-from=".drag-on-table"
           drag-ignore-from=".ag-theme-balham"
+          class="grid-item-table"
         >
           <!--  此下为表格  -->
           <div class="drag-on-table textz">
@@ -326,7 +327,7 @@
             <ag-grid-vue
               v-if="isSee"
               v-loading="isLoading"
-              style="height: calc(100% - 109px)"
+              style="height: calc(100% - 30px);margin-bottom: 0"
               class="table ag-theme-balham"
               :column-defs="computedColumnDefs"
               :rowData="computedRowData"
@@ -2823,7 +2824,9 @@ export default {
       }
       // hn-因为modelThresholdValues会有多个阈值，遍历并将json处理完成后再判断颜色等信息
       //判断颜色等信息
-      return handleDataSingleValue(params.data, modelThresholdValues);
+       if (params.data) {
+        return handleDataSingleValue(params.data, modelThresholdValues);
+      } 
     },
     /**
      * 渲染表格，将颜色渲染上去
@@ -2853,7 +2856,10 @@ export default {
       }
       // hn-因为modelThresholdValues会有多个阈值，遍历并将json处理完成后再判断颜色等信息
       //判断颜色等信息
-      return handleDataSingleValue(params.data, modelThresholdValues);
+      if (params.data) {
+        return handleDataSingleValue(params.data, modelThresholdValues);
+      }
+
     },
     /*changeCellColor(params, thresholdValueRel, modelResultDetailCol) {
       if (thresholdValueRel) {

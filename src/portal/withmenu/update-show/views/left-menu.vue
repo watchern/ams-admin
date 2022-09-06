@@ -10,7 +10,7 @@
           <img src="../../../../assets/img/login-logo.png" alt="">
         </div>
         <div class="menu flex a-center j-between flex-row">
-          <div class="list flex a-center j-between flex-row">
+          <div class="list flex a-center j-between flex-row" ref="topMenu">
             <div class="box flex a-center j-center flex-row" :class="[currentIndex === 0 && 'box-active']" @click="selectMenu({}, 0)"><div class="name">首页</div></div>
             <!-- <div class="box flex a-center j-center flex-row box-active" ><div class="name">审计分析</div></div> -->
             <div
@@ -39,7 +39,6 @@
               <div
                 
                 class="tree-list"
-                @mouseover="selectMenu(item, (index+1))"
               >
                 <div
                   class="tree-list-content"
@@ -483,6 +482,17 @@ export default {
       this.currentIndex = index;
       if (index != 0 && index != 'todo') {
         this.isShowTreeList = true;
+        this.$nextTick(()=> {
+          let _offsetLeft=0;
+          if(index==1){
+            _offsetLeft=(1.5*230)-40;
+          }
+          if(index==2){
+            _offsetLeft=0.6*230;
+          }
+          const boxActive = document.getElementsByClassName('tree-out-box')[0];
+          boxActive.style.paddingLeft=_offsetLeft+"px";
+        })
       } else if(index == 0 ) { // 首页
         this.isShowTreeList = false;
         this.$router.push({ path: '/ams/first' })
@@ -987,12 +997,13 @@ export default {
     z-index: 999;
     width: 100%;
     display: flex;
-    justify-content: center;
+    // justify-content: center;
     border-top: none !important;
     min-height: 570px;
     opacity: 0.94;
     background-image: linear-gradient(180deg, #CFE1F3 0%, #FAFCFE 100%);
     box-shadow: -7px -5px 15px 0px rgba(255,255,255,1);
+    // padding-left: 250px;
   }
   .tree-list {
     height: 530px;

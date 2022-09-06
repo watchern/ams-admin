@@ -219,8 +219,8 @@ module.exports = {
       resolve: {
         alias: {
           '@': resolve('src'),
-          '@ETL': 'ams-etlscheduler-ui/src',
-        '@MAX': 'ams-datamax/src'
+          '@ETL': 'ams-etlscheduler-vue/src',
+          '@MAX': 'ams-datamax/src'
         }
       },
       // gzip压缩

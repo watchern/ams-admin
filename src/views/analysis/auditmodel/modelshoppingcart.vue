@@ -176,60 +176,64 @@ export default {
     };
   },
   mounted() {
-    this.initEvent();
+    // this.initEvent();
   },
   methods: {
     initEvent() {
-      // 鼠标移入显示隐藏的盒子
-      var oNoneBox = document.getElementsByClassName("none-box")[0];
-      var oLabeTip = document.getElementsByClassName("label-tip")[0];
-      var oIconYY = document.getElementsByClassName("iconYY");
-      var oIconYY1 = document.getElementsByClassName("iconYY1")[0];
-      var timer = "null";
-      oLabeTip.onmouseover = function () {
-        clearInterval(timer);
-        oNoneBox.style.display = "block";
-      };
-      oLabeTip.onmouseout = function () {
-        timer = setInterval(function () {
+      this.$nextTick(() => {
+        // 鼠标移入显示隐藏的盒子
+        var oNoneBox = document.getElementsByClassName("none-box")[0];
+        var oLabeTip = document.getElementsByClassName("label-tip")[0];
+        var oIconYY = document.getElementsByClassName("iconYY");
+        var oIconYY1 = document.getElementsByClassName("iconYY1")[0];
+        var timer = "null";
+        oLabeTip.onmouseover = function () {
+          clearInterval(timer);
+          oNoneBox.style.display = "block";
+        };
+        oLabeTip.onmouseout = function () {
+          timer = setInterval(function () {
+            oNoneBox.style.display = "none";
+          }, 200);
+        };
+        oNoneBox.onmouseover = function () {
+          clearInterval(timer);
+          oNoneBox.style.display = "block";
+        };
+
+        oNoneBox.onmouseout = function () {
           oNoneBox.style.display = "none";
-        }, 200);
-      };
-      oNoneBox.onmouseover = function () {
-        clearInterval(timer);
-        oNoneBox.style.display = "block";
-      };
+        };
 
-      oNoneBox.onmouseout = function () {
-        oNoneBox.style.display = "none";
-      };
+        var oDrag = document.getElementById("drag");
+        var oBtn = this.byClass("select-btn", oDrag)[0];
+        var oTitle = this.byClass("title", oDrag)[0];
+        // var oL = this.byClass('resizeL', oDrag)[0]
+        // var oT = this.byClass('resizeT', oDrag)[0]
+        // var oR = this.byClass('resizeR', oDrag)[0]
+        // var oB = this.byClass('resizeB', oDrag)[0]
+        // var oLT = this.byClass('resizeLT', oDrag)[0]
+        // var oTR = this.byClass('resizeTR', oDrag)[0]
+        // var oBR = this.byClass('resizeBR', oDrag)[0]
+        // var oLB = this.byClass('resizeLB', oDrag)[0]
+        this.drag(oDrag, oBtn);
+        // 四角
+        // this.resize(oDrag, oLT, true, true, false, false)
+        // this.resize(oDrag, oTR, false, true, false, false)
+        // this.resize(oDrag, oBR, false, false, false, false)
+        // this.resize(oDrag, oLB, true, false, false, false)
+        // 四边
+        // this.resize(oDrag, oL, true, false, false, true)
+        // this.resize(oDrag, oT, false, true, true, false)
+        // this.resize(oDrag, oR, false, false, false, true)
+        // this.resize(oDrag, oB, false, false, true, false)
+        // oDrag.style.left =
+        //   (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + 'px'
+        // oDrag.style.top =
+        //   (document.documentElement.clientHeight - oDrag.offsetHeight) / 2 + 'px'
 
-      var oDrag = document.getElementById("drag");
-      var oBtn = this.byClass("select-btn", oDrag)[0];
-      var oTitle = this.byClass("title", oDrag)[0];
-      // var oL = this.byClass('resizeL', oDrag)[0]
-      // var oT = this.byClass('resizeT', oDrag)[0]
-      // var oR = this.byClass('resizeR', oDrag)[0]
-      // var oB = this.byClass('resizeB', oDrag)[0]
-      // var oLT = this.byClass('resizeLT', oDrag)[0]
-      // var oTR = this.byClass('resizeTR', oDrag)[0]
-      // var oBR = this.byClass('resizeBR', oDrag)[0]
-      // var oLB = this.byClass('resizeLB', oDrag)[0]
-      this.drag(oDrag, oBtn);
-      // 四角
-      // this.resize(oDrag, oLT, true, true, false, false)
-      // this.resize(oDrag, oTR, false, true, false, false)
-      // this.resize(oDrag, oBR, false, false, false, false)
-      // this.resize(oDrag, oLB, true, false, false, false)
-      // 四边
-      // this.resize(oDrag, oL, true, false, false, true)
-      // this.resize(oDrag, oT, false, true, true, false)
-      // this.resize(oDrag, oR, false, false, false, true)
-      // this.resize(oDrag, oB, false, false, true, false)
-      // oDrag.style.left =
-      //   (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + 'px'
-      // oDrag.style.top =
-      //   (document.documentElement.clientHeight - oDrag.offsetHeight) / 2 + 'px'
+      })
+     
     },
     drag(oBtn, handle) {
       var disY = 0;
@@ -351,18 +355,24 @@ export default {
     //   }
     // },
     setMemo(obj) {
-      let modelList = _.filter(obj, function(o) { return o.modelUse!= 2 })
-      this.showDrag = modelList.length == obj.length ? true : false
-      if(!this.showDrag)
-      this.$notify({
-        title: '提示',
-        message: '选中的模型中包含模型用途为预警的模型',
-        position: 'bottom-right',
-        duration: 2000,
-        type: 'warning'
+      this.$nextTick(() => {
+        let modelList = _.filter(obj, function(o) { return o.modelUse!= 2 })
+        this.showDrag = modelList.length == obj.length ? true : false
+        if(this.showDrag) {
+          // 元素显示后调用拖动方法
+          this.initEvent();
+        }
+        if(!this.showDrag)
+        this.$notify({
+          title: '提示',
+          message: '选中的模型中包含模型用途为预警的模型',
+          position: 'bottom-right',
+          duration: 2000,
+          type: 'warning'
+        })
+        this.memoValue = modelList.length;
+        this.currentData = modelList;
       })
-      this.memoValue = modelList.length;
-      this.currentData = modelList;
     },
     selectData() {
       this.dialogFormVisible = true;

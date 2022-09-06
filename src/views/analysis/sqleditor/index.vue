@@ -1322,6 +1322,8 @@ export default {
                   _this.resultShow.push({ id: 1 });
                   // if (executeflag === true) {
                   //   // 界面渲染完成之后开始执行sql,将sql送入调度
+                  // 显示放大按钮
+                  _this.$refs.maxSize.style.display = "block"
                   startExecuteSql(result.data)
                       .then((result) => {
                         _this.executeLoading = false;
