@@ -58,9 +58,11 @@ export default {
     this.$nextTick(() => {
       // 模型预警选择模型时弹框展示此页面最大宽度为80%
       const container = document.getElementsByClassName('content-box')[0];
+      const bodyWidth = document.body.clientWidth;
       if (this.width) {
         this.maxWidth = container.clientWidth;
-        this.maxWidth = this.maxWidth * 0.8
+
+        this.maxWidth = bodyWidth * 0.8
       } else {
         this.maxWidth = container.clientWidth;
       }
@@ -73,10 +75,10 @@ export default {
     window.onresize = () => {
       return (() => {
         const container = document.getElementsByClassName('content-box')[0];
-        console.log(container.clientWidth, '盒子宽度按')
+        const bodyWidth = document.body.clientWidth;
         if (this.width) {
           this.maxWidth = container.clientWidth;
-          this.maxWidth = this.maxWidth * 0.8
+          this.maxWidth = bodyWidth * 0.8
         } else {
           this.maxWidth = container.clientWidth;
         }
