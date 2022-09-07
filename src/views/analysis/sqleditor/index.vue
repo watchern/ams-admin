@@ -1544,6 +1544,7 @@ export default {
         //   return;
         // }
         this.resultShow = []; // 清空数据展示对象
+        $('.max-size').hide();
         isAllExecuteSuccess = false;
         currentExecuteProgress = 0;
         this.currentExecuteSQL = [];
