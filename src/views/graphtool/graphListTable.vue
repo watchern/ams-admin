@@ -15,8 +15,7 @@
                 <el-button v-if="type.toLowerCase().indexOf('screengraphtype') > -1" type="primary" class="oper-btn start" @click="run" :disabled="runGraphBtn"/>
             </el-col>
         </el-row>
-        <el-table key="graphTable" ref="graphListTable" v-loading="listLoading" height="500" :data="dataList" border fit highlight-current-row
-                  @select="listSelectChange" @select-all="listSelectChange">
+        <el-table key="graphTable" ref="graphListTable" v-loading="listLoading" :data="dataList" border fit highlight-current-row @select="listSelectChange" @select-all="listSelectChange" height="calc(100% - 150px)" >
             <el-table-column type="selection" width="55" />
             <el-table-column label="图形名称" align="left" prop="graphName" :show-overflow-tooltip="true">
                 <template slot-scope="scope">

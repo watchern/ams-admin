@@ -164,11 +164,13 @@
 
         <!-- 结果展示和参数输入区域 -->
         <div id="bottomPart" lay-filter="result-data">
+          <!-- <div id="maxOpen" class="max-size" ref="maxSize">
+            <div id="iconImg" class="iconImg" alt="最大化" @click="maxOpen" />
+            <div id="iconImg-huifu" class="iconImg" @click="maxOpen" />
+          </div> -->
           <div id="maxOpen" class="max-size" ref="maxSize">
             <div id="iconImg" class="iconImg" alt="最大化" @click="maxOpen" />
             <div id="iconImg-huifu" class="iconImg" @click="maxOpen" />
-            <!-- <div id="iconImg-save" class="iconImg" @click="outTable"></div>
-                        <div id="iconImg-table" class="iconImg"></div> -->
           </div>
           <div
             v-for="result in resultShow"
@@ -1753,11 +1755,11 @@ export default {
 }
 
 .max-size {
-  width: 80px;
-  position: relative;
-  right: 15px;
-  top: 29px;
-  float: right;
+  width: 14px;
+  height: 30px;
+  position: absolute;
+  right: 30px;
+  top: 0;
   display: none;
   z-index: 201;
 }

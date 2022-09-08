@@ -1,13 +1,16 @@
 #graphToolDiv{
     overflow-y: hidden;
 }
-.max-size {
-    width: 80px;
+.max-size-box {
     position: relative;
-    right: 15px;
-    top: 29px;
-    float: right;
+}
+.max-size {
+    width:14px;
+    height: 30px;
     z-index: 201;
+    position: absolute;
+    right: 30px;
+    top: 0;
 }
 #graphContainer {
 	background: url('../images/icons/grid.gif');

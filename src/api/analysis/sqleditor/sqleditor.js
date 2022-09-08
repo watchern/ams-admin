@@ -980,7 +980,7 @@ export function maxOpenOne() {
     $('#drag').show(100)
     $('#iconImg').css('display', 'block')
     $('#iconImg-huifu').css('display', 'none')
-    $('#bottomPart').css({ 'position': 'static', 'left': 0, 'width': 100 + '%', 'height': 'calc(100% - 250px)', 'z-index': 100 })
+    $('#bottomPart').css({ 'position': 'relative', 'left': 0, 'width': 100 + '%', 'height': 'calc(100% - 250px)', 'z-index': 100 })
     // $('.ag-theme-balham').css('height', 300)
     maxormin = true
   }

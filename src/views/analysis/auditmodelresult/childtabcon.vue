@@ -14,7 +14,9 @@
         <el-button type="primary" @click="queryCondition">查 询</el-button>
       </span>
     </el-dialog>
-    <el-row v-if="useType != 'graph' && ifopen != 0">
+    <!-- sql编译器页面显示图标 -->
+    <!-- <el-row v-if="useType != 'graph' && ifopen != 0"> -->
+    <el-row v-if="useType != 'graph' ">
       <!--   v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching"   -->
       <div
         class="el-btn-no-colorz"

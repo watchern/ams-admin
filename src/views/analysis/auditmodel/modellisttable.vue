@@ -178,7 +178,7 @@
           :key="tableKey"
           ref="modelListTable"
           v-loading="listLoading"
-          style="height: calc(100% - 200px); overflow-y: scroll"
+          height="calc(100% - 200px)"
           :data="list"
           border
           fit

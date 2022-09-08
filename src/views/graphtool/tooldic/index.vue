@@ -339,7 +339,7 @@
         <img class="iconImgGraph" src="../../../api/graphtool/images/icon/maximize.png" alt="最大化">
         <span class="iconText">最大化</span>
         </div> -->
-        <div>
+        <div class="max-size-box">
           <div id="maxOpen" class="max-size" v-show="resultTabActiveName == 0">
             <div id="iconImg" class="iconImg" alt="最大化" @click="maxOpen" />
             <div id="iconImg-huifu" class="iconImg" @click="maxOpen" />
