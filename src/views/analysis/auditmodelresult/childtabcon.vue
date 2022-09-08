@@ -20,14 +20,14 @@
       <!--   v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching"   -->
       <div
         class="el-btn-no-colorz"
-        v-if="!chartSwitching && ifopen == 1"
+        v-if="!chartSwitching && ifopen == 1 && tableType!='big'"
         @click="switchDivStyle('chart')"
       >
         <span> <i class="el-icon-menu"></i> 仅表格 </span>
       </div>
       <div
         class="el-btn-no-colorz"
-        v-if="chartSwitching && ifopen == 1"
+        v-if="chartSwitching && ifopen == 1 && tableType!='big'"
         @click="switchDivStyle('table')"
       >
         <span> <i class="el-icon-s-data"></i> 配置图表 </span>
@@ -43,7 +43,7 @@
         </span>
       </div>
       <div
-        v-if="(useType == 'sqlEditor' || myFlag) && !chartSwitching"
+        v-if="(useType == 'sqlEditor' || myFlag) && !chartSwitching && tableType!='big'"
         v-for="(item, index) in chartsResource.menuData"
         class="chartChange"
         :key="index"
@@ -207,7 +207,7 @@
           :x="chartConfigs.layout[0].x"
           :y="chartConfigs.layout[0].y"
           :w="chartConfigs.layout[0].w"
-          :h="chartConfigs.layout[0].h"
+          :h="tableType=='big'?tableShowHeight:chartConfigs.layout[0].h"
           :i="chartConfigs.layout[0].i"
           drag-allow-from=".drag-on-table"
           drag-ignore-from=".ag-theme-balham"
@@ -372,14 +372,14 @@
           </div>
         </grid-item>
         <grid-item
-          v-for="(item, index) in chartConfigs.chart"
-          :key="chartConfigs.layout[index + 1].i"
-          v-if="chartConfigs.chart.length > 0"
-          :x="chartConfigs.layout[index + 1].x"
-          :y="chartConfigs.layout[index + 1].y"
-          :w="chartConfigs.layout[index + 1].w"
-          :h="chartConfigs.layout[index + 1].h"
-          :i="chartConfigs.layout[index + 1].i"
+            v-for="(item, index) in chartConfigs.chart"
+            :key="chartConfigs.layout[index + 1].i"
+            v-if="chartConfigs.chart.length > 0 && tableType!='big'"
+            :x="chartConfigs.layout[index + 1].x"
+            :y="chartConfigs.layout[index + 1].y"
+            :w="tableType=='big'?0:chartConfigs.layout[index + 1].w"
+            :h="tableType=='big'?0:chartConfigs.layout[index + 1].h"
+            :i="chartConfigs.layout[index + 1].i"
         >
           <!--  此下为图表  -->
           <div
@@ -830,6 +830,9 @@ export default {
   },
 
   computed: {
+    documentClientHeight: {
+      get () { return this.$store.state.app.documentHeight }
+    },
     computedRowData() {
       return this.rotateConfig != null ? this.rotateRowData : this.rowData;
     },
@@ -879,6 +882,8 @@ export default {
   ],
   data() {
     return {
+      tableType:'normal',
+      tableShowHeight:0,
       defaultProps: {
         children: "children",
         label: "label",
@@ -1302,6 +1307,10 @@ export default {
     window.openModelDetailNew = _this.openModelDetailNew;
   },
   methods: {
+    zoomChange(type){
+     this.tableType=type;
+     this.tableShowHeight=parseInt(this.documentClientHeight/30)-9;
+    },
     confirmtag() {
       this.suspectsform.tag = this.treetagvalue.label;
       this.suspectsform.tagid = this.treetagvalue.id;

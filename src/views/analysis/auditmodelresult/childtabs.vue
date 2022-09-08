@@ -79,6 +79,10 @@ export default {
     this.paramInfoCopy = this.paramInfo
   },
   methods: {
+    //放大或缩小点击
+    zoomChangeTable(type){
+      this.$refs.child[0].zoomChange(type);
+    },
     /**
      * sql编辑器模型结果用来给子组件aggrid表格赋值
      */

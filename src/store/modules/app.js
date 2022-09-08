@@ -9,7 +9,9 @@ const state = {
   device: 'desktop',
   language: getLanguage(),
   size: Cookies.get('size') || 'medium',
-  meauData: {}
+  meauData: {},
+  documentHeight:'',
+
 }
 
 const mutations = {
@@ -41,6 +43,10 @@ const mutations = {
   SET_MEAU_DATA: (state, data) => {
     state.meauData = data
 
+  },
+  SET_DOCUMENT_HEIGHT: (state, data) => {
+    state.documentHeight = data
+
   }
 }
 
@@ -62,6 +68,9 @@ const actions = {
   },
   setMenuData({commit}, data) {
     commit('SET_MEAU_DATA', data)
+  },
+  setDocumentHeight({ commit },data){
+    commit('SET_DOCUMENT_HEIGHT', data)
   }
 }
 
