@@ -27,19 +27,17 @@
             </div>
           </el-col>
         </el-row>
-        <el-link class="select-link" type="primary" @click="registTable"
-          >注册资源</el-link
-        >
         <div class="tree-containerall">
           <MyElTree
             ref="tree2"
             :props="props"
             :load="loadNode2"
             lazy
+            :expand-on-click-node="false"
             :filter-node-method="filterNode"
             :default-expanded-keys="['ROOT']"
             class="filter-tree"
-            highlight-current="true"
+            :highlight-current="true"
             node-key="id"
             @node-click="nodeClick"
           >
@@ -101,6 +99,7 @@
                   <svg-icon icon-class="icon-delete-1" />
                 </el-button>
               </span>
+              <el-link v-if="data.id === 'ROOT'" class="select-link" type="primary" @click.stop="registTable">注册资源</el-link>
             </span>
           </MyElTree>
         </div>
@@ -539,8 +538,9 @@ export default {
   height: 95%;
 }
 .select-link {
-  margin-top: 10px;
+  // margin-top: 10px;
   cursor: pointer;
+  margin-left: 10px;
 }
 .page-container .tree-containerselect {
   height: 55vh;
