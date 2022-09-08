@@ -1100,7 +1100,7 @@ export default {
       //修改或添加处理意见等信息
       addOrUpdate(data).then((result) => {
         //给数据重新赋值并刷新表格
-        if (!result.data.isError) {
+        if (result.data.isError) {
           this.$message({ type: "error", message: "修改信息失败!" });
           return;
         }
