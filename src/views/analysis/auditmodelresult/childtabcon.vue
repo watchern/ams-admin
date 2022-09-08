@@ -15,8 +15,7 @@
       </span>
     </el-dialog>
     <!-- sql编译器页面显示图标 -->
-    <!-- <el-row v-if="useType != 'graph' && ifopen != 0"> -->
-    <el-row v-if="useType != 'graph' ">
+    <el-row v-if="useType != 'graph' && ifopen != 0">
       <!--   v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching"   -->
       <div
         class="el-btn-no-colorz"
@@ -1269,6 +1268,10 @@ export default {
       this.ifopen = 2;
     }
     if (this.$route.path == "/analysis/boeauditmodel") {
+      this.ifopen = 2;
+    }
+    // sql编译器显示图表
+    if (this.$route.path == "/analysis/sqleditor") {
       this.ifopen = 2;
     }
     this.getRenderTableData();

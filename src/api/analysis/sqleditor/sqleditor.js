@@ -204,10 +204,10 @@ export function initDragAndDrop() {
       // else if(iT > container.clientWidth*.85){iT = container.clientWidth*.85}
       // 模型脚本编辑页面限制拖动的最大范围
       // 控制左侧大于百分之20小于百分之50 并且右侧宽度大于百分之20小于百分之70
-      if ((((iT - 86 - tz_path) / container.clientWidth * 100)<70 && ((iT - 86 - tz_path) / container.clientWidth * 100) >10)&& ( (iT - 80 - tz_path) / container.clientWidth * 100) >10&&((iT - 80 - tz_path) / container.clientWidth * 100<50) ) {
-        vertical.style.left = (iT - 80 - tz_path) / container.clientWidth * 100 + '%'
-        leftPart.style.width = (iT - 86 - tz_path) / container.clientWidth * 100 + '%'
-        rightContent.style.width = (container.clientWidth - iT + 76 + tz_path) / container.clientWidth * 100 + '%'
+      if ((((iT - 72 - tz_path) / container.clientWidth * 100)<70 && ((iT - 72 - tz_path) / container.clientWidth * 100) >10)&& ( (iT - 66 - tz_path) / container.clientWidth * 100) >10&&((iT - 66 - tz_path) / container.clientWidth * 100<50) ) {
+        vertical.style.left = (iT - 66 - tz_path) / container.clientWidth * 100 + '%'
+        leftPart.style.width = (iT - 72 - tz_path) / container.clientWidth * 100 + '%'
+        rightContent.style.width = (container.clientWidth - iT + 62 + tz_path) / container.clientWidth * 100 + '%'
       }
 
       return false
