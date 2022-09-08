@@ -2436,7 +2436,13 @@ export default {
   height: 450px !important;
 }
 >>> .el-tabs__content {
-  overflow: visible;
-  height: 100%;
+  height: calc(100% - 50px);
+  overflow-y: auto!important;
+  padding:0px!important;
+}
+>>>.el-tabs__content::-webkit-scrollbar {
+  height: 0;
+  width: 0;
+  color: transparent;
 }
 </style>
