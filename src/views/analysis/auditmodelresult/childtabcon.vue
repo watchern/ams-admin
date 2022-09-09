@@ -63,6 +63,13 @@
           <!--    @drag="drag" @dragend="dragend(menu)"      -->
         </div>
       </div>
+      <div
+        class="el-btn-no-colorz"
+        @click="modelResultExport"
+        v-if="this.preLength == this.myIndex + 1 &&this.useType !== 'sqlEditor'"
+      >
+        <span title="导出" style="padding: 4px;"> <i class="el-icon-download"></i> 导出 </span>
+      </div>
     </el-row>
     <div ref="DragOn" class="drag-on">
       <div v-if="chartSwitching" class="drag-on-table textz">
@@ -166,7 +173,7 @@
               >条
             </div>
           </el-col>
-          <el-col :span="2">
+          <!-- <el-col :span="2">
             <el-row v-if="modelResultButtonIsShow" style="display: flex">
               <downloadExcel
                 :data="tableData"
@@ -186,7 +193,7 @@
                 ></el-button>
               </downloadExcel>
             </el-row>
-          </el-col>
+          </el-col> -->
         </el-row>
       </div>
       <grid-layout
@@ -214,7 +221,7 @@
         >
           <!--  此下为表格  -->
           <div class="drag-on-table textz">
-            <div
+            <!-- <div
               :span="2"
               style="right: 50px; top: -44px; position: absolute; z-index: 1"
             >
@@ -233,11 +240,11 @@
                     type="primary"
                     @click="modelResultExport"
                     class="oper-btn export"
-                    title="导出"
+                    title="导出2222222"
                   ></el-button>
                 </downloadExcel>
               </el-row>
-            </div>
+            </div> -->
             <div v-if="myFlag">
               <el-row>
                 <div
@@ -4168,7 +4175,7 @@ export default {
 .el-btn-no-colorz {
   float: right;
   height: 30px;
-  margin: 5px;
+  margin: 5px 0;
   font-size: 14px;
   padding: 2px 5px;
   cursor: pointer;
