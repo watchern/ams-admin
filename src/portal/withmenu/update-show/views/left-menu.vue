@@ -10,50 +10,62 @@
           <img src="../../../../assets/img/login-logo.png" alt="">
         </div>
         <div class="menu flex a-center j-between flex-row">
-          <div class="list flex a-center j-between flex-row" ref="topMenu">
-            <div class="box flex a-center j-center flex-row" :class="[currentIndex === 0 && 'box-active']" @click="selectMenu({}, 0)"><div class="name">首页</div></div>
+          <div class="list flex a-center j-between flex-row">
+            <div class="box flex a-center j-center flex-row box-new" :class="[currentIndex === 0 && 'box-active']" @click="selectMenu({}, 0)"><div class="name">首页</div></div>
             <!-- <div class="box flex a-center j-center flex-row box-active" ><div class="name">审计分析</div></div> -->
             <div
               v-for="(item, index) in applications"
               ref="navDom"
               :key="index"
-              class="box flex a-center j-center flex-row"
+              class="box flex a-center j-center flex-row relative box-new"
               :class="[currentIndex === (index+1) && 'box-active']"
               @click="selectMenu(item, (index+1))"
             >
               <div class="name">{{ item.name }}</div>
+              <div class="tree-list-new-box">
+                <div
+                    class="tree-list-content tree-list-back tree-list-new"
+                >
+                  <menu-tree
+                      :list="moremenugroup[index]"
+                      @closetree="isShrink = true"
+                      @click="selectMenu(item, index)"
+                  />
+                </div>
+              </div>
             </div>
-            <div class="box flex a-center j-center flex-row" :class="[currentIndex === 'todo' && 'box-active']" @click="selectMenu({}, 'todo')"> 
+            <div class="box flex a-center j-center flex-row box-new" :class="[currentIndex === 'todo' && 'box-active']" @click="selectMenu({}, 'todo')">
               <el-badge :value="getToDoNum" v-if="getToDoNum>0"  :max="99">
                <div class="name">我的待办</div>
               </el-badge>
               <div class="name" v-else>我的待办</div>
             </div>
           </div>
-          <div class="tree-out-box absolute" v-if="isShowTreeList">
-            <transition
-              name="slide-fade"
-              v-for="(item, index) in applications"
-              :key="index"
-            >
-              <div
-                
-                class="tree-list"
-              >
-                <div
-                  class="tree-list-content"
-                  :class="[currentIndex === (index+1) && 'tree-list-back']"
-                >
-                  <p class="tree-list-tit"><img src="../../../../assets/img/sjfx.png"><span>{{applications[index].name}}</span></p>
-                  <menu-tree
-                    :list="moremenugroup[index]"
-                    @closetree="isShrink = true"
-                    @click="selectMenu(item, (index+1))"
-                  />
-                </div>
-              </div>
-            </transition>
-          </div>
+<!--          <div class="tree-out-box absolute" v-if="isShowTreeList">-->
+<!--            <transition-->
+<!--              name="slide-fade"-->
+<!--              v-for="(item, index) in applications"-->
+<!--              :key="index"-->
+<!--            >-->
+<!--              <div-->
+<!--                -->
+<!--                class="tree-list"-->
+<!--                @mouseover="selectMenu(item, (index+1))"-->
+<!--              >-->
+<!--                <div-->
+<!--                  class="tree-list-content"-->
+<!--                  :class="[currentIndex === (index+1) && 'tree-list-back']"-->
+<!--                >-->
+<!--                  <p class="tree-list-tit"><img src="../../../../assets/img/sjfx.png"><span>{{applications[index].name}}</span></p>-->
+<!--                  <menu-tree-->
+<!--                    :list="moremenugroup[index]"-->
+<!--                    @closetree="isShrink = true"-->
+<!--                    @click="selectMenu(item, (index+1))"-->
+<!--                  />-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </transition>-->
+<!--          </div>-->
 
 
         </div>
@@ -482,17 +494,17 @@ export default {
       this.currentIndex = index;
       if (index != 0 && index != 'todo') {
         this.isShowTreeList = true;
-        this.$nextTick(()=> {
-          let _offsetLeft=0;
-          if(index==1){
-            _offsetLeft=(1.5*230)-40;
-          }
-          if(index==2){
-            _offsetLeft=0.6*230;
-          }
-          const boxActive = document.getElementsByClassName('tree-out-box')[0];
-          boxActive.style.paddingLeft=_offsetLeft+"px";
-        })
+        // this.$nextTick(()=> {
+        //   let _offsetLeft=0;
+        //   if(index==1){
+        //     _offsetLeft=(1.5*230)-40;
+        //   }
+        //   if(index==2){
+        //     _offsetLeft=0.6*230;
+        //   }
+        //   const boxActive = document.getElementsByClassName('tree-out-box')[0];
+        //   boxActive.style.paddingLeft=_offsetLeft+"px";
+        // })
       } else if(index == 0 ) { // 首页
         this.isShowTreeList = false;
         this.$router.push({ path: '/ams/first' })
@@ -997,13 +1009,12 @@ export default {
     z-index: 999;
     width: 100%;
     display: flex;
-    // justify-content: center;
+    justify-content: center;
     border-top: none !important;
     min-height: 570px;
     opacity: 0.94;
     background-image: linear-gradient(180deg, #CFE1F3 0%, #FAFCFE 100%);
     box-shadow: -7px -5px 15px 0px rgba(255,255,255,1);
-    // padding-left: 250px;
   }
   .tree-list {
     height: 530px;
@@ -1050,6 +1061,61 @@ export default {
         }
       }
     }
+    &-new-box{
+      display: none;
+      position: absolute;
+      top: 29px;
+      left:-5.5vw;
+      padding-top:20px;
+    }
+    &-new{
+      width: 16.5vw;
+      height:auto;
+      max-height: 60vh;
+      background: #FFFFFF;
+      box-shadow: 5px 8px 14px 1px #DCEBFB;
+      border-radius: 5px 5px 5px 5px;
+      transition: display 0.3s ease;
+    }
+  }
+  @media screen and (min-width:960px) and (max-width:1400px) {
+    .tree-list-new-box{
+      left:-4.5vw;
+    }
+  }
+  @media screen and (min-device-width:960px) and (max-device-width:1400px) {
+    .tree-list-new-box{
+      left:-4.5vw;
+    }
+  }
+  @media screen and (min-width:2000px) and (max-width:2500px) {
+    .tree-list-new-box{
+      left:-6vw;
+    }
+  }
+  @media screen and (min-device-width:2000px) and (max-device-width:2500px) {
+    .tree-list-new-box{
+      left:-6vw;
+    }
+  }
+  @media screen and (min-width:2500px) {
+    .tree-list-new-box{
+      left:-6.5vw;
+    }
+  }
+  @media screen and (min-device-width:2500px) {
+    .tree-list-new-box{
+      left:-6.5vw;
+    }
+  }
+  .box-new:hover{
+    color: #529ED4;
+    border-radius: 4px;
+    background: url('../style/images/box-active.png') no-repeat top center;
+    background-size: container; // 最长边完全显示
+  }
+  .box-new:hover>.tree-list-new-box,.tree-list-new-box:hover{
+    display: block;
   }
   .top {
     margin-top: 0;

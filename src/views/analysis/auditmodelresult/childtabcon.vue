@@ -335,7 +335,7 @@
             <ag-grid-vue
               v-if="isSee"
               v-loading="isLoading"
-              style="height: calc(100% - 30px);margin-bottom: 0"
+              style="height: calc(100% - 40px);margin-bottom: 0"
               class="table ag-theme-balham"
               :column-defs="computedColumnDefs"
               :rowData="computedRowData"
@@ -837,7 +837,10 @@ export default {
 
   computed: {
     documentClientHeight: {
-      get () { return this.$store.state.app.documentHeight }
+      get () {
+        this.chartReflexion(this.$store.state.app.documentHeight);
+        return this.$store.state.app.documentHeight
+      }
     },
     computedRowData() {
       return this.rotateConfig != null ? this.rotateRowData : this.rowData;
@@ -1287,7 +1290,7 @@ export default {
       this.ifopen = 2;
     }
     this.getRenderTableData();
-    this.chartReflexion();
+    this.chartReflexion(this.documentClientHeight);
     // this.getSuspectsMainData();
     //this.getSuspectssecondaryData();
     // this.getProjectlist();
@@ -3524,10 +3527,18 @@ export default {
     /**
      * 获取参数返显的数据
      */
-    chartReflexion() {
+    chartReflexion(documentClientHeight) {
+      let _h=parseInt(documentClientHeight/60),_minus=0;
+      if(documentClientHeight<=768) {
+        _minus =5;
+      }else if(documentClientHeight>768&&documentClientHeight<=900){
+        _minus=5.5;
+      }else{
+        _minus=6;
+      }
       this.chartConfigs = {
         chart: [],
-        layout: [{ x: 0, y: 0, w: 12, h: 11, i: "0" }],
+        layout: [{ x: 0, y: 0, w: 12, h: _h-_minus, i: "0" }],
       };
       this.modelChartSetups = [];
       if (this.nowtable.runResultTableUuid != undefined) {

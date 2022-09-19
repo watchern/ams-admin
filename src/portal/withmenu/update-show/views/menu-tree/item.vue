@@ -2,19 +2,20 @@
   <li class="item">
     <template>
       <div
-        class="item-title relative"
-        :class="[item.children && item.children.length && 'borderbottom']"
-        @click.stop.prevent="close(item)"
+          class="item-title relative"
+          :class="[item.children && item.children.length && 'borderbottom']"
+          @click.stop.prevent="close(item)"
       >
-        <span class="name" :class="[isOpen && 'text-black']">{{ item.name }}</span>
+        <span v-if="!item.children||(item.children&&item.children.length!=1)" class="name" :class="[isOpen && 'text-black']">{{ item.name }}</span>
+        <span v-if="item.children && item.children.length==1" class="name" :class="[isOpen && 'text-black']"   @click.stop.prevent="close(item,'one')">{{ item.name }}</span>
         <!-- && item.children.length!=1 -->
         <i
-          v-if="item.children && item.children.length "
-          class="el-icon-arrow-right icon "
-          :class="[isOpen && 'icon-open text-black']"
+            v-if="item.children && item.children.length && item.children.length>1"
+            class="el-icon-arrow-down icon absolute"
+            :class="[isOpen && 'icon-open text-black']"
         />
       </div>
-      <ul v-show="item.children && item.children.length && isOpen" class="ul-temp">
+      <ul v-show="item.children && item.children.length && isOpen && item.children.length > 1" class="ul-temp">
         <Item v-for="(val,index) in item.children" :key="index" :item="val" @close="close(val)" />
       </ul>
     </template>
@@ -41,7 +42,13 @@ export default {
     openHandle(bool) {
       this.isOpen = bool
     },
-    close(item) {
+    close(item,menuLevel) {
+      if(menuLevel=='one'){
+        while(item.path===''){
+          item=item.children[0];
+          this.item=item;
+        }
+      }
       let isCloseTree = false
       if (!item.children) {
         isCloseTree = true
@@ -106,7 +113,7 @@ export default {
     //border-bottom: 1px solid #363a43;
   }
   .item-title {
-    padding-left: 55px;
+    padding-left: 35px;
     font-family: PingFangSC-Regular;
     font-size: 14px;
     color: #3D424A;
