@@ -195,7 +195,7 @@
               <el-tab-pane label="错误信息">
                 <el-card class="box-card" style="height: 100px" align="center">
                   <div style="font-weight: lighter; font-size: 15px">
-                    {{ errorMessage }}
+                    {{ errorMessage}}
                   </div>
                 </el-card>
               </el-tab-pane>
@@ -1298,6 +1298,7 @@ export default {
                 if (result.data.isError) {
                   _this.isExecuteError = false;
                   _this.errorMessage = result.data.message;
+                  positionSqlError(result.data.message)
                   _this.executeLoading = false;
                 } else {
                   _this.isExecuteError = true;
