@@ -14,18 +14,19 @@
         <el-button type="primary" @click="queryCondition">查 询</el-button>
       </span>
     </el-dialog>
+    <!-- sql编译器页面显示图标 -->
     <el-row v-if="useType != 'graph' && ifopen != 0">
       <!--   v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching"   -->
       <div
         class="el-btn-no-colorz"
-        v-if="!chartSwitching && ifopen == 1"
+        v-if="!chartSwitching && ifopen == 1 && tableType!='big'"
         @click="switchDivStyle('chart')"
       >
         <span> <i class="el-icon-menu"></i> 仅表格 </span>
       </div>
       <div
         class="el-btn-no-colorz"
-        v-if="chartSwitching && ifopen == 1"
+        v-if="chartSwitching && ifopen == 1 && tableType!='big'"
         @click="switchDivStyle('table')"
       >
         <span> <i class="el-icon-s-data"></i> 配置图表 </span>
@@ -41,7 +42,7 @@
         </span>
       </div>
       <div
-        v-if="(useType == 'sqlEditor' || myFlag) && !chartSwitching"
+        v-if="(useType == 'sqlEditor' || myFlag) && !chartSwitching && tableType!='big'"
         v-for="(item, index) in chartsResource.menuData"
         class="chartChange"
         :key="index"
@@ -61,6 +62,13 @@
           />
           <!--    @drag="drag" @dragend="dragend(menu)"      -->
         </div>
+      </div>
+      <div
+        class="el-btn-no-colorz"
+        @click="modelResultExport"
+        v-if="this.preLength == this.myIndex + 1 &&this.useType !== 'sqlEditor'"
+      >
+        <span title="导出" style="padding: 4px;"> <i class="el-icon-download"></i> 导出 </span>
       </div>
     </el-row>
     <div ref="DragOn" class="drag-on">
@@ -165,7 +173,7 @@
               >条
             </div>
           </el-col>
-          <el-col :span="2">
+          <!-- <el-col :span="2">
             <el-row v-if="modelResultButtonIsShow" style="display: flex">
               <downloadExcel
                 :data="tableData"
@@ -185,7 +193,7 @@
                 ></el-button>
               </downloadExcel>
             </el-row>
-          </el-col>
+          </el-col> -->
         </el-row>
       </div>
       <grid-layout
@@ -205,14 +213,15 @@
           :x="chartConfigs.layout[0].x"
           :y="chartConfigs.layout[0].y"
           :w="chartConfigs.layout[0].w"
-          :h="chartConfigs.layout[0].h"
+          :h="tableType=='big'?tableShowHeight:chartConfigs.layout[0].h"
           :i="chartConfigs.layout[0].i"
           drag-allow-from=".drag-on-table"
           drag-ignore-from=".ag-theme-balham"
+          class="grid-item-table"
         >
           <!--  此下为表格  -->
           <div class="drag-on-table textz">
-            <div
+            <!-- <div
               :span="2"
               style="right: 50px; top: -44px; position: absolute; z-index: 1"
             >
@@ -231,11 +240,11 @@
                     type="primary"
                     @click="modelResultExport"
                     class="oper-btn export"
-                    title="导出"
+                    title="导出2222222"
                   ></el-button>
                 </downloadExcel>
               </el-row>
-            </div>
+            </div> -->
             <div v-if="myFlag">
               <el-row>
                 <div
@@ -326,7 +335,7 @@
             <ag-grid-vue
               v-if="isSee"
               v-loading="isLoading"
-              style="height: calc(100% - 109px)"
+              style="height: calc(100% - 40px);margin-bottom: 0"
               class="table ag-theme-balham"
               :column-defs="computedColumnDefs"
               :rowData="computedRowData"
@@ -369,14 +378,14 @@
           </div>
         </grid-item>
         <grid-item
-          v-for="(item, index) in chartConfigs.chart"
-          :key="chartConfigs.layout[index + 1].i"
-          v-if="chartConfigs.chart.length > 0"
-          :x="chartConfigs.layout[index + 1].x"
-          :y="chartConfigs.layout[index + 1].y"
-          :w="chartConfigs.layout[index + 1].w"
-          :h="chartConfigs.layout[index + 1].h"
-          :i="chartConfigs.layout[index + 1].i"
+            v-for="(item, index) in chartConfigs.chart"
+            :key="chartConfigs.layout[index + 1].i"
+            v-if="chartConfigs.chart.length > 0 && tableType!='big'"
+            :x="chartConfigs.layout[index + 1].x"
+            :y="chartConfigs.layout[index + 1].y"
+            :w="tableType=='big'?0:chartConfigs.layout[index + 1].w"
+            :h="tableType=='big'?0:chartConfigs.layout[index + 1].h"
+            :i="chartConfigs.layout[index + 1].i"
         >
           <!--  此下为图表  -->
           <div
@@ -827,6 +836,12 @@ export default {
   },
 
   computed: {
+    documentClientHeight: {
+      get () {
+        this.chartReflexion(this.$store.state.app.documentHeight);
+        return this.$store.state.app.documentHeight
+      }
+    },
     computedRowData() {
       return this.rotateConfig != null ? this.rotateRowData : this.rowData;
     },
@@ -876,6 +891,8 @@ export default {
   ],
   data() {
     return {
+      tableType:'normal',
+      tableShowHeight:0,
       defaultProps: {
         children: "children",
         label: "label",
@@ -1268,8 +1285,12 @@ export default {
     if (this.$route.path == "/analysis/boeauditmodel") {
       this.ifopen = 2;
     }
+    // sql编译器显示图表
+    if (this.$route.path == "/analysis/sqleditor") {
+      this.ifopen = 2;
+    }
     this.getRenderTableData();
-    this.chartReflexion();
+    this.chartReflexion(this.documentClientHeight);
     // this.getSuspectsMainData();
     //this.getSuspectssecondaryData();
     // this.getProjectlist();
@@ -1299,6 +1320,10 @@ export default {
     window.openModelDetailNew = _this.openModelDetailNew;
   },
   methods: {
+    zoomChange(type){
+     this.tableType=type;
+     this.tableShowHeight=parseInt(this.documentClientHeight/30)-9;
+    },
     confirmtag() {
       this.suspectsform.tag = this.treetagvalue.label;
       this.suspectsform.tagid = this.treetagvalue.id;
@@ -2823,7 +2848,9 @@ export default {
       }
       // hn-因为modelThresholdValues会有多个阈值，遍历并将json处理完成后再判断颜色等信息
       //判断颜色等信息
-      return handleDataSingleValue(params.data, modelThresholdValues);
+       if (params.data) {
+        return handleDataSingleValue(params.data, modelThresholdValues);
+      } 
     },
     /**
      * 渲染表格，将颜色渲染上去
@@ -2853,7 +2880,10 @@ export default {
       }
       // hn-因为modelThresholdValues会有多个阈值，遍历并将json处理完成后再判断颜色等信息
       //判断颜色等信息
-      return handleDataSingleValue(params.data, modelThresholdValues);
+      if (params.data) {
+        return handleDataSingleValue(params.data, modelThresholdValues);
+      }
+
     },
     /*changeCellColor(params, thresholdValueRel, modelResultDetailCol) {
       if (thresholdValueRel) {
@@ -3497,10 +3527,18 @@ export default {
     /**
      * 获取参数返显的数据
      */
-    chartReflexion() {
+    chartReflexion(documentClientHeight) {
+      let _h=parseInt(documentClientHeight/60),_minus=0;
+      if(documentClientHeight<=768) {
+        _minus =5;
+      }else if(documentClientHeight>768&&documentClientHeight<=900){
+        _minus=5.5;
+      }else{
+        _minus=6;
+      }
       this.chartConfigs = {
         chart: [],
-        layout: [{ x: 0, y: 0, w: 12, h: 11, i: "0" }],
+        layout: [{ x: 0, y: 0, w: 12, h: _h-_minus, i: "0" }],
       };
       this.modelChartSetups = [];
       if (this.nowtable.runResultTableUuid != undefined) {
@@ -4148,7 +4186,7 @@ export default {
 .el-btn-no-colorz {
   float: right;
   height: 30px;
-  margin: 5px;
+  margin: 5px 0;
   font-size: 14px;
   padding: 2px 5px;
   cursor: pointer;

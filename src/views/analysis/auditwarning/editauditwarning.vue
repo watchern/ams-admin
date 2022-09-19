@@ -1171,6 +1171,10 @@ export default {
     overflow: hidden !important;
     margin-top: 0vh !important;
   }
+   .dialogClass >>> .el-dialog__body {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+   }
   .btn-z{
     width: 70px;
     height: 36px;

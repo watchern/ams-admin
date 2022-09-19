@@ -1,4 +1,5 @@
 const getters = {
+  documentHeight: state => state.app.documentHeight,
   sidebar: state => state.app.sidebar,
   language: state => state.app.language,
   size: state => state.app.size,

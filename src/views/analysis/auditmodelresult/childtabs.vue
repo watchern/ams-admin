@@ -79,6 +79,10 @@ export default {
     this.paramInfoCopy = this.paramInfo
   },
   methods: {
+    //放大或缩小点击
+    zoomChangeTable(type){
+      this.$refs.child[0].zoomChange(type);
+    },
     /**
      * sql编辑器模型结果用来给子组件aggrid表格赋值
      */
@@ -241,9 +245,14 @@ export default {
     line-height:32px!important;
 }
 >>>.el-tabs__content{
-  height: calc(100% - 25px);
+  height: calc(100% - 50px);
   overflow-y: auto!important;
   padding:0px!important;
+}
+>>>.el-tabs__content::-webkit-scrollbar {
+  height: 0;
+  width: 0;
+  color: transparent;
 }
 .result-tabs{
   height:100%

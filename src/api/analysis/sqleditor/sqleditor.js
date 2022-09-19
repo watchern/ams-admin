@@ -204,10 +204,10 @@ export function initDragAndDrop() {
       // else if(iT > container.clientWidth*.85){iT = container.clientWidth*.85}
       // 模型脚本编辑页面限制拖动的最大范围
       // 控制左侧大于百分之20小于百分之50 并且右侧宽度大于百分之20小于百分之70
-      if ((((iT - 86 - tz_path) / container.clientWidth * 100)<70 && ((iT - 86 - tz_path) / container.clientWidth * 100) >10)&& ( (iT - 80 - tz_path) / container.clientWidth * 100) >10&&((iT - 80 - tz_path) / container.clientWidth * 100<50) ) {
-        vertical.style.left = (iT - 80 - tz_path) / container.clientWidth * 100 + '%'
-        leftPart.style.width = (iT - 86 - tz_path) / container.clientWidth * 100 + '%'
-        rightContent.style.width = (container.clientWidth - iT + 76 + tz_path) / container.clientWidth * 100 + '%'
+      if ((((iT - 72 - tz_path) / container.clientWidth * 100)<70 && ((iT - 72 - tz_path) / container.clientWidth * 100) >10)&& ( (iT - 66 - tz_path) / container.clientWidth * 100) >10&&((iT - 66 - tz_path) / container.clientWidth * 100<50) ) {
+        vertical.style.left = (iT - 66 - tz_path) / container.clientWidth * 100 + '%'
+        leftPart.style.width = (iT - 72 - tz_path) / container.clientWidth * 100 + '%'
+        rightContent.style.width = (container.clientWidth - iT + 62 + tz_path) / container.clientWidth * 100 + '%'
       }
 
       return false
@@ -387,9 +387,10 @@ export function initEvent() {
  * @param relTableMap 智能提示的表对象
  * @returns {CodeMirror.EditorFromTextArea}
  */
+let editor;
 export function initSQLEditor(textarea, relTableMap, expTableMap) {
   // 初始化CodeMirror
-  var editor = CodeMirror.fromTextArea(textarea, {
+  editor=CodeMirror.fromTextArea(textarea, {
     mode: 'text/x-mssql',
     theme: 'idea',
     indentWithTabs: true, // 带字符表得缩进
@@ -489,6 +490,61 @@ export function initSQLEditor(textarea, relTableMap, expTableMap) {
   editor.setSize('auto', '88%')
   // sql编辑器颜色 为了不影响公共样式
   $('.CodeMirror-scroll:eq(0)').css('background-color', 'rgb(237, 241, 245)')
+}
+
+/**
+ * 定位sql错误信息
+ * @param msg 错误信息
+ * @returns {null}
+ */
+export function positionSqlError(msg){
+  var errorInfo = "";
+  //说明是sql出现了错误  sql出现错误一定会带line
+  if (msg.indexOf("line") > -1) {
+    var line = editor.getCursor().line;//选中行数
+    var errorInfoList = msg.split(",");
+    let errorInfoListCope=JSON.parse(JSON.stringify(errorInfoList));
+    var errorLine;
+    var errorCol;
+    //展示报错信息
+    var errorMsg;
+
+    var columnRow;
+    var row;
+    for (var j = 0; j < errorInfoList.length; j++) {
+      if (errorInfoList[j].indexOf("line") > -1) {
+        errorLine = errorInfoList[j];
+        errorMsg = msg.replace(errorLine + ",", "");
+      }
+      if (errorInfoList[j].indexOf("column") > -1) {
+        errorCol = errorInfoList[j];
+        errorMsg = errorMsg.replace(errorCol + ",", "");
+      }
+    }
+    for (var i = 0; i < errorInfoListCope.length; i++) {
+      if (errorInfoListCope[i].indexOf("column") > -1) {
+        columnRow = parseInt(errorInfoListCope[i].replace("column", "").trim());
+      }
+      if (errorInfoListCope[i].indexOf("line") > -1) {
+        row = parseInt(errorInfoListCope[i].replace("line", "").trim());
+      }
+    }
+    console.log(row,532);
+    editor.markText({line: row - 1, ch: 0}, {
+      line: row - 1,
+      ch: columnRow + 20
+    }, {className: "errorHighlight", clearOnEnter: true});
+    //如果不是全部运行则处理行数
+    // if (!isAllRun) {
+    //   var value = errorLine.replace("line", "").trim();
+    //   errorLine = " 行：" + (Number(value) + line);
+    // } else {
+    //   errorLine = errorLine.replace("line", " 行：");
+    // }
+    // errorInfo = "错误信息：" + errorLine + errorCol.replace("column", " 列：") + "(若找不到错误原因可观察上下两行代码是否有误,例如：FROM拼写错误)";
+  } else {
+    errorInfo = msg;
+  }
 }
 
 /**
@@ -980,7 +1036,7 @@ export function maxOpenOne() {
     $('#drag').show(100)
     $('#iconImg').css('display', 'block')
     $('#iconImg-huifu').css('display', 'none')
-    $('#bottomPart').css({ 'position': 'static', 'left': 0, 'width': 100 + '%', 'height': 'calc(100% - 250px)', 'z-index': 100 })
+    $('#bottomPart').css({ 'position': 'relative', 'left': 0, 'width': 100 + '%', 'height': 'calc(100% - 250px)', 'z-index': 100 })
     // $('.ag-theme-balham').css('height', 300)
     maxormin = true
   }
@@ -2506,6 +2562,7 @@ export function getColumnSqlInfo(data) {
     baseURL: analysisUrl,
     url: '/SQLEditorController/getColumnSqlInfo',
     method: 'post',
+    keepErrorMsg:true,
     data
   })
 }

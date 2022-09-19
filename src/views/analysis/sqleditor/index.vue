@@ -164,11 +164,13 @@
 
         <!-- 结果展示和参数输入区域 -->
         <div id="bottomPart" lay-filter="result-data">
-          <div id="maxOpen" class="max-size" ref="maxSize">
+          <!-- <div id="maxOpen" class="max-size" ref="maxSize">
             <div id="iconImg" class="iconImg" alt="最大化" @click="maxOpen" />
             <div id="iconImg-huifu" class="iconImg" @click="maxOpen" />
-            <!-- <div id="iconImg-save" class="iconImg" @click="outTable"></div>
-                        <div id="iconImg-table" class="iconImg"></div> -->
+          </div> -->
+          <div id="maxOpen" class="max-size" ref="maxSize">
+            <div id="iconImg" class="iconImg" alt="最大化" @click="maxOpen('big')" />
+            <div id="iconImg-huifu" class="iconImg" @click="maxOpen('normal')" />
           </div>
           <div
             v-for="result in resultShow"
@@ -466,6 +468,7 @@ import {
   startExecuteSql,
   maxOpenOne,
   getColumnSqlInfo,
+  positionSqlError,
   refushTableTree,
   dropTable,
   getIsUpdate,
@@ -1322,6 +1325,8 @@ export default {
                   _this.resultShow.push({ id: 1 });
                   // if (executeflag === true) {
                   //   // 界面渲染完成之后开始执行sql,将sql送入调度
+                  // 显示放大按钮
+                  _this.$refs.maxSize.style.display = "block"
                   startExecuteSql(result.data)
                       .then((result) => {
                         _this.executeLoading = false;
@@ -1450,8 +1455,9 @@ export default {
                 });*/
       this.dialogFormVisible = false;
     },
-    maxOpen() {
+    maxOpen(type) {
       maxOpenOne();
+      this.$refs.childTabsRef[0].zoomChangeTable(type);
     },
     handleClick(data, node, tree) {
       // this.tempPath = data.label
@@ -1542,6 +1548,7 @@ export default {
         //   return;
         // }
         this.resultShow = []; // 清空数据展示对象
+        $('.max-size').hide();
         isAllExecuteSuccess = false;
         currentExecuteProgress = 0;
         this.currentExecuteSQL = [];
@@ -1551,15 +1558,24 @@ export default {
         this.loadText = "正在获取SQL列...";
         getColumnSqlInfo(data)
           .then((resp) => {
-            // 修改执行成功状态
-            isAllExecuteSuccess = true;
-            lastResultColumn = resp.data.columnName;
-            lastResultColumnType = resp.data.columnType;
-            setIsUpdate(false);
-            this.$emit("getSqlObj");
-            this.executeLoading = false;
-            this.loadText = "";
-            this.$message({ type: "success", message: "SQL校验通过" });
+            console.log(resp.code)
+            if (resp.code == 0 && resp.code == 20000){
+              // 修改执行成功状态
+              isAllExecuteSuccess = true;
+              lastResultColumn = resp.data.columnName;
+              lastResultColumnType = resp.data.columnType;
+              setIsUpdate(false);
+              this.$emit("getSqlObj");
+              this.executeLoading = false;
+              this.loadText = "";
+              this.$message({ type: "success", message: "SQL校验通过" });
+            }else{
+              this.executeLoading = false;
+              this.loadText = "";
+              this.$message({ type: "error", message: resp.msg });
+              // positionSqlError('SQL校验失败,错误信息:TODO : pos 10, line 1, column 7, token LITERAL_ALIAS "id"')
+              positionSqlError(resp.msg)
+            }
           })
           .catch((result) => {
             this.executeLoading = false;
@@ -1750,11 +1766,11 @@ export default {
 }
 
 .max-size {
-  width: 80px;
-  position: relative;
-  right: 15px;
-  top: 29px;
-  float: right;
+  width: 14px;
+  height: 30px;
+  position: absolute;
+  right: 30px;
+  top: 0;
   display: none;
   z-index: 201;
 }
@@ -1827,5 +1843,9 @@ div.rightMenu ul li:hover {
 .modelParamsDia >>> .el-dialog {
   min-width: 850px
 
+}
+>>>.errorHighlight{
+  background: rgba(244,38,12,.5);
+  color:#fff;
 }
 </style>

@@ -35,13 +35,11 @@
 #iconImg-huifu{
 	width: 14px;
 	height: 14px;
-	float: left;
 	background: url(./img/min.png) 0 0 no-repeat;
 	border: none;
 	display: inline-block;
 	background-size: 100%;
 	display: none;
-  margin: -20px 5px 3px 5px;
   cursor:pointer;
 }
 
@@ -57,13 +55,12 @@
 .iconImg {
 	width: 14px;
 	height: 14px;
-	float: left;
 	background: url(./img/max.png) 0 0 no-repeat;
 	border: none;
 	display: inline-block;
-	margin: -20px 5px 5px 55px;
 	background-size: 100%;
-  cursor:pointer;
+  	cursor:pointer;
+	margin-top: 10px;
 }
 
 .ztree * {

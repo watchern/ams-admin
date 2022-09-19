@@ -494,6 +494,17 @@ export default {
       this.currentIndex = index;
       if (index != 0 && index != 'todo') {
         this.isShowTreeList = true;
+        // this.$nextTick(()=> {
+        //   let _offsetLeft=0;
+        //   if(index==1){
+        //     _offsetLeft=(1.5*230)-40;
+        //   }
+        //   if(index==2){
+        //     _offsetLeft=0.6*230;
+        //   }
+        //   const boxActive = document.getElementsByClassName('tree-out-box')[0];
+        //   boxActive.style.paddingLeft=_offsetLeft+"px";
+        // })
       } else if(index == 0 ) { // 首页
         this.isShowTreeList = false;
         this.$router.push({ path: '/ams/first' })

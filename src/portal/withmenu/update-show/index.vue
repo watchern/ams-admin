@@ -48,7 +48,11 @@ export default {
       } else {
         return false
       }
-    }
+    },
+    documentClientHeight: {
+      get () { return this.$store.state.app.documentHeight },
+      set (val) { this.$store.dispatch('app/setDocumentHeight', val) }
+    },
   },
   created() {
     if (sessionStorage.getItem('store')) {
@@ -69,7 +73,17 @@ export default {
     })
 
   },
+  mounted() {
+    this.resetDocumentClientHeight();
+  },
   methods: {
+    // 重置窗口可视高度
+    resetDocumentClientHeight () {
+      this.documentClientHeight = document.documentElement['clientHeight']
+      window.addEventListener('resize', () => {
+        this.documentClientHeight = document.documentElement['clientHeight'];
+      }, true);
+    },
     getHelp () {
       let saveData = []
       saveData.push({

@@ -339,7 +339,7 @@
         <img class="iconImgGraph" src="../../../api/graphtool/images/icon/maximize.png" alt="最大化">
         <span class="iconText">最大化</span>
         </div> -->
-        <div>
+        <div class="max-size-box">
           <div id="maxOpen" class="max-size" v-show="resultTabActiveName == 0">
             <div id="iconImg" class="iconImg" alt="最大化" @click="maxOpen" />
             <div id="iconImg-huifu" class="iconImg" @click="maxOpen" />
@@ -1081,6 +1081,10 @@ export default {
         $("#tableArea").css({
           height: "100%",
         });
+        $("#geResultContainer .el-tabs__content").css({height: 'calc(100vh - 50px)' })
+        $("#graphContainer .drag-on").css({height: 'calc(100vh - 100px)' })
+        $("#graphContainer .vue-grid-layout").css({height: '100%' })
+        $("#graphContainer .grid-item-table").css({height: '100%' })
         $("#iconImg").css("display", "none");
         $("#iconImg-huifu").css("display", "block");
         this.maxormin = false;
@@ -1098,6 +1102,7 @@ export default {
         $("#tableArea").css({
           height: "225px",
         });
+        $("#geResultContainer .el-tabs__content").css({height: 'calc(100% - 39px)' })
         $("#iconImg").css("display", "block");
         $("#iconImg-huifu").css("display", "none");
         this.maxormin = true;

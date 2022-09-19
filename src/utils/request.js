@@ -10,10 +10,14 @@ const service = axios.create({
   timeout: 120000 // request timeout
 })
 
+//接口错误信息是否保留
+let keepErrorMsg=false;
+
 // request interceptor
 service.interceptors.request.use(
   config => {
     // do something before request is sent
+    keepErrorMsg=config.keepErrorMsg||false;
 
     if (store.getters.token) {
       // let each request carry token
@@ -46,7 +50,7 @@ service.interceptors.response.use(
     const res = response.data
 
     // if the custom code is not 0, it is judged as an error.
-    if (res.code !== 0 && res.code !== 20000) {
+    if (res.code !== 0 && res.code !== 20000 && !keepErrorMsg) {
       // Message({
       //   message: res.msg || 'Error',
       //   type: 'error',
