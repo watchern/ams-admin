@@ -529,10 +529,10 @@ export function positionSqlError(msg){
         row = parseInt(errorInfoListCope[i].replace("line", "").trim());
       }
     }
-    console.log(row,532);
     editor.markText({line: row - 1, ch: 0}, {
       line: row - 1,
-      ch: columnRow + 20
+      // ch: columnRow + 20,
+      ch: editor.getLine(row-1).length
     }, {className: "errorHighlight", clearOnEnter: true});
     //如果不是全部运行则处理行数
     // if (!isAllRun) {
