@@ -1036,7 +1036,7 @@ export default {
       background: #E3EDF7;
       background: #FFFFFF;
       background: #eff5fb;
-      border: 1px solid rgba(77,148,199,1);
+      border: 1px solid rgba(77,148,199,0.8);
       box-shadow: 5px 8px 14px 0px rgba(147,194,228,1),-7px -5px 15px 0px rgba(255,255,255,1);
       border-radius: 5px;
     }
@@ -1072,10 +1072,13 @@ export default {
       width: 16.5vw;
       height:auto;
       max-height: 60vh;
-      background: #FFFFFF;
-      box-shadow: 5px 8px 14px 1px #DCEBFB;
+      //background: #FFFFFF;
+      //box-shadow: 5px 8px 14px 1px #DCEBFB;
       border-radius: 5px 5px 5px 5px;
       transition: display 0.3s ease;
+      backdrop-filter: blur(7px) brightness(100%);
+      background-image: linear-gradient(180deg, #CFE1F3 0%, #FAFCFE 100%);
+      box-shadow: 5px 8px 14px 1px #DCEBFB;
     }
   }
   @media screen and (min-width:960px) and (max-width:1400px) {

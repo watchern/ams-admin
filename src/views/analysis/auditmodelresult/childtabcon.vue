@@ -220,7 +220,7 @@
           class="grid-item-table"
         >
           <!--  此下为表格  -->
-          <div class="drag-on-table textz">
+          <div class="drag-on-table textz" v-if="tableType!='big'">
             <!-- <div
               :span="2"
               style="right: 50px; top: -44px; position: absolute; z-index: 1"
@@ -328,30 +328,31 @@
                 </div>
               </el-row>
             </div>
+
             <!-- useType == 'modelRunResult' && this.modelUuid !== undefined
-                  ? this.renderTable
-                  : undefined -->
+               ? this.renderTable
+               : undefined -->
             <!-- 预览 -->
             <ag-grid-vue
-              v-if="isSee"
-              v-loading="isLoading"
-              style="height: calc(100% - 40px);margin-bottom: 0"
-              class="table ag-theme-balham"
-              :column-defs="computedColumnDefs"
-              :rowData="computedRowData"
-              rowMultiSelectWithClick="true"
-              :enable-col-resize="true"
-              :get-row-style="(preLength !== myIndex + 1) && useType == 'modelPreview' ?'': this.renderTableView"
-              row-selection="multiple"
-              @cellClicked="onCellClicked"
-              @grid-ready="onGridReady"
-              @rowSelected="rowChange"
-              :default-col-def="defaultColDef"
-              :sideBar="true"
-              :modules="modules"
-              :locale-text="localeText"
-              :frameworkComponents="frc"
-              :context="componentParent"
+                v-if="isSee"
+                v-loading="isLoading"
+                style="height: calc(100% - 40px);margin-bottom: 0"
+                class="table ag-theme-balham"
+                :column-defs="computedColumnDefs"
+                :rowData="computedRowData"
+                rowMultiSelectWithClick="true"
+                :enable-col-resize="true"
+                :get-row-style="(preLength !== myIndex + 1) && useType == 'modelPreview' ?'': this.renderTableView"
+                row-selection="multiple"
+                @cellClicked="onCellClicked"
+                @grid-ready="onGridReady"
+                @rowSelected="rowChange"
+                :default-col-def="defaultColDef"
+                :sideBar="true"
+                :modules="modules"
+                :locale-text="localeText"
+                :frameworkComponents="frc"
+                :context="componentParent"
             />
             <!-- :sideBar="true"
             :modules="modules"-->
@@ -359,11 +360,11 @@
               <div>{{ errorMessage }}</div>
             </el-card>
             <pagination
-              v-show="total > 0"
-              :total="total"
-              :page.sync="pageQuery.pageNo"
-              :limit.sync="pageQuery.pageSize"
-              @pagination="initData(nowSql)"
+                v-show="total > 0"
+                :total="total"
+                :page.sync="pageQuery.pageNo"
+                :limit.sync="pageQuery.pageSize"
+                @pagination="initData(nowSql)"
             />
             <el-row>
               <el-col :span="24">
@@ -376,6 +377,210 @@
               </el-col>
             </el-row>
           </div>
+          <el-tabs type="border-card"  v-if="tableType=='big'">
+            <el-tab-pane>
+              <span slot="label"><i class="el-icon-my-table"></i></span>
+              <!--  此下为表格  -->
+              <div class="drag-on-table textz">
+                <!-- <div
+                  :span="2"
+                  style="right: 50px; top: -44px; position: absolute; z-index: 1"
+                >
+                  <el-row v-if="modelResultButtonIsShow" style="display: flex">
+                    <downloadExcel
+                      :data="tableData"
+                      :fields="json_fields"
+                      :name="excelName"
+                      class="thechard-z"
+                      v-if="
+                        this.preLength == this.myIndex + 1 &&
+                        this.useType !== 'sqlEditor'
+                      "
+                    >
+                      <el-button
+                        type="primary"
+                        @click="modelResultExport"
+                        class="oper-btn export"
+                        title="导出2222222"
+                      ></el-button>
+                    </downloadExcel>
+                  </el-row>
+                </div> -->
+                <div v-if="myFlag">
+                  <el-row>
+                    <div
+                        align="right"
+                        :style="
+                    ifopen != 0 ? 'position: absolute;top: -29px;right: 0;' : ''
+                  "
+                    >
+                      <el-col :span="14">
+                        <el-input
+                            :readonly="true"
+                            value="设置查询条件后此处显示条件内容"
+                            v-if="typeof nowSql == 'undefined'"
+                        ></el-input>
+                        <el-input
+                            :readonly="true"
+                            :value="nowSql"
+                            v-if="typeof nowSql == 'undefined'"
+                        ></el-input>
+                      </el-col>
+                      <el-col :span="10" style="width:unset">
+                        <!-- 注释掉分配项目 -->
+                        <!-- <el-dropdown>
+                          <el-button
+                            type="primary"
+                            class="oper-btn allocation btn-width-md"
+                            :disabled="modelRunResultBtnIson.associatedBtn"
+                          />
+                          <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item @click.native="openProjectDialog"
+                              >分配项目</el-dropdown-item
+                            >
+                            <el-dropdown-item @click.native="removeRelated()"
+                              >移除分配项目</el-dropdown-item
+                            >
+                          </el-dropdown-menu>
+                        </el-dropdown> -->
+                        <!-- 注释掉分配个人 -->
+                        <!-- <el-button
+                          type="primary"
+                          @click="modelResultOpenDialog()"
+                          class="oper-btn resultShare btn-width-md"
+                          :disabled="modelRunResultBtnIson.resultShare"
+                          style="margin-left: 10px"
+                        /> -->
+                        <el-button
+                            :disabled="false"
+                            type="primary"
+                            @click="queryConditionSetting"
+                            class="oper-btn setting-detail btn-width-md"
+                            style="margin-left: 10px; margin-top: 5px"
+                        ></el-button>
+                        <el-button
+                            :disabled="false"
+                            type="primary"
+                            @click="reSet"
+                            class="oper-btn reset"
+                        ></el-button>
+                        <el-button
+                            :disabled="modelRunResultBtnIson.exportBtn"
+                            type="primary"
+                            @click="exportExcel"
+                            class="oper-btn export"
+                        ></el-button>
+                        <!-- addDetailRel('qwer1', '项目11') -->
+                        <el-button
+                            :disabled="false"
+                            type="primary"
+                            @click="toSubmitYc"
+                            class="oper-btn tjsh"
+                        >提交审核</el-button
+                        >
+                        <!-- <el-button
+                          :disabled="false"
+                          type="primary"
+                          @click="suspectsPutInStorage"
+                          class="oper-btn tjsh"
+                          >疑点入库</el-button
+                        > -->
+                      </el-col>
+                    </div>
+                  </el-row>
+                </div>
+
+                <!-- useType == 'modelRunResult' && this.modelUuid !== undefined
+                   ? this.renderTable
+                   : undefined -->
+                <!-- 预览 -->
+                <ag-grid-vue
+                    v-if="isSee"
+                    v-loading="isLoading"
+                    style="height: calc(100% - 40px);margin-bottom: 0"
+                    class="table ag-theme-balham"
+                    :column-defs="computedColumnDefs"
+                    :rowData="computedRowData"
+                    rowMultiSelectWithClick="true"
+                    :enable-col-resize="true"
+                    :get-row-style="(preLength !== myIndex + 1) && useType == 'modelPreview' ?'': this.renderTableView"
+                    row-selection="multiple"
+                    @cellClicked="onCellClicked"
+                    @grid-ready="onGridReady"
+                    @rowSelected="rowChange"
+                    :default-col-def="defaultColDef"
+                    :sideBar="true"
+                    :modules="modules"
+                    :locale-text="localeText"
+                    :frameworkComponents="frc"
+                    :context="componentParent"
+                />
+                <!-- :sideBar="true"
+                :modules="modules"-->
+                <el-card v-if="!isSee" class="box-card">
+                  <div>{{ errorMessage }}</div>
+                </el-card>
+                <pagination
+                    v-show="total > 0"
+                    :total="total"
+                    :page.sync="pageQuery.pageNo"
+                    :limit.sync="pageQuery.pageSize"
+                    @pagination="initData(nowSql)"
+                />
+                <el-row>
+                  <el-col :span="24">
+                    <div v-if="modelResultPageIsSee">
+                      共
+                      <span class="paging-z" title="只显示前10000条数据">
+                    {{ computedRowData.length }} </span
+                      >条
+                    </div>
+                  </el-col>
+                </el-row>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane>
+              <span slot="label"><i class="el-icon-my-chart"></i></span>
+              <!--  此下为图表  -->
+              <div style="height: 100%;overflow-y: auto">
+                <div
+                    v-for="(item, index) in chartConfigs.chart"
+                    :key="thechartdead"
+                    style="height: 100%; width: 100%; overflow: auto"
+                >
+                  <div v-if="afterResult" style="height: 350px">
+                    <div>
+                      <img
+                          src="./imgs/change.png"
+                          v-if="useType == 'sqlEditor' || myFlag"
+                          type="primary"
+                          @click="openEditChartDialog(index)"
+                          class="change-pos"
+                          title="修改图表"
+                      />
+                      <img
+                          src="./imgs/deletein.png"
+                          v-if="useType == 'sqlEditor' || myFlag"
+                          type="primary"
+                          @click="deleteChart(index)"
+                          class="delete-pos"
+                          title="删除图表"
+                      />
+                    </div>
+                    <mtEditor
+                        style="height: 100%"
+                        v-loading="chartLoading"
+                        :key="index"
+                        ref="chart1"
+                        :data="result"
+                        :chart-config="item"
+                        :preview="true"
+                    ></mtEditor>
+                  </div>
+                </div>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
         </grid-item>
         <grid-item
             v-for="(item, index) in chartConfigs.chart"
@@ -412,6 +617,7 @@
                 />
               </div>
               <mtEditor
+                  style="height: 100%"
                 v-loading="chartLoading"
                 :key="index"
                 ref="chart1"

@@ -126,3 +126,20 @@ table th{
   color: #102033;
   font-weight: bold;
 }
+
+.el-icon-my-table{
+  background: url('./icons/el-table.png')  no-repeat;
+  background-size: cover;
+}
+.el-icon-my-chart{
+  background: url('./icons/el-chart.png')  no-repeat;
+  background-size: cover;
+}
+.el-icon-my-table:before,.el-icon-my-chart:before{
+  content: "\e611";
+  font-size: 16px;
+  visibility: hidden;
+}
+.el-icon-my-table,.el-icon-my-chart{
+  font-size: 16px;
+}
