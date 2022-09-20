@@ -71,7 +71,7 @@
         <span title="导出" style="padding: 4px;"> <i class="el-icon-download"></i> 导出 </span>
       </div>
     </el-row>
-    <div ref="DragOn" class="drag-on">
+    <div ref="DragOn" class="drag-on" :key="gridLayKey">
       <div v-if="chartSwitching" class="drag-on-table textz">
         <div v-if="myFlag">
           <div
@@ -213,14 +213,14 @@
           :x="chartConfigs.layout[0].x"
           :y="chartConfigs.layout[0].y"
           :w="chartConfigs.layout[0].w"
-          :h="tableType=='big'?tableShowHeight:chartConfigs.layout[0].h"
+          :h="tableType==='big'?tableShowHeight:chartConfigs.layout[0].h"
           :i="chartConfigs.layout[0].i"
           drag-allow-from=".drag-on-table"
           drag-ignore-from=".ag-theme-balham"
           class="grid-item-table"
         >
           <!--  此下为表格  -->
-          <div class="drag-on-table textz" v-if="tableType!='big'">
+          <div class="drag-on-table textz" v-show="tableType!='big'">
             <!-- <div
               :span="2"
               style="right: 50px; top: -44px; position: absolute; z-index: 1"
@@ -377,7 +377,7 @@
               </el-col>
             </el-row>
           </div>
-          <el-tabs type="border-card"  v-if="tableType=='big'">
+          <el-tabs type="border-card"  v-show="tableType=='big'">
             <el-tab-pane>
               <span slot="label"><i class="el-icon-my-table"></i></span>
               <!--  此下为表格  -->
@@ -539,13 +539,13 @@
                 </el-row>
               </div>
             </el-tab-pane>
-            <el-tab-pane>
+            <el-tab-pane v-if="chartConfigs.chart&&chartConfigs.chart.length>0">
               <span slot="label"><i class="el-icon-my-chart"></i></span>
               <!--  此下为图表  -->
               <div style="height: 100%;overflow-y: auto">
                 <div
                     v-for="(item, index) in chartConfigs.chart"
-                    :key="thechartdead"
+                    :key="index"
                     style="height: 100%; width: 100%; overflow: auto"
                 >
                   <div v-if="afterResult" style="height: 350px">
@@ -1080,6 +1080,7 @@ export default {
    * sql编辑器模型结果使用变量：useType=sqlEditor 表示是sql编辑器模型结果所用  prePersonalVal：每一个prePersonalVal对应一个childtabcon组件，后续会触发父组件chidltabs中的loadTableData方法来根据prePersonalVal进行aggrid数据的展现
    */
   props: [
+      // "tableType",
     "nowtable", // {"id":"xxx","name":null,"sql":"SELECT ID FROM WAREHOUSE.RDM_x","type":null,"sqlParam":null,"customParam":null,"resultName":null,"process":0,"state":null}
     "modelUuid",
     "modelTitle",
@@ -1097,6 +1098,7 @@ export default {
   ],
   data() {
     return {
+      gridLayKey:0,
       tableType:'normal',
       tableShowHeight:0,
       defaultProps: {
@@ -1527,6 +1529,11 @@ export default {
   },
   methods: {
     zoomChange(type){
+
+      if(type=="normal"){
+        this.gridLayKey=Math.random();
+        this.chartReflexion(this.documentClientHeight);
+      }
      this.tableType=type;
      this.tableShowHeight=parseInt(this.documentClientHeight/30)-9;
     },

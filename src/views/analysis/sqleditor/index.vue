@@ -1458,7 +1458,11 @@ export default {
     },
     maxOpen(type) {
       maxOpenOne();
-      this.$refs.childTabsRef[0].zoomChangeTable(type);
+      // console.log(this.$refs.childTabsRef,1461)
+      for(let i in this.$refs.childTabsRef){
+        this.$refs.childTabsRef[i].zoomChangeTable(type);
+      }
+      // this.$refs.childTabsRef[0].zoomChangeTable(type);
     },
     handleClick(data, node, tree) {
       // this.tempPath = data.label

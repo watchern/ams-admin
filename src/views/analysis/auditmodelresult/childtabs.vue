@@ -4,6 +4,7 @@
   <el-tabs type="border-card" class="child-taps-top" v-model="selectTabName">
     <el-tab-pane v-if="useType==='modelRunResult'?true:false" style="height:calc(100% - 60px)" :label="useType === 'modelRunResult' ? '主表' : '结果1'"
       ><childTabCons
+        :tableType="tableType"
         :settingInfo="settingInfo"
         :nowtable="maintable"
         :model-uuid="modelUuid"
@@ -31,6 +32,7 @@
       >
       <!-- aggrid数据表格渲染 -->
       <childTabCons
+          :tableType="tableType"
         ref="child"
         :is-model-preview="isModelPreview"
         :model-uuid="tabsName(key,item) == '主表' && modelUuid || undefined"
@@ -65,6 +67,7 @@ export default {
   },
   data() {
     return {
+      tableType:'',
       index:0,
       hasButton:false,
       paramInfoCopy:{},
@@ -81,7 +84,16 @@ export default {
   methods: {
     //放大或缩小点击
     zoomChangeTable(type){
-      this.$refs.child[0].zoomChange(type);
+      this.tableType=type;
+      // console.log(this.$refs.onlyChild);
+      // this.$refs.child[0].zoomChange(type);
+      for(let i in this.$refs.child){
+        // console.log(this.$refs.child[i]);
+        i&&this.$refs.child[i]&&this.$refs.child[i].zoomChange(type);
+      }
+      // for(let i=0,l=this.$refs.child.length;i<l;i++){
+      //   this.$refs.child[i].zoomChange(type);
+      // }
     },
     /**
      * sql编辑器模型结果用来给子组件aggrid表格赋值
