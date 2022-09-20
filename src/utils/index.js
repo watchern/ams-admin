@@ -420,3 +420,24 @@ export function getArrLength(arr) {
     return arr.length
   }
 }
+
+export function getElementTop(element,footEle,from){
+  var footerHeight=40+100;
+  if(footEle&&footEle.offsetHeight!=0){
+    footerHeight=JSON.parse(JSON.stringify(footEle.offsetHeight))*4;
+  }
+  // console.log(footerHeight)
+  var top= JSON.parse(JSON.stringify(element.offsetTop));// 当前元素上边距
+  var parent= element.offsetParent;// 当前元素的父级元素
+  while (parent!== null){
+    top+=JSON.parse(JSON.stringify(parent.offsetTop)) ;// 累加上边距
+    parent= parent.offsetParent;// 依次获取父元素
+  }
+  if(element&&from!='addResize'){
+    window.addEventListener('resize', () => debounce(getElementTop(element,footEle,'addResize'),500,false), true);
+  }else{
+    window.removeEventListener('resize', () => debounce(getElementTop(element,footEle),500,false))
+  }
+  var _top=top+footerHeight;
+  return _top;
+}

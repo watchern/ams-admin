@@ -80,6 +80,8 @@
             />
           </el-row>
         </div>
+        <!--          js计算高度-->
+        <!--        el-table加:height="documentClientHeight - tableMinus"，去掉style里的height-->
         <el-table
           id="table"
           ref="itemDataTable"
@@ -91,7 +93,7 @@
           highlight-current-row
           @sort-change="sortChange"
           @selection-change="handleSelectionChange"
-          height="calc(100% - 90px)"
+          :height="documentClientHeight - tableMinus"
         >
           <el-table-column type="selection" width="55" />
           <el-table-column label="模型名称" width="300px" prop="model.modelName" >
@@ -365,6 +367,8 @@
   </div>
 </template>
 <script>
+//js计算高度
+import { getElementTop } from '@/utils/index';
 import {
   getRunTaskRelByPage,
   batchDeleteRunTaskRel,
@@ -409,8 +413,16 @@ export default {
   props:[
     "modelTitle"
   ],
+  computed: {
+    //js计算高度
+    documentClientHeight: {
+      get() { return this.$store.state.app.documentHeight }
+    },
+  },
   data() {
     return {
+      //js计算高度
+      tableMinus: 0,
       tableKey: "errorUuid",
       list: null, // 绑定elementTable的数据
       total: 0,
@@ -478,7 +490,19 @@ export default {
   created() {
     this.getLikeList();
   },
+  mounted() {
+    //js计算高度
+    this.$nextTick(() => {
+      this.getMinus();
+    })
+  },
   methods: {
+    //js计算高度
+    getMinus() {
+      var _table = document.getElementsByClassName("el-table");
+      var _tableFooter = document.getElementsByClassName("el-pagination");
+      this.tableMinus = getElementTop(_table[0], _tableFooter[0]);
+    },
     /**
      * 查看参数
      * @param row 查看的sql行
