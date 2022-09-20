@@ -4,6 +4,7 @@
   <el-tabs type="border-card" class="child-taps-top" v-model="selectTabName">
     <el-tab-pane v-if="useType==='modelRunResult'?true:false" style="height:calc(100% - 60px)" :label="useType === 'modelRunResult' ? '主表' : '结果1'"
       ><childTabCons
+        :callType="callType"
         :tableType="tableType"
         :settingInfo="settingInfo"
         :nowtable="maintable"
@@ -32,6 +33,7 @@
       >
       <!-- aggrid数据表格渲染 -->
       <childTabCons
+          :callType="callType"
           :tableType="tableType"
         ref="child"
         :is-model-preview="isModelPreview"
@@ -229,6 +231,7 @@ export default {
    * 公用变量：useType：判断是SQL编辑器结果、模型结果界面还是模型运行结果界面
    */
   props: [
+      "callType",
     "maintable",
     "helptables",
     "modelUuid",

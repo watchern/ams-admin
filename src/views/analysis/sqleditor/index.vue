@@ -179,6 +179,7 @@
             v-if="isExecuteError"
           >
             <childTabs
+                :callType="callType"
               ref="childTabsRef"
               :key="result.id"
               :pre-value="currentExecuteSQL"
