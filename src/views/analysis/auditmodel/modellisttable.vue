@@ -2445,4 +2445,7 @@ export default {
   width: 0;
   color: transparent;
 }
+>>>.vue-grid-item{
+  height: 90% !important;;
+}
 </style>
