@@ -11,7 +11,7 @@
         <span style="padding-right: 10px;">Error Log</span>
         <el-button size="mini" type="primary" icon="el-icon-delete" @click="clearAll">Clear All</el-button>
       </div>
-      <el-table :data="errorLogs" stripe border>
+      <el-table :data="errorLogs" stripe border ref="table" :height="autoHeight">
         <el-table-column label="Message">
           <template slot-scope="{row}">
             <div>
@@ -47,8 +47,13 @@
 </template>
 
 <script>
+import BaseVue from '@/utils/baseVue'
+let baseVue = new BaseVue({
+    targetel: "table",
+})
 export default {
   name: 'ErrorLog',
+  mixins:[baseVue],
   data() {
     return {
       dialogTableVisible: false

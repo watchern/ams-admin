@@ -15,7 +15,7 @@
                 <el-button v-if="type.toLowerCase().indexOf('screengraphtype') > -1" type="primary" class="oper-btn start" @click="run" :disabled="runGraphBtn"/>
             </el-col>
         </el-row>
-        <el-table key="graphTable" ref="graphListTable" v-loading="listLoading" :data="dataList" border fit highlight-current-row @select="listSelectChange" @select-all="listSelectChange" height="calc(100% - 150px)" >
+        <el-table key="graphTable" ref="graphListTable" v-loading="listLoading" :data="dataList" border fit highlight-current-row @select="listSelectChange" @select-all="listSelectChange" :height="autoHeight" >
             <el-table-column type="selection" width="55" />
             <el-table-column label="图形名称" align="left" prop="graphName" :show-overflow-tooltip="true">
                 <template slot-scope="scope">
@@ -66,9 +66,14 @@
     import PreviewGraph from '@/views/graphtool/previewGraph'
     import PersonTree from '@/components/publicpersontree/index'
     import { getGrapgListByType, deleteGraphInfoById, shareGraph, cancelShareGraph, searchGraphNodes, selectSharedPerson, publicGraph, cancelPublicGraph } from '@/api/graphtool/apiJs/graphList'
+    import BaseVue from '@/utils/baseVue'
+    let baseVue = new BaseVue({
+        targetel: "graphListTable",
+    })
     export default {
         name: 'GraphListTable',
         components: { QueryField, Pagination, PreviewGraph, PersonTree },
+        mixins:[baseVue],
         data() {
             return {
                 listLoading: true,

@@ -29,6 +29,7 @@
       highlight-current-row
       @select="thresholdvalueTableSelectEvent"
       @select-all="thresholdvalueTableSelectEvent"
+      :height="autoHeight"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column label="阈值名称" width="300px" prop="thresholdValueFolderName">
@@ -55,9 +56,14 @@ import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import {findThresholdValueList,addThresholdValue,batchThresholdValueDel,findThresholdValueById,updateThresholdValue} from '@/api/analysis/thresholdvalue'
 import EditThresholdValue from '@/views/analysis/thresholdvalue/editthresholdvalue'
+import BaseVue from '@/utils/baseVue'
+let baseVue = new BaseVue({
+    targetel: "modelListTable",
+})
 export default {
   name: 'Thresholdvaluelist',
   components: { QueryField,Pagination,EditThresholdValue },
+  mixins:[baseVue],
   data() {
     return {
       tableKey: 'errorUuid',

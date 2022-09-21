@@ -177,8 +177,8 @@
         <el-table
           :key="tableKey"
           ref="modelListTable"
+          :height="autoHeight"
           v-loading="listLoading"
-          height="calc(100% - 200px)"
           :data="list"
           border
           fit
@@ -447,8 +447,13 @@ import personTree from "@/components/publicpersontree/index";
 import ReviewSubmit from '@/views/flowwork/reviewSubmit.vue';
 import { getArrLength } from "@/utils";
 import * as paramCommonJs from "@/api/graphtool/js/paramCommon";
+import BaseVue from '@/utils/baseVue'
+let baseVue = new BaseVue({
+    targetel: "modelListTable",
+})
 export default {
   name: "ModelListTable",
+  mixins:[baseVue],
   components: {
     paramDrawNew,
     Pagination,
@@ -464,7 +469,7 @@ export default {
   props: ["power", "dataUserId", "sceneCode", "isAuditWarning"],
   data() {
     return {
-        isShowButton: false,
+      isShowButton: false,
       // 已经被当前人分享的模型列表弹窗
       cancelShareModelList: false,
       // 已经被当前人分享的模型列表

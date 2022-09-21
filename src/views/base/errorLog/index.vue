@@ -5,15 +5,15 @@
     </div>
     <div style="height: 24px;"></div>
     <el-table
+      ref="table"
       :key="tableKey"
       v-loading="listLoading"
       :data="list"
       border
       fit
+      :height="autoHeight"
       highlight-current-row
       style="width: 100%;"
-      height="calc(100vh - 300px)"
-      max-height="calc(100vh - 300px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -57,9 +57,13 @@ import {listByPageErrorLog} from '@/api/base/base'
 import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import axios from "axios";
-
+import BaseVue from '@/utils/baseVue'
+let baseVue = new BaseVue({
+    targetel: "table",
+})
 export default {
   components: { Pagination, QueryField },
+  mixins:[baseVue],
   data() {
     return {
       logerrortxt: '',

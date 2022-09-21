@@ -14,7 +14,7 @@
     </el-row>
     <el-table :key="tableKey" ref="auditWarningList" v-loading="listLoading" :data="list" border fit
               highlight-current-row style="width: 100%;" stripe
-              @select="listSelectChange" @select-all="listSelectChange" @selection-change="handleSelectionChange">
+              @select="listSelectChange" @select-all="listSelectChange" @selection-change="handleSelectionChange" :height="autoHeight">
       <el-table-column type="selection" width="55"/>
       <el-table-column label="预警名称" prop="warningName" width="300px">
         <template slot-scope="scope">
@@ -66,9 +66,14 @@ import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import EditAuditWarning from '@/views/analysis/auditwarning/editauditwarning'
 import { getInfo } from '@/api/user';
+import BaseVue from '@/utils/baseVue'
+let baseVue = new BaseVue({
+    targetel: "auditWarningList",
+})
 export default {
   name: 'auditWarningList',
   components: {Pagination, QueryField, EditAuditWarning},
+  mixins:[baseVue],
   data() {
     return {
       //表格id

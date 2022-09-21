@@ -21,11 +21,11 @@
       :data="list"
       border
       fit
-      height="calc(100vh - 300px)"
-      max-height="calc(100vh - 300px)"
       style="width: 100%;"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
+      ref="table"
+      :height="autoHeight"
     >
       <el-table-column label="选择" type="selection" width="55"/>
       <el-table-column label="代码类别名称" prop="dataSortName"/>
@@ -175,8 +175,13 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 import { listByPage, save, update, del, inItCode, saveSecond, updateSecond, delSecond } from '@/api/base/sysdata'
 import QueryField from '@/components/public/query-field/index'
 import { cacheDict } from "@/api/base/sys-dict";
+import BaseVue from '@/utils/baseVue'
+let baseVue = new BaseVue({
+    targetel: "table",
+})
 export default {
   components: { Pagination, QueryField },
+  mixins:[baseVue],
   data() {
     return {
       dialogTreeVisible: false,
