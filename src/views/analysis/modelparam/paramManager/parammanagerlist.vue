@@ -72,8 +72,7 @@
           :data="tableData"
           @select="paramTableSelectEvent"
           @select-all="paramTableSelectEvent"
-          height="calc(100vh - 300px)"
-          max-height="calc(100vh - 300px)"
+          :height="autoHeight"
         >
           <el-table-column type="selection" width="55" />
           <el-table-column
@@ -148,8 +147,13 @@ import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import addParam from '@/views/analysis/modelparam/paramManager/addParam'
 import $ from 'jquery'
+import BaseVue from '@/utils/baseVue'
+let baseVue = new BaseVue({
+    targetel: "paramTableList",
+})
 export default {
   components: { MyElTree,QueryField,Pagination,addParam},
+  mixins:[baseVue],
   data() {
     return {
       //搜索监听

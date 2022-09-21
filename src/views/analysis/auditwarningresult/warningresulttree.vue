@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="tree-container-box">
     <el-input
       v-model="filterText"
       placeholder="输入关键字进行过滤"

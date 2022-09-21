@@ -9,14 +9,14 @@
     </div>
     <div style="height: 24px;"></div>
     <el-table
+      ref="table"
       :key="tableKey"
       v-loading="listLoading"
       :data="list"
       border
       fit
-      height="calc(100vh - 300px)"
-      max-height="calc(100vh - 300px)"
       highlight-current-row
+      :height="autoHeight"
       style="width: 100%;"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
@@ -37,8 +37,13 @@
 import { listByPageOperationLog } from '@/api/base/base'
 import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
+import BaseVue from '@/utils/baseVue'
+let baseVue = new BaseVue({
+    targetel: "table",
+})
 export default {
   components: { Pagination, QueryField },
+  mixins:[baseVue],
   data() {
     return {
       tableKey: 'errorUuid',

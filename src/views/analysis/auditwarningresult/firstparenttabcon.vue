@@ -3,7 +3,7 @@
   <div class="app-container firstParentTabCon">
     <el-container>
       <el-aside class="tree-side">
-        <div class="tree-container" style = "height:700px;overflow:auto;">
+        <div class="tree-container" style = "height:100%;">
     <warningresulttree @getLikeList="getLikeList" @clickChangeTable="clickChangeTable"></warningresulttree>
     </div>
      </el-aside>
@@ -69,7 +69,8 @@
       highlight-current-row
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
-      height="450px"
+      :height="autoHeight"
+      ref="table"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column
@@ -404,12 +405,17 @@ import personTree from "@/components/publicpersontree/index";
 
 //引入时间格式化方法
 import dayjs from 'dayjs';
+import BaseVue from '@/utils/baseVue'
+let baseVue = new BaseVue({
+    targetel: "table",
+})
 export default {
   components: { Pagination, QueryField, warningresulttree,personTree },
   props: {
     runTaskUuid: String,
       modelTitle:String
   },
+  mixins:[baseVue],
   data() {
     return {
       tableKey: "errorUuid",
@@ -1305,6 +1311,12 @@ export default {
 <style>
 .firstParentTabCon .el-tooltip__popper {
   max-width: 700px;
+}
+.tree-container-box {
+  height: 100%;
+}
+.tree-container-box .el-tree {
+  height: calc(100% - 40px);
 }
 </style>
 

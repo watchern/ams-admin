@@ -1528,6 +1528,7 @@ export default {
 
 .el-container {
   border: 1px solid #eee;
+  overflow: unset;
 }
 
 .div-btn {

@@ -48,7 +48,7 @@
           highlight-current-row
           @sort-change="sortChange"
           @selection-change="handleSelectionChange"
-          height="450px"
+          :height="autoHeight"
         >
           <el-table-column type="selection" width="55px" />
           <el-table-column
@@ -267,6 +267,10 @@ import { getParamSettingArr } from "@/api/analysis/auditparam";
 import personTree from "@/components/publicpersontree/index";
 import { getDictList } from '@/utils'
 import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
+import BaseVue from '@/utils/baseVue'
+let baseVue = new BaseVue({
+    targetel: "resultTable",
+})
 export default {
   components: { Pagination, QueryField, runimmediatelycon, personTree, flowItem },
   props: {
@@ -275,6 +279,7 @@ export default {
       default: ''
     }
   },
+  mixins:[baseVue],
   data() {
     return {
       //工作流相关
