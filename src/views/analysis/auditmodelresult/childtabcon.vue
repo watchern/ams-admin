@@ -540,10 +540,10 @@
                 </el-row>
               </div>
             </el-tab-pane>
-            <el-tab-pane>
+            <el-tab-pane style="height:100%">
 
               <span slot="label"><i class="el-icon-my-chart"></i></span>
-              <div class="new-tabs-charts-div">
+              <div class="new-tabs-charts-div"  >
                 <div
                     v-if="(useType == 'sqlEditor' || myFlag) && !chartSwitching"
                     v-for="(item, index) in chartsResource.menuData"
@@ -552,12 +552,13 @@
                 >
                   <div class="item_div" v-for="(menu, i) in item.sub">
                     <div
-                        :draggable="true"
+                        draggable="true"
                         :key="i"
                         :style="{
               backgroundPosition:
                 menu.bgPositionX + 'px ' + menu.bgPositionY + 'px',
               cursor: 'pointer',
+              userSelect:'none'
             }"
                         class="item_img item-bgimg-size"
                         @drag="drag"
@@ -569,7 +570,7 @@
               </div>
 
               <!--  此下为图表  -->
-              <div style="height: 100%;overflow-y: auto" :draggable="true" ondragenter="dragenter" ondragover="dragover2">
+              <div style="height: 100%;min-height:30%"  @dragenter="dragenter" @dragover="dragover2">
                 <div
                     v-for="(item, index) in chartConfigs.chart"
                     :key="index"
