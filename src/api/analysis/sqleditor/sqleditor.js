@@ -529,6 +529,8 @@ export function positionSqlError(msg){
         row = parseInt(errorInfoListCope[i].replace("line", "").trim());
       }
     }
+    errorLine = errorLine.replace("line", " 行：");
+    errorInfo = "错误信息：" + errorLine + errorCol.replace("column", " 列：") + "(若找不到错误原因可观察上下两行代码是否有误,例如：FROM拼写错误)";
     editor.markText({line: row - 1, ch: 0}, {
       line: row - 1,
       // ch: columnRow + 20,
@@ -545,6 +547,7 @@ export function positionSqlError(msg){
   } else {
     errorInfo = msg;
   }
+  return errorInfo;
 }
 
 /**

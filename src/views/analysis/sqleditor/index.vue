@@ -1298,8 +1298,8 @@ export default {
                 //在这如果报错就加一个新页签，如果不报错就显示我的
                 if (result.data.isError) {
                   _this.isExecuteError = false;
-                  _this.errorMessage = result.data.message;
-                  positionSqlError(result.data.message)
+                  // _this.errorMessage = result.data.message;
+                  _this.errorMessage =positionSqlError(result.data.message)
                   _this.executeLoading = false;
                 } else {
                   _this.isExecuteError = true;
