@@ -2,7 +2,7 @@
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 import request from '@/utils/request'
 import store from '@/store'
-import CodeMirror from 'codemirror'
+import CodeMirror from "../../lib/codemirror"
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
