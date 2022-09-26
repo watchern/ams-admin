@@ -1751,9 +1751,8 @@ export default {
 .successHighlight {
   background-color: transparent !important;
 }
-
-.CodeMirror-hints {
-  z-index: 1000;
+>>>.CodeMirror-hints {
+  z-index: 999999999;
 }
 
 #dataShow > pre {
