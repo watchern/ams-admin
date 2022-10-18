@@ -477,15 +477,16 @@
     </el-dialog> -->
     <!-- 弹窗7 -->
     <el-dialog
-      v-if="previewVisible"
       :visible.sync="previewVisible"
       width="80%"
       style="min-width: 1000px"
       :close-on-click-modal="false"
+      @opened="getPreview"
     >
       <el-row>
         <el-col>
           <childTabs
+              v-if="arrSql!=null"
             ref="childTabs"
             :pre-value="executeSQLList"
             use-type="previewTable"
@@ -1658,21 +1659,22 @@ export default {
     },
     // 预览数据
     preview() {
+      this.arrSql =null;
       this.loading = true;
       preview(this.selections[0]).then((res) => {
         if (res.data.code === '200' || res.data.code === 200 || res.data.isSuccess == true) {
           this.executeSQLList = res.data.executeTask.executeSQL;
           this.arrSql = res.data;
           this.previewVisible = true;
-          this.$nextTick(() => {
-            this.$refs.childTabs.loadTableData(this.arrSql);
-            this.loading = false;
-          });
         } else {
           this.loading = false;
           this.$message({ type: "info", message: res.data.msg });
         }
       });
+    },
+    getPreview(){
+      this.$refs.childTabs.loadTableData(this.arrSql);
+      this.loading = false;
     },
     // 分享表
     shareTable() {
