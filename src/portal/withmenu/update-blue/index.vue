@@ -72,10 +72,10 @@ export default {
       if (res.data) {
         this.setWatermark();
       }
-      
+
     })
-   
-    
+
+
   },
   methods: {
     getHelp () {
@@ -107,7 +107,7 @@ export default {
           this.personIp,
           ''
         );
-      // }) 
+      // })
     }
   }
 }
@@ -147,7 +147,7 @@ export default {
   width: 100vw;
 }
 .home-right-content{
-  overflow: auto;
+  /*overflow: auto;*/
   width: calc(100% - 24px);
   height: calc(100% - 32px);
   border-radius: 30px;
