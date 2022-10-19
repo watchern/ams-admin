@@ -481,9 +481,10 @@
       width="80%"
       style="min-width: 1000px"
       :close-on-click-modal="false"
-      @opened="getPreview"
+
     >
-      <el-row>
+<!--      @opened="getPreview"-->
+      <el-row >
         <el-col>
           <childTabs
               v-if="arrSql!=null"
@@ -579,6 +580,8 @@ export default {
   // eslint-disable-next-line vue/order-in-components
   data() {
     return {
+      previewKey:0,
+      initPreview:false,
       // tree相关属性
       getTree: {
         tree: null,
@@ -1664,8 +1667,16 @@ export default {
       preview(this.selections[0]).then((res) => {
         if (res.data.code === '200' || res.data.code === 200 || res.data.isSuccess == true) {
           this.executeSQLList = res.data.executeTask.executeSQL;
+          this.$set(this,'executeSQLList',this.executeSQLList);
           this.arrSql = res.data;
           this.previewVisible = true;
+          this.initPreview=true;
+          this.loading = false;
+          this.previewKey=Math.random();
+          this.$nextTick(()=>{
+            this.$refs.childTabs.loadTableData(this.arrSql);
+          })
+
         } else {
           this.loading = false;
           this.$message({ type: "info", message: res.data.msg });
@@ -1673,8 +1684,9 @@ export default {
       });
     },
     getPreview(){
+      this.initPreview=true;
       this.$refs.childTabs.loadTableData(this.arrSql);
-      this.loading = false;
+
     },
     // 分享表
     shareTable() {

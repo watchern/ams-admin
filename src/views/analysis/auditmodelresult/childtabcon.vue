@@ -378,7 +378,8 @@
 <!--              </el-col>-->
 <!--            </el-row>-->
 <!--          </div>-->
-          <el-tabs type="border-card">
+          <el-tabs type="border-card" style="height:100%">
+
             <el-tab-pane>
               <span slot="label"><i class="el-icon-my-table"></i></span>
               <!--  此下为表格  -->
