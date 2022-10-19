@@ -93,7 +93,7 @@
           highlight-current-row
           @sort-change="sortChange"
           @selection-change="handleSelectionChange"
-          :height="documentClientHeight - tableMinus"
+          :height="autoHeight"
         >
           <el-table-column type="selection" width="55" />
           <el-table-column label="模型名称" width="300px" prop="model.modelName" >
@@ -399,10 +399,14 @@ import AV from "leancloud-storage";
 import userProject from "@/views/base/userproject/index";
 import { getParamSettingArr } from "@/api/analysis/auditparam";
 import personTree from "@/components/publicpersontree/index";
-
+import BaseVue from '@/utils/baseVue'
 //引入时间格式化方法
 import dayjs from 'dayjs';
+let baseVue = new BaseVue({
+  targetel: "itemDataTable",
+})
 export default {
+  mixins:[baseVue],
   components: {
     Pagination,
     QueryField,
