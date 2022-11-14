@@ -4,7 +4,7 @@
       <el-col style="width: calc(100% - 64px)">
         <el-input v-model="filterText1" placeholder="输入关键字进行过滤"/>
       </el-col>
-      <!--<el-col style="width: 64px">
+      <el-col style="width: 64px">
         <div class="controlTreeNode">
           <el-button
                   title="展开全部节点"
@@ -23,7 +23,7 @@
           ><img class="collapseIcon" src="../../../styles/icons/collapseicon.png"/>
           </el-button>
         </div>
-      </el-col>-->
+      </el-col>
     </el-row>
     <div class="tree-option" style="height: calc(100% - 70px)"
          v-loading="treeLoading">
@@ -37,6 +37,7 @@
         :filter-node-method="filterNode"
         node-key="id"
         @node-click="nodeClick"
+        @node-expand="nodeExpand"
         :load="loadNode"
         :expand-on-click-node="false"
         lazy
@@ -194,32 +195,32 @@ export default {
     this.refresh();
   },
   methods: {
-    // expandAllNodes(){
-    //   this.ifExpandAll = true;
-    //   this.changeTreeNodeStatus(this.$refs.tree1.store.root)
-    // },
-    // collapseAllNodes(){
-    //   this.ifExpandAll = false;
-    //   this.changeTreeNodeStatus(this.$refs.tree1.store.root)
-    // },
-    // changeTreeNodeStatus (node) {
-    //   node.ifExpandAll = this.ifExpandAll
-    //   for (let i = 0; i < node.childNodes.length; i++) {
-    //     // 改变节点的自身expanded状态
-    //     node.childNodes[i].expanded = this.ifExpandAll
-    //     // 遍历子节点
-    //     if (node.childNodes[i].childNodes.length > 0) {
-    //       this.changeTreeNodeStatus(node.childNodes[i])
-    //     }
-    //   }
-    // },
+    expandAllNodes(){
+      this.ifExpandAll = true;
+      this.changeTreeNodeStatus(this.$refs.tree1.store.root)
+    },
+    collapseAllNodes(){
+      this.ifExpandAll = false;
+      this.changeTreeNodeStatus(this.$refs.tree1.store.root)
+    },
+    changeTreeNodeStatus (node) {
+      node.ifExpandAll = this.ifExpandAll
+      for (let i = 0; i < node.childNodes.length; i++) {
+        // 改变节点的自身expanded状态
+        node.childNodes[i].expanded = this.ifExpandAll
+        // 遍历子节点
+        if (node.childNodes[i].childNodes.length > 0) {
+          this.changeTreeNodeStatus(node.childNodes[i])
+        }
+      }
+    },
     filterNode(value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
-    // getTree() {
-    //   return this.$refs.tree1;
-    // },
+    getTree() {
+      return this.$refs.tree1;
+    },
     nodeClick(data, node, tree) {
       this.$emit("node-click", data, node, tree);
     },
@@ -229,7 +230,7 @@ export default {
       }
       this.$emit("handle-check", data ,checkIds.checkedKeys.length > 0);
     },
-    // nodeExpand() {},
+    nodeExpand() {},
     appendnode(childData, parentNode) {
       this.$refs.tree1.append(childData, parentNode);
       parentNode.loaded = false;

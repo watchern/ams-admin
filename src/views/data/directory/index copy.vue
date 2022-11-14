@@ -26,10 +26,9 @@
 <script>
 import dataTree from '@/views/data/role-res/data-tree'
 import BaseDirectoryList from '@/views/data/directory/directorylist'
-import TreeCommon from "@/components/DataAssets/tree_common.vue"
 
 export default {
-  components: { dataTree, BaseDirectoryList, TreeCommon },
+  components: { dataTree, BaseDirectoryList },
   props: ['dataUserId', 'sceneCode'],
   data() {
     return {

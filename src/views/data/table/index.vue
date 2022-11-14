@@ -1,32 +1,44 @@
 <template>
   <div class="page-container">
-    <div style="display:flex;width:100%;">
-      <div>
-        <el-row width="100%" style="margin-bottom: 10px">
-          <el-col :span="18">
-            <el-input v-model="filterText2" placeholder="输入关键字进行过滤" />
-          </el-col>
-          <el-col :span="6">
-            <div class="controlTreeNode">
-              <el-button
-                      title="展开全部节点"
-                      type="text"
-                      size="mini"
-                      class="expandTreeNode"
-                      @click="expandAllNodes()"
-              ><img class="expandIcon" src="../../../styles/icons/expandicon.png"/>
-              </el-button>
-              <el-button
-                      title="收起全部节点"
-                      type="text"
-                      size="mini"
-                      class="collapseTreeNode"
-                      @click="collapseAllNodes()"
-              ><img class="collapseIcon" src="../../../styles/icons/collapseicon.png"/>
-              </el-button>
+    <!-- left_conter -->
+    <div class="  ">
+      <el-tabs v-model="activeName"
+               type="card"
+               @tab-click="handleClick">
+        <el-tab-pane label="系统"
+                     name="0">系统</el-tab-pane>
+        <el-tab-pane label="主题"
+                     name="1">主题</el-tab-pane>
+        <el-tab-pane label="分层"
+                     name="2">分层</el-tab-pane>
+        <el-tab-pane label="目录"
+                     name="3">目录</el-tab-pane>
+      </el-tabs>
+      <div class="padding10">
+        <el-input v-model="filterText2"
+                  placeholder="输入关键字进行过滤" />
             </div>
-          </el-col>
-        </el-row>
+      <div class="padding10">
+
+        <el-form :inline="true"
+                 :model="query"
+                 label-position="bottom">
+          <el-form-item label="数据源：">
+            <el-select v-model="query.dataSource"
+                       placeholder="请选择数据源">
+              <el-option v-for="item in options"
+                         @change="select"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </el-form-item>
+        </el-form>
+
+      </div>
+
+      <div class="padding10">
+
         <div class="tree-containerall">
           <MyElTree
             ref="tree2"
@@ -104,10 +116,73 @@
           </MyElTree>
         </div>
       </div>
-      <div style="margin-left: 50px;width:85%;">
-        <tabledatatabs
-          v-if="divInfo"
-          ref="tabledatatabs"
+    </div>
+    <!-- left_conter end-->
+
+    <!-- right_conter -->
+    <div class="right_conter padding10">
+
+      <!-- 默认表单 -->
+      <div v-if="divInfo == false">
+        <div class="padding10">
+          <el-row>
+            <el-col align="right">
+              <el-button type="primary"
+                         class="oper-btn  btn-width-md"
+                         @click="registTable()">注册资产</el-button>
+            </el-col>
+          </el-row>
+        </div>
+        <el-table v-loading="listLoading"
+                  :data="list"
+                  border
+                  fit
+                  highlight-current-row
+                  style="width: 100%;height:calc(100% - 140px);overflow: auto;"
+                  @selection-change="handleSelectionChange">
+          <el-table-column type="selection"
+                           width="55" />
+          <!-- <el-table-column label="所属系统名称" width="300px" align="center" prop="folderName" /> -->
+          <el-table-column label="系统名称"
+                           prop="displayTbName" />
+          <el-table-column label="系统代码"
+                           prop="chnName" />
+          <el-table-column label="创建时间"
+                           align="center"
+                           :formatter="formatCreateTime"
+                           prop="createTime" />
+          <el-table-column label="创建人"
+                           align="center"
+                           prop="createTime" />
+          <el-table-column label="操作"
+                           align="center"
+                           min-width="100">
+            <template slot-scope="scope">
+              <el-button type="primary"
+                         class="oper-btn edit"
+                         title="修改"
+                         size="mini"
+                         @click="edit_table(scope.row.tableMetaUuid)" />
+              <el-button type="primary"
+                         class="oper-btn delete"
+                         title="删除"
+                         size="mini"
+                         @click="delete_table(scope.row.tableMetaUuid)" />
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination v-show="form.total>0"
+                       :total="form.total"
+                       :current-page="form.currentPage"
+                       background
+                       @current-change="handleCurrentChange"
+                       @size-change="handleSizeChange"
+                       layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+      </div>
+
+      <!-- 点击树-->
+      <div v-if="divInfo==true">
+        <tabledatatabs ref="tabledatatabs"
           open-type="tableRegister"
           :table-id="tableId"
           :tab-show.sync="tabShow"
@@ -115,6 +190,9 @@
         />
       </div>
     </div>
+    <!-- right_conter end-->
+
+    <!-- 注册资产 -->
     <el-dialog
       :close-on-click-modal="false"
       :default-expand-all="true"
@@ -128,20 +206,19 @@
         placeholder="输入想要查询的表名称（模糊搜索）"
       />
       <el-button @click="getTables"> 搜索 </el-button>
-      <!--<el-select defaultFirstOption="true" @change="handleSelectChange" :value="selectValue">
-          <el-option label="显示所有" value="all"></el-option>
-          <el-option label="只显示未注册" value="noPart"></el-option>
-          <el-option label="只显示已注册" value="yesPart"></el-option>
-        </el-select>-->
-      <div class="tree-containerselect">
-        <MyElTree
-          ref="tree1"
+
+        <div class="tree-containerselect padding10">
+
+          <!-- @check-change="handleCheckChange"
+                    show-checkbox
+                     -->
+          <MyElTree ref="tree1"
           v-loading="treeLoading"
           :props="props"
           :data="tableData"
           class="filter-tree"
-          show-checkbox
-        >
+                    @node-click="nodeClick"
+                    default-expand-all>
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <!-- class="el-icon-menu"  style="color: #409eff" -->
             <i  v-if="data.type === 'USER'">
@@ -161,11 +238,158 @@
       </div>
       <span slot="footer">
         <el-button @click="registTableFlag = false">取消</el-button>
-        <el-button type="primary" @click="flagSelectTable">保存</el-button>
+          <!-- <el-button type="primary"
+                     @click="flagSelectTable">保存</el-button> -->
+
+          <el-button type="primary"
+                     :disabled="isDisable"
+                     @click="next()">下一步</el-button>
+        </span>
+      </el-dialog>
+
+      <!-- 下一步 基本信息-->
+      <el-dialog title="基本信息"
+                 class="data_res"
+                 :visible.sync="dialogVisible_information"
+                 @close="handleClose('form')"
+                 width="40%">
+        <el-form :rules="rules"
+                 ref="form"
+                 label-width="140px"
+                 :model="form"
+                 :inline="false">
+          <!-- 资产编码 && 资产类型：-->
+          <div class="son">
+            <el-form-item label="资产编码:"
+                          prop="tableCode">
+              <el-input type="text"
+                        v-model="form.tableCode"
+                        :rows="4">
+              </el-input>
+            </el-form-item>
+
+            <el-form-item label="资产类型：:"
+                          prop="tableType">
+              <el-select v-model="form.tableType"
+                         :rows="4"
+                         placeholder="请选择资产类型">
+                <el-option v-for="item in options"
+                           @change="select"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
+              </el-select>
+            </el-form-item>
+          </div>
+
+          <!-- 资产主题 && 所属系统-->
+          <div class="son">
+            <el-form-item label="资产主题:"
+                          prop="tableThemeId">
+              <el-select v-model="form.tableThemeId"
+                         :rows="4"
+                         placeholder="请选择资产主题">
+                <el-option v-for="item in next_data.themeList"
+                           :key="item.codeUuid"
+                           :label="item.codeName"
+                           :value="item.codeUuid" />
+              </el-select>
+            </el-form-item>
+
+            <el-form-item label="所属系统:"
+                          prop="businessSystemId">
+              <el-select v-model="form.businessSystemId"
+                         :rows="4"
+                         placeholder="请选择所属系统">
+                <el-option v-for="item in next_data.businessSystemList"
+                           :key="item.businessSystemUuid"
+                           :label="item.businessSystemName"
+                           :value="item.businessSystemUuid" />
+              </el-select>
+            </el-form-item>
+          </div>
+
+          <!-- 资产分层 && 所属目录-->
+          <div class="son">
+            <el-form-item label="资产分层:"
+                          prop="tableLayeredId">
+              <el-select v-model="form.tableLayeredId"
+                         :rows="4"
+                         placeholder="请选择资产分层">
+                <el-option v-for="item in next_data.layeredList"
+                           :key="item.codeUuid"
+                           :label="item.codeName"
+                           :value="item.codeUuid" />
+              </el-select>
+            </el-form-item>
+
+            <el-form-item label="所属目录:"
+                          prop="folderUuid">
+              <el-cascader v-model="form.folderUuid"
+                           :options="next_contentsList"
+                           placeholder="请选择所属目录"
+                           clearable
+                           :props="props"
+                           ref="cascaderArr"
+                           @change="handleChange($event)"></el-cascader>
+            </el-form-item>
+          </div>
+          <!--  资产负责人-->
+          <div class="son ">
+            <div class="son_check">
+
+              <el-form-item label="资产负责人:"
+                            prop="personUuid">
+                <el-input type="text"
+                          v-model="form.personUuid">
+                </el-input>
+
+              </el-form-item>
+              <el-button type="primary"
+                         class="oper-btn"
+                         @click="check_people()">选择</el-button>
+            </div>
+
+          </div>
+
+          <!--  资产备注-->
+          <div class="son">
+            <el-form-item label="资产备注:"
+                          prop="tableRemarks">
+              <el-input type="textarea"
+                        v-model="form.tableRemarks">
+              </el-input>
+            </el-form-item>
+
+          </div>
+
+        </el-form>
+
+        <span slot="footer"
+              class="dialog-footer">
+          <el-button @click="step()">上一步</el-button>
+          <el-button type="primary"
+                     :disabled="isDisable"
+                     @click="save('form')">保存</el-button>
+          <el-button @click="dialogVisible_information = false">关闭</el-button>
+
       </span>
     </el-dialog>
-    <el-dialog
-      :title="dialogTitle"
+
+      <!-- 选择责任人 -->
+      <el-dialog title="选择责任人"
+                 :visible.sync="resultShareDialogIsSee"
+                 width="50%">
+        <personTree ref="orgPeopleTree"></personTree>
+        <span slot="footer"
+              class="dialog-footer">
+          <el-button @click="resultShareDialogIsSee = false">取 消</el-button>
+          <el-button type="primary"
+                     @click="modelResultShare">确 定</el-button>
+        </span>
+      </el-dialog>
+
+      <el-dialog :title="dialogTitle"
       :visible.sync="folderFormVisible"
       width="600px"
       :close-on-click-modal="false"
@@ -185,6 +409,10 @@
       </span>
     </el-dialog>
   </div>
+    <!-- right_conter end-->
+
+<!--  </div>-->
+
 </template>
 
 <script>
@@ -197,11 +425,32 @@ import {
 } from "@/api/data/table-info";
 import { saveFolder, updateFolder, delFolder } from "@/api/data/folder";
 import { commonNotify } from "@/utils";
+import QueryField from '@/components/public/query-field/index'
+import personTree from "@/components/publicpersontree/index";
+import {
+  insertRunResultShare,//责任人
+} from "@/api/analysis/auditmodelresult";
+
+import {
+  // page_list_data,//列表
+  // getById,//详情
+  // save_data,//新增保存
+  // update_data,//编辑保存
+  // delete_data,//删除
+  batchSaveTable_save,//下一步 保存
+  getListTree,//注册资产下一步
+} from "@/api/lhg/register.js";
+
+
 
 export default {
-  components: { MyElTree, tabledatatabs },
+  components: {
+    MyElTree, tabledatatabs, QueryField,
+    personTree: () => import('@/components/publicpersontree/index')
+  },
   data() {
     return {
+      activeName: 0,//tab切换
       ifExpandAll: false, // 是否展开所有树节点
       tabShow: "basicinfo",
       tableId: "",
@@ -210,11 +459,11 @@ export default {
       filterText1: null,
       filterText2: null,
       fromData: [],
-      props: {
-        label: "label",
-        isLeaf: "leaf",
-        children: "children",
-      },
+      // props: {
+      //   label: "label",
+      //   isLeaf: "leaf",
+      //   children: "children",
+      // },
       folderForm: {
         folderUuid: null,
         folderName: null,
@@ -230,10 +479,95 @@ export default {
         update: "编辑文件夹",
         create: "添加文件夹",
       },
-      selectValue: 1,
+      // selectValue: 1,
       treeLoading: false,
       tableData: [],
       chooseTables:[],
+
+      // 列表
+      listLoading: false,
+      list: [],//table 列表
+      // 新建的数据
+      // form: {
+      //   name: '',
+      //   time: '',
+      //   code: '',
+      //   beforSemantics: '',
+      //   pageNo: 1,
+      //   total: 0,
+      //   pageSize: 5,
+      // },
+
+      // 资料树筛选 数据源
+      query: {
+        dataSource: 'Postgre',//筛选条件
+      },
+
+      options: [{
+        value: 'Postgre',
+        label: 'MRS-DWS'
+      }, {
+        value: 'Hive',
+        label: 'ADS'
+      }],
+      dialogVisible_information: false,//下一步 基本信息
+
+      rules: {
+        tableCode: [
+          { required: true, message: '请输入资产编码', trigger: 'blur' },
+        ],
+        tableType: [
+          { required: true, message: '请选择资产类型', trigger: 'change' },
+        ],
+
+        tableThemeId: [
+          { required: true, message: '请选择所属主题', trigger: 'change' },
+        ],
+        businessSystemId: [
+          { required: true, message: '请选择所属系统', trigger: 'change' },
+        ],
+
+        tableLayeredId: [
+          { required: true, message: '请选择资产分层', trigger: 'change' },
+        ],
+
+        folderUuid: [
+          { required: true, message: '请选择所属目录', trigger: 'change' },
+        ],
+        personUuid: [
+          { required: true, message: '请选择资产责任人', trigger: 'change' },
+        ],
+
+        tableRemarks: [
+          { required: true, message: '请输入资产备注', trigger: 'blur' },
+        ],
+      },
+      // 新增的数据
+      form: {
+        tableCode: '',// 资产编码
+        tableType: '',// 资产类型
+        tableThemeId: '',// 资产主题
+        businessSystemId: '',//所属系统
+        tableLayeredId: '',//资产分层
+        folderUuid: '',//所属目录
+
+        personUuid: '',//资产责任人
+        tableRemarks: '',//资产备注
+
+      },
+      isDisable: false, //防止重复提交
+      resultShareDialogIsSee: false,//选择责任人
+      selectValue: [], // 存储表格中选中的数据
+      next_data: [],// 点击下一步的数据
+      props: {
+        label: 'label',
+        children: 'children',
+        value: 'id'
+      },
+      next_contentsList: [],//目录
+      check_next_contentsList: {},//选择的目录
+
+
     };
   },
   computed: {
@@ -263,70 +597,45 @@ export default {
   },
   created() {},
   methods: {
-      expandAllNodes(){
-          this.ifExpandAll = true;
-          this.changeTreeNodeStatus(this.$refs.tree2.store.root)
-      },
-      collapseAllNodes(){
-          this.ifExpandAll = false;
-          this.changeTreeNodeStatus(this.$refs.tree2.store.root)
-      },
-      changeTreeNodeStatus (node) {
-          node.ifExpandAll = this.ifExpandAll
-          for (let i = 0; i < node.childNodes.length; i++) {
-              // 改变节点的自身expanded状态
-              node.childNodes[i].expanded = this.ifExpandAll
-              // 遍历子节点
-              if (node.childNodes[i].childNodes.length > 0) {
-                  this.changeTreeNodeStatus(node.childNodes[i])
-              }
+    // tab切换
+    handleClick (tab, event) {
+      // this.query.dataSource = ''
+      //
+      if (tab.index == '0') {
+        alert(1)
+      } else if (tab.index == '1') {
+        alert(2)
+      } else if (tab.index == '2') {
+        alert(3)
+      } else {
+        alert(4)
           }
       },
+
+    // expandAllNodes () {
+    //   this.ifExpandAll = true;
+    //   this.changeTreeNodeStatus(this.$refs.tree2.store.root)
+    // },
+    // collapseAllNodes () {
+    //   this.ifExpandAll = false;
+    //   this.changeTreeNodeStatus(this.$refs.tree2.store.root)
+    // },
+    // changeTreeNodeStatus (node) {
+    //   node.ifExpandAll = this.ifExpandAll
+    //   for (let i = 0; i < node.childNodes.length; i++) {
+    //     // 改变节点的自身expanded状态
+    //     node.childNodes[i].expanded = this.ifExpandAll
+    //     // 遍历子节点
+    //     if (node.childNodes[i].childNodes.length > 0) {
+    //       this.changeTreeNodeStatus(node.childNodes[i])
+    //     }
+    //   }
+    // },
     filterNode(value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
-    /*loadNode1(node, resolve) {
-      debugger;
-      if (node.level <= 3) {
-        var schemaName = ''
-        var tableName = ''
-        if (node.level === 1) {
-          //schemaName = node.data.id
-          resolve(this.tableData)
-        } else if (node.level === 2) {
-          var nodePath = this.$refs.tree2.getNodePath(node)
-          schemaName = nodePath[1].id
-          tableName = node.data.label
-        }
-        console.log(schemaName + ' ' + tableName)
-        if(node.level !== 1){
-          this.treeLoading = true
-          listUnCached(node.level, schemaName, tableName).then(resp => {
-            if(node.level === 0){
-              this.currentUser = resp.data[0].id;  //获取用户
-            }
-            this.treeLoading = false
-            resolve(resp.data)
-          })
-        }
-
-      } else {
-        resolve([])
-      }
-    },*/
-    getTables() {
-      this.treeLoading = true;
-      listUnCached(
-        "table",
-        "",
-        this.filterText1 == null ? "" : this.filterText1
-      ).then((resp) => {
-        this.treeLoading = false;
-        this.tableData = resp.data;
-      });
-    },
-    loadNode2(node, resolve) {
+    loadNode2 (node, resolve) {
       if (!node.data) {
         resolve([{ id: "ROOT", label: "数据集", leaf: false }]);
       } else {
@@ -335,26 +644,31 @@ export default {
         });
       }
     },
-    registTable() {
-      var ckFolder = this.$refs.tree2.getCurrentNode();
-      // console.log(ckFolder); return;
-      if (!ckFolder || ckFolder.type !== "FOLDER") {
-        this.$notify(
-          commonNotify({ type: "warning", message: "请选中文件夹" })
-        );
-        return false;
-      }
-      this.registTableFlag = true
-      this.getTables()
+
+    // 点击注册资源的 数据库列表
+    getTables() {
+      this.treeLoading = true;
+      listUnCached(
+        "table",
+        "",
+        this.filterText1 == null ? "" : this.filterText1,
+        this.query.dataSource,
+      ).then((resp) => {
+        this.treeLoading = false;
+        this.tableData = resp.data;
+      });
     },
+
+
+    // 旧版本保存
     flagSelectTable() {
       var ckFolder = this.$refs.tree2.getCurrentNode();
-      if (!ckFolder || ckFolder.type !== "FOLDER") {
-        this.$notify(
-          commonNotify({ type: "warning", message: "请选中文件夹" })
-        );
-        return false;
-      } else {
+      // if (!ckFolder || ckFolder.type !== "FOLDER") {
+      //   this.$notify(
+      //     commonNotify({ type: "warning", message: "请选中文件夹" })
+      //   );
+      //   return false;
+      // } else {
         var ckTbs = this.$refs.tree1.getCheckedNodes();
         // var nodes = this.$refs.tree1.filter(this.filterText1);
         if (this.filterText1 != null) {
@@ -393,7 +707,7 @@ export default {
           );
         });
         this.registTableFlag = false;
-      }
+      // }
     },
     // 刷根据节点ID刷新节点
     refreshNodeBy(id){
@@ -401,6 +715,7 @@ export default {
       node.loaded = false;
       node.expand(); // 主动调用展开节点方法，重新查询该节点下的所有子节点
     },
+    // 点击切换表单
     nodeClick(data, node, tree) {
       this.divInfo = false;
       if (node.data.type === "TABLE") {
@@ -520,10 +835,311 @@ export default {
         });
       });
     },
-  }, // 注册
+
+    // ································
+
+    // 时间格式化
+    formatCreateTime (row, column) {
+      // 拼接日期规格为YYYY-MM-DD hh:mm:ss
+      var createTime = new Date(row.createTime)
+      var createTimeRow = createTime.getFullYear() + '-' + (createTime.getMonth() + 1) + '-' + createTime.getDate() + ' ' + createTime.getHours() + ':' + createTime.getMinutes() + ':' + createTime.getSeconds()
+      return createTimeRow
+    },
+    // 选择数据源
+    select (val) {
+      this.query.dataSource = val
+
+    },
+    // 注册资产
+    registTable () {
+      // var ckFolder = this.$refs.tree2.getCurrentNode();
+      // //  return;
+      // if (!ckFolder || ckFolder.type !== "FOLDER") {
+      //   this.$notify(
+      //     commonNotify({ type: "warning", message: "请选中文件夹" })
+      //   );
+      //   return false;
+      // }
+      this.registTableFlag = true
+      this.getTables()
+    },
+    // 上一步
+    step () {
+      // this.registTableFlag = true;//关闭上一步
+      this.dialogVisible_information = false;//关闭基本信息
+    },
+
+    // 第一步选择的数据库
+    nodeClick (data, node, tree) {
+      console.log(data);
+      console.log(node);
+      // console.log(tree);
+    },
+
+
+    // 注册资产 下一步
+    next () {
+
+      if (data) {
+        alert(1)
+        this.isDisable = false
+      } else {
+        this.isDisable = true
+        alert(2)
+      }
+
+
+      // this.registTableFlag = false;//关闭上一步
+      this.dialogVisible_information = true//显示下一步 基本信息
+      getListTree().then((res) => {
+        this.next_data = res.data
+        this.next_contentsList = res.data.contentsList.children
+        this.next_contentsList.forEach(item => {
+
+          if (item.children.length == 0) {
+            item.children = undefined
+          } else {
+            this.formatCascaderData(item.children)
+          }
+        })
+        // businessSystemList//系统
+        // contentsList//目录
+        // layeredList//分层
+        // themeList//主题
+
+      })
+    },
+    // 所属目录层级联动
+    handleChange (row) {
+      const checkedNode = this.$refs["cascaderArr"].getCheckedNodes();
+      console.log(checkedNode[0].data.label);  //获取当前点击节点的label值
+      console.log(checkedNode[0]);  //获取由label组成的数组
+      //
+      // return false
+      this.check_next_contentsList = checkedNode[0]
+      this.form.folderUuid = checkedNode[0].id
+      //
+    },
+
+    // 格式化数据，递归将空的children置为undefined
+    formatCascaderData (data) {
+      for (var i = 0; i < data.length; i++) {
+        if (data[i].children.length < 1) {
+          // children若为空数组，则将children设为undefined
+          data[i].children = undefined;
+        } else {
+          // children若不为空数组，则继续 递归调用 本方法
+          this.formatCascaderData(data[i].children)
+        }
+      }
+      return data
+    },
+    // 关闭弹窗
+    handleClose (form) {
+      this.$refs[form].resetFields() //清空添加的值
+    },
+
+    // 下一步的保存
+    save (form) {
+      this.isDisable = true
+      setTimeout(() => {
+        this.isDisable = false
+      }, 2000)
+      this.$refs[form].validate((valid) => {
+        if (valid) {
+
+          var ckFolder = this.$refs.tree2.getCurrentNode();
+          ckTbs.filter((tb) => { return tb.type === "TABLE"; }).forEach((node) => {
+            const tableForm = {
+              tableMetaUuid: node.id,
+              displayTbName: node.label,
+              dbName: node.pid,
+              tbName: node.label,
+              folderUuid: ckFolder.id,
+
+              personLiables: [
+                {
+                  personName: "string",// 资产认权人姓名
+                  personUuid: "string", //资产认权人主键
+                  tableMetaUuid: "string",// 资产主键
+                }
+              ],
+              tableRelationQuery: {
+                businessSystemId: this.form.tableLayeredId, //所属系统主键
+                tableCode: this.form.tableCode, //资产编码
+                tableDataSource: this.query.dataSource, //数据源
+                tableLayeredId: this.form.tableLayeredId, //资产分层主键
+                tableMetaUuid: "string", //资产主键
+
+                tableRemarks: this.form.tableRemarks, //资产备注
+                tableThemeId: this.form.tableThemeId, //资产主题主键
+                tableType: this.form.tableType, //资产类型
+              },
+            };
+            // 将选中的表信息封装入节点对象集合
+            this.chooseTables.push(tableForm);
+
+
+          });
+          console.log(this.chooseTables);
+
+          // let params = {
+          //   tableMetaUuid: this.check_next_contentsList.id,
+          //   displayTbName: this.check_next_contentsList.label,
+          //   dbName: this.check_next_contentsList.pid,
+          //   tbName: this.check_next_contentsList.label,
+
+          //   folderUuid: this.form.folderUuid,//所属目录id
+
+          // };
+          console.log(params);
+
+          batchSaveTable_save(this.chooseTables).then((resp) => {
+            if (resp.code == 0) {
+              this.$message({
+                type: "success",
+                message: "新增成功!",
+              });
+            } else {
+              this.$message({
+                type: "error",
+                message: res.msg,
+              });
+            }
+          })
+          // this.resultShareDialogIsSee = false;
+        } else {
+          this.$message({
+            message: '请填写信息',
+            type: 'info',
+            showClose: true,
+          })
+          return false
+        }
+      })
+    },
+    // 选择责任人
+    check_people () {
+      this.resultShareDialogIsSee = true;
+    },
+    modelResultShare () {
+      // this.listLoading = true;
+      var runTaskRelUuids = [];
+      var personUuids = [];
+      var personNames = []
+      var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
+      for (var i = 0; i < selectedNode.length; i++) {
+        personUuids.push(selectedNode[i].personuuid);
+        personNames.push(selectedNode[i].cnname);
+      }
+      //id
+      //name
+      //
+      return false
+      for (var i = 0; i < this.selected1.length; i++) {
+        runTaskRelUuids.push(this.selected1[i].runTaskRelUuid);
+      }
+      if (personUuids.length > 0) {
+        // insertRunResultShare(runTaskRelUuids, personUuids, personNames).then((resp) => {
+        //   // this.listLoading = false;
+        //
+        //   if (resp.data == true) {
+        //     this.$message({
+        //       type: "success",
+        //       message: "结果共享成功!",
+        //     });
+        //   } else {
+        //     this.$message({
+        //       type: "error",
+        //       message: "结果共享失败!",
+        //     });
+        //   }
+        //   this.resultShareDialogIsSee = false;
+        // });
+      } else {
+        this.listLoading = false;
+        this.$message({
+          message: "请选择责任人",
+        });
+      }
+    },
+
+    // 刷新列表
+    getList () {
+
+    },
+    /**
+  * 当多选框改变时触发
+  */
+    handleSelectionChange (val) {
+      this.selectValue = val
+    },
+
+    // 分页
+    handleCurrentChange (val) {
+      // this.queryInfo.currentPage = val
+
+      // this.findSonNodeTreeList(
+      //   this.addForm.superLabel,
+      //   this.queryInfo.currentPage,
+      //   this.queryInfo.pageSize,
+      // )
+    },
+    // 每页多少条
+    handleSizeChange (val) {
+      // this.queryInfo.pageSize = val
+      // this.findSonNodeTreeList(
+      //   this.defaultExpandKeys[0],
+      //   this.queryInfo.currentPage,
+      //   this.queryInfo.pageSize,
+      // )
+    },
+  },
+
+
+
 };
 </script>
+<style scoped>
+@import url("./../../../assets/css/common.css");
+.page-container {
+  display: flex;
+}
+.data_res >>> .el-form {
+  padding: 20px 20px 0;
+  box-sizing: border-box;
+}
 
+.son {
+  display: flex;
+  margin-bottom: 20px;
+}
+.son >>> .el-form-item {
+  width: 100%;
+  display: flex;
+}
+.data_res >>> .el-form-item__content {
+  flex: 1;
+  margin-left: 0 !important;
+  float: left;
+}
+.data_res >>> .el-textarea .el-textarea__inner {
+  resize: none;
+}
+
+.data_res >>> .el-form-item--medium .el-form-item__label {
+  float: left !important;
+  text-align: right;
+}
+.son_check {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.son_check >>> .el-button {
+  margin-left: 10px;
+}
+</style>
 <style lang="scss" scoped>
 .trees {
   width: 45%;

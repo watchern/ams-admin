@@ -46,7 +46,50 @@ const dataRouter = {
       meta: {
         title: '数据管理-数据准备-数据转码'
       }
-    }, {
+    },
+    {
+      path: 'data_res_management',
+      name: '数据资源管理',
+      component: () => import('@/views/data/data_res_management/index'),
+      meta: {
+        title: '数据管理-数据准备-数据资源管理'
+      }
+    },
+    {
+      path: 'data_accreditation_management',
+      name: '数据认权管理',
+      component: () => import('@/views/data/data_accreditation_management/index'),
+      meta: {
+        title: '数据管理-数据准备-数据认权管理'
+      }
+    },
+
+    {
+      path: 'data_resource_analysis',
+      name: '数据资源分析',
+      component: () => import('@/views/data/data_resource_analysis/index'),
+      meta: {
+        title: '数据管理-数据准备-数据资源分析'
+      }
+    },
+    {
+      path: 'data_resource_preview',
+      name: '数据资源预览',
+      component: () => import('@/views/data/data_resource_preview/index'),
+      meta: {
+        title: '数据管理-数据准备-数据资源预览'
+      }
+    },
+
+    {
+      path: 'data_res_map',
+      name: '数据资源地图',
+      component: () => import('@/views/data/data_res_map/index'),
+      meta: {
+        title: '数据管理-数据准备-数据资源地图'
+      }
+    },
+    {
       path: 'dict',
       name: '数据字典维护',
       component: () => import('@/views/data/dict/index'),

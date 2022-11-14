@@ -1,0 +1,78 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.conter_center {
+  /* border: 1px solid blue; */
+}
+.left_conter {
+  /* border: 1px solid red; */
+  width: 350px;
+}
+.right_conter {
+  flex: 1;
+  min-width: 800px;
+  /* border: 1px solid red; */
+}
+ul {
+  list-style: none;
+}
+
+/* 新版页面的 */
+.fl {
+  float: left;
+}
+
+.fr {
+  float: right;
+}
+
+.flex {
+  display: flex;
+}
+
+._width {
+  width: 100%;
+}
+
+._height {
+  height: 100%;
+}
+
+.padding10 {
+  padding: 10px;
+  box-sizing: border-box;
+
+}
+
+.padding20 {
+  padding: 20px;
+  box-sizing: border-box;
+
+}
+
+.box_sizing {
+  box-sizing: border-box;
+}
+
+.blue {
+  color: #409EFF !important;
+  cursor: pointer;
+}
+
+.red {
+  color: #F56C6C !important;
+}
+
+.black {
+  color: #909399 !important;
+}
+
+
+/* 分页 */
+.pagination {
+  padding: 10px;
+  text-align: right;
+  box-sizing: border-box;
+}

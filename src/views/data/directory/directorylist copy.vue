@@ -79,12 +79,12 @@
           @click="preview"
         />
       <!--  分享 -->
-        <!--<el-button
+        <el-button
           type="primary"
           class="oper-btn share"
           :disabled="disShareTable"
           @click="shareTable"
-        />-->
+        />
       </el-col>
       <el-col align="right" v-else>
         <el-button

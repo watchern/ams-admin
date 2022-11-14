@@ -35,7 +35,7 @@
         v-if="openType === 'showTable' || openType === 'tableRegister'"
         label="业务信息"
         name="bizInfo"
-        @click="change">
+        @click="change()">
         <biz-info :table-id="tableId" :open-type="openType" :ifShowPlace="ifShowPlace"/>
         </el-tab-pane>
     </el-tabs>
@@ -81,6 +81,9 @@ export default {
     },
     tableshow(show) {
       this.$emit("table-show", show);
+    },
+    change () {
+
     },
   },
 };

@@ -15,9 +15,10 @@
           ref="tree"
         ></el-tree>
       </el-aside>
-      <div>
-      <el-table
-        v-loading="listLoading"
+      <div style="flex: 1;"
+           class="padding10 child_table">
+        <el-table v-loading="listLoading"
+                  style="width: 100%;"
         :data="list"
         border
         fit
@@ -27,13 +28,11 @@
         <el-table-column type="selection" width="55" />
         <el-table-column
           label="人员名称"
-          width="150px"
           align="center"
           prop="cnname"
         />
         <el-table-column
           label="组织名称"
-          width="200px"
           align="center"
           prop="org.cnname"
         />
@@ -154,3 +153,6 @@ export default {
   },
 };
 </script>
+<style scoped>
+@import url("../../assets/css/common.css");
+</style>

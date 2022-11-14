@@ -454,3 +454,18 @@
 .oper-btn.skip:after {
   content:'\e612  跳过'!important;
 }
+
+// 导入汉化内容
+.oper-btn.import_Sinicization:after{
+  content:'\e775  导入汉化内容'!important;
+}
+.oper-btn.import_Sinicization:hover::before{
+  content:'\e775  导入汉化内容'!important;
+}
+// 下载表信息
+.oper-btn.down_table:after{
+  content:'\e7a3 下载表信息'!important;
+}
+.oper-btn.down_table:hover::before{
+  content:'\e7a3 下载表信息'!important;
+}
