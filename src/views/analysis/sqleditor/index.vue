@@ -145,6 +145,21 @@
                 @click="modelResultSavePathDialog = true"
                 >{{ path }} <i class="el-icon-edit" style="font-size: 16px"></i
               ></label>
+              <!-- 切换数据源下拉框 -->
+              <div class="chooseDataSource" v-if="typeof callType == 'undefined'">
+                <!--                请选择数据源：-->
+                <el-select
+                        v-model="dataSource"
+                        style="width: 100px"
+                >
+                  <el-option
+                          v-for=" item in dataSourceList"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value"
+                  />
+                </el-select>
+              </div>
             </el-col>
           </el-row>
           <div
@@ -550,6 +565,7 @@ export default {
     "sceneCode1",
     "callType",
     'modelFolderPath',
+    "callType",
   ],
   created() {
     if (this.dataUserId != undefined && this.sceneCode1 != undefined) {
@@ -560,6 +576,14 @@ export default {
   },
   data() {
     return {
+      dataSource: "Postgre",
+      dataSourceList: [{
+        value:"Hive",
+        label:"Hive"
+      }, {
+        value:"Postgre",
+        label:"Postgre"
+      }],
       //参数关联dialog
       ParamModelDialog: false,
       //参数关联表单
@@ -606,6 +630,7 @@ export default {
         draftTitle: "",
         draftSql: "",
         paramJson: "",
+        dataSource: "Postgre"
       },
       sqlDraftFormRules: {
         draftTitle: [
@@ -694,6 +719,26 @@ export default {
         }
       });
     },
+      dataSource(){
+        // 切换数据源后刷新页面重新获取对应数据源的数据
+          this.executeLoading = true
+          this.loadText = '正在重新加载数据表及函数...'
+          initFunctionTree(this.dataSource)
+          initTableTip(this.dataUserId, this.sceneCode1).then((result) => {
+              initTableTree(result, this.dataSource)
+              var relTableMap = {}
+              var expTableMap = {}
+              if (result.data != null) {
+                  for (let i = 0; i < result.data.length; i++) {
+                      if (result.data[i].type === 'table') {
+                          relTableMap[result.data[i].enName] = []
+                          expTableMap[result.data[i].enName] = result.data[i].extCol
+                      }
+                  }
+              }
+              this.executeLoading = false
+          });
+      }
   },
   mounted() {
     try {
@@ -710,6 +755,9 @@ export default {
     this.$refs.maxSize.style.display = "none"
   },
   methods: {
+    // dataSourceChange(){
+    // sessionStorage.setItem("dataSource", this.dataSource));
+    // },
     /**
      * 表单确定按钮
      */
@@ -940,7 +988,7 @@ export default {
               };
               treeNodes.push(treeNode);
             }
-            refushTableTree(treeNodes);
+            refushTableTree(treeNodes, this.dataSource);
           }
         }
         if (dataObj.listenerType === "onSQLResult") {
@@ -1008,7 +1056,7 @@ export default {
       const userId = this.$store.state.user.code;
       initDragAndDrop();
       initIcon();
-      initFunctionTree();
+      initFunctionTree(this.dataSource);
       initBJTree();
       initVariable();
       initEvent();
@@ -1017,7 +1065,7 @@ export default {
       this.loadText = "正在初始化数据表...";
       initTableTip(this.dataUserId, this.sceneCode1)
         .then((result) => {
-          initTableTree(result);
+          initTableTree(result, this.dataSource);
           var relTableMap = {};
           var expTableMap = {};
           if (result.data != null) {
@@ -1090,7 +1138,7 @@ export default {
      * sql格式化
      */
     sqlFormat() {
-      sqlFormat();
+      sqlFormat(this.dataSource)
     },
     /**
      * 查找和替换
@@ -1166,7 +1214,7 @@ export default {
      * 生成select语句
      */
     getSelectSql(menuId) {
-      getSelectSql(menuId);
+      getSelectSql(menuId, this.dataSource)
     },
     /**
      *打开sql保存草稿窗体
@@ -1293,7 +1341,7 @@ export default {
         if (!obj.isExistParam) {
           // this.executeLoading = true
           _this.loadText = "正在获取SQL信息...";
-          getExecuteTask(obj, _this.dataUserId, _this.sceneCode1).then(
+          getExecuteTask(obj, _this.dataUserId, _this.sceneCode1, _this.dataSource).then(
               (result) => {
                 //在这如果报错就加一个新页签，如果不报错就显示我的
                 if (result.data.isError) {
@@ -1325,6 +1373,7 @@ export default {
                   _this.modelOriginalTable = result.data.tables;
                   _this.createTreeNode = result.data.treeNodeInfo;
                   _this.resultShow.push({ id: 1 });
+                  result.data.dataSource = _this.dataSource
                   // if (executeflag === true) {
                   //   // 界面渲染完成之后开始执行sql,将sql送入调度
                   // 显示放大按钮
@@ -1417,7 +1466,7 @@ export default {
       this.executeLoading = true;
       // 显示最大化按钮
       $('.max-size').show()
-      getExecuteTask(obj, this.dataUserId, this.sceneCode1).then((result) => {
+      getExecuteTask(obj, this.dataUserId, this.sceneCode1, this.dataSource).then((result) => {
         if (result.data.isError) {
           this.$message({
             type: "error",
@@ -1435,6 +1484,7 @@ export default {
           this.createTreeNode = result.data.treeNodeInfo;
           this.resultShow.push({ id: 1 });
           // 界面渲染完成之后开始执行sql,将sql送入调度
+          result.data.dataSource = this.dataSource
           startExecuteSql(result.data)
             .then((result) => {
               this.executeLoading = false;
@@ -1543,7 +1593,7 @@ export default {
       this.executeLoading = true;
       this.loadText = "正在校验sql是否符合语法规范...";
       //大亚湾跳过校验
-      // verifySql().then((verSqlResult) => {
+      // verifySql(this.dataSource).then((verSqlResult) => {
         this.executeLoading = false;
         //大亚湾跳过校验
         // if (!verSqlResult.data.verify) {
@@ -1559,7 +1609,7 @@ export default {
         currentExecuteProgress = 0;
         this.currentExecuteSQL = [];
         lastResultColumn = [];
-        const data = { sql: result.sql };
+        const data = { sql: result.sql , dataSource: this.dataSource};
         this.executeLoading = true;
         this.loadText = "正在获取SQL列...";
         getColumnSqlInfo(data)
@@ -1600,7 +1650,7 @@ export default {
      * 接口：获取SQL编辑器节点的信息（图形化工具SQL编辑器节点专属方法                                     ）
      */
     async saveSqlInfo() {
-      return await getGraphSaveInfo();
+      return await getGraphSaveInfo(this.dataSource);
     },
     /**
      * 接口：获取SQL的验证结果
@@ -1852,5 +1902,10 @@ div.rightMenu ul li:hover {
 >>>.errorHighlight{
   background: rgba(244,38,12,.5);
   color:#fff;
+}
+.chooseDataSource{
+  left: 55px;
+  display: inline-block;
+  position: relative;
 }
 </style>

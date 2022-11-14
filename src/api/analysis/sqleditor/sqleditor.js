@@ -615,7 +615,7 @@ export function initIcon() {
 /**
  * 初始化数据表树
  */
-export function initTableTree(result) {
+export function initTableTree(result,dataSource) {
   // 数据表树加载,开始
   var setting = {
     // 异步加载
@@ -690,7 +690,7 @@ export function initTableTree(result) {
             baseURL: dataUrl,
             url: '/tableMeta/getCols',
             method: 'post',
-            params: { tableMetaUuid: tableMetaUuid, isEnclose: "1" }
+            params: { tableMetaUuid: tableMetaUuid, isEnclose:"1" ,dataSource: dataSource }
           }).then(result => {
             if (result.data == null) {
               this.$message({
@@ -805,7 +805,7 @@ export function initTableTree(result) {
 /**
  * 执行create语句后刷新左侧树
  */
-export function refushTableTree(treeNodes) {
+export function refushTableTree(treeNodes, dataSource) {
   var setting = {
     // 异步加载
     data: {
@@ -882,7 +882,7 @@ export function refushTableTree(treeNodes) {
               baseURL: dataUrl,
               url: '/tableMeta/getCols',
               method: 'post',
-              params: { tableMetaUuid: tableMetaUuid, isEnclose: "1" }
+              params: { tableMetaUuid: tableMetaUuid, isEnclose:"1", dataSource: dataSource}
             }).then(result => {
               if (result.data == null) {
                 this.$message({
@@ -1571,7 +1571,7 @@ export function initBJTree() {
 /**
  * 初始化函数树
  */
-export function initFunctionTree() {
+export function initFunctionTree(dataSource) {
   // 函数树加载,开始
   var funSetting = {
     data: {
@@ -1610,7 +1610,8 @@ export function initFunctionTree() {
   request({
     baseURL: analysisUrl,
     url: '/SQLEditorController/getFunctionData',
-    method: 'get'
+    method: 'post',
+    params: { dataSource: dataSource }
   }).then(result => {
     functionRootNode.children = JSON.parse(result.data)
     sqlZtreeObj = $.fn.zTree.init($('#sqlFunTree'), funSetting, functionRootNode)
@@ -1973,7 +1974,7 @@ function getIndexArr(text, str, index, indexArr) {
 /**
  * 格式化SQL语句
  */
-export function sqlFormat() {
+export function sqlFormat(dataSource) {
   if (!paramObj) {
     paramObj = {}
   }
@@ -1989,7 +1990,7 @@ export function sqlFormat() {
       text = text.replace(arr[i].id, arr[i].name + '_rpm_JL')
     }
   }
-  var param = { sql: text }
+  var param = { sql: text, dataSource: dataSource}
   request({
     baseURL: analysisUrl,
     url: '/SQLEditorController/formatSql',
@@ -2262,7 +2263,7 @@ export function getSaveInfo() {
  * 生成select语句
  * @param menuId 菜单编号
  */
-export function getSelectSql(menuId) {
+export function getSelectSql(menuId,dataSource) {
   hideRMenu(menuId)
   var nodes = zTreeObj.getSelectedNodes()
   if (nodes.length > 0) {
@@ -2275,7 +2276,7 @@ export function getSelectSql(menuId) {
         baseURL: dataUrl,
         url: '/tableMeta/getCols',
         method: 'post',
-        params: { tableMetaUuid: tableMetaUuid, isEnclose: "1" }
+        params: { tableMetaUuid: tableMetaUuid, isEnclose:"1", dataSource: dataSource }
       }).then(result => {
         if (result.data == undefined || result.data == null) {
           return
@@ -2295,13 +2296,13 @@ export function getSelectSql(menuId) {
             }
             CodeMirror.tableColMapping[tableName] = enColumns
             editorObj.options.hintOptions.tables[tableName] = enColumns
-            getSelectSQLByColumns(enColumns, tableName, oldSql, null)
+            getSelectSQLByColumns(enColumns, tableName, oldSql, null, dataSource)
           } else {
           }
         }
       })
     } else {
-      getSelectSQLByColumns(columns, tableName, oldSql, null)
+      getSelectSQLByColumns(columns, tableName, oldSql, null, dataSource)
     }
   }
 }
@@ -2313,7 +2314,7 @@ export function getSelectSql(menuId) {
  * @param oldSql SQL编辑器内原语句
  * @param loading 有遮罩层就传，没有就传null
  */
-function getSelectSQLByColumns(columns, tableName, oldSql, loading) {
+function getSelectSQLByColumns(columns, tableName, oldSql, loading, dataSource) {
   var sql = 'SELECT '
   $(columns).each(function (idx) {
     if (idx !== 0) {
@@ -2327,7 +2328,7 @@ function getSelectSQLByColumns(columns, tableName, oldSql, loading) {
     baseURL: analysisUrl,
     url: '/SQLEditorController/formatSql',
     method: 'post',
-    data: { 'sql': sql }
+    data: { 'sql': sql, 'dataSource': dataSource}
   }).then(result => {
     if (result.data.isError) {
       if (loading) {
@@ -2431,7 +2432,7 @@ export function getSql() {
 }
 
 // 校验sql 只返回true或者false
-export async function verifySql() {
+export async function verifySql(dataSource) {
   var selText = editorObj.getSelection()
   if ($.trim(selText) === '') {
     selText = editorObj.getValue()
@@ -2443,7 +2444,7 @@ export async function verifySql() {
       selText = selText.replace(arr[i].id, arr[i].name + '_rpm_JL')
     }
   }
-  var data = { sqls: selText }
+  var data = { sqls: selText, dataSource: dataSource}
   return await request({
     baseURL: analysisUrl,
     url: '/SQLEditorController/checkSql',
@@ -2516,7 +2517,7 @@ export function startExecuteSql(data) {
  * 获取执行任务
  * @param {*} data 要执行的数据
  */
-export function getExecuteTask(data, dataUserId, sceneCode) {
+export function getExecuteTask(data,dataUserId,sceneCode, dataSource) {
   var dataUserId1 = ''
   var sceneCode1 = ''
   if (dataUserId != undefined && sceneCode != undefined) {
@@ -2528,6 +2529,7 @@ export function getExecuteTask(data, dataUserId, sceneCode) {
   }
   data.userId = dataUserId1;
   data.sceneCode = sceneCode1;
+  data.dataSource = dataSource;
   return request({
     baseURL: analysisUrl,
     url: '/SQLEditorController/getExecuteTask',
@@ -2624,7 +2626,7 @@ export function saveSqlEditorExecuteDefaultPath(data) {
   })
 }
 
-export async function getGraphSaveInfo() {
+export async function getGraphSaveInfo(dataSource){
   var returnObj = {
     "isError": false,
     "message": "",
@@ -2632,7 +2634,7 @@ export async function getGraphSaveInfo() {
     "isChange": false
   };
   //检查SQL语句是否发生变化
-  const response = await compareSql({ "oldSql": sqlEditorVue.sqlValue, "newSql": returnObj.sql })
+    const response = await compareSql({"oldSql":sqlEditorVue.sqlValue,"newSql":returnObj.sql, dataSource: dataSource})
   if (response.data == null || response.data.isError) {
     returnObj.isError = true;
     returnObj.message = "检测SQL语句是否改变发生错误";
