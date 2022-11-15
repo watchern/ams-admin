@@ -217,7 +217,7 @@
           :props="props"
           :data="tableData"
           class="filter-tree"
-                    @node-click="nodeClick"
+                    @node-click="nodeClick1"
                     default-expand-all>
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <!-- class="el-icon-menu"  style="color: #409eff" -->
@@ -870,7 +870,7 @@ export default {
     },
 
     // 第一步选择的数据库
-    nodeClick (data, node, tree) {
+    nodeClick1 (data, node, tree) {
       console.log(data);
       console.log(node);
       // console.log(tree);
