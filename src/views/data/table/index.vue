@@ -188,7 +188,6 @@
           :ifShowPlace="true"
         />
       </div>
-    </div>
     <!-- right_conter end-->
 
     <!-- 注册资产 -->
@@ -412,7 +411,7 @@
   </div>
     <!-- right_conter end-->
 
-<!--  </div>-->
+  </div>
 
 </template>
 
