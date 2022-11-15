@@ -4,6 +4,8 @@ import request from '@/utils/request'
 const baseURL = '/data'
 
 const controller2 = 'tableMeta'
+const BusinessSystem = 'businessSystem'
+
 
 /* 元数据操作*/
 export function listUnCached (requestType, pid, tableName, dataSource) {
@@ -19,13 +21,50 @@ export function listUnCached (requestType, pid, tableName, dataSource) {
     }
   })
 }
-export function getDataTreeNode(pid) {
+// tree end···············
+// 目录
+export function getDataTreeNode (data) {
   return request({
     baseURL: baseURL,
-    url: `/${controller2}/getDataTreeNode/${pid}`,
-    method: 'get'
+    url: `/${controller2}/getDataTreeNode/`,
+    method: 'post',
+    data,
+
   })
 }
+// 系统
+export function getBusinessSystemTree (data) {
+  console.log(data);
+  return request({
+    baseURL: baseURL,
+    url: `/${BusinessSystem}/getBusinessSystemTree`,
+    method: 'post',
+    data,
+  })
+}
+// 主题
+export function getThemeTree (params) {
+  return request({
+    baseURL: baseURL,
+    url: `/${BusinessSystem}/getThemeTree`,
+    method: 'post',
+    params
+
+  })
+}
+// 数据分层
+export function getLayeredTree (params) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/getLayeredTree`,
+    method: 'post',
+    params
+
+  })
+}
+// tree end···············
+
+
 /* 缓存数据操作*/
 export function saveTable(data) {
   return request({

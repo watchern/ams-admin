@@ -1,25 +1,25 @@
 <template>
   <div class="page-container">
     <!-- left_conter -->
-    <div class="  ">
+    <div class="left_conter">
       <el-tabs v-model="activeName"
                type="card"
                @tab-click="handleClick">
         <el-tab-pane label="系统"
-                     name="0">系统</el-tab-pane>
+                     name="0"></el-tab-pane>
         <el-tab-pane label="主题"
-                     name="1">主题</el-tab-pane>
+                     name="1"></el-tab-pane>
         <el-tab-pane label="分层"
-                     name="2">分层</el-tab-pane>
+                     name="2"></el-tab-pane>
         <el-tab-pane label="目录"
-                     name="3">目录</el-tab-pane>
+                     name="3"></el-tab-pane>
       </el-tabs>
       <div class="padding10">
         <el-input v-model="filterText2"
                   placeholder="输入关键字进行过滤" />
             </div>
       <div class="padding10">
-
+        <!-- 数据源 -->
         <el-form :inline="true"
                  :model="query"
                  label-position="bottom">
@@ -40,12 +40,11 @@
       <div class="padding10">
 
         <div class="tree-containerall">
-          <MyElTree
-            ref="tree2"
+          <!-- :load="loadNode2"
+                    lazy -->
+          <MyElTree ref="tree2"
             :props="props"
-            :load="loadNode2"
-            lazy
-            :expand-on-click-node="false"
+                    :data="tree_list"
             :filter-node-method="filterNode"
             :default-expanded-keys="['ROOT']"
             class="filter-tree"
@@ -217,7 +216,7 @@
           :props="props"
           :data="tableData"
           class="filter-tree"
-                    @node-click="nodeClick1"
+                    @node-click="nodeClick_table"
                     default-expand-all>
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <!-- class="el-icon-menu"  style="color: #409eff" -->
@@ -243,6 +242,7 @@
 
           <el-button type="primary"
                      :disabled="isDisable"
+                     v-if="is_next == true"
                      @click="next()">下一步</el-button>
         </span>
       </el-dialog>
@@ -255,7 +255,7 @@
                  width="40%">
         <el-form :rules="rules"
                  ref="form"
-                 label-width="140px"
+                 label-width="100px"
                  :model="form"
                  :inline="false">
           <!-- 资产编码 && 资产类型：-->
@@ -263,6 +263,7 @@
             <el-form-item label="资产编码:"
                           prop="tableCode">
               <el-input type="text"
+                        placeholder="请输入资产编码"
                         v-model="form.tableCode"
                         :rows="4">
               </el-input>
@@ -273,8 +274,7 @@
               <el-select v-model="form.tableType"
                          :rows="4"
                          placeholder="请选择资产类型">
-                <el-option v-for="item in options"
-                           @change="select"
+                <el-option v-for="item in data_type"
                            :key="item.value"
                            :label="item.label"
                            :value="item.value" />
@@ -329,9 +329,9 @@
                            :options="next_contentsList"
                            placeholder="请选择所属目录"
                            clearable
-                           :props="props"
+                           :props="props2"
                            ref="cascaderArr"
-                           @change="handleChange($event)"></el-cascader>
+                           @change="handleChange"></el-cascader>
             </el-form-item>
           </div>
           <!--  资产负责人-->
@@ -339,9 +339,10 @@
             <div class="son_check">
 
               <el-form-item label="资产负责人:"
-                            prop="personUuid">
+                            prop="personName">
                 <el-input type="text"
-                          v-model="form.personUuid">
+                          disabled
+                          v-model="form.personName">
                 </el-input>
 
               </el-form-item>
@@ -385,7 +386,7 @@
               class="dialog-footer">
           <el-button @click="resultShareDialogIsSee = false">取 消</el-button>
           <el-button type="primary"
-                     @click="modelResultShare">确 定</el-button>
+                     @click="modelResultShare()">确 定</el-button>
         </span>
       </el-dialog>
 
@@ -420,8 +421,11 @@ import tabledatatabs from "@/views/data/table/tabledatatabs";
 import MyElTree from "@/components/public/tree/src/tree.vue";
 import {
   listUnCached,
-  getDataTreeNode,
-  delTable, batchSaveTable,
+  getDataTreeNode,//目录
+  getBusinessSystemTree,//系统
+  getThemeTree,//主题
+  getLayeredTree,//分层
+  delTable,
 } from "@/api/data/table-info";
 import { saveFolder, updateFolder, delFolder } from "@/api/data/folder";
 import { commonNotify } from "@/utils";
@@ -459,11 +463,13 @@ export default {
       filterText1: null,
       filterText2: null,
       fromData: [],
-      // props: {
-      //   label: "label",
-      //   isLeaf: "leaf",
-      //   children: "children",
-      // },
+      props: {
+        label: "label",
+        isLeaf: "leaf",
+        children: "children",
+      },
+
+      tree_list: [],//左侧资料树数据结构
       folderForm: {
         folderUuid: null,
         folderName: null,
@@ -538,9 +544,9 @@ export default {
           { required: true, message: '请选择资产责任人', trigger: 'change' },
         ],
 
-        tableRemarks: [
-          { required: true, message: '请输入资产备注', trigger: 'blur' },
-        ],
+        // tableRemarks: [
+        //   { required: true, message: '请输入资产备注', trigger: 'blur' },
+        // ],
       },
       // 新增的数据
       form: {
@@ -551,22 +557,33 @@ export default {
         tableLayeredId: '',//资产分层
         folderUuid: '',//所属目录
 
-        personUuid: '',//资产责任人
         tableRemarks: '',//资产备注
+        personName: '',
+        personUuid: '',//资产责任人
+        personLiables: [],
 
       },
+      personName: [],
       isDisable: false, //防止重复提交
       resultShareDialogIsSee: false,//选择责任人
       selectValue: [], // 存储表格中选中的数据
       next_data: [],// 点击下一步的数据
-      props: {
+      props2: {
         label: 'label',
         children: 'children',
         value: 'id'
       },
       next_contentsList: [],//目录
-      check_next_contentsList: {},//选择的目录
+      // check_next_contentsList: {},//选择的目录
+      is_next: false,//是否显示下一步
+      ischeck_data: {},//第一步选择的数据库
 
+      data_type: [
+        {
+          value: 1,
+          label: '表'
+        }
+      ],
 
     };
   },
@@ -595,20 +612,25 @@ export default {
       this.$refs.tree2.filter(val)
     }
   },
-  created() {},
+  created () {
+    this.post_tree_data();
+  },
   methods: {
     // tab切换
     handleClick (tab, event) {
       // this.query.dataSource = ''
       //
       if (tab.index == '0') {
-        alert(1)
+        // alert(1)
       } else if (tab.index == '1') {
-        alert(2)
+        // alert(2)
       } else if (tab.index == '2') {
-        alert(3)
+        // alert(3)
+
       } else {
-        alert(4)
+        // alert(4)
+        this.post_tree_data();
+
           }
       },
 
@@ -635,15 +657,33 @@ export default {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
-    loadNode2 (node, resolve) {
-      if (!node.data) {
-        resolve([{ id: "ROOT", label: "数据集", leaf: false }]);
-      } else {
-        getDataTreeNode(node.data.id).then((resp) => {
-          resolve(resp.data);
-        });
+
+    post_tree_data () {
+      let params = {
+        isShowTable: true,//是否显示表
+        dataSource: this.query.dataSource,//数据源
       }
+      getBusinessSystemTree(params).then((res) => {
+        this.tree_list = resp.data
+        console.log(this.tree_list);
+
+        });
     },
+
+
+
+
+    // loadNode2 (node, resolve) {
+    //   console.log(node);
+    //   console.log(resolve);
+    //   if (!node.data) {
+    //     resolve([{ id: "ROOT", label: "数据集", leaf: false }]);
+    //   } else {
+    //     getDataTreeNode(node.data.id).then((resp) => {
+    //       resolve(resp.data);
+    //     });
+    //   }
+    // },
 
     // 点击注册资源的 数据库列表
     getTables() {
@@ -661,54 +701,46 @@ export default {
 
 
     // 旧版本保存
-    flagSelectTable() {
-      var ckFolder = this.$refs.tree2.getCurrentNode();
-      // if (!ckFolder || ckFolder.type !== "FOLDER") {
+    // flagSelectTable () {
+    //   var ckFolder = this.$refs.tree2.getCurrentNode();
+    //   // if (!ckFolder || ckFolder.type !== "FOLDER") {
+    //   //   this.$notify(
+    //   //     commonNotify({ type: "warning", message: "请选中文件夹" })
+    //   //   );
+    //   //   return false;
+    //   // } else {
+    //   var ckTbs = this.$refs.tree1.getCheckedNodes();
+    //   // var nodes = this.$refs.tree1.filter(this.filterText1);
+    //   if (this.filterText1 != null) {
+    //     ckTbs = ckTbs.filter((tb) => {
+    //       return tb.label.indexOf(this.filterText1) !== -1;
+    //     });
+    //   }
+    //   ckTbs.filter((tb) => { return tb.type === "TABLE"; }).forEach((node) => {
+    //     const tableForm = {
+    //       tableMetaUuid: node.id,
+    //       displayTbName: node.label,
+    //       dbName: node.pid,
+    //       tbName: node.label,
+    //       folderUuid: ckFolder.id,
+    //     };
+    //     // 将选中的表信息封装入节点对象集合
+    //     this.chooseTables.push(tableForm);
+    //   });
+    //   // 批量保存
+    //   batchSaveTable(this.chooseTables).then(() => {
+    //     // 刷新ROOT节点
+    //     this.refreshNodeBy("ROOT");
       //   this.$notify(
-      //     commonNotify({ type: "warning", message: "请选中文件夹" })
+    //       commonNotify({
+    //         type: "success",
+    //         message: `同步成功！`,
+    //       })
       //   );
-      //   return false;
-      // } else {
-        var ckTbs = this.$refs.tree1.getCheckedNodes();
-        // var nodes = this.$refs.tree1.filter(this.filterText1);
-        if (this.filterText1 != null) {
-          ckTbs = ckTbs.filter((tb) => {
-            return tb.label.indexOf(this.filterText1) !== -1;
-          });
-        }
-        ckTbs
-          .filter((tb) => {
-            return tb.type === "TABLE";
-          })
-          .forEach((node) => {
-            const tableForm = {
-              tableMetaUuid: node.id,
-              displayTbName: node.label,
-              dbName: node.pid,
-              tbName: node.label,
-              folderUuid: ckFolder.id,
-            };
-            // 将选中的表信息封装入节点对象集合
-            this.chooseTables.push(tableForm);
-          });
-        // 批量保存
-        batchSaveTable(this.chooseTables).then((res) => {
-          if (res.code!= 0) {
-            this.$message({type:'error', message:res.msg})
-            return
-          }
-          // 刷新ROOT节点
-          this.refreshNodeBy("ROOT");
-          this.$notify(
-              commonNotify({
-                type: "success",
-                message: `同步成功！`,
-              })
-          );
-        });
-        this.registTableFlag = false;
-      // }
-    },
+    //   });
+    //   this.registTableFlag = false;
+    //   // }
+    // },
     // 刷根据节点ID刷新节点
     refreshNodeBy(id){
       let node = this.$refs.tree2.getNode(id); // 通过节点id找到对应树节点对象
@@ -867,35 +899,49 @@ export default {
     step () {
       // this.registTableFlag = true;//关闭上一步
       this.dialogVisible_information = false;//关闭基本信息
-    },
 
+      this.clear()
+    },
+    // 清除注册资产第二步的数据
+    clear () {
+      // 清空
+      this.form.tableCode = ''
+      this.form.tableType = ''
+      this.form.tableThemeId = ''
+      this.form.businessSystemId = ''
+      this.form.tableLayeredId = ''
+      this.form.folderUuid = ''
+      this.form.personUuid = ''
+      this.form.tableRemarks = ''
+      this.personUuid = [];
+      this.personName = [];
+    },
     // 第一步选择的数据库
-    nodeClick1 (data, node, tree) {
+    nodeClick_table (data, node, tree) {
+      if (data) {
+        // 显示保存按钮
+        this.is_next = true;
       console.log(data);
-      console.log(node);
+        this.ischeck_data = data
+      } else {
+        this.is_next = false
+      }
       // console.log(tree);
     },
 
 
     // 注册资产 下一步
     next () {
-
-      if (data) {
-        alert(1)
-        this.isDisable = false
-      } else {
-        this.isDisable = true
-        alert(2)
-      }
-
-
-      // this.registTableFlag = false;//关闭上一步
+      this.registTableFlag = false;//关闭上一步
       this.dialogVisible_information = true//显示下一步 基本信息
       getListTree().then((res) => {
         this.next_data = res.data
         this.next_contentsList = res.data.contentsList.children
         this.next_contentsList.forEach(item => {
+          // console.log(item.children);
+          // debugger;
 
+          // 所属目录三级联动判断
           if (item.children.length == 0) {
             item.children = undefined
           } else {
@@ -909,15 +955,19 @@ export default {
 
       })
     },
-    // 所属目录层级联动
-    handleChange (row) {
-      const checkedNode = this.$refs["cascaderArr"].getCheckedNodes();
-      console.log(checkedNode[0].data.label);  //获取当前点击节点的label值
-      console.log(checkedNode[0]);  //获取由label组成的数组
-      //
+    // 点击 所属目录层级联动
+    handleChange (val) {
+      // const checkedNode = this.$refs["cascaderArr"].getCheckedNodes();
+      // console.log(checkedNode[0].data.label);  //获取当前点击节点的label值
+      // console.log(checkedNode[0]);  //获取由label组成的数组
       // return false
-      this.check_next_contentsList = checkedNode[0]
-      this.form.folderUuid = checkedNode[0].id
+      // this.check_next_contentsList = checkedNode[0]
+      // this.form.folderUuid = checkedNode[0].id
+      let folderUuid = val.toString();
+      console.log(folderUuid);
+
+      this.form.folderUuid = folderUuid
+
       //
     },
 
@@ -937,6 +987,7 @@ export default {
     // 关闭弹窗
     handleClose (form) {
       this.$refs[form].resetFields() //清空添加的值
+      this.clear()
     },
 
     // 下一步的保存
@@ -948,52 +999,40 @@ export default {
       this.$refs[form].validate((valid) => {
         if (valid) {
 
-          var ckFolder = this.$refs.tree2.getCurrentNode();
-          ckTbs.filter((tb) => { return tb.type === "TABLE"; }).forEach((node) => {
+          // var ckFolder = this.$refs.tree2.getCurrentNode();
+          // ckTbs.filter((tb) => { return tb.type === "TABLE"; }).forEach((node) => {
             const tableForm = {
-              tableMetaUuid: node.id,
-              displayTbName: node.label,
-              dbName: node.pid,
-              tbName: node.label,
-              folderUuid: ckFolder.id,
-
-              personLiables: [
-                {
-                  personName: "string",// 资产认权人姓名
-                  personUuid: "string", //资产认权人主键
-                  tableMetaUuid: "string",// 资产主键
-                }
-              ],
+            tableMetaUuid: this.ischeck_data.id,
+            displayTbName: this.ischeck_data.label,
+            dbName: this.ischeck_data.pid,
+            tbName: this.ischeck_data.label,
+            folderUuid: this.form.folderUuid,//目录id
+            // 资产责任人
+            // personLiables: [
+            //   {
+            //     personName: this.form.personName,// 资产认权人姓名
+            //     personUuid: this.form.personUuid, //资产认权人主键
+            //     // tableMetaUuid: this.ischeck_data.id,// 资产主键
+            //   }
+            // ],
+            personLiables: this.form.personLiables,
               tableRelationQuery: {
+              tableDataSource: this.query.dataSource, //数据源
                 businessSystemId: this.form.tableLayeredId, //所属系统主键
                 tableCode: this.form.tableCode, //资产编码
-                tableDataSource: this.query.dataSource, //数据源
                 tableLayeredId: this.form.tableLayeredId, //资产分层主键
-                tableMetaUuid: "string", //资产主键
+              tableMetaUuid: this.ischeck_data.id, //资产主键
 
                 tableRemarks: this.form.tableRemarks, //资产备注
                 tableThemeId: this.form.tableThemeId, //资产主题主键
                 tableType: this.form.tableType, //资产类型
               },
             };
+          // console.log(tableForm);
             // 将选中的表信息封装入节点对象集合
             this.chooseTables.push(tableForm);
-
-
-          });
-          console.log(this.chooseTables);
-
-          // let params = {
-          //   tableMetaUuid: this.check_next_contentsList.id,
-          //   displayTbName: this.check_next_contentsList.label,
-          //   dbName: this.check_next_contentsList.pid,
-          //   tbName: this.check_next_contentsList.label,
-
-          //   folderUuid: this.form.folderUuid,//所属目录id
-
-          // };
-          console.log(params);
-
+          // return false
+          // console.log(this.chooseTables);
           batchSaveTable_save(this.chooseTables).then((resp) => {
             if (resp.code == 0) {
               this.$message({
@@ -1006,8 +1045,9 @@ export default {
                 message: res.msg,
               });
             }
+            this.dialogVisible_information = false;
+            this.registTableFlag = false;//关闭上一步
           })
-          // this.resultShareDialogIsSee = false;
         } else {
           this.$message({
             message: '请填写信息',
@@ -1021,47 +1061,36 @@ export default {
     // 选择责任人
     check_people () {
       this.resultShareDialogIsSee = true;
+      this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection();//清空选择的责任人
     },
     modelResultShare () {
       // this.listLoading = true;
       var runTaskRelUuids = [];
       var personUuids = [];
-      var personNames = []
+      var personNames = [];
+
+      var arr = []
       var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
       for (var i = 0; i < selectedNode.length; i++) {
         personUuids.push(selectedNode[i].personuuid);
         personNames.push(selectedNode[i].cnname);
+
+
+
+        this.form.personUuid = personUuids
+        this.form.personName = personNames
+
+        // this.form.personName = personNames.toString();
+        // console.log(this.form.personName);
+
+        let obj = {
+          personuuid: selectedNode[i].personuuid, personName: selectedNode[i].cnname
       }
-      //id
-      //name
-      //
-      return false
-      for (var i = 0; i < this.selected1.length; i++) {
-        runTaskRelUuids.push(this.selected1[i].runTaskRelUuid);
+        arr.push(obj)
       }
-      if (personUuids.length > 0) {
-        // insertRunResultShare(runTaskRelUuids, personUuids, personNames).then((resp) => {
-        //   // this.listLoading = false;
-        //
-        //   if (resp.data == true) {
-        //     this.$message({
-        //       type: "success",
-        //       message: "结果共享成功!",
-        //     });
-        //   } else {
-        //     this.$message({
-        //       type: "error",
-        //       message: "结果共享失败!",
-        //     });
-        //   }
-        //   this.resultShareDialogIsSee = false;
-        // });
-      } else {
-        this.listLoading = false;
-        this.$message({
-          message: "请选择责任人",
-        });
-      }
+      this.form.personLiables = arr
+      console.log(this.form.personLiables);
+      this.resultShareDialogIsSee = false;
     },
 
     // 刷新列表
@@ -1102,6 +1131,13 @@ export default {
 </script>
 <style scoped>
 @import url("./../../../assets/css/common.css");
+.left_conter >>> .el-tabs__item {
+  width: 25%;
+  text-align: center;
+}
+.left_conter >>> .el-tabs__nav {
+  width: 100%;
+}
 .page-container {
   display: flex;
 }
@@ -1114,9 +1150,12 @@ export default {
   display: flex;
   margin-bottom: 20px;
 }
-.son >>> .el-form-item {
+.son >>> .el-form-item,
+.son >>> .el-select,
+.son >>> .el-cascader {
   width: 100%;
   display: flex;
+  margin-bottom: 0 !important;
 }
 .data_res >>> .el-form-item__content {
   flex: 1;
