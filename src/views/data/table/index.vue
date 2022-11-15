@@ -16,6 +16,11 @@
       </el-tabs>
       <div class="padding10">
         <el-input v-model="filterText2"
+                  v-if="activeName!==3"
+                  placeholder="输入关键字进行过滤" />
+
+        <el-input v-model="filterText3"
+                  v-else
                   placeholder="输入关键字进行过滤" />
             </div>
       <div class="padding10">
@@ -39,37 +44,95 @@
 
       <div class="padding10">
 
-        <div class="tree-containerall">
-          <!-- :load="loadNode2"
-                    lazy -->
+        <!-- 系统 主题 分层 -->
+        <div class="tree-containerall"
+             v-if="activeName!==3">
           <MyElTree ref="tree2"
             :props="props"
                     :data="tree_list"
             :filter-node-method="filterNode"
             :default-expanded-keys="['ROOT']"
             class="filter-tree"
-            :highlight-current="true"
-            node-key="id"
-            @node-click="nodeClick"
-          >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
-              <i v-if="data.id === 'ROOT'" class="el-icon-s-home" />
-              <i v-if="data.type === 'FOLDER'" >
+                    highlight-current="true"
+                    node-key="id"
+                    @node-click="nodeClick">
+            <span slot-scope="{ node, data }"
+                  class="custom-tree-node">
+              <i v-if="data.id === 'ROOT'"
+                 :class="data.icon" />
+              <i
+                 v-if="data.type === 'folder' || data.type === 'system' || data.type === 'layered' || data.type === 'theme'">
                 <span class="agreeicon0"></span>
               </i>
-              <i v-if="data.type === 'TABLE'">
-                <!-- style="padding-right: 3px; vertical-align: bottom" -->
-                <!-- &#xecee; -->
+              <i v-if="data.type === 'table'">
                 <span class="icon iconfont agreeicon1"></span>
               </i>
-               <i v-if="data.type === 'VIEW'">
-                <!-- style="padding-right: 3px; vertical-align: bottom" -->
-                    <!-- &#xecee; -->
+              <i v-if="data.type === 'view'">
                 <span class="icon iconfont agreeicon4"></span>
               </i>
 
+              <i v-if="data.type === 'column'"
+                 class="el-icon-c-scale-to-original" />
+              <span>{{ node.label }}</span>
+              <span style="margin-left: 10px">
+                <el-button v-if="
+                    data.id === 'ROOT' ||
+                    (data.extMap && data.extMap.folder_type === 'maintained')
+                  "
+                           type="text"
+                           size="mini"
+                           @click.stop="() => handleCreateFolder(node, data)">
+                  <i class="el-icon-circle-plus" />
+                </el-button>
+                <el-button v-if="data.extMap && data.extMap.folder_type === 'maintained'"
+                           type="text"
+                           size="mini"
+                           @click.stop="() => handleUpdateFolder(node, data)">
+                  <i class="el-icon-edit" />
+                </el-button>
+                <el-button v-if="
+                    (data.extMap && data.extMap.folder_type === 'maintained') ||
+                    data.type === 'table'||
+                    data.type === 'view'
+                  "
+                           type="text"
+                           size="mini"
+                           @click.stop="() => handleRemove(node, data)">
+                  <i class="el-icon-delete" />
+                </el-button>
+              </span>
+            </span>
+          </MyElTree>
+        </div>
+
+        <!-- 目录 -->
+        <div class="tree-containerall"
+             v-else>
+          <MyElTree ref="tree3"
+                    :props="defaultProps"
+                    :load="loadNode2"
+                    lazy
+                    :filter-node-method="filterNode"
+                    :default-expanded-keys="['ROOT']"
+                    class="filter-tree"
+                    highlight-current="true"
+            node-key="id"
+                    @node-click="handleNodeClick">
+            <span slot-scope="{ node, data }" class="custom-tree-node">
+              <i v-if="data.id === 'ROOT'"
+                 :class="data.icon" />
               <i
-                v-if="data.type === 'COLUMN'"
+                 v-if="data.type === 'folder' || data.type === 'system' || data.type === 'layered' || data.type === 'theme'">
+                <span class="agreeicon0"></span>
+              </i>
+              <i v-if="data.type === 'table'">
+                <span class="icon iconfont agreeicon1"></span>
+              </i>
+              <i v-if="data.type === 'view'">
+                <span class="icon iconfont agreeicon4"></span>
+              </i>
+
+              <i v-if="data.type === 'column'"
                 class="el-icon-c-scale-to-original"
               />
               <span>{{ node.label }}</span>
@@ -99,8 +162,8 @@
                 <el-button
                   v-if="
                     (data.extMap && data.extMap.folder_type === 'maintained') ||
-                    data.type === 'TABLE'||
-                    data.type === 'VIEW'
+                    data.type === 'table'||
+                    data.type === 'view'
                   "
                   type="text"
                   size="mini"
@@ -133,7 +196,7 @@
           </el-row>
         </div>
         <el-table v-loading="listLoading"
-                  :data="list"
+                  :data="list.data"
                   border
                   fit
                   highlight-current-row
@@ -142,14 +205,14 @@
           <el-table-column type="selection"
                            width="55" />
           <!-- <el-table-column label="所属系统名称" width="300px" align="center" prop="folderName" /> -->
-          <el-table-column label="系统名称"
+          <el-table-column label="资产名称"
                            prop="displayTbName" />
-          <el-table-column label="系统代码"
+          <el-table-column label="资产编码"
                            prop="chnName" />
           <el-table-column label="创建时间"
+                           prop="createTime"
                            align="center"
-                           :formatter="formatCreateTime"
-                           prop="createTime" />
+                           :formatter="formatCreateTime" />
           <el-table-column label="创建人"
                            align="center"
                            prop="createTime" />
@@ -170,8 +233,8 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination v-show="form.total>0"
-                       :total="form.total"
+        <el-pagination v-show="list.total>0"
+                       :total="list.total"
                        :current-page="form.currentPage"
                        background
                        @current-change="handleCurrentChange"
@@ -425,6 +488,7 @@ import {
   getThemeTree,//主题
   getLayeredTree,//分层
   delTable,
+  listByTreePage,//列表
 } from "@/api/data/table-info";
 import { saveFolder, updateFolder, delFolder } from "@/api/data/folder";
 import { commonNotify } from "@/utils";
@@ -461,8 +525,15 @@ export default {
       divInfo: false,
       filterText1: null,
       filterText2: null,
+      filterText3: null,
       fromData: [],
       props: {
+        label: "label",
+        isLeaf: "leaf",
+        children: "children",
+      },
+      // 目录
+      defaultProps: {
         label: "label",
         isLeaf: "leaf",
         children: "children",
@@ -609,27 +680,32 @@ export default {
     },
     filterText2(val) {
       this.$refs.tree2.filter(val)
+    },
+    filterText3 (val) {
+      this.$refs.tree3.filter(val)
     }
   },
   created () {
-    this.post_tree_data();
+    this.post_getBusinessSystemTree();//系统
+    // this.post_getThemeTree();//主题
+    // this.post_getLayeredTree();//分层
+    // this.post_getDataTreeNode();//目录
+
+
   },
   methods: {
     // tab切换
     handleClick (tab, event) {
-      // this.query.dataSource = ''
-      //
       if (tab.index == '0') {
-        // alert(1)
+        this.post_getBusinessSystemTree();//系统
       } else if (tab.index == '1') {
-        // alert(2)
+        this.post_getThemeTree();//主题
       } else if (tab.index == '2') {
-        // alert(3)
-
+        this.post_getLayeredTree();//分层
       } else {
-        // alert(4)
-        this.post_tree_data();
+        this.post_getDataTreeNode('ROOT', this.query.dataSource);//目录
 
+        // this.loadNode2("ROOT", this.query.dataSource);
           }
       },
 
@@ -657,12 +733,27 @@ export default {
       return data.label.indexOf(value) !== -1;
     },
 
-    post_tree_data () {
-      let params = {
-        isShowTable: true,//是否显示表
-        dataSource: this.query.dataSource,//数据源
-      }
-      getBusinessSystemTree(params).then((res) => {
+    // 系统
+    post_getBusinessSystemTree () {
+      getBusinessSystemTree(true, this.query.dataSource, true).then((resp) => {
+        this.tree_list = resp.data
+      });
+    },
+    // 主题
+    post_getThemeTree () {
+      getThemeTree(true, this.query.dataSource, true).then((resp) => {
+        this.tree_list = resp.data
+      });
+    },
+    // 分层
+    post_getLayeredTree () {
+      getLayeredTree(true, this.query.dataSource, true).then((resp) => {
+        this.tree_list = resp.data
+      });
+    },
+    // 目录
+    post_getDataTreeNode (pid, dataSource) {
+      getDataTreeNode(pid, dataSource).then((resp) => {
         this.tree_list = resp.data
         console.log(this.tree_list);
 
@@ -678,11 +769,29 @@ export default {
     //   if (!node.data) {
     //     resolve([{ id: "ROOT", label: "数据集", leaf: false }]);
     //   } else {
-    //     getDataTreeNode(node.data.id).then((resp) => {
+    //     getDataTreeNode(node.data.id = pid, dataSource).then((resp) => {
     //       resolve(resp.data);
     //     });
     //   }
     // },
+    async loadNode2 (node, resolve) {
+      if (node.level !== 0) {
+        // 子级
+        this.getTreeData(node.data.id, resolve);
+      } else {
+        // 父级
+        this.getTreeData("", resolve);
+      }
+    },
+    async getTreeData (id, resolve) {
+      if (id) {
+        // 子级
+        this.post_getDataTreeNode(id, this.query.dataSource);//目录
+      } else {
+        //父级
+        this.post_getDataTreeNode('ROOT', this.query.dataSource);//目录
+      }
+    },
 
     // 点击注册资源的 数据库列表
     getTables() {
@@ -698,48 +807,6 @@ export default {
       });
     },
 
-
-    // 旧版本保存
-    // flagSelectTable () {
-    //   var ckFolder = this.$refs.tree2.getCurrentNode();
-    //   // if (!ckFolder || ckFolder.type !== "FOLDER") {
-    //   //   this.$notify(
-    //   //     commonNotify({ type: "warning", message: "请选中文件夹" })
-    //   //   );
-    //   //   return false;
-    //   // } else {
-    //   var ckTbs = this.$refs.tree1.getCheckedNodes();
-    //   // var nodes = this.$refs.tree1.filter(this.filterText1);
-    //   if (this.filterText1 != null) {
-    //     ckTbs = ckTbs.filter((tb) => {
-    //       return tb.label.indexOf(this.filterText1) !== -1;
-    //     });
-    //   }
-    //   ckTbs.filter((tb) => { return tb.type === "TABLE"; }).forEach((node) => {
-    //     const tableForm = {
-    //       tableMetaUuid: node.id,
-    //       displayTbName: node.label,
-    //       dbName: node.pid,
-    //       tbName: node.label,
-    //       folderUuid: ckFolder.id,
-    //     };
-    //     // 将选中的表信息封装入节点对象集合
-    //     this.chooseTables.push(tableForm);
-    //   });
-    //   // 批量保存
-    //   batchSaveTable(this.chooseTables).then(() => {
-    //     // 刷新ROOT节点
-    //     this.refreshNodeBy("ROOT");
-      //   this.$notify(
-    //       commonNotify({
-    //         type: "success",
-    //         message: `同步成功！`,
-    //       })
-      //   );
-    //   });
-    //   this.registTableFlag = false;
-    //   // }
-    // },
     // 刷根据节点ID刷新节点
     refreshNodeBy(id){
       let node = this.$refs.tree2.getNode(id); // 通过节点id找到对应树节点对象
@@ -749,13 +816,74 @@ export default {
     // 点击切换表单
     nodeClick(data, node, tree) {
       this.divInfo = false;
-      if (node.data.type === "TABLE") {
+      console.log(node.data);
+      if (node.data.type === "table") {
         this.$nextTick(() => {
           this.divInfo = true;
           this.tableId = node.data.id;
         });
+      } else {
+
+        if (node.data.type === "folder") {
+          this.post_getDataTreeNode(node.data.id, this.query.dataSource);//目录
+        }
+        this.page_list(node.data);//list
       }
     },
+
+    // 右侧列表
+    page_list (data) {
+      console.log(data);
+      if (data.type == "system") {
+        let params = {
+          businessSystemId: data.id,//所属系统主键
+          tableThemeId: '',
+          tableLayeredId: '',
+          folderUuid: '',
+          dataSource: this.query.dataSource,//数据源
+        }
+        this.query_lisy(params)
+      } else if (data.type == "theme") {
+        let params = {
+          businessSystemId: '',
+          tableThemeId: data.id,//资产主题主键
+          tableLayeredId: '',
+          folderUuid: '',
+          dataSource: this.query.dataSource,//数据源
+        }
+        this.query_lisy(params)
+
+      } else if (data.type == "layered") {
+        let params = {
+          businessSystemId: '',
+          tableThemeId: '',
+          tableLayeredId: data.id,//资产分层主键
+          folderUuid: '',//目录ID
+          dataSource: this.query.dataSource,//数据源
+        }
+        this.query_lisy(params)
+
+      } else {
+        let params = {
+          businessSystemId: '',
+          tableThemeId: '',
+          tableLayeredId: '',
+          folderUuid: data.id,//目录ID
+          dataSource: this.query.dataSource,//数据源
+        }
+        this.query_lisy(params)
+      }
+    },
+
+    query_lisy (params) {
+      console.log(params);
+      listByTreePage(params).then((resp) => {
+        this.list = resp
+        console.log(this.list);
+      });
+    },
+
+
     resetFolderForm() {
       Object.keys(this.folderForm).forEach((key) => {
         this.$set(this.folderForm, key, null);
@@ -1092,6 +1220,13 @@ export default {
       this.resultShareDialogIsSee = false;
     },
 
+
+
+    // 右侧表单
+    // 多选
+    handleSelectionChange (val) {
+      this.Selectval = val;
+    },
     // 刷新列表
     getList () {
 

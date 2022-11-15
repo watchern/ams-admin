@@ -23,43 +23,67 @@ export function listUnCached (requestType, pid, tableName, dataSource) {
 }
 // tree end···············
 // 目录
-export function getDataTreeNode (data) {
+export function getDataTreeNode (pid, dataSource) {
   return request({
     baseURL: baseURL,
-    url: `/${controller2}/getDataTreeNode/`,
+    url: `/${controller2}/getDataTreeNode`,
     method: 'post',
-    data,
-
+    // data,
+    params: {
+      pid: pid,//是否显示表
+      dataSource: dataSource,//数据源
+    }
   })
 }
 // 系统
-export function getBusinessSystemTree (data) {
-  console.log(data);
+export function getBusinessSystemTree (isShowTable, dataSource, onlyShowPublic) {
   return request({
     baseURL: baseURL,
     url: `/${BusinessSystem}/getBusinessSystemTree`,
     method: 'post',
-    data,
+    params: {
+      isShowTable: isShowTable,//是否显示表
+      dataSource: dataSource,//数据源
+      onlyShowPublic: onlyShowPublic,//数据表注册左侧树传参true,数据资源目录左侧树传参false
+    }
   })
 }
 // 主题
-export function getThemeTree (params) {
+export function getThemeTree (isShowTable, dataSource, onlyShowPublic) {
   return request({
     baseURL: baseURL,
     url: `/${BusinessSystem}/getThemeTree`,
     method: 'post',
-    params
-
+    params: {
+      isShowTable: isShowTable,//是否显示表
+      dataSource: dataSource,//数据源
+      onlyShowPublic: onlyShowPublic,//数据表注册左侧树传参true,数据资源目录左侧树传参false
+    }
   })
 }
 // 数据分层
-export function getLayeredTree (params) {
+export function getLayeredTree (isShowTable, dataSource, onlyShowPublic) {
   return request({
     baseURL: baseURL,
-    url: `/${controller2}/getLayeredTree`,
+    url: `/${BusinessSystem}/getLayeredTree`,
     method: 'post',
-    params
+    params: {
+      isShowTable: isShowTable,//是否显示表
+      dataSource: dataSource,//数据源
+      onlyShowPublic: onlyShowPublic,//数据表注册左侧树传参true,数据资源目录左侧树传参false
+    }
+  })
+}
 
+
+
+// 列表
+export function listByTreePage (data) {
+  return request({
+    baseURL: baseURL,
+    url: `/tableMeta/listByTreePage`,
+    method: 'post',
+    data
   })
 }
 // tree end···············
