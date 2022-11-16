@@ -86,6 +86,19 @@ export function listByTreePage (data) {
     data
   })
 }
+
+// 列表
+export function getEtlInfoByTableId (tableMetaUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/getEtlInfoByTableId`,
+    method: 'get',
+    params:{tableMetaUuid:tableMetaUuid}
+  })
+}
+
+
+
 // tree end···············
 
 
