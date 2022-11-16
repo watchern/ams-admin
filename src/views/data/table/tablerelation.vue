@@ -132,7 +132,7 @@
       <el-dialog v-if="dataTableTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="dataTableTree" title="请选择数据表" width="80%" :close-on-click-modal="false">
         <data-tree ref="dataTableTree" :data-user-id="dataUserId" :scene-code="sceneCode" />
         <div slot="footer">
-          <el-button tvype="primary" @click="getDataTable">确定</el-button>
+          <el-button type="primary" @click="getDataTable">确定</el-button>
           <el-button @click="dataTableTree = false">取消</el-button>
         </div>
       </el-dialog>
