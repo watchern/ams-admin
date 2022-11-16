@@ -126,7 +126,7 @@ import { addTable, updateTable } from "@/api/data/directory";
 import _ from "lodash"
 export default {
   // eslint-disable-next-line vue/require-prop-types
-  props: ["tableId", "openType", "forderId", "getTree" ,"clickId","isEdit"],
+  props: ["tableId", "openType", "forderId", "getTree","clickId","isEdit","relationForm"],
   data() {
     return {
       colLoading: false,
@@ -309,7 +309,30 @@ export default {
       addObj.colMetas = this.temp;
       addObj.folderUuid = this.forderId;
       addObj.displayTbName = this.tempTable.displayTbName;
-      addTable(addObj)
+      // var aa = this.relationForm;
+
+      const tableMeta = {
+            colMetas: this.temp,
+            // tableMetaUuid: this.ischeck_data.id,
+            displayTbName: this.tempTable.displayTbName,
+            dbName: this.tempTable.displayTbName,
+            tbName: this.tempTable.displayTbName,
+            folderUuid: this.forderId,//目录id
+            //资产认权人
+            personLiables: this.relationForm.personLiables,
+            tableRelationQuery: {
+              tableDataSource: this.relationForm.tableDataSource, //数据源
+              businessSystemId: this.relationForm.tableLayeredId, //所属系统主键
+              tableCode: this.relationForm.tableCode, //资产编码
+              tableLayeredId: this.relationForm.tableLayeredId, //资产分层主键
+              tableRemarks: this.relationForm.tableRemarks, //资产备注
+              tableThemeId: this.relationForm.tableThemeId, //资产主题主键
+              tableType: this.relationForm.tableType, //资产类型
+            },
+      };
+
+
+      addTable(tableMeta)
         .then((res) => {
           if (res.data.status === "500") {
             this.$notify({

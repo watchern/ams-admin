@@ -403,6 +403,7 @@
                 :open-type="openType"
                 :tab-show.sync="tabShow"
                 :get-tree="getTree"
+                :relationForm="relationForm"
                 :clickId="clickId"
                 :is-edit="isEdit"
                 @append-node="appendnode"
@@ -524,6 +525,118 @@
         </div>
       </div>
     </el-dialog>
+    <el-dialog v-if="relationVisible"
+               title="基本信息"
+               class="data_res"
+               :visible.sync="relationVisible"
+               width="50%">
+      <div>
+        <el-form ref="form"
+                 label-width="100px"
+                 :model="form"
+                 inline="false"
+                 :rules="rules"
+        >
+          <!-- :inline="false" -->
+          <div >
+            <el-form-item label="资产编码:" prop="tableCode" >
+              <el-input type="text" placeholder="请输入资产编码" v-model="form.tableCode"  style="width:220px"/>
+            </el-form-item>
+
+            <el-form-item label="资产类型:" prop="tableType">
+              <el-select v-model="form.tableType" placeholder="请选择资产类型">
+                <el-option v-for="item in data_type"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
+              </el-select>
+            </el-form-item>
+          </div>
+          <div >
+            <el-form-item label="资产主题:" prop="tableThemeId">
+              <el-select v-model="form.tableThemeId"  placeholder="请选择资产主题">
+                <el-option v-for="item in next_data.themeList"
+                           :key="item.codeUuid"
+                           :label="item.codeName"
+                           :value="item.codeUuid" />
+              </el-select>
+            </el-form-item>
+
+            <el-form-item label="所属系统:" prop="businessSystemId">
+              <el-select v-model="form.businessSystemId"  placeholder="请选择所属系统">
+                <el-option v-for="item in next_data.businessSystemList"
+                           :key="item.businessSystemUuid"
+                           :label="item.businessSystemName"
+                           :value="item.businessSystemUuid" />
+              </el-select>
+            </el-form-item>
+          </div>
+          <div>
+            <el-form-item label="资产分层:" prop="tableLayeredId">
+              <el-select v-model="form.tableLayeredId"  placeholder="请选择资产分层">
+                <el-option v-for="item in next_data.layeredList"
+                           :key="item.codeUuid"
+                           :label="item.codeName"
+                           :value="item.codeUuid" />
+              </el-select>
+            </el-form-item>
+
+            <el-form-item label="所属目录:" prop="folderUuid">
+              <el-cascader v-model="form.folderUuid"
+                           :options="next_contentsList"
+                           placeholder="请选择所属目录"
+                           clearable
+                           :props="props2"
+                           @change="handleChange"></el-cascader>
+            </el-form-item>
+          </div>
+          <div >
+            <div class="son_check">
+              <el-form-item label="资产负责人:" prop="personName" >
+                <el-input type="text" disabled v-model="form.personName" style="width:150px"/>
+              </el-form-item>
+              <el-button type="primary" class="oper-btn" @click="check_people()">选择</el-button>
+              <!-- </div>
+              <div class="son_check"> -->
+              <el-form-item label="数据源:" prop="tableDataSource">
+                <el-select v-model="form.tableDataSource"  placeholder="请选择数据源">
+                  <el-option v-for="item in tableDataSources"
+                             :key="item.value"
+                             :label="item.label"
+                             :value="item.value" />
+                </el-select>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="son">
+            <el-form-item label="资产备注:" prop="tableRemarks">
+              <el-input type="textarea"  v-model="form.tableRemarks"/>
+            </el-form-item>
+          </div>
+
+        </el-form>
+        <span slot="footer"
+              class="dialog-footer">
+          <el-button type="primary"
+                     :disabled="isDisable"
+                     @click="next()">下一步</el-button>
+          <el-button @click="relationVisible = false">关闭</el-button>
+
+        </span>
+      </div>
+    </el-dialog>
+
+    <el-dialog title="选择责任人"
+               :visible.sync="resultShareDialogIsSee"
+               width="50%">
+      <personTree ref="orgPeopleTree"></personTree>
+      <span slot="footer"
+            class="dialog-footer">
+          <el-button @click="resultShareDialogIsSee = false">取 消</el-button>
+          <el-button type="primary"
+                     @click="modelResultShare()">确 定</el-button>
+        </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -554,7 +667,10 @@ import { mapState } from "vuex";
 import { getInfo } from '@/api/user';
 import { getSystemRole} from '@/api/user';
 // import { getById } from '@TCB/api/tcbaudit/personalManage';
-
+import {
+  batchSaveTable_save,//下一步 保存
+  getListTree,//注册资产下一步
+} from "@/api/lhg/register.js";
 export default {
   computed: {
     // 因为时序问题，store中没有personcode时组件可能被加载 导致dataUserId==''  所以要加personcode!=='' 控制
@@ -580,6 +696,79 @@ export default {
   // eslint-disable-next-line vue/order-in-components
   data() {
     return {
+      //数据源类型
+      tableDataSources:[
+        {
+          value: 'Hive',
+          label: 'ADS'
+        },
+        {
+          value: 'Postgre',
+          label: 'MRS-DWS'
+        }
+      ],
+      query: {
+        dataSource: 'Postgre',//筛选条件
+      },
+      relationForm:{},
+      resultShareDialogIsSee: false,//选择责任人
+      rules: {
+        tableCode: [
+          { required: true, message: '请输入资产编码', trigger: 'blur' },
+        ],
+        tableType: [
+          { required: true, message: '请选择资产类型', trigger: 'change' },
+        ],
+
+        tableThemeId: [
+          { required: true, message: '请选择所属主题', trigger: 'change' },
+        ],
+        businessSystemId: [
+          { required: true, message: '请选择所属系统', trigger: 'change' },
+        ],
+
+        tableLayeredId: [
+          { required: true, message: '请选择资产分层', trigger: 'change' },
+        ],
+
+        folderUuid: [
+          { required: true, message: '请选择所属目录', trigger: 'change' },
+        ],
+        personUuid: [
+          { required: true, message: '请选择资产责任人', trigger: 'change' },
+        ],
+
+        // tableRemarks: [
+        //   { required: true, message: '请输入资产备注', trigger: 'blur' },
+        // ],
+      },
+      next_data: [],
+      props2: {
+        label: 'label',
+        children: 'children',
+        value: 'id'
+      },
+      next_contentsList: [],
+      data_type: [
+        {
+          value: 1,
+          label: '表'
+        }
+      ],
+      form: {
+        tableCode: '',// 资产编码
+        tableType: '',// 资产类型
+        tableThemeId: '',// 资产主题
+        businessSystemId: '',//所属系统
+        tableLayeredId: '',//资产分层
+        folderUuid: '',//所属目录
+        tableDataSource: '',//数据源
+        tableRemarks: '',//资产备注
+        personName: '',
+        personUuid: '',//资产责任人
+        personLiables: [],
+      },
+      relationVisible: false,
       previewKey:0,
       initPreview:false,
       // tree相关属性
@@ -884,6 +1073,56 @@ export default {
     }
   },
   methods: {
+    //保存选择的资产责任人
+    modelResultShare () {
+      // this.listLoading = true;
+      var runTaskRelUuids = [];
+      var personUuids = [];
+      var personNames = [];
+
+      var arr = []
+      var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
+      for (var i = 0; i < selectedNode.length; i++) {
+        personUuids.push(selectedNode[i].personuuid);
+        personNames.push(selectedNode[i].cnname);
+
+
+
+        this.form.personUuid = personUuids
+        this.form.personName = personNames
+
+        // this.form.personName = personNames.toString();
+        // console.log(this.form.personName);
+
+        let obj = {
+          personuuid: selectedNode[i].personuuid, personName: selectedNode[i].cnname
+        }
+        arr.push(obj)
+      }
+      this.form.personLiables = arr
+      console.log(this.form.personLiables);
+      this.resultShareDialogIsSee = false;
+    },
+    //选择资产负责人
+    check_people () {
+      this.resultShareDialogIsSee = true;
+      this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection();//清空选择的责任人
+    },
+    handleChange (val) {
+      // const checkedNode = this.$refs["cascaderArr"].getCheckedNodes();
+      // console.log(checkedNode[0].data.label);  //获取当前点击节点的label值
+      // console.log(checkedNode[0]);  //获取由label组成的数组
+      // return false
+      // this.check_next_contentsList = checkedNode[0]
+      // this.form.folderUuid = checkedNode[0].id
+      let folderUuid = val.toString();
+      console.log(folderUuid);
+
+      this.form.folderUuid = folderUuid
+
+      //
+    },
+
     changeDataType(row){
       const currRule = this.CommonUtil.DataTypeRules[row.dataType.toUpperCase().trim()];
       if (!this.disableEditColumn) {
@@ -1421,8 +1660,60 @@ export default {
       this.resourceForm.displayTbName = "";
       this.folderFormVisible = false;
     },
+    // 格式化数据，递归将空的children置为undefined
+    formatCascaderData (data) {
+      for (var i = 0; i < data.length; i++) {
+        if (data[i].children.length < 1) {
+          // children若为空数组，则将children设为undefined
+          data[i].children = undefined;
+        } else {
+          // children若不为空数组，则继续 递归调用 本方法
+          this.formatCascaderData(data[i].children)
+        }
+      }
+      return data
+    },
+    //下一步
+    next(){
+      var a = this.form;
+      this.relationForm = this.form;
+      this.relationVisible = false;
+      this.tableColumnVisible = true;
+      this.tabShow = "column";
+      this.tableId = "1";
+      this.openType = "addTable";
+    },
     // 新增表
     addTable() {
+      this.form = {
+        tableCode: '',// 资产编码
+        tableType: '',// 资产类型
+        tableThemeId: '',// 资产主题
+        businessSystemId: '',//所属系统
+        tableLayeredId: '',//资产分层
+        folderUuid: '',//所属目录
+        tableDataSource: '',//数据源
+        tableRemarks: '',//资产备注
+        personName: '',
+        personUuid: '',//资产责任人
+        personLiables: [],
+      };
+      getListTree().then((res) => {
+        this.next_data = res.data
+
+        this.next_contentsList = res.data.contentsList.children
+        this.next_contentsList.forEach(item => {
+          // console.log(item.children);
+
+
+          // 所属目录三级联动判断
+          if (item.children.length == 0) {
+            item.children = undefined
+          } else {
+            this.formatCascaderData(item.children)
+          }
+        })
+      })
       // 个人空间根目录禁止新增和导入操作,'ROOT'和'个人空间'是数据中写死的，若修改pid标识和个人空间名称需修改此处
       var addFlag = this.currTreeNode.pid == 'ROOT' && this.currTreeNode.title == this.personalTitle
       if(addFlag) {
@@ -1432,10 +1723,10 @@ export default {
         })
         return
       }
-      this.openType = "addTable";
-      this.tableColumnVisible = true;
-      this.tabShow = "column";
-      this.tableId = "1";
+
+      // this.tableColumnVisible = true;
+      this.relationVisible = true;
+
     },
     // 上传表
     uploadTable() {
@@ -1875,3 +2166,34 @@ export default {
   },
 };
 </script>
+<style scoped>
+
+.son_check {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.son_check >>> .el-button {
+  margin-left: 10px;
+}
+.data_res >>> .el-form-item__content {
+  flex: 1;
+  margin-left: 0 !important;
+  float: left;
+}
+.data_res >>> .el-textarea .el-textarea__inner {
+  resize: none;
+}
+
+.data_res >>> .el-form-item--medium .el-form-item__label {
+  float: left !important;
+  text-align: right;
+}
+.son >>> .el-form-item,
+.son >>> .el-select,
+.son >>> .el-cascader {
+  width: 100%;
+  display: flex;
+  margin-bottom: 0 !important;
+}
+</style>
