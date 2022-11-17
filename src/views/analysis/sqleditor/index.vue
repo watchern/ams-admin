@@ -946,7 +946,7 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
-      this.pushUuid = uuid2();
+      this.pushUuid = uuid2() + Date.parse(new Date());
       /*      const webSocketPath =
                   'ws://localhost:8086/analysis/websocket?' +
                   this.$store.getters.personuuid*/
