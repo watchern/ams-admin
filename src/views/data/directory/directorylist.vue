@@ -40,12 +40,15 @@
           :disabled="disAddTable"
           @click="addTable"
         />
+        <!-- 导入表按钮 -->
         <el-button
           type="primary"
           class="oper-btn import-table btn-width-md"
           :disabled="disAddTable"
-          @click="uploadTable"
+
+          @click="uploadRealtion"
         />
+        <!--  @click="uploadTable" -->
         <!--   新增文件夹     -->
         <!--<el-button
           type="primary"
@@ -212,6 +215,7 @@
       </span>
     </el-dialog>
     <!-- 导入表数据 -->
+    <!-- 导入表弹窗 -->
     <el-dialog
       :close-on-click-modal="false"
       v-if="uploadVisible"
@@ -696,6 +700,8 @@ export default {
   // eslint-disable-next-line vue/order-in-components
   data() {
     return {
+      //下一步按钮的标志位
+      nextStep: '',
       //数据源类型
       tableDataSources:[
         {
@@ -1344,6 +1350,9 @@ export default {
       //手动清空temp，让用户重新选择
       this.temp = []
     },
+
+
+
     // 执行下一步 读取文件列信息
     nextImport() {
       // 判断文件是否上传
@@ -1416,7 +1425,22 @@ export default {
         if (!this.isValidColumnImport(obj)) {
           return;
         }
+        if(this.form.tableDataSource == "Postgre" && (obj.dataType == 'VARCHAR' || obj.dataType == 'varchar')){
+          obj.dataType = 'char';
+        }
       }
+
+      this.uploadtempInfo.tableRelationQuery = {
+        businessSystemId: this.form.businessSystemId,
+        tableCode: this.form.tableCode,
+        tableDataSource: this.form.tableDataSource,
+        tableLayeredId: this.form.tableLayeredId,
+        tableRemarks: this.form.tableRemarks,
+        tableThemeId: this.form.tableThemeId,
+        tableType: this.form.tableType
+      }
+      this.uploadtempInfo.personLiables = this.form.personLiables;
+
       this.dialoading = true;
       importTable(this.uploadtempInfo).then((res) => {
         this.dialoading = false;
@@ -1513,7 +1537,7 @@ export default {
       this.webSocketImport.onclose = function (event) {
         console.log("导入表WebSocket已关闭连接")
       };
-
+      this.relationVisible = false;
 
     },
     judegeTable(val){
@@ -1673,18 +1697,10 @@ export default {
       }
       return data
     },
-    //下一步
-    next(){
-      var a = this.form;
-      this.relationForm = this.form;
-      this.relationVisible = false;
-      this.tableColumnVisible = true;
-      this.tabShow = "column";
-      this.tableId = "1";
-      this.openType = "addTable";
-    },
+
     // 新增表
     addTable() {
+      this.nextStep = 1;
       this.form = {
         tableCode: '',// 资产编码
         tableType: '',// 资产类型
@@ -1727,6 +1743,65 @@ export default {
       // this.tableColumnVisible = true;
       this.relationVisible = true;
 
+    },
+    //导入表打开资产关系表页面
+    uploadRealtion(){
+
+      this.nextStep = 2;
+      this.relationVisible = true;
+      this.form = {
+        tableCode: '',// 资产编码
+        tableType: '',// 资产类型
+        tableThemeId: '',// 资产主题
+        businessSystemId: '',//所属系统
+        tableLayeredId: '',//资产分层
+        folderUuid: '',//所属目录
+        tableDataSource: '',//数据源
+        tableRemarks: '',//资产备注
+        personName: '',
+        personUuid: '',//资产责任人
+        personLiables: [],
+      };
+      getListTree().then((res) => {
+        this.next_data = res.data
+        this.next_contentsList = res.data.contentsList.children
+        this.next_contentsList.forEach(item => {
+          // 所属目录三级联动判断
+          if (item.children.length == 0) {
+            item.children = undefined
+          } else {
+            this.formatCascaderData(item.children)
+          }
+        })
+      })
+        // 个人空间根目录禁止新增和导入操作,'ROOT'和'个人空间'是数据中写死的，若修改pid标识和个人空间名称需修改此处
+        var addFlag = this.currTreeNode.pid == 'ROOT' && this.currTreeNode.title == this.personalTitle
+        if(addFlag) {
+          this.$message({
+            type: 'info',
+            message: this.personalTitle + '需新建目录后才能新增表',
+          })
+          return
+        }
+        // this.tableColumnVisible = true;
+        this.relationVisible = true;
+    },
+    //下一步
+    next(){
+      //进行判断
+      //1： 新增表操作的下一步
+      if(this.nextStep == 1){
+        this.relationForm = this.form;
+        this.relationVisible = false;
+        this.tableColumnVisible = true;
+        this.tabShow = "column";
+        this.tableId = "1";
+        this.openType = "addTable";
+      }
+      //2：导入表操作的下一步
+      else if(this.nextStep == 2){
+        this.uploadTable();
+      }
     },
     // 上传表
     uploadTable() {
