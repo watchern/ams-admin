@@ -23,18 +23,32 @@ export function listUnCached (requestType, pid, tableName, dataSource) {
 }
 // tree end···············
 // 目录
-export function getDataTreeNode (pid, dataSource) {
+// export function getDataTreeNode (pid, dataSource) {
+//   return request({
+//     baseURL: baseURL,
+//     url: `/${controller2}/getDataTreeNode`,
+//     method: 'post',
+//     // data,
+//     params: {
+//       pid: pid,//是否显示表
+//       dataSource: dataSource,//数据源
+//     }
+//   })
+// }
+export function getDataTreeNode (dataSource) {
   return request({
     baseURL: baseURL,
-    url: `/${controller2}/getDataTreeNode`,
+    url: `/${controller2}/getPublicDataTree`,
     method: 'post',
     // data,
     params: {
-      pid: pid,//是否显示表
+      // pid: pid,//是否显示表
       dataSource: dataSource,//数据源
     }
   })
 }
+
+
 // 系统
 export function getBusinessSystemTree (isShowTable, dataSource, onlyShowPublic) {
   return request({
@@ -103,7 +117,7 @@ export function getEtlInfoByTableId (tableMetaUuid) {
 
 
 /* 缓存数据操作*/
-export function saveTable(data) {
+export function saveTable (data) {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/save`,
@@ -112,7 +126,7 @@ export function saveTable(data) {
   })
 }
 /* 批量缓存数据操作*/
-export function batchSaveTable(data) {
+export function batchSaveTable (data) {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/batchSave`,
@@ -120,7 +134,7 @@ export function batchSaveTable(data) {
     data
   })
 }
-export function saveTableInfo(data) {
+export function saveTableInfo (data) {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/saveTableInfo`,
@@ -128,7 +142,7 @@ export function saveTableInfo(data) {
     data
   })
 }
-export function updateTable(data) {
+export function updateTable (data) {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/update`,
@@ -136,15 +150,15 @@ export function updateTable(data) {
     data
   })
 }
-export function judgeName(tableName) {
+export function judgeName (tableName) {
   return request({
     baseURL: baseURL,
     url: `/validateTableName`,
     method: 'get',
-    params: { tableName: tableName}
+    params: { tableName: tableName }
   })
 }
-export function delTable(ids) {
+export function delTable (ids) {
   var param = ids.split('>')
   return request({
     baseURL: baseURL,
@@ -152,7 +166,8 @@ export function delTable(ids) {
     method: 'delete'
   })
 }
-export function getResELTree(data) {
+
+export function getResELTree (data) {
 
   if (!data) data = { dataUserId: '', sceneCode: '' }
   if (!data.type) data.type = 'common'
@@ -168,7 +183,7 @@ export function getResELTree(data) {
  * @param data
  * @returns {AxiosPromise}
  */
-export function getTableCol(tableMetaUuid) {
+export function getTableCol (tableMetaUuid) {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/getCols`,
@@ -182,7 +197,7 @@ export function getTableCol(tableMetaUuid) {
  * @param data
  * @returns {AxiosPromise}
  */
-export function getTableByCol(colMetaUuid) {
+export function getTableByCol (colMetaUuid) {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/getTableByCol`,
@@ -196,7 +211,7 @@ export function getTableByCol(colMetaUuid) {
  * @param data
  * @returns {AxiosPromise}
  */
-export function selectRelTable(tableMetaUuid) {
+export function selectRelTable (tableMetaUuid) {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/selectRelTable`,
@@ -205,7 +220,7 @@ export function selectRelTable(tableMetaUuid) {
   })
 }
 
-export function saveTableCols(sql) {
+export function saveTableCols (sql) {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/saveTableCols`,
@@ -214,7 +229,7 @@ export function saveTableCols(sql) {
   })
 }
 
-export function getTableInfo(tableMetaUuid) {
+export function getTableInfo (tableMetaUuid) {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/getTableInfo`,
@@ -223,7 +238,7 @@ export function getTableInfo(tableMetaUuid) {
   })
 }
 
-export function getCreateSql(tableMetaUuid) {
+export function getCreateSql (tableMetaUuid) {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/getCreateSql`,
@@ -232,7 +247,7 @@ export function getCreateSql(tableMetaUuid) {
   })
 }
 
-export function getBasicInfo(tableMetaUuid) {
+export function getBasicInfo (tableMetaUuid) {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/getBasicInfo`,
@@ -241,7 +256,7 @@ export function getBasicInfo(tableMetaUuid) {
   })
 }
 
-export function getColsInfo(tableMetaUuid) {
+export function getColsInfo (tableMetaUuid) {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/getColsInfo`,
@@ -250,7 +265,7 @@ export function getColsInfo(tableMetaUuid) {
   })
 }
 
-export function selectIndexInfo(tableMetaUuid) {
+export function selectIndexInfo (tableMetaUuid) {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/selectIndexInfo`,
@@ -259,7 +274,7 @@ export function selectIndexInfo(tableMetaUuid) {
   })
 }
 
-export function getSqlType() {
+export function getSqlType () {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/getSqlType`,
@@ -269,14 +284,14 @@ export function getSqlType() {
 
 /* 角色表操作*/
 const controller3 = 'roleTable'
-export function getResByRole(roleUuid) {
+export function getResByRole (roleUuid) {
   return request({
     baseURL: baseURL,
     url: `/${controller3}/getResByRole/${roleUuid}`,
     method: 'get'
   })
 }
-export function getRoleCols(roleUuid, tableUuid) {
+export function getRoleCols (roleUuid, tableUuid) {
   return request({
     baseURL: baseURL,
     url: `/${controller3}/getRoleCols`,
@@ -287,7 +302,7 @@ export function getRoleCols(roleUuid, tableUuid) {
     }
   })
 }
-export function saveRoleTable(roleUuid, rfolders, rtables, rcols) {
+export function saveRoleTable (roleUuid, rfolders, rtables, rcols) {
   return request({
     baseURL: baseURL,
     url: `/${controller3}/save`,
@@ -301,7 +316,7 @@ export function saveRoleTable(roleUuid, rfolders, rtables, rcols) {
   })
 }
 
-export function getAccessType() {
+export function getAccessType () {
   return request({
     baseURL: baseURL,
     url: `/${controller3}/getAccessType`,
@@ -309,3 +324,14 @@ export function getAccessType() {
   })
 }
 
+
+
+// 删除表单数据
+export function delete_data (data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/delete/${param[0]}/${param[1]}`,
+    method: 'delete',
+    data
+  })
+}

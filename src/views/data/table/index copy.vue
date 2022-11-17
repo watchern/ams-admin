@@ -2,48 +2,48 @@
   <div class="page-container">
     <div style="display:flex;width:100%;">
       <div>
-        <el-row width="100%" style="margin-bottom: 10px">
+        <el-row width="100%"
+                style="margin-bottom: 10px">
           <el-col :span="18">
-            <el-input v-model="filterText2" placeholder="输入关键字进行过滤" />
+            <el-input v-model="filterText2"
+                      placeholder="输入关键字进行过滤" />
           </el-col>
           <el-col :span="6">
             <div class="controlTreeNode">
-              <el-button
-                      title="展开全部节点"
-                      type="text"
-                      size="mini"
-                      class="expandTreeNode"
-                      @click="expandAllNodes()"
-              ><img class="expandIcon" src="../../../styles/icons/expandicon.png"/>
+              <el-button title="展开全部节点"
+                         type="text"
+                         size="mini"
+                         class="expandTreeNode"
+                         @click="expandAllNodes()"><img class="expandIcon"
+                     src="../../../styles/icons/expandicon.png" />
               </el-button>
-              <el-button
-                      title="收起全部节点"
-                      type="text"
-                      size="mini"
-                      class="collapseTreeNode"
-                      @click="collapseAllNodes()"
-              ><img class="collapseIcon" src="../../../styles/icons/collapseicon.png"/>
+              <el-button title="收起全部节点"
+                         type="text"
+                         size="mini"
+                         class="collapseTreeNode"
+                         @click="collapseAllNodes()"><img class="collapseIcon"
+                     src="../../../styles/icons/collapseicon.png" />
               </el-button>
             </div>
           </el-col>
         </el-row>
         <div class="tree-containerall">
-          <MyElTree
-            ref="tree2"
-            :props="props"
-            :load="loadNode2"
-            lazy
-            :expand-on-click-node="false"
-            :filter-node-method="filterNode"
-            :default-expanded-keys="['ROOT']"
-            class="filter-tree"
-            :highlight-current="true"
-            node-key="id"
-            @node-click="nodeClick"
-          >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
-              <i v-if="data.id === 'ROOT'" class="el-icon-s-home" />
-              <i v-if="data.type === 'FOLDER'" >
+          <MyElTree ref="tree2"
+                    :props="props"
+                    :load="loadNode2"
+                    lazy
+                    :expand-on-click-node="false"
+                    :filter-node-method="filterNode"
+                    :default-expanded-keys="['ROOT']"
+                    class="filter-tree"
+                    :highlight-current="true"
+                    node-key="id"
+                    @node-click="nodeClick">
+            <span slot-scope="{ node, data }"
+                  class="custom-tree-node">
+              <i v-if="data.id === 'ROOT'"
+                 class="el-icon-s-home" />
+              <i v-if="data.type === 'FOLDER'">
                 <span class="agreeicon0"></span>
               </i>
               <i v-if="data.type === 'TABLE'">
@@ -51,82 +51,73 @@
                 <!-- &#xecee; -->
                 <span class="icon iconfont agreeicon1"></span>
               </i>
-               <i v-if="data.type === 'VIEW'">
+              <i v-if="data.type === 'VIEW'">
                 <!-- style="padding-right: 3px; vertical-align: bottom" -->
-                    <!-- &#xecee; -->
+                <!-- &#xecee; -->
                 <span class="icon iconfont agreeicon4"></span>
               </i>
 
-              <i
-                v-if="data.type === 'COLUMN'"
-                class="el-icon-c-scale-to-original"
-              />
+              <i v-if="data.type === 'COLUMN'"
+                 class="el-icon-c-scale-to-original" />
               <span>{{ node.label }}</span>
               <span style="margin-left: 10px">
                 <!--添加： 根节点以及手工维护的节点-->
-                <el-button
-                  v-if="
+                <el-button v-if="
                     data.id === 'ROOT' ||
                     (data.extMap && data.extMap.folder_type === 'maintained')
                   "
-                  type="text"
-                  size="mini"
-                  class="tree-line-btn"
-                  @click.stop="() => handleCreateFolder(node, data)"
-                  ><svg-icon icon-class="icon-add-1" /></el-button>
+                           type="text"
+                           size="mini"
+                           class="tree-line-btn"
+                           @click.stop="() => handleCreateFolder(node, data)">
+                  <svg-icon icon-class="icon-add-1" />
+                </el-button>
                 <!--修改： 手工维护的节点-->
-                <el-button
-                  v-if="data.extMap && data.extMap.folder_type === 'maintained'"
-                  type="text"
-                  size="mini"
-                  class="tree-line-btn"
-                  @click.stop="() => handleUpdateFolder(node, data)"
-                >
-                 <svg-icon icon-class="icon-edit-1" />
+                <el-button v-if="data.extMap && data.extMap.folder_type === 'maintained'"
+                           type="text"
+                           size="mini"
+                           class="tree-line-btn"
+                           @click.stop="() => handleUpdateFolder(node, data)">
+                  <svg-icon icon-class="icon-edit-1" />
                 </el-button>
                 <!--删除： 手工维护的节点-->
-                <el-button
-                  v-if="
+                <el-button v-if="
                     (data.extMap && data.extMap.folder_type === 'maintained') ||
                     data.type === 'TABLE'||
                     data.type === 'VIEW'
                   "
-                  type="text"
-                  size="mini"
-                  class="tree-line-btn"
-                  @click.stop="() => handleRemove(node, data)"
-                >
+                           type="text"
+                           size="mini"
+                           class="tree-line-btn"
+                           @click.stop="() => handleRemove(node, data)">
                   <svg-icon icon-class="icon-delete-1" />
                 </el-button>
               </span>
-              <el-link v-if="data.id === 'ROOT'" class="select-link" type="primary" @click.stop="registTable">注册资源</el-link>
+              <el-link v-if="data.id === 'ROOT'"
+                       class="select-link"
+                       type="primary"
+                       @click.stop="registTable">注册资源</el-link>
             </span>
           </MyElTree>
         </div>
       </div>
       <div style="margin-left: 50px;width:85%;">
-        <tabledatatabs
-          v-if="divInfo"
-          ref="tabledatatabs"
-          open-type="tableRegister"
-          :table-id="tableId"
-          :tab-show.sync="tabShow"
-          :ifShowPlace="true"
-        />
+        <tabledatatabs v-if="divInfo"
+                       ref="tabledatatabs"
+                       open-type="tableRegister"
+                       :table-id="tableId"
+                       :tab-show.sync="tabShow"
+                       :ifShowPlace="true" />
       </div>
     </div>
-    <el-dialog
-      :close-on-click-modal="false"
-      :default-expand-all="true"
-      :title="'选择注册表'"
-      :visible.sync="registTableFlag"
-      width="600px"
-    >
-      <el-input
-        style="width: 70%"
-        v-model="filterText1"
-        placeholder="输入想要查询的表名称（模糊搜索）"
-      />
+    <el-dialog :close-on-click-modal="false"
+               :default-expand-all="true"
+               :title="'选择注册表'"
+               :visible.sync="registTableFlag"
+               width="600px">
+      <el-input style="width: 70%"
+                v-model="filterText1"
+                placeholder="输入想要查询的表名称（模糊搜索）" />
       <el-button @click="getTables"> 搜索 </el-button>
       <!--<el-select defaultFirstOption="true" @change="handleSelectChange" :value="selectValue">
           <el-option label="显示所有" value="all"></el-option>
@@ -134,26 +125,28 @@
           <el-option label="只显示已注册" value="yesPart"></el-option>
         </el-select>-->
       <div class="tree-containerselect">
-        <MyElTree
-          ref="tree1"
-          v-loading="treeLoading"
-          :props="props"
-          :data="tableData"
-          class="filter-tree"
-          show-checkbox
-        >
-          <span slot-scope="{ node, data }" class="custom-tree-node">
+        <MyElTree ref="tree1"
+                  v-loading="treeLoading"
+                  :props="props"
+                  :data="tableData"
+                  class="filter-tree"
+                  show-checkbox>
+          <span slot-scope="{ node, data }"
+                class="custom-tree-node">
             <!-- class="el-icon-menu"  style="color: #409eff" -->
-            <i  v-if="data.type === 'USER'">
-            <img src="../../../assets/img/table_0.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+            <i v-if="data.type === 'USER'">
+              <img src="../../../assets/img/table_0.png"
+                   style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
             </i>
             <!-- class="el-icon-tickets"  style="color: #409eff" -->
-            <i  v-if="data.type === 'TABLE'">
-            <img src="../../../assets/img/table_1.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+            <i v-if="data.type === 'TABLE'">
+              <img src="../../../assets/img/table_1.png"
+                   style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
             </i>
             <!-- class="el-icon-s-ticket"  style="color: #409eff" -->
-            <i  v-if="data.type === 'COLUMN'">
-            <img src="../../../assets/img/table_2.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+            <i v-if="data.type === 'COLUMN'">
+              <img src="../../../assets/img/table_2.png"
+                   style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
             </i>
             <span>{{ node.label }}</span>
           </span>
@@ -161,27 +154,25 @@
       </div>
       <span slot="footer">
         <el-button @click="registTableFlag = false">取消</el-button>
-        <el-button type="primary" @click="flagSelectTable">保存</el-button>
+        <el-button type="primary"
+                   @click="flagSelectTable">保存</el-button>
       </span>
     </el-dialog>
-    <el-dialog
-      :title="dialogTitle"
-      :visible.sync="folderFormVisible"
-      width="600px"
-      :close-on-click-modal="false"
-    >
-      <el-form ref="folderForm" :model="folderForm" class="detail-form">
+    <el-dialog :title="dialogTitle"
+               :visible.sync="folderFormVisible"
+               width="600px"
+               :close-on-click-modal="false">
+      <el-form ref="folderForm"
+               :model="folderForm"
+               class="detail-form">
         <el-form-item label="文件夹名称">
-          <el-input v-model="folderForm.folderName"  />
+          <el-input v-model="folderForm.folderName" />
         </el-form-item>
       </el-form>
       <span slot="footer">
         <el-button @click="folderFormVisible = false">取消</el-button>
-        <el-button
-          type="primary"
-          @click="dialogStatus === 'create' ? createFolder() : updateFolder()"
-          >保存</el-button
-        >
+        <el-button type="primary"
+                   @click="dialogStatus === 'create' ? createFolder() : updateFolder()">保存</el-button>
       </span>
     </el-dialog>
   </div>
@@ -200,7 +191,7 @@ import { commonNotify } from "@/utils";
 
 export default {
   components: { MyElTree, tabledatatabs },
-  data() {
+  data () {
     return {
       ifExpandAll: false, // 是否展开所有树节点
       tabShow: "basicinfo",
@@ -233,11 +224,11 @@ export default {
       selectValue: 1,
       treeLoading: false,
       tableData: [],
-      chooseTables:[],
+      chooseTables: [],
     };
   },
   computed: {
-    dialogTitle() {
+    dialogTitle () {
       return (
         (this.parentNode.label == null
           ? ""
@@ -245,44 +236,44 @@ export default {
         this.textMap[this.dialogStatus]
       );
     },
-    fromDisabled() {
+    fromDisabled () {
       return false;
     },
-    toDisabled() {
+    toDisabled () {
       return false;
     },
   },
   watch: {
-    filterText1(val) {
+    filterText1 (val) {
       this.$refs.tree1.filter(val);
       // eslint-disable-next-line indent
     },
-    filterText2(val) {
+    filterText2 (val) {
       this.$refs.tree2.filter(val)
     }
   },
-  created() {},
+  created () { },
   methods: {
-      expandAllNodes(){
-          this.ifExpandAll = true;
-          this.changeTreeNodeStatus(this.$refs.tree2.store.root)
-      },
-      collapseAllNodes(){
-          this.ifExpandAll = false;
-          this.changeTreeNodeStatus(this.$refs.tree2.store.root)
-      },
-      changeTreeNodeStatus (node) {
-          node.ifExpandAll = this.ifExpandAll
-          for (let i = 0; i < node.childNodes.length; i++) {
-              // 改变节点的自身expanded状态
-              node.childNodes[i].expanded = this.ifExpandAll
-              // 遍历子节点
-              if (node.childNodes[i].childNodes.length > 0) {
-                  this.changeTreeNodeStatus(node.childNodes[i])
-              }
-          }
-      },
-    filterNode(value, data) {
+    expandAllNodes () {
+      this.ifExpandAll = true;
+      this.changeTreeNodeStatus(this.$refs.tree2.store.root)
+    },
+    collapseAllNodes () {
+      this.ifExpandAll = false;
+      this.changeTreeNodeStatus(this.$refs.tree2.store.root)
+    },
+    changeTreeNodeStatus (node) {
+      node.ifExpandAll = this.ifExpandAll
+      for (let i = 0; i < node.childNodes.length; i++) {
+        // 改变节点的自身expanded状态
+        node.childNodes[i].expanded = this.ifExpandAll
+        // 遍历子节点
+        if (node.childNodes[i].childNodes.length > 0) {
+          this.changeTreeNodeStatus(node.childNodes[i])
+        }
+      }
+    },
+    filterNode (value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
@@ -315,7 +306,7 @@ export default {
         resolve([])
       }
     },*/
-    getTables() {
+    getTables () {
       this.treeLoading = true;
       listUnCached(
         "table",
@@ -326,7 +317,7 @@ export default {
         this.tableData = resp.data;
       });
     },
-    loadNode2(node, resolve) {
+    loadNode2 (node, resolve) {
       if (!node.data) {
         resolve([{ id: "ROOT", label: "数据集", leaf: false }]);
       } else {
@@ -335,7 +326,7 @@ export default {
         });
       }
     },
-    registTable() {
+    registTable () {
       var ckFolder = this.$refs.tree2.getCurrentNode();
       // console.log(ckFolder); return;
       if (!ckFolder || ckFolder.type !== "FOLDER") {
@@ -347,7 +338,7 @@ export default {
       this.registTableFlag = true
       this.getTables()
     },
-    flagSelectTable() {
+    flagSelectTable () {
       var ckFolder = this.$refs.tree2.getCurrentNode();
       if (!ckFolder || ckFolder.type !== "FOLDER") {
         this.$notify(
@@ -379,29 +370,29 @@ export default {
           });
         // 批量保存
         batchSaveTable(this.chooseTables).then((res) => {
-          if (res.code!= 0) {
-            this.$message({type:'error', message:res.msg})
+          if (res.code != 0) {
+            this.$message({ type: 'error', message: res.msg })
             return
           }
           // 刷新ROOT节点
           this.refreshNodeBy("ROOT");
           this.$notify(
-              commonNotify({
-                type: "success",
-                message: `同步成功！`,
-              })
+            commonNotify({
+              type: "success",
+              message: `同步成功！`,
+            })
           );
         });
         this.registTableFlag = false;
       }
     },
     // 刷根据节点ID刷新节点
-    refreshNodeBy(id){
+    refreshNodeBy (id) {
       let node = this.$refs.tree2.getNode(id); // 通过节点id找到对应树节点对象
       node.loaded = false;
       node.expand(); // 主动调用展开节点方法，重新查询该节点下的所有子节点
     },
-    nodeClick(data, node, tree) {
+    nodeClick (data, node, tree) {
       this.divInfo = false;
       if (node.data.type === "TABLE") {
         this.$nextTick(() => {
@@ -410,12 +401,12 @@ export default {
         });
       }
     },
-    resetFolderForm() {
+    resetFolderForm () {
       Object.keys(this.folderForm).forEach((key) => {
         this.$set(this.folderForm, key, null);
       });
     },
-    handleCreateFolder(node, data) {
+    handleCreateFolder (node, data) {
       this.resetFolderForm();
       this.parentNode = node;
       this.dialogStatus = "create";
@@ -429,7 +420,7 @@ export default {
       this.folderForm.fullPath = fullPath.join("/");
       this.folderFormVisible = true;
     },
-    handleUpdateFolder(node, data) {
+    handleUpdateFolder (node, data) {
       this.resetFolderForm();
       this.tempData = data;
       this.dialogStatus = "update";
@@ -444,14 +435,14 @@ export default {
       // this.folderForm.fullPath = fullPath.join("/");
       this.folderFormVisible = true;
     },
-    handleRemove(node, data) {
+    handleRemove (node, data) {
       this.$confirm("是否删除？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
-          if (data.type === "TABLE" || data.type === "VIEW" ) {
+          if (data.type === "TABLE" || data.type === "VIEW") {
             delTable(data.id).then((resp) => {
               this.$notify(
                 commonNotify({ type: "success", message: "删除成功！" })
@@ -467,11 +458,11 @@ export default {
             });
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     },
-    createFolder() {
-      if(this.folderForm.folderName == null || this.folderForm.folderName.trim().length == 0){
-        this.$message({type:'info',message:"文件夹名不可为空，请重新输入文件夹名！"})
+    createFolder () {
+      if (this.folderForm.folderName == null || this.folderForm.folderName.trim().length == 0) {
+        this.$message({ type: 'info', message: "文件夹名不可为空，请重新输入文件夹名！" })
         return
       }
       saveFolder(this.folderForm).then((resp) => {
@@ -489,9 +480,9 @@ export default {
         this.folderFormVisible = false;
       });
     },
-    updateFolder() {
-      if(this.folderForm.folderName == null || this.folderForm.folderName.trim().length == 0){
-        this.$message({type:'info',message:"文件夹名不可为空，请重新输入文件夹名！"})
+    updateFolder () {
+      if (this.folderForm.folderName == null || this.folderForm.folderName.trim().length == 0) {
+        this.$message({ type: 'info', message: "文件夹名不可为空，请重新输入文件夹名！" })
         return
       }
       updateFolder(this.folderForm).then((resp) => {
@@ -505,8 +496,8 @@ export default {
         this.refreshNodeBy("ROOT");
       });
     },
-    handleSelectChange(val) {},
-    removeTable() {
+    handleSelectChange (val) { },
+    removeTable () {
       var ids = this.$refs.tree2.getCheckedKeys();
       delTable(ids.join(",")).then((resp) => {
         this.$notify(
@@ -595,22 +586,22 @@ export default {
   *vertical-align: middle;
 }
 .agreeicon4 {
-    display: inline-block;
-    height: 16px;
-    width: 16px;
-    margin-right: 2px;
-    margin-top: 0;
-    background-size: 100%;
-    background-image: url("../../../styles/icons/view.png");
-    vertical-align: top;
-    *vertical-align: middle;
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  margin-right: 2px;
+  margin-top: 0;
+  background-size: 100%;
+  background-image: url("../../../styles/icons/view.png");
+  vertical-align: top;
+  *vertical-align: middle;
 }
-.controlTreeNode{
+.controlTreeNode {
   width: 100%;
   height: 36px;
   text-align: center;
 }
-.expandTreeNode{
+.expandTreeNode {
   position: relative;
   border: 1px #656565;
   top: 6px;
@@ -618,18 +609,18 @@ export default {
   height: 25px;
   width: 25px;
   display: inline-block;
-  background: #559ED4;
-  &:active{
+  background: #559ed4;
+  &:active {
     background: #5ac3eb !important;
   }
-  &:hover{
+  &:hover {
     background: #5ac3eb !important;
   }
-  &:focus{
+  &:focus {
     background: #5ac3eb !important;
   }
 }
-.collapseTreeNode{
+.collapseTreeNode {
   position: relative;
   border: 1px #656565;
   top: 6px;
@@ -637,28 +628,28 @@ export default {
   height: 25px;
   width: 25px;
   display: inline-block;
-  background: #559ED4;
-  &:active{
+  background: #559ed4;
+  &:active {
     background: #5ac3eb !important;
   }
-  &:hover{
+  &:hover {
     background: #5ac3eb !important;
   }
-  &:focus{
+  &:focus {
     background: #5ac3eb !important;
   }
 }
-.expandIcon{
+.expandIcon {
   height: 12px;
   z-index: 100;
   position: relative;
 }
-.collapseIcon{
+.collapseIcon {
   height: 12px;
   z-index: 100;
   position: relative;
 }
-.tree-line-btn{
-  background: rgba(255,255,255,0) !important;
+.tree-line-btn {
+  background: rgba(255, 255, 255, 0) !important;
 }
 </style>
