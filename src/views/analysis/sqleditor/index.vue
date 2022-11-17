@@ -723,6 +723,7 @@ export default {
         // 切换数据源后刷新页面重新获取对应数据源的数据
           this.executeLoading = true
           this.loadText = '正在重新加载数据表及函数...'
+          this.getWebSocket();
           initFunctionTree(this.dataSource)
           initTableTip(this.dataUserId, this.sceneCode1).then((result) => {
               initTableTree(result, this.dataSource)
