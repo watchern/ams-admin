@@ -35,7 +35,7 @@ VUE_APP_BASE_SKINCONTROL = 'old-login'
 VUE_APP_BASE_SKIN = 'update-blue'
 ```
 #首页配置 first旧版首页
+```
 VUE_APP_INDEX_PAGE = 'first'
+```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
