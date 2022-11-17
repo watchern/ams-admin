@@ -3787,6 +3787,9 @@ export default {
       }else{
         _minus=6;
       }
+      if(documentClientHeight == "" && this.useType == "sqlEditor"){
+        _minus=-11;
+      }
       this.chartConfigs = {
         chart: [],
         layout: [{ x: 0, y: 0, w: 12, h: _h-_minus, i: "0" }],
