@@ -1101,7 +1101,7 @@ export default {
         // console.log(this.form.personName);
 
         let obj = {
-          personuuid: selectedNode[i].personuuid, personName: selectedNode[i].cnname
+          personUuid: selectedNode[i].personuuid, personName: selectedNode[i].cnname
         }
         arr.push(obj)
       }

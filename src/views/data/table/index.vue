@@ -17,7 +17,7 @@
       <div class="padding10">
         <el-input v-model="filterText2"
                   placeholder="输入关键字进行过滤" />
-        <!-- 
+        <!--
         <el-input v-model="filterText3"
                   v-else
                   placeholder="输入关键字进行过滤" /> -->
@@ -723,10 +723,10 @@ export default {
     // }
     // },
     // loadNode2 (node, resolve) {
-    //   
+    //
     //   alert(0)
     //   if (node.level === 0) {
-    //     // 
+    //     //
     //     //  父级
     //     resolve(this.treeData);
     //   }
@@ -741,17 +741,17 @@ export default {
     // getTagList (pid) {
     //   getDataTreeNode(pid, this.query.dataSource).then((resp) => {
     //     this.treeData = resp.data
-    //     
+    //
     //     // let _data = resp.data;
     //     // return resolve(this.treeData)
     //   });
     // },
     // // 子节点
     // loadNodeChildren (pid, resolve) {
-    //   
+    //
     //   getDataTreeNode(pid, this.query.dataSource).then((resp) => {
     //     let _data = resp.data;
-    //     
+    //
     //     let resArr = [];//插入子级数据
     //     _data.forEach(item => {
     //       item = JSON.parse(JSON.stringify(item));
@@ -764,7 +764,7 @@ export default {
     //         // relateCount: item.relateCount
     //       });
     //     })
-    //     
+    //
     //     this.$refs.tree3.updateKeyChildren(node.data.id, resArr);
     //     return resolve(_data);
     //   });
@@ -862,7 +862,7 @@ export default {
       listByTreePage(params).then((resp) => {
         this.list = resp.data
         this.listLoading = false
-        // 
+        //
       });
     },
     // 删除
@@ -1017,7 +1017,7 @@ export default {
         // 分层
         this.post_getLayeredTree();//分层
       } else {
-        // 目录 
+        // 目录
         this.post_getDataTreeNode();//目录
       }
 
@@ -1066,7 +1066,7 @@ export default {
       } else {
         this.is_next = false
       }
-      // 
+      //
     },
 
 
@@ -1078,7 +1078,7 @@ export default {
         this.next_data = res.data
         this.next_contentsList = res.data.contentsList.children
         this.next_contentsList.forEach(item => {
-          // 
+          //
           // debugger;
 
           // 所属目录三级联动判断
@@ -1160,11 +1160,12 @@ export default {
               tableType: this.form.tableType, //资产类型
             },
           };
-          // 
+
+          //
           // 将选中的表信息封装入节点对象集合
           this.chooseTables.push(tableForm);
           // return false
-          // 
+          //
           batchSaveTable_save(this.chooseTables).then((resp) => {
             if (resp.code == 0) {
               this.$message({
@@ -1220,13 +1221,15 @@ export default {
         personNames.push(selectedNode[i].cnname);
 
         this.form.personName_str = personNames.join(",");
-        // 
+        //
         this.form.personUuid = personUuids
         this.form.personName = personNames
         // this.form.personName = personNames.toString();
-        // 
+        //
+        // console.log(selectedNode[i].cnname)
+        // console.log(selectedNode[i]);
         let obj = {
-          personuuid: selectedNode[i].personuuid, personName: selectedNode[i].cnname
+          personUuid: selectedNode[i].personuuid, personName: selectedNode[i].cnname
         }
         arr.push(obj)
       }
