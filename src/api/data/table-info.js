@@ -100,6 +100,19 @@ export function listByTreePage (data) {
     data
   })
 }
+
+// etl获取数据资产信息
+export function getEtlInfoByTableId (tableMetaUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/getEtlInfoByTableId`,
+    method: 'get',
+    params:{tableMetaUuid:tableMetaUuid}
+  })
+}
+
+
+
 // tree end···············
 
 
