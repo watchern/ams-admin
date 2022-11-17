@@ -704,10 +704,10 @@ export default {
       nextStep: '',
       //数据源类型
       tableDataSources:[
-        {
-          value: 'Hive',
-          label: 'ADS'
-        },
+        // {
+        //   value: 'Hive',
+        //   label: 'ADS'
+        // },
         {
           value: 'Postgre',
           label: 'MRS-DWS'

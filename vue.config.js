@@ -164,7 +164,7 @@ module.exports = {
     "ag-grid-vue",
     "ams-clue-vue",
     "ams-datamax",
-    "ams-etlscheduler-vue",
+    "ams-etlscheduler-hx",
     "ams-file-vue",
     "ams-starflow-vue",
     "axios",
@@ -219,7 +219,7 @@ module.exports = {
       resolve: {
         alias: {
           '@': resolve('src'),
-          '@ETL': 'ams-etlscheduler-vue/src',
+          '@ETL': 'ams-etlscheduler-hx/src',
         '@MAX': 'ams-datamax/src'
         }
       },
@@ -332,7 +332,7 @@ module.exports = {
                 amsEtlschedulerUi: {
                   name: 'chunk-elementUI', // split elementUI into a single package
                   priority: 20, // the weight needs to be larger than libs and app or it will be packaged into libs or app
-                  test: /[\\/]node_modules[\\/]_?ams-etlscheduler-vue(.*)/ // in order to adapt to cnpm
+                  test: /[\\/]node_modules[\\/]_?ams-etlscheduler-hx(.*)/ // in order to adapt to cnpm
                 },
                 commons: {
                   name: 'chunk-commons',
