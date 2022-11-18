@@ -150,7 +150,7 @@
                 数据源：
                 <el-select
                         v-model="dataSource"
-                        style="width: 100px"
+                        style="width: 120px"
                 >
                   <el-option
                           v-for=" item in dataSourceList"
