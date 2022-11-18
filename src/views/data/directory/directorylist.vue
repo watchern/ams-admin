@@ -704,10 +704,10 @@ export default {
       nextStep: '',
       //数据源类型
       tableDataSources:[
-        {
-          value: 'Hive',
-          label: 'ADS'
-        },
+        // {
+        //   value: 'Hive',
+        //   label: 'ADS'
+        // },
         {
           value: 'Postgre',
           label: 'MRS-DWS'
@@ -1101,7 +1101,7 @@ export default {
         // console.log(this.form.personName);
 
         let obj = {
-          personuuid: selectedNode[i].personuuid, personName: selectedNode[i].cnname
+          personUuid: selectedNode[i].personuuid, personName: selectedNode[i].cnname
         }
         arr.push(obj)
       }

@@ -101,7 +101,7 @@ export function listByTreePage (data) {
   })
 }
 
-// 列表
+// etl获取数据资产信息
 export function getEtlInfoByTableId (tableMetaUuid) {
   return request({
     baseURL: baseURL,

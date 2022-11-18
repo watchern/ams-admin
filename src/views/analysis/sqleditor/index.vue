@@ -723,6 +723,7 @@ export default {
         // 切换数据源后刷新页面重新获取对应数据源的数据
           this.executeLoading = true
           this.loadText = '正在重新加载数据表及函数...'
+          this.getWebSocket();
           initFunctionTree(this.dataSource)
           initTableTip(this.dataUserId, this.sceneCode1).then((result) => {
               initTableTree(result, this.dataSource)
@@ -946,7 +947,7 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
-      this.pushUuid = uuid2();
+      this.pushUuid = uuid2() + Date.parse(new Date());
       /*      const webSocketPath =
                   'ws://localhost:8086/analysis/websocket?' +
                   this.$store.getters.personuuid*/
