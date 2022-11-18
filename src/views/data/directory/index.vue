@@ -1,6 +1,9 @@
 <template>
-  <div class="tree-list-container" style="display:flex; justify-content:space-around">
-    <div class="tree">
+  <div class="tree-list-container"
+       style="display:flex; justify-content:space-around">
+    <!-- left_conter -->
+    <div class="left_conter">
+      <!-- <div class="tree"> -->
       <!-- <el-row>
         <el-col>
           <el-select v-model="currentSceneUuid" placeholder="请选择">
@@ -13,13 +16,27 @@
           </el-select>
         </el-col>
       </el-row> -->
-      <dataTree v-if="isTreeShow" ref="dataTree" :data-user-id="directyDataUserId" :scene-code="directySceneCode"
-                @node-click="nodeclick" :folder-show="true" @create-folder="createFolder" @rename-resource="renameResource"
-                @del-data="delData"/>
+      <dataTree v-if="isTreeShow"
+                ref="dataTree"
+                :data-user-id="directyDataUserId"
+                :scene-code="directySceneCode"
+                @node-click="nodeclick"
+                :folder-show="true"
+                @create-folder="createFolder"
+                @rename-resource="renameResource"
+                @del-data="delData" />
     </div>
-    <div class="divContent">
-      <BaseDirectoryList ref="listData" :data-user-id="directyDataUserId" :scene-code="directySceneCode" @append-node="appendnode" @remove="remove" @refresh="refresh" />
+    <!-- </div> -->
+    <div class="right_conter padding10">
+
+      <BaseDirectoryList ref="listData"
+                         :data-user-id="directyDataUserId"
+                         :scene-code="directySceneCode"
+                         @append-node="appendnode"
+                         @remove="remove"
+                         @refresh="refresh" />
     </div>
+
   </div>
 </template>
 
@@ -31,7 +48,7 @@ import TreeCommon from "@/components/DataAssets/tree_common.vue"
 export default {
   components: { dataTree, BaseDirectoryList, TreeCommon },
   props: ['dataUserId', 'sceneCode'],
-  data() {
+  data () {
     return {
       allScene: [],
       currentSceneUuid: this.$store.getters.scenecode,
@@ -41,22 +58,22 @@ export default {
     }
   },
   computed: {
-    currentScene() {
+    currentScene () {
       return this.allScene.filter(e => { return e.sceneCode === this.currentSceneUuid })[0]
     }
   },
-  created() {
+  created () {
     this.initDirectory()
   },
-  mounted(){
+  mounted () {
     //手动触发一次点击事件展示默认结构
-    setTimeout(function(){
+    setTimeout(function () {
       $('.el-tree-node:eq(0)').click()
-    },1000)
+    }, 1000)
 
   },
   methods: {
-    initDirectory() {
+    initDirectory () {
       if (typeof (this.dataUserId) !== 'undefined') {
         this.directyDataUserId = this.dataUserId
       }
@@ -64,33 +81,33 @@ export default {
         this.directySceneCode = this.sceneCode
       }
     },
-    reload() {
+    reload () {
       this.isTreeShow = false
       this.isRouterAlive = false
       this.$nextTick(() => (this.isTreeShow = true))
     },
-    nodeclick(data, node, tree) {
+    nodeclick (data, node, tree) {
       this.$refs.listData.getList(data, node, tree)
     },
     //创建文件夹
-    createFolder(node) {
+    createFolder (node) {
       this.$refs.listData.createFolderByTree(node)
     },
     // 重命名文件夹
-    renameResource(node) {
+    renameResource (node) {
       this.$refs.listData.renameResourceByTree(node)
     },
     // 删除文件夹
-    delData(node){
+    delData (node) {
       this.$refs.listData.delDataByTree(node)
     },
-    appendnode(childData, parentNode) {
+    appendnode (childData, parentNode) {
       this.$refs.dataTree.appendnode(childData, parentNode)
     },
-    remove(data, parentNode) {
+    remove (data, parentNode) {
       this.$refs.dataTree.remove(data, parentNode)
     },
-    refresh(query) {
+    refresh (query) {
       this.$refs.dataTree.refresh(query)
     }
   }
@@ -98,20 +115,31 @@ export default {
 </script>
 
 <style scoped>
+@import url("./../../../assets/css/common.css");
+.page-container {
+  padding: 0 0 0 20px !important;
+}
+.left_conter {
+  position: relative;
+}
+
+.left_conter >>> .el-tabs__item {
+  width: 25%;
+  text-align: center;
+}
+.left_conter >>> .el-tabs__nav {
+  width: 100%;
+}
 .tree {
-  width: 16%;
-  margin-left: 1%;
-  height: 100%;
+  /* width: 16%; */
+  /* margin-left: 1%; */
+  /* height: 100%; */
 }
 .tree >>> .filter-tree {
   margin-top: 0;
 }
 .tree .tree-option {
   margin-top: 0 !important;
-
-}
-.divContent {
-  width: 83%;
 }
 .agreeicon0 {
   display: inline-block;

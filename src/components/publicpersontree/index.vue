@@ -2,50 +2,41 @@
   <div>
     <el-container class="app-container">
       <el-aside class="tree-side">
-        <el-input
-          v-model="filterText"
-          placeholder="输入关键字进行过滤"
-          class="tree-search"
-        />
-        <el-tree
-          :data="data"
-          :props="defaultProps"
-          @node-click="handleNodeClick"
-          :filter-node-method="filterNode"
-          ref="tree"
-        ></el-tree>
+        <el-input v-model="filterText"
+                  placeholder="输入关键字进行过滤"
+                  class="tree-search" />
+        <el-tree :data="data"
+                 :props="defaultProps"
+                 @node-click="handleNodeClick"
+                 :filter-node-method="filterNode"
+                 ref="tree"></el-tree>
       </el-aside>
       <div style="flex: 1;"
            class="padding10 child_table">
         <el-table v-loading="listLoading"
+                  ref="multipleTable"
                   style="width: 100%;"
-        :data="list"
-        border
-        fit
-        highlight-current-row
-        @selection-change="handleSelectionChange"
-      >
-        <el-table-column type="selection" width="55" />
-        <el-table-column
-          label="人员名称"
-          align="center"
-          prop="cnname"
-        />
-        <el-table-column
-          label="组织名称"
-          align="center"
-          prop="org.cnname"
-        />
-      </el-table>
-      <el-pagination
-          :current-page="page"
-          :page-sizes="[10, 20, 30, 50]"
-          :page-size="limit"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-      />
+                  :data="list"
+                  border
+                  fit
+                  highlight-current-row
+                  @selection-change="handleSelectionChange">
+          <el-table-column type="selection"
+                           width="55" />
+          <el-table-column label="人员名称"
+                           align="center"
+                           prop="cnname" />
+          <el-table-column label="组织名称"
+                           align="center"
+                           prop="org.cnname" />
+        </el-table>
+        <el-pagination :current-page="page"
+                       :page-sizes="[10, 20, 30, 50]"
+                       :page-size="limit"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="total"
+                       @size-change="handleSizeChange"
+                       @current-change="handleCurrentChange" />
       </div>
     </el-container>
   </div>
@@ -55,17 +46,17 @@
 import { findOrgTree, findPeopleByOrgId } from "@/api/base/orgpeople";
 export default {
   watch: {
-    filterText(val) {
+    filterText (val) {
       // 搜索树
       this.$refs.tree.filter(val);
     },
   },
   components: {},
-  created() {
-    this.findOrgTree();
+  created () {
+    this.findOrgTree_data();
     this.initData("");
   },
-  data() {
+  data () {
     return {
       data: [], //组织人员树的数据
       defaultProps: {
@@ -87,7 +78,7 @@ export default {
     /**
      * 初始化组织树
      */
-    findOrgTree() {
+    findOrgTree_data () {
       findOrgTree().then((resp) => {
         this.data = resp.data;
       });
@@ -95,21 +86,21 @@ export default {
     /**
      * 点击树节点时候触发
      */
-    handleNodeClick(data) {
+    handleNodeClick (data) {
       this.listLoading = true;
       this.initData(data.id);
     },
     /**
      * 过滤树节点方法
      */
-    filterNode(value, data) {
+    filterNode (value, data) {
       if (!value) return true;
       return data.name.indexOf(value) !== -1;
     },
     /**
      * 初始化表格数据
      */
-    initData(orgId) {
+    initData (orgId) {
       findPeopleByOrgId(orgId).then((resp) => {
         this.dataList = resp.data;
         this.listLoading = false;
@@ -119,7 +110,7 @@ export default {
       });
     },
     // 处理数据
-    getList() {
+    getList () {
       // es6过滤得到满足搜索条件的展示数据list
       this.list = this.dataList.filter(
         (item, index) =>
@@ -129,25 +120,25 @@ export default {
       this.total = this.dataList.length;
     },
     // 当每页数量改变
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.limit = val;
       this.getList();
     },
     // 当当前页改变
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.page = val;
       this.getList();
     },
     /**
      * 当多选框改变时触发
      */
-    handleSelectionChange(val) {
+    handleSelectionChange (val) {
       this.selectValue = val
     },
     /**
      * 返回选中的数据方法
      */
-    getSelectValue(){
+    getSelectValue () {
       return this.selectValue
     }
   },
