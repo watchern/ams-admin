@@ -3790,6 +3790,9 @@ export default {
       if(documentClientHeight == "" && this.useType == "sqlEditor"){
         _minus=-11;
       }
+      if(documentClientHeight == "" && this.useType == "previewTable"){
+        _minus=-12;
+      }
       this.chartConfigs = {
         chart: [],
         layout: [{ x: 0, y: 0, w: 12, h: _h-_minus, i: "0" }],
