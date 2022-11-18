@@ -706,11 +706,11 @@ export default {
       tableDataSources:[
         // {
         //   value: 'Hive',
-        //   label: 'ADS'
+        //   label: 'MRS-DWS'
         // },
         {
           value: 'Postgre',
-          label: 'MRS-DWS'
+          label: 'ADS'
         }
       ],
       query: {

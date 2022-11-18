@@ -147,7 +147,7 @@
               ></label>
               <!-- 切换数据源下拉框 -->
               <div class="chooseDataSource" v-if="typeof callType == 'undefined'">
-                <!--                请选择数据源：-->
+                数据源：
                 <el-select
                         v-model="dataSource"
                         style="width: 100px"
@@ -579,10 +579,10 @@ export default {
       dataSource: "Postgre",
       dataSourceList: [{
         value:"Hive",
-        label:"Hive"
+        label:"MRS-DWS"
       }, {
         value:"Postgre",
-        label:"Postgre"
+        label:"ADS"
       }],
       //参数关联dialog
       ParamModelDialog: false,
