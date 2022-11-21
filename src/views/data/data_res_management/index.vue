@@ -278,16 +278,7 @@ export default {
   watch: {},
   mounted () { },
   created () {
-    let params = {
-      pageNo: this.query.pageNo,
-      pageSize: this.query.pageSize,
-      condition: {
-        businessSystemName: this.query.businessSystemName,
-        businessSystemCode: this.query.businessSystemCode,
-        createUserName: this.query.createUserName,
-      },
-    }
-    this.getList(params);//刷新列表
+    this.getList();//刷新列表
   },
   methods: {
     // 时间格式化、
@@ -305,16 +296,8 @@ export default {
       this.query.createUserName = ''
     },
     search () {
-      let params = {
-        pageNo: 1,
-        pageSize: this.query.pageSize,
-        condition: {
-          businessSystemName: this.query.businessSystemName,
-          businessSystemCode: this.query.businessSystemCode,
-          createUserName: this.query.createUserName,
-        },
-      }
-      this.getList(params);//刷新列表
+      this.query.pageNo = 1
+      this.getList();//刷新列表
     },
     // 刷新列表
     getList () {

@@ -2,32 +2,34 @@
   <div class="page-container">
     <!-- left_conter -->
     <div class="left_conter">
+
       <el-tabs v-model="activeName"
                type="card"
                @tab-click="handleClick">
         <el-tab-pane label="系统"
+                     :disabled="tabclick"
                      name="0"></el-tab-pane>
         <el-tab-pane label="主题"
+                     :disabled="tabclick"
                      name="1"></el-tab-pane>
         <el-tab-pane label="分层"
+                     :disabled="tabclick"
                      name="2"></el-tab-pane>
         <el-tab-pane label="目录"
+                     :disabled="tabclick"
                      name="3"></el-tab-pane>
       </el-tabs>
       <div class="padding10">
         <el-input v-model="filterText2"
                   placeholder="输入关键字进行过滤" />
-        <!--
-        <el-input v-model="filterText3"
-                  v-else
-                  placeholder="输入关键字进行过滤" /> -->
       </div>
-      <div class="padding10">
-        <!-- 数据源 -->
+      <!-- 数据源 -->
+      <div class="padding10 dataSource">
         <el-form :inline="true"
                  :model="query"
                  label-position="bottom">
-          <el-form-item label="数据源：">
+          <el-form-item label="数据源："
+                        label-width="70px">
             <el-select v-model="query.dataSource"
                        @change="selectdata"
                        placeholder="请选择数据源">
@@ -41,17 +43,20 @@
 
       </div>
 
-      <div class="padding10">
+      <div v-show="loading== true"
+           class="loading">
+        <div class="conter_loading">
+          <span><img src="../../../assets/img/loading.gif"
+                 alt=""></span>
+        </div>
+      </div>
 
-        <!-- 系统 主题 分层  目录-->
-        <div class="tree-containerall">
+      <div v-show="loading== false">
 
-          <div v-if="loading"
-               class="loading">
-            <span><img src="../../../assets/img/loading.gif"
-                   alt=""></span>
-          </div>
-          <div v-else>
+        <div class="padding10">
+          <!-- 系统 主题 分层  目录-->
+          <div class="tree-containerall">
+
             <MyElTree ref="tree2"
                       :props="props"
                       :data="tree_list"
@@ -108,12 +113,14 @@
                 </span>
               </span>
             </MyElTree>
+
           </div>
+          <!-- 目录 -->
 
         </div>
-        <!-- 目录 -->
 
       </div>
+
     </div>
     <!-- left_conter end-->
 
@@ -126,7 +133,8 @@
           <el-row>
             <el-col align="right">
               <el-button type="primary"
-                         class="oper-btn  btn-width-md"
+                         style="padding:0 10px;width:auto"
+                         class="oper-btn "
                          @click="registTable()">注册资产-{{query.dataSource}}</el-button>
             </el-col>
           </el-row>
@@ -146,28 +154,29 @@
           <el-table-column label="表代码"
                            prop="chnName">
             <template slot-scope="scope">
+              <div v-if="scope.row.tableRelationQuery.tableCode">
+                {{scope.row.tableRelationQuery.tableCode.substring(0,scope.row.tableRelationQuery.tableCode.lastIndexOf(">"))}}
+              </div>
 
-              {{scope.row.tableRelationQuery.tableCode.substring(0,scope.row.tableRelationQuery.tableCode.lastIndexOf(">"))}}
-              <!-- {{scope.row.tableRelationQuery.tableCode}} -->
             </template>
           </el-table-column>
           <el-table-column label="表类型"
                            prop="chnName">
             <template slot-scope="scope">
               {{
-                scope.row.tableRelationQuery.tableType == 0
+                scope.row.tableRelationQuery.tableType == 1
                       ? '表'
-                      : scope.row.tableRelationQuery.tableType == 1
-                      ? '视图'
                       : scope.row.tableRelationQuery.tableType == 2
-                      ? '存储过程'
+                      ? '视图'
                       : scope.row.tableRelationQuery.tableType == 3
-                      ? '接口'
+                      ? '存储过程'
                       : scope.row.tableRelationQuery.tableType == 4
-                       ? '报表'
+                      ? '接口'
                       : scope.row.tableRelationQuery.tableType == 5
-                      ? '指标'
+                       ? '报表'
                       : scope.row.tableRelationQuery.tableType == 6
+                      ? '指标'
+                      : scope.row.tableRelationQuery.tableType == 7
                       ? '标签' : '其它'
               }}
             </template>
@@ -178,7 +187,7 @@
                            :formatter="formatCreateTime" /> -->
           <el-table-column label="创建人"
                            align="center"
-                           prop="createTime">
+                           prop="createUserName">
             <template slot-scope="scope">
               {{scope.row.tableRelationQuery.createUserName}}
             </template>
@@ -241,6 +250,7 @@
                     :props="props"
                     :data="tableData"
                     class="filter-tree"
+                    show-checkbox
                     @node-click="nodeClick_table"
                     default-expand-all>
             <span slot-scope="{ node, data }"
@@ -363,6 +373,26 @@
                            @change="handleChange"></el-cascader>
             </el-form-item>
           </div>
+
+          <!--  是否增量-->
+          <!-- <div class="son ">
+            <div class="son_check">
+              <el-form-item label="是否增量:"
+                            prop="increment">
+                <el-select v-model="form.increment"
+                           :rows="4"
+                           placeholder="请选择是否增量">
+                  <el-option v-for="item in option_increment"
+                             :key="item.codeUuid"
+                             :label="item.codeName"
+                             :value="item.codeUuid" />
+                </el-select>
+
+              </el-form-item>
+            </div>
+
+          </div> -->
+
           <!--  资产负责人-->
           <div class="son ">
             <div class="son_check">
@@ -482,7 +512,7 @@ export default {
   },
   data () {
     return {
-      activeName: '1',//tab切换
+      activeName: '0',//tab切换
       ifExpandAll: false, // 是否展开所有树节点
       tabShow: "basicinfo",
       tableId: "",
@@ -572,8 +602,8 @@ export default {
         folderUuid: [
           { required: true, message: '请选择所属目录', trigger: 'change' },
         ],
-        // personUuid: [
-        //   { required: true, message: '请选择资产责任人', trigger: 'change' },
+        // increment: [
+        //   { required: true, message: '请选择是否增量', trigger: 'change' },
         // ],
 
         personName_str: [
@@ -591,6 +621,7 @@ export default {
         businessSystemId: '',//所属系统
         tableLayeredId: '',//资产分层
         folderUuid: '',//所属目录
+        // increment: '',//是否增量
 
         tableRemarks: '',//资产备注
         personName: '',
@@ -599,6 +630,17 @@ export default {
         personLiables: [],
 
       },
+
+      // option_increment: [
+      //   {
+      //     value: 0,
+      //     label: '增量'
+      //   },
+      //   {
+      //     value: 1,
+      //     label: '全量'
+      //   },
+      // ],
       isDisable: false, //防止重复提交
       resultShareDialogIsSee: false,//选择责任人
       selectValue: [], // 存储表格中选中的数据
@@ -624,7 +666,8 @@ export default {
       node_had: [], // 触发 tree 的 :load=loadNode 重复触发  动态更新tree
       resolve_had: [], // 触发 tree 的 :load=loadNode 重复触发  动态更新tree
       treeData: [],
-      loading: false,
+      loading: true,
+      tabclick: false,
     };
   },
   computed: {
@@ -663,18 +706,22 @@ export default {
   methods: {
     // tab切换
     handleClick (tab, event) {
-      this.loading = true
       if (tab.index == '0') {
+        this.tabclick = true
+        // setTimeout(() => {
+        //   this.tabclick = false
+        // }, 3000)
         this.post_getBusinessSystemTree();//系统
       } else if (tab.index == '1') {
+        this.tabclick = true
+
         this.post_getThemeTree();//主题
       } else if (tab.index == '2') {
+        this.tabclick = true
         this.post_getLayeredTree();//分层
       } else {
-        // this.getTagList()
-        // this.getTagList('ROOT')
+        this.tabclick = true
         this.post_getDataTreeNode(this.query.dataSource);//目录
-        // this.loadNode2("ROOT", this.query.dataSource);
       }
     },
     filterNode (value, data) {
@@ -684,31 +731,39 @@ export default {
 
     // 系统
     post_getBusinessSystemTree () {
+      this.loading = true
       getBusinessSystemTree(true, this.query.dataSource, true).then((resp) => {
         this.tree_list = resp.data
         this.loading = false
+        this.tabclick = false
       });
     },
     // 主题
     post_getThemeTree () {
+      this.loading = true
       getThemeTree(true, this.query.dataSource, true).then((resp) => {
         this.tree_list = resp.data
         this.loading = false
+        this.tabclick = false
       });
     },
     // 分层
     post_getLayeredTree () {
+      this.loading = true
+
       getLayeredTree(true, this.query.dataSource, true).then((resp) => {
         this.tree_list = resp.data
         this.loading = false
+        this.tabclick = false
       });
     },
     // 目录
     post_getDataTreeNode () {
+      this.loading = true
       getDataTreeNode(this.query.dataSource).then((resp) => {
         this.tree_list = resp.data
-
         this.loading = false
+        this.tabclick = false
 
       });
     },
@@ -1148,6 +1203,8 @@ export default {
             tbName: this.ischeck_data.label,
             folderUuid: this.form.folderUuid,//目录id
             personLiables: this.form.personLiables,// 资产责任人
+            // increment: this.form.increment,//是否增量
+
             tableRelationQuery: {
               tableDataSource: this.query.dataSource, //数据源
               businessSystemId: this.form.businessSystemId, //所属系统主键
@@ -1200,14 +1257,35 @@ export default {
     // 选择责任人
     check_people () {
       this.resultShareDialogIsSee = true;
+      this.clearcheckbox();
+      // this.$nextTick(() => {
+      //   if (this.$refs.orgPeopleTree) {
+      //     if (this.$refs.multipleTable) {
+      //       this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection();//清空选择的责任人
+      //     }
+      //   }
+      // })
+    },
+
+    // 清除多选框
+    clearcheckbox () {
       this.$nextTick(() => {
+        if (this.$refs.multipleTable) {
+          this.$refs.multipleTable.clearSelection();//清除多选框
+        }
         if (this.$refs.orgPeopleTree) {
           if (this.$refs.multipleTable) {
-            this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection();//清空选择的责任人
+            this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection();//清空选择的认权人
+            this.$refs.orgPeopleTree.findOrgTree_data();
+            this.$refs.orgPeopleTree.list = [];
+            this.$refs.orgPeopleTree.total = 0;
           }
         }
       })
     },
+
+
+
     modelResultShare () {
       // this.listLoading = true;
       var runTaskRelUuids = [];
@@ -1282,6 +1360,17 @@ export default {
 </script>
 <style scoped>
 @import url("./../../../assets/css/common.css");
+.left_conter {
+  position: relative;
+}
+.dataSource >>> .el-form-item {
+  display: flex;
+  width: 100%;
+}
+
+.left_conter >>> .el-tabs__header {
+  margin: 0;
+}
 .left_conter >>> .el-tabs__item {
   width: 25%;
   text-align: center;
@@ -1356,7 +1445,7 @@ export default {
   margin-top: 20px;
 }
 .page-container .tree-containerall {
-  height: 75vh;
+  // height: 75vh;
   overflow: auto;
 }
 .page-container .tree-containerall .filter-tree {
@@ -1466,19 +1555,5 @@ export default {
 }
 .tree-line-btn {
   background: rgba(255, 255, 255, 0) !important;
-}
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 50%;
-  // background: rgba(106, 106, 106, 0.0862745098);
-  // border-radius: 15.5px;
-}
-.loading span {
-  width: 60px;
-}
-.loading span img {
-  width: 100%;
 }
 </style>
