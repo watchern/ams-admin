@@ -15,19 +15,6 @@
       <!-- :span="6" -->
       <!-- @原始数据@ -->
 
-      <el-tabs v-model="activeName"
-               type="card"
-               @tab-click="handleClick">
-        <el-tab-pane label="系统"
-                     name="0"></el-tab-pane>
-        <el-tab-pane label="主题"
-                     name="1"></el-tab-pane>
-        <el-tab-pane label="分层"
-                     name="2"></el-tab-pane>
-        <el-tab-pane label="目录"
-                     name="3"></el-tab-pane>
-      </el-tabs>
-
       <el-col :span="7">
         <el-input v-model="filterText1"
                   placeholder="输入关键字进行过滤" />
@@ -362,8 +349,7 @@ export default {
       accessTypeArray: [],
       selectList: [],
       checkedNode: [],
-      writeNode: [], // 拥有写权限的数据
-      activeName: 0,
+      writeNode: [] // 拥有写权限的数据
     };
   },
   computed: {},
@@ -418,14 +404,6 @@ export default {
     });
   },
   methods: {
-    handleClick (tab, event) {
-      if (tab.index == '0') {
-      } else if (tab.index == '1') {
-      } else if (tab.index == '2') {
-      } else {
-
-      }
-    },
     // 找到所有有写权限的节点
     findWriteTree (nodes) {
       nodes.map(i => {
