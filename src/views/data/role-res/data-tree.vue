@@ -217,9 +217,9 @@ export default {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
-    getTree() {
-      return this.$refs.tree1;
-    },
+    // getTree() {
+    //   return this.$refs.tree1;
+    // },
     nodeClick(data, node, tree) {
       this.$emit("node-click", data, node, tree);
     },
