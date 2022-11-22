@@ -337,7 +337,6 @@ export default {
 
     },
 
-
     filterNode (value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
