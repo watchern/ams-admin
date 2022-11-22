@@ -330,21 +330,29 @@ export default {
         // 分层
         this.post_getLayeredTree();//分层
       } else {
-        // 目录
+        // 目录 
         this.post_getDataTreeNode();//目录
 
       }
 
     },
 
+
     filterNode (value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
+<<<<<<<<< Temporary merge branch 1
+    getTree() {
+      return this.$refs.tree1;
+    },
+    nodeClick(data, node, tree) {
+=========
     // getTree() {
     //   return this.$refs.tree1;
     // },
     nodeClick (data, node, tree) {
+>>>>>>>>> Temporary merge branch 2
       this.$emit("node-click", data, node, tree);
     },
     handleCheck (data, checkIds) {

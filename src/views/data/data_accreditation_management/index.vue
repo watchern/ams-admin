@@ -44,16 +44,23 @@
               </el-select>
             </el-form-item> -->
 
+<!--            <el-form-item>-->
+<!--              <el-select v-model="query.personName"-->
+<!--                         clearable-->
+<!--                         @change="selectdata_people"-->
+<!--                         placeholder="请选择认权人">-->
+<!--                <el-option v-for="item in options_type_list"-->
+<!--                           :key="item.value"-->
+<!--                           :label="item.label"-->
+<!--                           :value="item.value" />-->
+<!--              </el-select>-->
+<!--            </el-form-item>-->
+
+
             <el-form-item>
-              <el-select v-model="query.personName"
-                         clearable
-                         @change="selectdata_people"
-                         placeholder="请选择认权人">
-                <el-option v-for="item in options_type_list"
-                           :key="item.value"
-                           :label="item.label"
-                           :value="item.value" />
-              </el-select>
+              <el-input v-model="query.personName"
+                        placeholder="请选择认权人"
+                        clearable />
             </el-form-item>
 
             <el-form-item>
@@ -293,22 +300,36 @@ export default {
 
     // 认权追加
     approval_Add () {
+      if (this.Selectval_list.length !== 0) {
+        this.resultShareDialogIsSee = true
 
-      this.resultShareDialogIsSee = true
-
-      this.clearcheckbox();
-      this.click_type = '1'
-      var tableMetaUuid = [];
-      for (var i = 0; i < this.Selectval_list.length; i++) {
-        tableMetaUuid.push(this.Selectval_list[i].tableMetaUuid)
+        this.clearcheckbox();
+        this.click_type = '1'
+        var tableMetaUuid = [];
+        for (var i = 0; i < this.Selectval_list.length; i++) {
+          tableMetaUuid.push(this.Selectval_list[i].tableMetaUuid)
+        }
+        this.form.tableMetaUuid = tableMetaUuid
+      } else {
+        this.$message({
+          message: '请选择数据后进行追加',
+          type: 'warning',
+          showClose: true,
+        })
       }
-      this.form.tableMetaUuid = tableMetaUuid
     },
 
     // 认权收回
     approval_Retract () {
       // this.resultShareDialogIsSee = true
       var tableMetaUuid = [];
+      if (this.Selectval_list.length == 0) {
+        this.$message({
+          type: 'warning',
+          message: '请选择数据后进行收回',
+        })
+        return
+      }
       for (var i = 0; i < this.Selectval_list.length; i++) {
         tableMetaUuid.push(this.Selectval_list[i].tableMetaUuid)
       }

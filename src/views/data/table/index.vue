@@ -22,6 +22,13 @@
       <div class="padding10">
         <el-input v-model="filterText2"
                   placeholder="输入关键字进行过滤" />
+<<<<<<<<< Temporary merge branch 1
+        <!--
+        <el-input v-model="filterText3"
+                  v-else
+                  placeholder="输入关键字进行过滤" /> -->
+=========
+>>>>>>>>> Temporary merge branch 2
       </div>
       <!-- 数据源 -->
       <div class="padding10 dataSource">
@@ -1304,8 +1311,10 @@ export default {
         this.form.personName = personNames
         // this.form.personName = personNames.toString();
         //
+        // console.log(selectedNode[i].cnname)
+        // console.log(selectedNode[i]);
         let obj = {
-          personuuid: selectedNode[i].personuuid, personName: selectedNode[i].cnname
+          personUuid: selectedNode[i].personuuid, personName: selectedNode[i].cnname
         }
         arr.push(obj)
       }
