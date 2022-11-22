@@ -22,13 +22,6 @@
       <div class="padding10">
         <el-input v-model="filterText2"
                   placeholder="输入关键字进行过滤" />
-<<<<<<<<< Temporary merge branch 1
-        <!--
-        <el-input v-model="filterText3"
-                  v-else
-                  placeholder="输入关键字进行过滤" /> -->
-=========
->>>>>>>>> Temporary merge branch 2
       </div>
       <!-- 数据源 -->
       <div class="padding10 dataSource">
@@ -873,7 +866,7 @@ export default {
 
         } else if (data.type == "theme") {
           this.query.businessSystemId = ''
-          this.query.tableThemeId = node.data.id;;
+          this.query.tableThemeId = node.data.id;
           this.query.tableLayeredId = '';
           this.query.folderUuid = '';
           this.query_lisy();
@@ -881,7 +874,7 @@ export default {
         } else if (data.type == "layered") {
           this.query.businessSystemId = ''
           this.query.tableThemeId = '';
-          this.query.tableLayeredId = node.data.id;;
+          this.query.tableLayeredId = node.data.id;
           this.query.folderUuid = '';
           this.query_lisy();
 
@@ -900,7 +893,7 @@ export default {
           this.query.businessSystemId = ''
           this.query.tableThemeId = '';
           this.query.tableLayeredId = '';
-          this.query.folderUuid = node.data.id;;
+          this.query.folderUuid = node.data.id;
           this.query_lisy();
 
         }

@@ -342,17 +342,10 @@ export default {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
-<<<<<<<<< Temporary merge branch 1
     getTree() {
       return this.$refs.tree1;
     },
     nodeClick(data, node, tree) {
-=========
-    // getTree() {
-    //   return this.$refs.tree1;
-    // },
-    nodeClick (data, node, tree) {
->>>>>>>>> Temporary merge branch 2
       this.$emit("node-click", data, node, tree);
     },
     handleCheck (data, checkIds) {
