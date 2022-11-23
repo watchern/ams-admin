@@ -704,10 +704,6 @@ export default {
       nextStep: '',
       //数据源类型
       tableDataSources:[
-        // {
-        //   value: 'Hive',
-        //   label: 'MRS-DWS'
-        // },
         {
           value: 'Postgre',
           label: 'ADS'
@@ -1739,7 +1735,6 @@ export default {
         })
         return
       }
-
       // this.tableColumnVisible = true;
       this.relationVisible = true;
 
