@@ -251,6 +251,7 @@
                     :data="tableData"
                     class="filter-tree"
                     show-checkbox
+                    @check-change = "nodeClick_table"
                     @node-click="nodeClick_table"
                     default-expand-all>
             <span slot-scope="{ node, data }"
@@ -1320,16 +1321,16 @@ export default {
 
     // 右侧表单
     // 多选
-    handleSelectionChange (val) {
-      this.Selectval = val;
-    },
+    // handleSelectionChange (val) {
+    //   this.Selectval = val;
+    // },
 
     /**
   * 当多选框改变时触发
   */
-    handleSelectionChange (val) {
-      this.selectValue = val
-    },
+    // handleSelectionChange (val) {
+    //   this.selectValue = val
+    // },
 
     // 分页
     handleCurrentChange (val) {
