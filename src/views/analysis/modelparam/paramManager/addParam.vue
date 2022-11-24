@@ -682,10 +682,10 @@ export default {
           { required: true, message: "请输入参数名称", trigger: "blur" },
         ],
         dataType: [
-          { required: true, message: "请输入数据类型", trigger: "blur" },
+          { required: true, message: "请输入数据类型", trigger: "change" },
         ],
         inputType: [
-          { required: true, message: "请输入输入方式", trigger: "blur" },
+          { required: true, message: "请输入输入方式", trigger: "change" },
         ],
       },
       relevancerules: {
@@ -723,6 +723,7 @@ export default {
         maxIntervalVal: "",
         maxIntervalUnit: "",
         formalType: "",
+        dataSourceType: "Postgre",
         description: "",
         example: "",
         folderId: "",
@@ -763,6 +764,7 @@ export default {
       isShowElement: {
         timeIntervalShow: false,
         formalTypeShow: false,
+        dataSourceShow: false,
         alternateValueShow: false,
         SQLdtreeShow: false,
         dataLengthInterValShow: false,
@@ -956,6 +958,7 @@ export default {
             that.form.example = data.example;
             if (data.paramChoice) {
               that.form.formalType = data.paramChoice.choiceType;
+              that.form.dataSourceType = data.paramChoice.choiceDataSourceType;
               that.form.allowedNull = data.paramChoice.allowedNull;
               $("#choiceUuid").val(data.paramChoice.ammParamChoiceUuid);
               if (data.paramChoice.ammParamChoiceUuid) {
@@ -1123,6 +1126,7 @@ export default {
           //日期选择器
           this.isShowElement.timeIntervalShow = true;
           this.isShowElement.formalTypeShow = false;
+          this.isShowElement.dataSourceShow = false;
           this.isShowElement.alternateValueShow = false;
           this.isShowElement.dataLengthInterValShow = false;
           this.isShowElement.SQLdtreeShow = false;
@@ -1131,6 +1135,7 @@ export default {
           //下拉列表
           this.isShowElement.timeIntervalShow = false;
           this.isShowElement.formalTypeShow = true;
+          this.isShowElement.dataSourceShow = true;
           this.isShowElement.alternateValueShow = true;
           this.isShowElement.dataLengthInterValShow = false;
           this.isShowElement.SQLdtreeShow = false;
@@ -1139,6 +1144,7 @@ export default {
           //下拉树
           this.isShowElement.timeIntervalShow = false;
           this.isShowElement.formalTypeShow = true;
+          this.isShowElement.dataSourceShow = true;
           this.isShowElement.alternateValueShow = false;
           this.isShowElement.dataLengthInterValShow = false;
           this.isShowElement.SQLdtreeShow = true;
@@ -1148,6 +1154,7 @@ export default {
           //文本
           this.isShowElement.timeIntervalShow = false;
           this.isShowElement.formalTypeShow = false;
+          this.isShowElement.dataSourceShow = false;
           this.isShowElement.alternateValueShow = false;
           this.isShowElement.dataLengthInterValShow = true;
           this.isShowElement.SQLdtreeShow = false;
@@ -1265,6 +1272,9 @@ export default {
       if (this.isShowElement.formalTypeShow) {
         dataParam["paramChoice.choiceType"] = this.form.formalType;
       }
+      if (this.isShowElement.dataSourceShow) {
+        dataParam["paramChoice.choiceDataSourceType"] = this.form.dataSourceType;
+      }
       if (this.isShowElement.SQLdtreeShow) {
         dataParam["paramChoice.optionsSql"] = this.form.paramChoice.optionsSql;
       }
@@ -1380,6 +1390,9 @@ export default {
 
       if (this.isShowElement.formalTypeShow) {
         dataParam["paramChoice.choiceType"] = this.form.formalType;
+      }
+      if (this.isShowElement.dataSourceShow) {
+        dataParam["paramChoice.choiceDataSourceType"] = this.form.dataSourceType;
       }
       if (this.isShowElement.SQLdtreeShow) {
         dataParam["paramChoice.optionsSql"] = this.form.paramChoice.optionsSql;
