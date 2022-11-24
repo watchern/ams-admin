@@ -328,6 +328,9 @@ export default {
               tableRemarks: this.relationForm.tableRemarks, //资产备注
               tableThemeId: this.relationForm.tableThemeId, //资产主题主键
               tableType: this.relationForm.tableType, //资产类型
+              isSpike: this.relationForm.isSpike,
+              isSentFile: this.relationForm.isSentFile,
+              ileName: this.relationForm.fileName
             },
       };
 

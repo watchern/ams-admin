@@ -374,25 +374,45 @@
                            @change="handleChange"></el-cascader>
             </el-form-item>
           </div>
-
-          <!--  是否增量-->
-          <!-- <div class="son ">
-            <div class="son_check">
+          <!--是否增量，是否推送文件-->
+          <div  class="son ">
+           
               <el-form-item label="是否增量:"
-                            prop="increment">
-                <el-select v-model="form.increment"
+                            prop="isSpike">
+                <el-select v-model="form.isSpike"
                            :rows="4"
                            placeholder="请选择是否增量">
-                  <el-option v-for="item in option_increment"
-                             :key="item.codeUuid"
-                             :label="item.codeName"
-                             :value="item.codeUuid" />
+                  <el-option v-for="item in option_isSpike"
+                             :key="item.value"
+                             :label="item.label"
+                             :value="item.value" />
                 </el-select>
 
               </el-form-item>
-            </div>
+              <el-form-item label="是否推送文件:"
+                          prop="isSentFile">
+              <el-select v-model="form.isSentFile"
+                         :rows="4"
+                         placeholder="请选择是否推送文件">
+                <el-option v-for="item in option_isSentFile"
+                           :key="item.value"
+                           :label="item.label"
+                             :value="item.value" />
+              </el-select>
+            </el-form-item>
 
-          </div> -->
+          </div>
+          <!-- 真实文件名称 -->
+          <div class="son ">
+            <el-form-item label="文件名称:"
+                          prop="fileName">
+              <el-input type="text"
+                        placeholder="请输入文件名称"
+                        v-model="form.fileName"
+                        :rows="4" @input="checkFileName">
+              </el-input>
+            </el-form-item>
+          </div>
 
           <!--  资产负责人-->
           <div class="son ">
@@ -431,7 +451,7 @@
           <el-button @click="step()">上一步</el-button>
           <el-button type="primary"
                      :disabled="isDisable"
-                     @click="save('form')">保存</el-button>
+                     @click="save('form')" v-if="ifFileNameExist">保存</el-button>
           <el-button @click="dialogVisible_information = false">关闭</el-button>
 
         </span>
@@ -500,6 +520,7 @@ import {
   // save_data,//新增保存
   // update_data,//编辑保存
   // delete_data,//删除
+  checkFileName,//校验文件名是否已经存在
   batchSaveTable_save,//下一步 保存
   getListTree,//注册资产下一步
 } from "@/api/lhg/register.js";
@@ -513,6 +534,7 @@ export default {
   },
   data () {
     return {
+      ifFileNameExist: true,
       activeName: '0',//tab切换
       ifExpandAll: false, // 是否展开所有树节点
       tabShow: "basicinfo",
@@ -603,9 +625,17 @@ export default {
         folderUuid: [
           { required: true, message: '请选择所属目录', trigger: 'change' },
         ],
-        // increment: [
-        //   { required: true, message: '请选择是否增量', trigger: 'change' },
-        // ],
+        isSpike: [
+          { required: true, message: '请选择是否增量', trigger: 'change' },
+        ],
+
+        isSentFile: [
+          { required: true, message: '请选择是否推送文件', trigger: 'change' },
+        ],
+
+        fileName: [
+          { required: true, message: '请输入文件名称', trigger: 'change' },
+        ],
 
         personName_str: [
           { required: true, message: '请选择资产责任人', trigger: 'change' },
@@ -623,7 +653,9 @@ export default {
         tableLayeredId: '',//资产分层
         folderUuid: '',//所属目录
         // increment: '',//是否增量
-
+        isSpike: 1,//是否增量
+        isSentFile: 0,//是否推送文件
+        fileName: '',//文件名称
         tableRemarks: '',//资产备注
         personName: '',
         personUuid: '',//资产责任人
@@ -632,16 +664,26 @@ export default {
 
       },
 
-      // option_increment: [
-      //   {
-      //     value: 0,
-      //     label: '增量'
-      //   },
-      //   {
-      //     value: 1,
-      //     label: '全量'
-      //   },
-      // ],
+      option_isSpike: [
+        {
+          value: 0,
+          label: '全量'
+        },
+        {
+          value: 1,
+          label: '增量'
+        },
+      ],
+      option_isSentFile: [
+        {
+          value: 0,
+          label: '不推送'
+        },
+        {
+          value: 1,
+          label: '推送'
+        },
+      ],
       isDisable: false, //防止重复提交
       resultShareDialogIsSee: false,//选择责任人
       selectValue: [], // 存储表格中选中的数据
@@ -705,6 +747,22 @@ export default {
     // this.post_getDataTreeNode();//目录
   },
   methods: {
+    //校验文件名是否存在
+    checkFileName(){
+      checkFileName(this.form.fileName).then((res) =>{
+          if(res.data){
+            this.$message.error("文件名已存在");
+            //隐藏保存按钮
+            this.ifFileNameExist = false
+          }else{
+            //显示保存按钮
+            this.ifFileNameExist = true
+            // this.$message.success("文件名可用");
+          }
+      }
+      )
+    },
+
     // tab切换
     handleClick (tab, event) {
       if (tab.index == '0') {
@@ -1109,6 +1167,9 @@ export default {
       this.form.folderUuid = ''
       this.form.personUuid = ''
       this.form.tableRemarks = ''
+      this.form.isSpike = 1
+      this.form.isSentFile = 0
+      this.form.fileName = ''
       this.personUuid = [];
       this.personName = [];
     },
@@ -1205,17 +1266,20 @@ export default {
             folderUuid: this.form.folderUuid,//目录id
             personLiables: this.form.personLiables,// 资产责任人
             // increment: this.form.increment,//是否增量
-
+            isSpike: this.form.isSpike, //是否增量
             tableRelationQuery: {
               tableDataSource: this.query.dataSource, //数据源
               businessSystemId: this.form.businessSystemId, //所属系统主键
               tableCode: this.form.tableCode, //资产编码
               tableLayeredId: this.form.tableLayeredId, //资产分层主键
               tableMetaUuid: this.ischeck_data.id, //资产主键
-
+              
               tableRemarks: this.form.tableRemarks, //资产备注
               tableThemeId: this.form.tableThemeId, //资产主题主键
               tableType: this.form.tableType, //资产类型
+              isSpike: this.form.isSpike, //是否增量
+              isSentFile: this.form.isSentFile, //是否推送文件
+              fileName: this.form.fileName //文件名称
             },
           };
 
