@@ -330,12 +330,13 @@ export default {
         // 分层
         this.post_getLayeredTree();//分层
       } else {
-        // 目录
+        // 目录 
         this.post_getDataTreeNode();//目录
 
       }
 
     },
+
 
     filterNode (value, data) {
       if (!value) return true;

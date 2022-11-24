@@ -250,6 +250,7 @@
                     :data="tableData"
                     class="filter-tree"
                     show-checkbox
+                    @check-change = "nodeClick_table"
                     @node-click="nodeClick_table"
                     default-expand-all>
             <span slot-scope="{ node, data }"
@@ -866,7 +867,7 @@ export default {
 
         } else if (data.type == "theme") {
           this.query.businessSystemId = ''
-          this.query.tableThemeId = node.data.id;;
+          this.query.tableThemeId = node.data.id;
           this.query.tableLayeredId = '';
           this.query.folderUuid = '';
           this.query_lisy();
@@ -874,7 +875,7 @@ export default {
         } else if (data.type == "layered") {
           this.query.businessSystemId = ''
           this.query.tableThemeId = '';
-          this.query.tableLayeredId = node.data.id;;
+          this.query.tableLayeredId = node.data.id;
           this.query.folderUuid = '';
           this.query_lisy();
 
@@ -893,7 +894,7 @@ export default {
           this.query.businessSystemId = ''
           this.query.tableThemeId = '';
           this.query.tableLayeredId = '';
-          this.query.folderUuid = node.data.id;;
+          this.query.folderUuid = node.data.id;
           this.query_lisy();
 
         }
@@ -1303,8 +1304,10 @@ export default {
         this.form.personName = personNames
         // this.form.personName = personNames.toString();
         //
+        // console.log(selectedNode[i].cnname)
+        // console.log(selectedNode[i]);
         let obj = {
-          personuuid: selectedNode[i].personuuid, personName: selectedNode[i].cnname
+          personUuid: selectedNode[i].personuuid, personName: selectedNode[i].cnname
         }
         arr.push(obj)
       }
@@ -1317,16 +1320,16 @@ export default {
 
     // 右侧表单
     // 多选
-    handleSelectionChange (val) {
-      this.Selectval = val;
-    },
+    // handleSelectionChange (val) {
+    //   this.Selectval = val;
+    // },
 
     /**
   * 当多选框改变时触发
   */
-    handleSelectionChange (val) {
-      this.selectValue = val
-    },
+    // handleSelectionChange (val) {
+    //   this.selectValue = val
+    // },
 
     // 分页
     handleCurrentChange (val) {
