@@ -542,7 +542,7 @@
                  :rules="rules"
         >
           <!-- :inline="false" -->
-          <div >
+          <div style="width:100%">
             <el-form-item label="资产编码:" prop="tableCode" >
               <el-input type="text" placeholder="请输入资产编码" v-model="form.tableCode"  style="width:220px"/>
             </el-form-item>
@@ -594,10 +594,45 @@
                            @change="handleChange"></el-cascader>
             </el-form-item>
           </div>
+
+          <div>
+           
+           <el-form-item label="是否增量:"
+                         prop="isSpike">
+             <el-select v-model="form.isSpike"
+                        :rows="4"
+                        placeholder="请选择是否增量">
+               <el-option v-for="item in option_isSpike"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value" />
+             </el-select>
+
+           </el-form-item>
+           <el-form-item label="是否推送文件:"
+                       prop="isSentFile">
+           <el-select v-model="form.isSentFile"
+                      :rows="4"
+                      placeholder="请选择是否推送文件">
+             <el-option v-for="item in option_isSentFile"
+                        :key="item.value"
+                        :label="item.label"
+                          :value="item.value" />
+           </el-select>
+         </el-form-item>
+
+       </div>
+       <!-- 真实文件名称 -->
+       <div>
+         <el-form-item label="文件名称:" prop="fileName" >
+           <el-input type="text" placeholder="请输入文件名称" style="width:550px" v-model="form.fileName" :rows="4" :size="big" @input="checkFileName"/>
+         </el-form-item>
+       </div>
+
           <div >
-            <div class="son_check">
+            <div >
               <el-form-item label="资产负责人:" prop="personName" >
-                <el-input type="text" disabled v-model="form.personName" style="width:150px"/>
+                <el-input type="text" disabled v-model="form.personName" style="width:161px"/>
               </el-form-item>
               <el-button type="primary" class="oper-btn" @click="check_people()">选择</el-button>
               <!-- </div>
@@ -612,9 +647,9 @@
               </el-form-item>
             </div>
           </div>
-          <div class="son">
+          <div >
             <el-form-item label="资产备注:" prop="tableRemarks">
-              <el-input type="textarea"  v-model="form.tableRemarks"/>
+              <el-input type="textarea" v-model="form.tableRemarks" style="width:550px" />
             </el-form-item>
           </div>
 
@@ -623,7 +658,7 @@
               class="dialog-footer">
           <el-button type="primary"
                      :disabled="isDisable"
-                     @click="next()">下一步</el-button>
+                     @click="next()" v-if="ifFileNameExist">下一步</el-button>
           <el-button @click="relationVisible = false">关闭</el-button>
 
         </span>
@@ -637,8 +672,7 @@
       <span slot="footer"
             class="dialog-footer">
           <el-button @click="resultShareDialogIsSee = false">取 消</el-button>
-          <el-button type="primary"
-                     @click="modelResultShare()">确 定</el-button>
+          <el-button type="primary" @click="modelResultShare()" >确 定</el-button>
         </span>
     </el-dialog>
   </div>
@@ -674,6 +708,7 @@ import { getSystemRole} from '@/api/user';
 import {
   batchSaveTable_save,//下一步 保存
   getListTree,//注册资产下一步
+  checkFileName // 校验文件名是否已经存在
 } from "@/api/lhg/register.js";
 export default {
   computed: {
@@ -700,6 +735,29 @@ export default {
   // eslint-disable-next-line vue/order-in-components
   data() {
     return {
+      //文件名是否重复,如果重复，隐藏保存按钮
+      ifFileNameExist: true,
+      option_isSpike: [
+        {
+          value: 0,
+          label: '全量'
+        },
+        {
+          value: 1,
+          label: '增量'
+        },
+      ],
+      option_isSentFile: [
+        {
+          value: 0,
+          label: '不推送'
+        },
+        {
+          value: 1,
+          label: '推送'
+        },
+      ],
+
       //下一步按钮的标志位
       nextStep: '',
       //数据源类型
@@ -739,6 +797,17 @@ export default {
         personUuid: [
           { required: true, message: '请选择资产责任人', trigger: 'change' },
         ],
+        isSpike: [
+          { required: true, message: '请选择是否增量', trigger: 'change' },
+        ],
+
+        isSentFile: [
+          { required: true, message: '请选择是否推送文件', trigger: 'change' },
+        ],
+
+        fileName: [
+          { required: true, message: '请输入文件名称', trigger: 'change' },
+        ],
 
         // tableRemarks: [
         //   { required: true, message: '请输入资产备注', trigger: 'blur' },
@@ -769,6 +838,9 @@ export default {
         personName: '',
         personUuid: '',//资产责任人
         personLiables: [],
+        isSpike: 1,//是否增量
+        isSentFile: 0,//是否推送文件
+        fileName: '',//文件名称
       },
       relationVisible: false,
       previewKey:0,
@@ -1075,6 +1147,20 @@ export default {
     }
   },
   methods: {
+    //校验文件名是否存在
+    checkFileName(){
+      checkFileName(this.form.fileName).then((res) =>{
+          if(res.data){
+            this.$message.error("文件名已存在");
+            this.ifFileNameExist = false
+          }else{
+            this.ifFileNameExist = true 
+            // this.$message.success("文件名可用");
+          }
+      }
+      )
+    },
+
     //保存选择的资产责任人
     modelResultShare () {
       // this.listLoading = true;
@@ -1433,7 +1519,10 @@ export default {
         tableLayeredId: this.form.tableLayeredId,
         tableRemarks: this.form.tableRemarks,
         tableThemeId: this.form.tableThemeId,
-        tableType: this.form.tableType
+        tableType: this.form.tableType,
+        isSpike: this.form.isSpike,
+        isSentFile: this.form.isSentFile,
+        fileName: this.form.fileName
       }
       this.uploadtempInfo.personLiables = this.form.personLiables;
 
@@ -1709,6 +1798,9 @@ export default {
         personName: '',
         personUuid: '',//资产责任人
         personLiables: [],
+        isSpike: 1,//是否增量
+        isSentFile: 0,//是否推送文件
+        fileName: ''//文件名称
       };
       getListTree().then((res) => {
         this.next_data = res.data
@@ -1756,6 +1848,9 @@ export default {
         personName: '',
         personUuid: '',//资产责任人
         personLiables: [],
+        isSpike: 1,//是否增量
+        isSentFile: 0,//是否推送文件
+        fileName: ''//文件名称
       };
       getListTree().then((res) => {
         this.next_data = res.data

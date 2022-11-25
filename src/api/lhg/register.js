@@ -9,6 +9,7 @@ const controller2 = 'tableMeta'
 
 
 
+
 // 列表查询
 export function page_list_data (data) {
 	// console.log(data);
@@ -78,6 +79,16 @@ export function batchSaveTable_save (data) {
 		baseURL: baseURL,
 		url: `/${controller2}/batchSave`,
 		method: 'post',
+		data
+	})
+}
+
+/* 校验文件名是否存在*/
+export function checkFileName (data) {
+	return request({
+		baseURL: dataUrl,
+		url: '/tableRelationQuery/checkFileName?fileName=' + data,
+		method: 'get',
 		data
 	})
 }
