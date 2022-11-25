@@ -376,7 +376,7 @@
           </div>
           <!--是否增量，是否推送文件-->
           <div  class="son ">
-           
+
               <el-form-item label="是否增量:"
                             prop="isSpike">
                 <el-select v-model="form.isSpike"
@@ -1178,7 +1178,7 @@ export default {
       console.log(data)
       console.log(node)
       console.log(tree)
-      
+
       if (data) {
         // 显示保存按钮
         this.is_next = true;
@@ -1278,7 +1278,7 @@ export default {
               tableCode: this.form.tableCode, //资产编码
               tableLayeredId: this.form.tableLayeredId, //资产分层主键
               tableMetaUuid: this.ischeck_data.id, //资产主键
-              
+
               tableRemarks: this.form.tableRemarks, //资产备注
               tableThemeId: this.form.tableThemeId, //资产主题主键
               tableType: this.form.tableType, //资产类型
@@ -1425,6 +1425,7 @@ export default {
       // )
     },
   },
+
 
 
 
