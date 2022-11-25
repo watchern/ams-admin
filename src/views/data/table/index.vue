@@ -309,7 +309,7 @@
               </el-input>
             </el-form-item>
 
-            <el-form-item label="资产类型：:"
+            <el-form-item label="资产类型:"
                           prop="tableType">
               <el-select v-model="form.tableType"
                          :rows="4"
@@ -1175,6 +1175,10 @@ export default {
     },
     // 第一步选择的数据库
     nodeClick_table (data, node, tree) {
+      console.log(data)
+      console.log(node)
+      console.log(tree)
+      
       if (data) {
         // 显示保存按钮
         this.is_next = true;
@@ -1249,6 +1253,7 @@ export default {
 
     // 下一步的保存
     save (form) {
+      console.log("实际的表名"+this.ischeck_data.id);
       this.isDisable = true
       setTimeout(() => {
         this.isDisable = false
@@ -1308,6 +1313,8 @@ export default {
             }
             this.dialogVisible_information = false;
             this.registTableFlag = false;//关闭上一步
+            //将这个对象置空，避免出现混杂了上一次的传值的问题
+            this.ischeck_data = {}
           })
         } else {
           this.$message({
