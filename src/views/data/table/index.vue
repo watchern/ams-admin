@@ -375,7 +375,7 @@
           </div>
           <!--是否增量，是否推送文件-->
           <div  class="son ">
-           
+
               <el-form-item label="是否增量:"
                             prop="isSpike">
                 <el-select v-model="form.isSpike"
@@ -780,7 +780,6 @@ export default {
       } else {
         this.tabclick = true
         this.post_getDataTreeNode(this.query.dataSource);//目录
-        // this.loadNode2("ROOT", this.query.dataSource);
       }
     },
     filterNode (value, data) {
@@ -1258,48 +1257,90 @@ export default {
 
           // var ckFolder = this.$refs.tree2.getCurrentNode();
           // ckTbs.filter((tb) => { return tb.type === "TABLE"; }).forEach((node) => {
-          const tableForm = {
-            tableMetaUuid: this.ischeck_data.id,
-            displayTbName: this.ischeck_data.label,
-            dbName: this.ischeck_data.pid,
-            tbName: this.ischeck_data.label,
-            folderUuid: this.form.folderUuid,//目录id
-            personLiables: this.form.personLiables,// 资产责任人
-            // increment: this.form.increment,//是否增量
-            isSpike: this.form.isSpike, //是否增量
-            tableRelationQuery: {
-              tableDataSource: this.query.dataSource, //数据源
-              businessSystemId: this.form.businessSystemId, //所属系统主键
-              tableCode: this.form.tableCode, //资产编码
-              tableLayeredId: this.form.tableLayeredId, //资产分层主键
-              tableMetaUuid: this.ischeck_data.id, //资产主键
-              
-              tableRemarks: this.form.tableRemarks, //资产备注
-              tableThemeId: this.form.tableThemeId, //资产主题主键
-              tableType: this.form.tableType, //资产类型
+
+          for (var i = 0; i < this.form.fileName.length; i++) {
+
+
+            this.form.file_name = this.form.fileName[i]
+
+            const tableForm = {
+              tableMetaUuid: this.ischeck_data.id,
+              displayTbName: this.ischeck_data.label,
+              dbName: this.ischeck_data.pid,
+              tbName: this.ischeck_data.label,
+              folderUuid: this.form.folderUuid,//目录id
+              personLiables: this.form.personLiables,// 资产责任人
+              // increment: this.form.increment,//是否增量
               isSpike: this.form.isSpike, //是否增量
-              isSentFile: this.form.isSentFile, //是否推送文件
-              fileName: this.form.fileName //文件名称
-            },
-          };
+              tableRelationQuery: {
+                tableDataSource: this.query.dataSource, //数据源
+                businessSystemId: this.form.businessSystemId, //所属系统主键
+                tableCode: this.form.tableCode, //资产编码
+                tableLayeredId: this.form.tableLayeredId, //资产分层主键
+                tableMetaUuid: this.ischeck_data.id, //资产主键
+
+                tableRemarks: this.form.tableRemarks, //资产备注
+                tableThemeId: this.form.tableThemeId, //资产主题主键
+                tableType: this.form.tableType, //资产类型
+                isSpike: this.form.isSpike, //是否增量
+                isSentFile: this.form.isSentFile, //是否推送文件
+                // fileName: this.form.fileName //文件名称
+                fileName: this.form.file_name
+              },
+            };
+            this.chooseTables.push(tableForm);
+          }
           //
+          // return false
+
+
+
+          // const tableForm = {
+          //   tableMetaUuid: this.ischeck_data.id,
+          //   displayTbName: this.ischeck_data.label,
+          //   dbName: this.ischeck_data.pid,
+          //   tbName: this.ischeck_data.label,
+          //   folderUuid: this.form.folderUuid,//目录id
+          //   personLiables: this.form.personLiables,// 资产责任人
+          //   // increment: this.form.increment,//是否增量
+          //   isSpike: this.form.isSpike, //是否增量
+          //   tableRelationQuery: {
+          //     tableDataSource: this.query.dataSource, //数据源
+          //     businessSystemId: this.form.businessSystemId, //所属系统主键
+          //     tableCode: this.form.tableCode, //资产编码
+          //     tableLayeredId: this.form.tableLayeredId, //资产分层主键
+          //     tableMetaUuid: this.ischeck_data.id, //资产主键
+
+          //     tableRemarks: this.form.tableRemarks, //资产备注
+          //     tableThemeId: this.form.tableThemeId, //资产主题主键
+          //     tableType: this.form.tableType, //资产类型
+          //     isSpike: this.form.isSpike, //是否增量
+          //     isSentFile: this.form.isSentFile, //是否推送文件
+          //     // fileName: this.form.fileName //文件名称
+          //     fileName:this.form.file_name
+          //   },
+          // };
           // 将选中的表信息封装入节点对象集合
-          this.chooseTables.push(tableForm);
+          // this.chooseTables.push(tableForm);
+          //
           // return false
           //
+
           batchSaveTable_save(this.chooseTables).then((resp) => {
             if (resp.code == 0) {
               this.$message({
                 type: "success",
                 message: "新增成功!",
               });
-
+              this.btnLoading = false;//保存loadnin
+              this.chooseTables = []//传输的数据
               this.post_getBusinessSystemTree();//系统
               this.post_getThemeTree();//主题
               this.post_getLayeredTree();//分层
               // this.post_getDataTreeNode();//目录
 
             } else {
+              this.btnLoading = false
               this.$message({
                 type: "error",
                 message: res.msg,
@@ -1309,6 +1350,7 @@ export default {
             this.registTableFlag = false;//关闭上一步
           })
         } else {
+          this.btnLoading = false;//保存loadnin
           this.$message({
             message: '请填写信息',
             type: 'info',
@@ -1368,10 +1410,11 @@ export default {
         this.form.personName = personNames
         // this.form.personName = personNames.toString();
         //
-        // console.log(selectedNode[i].cnname)
-        // console.log(selectedNode[i]);
+        //
+        //
         let obj = {
-          personUuid: selectedNode[i].personuuid, personName: selectedNode[i].cnname
+          personUuid: selectedNode[i].personuuid,
+          personName: selectedNode[i].cnname
         }
         arr.push(obj)
       }
@@ -1619,19 +1662,5 @@ export default {
 }
 .tree-line-btn {
   background: rgba(255, 255, 255, 0) !important;
-}
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 50%;
-  // background: rgba(106, 106, 106, 0.0862745098);
-  // border-radius: 15.5px;
-}
-.loading span {
-  width: 60px;
-}
-.loading span img {
-  width: 100%;
 }
 </style>
