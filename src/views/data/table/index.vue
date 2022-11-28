@@ -471,8 +471,7 @@
           <el-button type="primary"
                      :loading="btnLoading"
                      :disabled="isDisable"
-                     @click="save('form')" 
-                     v-if="ifFileNameExist">{{this.btnLoading == true ? '保存中' : '保存'}}</el-button>
+                     @click="save('form')">{{this.btnLoading == true ? '保存中' : '保存'}}</el-button>
 
           <el-button @click="close_diag()">关闭</el-button>
 
@@ -689,6 +688,8 @@ export default {
           {
             label: '',
             fileName: '',
+            pid: '',
+            id: '',
           }
         ],//选择的数据表
       },
@@ -781,33 +782,29 @@ export default {
     //校验文件名是否存在
     checkFileName_change (fileName) {
       // 
-      checkFileName(fileName).then((res) => {
-        if (res.data) {
-          this.$message({
-            message: '文件名已存在',
-            type: 'error',
-            showClose: true,
-          })
+      // checkFileName(fileName).then((res) => {
+      //   if (res.data) {
+      //     this.$message({
+      //       message: '文件名已存在',
+      //       type: 'success',
+      //       showClose: true,
+      //     })
 
-          //隐藏保存按钮
-          this.ifFileNameExist = false
-        } else{
-           //显示保存按钮
-          this.ifFileNameExist = true
-        }
-        // else {
-        //   this.$message({
-        //     message: res.message,
-        //     type: 'success',
-        //     showClose: true,
-        //   })
-        //   //显示保存按钮
-        //   this.ifFileNameExist = true
-        //   // this.$message.success("文件名可用");
-        // }
-      }
-      )
-      this.registTableFlag = false;//关闭上一步
+      //     //隐藏保存按钮
+      //     this.ifFileNameExist = false
+      //   } else {
+      //     this.$message({
+      //       message: res.message,
+      //       type: 'success',
+      //       showClose: true,
+      //     })
+      //     //显示保存按钮
+      //     this.ifFileNameExist = true
+      //     // this.$message.success("文件名可用");
+      //   }
+      // }
+      // )
+      // this.registTableFlag = false;//关闭上一步
 
     },
 
@@ -1217,8 +1214,12 @@ export default {
       this.form.tableRemarks = ''
       this.form.isSpike = 1
       this.form.isSentFile = 0
-      this.form.fileName = ''
-      this.personUuid = [];
+      this.form.check_list.fileName = '',
+        this.form.check_list.pid = '',
+        this.form.check_list.id = '',
+        this.form.check_list.label = '',
+
+        this.personUuid = [];
       this.personName = [];
     },
     // 第一步选择的数据库
@@ -1226,15 +1227,18 @@ export default {
       //获取所有选中的节点 start
       let res = this.$refs.tree1.getCheckedNodes()
       var check_list = []
+      console.log(res);
+
       for (var i = 0; i < res.length; i++) {
         let obj = {
           label: res[i].label,
-          fileName: ''
+          fileName: '',
+          pid: res[i].pid,
+          id: res[i].id,
         }
         check_list.push(obj)
       }
       this.form.check_list = check_list
-
       if (data) {
         // 显示保存按钮
         this.is_next = true;
@@ -1315,7 +1319,6 @@ export default {
 
     // 下一步的保存
     save (form) {
-      console.log(this.check_list);
       this.btnLoading = true
       this.isDisable = true
       setTimeout(() => {
@@ -1327,14 +1330,14 @@ export default {
           // ckTbs.filter((tb) => { return tb.type === "TABLE"; }).forEach((node) => {
           for (var i = 0; i < this.form.check_list.length; i++) {
 
-            this.form.file_name = this.form.check_list[i].fileName
+            this.form.file_name = this.form.check_list[i].fileName//文件夹名称
 
             // this.form.file_name = this.form.fileName[i]
             const tableForm = {
-              tableMetaUuid: this.ischeck_data.id,
-              displayTbName: this.ischeck_data.label,
-              dbName: this.ischeck_data.pid,
-              tbName: this.ischeck_data.label,
+              tableMetaUuid: this.form.check_list[i].id,
+              displayTbName: this.form.check_list[i].label,
+              dbName: this.form.check_list[i].pid,
+              tbName: this.form.check_list[i].label,
               folderUuid: this.form.folderUuid,//目录id
               personLiables: this.form.personLiables,// 资产责任人
               // increment: this.form.increment,//是否增量
@@ -1344,7 +1347,7 @@ export default {
                 businessSystemId: this.form.businessSystemId, //所属系统主键
                 tableCode: this.form.tableCode, //资产编码
                 tableLayeredId: this.form.tableLayeredId, //资产分层主键
-                tableMetaUuid: this.ischeck_data.id, //资产主键
+                tableMetaUuid: this.form.check_list[i].id, //资产主键
 
                 tableRemarks: this.form.tableRemarks, //资产备注
                 tableThemeId: this.form.tableThemeId, //资产主题主键
@@ -1357,6 +1360,8 @@ export default {
             };
             this.chooseTables.push(tableForm);
           }
+          console.log(this.chooseTables);
+
           batchSaveTable_save(this.chooseTables).then((resp) => {
             if (resp.code == 0) {
               this.$message({
