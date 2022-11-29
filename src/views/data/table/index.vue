@@ -2,6 +2,7 @@
   <div class="page-container">
     <!-- left_conter -->
     <div class="left_conter">
+
       <el-tabs v-model="activeName"
                type="card"
                @tab-click="handleClick">
@@ -374,7 +375,7 @@
             </el-form-item>
           </div>
           <!--是否增量，是否推送文件-->
-          <div  class="son ">
+          <div class="son ">
 
             <el-form-item label="是否增量:"
                           prop="isSpike">
@@ -401,23 +402,28 @@
             </el-form-item>
 
           </div>
-          <!--表名 真实文件名称 -->
+          <!--表名 文件名称 -->
           <div class="son "
-               v-for="(item,index) in check_list"
-               :key="index">
+               v-for="(item,index) in form.check_list"
+               :key="index"
+               :ref="`ruleForm${index}`">
 
             <el-form-item label="表名:">
-              <p>{{item.title}}</p>
+              <p>{{item.label}}</p>
             </el-form-item>
 
             <el-form-item label="文件名称:"
-                          :rules="form.fileName"
-                          :prop="'fileName.'+index">
+                          :prop="'check_list.' + index + '.fileName'"
+                          :rules="{
+            required: true,
+            message: '请输入文件名称',
+            trigger: 'blur',
+          }">
               <el-input type="text"
                         placeholder="请输入文件名称"
-                        v-model="form.fileName[index]"
+                        v-model="item.fileName"
                         :rows="4"
-                        @input="checkFileName">
+                        @input="checkFileName_change(item.fileName)">
               </el-input>
             </el-form-item>
           </div>
@@ -651,13 +657,12 @@ export default {
         fileName: [
           { required: true, message: '请输入文件名称', trigger: 'change' },
         ],
-
-        // personName_str: [
-        //   { required: true, message: '请选择资产责任人', trigger: 'change' },
-        // ],
-        // tableRemarks: [
-        //   { required: true, message: '请输入资产备注', trigger: 'blur' },
-        // ],
+        personName_str: [
+          { required: true, message: '请选择资产责任人', trigger: 'change' },
+        ],
+        tableRemarks: [
+          { required: true, message: '请输入资产备注', trigger: 'blur' },
+        ],
       },
       btnLoading: false,//保存loading
       // 新增的数据
@@ -676,9 +681,17 @@ export default {
         personUuid: '',//资产责任人
         personName_str: '',//责任人
         personLiables: [],
-        fileName: [],//文件名称
+        // fileName: [],//文件名称
 
         file_name: '',
+        check_list: [
+          {
+            label: '',
+            fileName: '',
+            pid: '',
+            id: '',
+          }
+        ],//选择的数据表
       },
 
       option_isSpike: [
@@ -729,7 +742,7 @@ export default {
       loading: true,
       tabclick: false,
 
-      check_list: [],//选择的数据表
+
     };
   },
   computed: {
@@ -767,29 +780,32 @@ export default {
   },
   methods: {
     //校验文件名是否存在
-    checkFileName () {
-      checkFileName(this.form.fileName).then((res) => {
-        if (res.data) {
-          this.$message({
-            message: '文件名已存在',
-            type: 'success',
-            showClose: true,
-          })
+    checkFileName_change (fileName) {
+      //
+      // checkFileName(fileName).then((res) => {
+      //   if (res.data) {
+      //     this.$message({
+      //       message: '文件名已存在',
+      //       type: 'success',
+      //       showClose: true,
+      //     })
 
-          //隐藏保存按钮
-          this.ifFileNameExist = false
-        } else {
-          this.$message({
-            message: res.message,
-            type: 'success',
-            showClose: true,
-          })
-          //显示保存按钮
-          this.ifFileNameExist = true
-          // this.$message.success("文件名可用");
-        }
-      }
-      )
+      //     //隐藏保存按钮
+      //     this.ifFileNameExist = false
+      //   } else {
+      //     this.$message({
+      //       message: res.message,
+      //       type: 'success',
+      //       showClose: true,
+      //     })
+      //     //显示保存按钮
+      //     this.ifFileNameExist = true
+      //     // this.$message.success("文件名可用");
+      //   }
+      // }
+      // )
+      // this.registTableFlag = false;//关闭上一步
+
     },
 
     // tab切换
@@ -1198,23 +1214,35 @@ export default {
       this.form.tableRemarks = ''
       this.form.isSpike = 1
       this.form.isSentFile = 0
-      this.form.fileName = ''
-      this.personUuid = [];
+      this.form.check_list.fileName = '',
+        this.form.check_list.pid = '',
+        this.form.check_list.id = '',
+        this.form.check_list.label = '',
+
+        this.personUuid = [];
       this.personName = [];
     },
     // 第一步选择的数据库
     nodeClick_table (data, node, tree) {
       //获取所有选中的节点 start
       let res = this.$refs.tree1.getCheckedNodes()
-      let check_list = []
-      res.forEach((item) => {
-        check_list.push(item)
-      })
-      this.check_list = check_list
+      var check_list = []
+      console.log(res);
 
+      for (var i = 0; i < res.length; i++) {
+        let obj = {
+          label: res[i].label,
+          fileName: '',
+          pid: res[i].pid,
+          id: res[i].id,
+        }
+        check_list.push(obj)
+      }
+      this.form.check_list = check_list
       if (data) {
         // 显示保存按钮
         this.is_next = true;
+
         this.ischeck_data = data
       } else {
         this.is_next = false
@@ -1225,12 +1253,6 @@ export default {
 
     // 注册资产 下一步
     next () {
-
-
-
-
-
-
       this.registTableFlag = false;//关闭上一步
       this.dialogVisible_information = true//显示下一步 基本信息
       getListTree().then((res) => {
@@ -1305,20 +1327,18 @@ export default {
       }, 2000)
       this.$refs[form].validate((valid) => {
         if (valid) {
-
           // var ckFolder = this.$refs.tree2.getCurrentNode();
           // ckTbs.filter((tb) => { return tb.type === "TABLE"; }).forEach((node) => {
+          for (var i = 0; i < this.form.check_list.length; i++) {
 
-          for (var i = 0; i < this.form.fileName.length; i++) {
+            this.form.file_name = this.form.check_list[i].fileName//文件夹名称
 
-
-            this.form.file_name = this.form.fileName[i]
-
+            // this.form.file_name = this.form.fileName[i]
             const tableForm = {
-              tableMetaUuid: this.ischeck_data.id,
-              displayTbName: this.ischeck_data.label,
-              dbName: this.ischeck_data.pid,
-              tbName: this.ischeck_data.label,
+              tableMetaUuid: this.form.check_list[i].id,
+              displayTbName: this.form.check_list[i].label,
+              dbName: this.form.check_list[i].pid,
+              tbName: this.form.check_list[i].label,
               folderUuid: this.form.folderUuid,//目录id
               personLiables: this.form.personLiables,// 资产责任人
               // increment: this.form.increment,//是否增量
@@ -1328,7 +1348,7 @@ export default {
                 businessSystemId: this.form.businessSystemId, //所属系统主键
                 tableCode: this.form.tableCode, //资产编码
                 tableLayeredId: this.form.tableLayeredId, //资产分层主键
-                tableMetaUuid: this.ischeck_data.id, //资产主键
+                tableMetaUuid: this.form.check_list[i].id, //资产主键
 
                 tableRemarks: this.form.tableRemarks, //资产备注
                 tableThemeId: this.form.tableThemeId, //资产主题主键
@@ -1341,41 +1361,7 @@ export default {
             };
             this.chooseTables.push(tableForm);
           }
-          //
-          // return false
-
-
-
-          // const tableForm = {
-          //   tableMetaUuid: this.ischeck_data.id,
-          //   displayTbName: this.ischeck_data.label,
-          //   dbName: this.ischeck_data.pid,
-          //   tbName: this.ischeck_data.label,
-          //   folderUuid: this.form.folderUuid,//目录id
-          //   personLiables: this.form.personLiables,// 资产责任人
-          //   // increment: this.form.increment,//是否增量
-          //   isSpike: this.form.isSpike, //是否增量
-          //   tableRelationQuery: {
-          //     tableDataSource: this.query.dataSource, //数据源
-          //     businessSystemId: this.form.businessSystemId, //所属系统主键
-          //     tableCode: this.form.tableCode, //资产编码
-          //     tableLayeredId: this.form.tableLayeredId, //资产分层主键
-          //     tableMetaUuid: this.ischeck_data.id, //资产主键
-
-          //     tableRemarks: this.form.tableRemarks, //资产备注
-          //     tableThemeId: this.form.tableThemeId, //资产主题主键
-          //     tableType: this.form.tableType, //资产类型
-          //     isSpike: this.form.isSpike, //是否增量
-          //     isSentFile: this.form.isSentFile, //是否推送文件
-          //     // fileName: this.form.fileName //文件名称
-          //     fileName:this.form.file_name
-          //   },
-          // };
-          // 将选中的表信息封装入节点对象集合
-          // this.chooseTables.push(tableForm);
-          //
-          // return false
-          //
+          console.log(this.chooseTables);
 
           batchSaveTable_save(this.chooseTables).then((resp) => {
             if (resp.code == 0) {
