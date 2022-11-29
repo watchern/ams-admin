@@ -1616,7 +1616,7 @@ export default {
         getColumnSqlInfo(data)
           .then((resp) => {
             console.log(resp.code)
-            if (resp.code == 0 && resp.code == 20000){
+            if (resp.code == 0 || resp.code == 20000){
               // 修改执行成功状态
               isAllExecuteSuccess = true;
               lastResultColumn = resp.data.columnName;
