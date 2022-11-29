@@ -49,9 +49,11 @@
       </el-col>
     </el-row> -->
 
-    <div v-show="loading== true"
-         class="loading">
-      <div class="conter_loading">
+    <div v-if="loading== true"
+         class="loading padding10"
+         style="position: inherit;">
+      <div class="conter_loading"
+           style="background:none">
         <span><img src="../../../assets/img/loading.gif"
                alt=""></span>
       </div>
@@ -59,7 +61,7 @@
 
     <!-- 系统 主题 分层  目录-->
     <div class="tree-containerall padding10"
-         v-show="loading== false">
+         v-if="loading== false">
       <!-- <div class="tree-option "
            v-loading="treeLoading"> -->
       <!-- :default-expand-all="true" 展开全部节点 -->
@@ -258,7 +260,7 @@ export default {
       this.loading = true
       getBusinessSystemTree(true, this.query.dataSource, false).then((resp) => {
         this.treeData1 = resp.data
-        this.loading = false
+        // this.loading = false
         this.tabclick = false
       });
     },
@@ -342,10 +344,10 @@ export default {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
-    getTree() {
+    getTree () {
       return this.$refs.tree1;
     },
-    nodeClick(data, node, tree) {
+    nodeClick (data, node, tree) {
       this.$emit("node-click", data, node, tree);
     },
     handleCheck (data, checkIds) {
@@ -480,7 +482,10 @@ export default {
   }, // 注册
 };
 </script>
+
 <style scoped>
+@import url("./../../../assets/css/common.css");
+
 .tree-containerall {
   /* height: 75vh; */
   height: calc(100% - 140px);
