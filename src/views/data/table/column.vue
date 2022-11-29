@@ -322,15 +322,15 @@ export default {
             personLiables: this.relationForm.personLiables,
             tableRelationQuery: {
               tableDataSource: this.relationForm.tableDataSource, //数据源
-              businessSystemId: this.relationForm.tableLayeredId, //所属系统主键
+              businessSystemId: this.relationForm.businessSystemId, //所属系统主键
               tableCode: this.relationForm.tableCode, //资产编码
               tableLayeredId: this.relationForm.tableLayeredId, //资产分层主键
               tableRemarks: this.relationForm.tableRemarks, //资产备注
               tableThemeId: this.relationForm.tableThemeId, //资产主题主键
               tableType: this.relationForm.tableType, //资产类型
-              isSpike: this.relationForm.isSpike,
-              isSentFile: this.relationForm.isSentFile,
-              ileName: this.relationForm.fileName
+              isSpike: this.relationForm.isSpike, //是否增量
+              isSentFile: this.relationForm.isSentFile, //是否推送文件
+              fileName: this.relationForm.fileName //文件名称
             },
       };
 
