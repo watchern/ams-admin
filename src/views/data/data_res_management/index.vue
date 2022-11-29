@@ -142,7 +142,7 @@
             <el-input style="width: 80%;"
                       type="input"
                       :disabled="title == '查看业务系统'"
-                      v-model="form.businessSystemEtldate"></el-input>
+                      v-model.number="form.businessSystemEtldate"></el-input>
 
             <!-- </el-date-picker> -->
 
@@ -249,11 +249,12 @@ export default {
         businessSystemName: [
           { required: true, message: '请输入名称', trigger: 'blur' },
         ],
-        businessSystemEtldate: [
-          { required: true, message: '请选择时间', trigger: 'change' },
-        ],
         businessSystemCode: [
-          { required: true, message: '请输入系统代码', trigger: 'blue' },
+          { required: true, message: '请输入系统代码', trigger: 'change' },
+        ],
+        businessSystemEtldate: [
+          { required: true, message: '请输入时间', trigger: 'change' },
+          { type: 'number', message: '时间必须为数字值' },
         ],
         beforSemantics: [
           { required: true, message: '请输入创建人', trigger: 'blue' },
