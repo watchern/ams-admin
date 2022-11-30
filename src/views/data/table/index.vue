@@ -21,6 +21,7 @@
       </el-tabs>
       <div class="padding10">
         <el-input v-model="filterText2"
+                  :disabled="tabclick"
                   placeholder="输入关键字进行过滤" />
       </div>
       <!-- 数据源 -->
@@ -31,6 +32,7 @@
           <el-form-item label="数据源："
                         label-width="70px">
             <el-select v-model="query.dataSource"
+                       :disabled="tabclick"
                        @change="selectdata"
                        placeholder="请选择数据源">
               <el-option v-for="item in options"
@@ -811,20 +813,16 @@ export default {
     // tab切换
     handleClick (tab, event) {
       if (tab.index == '0') {
-        this.tabclick = true
+        // this.tabclick = true
         // setTimeout(() => {
         //   this.tabclick = false
         // }, 3000)
         this.post_getBusinessSystemTree();//系统
       } else if (tab.index == '1') {
-        this.tabclick = true
-
         this.post_getThemeTree();//主题
       } else if (tab.index == '2') {
-        this.tabclick = true
         this.post_getLayeredTree();//分层
       } else {
-        this.tabclick = true
         this.post_getDataTreeNode(this.query.dataSource);//目录
       }
     },
@@ -836,6 +834,7 @@ export default {
     // 系统
     post_getBusinessSystemTree () {
       this.loading = true
+      this.tabclick = true
       getBusinessSystemTree(true, this.query.dataSource, true).then((resp) => {
         this.tree_list = resp.data
         this.loading = false
@@ -845,6 +844,7 @@ export default {
     // 主题
     post_getThemeTree () {
       this.loading = true
+      this.tabclick = true
       getThemeTree(true, this.query.dataSource, true).then((resp) => {
         this.tree_list = resp.data
         this.loading = false
@@ -854,7 +854,7 @@ export default {
     // 分层
     post_getLayeredTree () {
       this.loading = true
-
+      this.tabclick = true
       getLayeredTree(true, this.query.dataSource, true).then((resp) => {
         this.tree_list = resp.data
         this.loading = false
@@ -864,6 +864,7 @@ export default {
     // 目录
     post_getDataTreeNode () {
       this.loading = true
+      this.tabclick = true
       getDataTreeNode(this.query.dataSource).then((resp) => {
         this.tree_list = resp.data
         this.loading = false
@@ -1320,7 +1321,7 @@ export default {
 
     // 下一步的保存
     save (form) {
-      this.btnLoading = true
+      // this.btnLoading = true
       this.isDisable = true
       setTimeout(() => {
         this.isDisable = false
@@ -1329,63 +1330,70 @@ export default {
         if (valid) {
           // var ckFolder = this.$refs.tree2.getCurrentNode();
           // ckTbs.filter((tb) => { return tb.type === "TABLE"; }).forEach((node) => {
-          for (var i = 0; i < this.form.check_list.length; i++) {
+          console.log(this.form.check_list);
 
-            this.form.file_name = this.form.check_list[i].fileName//文件夹名称
+          let names = this.form.check_list.map(item => item["fileName"]);
+          let nameSet = new Set(names);
 
-            // this.form.file_name = this.form.fileName[i]
-            const tableForm = {
-              tableMetaUuid: this.form.check_list[i].id,
-              displayTbName: this.form.check_list[i].label,
-              dbName: this.form.check_list[i].pid,
-              tbName: this.form.check_list[i].label,
-              folderUuid: this.form.folderUuid,//目录id
-              personLiables: this.form.personLiables,// 资产责任人
-              // increment: this.form.increment,//是否增量
-              isSpike: this.form.isSpike, //是否增量
-              tableRelationQuery: {
-                tableDataSource: this.query.dataSource, //数据源
-                businessSystemId: this.form.businessSystemId, //所属系统主键
-                tableCode: this.form.tableCode, //资产编码
-                tableLayeredId: this.form.tableLayeredId, //资产分层主键
-                tableMetaUuid: this.form.check_list[i].id, //资产主键
-
-                tableRemarks: this.form.tableRemarks, //资产备注
-                tableThemeId: this.form.tableThemeId, //资产主题主键
-                tableType: this.form.tableType, //资产类型
+          if (nameSet.size == names.length) {
+            // console.log("没有重复值");
+            for (var i = 0; i < this.form.check_list.length; i++) {
+              this.form.file_name = this.form.check_list[i].fileName//文件夹名称
+              // this.form.file_name = this.form.fileName[i]
+              const tableForm = {
+                tableMetaUuid: this.form.check_list[i].id,
+                displayTbName: this.form.check_list[i].label,
+                dbName: this.form.check_list[i].pid,
+                tbName: this.form.check_list[i].label,
+                folderUuid: this.form.folderUuid,//目录id
+                personLiables: this.form.personLiables,// 资产责任人
+                // increment: this.form.increment,//是否增量
                 isSpike: this.form.isSpike, //是否增量
-                isSentFile: this.form.isSentFile, //是否推送文件
-                // fileName: this.form.fileName //文件名称
-                fileName: this.form.file_name
-              },
-            };
-            this.chooseTables.push(tableForm);
-          }
-          console.log(this.chooseTables);
+                tableRelationQuery: {
+                  tableDataSource: this.query.dataSource, //数据源
+                  businessSystemId: this.form.businessSystemId, //所属系统主键
+                  tableCode: this.form.tableCode, //资产编码
+                  tableLayeredId: this.form.tableLayeredId, //资产分层主键
+                  tableMetaUuid: this.form.check_list[i].id, //资产主键
 
-          batchSaveTable_save(this.chooseTables).then((resp) => {
-            if (resp.code == 0) {
-              this.$message({
-                type: "success",
-                message: "新增成功!",
-              });
-              this.btnLoading = false;//保存loadnin
-              this.chooseTables = []//传输的数据
-              this.post_getBusinessSystemTree();//系统
-              this.post_getThemeTree();//主题
-              this.post_getLayeredTree();//分层
-              // this.post_getDataTreeNode();//目录
-
-            } else {
-              this.btnLoading = false
-              this.$message({
-                type: "error",
-                message: res.msg,
-              });
+                  tableRemarks: this.form.tableRemarks, //资产备注
+                  tableThemeId: this.form.tableThemeId, //资产主题主键
+                  tableType: this.form.tableType, //资产类型
+                  isSpike: this.form.isSpike, //是否增量
+                  isSentFile: this.form.isSentFile, //是否推送文件
+                  // fileName: this.form.fileName //文件名称
+                  fileName: this.form.file_name
+                },
+              };
+              this.chooseTables.push(tableForm);
             }
-            this.dialogVisible_information = false;
-            this.registTableFlag = false;//关闭上一步
-          })
+            // console.log(this.chooseTables);
+            batchSaveTable_save(this.chooseTables).then((resp) => {
+              if (resp.code == 0) {
+                this.$message({
+                  type: "success",
+                  message: "新增成功!",
+                });
+                this.btnLoading = false;//保存loadnin
+                this.chooseTables = []//传输的数据
+                this.post_getBusinessSystemTree();//系统
+                this.post_getThemeTree();//主题
+                this.post_getLayeredTree();//分层
+                // this.post_getDataTreeNode();//目录
+
+              } else {
+                this.btnLoading = false
+                this.$message({
+                  type: "error",
+                  message: res.msg,
+                });
+              }
+              this.dialogVisible_information = false;
+              this.registTableFlag = false;//关闭上一步
+            })
+          } else {
+            this.$message({ type: "info", message: "文件名字不可以重复!" });
+          }
         } else {
           this.btnLoading = false;//保存loadnin
           this.$message({

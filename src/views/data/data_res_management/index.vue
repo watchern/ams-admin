@@ -50,12 +50,14 @@
         </el-row>
       </div>
 
+      <div :style="{'max-height': this.timeLineHeight + 'px' }"
+           style="overflow-y:scroll;">
       <el-table v-loading="listLoading"
                 :data="page_list.records"
                 border
                 fit
                 highlight-current-row
-                style="width: 100%;height:calc(100% - 140px);overflow: auto;"
+                style="width: 100%;height:calc(480px);overflow: auto;"
                 @selection-change="handleSelectionChange">
         <!-- <el-table-column type="selection"
                          width="55" /> -->
@@ -94,6 +96,7 @@
           </template>
         </el-table-column>
       </el-table>
+      </div>
       <el-pagination v-show="page_list.total>0"
                      :total="page_list.total"
                      :current-page="page_list.currentPage"
@@ -142,7 +145,7 @@
             <el-input style="width: 80%;"
                       type="input"
                       :disabled="title == '查看业务系统'"
-                      v-model="form.businessSystemEtldate"></el-input>
+                      v-model.number="form.businessSystemEtldate"></el-input>
 
             <!-- </el-date-picker> -->
 
@@ -229,6 +232,7 @@ export default {
       listLoading: false,
       page_list: [],//列表
       Selectval: [],//多选的值
+      timeLineHeight: "",
       // 新增的数据
       form: {
         businessSystemName: '',// 业务系统名称
@@ -249,11 +253,12 @@ export default {
         businessSystemName: [
           { required: true, message: '请输入名称', trigger: 'blur' },
         ],
-        businessSystemEtldate: [
-          { required: true, message: '请选择时间', trigger: 'change' },
-        ],
         businessSystemCode: [
-          { required: true, message: '请输入系统代码', trigger: 'blue' },
+          { required: true, message: '请输入系统代码', trigger: 'change' },
+        ],
+        businessSystemEtldate: [
+          { required: true, message: '请输入时间', trigger: 'change' },
+          { type: 'number', message: '时间必须为数字值' },
         ],
         beforSemantics: [
           { required: true, message: '请输入创建人', trigger: 'blue' },
@@ -276,7 +281,12 @@ export default {
   },
   computed: {},
   watch: {},
-  mounted () { },
+  mounted () {
+    this.timeLineHeight = document.documentElement.clientHeight-100;
+    window.onresize = () => {
+      this.timeLineHeight = document.documentElement.clientHeight-100;
+    };
+  },
   created () {
     this.getList();//刷新列表
   },

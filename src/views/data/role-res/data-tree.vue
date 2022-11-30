@@ -21,6 +21,7 @@
     </el-tabs>
     <div class="padding10">
       <el-input v-model="filterText1"
+                :disabled="tabclick"
                 placeholder="输入关键字进行过滤" />
     </div>
     <!-- 数据源 -->
@@ -32,6 +33,7 @@
                       label-width="70px">
           <el-select v-model="query.dataSource"
                      @change="selectdata"
+                     :disabled="tabclick"
                      placeholder="请选择数据源">
             <el-option v-for="item in options"
                        :key="item.value"
@@ -258,14 +260,16 @@ export default {
     // 系统
     post_getBusinessSystemTree () {
       this.loading = true
+      this.tabclick = true
       getBusinessSystemTree(true, this.query.dataSource, false).then((resp) => {
         this.treeData1 = resp.data
-        // this.loading = false
+        this.loading = false
         this.tabclick = false
       });
     },
     // 主题
     post_getThemeTree () {
+      this.tabclick = true
       this.loading = true
       getThemeTree(true, this.query.dataSource, false).then((resp) => {
         this.treeData1 = resp.data
@@ -275,6 +279,7 @@ export default {
     },
     // 分层
     post_getLayeredTree () {
+      this.tabclick = true
       this.loading = true
       getLayeredTree(true, this.query.dataSource, false).then((resp) => {
         this.treeData1 = resp.data
@@ -302,20 +307,16 @@ export default {
     // tab切换
     handleClick (tab, event) {
       if (tab.index == '0') {
-        this.tabclick = true
+        // this.tabclick = true
         // setTimeout(() => {
         //   this.tabclick = false
         // }, 3000)
         this.post_getBusinessSystemTree();//系统
       } else if (tab.index == '1') {
-        this.tabclick = true
-
         this.post_getThemeTree();//主题
       } else if (tab.index == '2') {
-        this.tabclick = true
         this.post_getLayeredTree();//分层
       } else {
-        this.tabclick = truncate
         this.post_getDataTreeNode();//目录
       }
     },
@@ -334,9 +335,7 @@ export default {
       } else {
         // 目录 
         this.post_getDataTreeNode();//目录
-
       }
-
     },
 
 
