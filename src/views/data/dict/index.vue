@@ -18,6 +18,7 @@
     <el-table :key="tableKey"
               v-loading="listLoading"
               :data="list"
+              height="calc(100% - 160px)"
               border
               fit
               highlight-current-row
