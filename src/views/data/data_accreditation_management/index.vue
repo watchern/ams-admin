@@ -82,6 +82,7 @@
       <el-table v-loading="listLoading"
                 :data="page_list.records"
                 ref="multipleTable"
+                height="450px"
                 border
                 fit
                 highlight-current-row

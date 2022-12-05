@@ -20,6 +20,7 @@
       :key="tableKey"
       v-loading="listLoading"
       :data="list"
+      height="400px"
       stripe
       border
       fit

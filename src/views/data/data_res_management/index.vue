@@ -50,14 +50,13 @@
         </el-row>
       </div>
 
-      <div :style="{'max-height': this.timeLineHeight + 'px' }"
-           style="overflow-y:scroll;">
       <el-table v-loading="listLoading"
                 :data="page_list.records"
+                height="400px"
                 border
                 fit
                 highlight-current-row
-                style="width: 100%;height:calc(480px);overflow: auto;"
+                style="width: 100%;height:calc(100% - 140px);overflow: auto;"
                 @selection-change="handleSelectionChange">
         <!-- <el-table-column type="selection"
                          width="55" /> -->
@@ -203,7 +202,6 @@
       </el-dialog>
 
     </div>
-  </div>
 
 </template>
 
@@ -232,7 +230,6 @@ export default {
       listLoading: false,
       page_list: [],//列表
       Selectval: [],//多选的值
-      timeLineHeight: "",
       // 新增的数据
       form: {
         businessSystemName: '',// 业务系统名称
@@ -281,12 +278,6 @@ export default {
   },
   computed: {},
   watch: {},
-  mounted () {
-    this.timeLineHeight = document.documentElement.clientHeight-100;
-    window.onresize = () => {
-      this.timeLineHeight = document.documentElement.clientHeight-100;
-    };
-  },
   created () {
     this.getList();//刷新列表
   },
