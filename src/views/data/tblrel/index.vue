@@ -127,7 +127,7 @@
         </el-form>
       </template>
       <div slot="footer">
-        <el-button size="mini" @click="dialogFormVisible = false"
+        <el-button @click="dialogFormVisible = false"
           >取消</el-button
         >
         <el-button

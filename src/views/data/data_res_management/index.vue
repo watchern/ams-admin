@@ -132,7 +132,7 @@
                       :disabled="title == '查看业务系统'"
                       v-model="form.businessSystemCode"></el-input>
           </el-form-item>
-          <el-form-item label="业务系统数据时间:"
+          <el-form-item label="执行时间间隔:"
                         prop="businessSystemEtldate">
             <!-- <el-date-picker v-model="form.businessSystemEtldate"
                             type="date"

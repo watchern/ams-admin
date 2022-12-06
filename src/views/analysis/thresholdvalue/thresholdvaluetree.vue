@@ -253,6 +253,10 @@ export default {
      * 修改阈值分类
      */
     updateFolder() {
+      if (this.selectTreeNode.pid === "0") {
+        this.$message({ success: "info", message: "根目录不允许修改" });
+        return;
+      }
       this.form.thresholdValueFolderUuid = this.selectTreeNode.id;
       this.form.parentUuid = null;
       this.form.folderPath = null;
