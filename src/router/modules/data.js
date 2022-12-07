@@ -143,11 +143,11 @@ const dataRouter = {
       component: () => import('@/views/data/config/index')
     },
     {
-      path: 'text',
-      name: '测试的',
-      component: () => import('@/views/data/text/index'),
+      path: 'expansion',
+      name: '扩容',
+      component: () => import('@/views/data/expansion/index'),
       meta: {
-        title: "数据管理-测试的"
+        title: "数据管理-扩容"
       }
     },
   ]

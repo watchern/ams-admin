@@ -26,19 +26,37 @@
                  type="primary"
                  @click="search()">查询</el-button>
       <el-button size="mini"
-                 type="primary"
+                 type="info"
                  @click="clear_search()">重置</el-button>
     </div>
     <!-- 查询 end-->
 
     <!-- 是否显示按钮 数据注册显示 -->
-    <div class="common_btn padding10"
+    <div class="common_btn "
          v-if="is_btn == true">
-      <el-button type="primary">数据字典导入导出</el-button>
+      <div class="click_btn">
+        <el-button type="primary">数据字典导入导出</el-button>
+        <div class="show_btn">
+          <el-button type="primary">模版下载</el-button>
+          <el-button type="primary">导入数据资源</el-button>
+        </div>
+      </div>
 
-      <el-button type="primary">汉化信息导入导出</el-button>
+      <div class="click_btn">
+        <el-button type="primary">汉化信息导入导出</el-button>
+        <div class="show_btn">
+          <el-button type="primary">模版下载</el-button>
+          <el-button type="primary">导入汉化信息</el-button>
+        </div>
+      </div>
 
-      <el-button type="primary">表关系导入导出</el-button>
+      <div class="click_btn">
+        <el-button type="primary">表关系导入导出</el-button>
+        <div class="show_btn">
+          <el-button type="primary">模版下载</el-button>
+          <el-button type="primary">导入表关系</el-button>
+        </div>
+      </div>
 
       <el-button type="primary">同步数据结构</el-button>
 
@@ -50,41 +68,51 @@
     </div>
 
     <!-- 内容 -->
-    <div class="box_ard">
-      <div class="box_ard_header _width"
-           @click="on_deails('1111')">
-        <p class="new_num">GIUDUDION</p>
-        <p class="new_title">这是标题</p>
-        <span class="new_type">存款业务主题</span>
-      </div>
-      <div class="new_left padding10">
-        <i><img src="../../assets/img/activity.png"
-               alt=""></i>
+    <div class="box_ard"
+         v-for="(item,index) in list"
+         :key="index">
+      <div class="check">
+        <el-checkbox v-model="item.isCheck"
+                     @change="handleCheckAllChange(item)"></el-checkbox>
       </div>
 
-      <div class="new_right">
-        <div class="table_type">
-          <p class="one">表关联数量：<span>1</span>
-            <el-card class="show_tips">
-              <p>BIBIUU</p>
-              <p>BIBIUU</p>
-              <p>BIBIUU</p>
-            </el-card>
-
-          </p>
-          <p class="two">使用此表模型数：<span>1</span>
-            <el-card class="show_tips">
-              <p>BIBIUU</p>
-              <p>BIBIUU</p>
-              <p>BIBIUU</p>
-            </el-card>
-          </p>
+      <div class="conter_list">
+        <div class="box_ard_header _width"
+             @click="on_deails('1111')">
+          <p class="new_num">{{item.name}}</p>
+          <p class="new_title">{{item.title}}</p>
+          <span class="new_type">{{item.title1}}</span>
         </div>
-        <p class="text">描述：213123213123</p>
-        <p class="text">字段：12321321313213</p>
-        <div class="data_list">
-          <span class="data_time">数据日期 2022-11-06</span>
-          <span class="data_number">数据量 2,530,000 条</span>
+
+        <div class="new_left padding10">
+          <i><img src="../../assets/img/activity.png"
+                 alt=""></i>
+        </div>
+
+        <div class="new_right">
+          <div class="table_type">
+            <p class="one">表关联数量：<span>1</span>
+              <el-card class="show_tips">
+                <p>BIBIUU</p>
+                <p>BIBIUU</p>
+                <p>BIBIUU</p>
+              </el-card>
+
+            </p>
+            <p class="two">使用此表模型数：<span>1</span>
+              <el-card class="show_tips">
+                <p>BIBIUU</p>
+                <p>BIBIUU</p>
+                <p>BIBIUU</p>
+              </el-card>
+            </p>
+          </div>
+          <p class="text">描述：213123213123</p>
+          <p class="text">字段：12321321313213</p>
+          <div class="data_list">
+            <span class="data_time">数据日期 2022-11-06</span>
+            <span class="data_number">数据量 2,530,000 条</span>
+          </div>
         </div>
       </div>
 
@@ -126,6 +154,11 @@ export default {
       TagsAll: [],
       inputLength: '',
 
+
+      list: [
+        { name: 'GIUDUDION', title: '这是标题', title1: '存款业务主体', title2: '描述描述描述', title4: '字段21321313123', isCheck: 'true' },
+        { name: 'GIUDUDION', title: '这是标题', title1: '存款业务主体', title2: '描述描述描述', title4: '字段21321313123', isCheck: 'true' }
+      ],
 
     };
   },
@@ -195,12 +228,59 @@ export default {
       this.$emit("on_deails", data);
 
     },
+    handleCheckAllChange (node) {
+      console.log(node);
+      let arr = []
+      arr.push(node)
+      console.log(arr);
+      return false
+      if (node.children && node.children instanceof Array && node.children.length > 0) {
+        node.children.forEach(item => {
+          item.isCheck = node.isCheck
+        })
+      }
+    },
+    handleCheckedCitiesChange (parent) {
+      parent.isCheck = parent.children.every(item => item.isCheck)
+    },
 
   }
 }
 </script>
  
 <style scoped>
+/* 操作btn */
+.click_btn {
+  display: table-caption;
+  position: relative;
+}
+.show_btn {
+  border-radius: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  opacity: 0;
+  /* height: 0; */
+  display: flex;
+  transition: all 0.35s;
+  justify-content: space-around;
+  transform: scale(0);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
+}
+.click_btn:hover .show_btn {
+  top: 70px;
+  /* height: 40px !important; */
+  opacity: 1 !important;
+  z-index: 99;
+  transform: scale(1);
+  transform: translate(-50%, -50%);
+}
+
 .preview_conter {
 }
 /* 搜索  */
@@ -279,6 +359,7 @@ export default {
 /* 搜索  end*/
 
 /* 结果列表 */
+
 .box_ard {
   display: flex;
   flex-wrap: wrap;
@@ -290,6 +371,17 @@ export default {
   box-sizing: border-box;
 }
 
+.check {
+  width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+.conter_list {
+  width: calc(100% - 40px);
+  box-sizing: border-box;
+}
 .box_ard_header {
   display: flex;
   padding: 10px 0;
@@ -412,6 +504,11 @@ export default {
 }
 
 .common_btn {
-  margin-bottom: 10px;
+  padding: 10px 0 20px;
+  box-sizing: border-box;
+  display: flex;
+}
+.common_btn >>> .el-button {
+  margin: 0 10px;
 }
 </style>

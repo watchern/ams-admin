@@ -486,7 +486,7 @@ export default {
     // 扩容
     on_expansion () {
       this.$router.push({
-        path: '/data/text'
+        path: '/data/expansion'
       })
     }
   }, // 注册
