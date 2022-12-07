@@ -1,6 +1,6 @@
 <template>
   <div>
-    数据资源分析
+    测试
   </div>
 </template>
 

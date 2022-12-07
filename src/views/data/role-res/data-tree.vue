@@ -15,9 +15,9 @@
       <el-tab-pane label="分层"
                    :disabled="tabclick"
                    name="2"></el-tab-pane>
-      <el-tab-pane label="目录"
+      <!-- <el-tab-pane label="目录"
                    :disabled="tabclick"
-                   name="3"></el-tab-pane>
+                   name="3"></el-tab-pane> -->
     </el-tabs>
     <div class="padding10">
       <el-input v-model="filterText1"
@@ -288,21 +288,21 @@ export default {
       });
     },
     // 目录
-    post_getDataTreeNode () {
-      this.loading = true
-      getResELTree({
-        dataUserId: this.dataUserId,
-        sceneCode: this.sceneCode,
-        type: this.treeType,
-      }).then((resp) => {
-        // this.treeLoading = false;
-        this.treeData1 = resp.data;
-        this.loading = false
-        this.tabclick = false
-        //默认展开所有文件夹
-        // this.openlist = ["ROOT"];
-      });
-    },
+    // post_getDataTreeNode () {
+    //   this.loading = true
+    //   getResELTree({
+    //     dataUserId: this.dataUserId,
+    //     sceneCode: this.sceneCode,
+    //     type: this.treeType,
+    //   }).then((resp) => {
+    //     // this.treeLoading = false;
+    //     this.treeData1 = resp.data;
+    //     this.loading = false
+    //     this.tabclick = false
+    //     //默认展开所有文件夹
+    //     // this.openlist = ["ROOT"];
+    //   });
+    // },
 
     // tab切换
     handleClick (tab, event) {
@@ -316,9 +316,10 @@ export default {
         this.post_getThemeTree();//主题
       } else if (tab.index == '2') {
         this.post_getLayeredTree();//分层
-      } else {
-        this.post_getDataTreeNode();//目录
       }
+      // else {
+      //   this.post_getDataTreeNode();//目录
+      // }
     },
     // 选择数据源
     selectdata (val) {
@@ -332,10 +333,11 @@ export default {
       } else if (this.activeName == '2') {
         // 分层
         this.post_getLayeredTree();//分层
-      } else {
-        // 目录 
-        this.post_getDataTreeNode();//目录
       }
+      // else {
+      //   // 目录 
+      //   this.post_getDataTreeNode();//目录
+      // }
     },
 
 

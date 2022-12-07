@@ -2,7 +2,7 @@
 const dataRouter = {
   path: '/data',
   name: '审计数据管理',
-  component: (resolve) => require(['@/portal/' + (process.env.VUE_APP_BASE_MENU === 'withmenu'?'withmenu/' + process.env.VUE_APP_BASE_SKIN:'withoutmenu') + '/index'], resolve),
+  component: (resolve) => require(['@/portal/' + (process.env.VUE_APP_BASE_MENU === 'withmenu' ? 'withmenu/' + process.env.VUE_APP_BASE_SKIN : 'withoutmenu') + '/index'], resolve),
   meta: {
   },
   children: [
@@ -141,7 +141,15 @@ const dataRouter = {
       path: 'config',
       name: '运维操作',
       component: () => import('@/views/data/config/index')
-    }
+    },
+    {
+      path: 'text',
+      name: '测试的',
+      component: () => import('@/views/data/text/index'),
+      meta: {
+        title: "数据管理-测试的"
+      }
+    },
   ]
 }
 export default dataRouter

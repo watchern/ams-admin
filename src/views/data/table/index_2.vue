@@ -128,18 +128,9 @@
 
     <!-- right_conter -->
     <div class="right_conter padding10">
-      <a href="javascript:;"
-         @click="moreTask">测试的</a>
-      <DataResourceDisplay @on_deails="on_deails_change"
-                           :is_btn="is_btn"
-                           v-if="show_details == false"></DataResourceDisplay>
-
-      <!-- 基本信息详情 -->
-      <Details ref="Details_ref"
-               v-if="show_details == true"></Details>
 
       <!-- 默认表单 -->
-      <!-- <div v-if="divInfo == false">
+      <div v-if="divInfo == false">
         <div class="padding10">
           <el-row>
             <el-col align="right">
@@ -150,6 +141,7 @@
             </el-col>
           </el-row>
         </div>
+        <!-- @selection-change="handleSelectionChange" -->
         <el-table v-loading="listLoading"
                   :data="list.records"
                   border
@@ -158,6 +150,7 @@
                   style="width: 100%;height:calc(100% - 140px);overflow: auto;">
           <el-table-column type="selection"
                            width="55" />
+          <!-- <el-table-column label="所属系统名称" width="300px" align="center" prop="folderName" /> -->
           <el-table-column label="表名称"
                            prop="displayTbName" />
           <el-table-column label="表代码"
@@ -190,6 +183,10 @@
               }}
             </template>
           </el-table-column>
+          <!-- <el-table-column label="创建时间"
+                           prop="createTime"
+                           align="center"
+                           :formatter="formatCreateTime" /> -->
           <el-table-column label="创建人"
                            align="center"
                            prop="createUserName">
@@ -202,6 +199,11 @@
                            align="center"
                            min-width="100">
             <template slot-scope="scope">
+              <!-- <el-button type="primary"
+                         class="oper-btn edit"
+                         title="修改"
+                         size="mini"
+                         @click="edit_table(scope.row.tableMetaUuid)" /> -->
               <el-button type="primary"
                          class="oper-btn delete"
                          title="删除"
@@ -217,9 +219,20 @@
                        @current-change="handleCurrentChange"
                        @size-change="handleSizeChange"
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
-      </div> -->
+      </div>
+
+      <!-- 点击树-->
+      <div v-if="divInfo==true">
+        <tabledatatabs ref="tabledatatabs"
+                       open-type="tableRegister"
+                       :table-id="tableId"
+                       :tab-show.sync="tabShow"
+                       :ifShowPlace="true" />
+      </div>
+      <!-- right_conter end-->
+
       <!-- 注册资产 -->
-      <!-- <el-dialog :close-on-click-modal="false"
+      <el-dialog :close-on-click-modal="false"
                  :default-expand-all="true"
                  :title="'选择注册表'"
                  :visible.sync="registTableFlag"
@@ -230,6 +243,10 @@
         <el-button @click="getTables"> 搜索 </el-button>
 
         <div class="tree-containerselect padding10">
+
+          <!-- @check-change="handleCheckChange"
+                    show-checkbox
+                     -->
           <MyElTree ref="tree1"
                     v-loading="treeLoading"
                     :props="props"
@@ -241,14 +258,17 @@
                     default-expand-all>
             <span slot-scope="{ node, data }"
                   class="custom-tree-node">
+              <!-- class="el-icon-menu"  style="color: #409eff" -->
               <i v-if="data.type === 'USER'">
                 <img src="../../../assets/img/table_0.png"
                      style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
               </i>
+              <!-- class="el-icon-tickets"  style="color: #409eff" -->
               <i v-if="data.type === 'TABLE'">
                 <img src="../../../assets/img/table_1.png"
                      style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
               </i>
+              <!-- class="el-icon-s-ticket"  style="color: #409eff" -->
               <i v-if="data.type === 'COLUMN'">
                 <img src="../../../assets/img/table_2.png"
                      style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
@@ -259,13 +279,15 @@
         </div>
         <span slot="footer">
           <el-button @click="registTableFlag = false">取消</el-button>
+          <!-- <el-button type="primary"
+                     @click="flagSelectTable">保存</el-button> -->
 
           <el-button type="primary"
                      :disabled="isDisable"
                      v-if="is_next == true"
                      @click="next()">下一步</el-button>
         </span>
-      </el-dialog> -->
+      </el-dialog>
 
       <!-- 下一步 基本信息-->
       <el-dialog title="基本信息"
@@ -514,8 +536,6 @@ import personTree from "@/components/publicpersontree/index";
 import {
   insertRunResultShare,//责任人
 } from "@/api/analysis/auditmodelresult";
-import DataResourceDisplay from "@/components/directory/data_resource_display.vue"
-import Details from "@/components/directory/details.vue"
 
 import {
   // page_list_data,//列表
@@ -533,7 +553,6 @@ import {
 export default {
   components: {
     MyElTree, tabledatatabs, QueryField,
-    DataResourceDisplay, Details,
     personTree: () => import('@/components/publicpersontree/index')
   },
   data () {
@@ -725,8 +744,6 @@ export default {
       loading: true,
       tabclick: false,
 
-      show_details: false,//显示基本信息详情
-      is_btn: true,//是否显示按钮
 
     };
   },
@@ -764,18 +781,6 @@ export default {
     // this.post_getDataTreeNode();//目录
   },
   methods: {
-
-    moreTask () {
-      this.$router.push({
-        path: '/data/text'
-      })
-    },
-
-    // 显示基本信息详情
-    on_deails_change (data) {
-      this.show_details = true
-
-    },
     //校验文件名是否存在
     checkFileName_change (fileName) {
       // 

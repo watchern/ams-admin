@@ -2,7 +2,7 @@
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
 const Timestamp = new Date().getTime();
-function resolve(dir) {
+function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
@@ -32,7 +32,7 @@ module.exports = {
    * In most cases please use '/' !!!
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
-   publicPath: './',
+  publicPath: './',
   outputDir: 'dist',
   assetsDir: 'static',
   lintOnSave: false,
@@ -157,7 +157,6 @@ module.exports = {
   },
   transpileDependencies: [
     "element-ui",
-    "@vue/composition-api",
     "@jiaminghi",
     "ag-grid",
     "ag-grid-community",
@@ -220,7 +219,7 @@ module.exports = {
         alias: {
           '@': resolve('src'),
           '@ETL': 'ams-etlscheduler-hx/src',
-        '@MAX': 'ams-datamax/src'
+          '@MAX': 'ams-datamax/src'
         }
       },
       // gzip压缩

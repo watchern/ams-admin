@@ -24,7 +24,10 @@ import VueAnimateNumber from 'vue-animate-number'
 Vue.use(VueAnimateNumber)
 // import '@/directive/Ace/scroll.js'
 import components from '@/components/public/index'
-
+import DataV from '@jiaminghi/data-view'
+Vue.use(DataV)
+import { borderBox1 } from '@jiaminghi/data-view'
+Vue.use(borderBox1)
 // 指标注释
 import 'ams-indicator-vue/src/styles/element-variables.scss'
 import 'ams-indicator-vue/src/styles/index.scss' // global css
@@ -104,7 +107,7 @@ import common from "ams-starflow-vue/src/components/common/common";
 Vue.prototype.$clipboard = clipboard
 Vue.prototype.$ajax = axios
 Vue.prototype.$axios = axios
-Vue.prototype.axios=axios;
+Vue.prototype.axios = axios;
 Vue.prototype.dict = dict;
 Vue.prototype.common = common;
 
@@ -140,13 +143,13 @@ Vue.prototype.log_see = "查看";
  * {{ETLSCHEDULER: string, DATA: string, GRAPHTOOL: string, INDICATOR: string, ANALYSIS: string, DATAMAX: string, BASE: string}}
  */
 Vue.prototype.AmsModules = {
-  ANALYSIS:'analysis',
-  BASE:'base',
+  ANALYSIS: 'analysis',
+  BASE: 'base',
   DATA: 'data',
-  ETLSCHEDULER:'etlscheduler',
-  DATAMAX:'datamax',
-  INDICATOR:'indicator',
-  GRAPHTOOL:'graphtool'
+  ETLSCHEDULER: 'etlscheduler',
+  DATAMAX: 'datamax',
+  INDICATOR: 'indicator',
+  GRAPHTOOL: 'graphtool'
 }
 
 /**
@@ -156,7 +159,7 @@ Vue.prototype.AmsModules = {
  * @returns {string}
  */
 Vue.prototype.AmsWebsocket = {
-  getWSBaseUrl: function(moduleName) {
+  getWSBaseUrl: function (moduleName) {
     moduleName = moduleName ? moduleName : null
     const websockettype = process.env["VUE_APP_WEBSOCKETTYPE"] ? process.env["VUE_APP_WEBSOCKETTYPE"] : "client"
     const appservername = process.env["VUE_APP_SERVERNAME"] ? process.env["VUE_APP_SERVERNAME"] : ""
@@ -184,19 +187,19 @@ Vue.prototype.AmsWebsocket = {
   }
 }
 
-Vue.prototype.hasMenu = process.env["VUE_APP_BASE_MENU"] ? process.env["VUE_APP_BASE_MENU"] !== 'withoutmenu':true
+Vue.prototype.hasMenu = process.env["VUE_APP_BASE_MENU"] ? process.env["VUE_APP_BASE_MENU"] !== 'withoutmenu' : true
 Vue.prototype.contextUrl = "indicator";
 Vue.prototype.dataContextUrl = "data";
 Vue.prototype.baseContextUrl = "base";
-Vue.prototype.getParams = function(){
+Vue.prototype.getParams = function () {
   var url = window.location.href;
   url = url.split("?")[1];
-  if(!url) return "";
+  if (!url) return "";
   var para = url.split("&");
   var len = para.length;
   var res = {};
   var arr = [];
-  for(var i=0;i<len;i++){
+  for (var i = 0; i < len; i++) {
     arr = para[i].split("=");
     res[arr[0]] = arr[1];
   }
@@ -209,23 +212,23 @@ Vue.prototype.getParams = function(){
  * @param group 聚合方式
  * @param name 指标名称
  */
-Vue.prototype.updateGroupDisplay = function(group,name) {
-  if(group == "sum"){
+Vue.prototype.updateGroupDisplay = function (group, name) {
+  if (group == "sum") {
     return "合计(" + name + ")";
   }
-  if(group == "count"){
+  if (group == "count") {
     return "计数(" + name + ")";
   }
-  if(group == "max"){
+  if (group == "max") {
     return "最大值(" + name + ")";
   }
-  if(group == "min"){
+  if (group == "min") {
     return "最小值(" + name + ")";
   }
-  if(group == "avg"){
+  if (group == "avg") {
     return "平均值(" + name + ")";
   }
-  if(group == "distinct"){
+  if (group == "distinct") {
     return "差异计数(" + name + ")";
   }
   return name;
@@ -235,7 +238,7 @@ Vue.prototype.updateGroupDisplay = function(group,name) {
  * 生成UUID
  * @returns {string} 返回生成的UUID
  */
-Vue.prototype.getuuid = function (){
+Vue.prototype.getuuid = function () {
   var s = [];
   var hexDigits = "0123456789abcdef";
   for (var i = 0; i < 36; i++) {
@@ -254,12 +257,12 @@ Vue.prototype.getuuid = function (){
  * @param args 要拼接的字符串
  * @returns {String} 返回拼接后的字符串
  */
-String.prototype.format = function(args) {
+String.prototype.format = function (args) {
   var result = this;
   if (arguments.length > 0) {
     if (arguments.length == 1 && typeof (args) == "object") {
       for (var key in args) {
-        if(args[key]!=undefined){
+        if (args[key] != undefined) {
           var reg = new RegExp("({" + key + "})", "g");
           result = result.replace(reg, args[key]);
         }
@@ -282,10 +285,10 @@ String.prototype.format = function(args) {
  * @param str
  * @returns {*}
  */
-Vue.prototype.getCharBetweenString = function(str) {
+Vue.prototype.getCharBetweenString = function (str) {
   var guuidReg = /\((.+?)\)/g;
   var guuid = str.match(guuidReg);
-  guuid = JSON.stringify(guuid).replace("[\"(","").replace(")\"]","");
+  guuid = JSON.stringify(guuid).replace("[\"(", "").replace(")\"]", "");
   return guuid;
 }
 
@@ -295,7 +298,7 @@ Vue.prototype.getCharBetweenString = function(str) {
  * @param operaterType 操作类型
  * @param info 信息记录
  */
-Vue.prototype.addOperLogByParam = function(module,operaterType,info) {
+Vue.prototype.addOperLogByParam = function (module, operaterType, info) {
 }
 /**
  * 这个方法用来添加消息提醒
@@ -304,7 +307,7 @@ Vue.prototype.addOperLogByParam = function(module,operaterType,info) {
  * @param personUuid
  * @param type
  */
-Vue.prototype.addMessage = function(title,content,personUuid,type){
+Vue.prototype.addMessage = function (title, content, personUuid, type) {
 }
 
 //endregion 指标
