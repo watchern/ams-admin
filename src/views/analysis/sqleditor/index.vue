@@ -13,6 +13,7 @@
           <img :src="canshu" /><span>参数</span>
         </div>
         <div class="unfold-sql"><img :src="sql" /><span>函数</span></div>
+        <div class="unfold-draft"><img :src="draft" /><span>SQL草稿</span></div>
         <!-- <div class="unfold-bj">
           <img :src="sql" /><span>标记</span>
         </div> -->
@@ -59,6 +60,18 @@
             suffix-icon="el-icon-search"
           />
           <ul id="sqlFunTree" class="ztree" style="margin-top: 5px" />
+        </div>
+        <!--        SQL草稿树-->
+        <div class="left-draftTree">
+          <el-input
+                  id="draftSearch"
+                  style="margin-top: 5px"
+                  v-model="draftInput"
+                  placeholder="输入关键字进行过滤"
+                  @change="draftTreeSearch"
+                  suffix-icon="el-icon-search"
+          />
+          <ul id="draftTree" class="ztree" style="margin-top: 5px" />
         </div>
         <div class="left-bjTree">
           <ul id="bjTree" class="ztree" style="margin-top: 5px;padding:20px 0 0 30px;" />
@@ -460,6 +473,8 @@ import {
   initBJTree,
   initEvent,
   initParamTreeNew,
+  initDraftTree,
+  draftTreeSearch,
   tableTreeSearch,
   paramTreeSearch,
   functionTreeSearch,
@@ -680,9 +695,12 @@ export default {
       paramSearchInput: "",
       // 函数树搜索值
       functionInput: "",
+      // SQL草稿树搜索值
+      draftInput: "",
       shuju: require("@/views/analysis/auditmodel/imgs/shuju.png"),
       canshu: require("@/views/analysis/auditmodel/imgs/canshu.png"),
       sql: require("@/views/analysis/auditmodel/imgs/sql.png"),
+      draft: require("@/views/analysis/auditmodel/imgs/sql.png"),
       // 结果保存执行路径
       modelResultSavePathDialog: false,
       // 临时执行路径
@@ -1062,6 +1080,7 @@ export default {
       initVariable();
       initEvent();
       initParamTreeNew(this.modelFolderPath);
+      initDraftTree();
       this.executeLoading = true;
       this.loadText = "正在初始化数据表...";
       initTableTip(this.dataUserId, this.sceneCode1)
@@ -1134,6 +1153,12 @@ export default {
      */
     functionTreeSearch() {
       functionTreeSearch();
+    },
+    /**
+     * SQL草稿树搜索
+     */
+    draftTreeSearch() {
+      draftTreeSearch();
     },
     /**
      * sql格式化
@@ -1858,7 +1883,8 @@ export default {
 
 .left-dataTree,
 .left-paramTree,
-.left-sqlFunTree {
+.left-sqlFunTree,
+.left-draftTree {
   /*width: 85%;*/
   margin-left: 30px;
 }
