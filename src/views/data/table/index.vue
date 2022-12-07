@@ -128,18 +128,16 @@
 
     <!-- right_conter -->
     <div class="right_conter padding10">
-      <a href="javascript:;"
-         <DataResourceDisplay
-         @on_deails="on_deails_change"
-         :is_btn="is_btn"
-         v-if="show_details == false"></DataResourceDisplay>
+      <DataResourceDisplay @on_deails="on_deails_change"
+                           :is_btn="is_btn"
+                           v-if="show_details == false"></DataResourceDisplay>
 
-        <!-- 基本信息详情 -->
-        <Details ref="Details_ref"
-                 v-if="show_details == true"></Details>
+      <!-- 基本信息详情 -->
+      <Details ref="Details_ref"
+               v-if="show_details == true"></Details>
 
-        <!-- 默认表单 -->
-        <!-- <div v-if="divInfo == false">
+      <!-- 默认表单 -->
+      <!-- <div v-if="divInfo == false">
         <div class="padding10">
           <el-row>
             <el-col align="right">
@@ -218,8 +216,8 @@
                        @size-change="handleSizeChange"
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div> -->
-        <!-- 注册资产 -->
-        <!-- <el-dialog :close-on-click-modal="false"
+      <!-- 注册资产 -->
+      <!-- <el-dialog :close-on-click-modal="false"
                  :default-expand-all="true"
                  :title="'选择注册表'"
                  :visible.sync="registTableFlag"
@@ -267,227 +265,227 @@
         </span>
       </el-dialog> -->
 
-        <!-- 下一步 基本信息-->
-        <el-dialog title="基本信息"
-                   class="data_res"
-                   :visible.sync="dialogVisible_information"
-                   @close="handleClose('form')"
-                   width="40%">
-          <el-form :rules="rules"
-                   ref="form"
-                   label-width="100px"
-                   :model="form"
-                   :inline="false">
-            <!-- 资产编码 && 资产类型：-->
-            <div class="son">
-              <el-form-item label="资产编码:"
-                            prop="tableCode">
-                <el-input type="text"
-                          placeholder="请输入资产编码"
-                          v-model="form.tableCode"
-                          :rows="4">
-                </el-input>
-              </el-form-item>
+      <!-- 下一步 基本信息-->
+      <el-dialog title="基本信息"
+                 class="data_res"
+                 :visible.sync="dialogVisible_information"
+                 @close="handleClose('form')"
+                 width="40%">
+        <el-form :rules="rules"
+                 ref="form"
+                 label-width="100px"
+                 :model="form"
+                 :inline="false">
+          <!-- 资产编码 && 资产类型：-->
+          <div class="son">
+            <el-form-item label="资产编码:"
+                          prop="tableCode">
+              <el-input type="text"
+                        placeholder="请输入资产编码"
+                        v-model="form.tableCode"
+                        :rows="4">
+              </el-input>
+            </el-form-item>
 
-              <el-form-item label="资产类型:"
-                            prop="tableType">
-                <el-select v-model="form.tableType"
-                           :rows="4"
-                           placeholder="请选择资产类型">
-                  <el-option v-for="item in data_type"
-                             :key="item.value"
-                             :label="item.label"
-                             :value="item.value" />
-                </el-select>
-              </el-form-item>
-            </div>
+            <el-form-item label="资产类型:"
+                          prop="tableType">
+              <el-select v-model="form.tableType"
+                         :rows="4"
+                         placeholder="请选择资产类型">
+                <el-option v-for="item in data_type"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
+              </el-select>
+            </el-form-item>
+          </div>
 
-            <!-- 资产主题 && 所属系统-->
-            <div class="son">
-              <el-form-item label="资产主题:"
-                            prop="tableThemeId">
-                <el-select v-model="form.tableThemeId"
-                           :rows="4"
-                           placeholder="请选择资产主题">
-                  <el-option v-for="item in next_data.themeList"
-                             :key="item.codeUuid"
-                             :label="item.codeName"
-                             :value="item.codeUuid" />
-                </el-select>
-              </el-form-item>
+          <!-- 资产主题 && 所属系统-->
+          <div class="son">
+            <el-form-item label="资产主题:"
+                          prop="tableThemeId">
+              <el-select v-model="form.tableThemeId"
+                         :rows="4"
+                         placeholder="请选择资产主题">
+                <el-option v-for="item in next_data.themeList"
+                           :key="item.codeUuid"
+                           :label="item.codeName"
+                           :value="item.codeUuid" />
+              </el-select>
+            </el-form-item>
 
-              <el-form-item label="所属系统:"
-                            prop="businessSystemId">
-                <el-select v-model="form.businessSystemId"
-                           :rows="4"
-                           placeholder="请选择所属系统">
-                  <el-option v-for="item in next_data.businessSystemList"
-                             :key="item.businessSystemUuid"
-                             :label="item.businessSystemName"
-                             :value="item.businessSystemUuid" />
-                </el-select>
-              </el-form-item>
-            </div>
+            <el-form-item label="所属系统:"
+                          prop="businessSystemId">
+              <el-select v-model="form.businessSystemId"
+                         :rows="4"
+                         placeholder="请选择所属系统">
+                <el-option v-for="item in next_data.businessSystemList"
+                           :key="item.businessSystemUuid"
+                           :label="item.businessSystemName"
+                           :value="item.businessSystemUuid" />
+              </el-select>
+            </el-form-item>
+          </div>
 
-            <!-- 资产分层 && 所属目录-->
-            <div class="son">
-              <el-form-item label="资产分层:"
-                            prop="tableLayeredId">
-                <el-select v-model="form.tableLayeredId"
-                           :rows="4"
-                           placeholder="请选择资产分层">
-                  <el-option v-for="item in next_data.layeredList"
-                             :key="item.codeUuid"
-                             :label="item.codeName"
-                             :value="item.codeUuid" />
-                </el-select>
-              </el-form-item>
+          <!-- 资产分层 && 所属目录-->
+          <div class="son">
+            <el-form-item label="资产分层:"
+                          prop="tableLayeredId">
+              <el-select v-model="form.tableLayeredId"
+                         :rows="4"
+                         placeholder="请选择资产分层">
+                <el-option v-for="item in next_data.layeredList"
+                           :key="item.codeUuid"
+                           :label="item.codeName"
+                           :value="item.codeUuid" />
+              </el-select>
+            </el-form-item>
 
-              <el-form-item label="所属目录:"
-                            prop="folderUuid">
-                <el-cascader v-model="form.folderUuid"
-                             :options="next_contentsList"
-                             placeholder="请选择所属目录"
-                             clearable
-                             :props="props2"
-                             ref="cascaderArr"
-                             @change="handleChange"></el-cascader>
-              </el-form-item>
-            </div>
-            <!--是否增量，是否推送文件-->
-            <div class="son ">
+            <el-form-item label="所属目录:"
+                          prop="folderUuid">
+              <el-cascader v-model="form.folderUuid"
+                           :options="next_contentsList"
+                           placeholder="请选择所属目录"
+                           clearable
+                           :props="props2"
+                           ref="cascaderArr"
+                           @change="handleChange"></el-cascader>
+            </el-form-item>
+          </div>
+          <!--是否增量，是否推送文件-->
+          <div class="son ">
 
-              <el-form-item label="是否增量:"
-                            prop="isSpike">
-                <el-select v-model="form.isSpike"
-                           :rows="4"
-                           placeholder="请选择是否增量">
-                  <el-option v-for="item in option_isSpike"
-                             :key="item.value"
-                             :label="item.label"
-                             :value="item.value" />
-                </el-select>
+            <el-form-item label="是否增量:"
+                          prop="isSpike">
+              <el-select v-model="form.isSpike"
+                         :rows="4"
+                         placeholder="请选择是否增量">
+                <el-option v-for="item in option_isSpike"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
+              </el-select>
 
-              </el-form-item>
-              <el-form-item label="是否推送文件:"
-                            prop="isSentFile">
-                <el-select v-model="form.isSentFile"
-                           :rows="4"
-                           placeholder="请选择是否推送文件">
-                  <el-option v-for="item in option_isSentFile"
-                             :key="item.value"
-                             :label="item.label"
-                             :value="item.value" />
-                </el-select>
-              </el-form-item>
+            </el-form-item>
+            <el-form-item label="是否推送文件:"
+                          prop="isSentFile">
+              <el-select v-model="form.isSentFile"
+                         :rows="4"
+                         placeholder="请选择是否推送文件">
+                <el-option v-for="item in option_isSentFile"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
+              </el-select>
+            </el-form-item>
 
-            </div>
-            <!--表名 文件名称 -->
-            <div class="son "
-                 v-for="(item,index) in form.check_list"
-                 :key="index"
-                 :ref="`ruleForm${index}`">
+          </div>
+          <!--表名 文件名称 -->
+          <div class="son "
+               v-for="(item,index) in form.check_list"
+               :key="index"
+               :ref="`ruleForm${index}`">
 
-              <el-form-item label="表名:">
-                <p>{{item.label}}</p>
-              </el-form-item>
+            <el-form-item label="表名:">
+              <p>{{item.label}}</p>
+            </el-form-item>
 
-              <el-form-item label="文件名称:"
-                            :prop="'check_list.' + index + '.fileName'"
-                            :rules="{
+            <el-form-item label="文件名称:"
+                          :prop="'check_list.' + index + '.fileName'"
+                          :rules="{
             required: true,
             message: '请输入文件名称',
             trigger: 'blur',
           }">
+              <el-input type="text"
+                        placeholder="请输入文件名称"
+                        v-model="item.fileName"
+                        :rows="4"
+                        @input="checkFileName_change(item.fileName)">
+              </el-input>
+            </el-form-item>
+          </div>
+
+          <!--  资产负责人-->
+          <div class="son ">
+            <div class="son_check">
+
+              <el-form-item label="资产负责人:"
+                            prop="personName_str">
                 <el-input type="text"
-                          placeholder="请输入文件名称"
-                          v-model="item.fileName"
-                          :rows="4"
-                          @input="checkFileName_change(item.fileName)">
+                          disabled
+                          v-model="form.personName_str">
                 </el-input>
+
               </el-form-item>
+              <el-button type="primary"
+                         class="oper-btn"
+                         @click="check_people()">选择</el-button>
             </div>
 
-            <!--  资产负责人-->
-            <div class="son ">
-              <div class="son_check">
+          </div>
 
-                <el-form-item label="资产负责人:"
-                              prop="personName_str">
-                  <el-input type="text"
-                            disabled
-                            v-model="form.personName_str">
-                  </el-input>
+          <!--  资产备注-->
+          <div class="son">
+            <el-form-item label="资产备注:"
+                          prop="tableRemarks">
+              <el-input type="textarea"
+                        v-model="form.tableRemarks">
+              </el-input>
+            </el-form-item>
 
-                </el-form-item>
-                <el-button type="primary"
-                           class="oper-btn"
-                           @click="check_people()">选择</el-button>
-              </div>
+          </div>
 
-            </div>
+        </el-form>
 
-            <!--  资产备注-->
-            <div class="son">
-              <el-form-item label="资产备注:"
-                            prop="tableRemarks">
-                <el-input type="textarea"
-                          v-model="form.tableRemarks">
-                </el-input>
-              </el-form-item>
-
-            </div>
-
-          </el-form>
-
-          <span slot="footer"
-                class="dialog-footer">
-            <el-button @click="step()">上一步</el-button>
-            <!-- <el-button type="primary"
+        <span slot="footer"
+              class="dialog-footer">
+          <el-button @click="step()">上一步</el-button>
+          <!-- <el-button type="primary"
                      :disabled="isDisable"
                      @click="save('form')"
                      v-if="ifFileNameExist">保存</el-button> -->
 
-            <el-button type="primary"
-                       :loading="btnLoading"
-                       :disabled="isDisable"
-                       @click="save('form')">{{this.btnLoading == true ? '保存中' : '保存'}}</el-button>
+          <el-button type="primary"
+                     :loading="btnLoading"
+                     :disabled="isDisable"
+                     @click="save('form')">{{this.btnLoading == true ? '保存中' : '保存'}}</el-button>
 
-            <el-button @click="close_diag()">关闭</el-button>
+          <el-button @click="close_diag()">关闭</el-button>
 
-          </span>
-        </el-dialog>
+        </span>
+      </el-dialog>
 
-        <!-- 选择责任人 -->
-        <el-dialog title="选择责任人"
-                   :visible.sync="resultShareDialogIsSee"
-                   width="50%">
-          <personTree ref="orgPeopleTree"></personTree>
-          <span slot="footer"
-                class="dialog-footer">
-            <el-button @click="resultShareDialogIsSee = false">取 消</el-button>
-            <el-button type="primary"
-                       @click="modelResultShare()">确 定</el-button>
-          </span>
-        </el-dialog>
+      <!-- 选择责任人 -->
+      <el-dialog title="选择责任人"
+                 :visible.sync="resultShareDialogIsSee"
+                 width="50%">
+        <personTree ref="orgPeopleTree"></personTree>
+        <span slot="footer"
+              class="dialog-footer">
+          <el-button @click="resultShareDialogIsSee = false">取 消</el-button>
+          <el-button type="primary"
+                     @click="modelResultShare()">确 定</el-button>
+        </span>
+      </el-dialog>
 
-        <el-dialog :title="dialogTitle"
-                   :visible.sync="folderFormVisible"
-                   width="600px"
-                   :close-on-click-modal="false">
-          <el-form ref="folderForm"
-                   :model="folderForm"
-                   class="detail-form">
-            <el-form-item label="文件夹名称">
-              <el-input v-model="folderForm.folderName" />
-            </el-form-item>
-          </el-form>
-          <span slot="footer">
-            <el-button @click="folderFormVisible = false">取消</el-button>
-            <el-button type="primary"
-                       @click="dialogStatus === 'create' ? createFolder() : updateFolder()">保存</el-button>
-          </span>
-        </el-dialog>
+      <el-dialog :title="dialogTitle"
+                 :visible.sync="folderFormVisible"
+                 width="600px"
+                 :close-on-click-modal="false">
+        <el-form ref="folderForm"
+                 :model="folderForm"
+                 class="detail-form">
+          <el-form-item label="文件夹名称">
+            <el-input v-model="folderForm.folderName" />
+          </el-form-item>
+        </el-form>
+        <span slot="footer">
+          <el-button @click="folderFormVisible = false">取消</el-button>
+          <el-button type="primary"
+                     @click="dialogStatus === 'create' ? createFolder() : updateFolder()">保存</el-button>
+        </span>
+      </el-dialog>
     </div>
     <!-- right_conter end-->
 
