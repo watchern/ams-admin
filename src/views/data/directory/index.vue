@@ -29,12 +29,22 @@
     <!-- </div> -->
     <div class="right_conter padding10">
 
-      <BaseDirectoryList ref="listData"
+      <!-- <BaseDirectoryList ref="listData"
                          :data-user-id="directyDataUserId"
                          :scene-code="directySceneCode"
                          @append-node="appendnode"
                          @remove="remove"
-                         @refresh="refresh" />
+                         @refresh="refresh" /> -->
+
+      <!-- 数据资源展示 -->
+      <DataResourceDisplay @on_deails="on_deails_change"
+                           :is_btn="is_btn"
+                           v-if="show_details == false"></DataResourceDisplay>
+
+      <!-- 基本信息详情 -->
+      <Details ref="Details_ref"
+               v-if="show_details == true"></Details>
+
     </div>
 
   </div>
@@ -44,9 +54,11 @@
 import dataTree from '@/views/data/role-res/data-tree'
 import BaseDirectoryList from '@/views/data/directory/directorylist'
 import TreeCommon from "@/components/DataAssets/tree_common.vue"
+import DataResourceDisplay from "@/components/directory/data_resource_display.vue"
+import Details from "@/components/directory/details.vue"
 
 export default {
-  components: { dataTree, BaseDirectoryList, TreeCommon },
+  components: { dataTree, TreeCommon, DataResourceDisplay, Details },
   props: ['dataUserId', 'sceneCode'],
   data () {
     return {
@@ -54,7 +66,10 @@ export default {
       currentSceneUuid: this.$store.getters.scenecode,
       directyDataUserId: this.$store.state.user.datauserid,
       directySceneCode: 'auditor',
-      isTreeShow: true
+      isTreeShow: true,
+      show_details: false,//显示基本信息详情
+      is_btn: false,//是否显示按钮
+
     }
   },
   computed: {
@@ -109,6 +124,12 @@ export default {
     },
     refresh (query) {
       this.$refs.dataTree.refresh(query)
+    },
+
+    // 显示基本信息详情
+    on_deails_change (data) {
+      this.show_details = true
+
     }
   }
 }
