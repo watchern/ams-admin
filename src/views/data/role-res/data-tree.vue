@@ -162,7 +162,10 @@
       </MyElTree>
       <!-- </div> -->
     </div>
-
+    <!-- 扩容 -->
+    <div class="Expansion _width padding10">
+      <el-progress :percentage="50"></el-progress> <span @click="on_expansion()">扩容</span>
+    </div>
   </div>
 </template>
 
@@ -480,6 +483,12 @@ export default {
         }
       }
     },
+    // 扩容
+    on_expansion () {
+      this.$router.push({
+        path: '/data/text'
+      })
+    }
   }, // 注册
 };
 </script>
@@ -489,7 +498,7 @@ export default {
 
 .tree-containerall {
   /* height: 75vh; */
-  height: calc(100% - 140px);
+  height: calc(100% - 160px);
   overflow: auto;
 }
 .app-container >>> .el-form-item {
@@ -575,5 +584,24 @@ export default {
 }
 .tree-line-btn {
   background: rgba(255, 255, 255, 0) !important;
+}
+
+// Expansion
+.Expansion {
+  color: #5ac3eb;
+}
+// .Expansion >>> .progressbar {
+//   width: calc(100% - 50px);
+// }
+.Expansion span {
+  width: 100%;
+  text-align: center;
+  color: #1890ff;
+  display: block;
+  transition: 0.2s;
+}
+.Expansion span:hover {
+  font-weight: 500;
+  cursor: pointer;
 }
 </style>

@@ -31,8 +31,9 @@
     </div>
     <!-- 查询 end-->
 
-    <!-- btn -->
-    <div class="common_btn padding10">
+    <!-- 是否显示按钮 数据注册显示 -->
+    <div class="common_btn padding10"
+         v-if="is_btn == true">
       <el-button type="primary">数据字典导入导出</el-button>
 
       <el-button type="primary">汉化信息导入导出</el-button>
@@ -56,9 +57,7 @@
         <p class="new_title">这是标题</p>
         <span class="new_type">存款业务主题</span>
       </div>
-      <!-- 是否显示按钮 数据注册显示 -->
-      <div class="new_left padding10"
-           v-if="is_btn == true">
+      <div class="new_left padding10">
         <i><img src="../../assets/img/activity.png"
                alt=""></i>
       </div>

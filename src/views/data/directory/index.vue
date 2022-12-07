@@ -38,6 +38,7 @@
 
       <!-- 数据资源展示 -->
       <DataResourceDisplay @on_deails="on_deails_change"
+                           :is_btn="is_btn"
                            v-if="show_details == false"></DataResourceDisplay>
 
       <!-- 基本信息详情 -->
@@ -67,6 +68,7 @@ export default {
       directySceneCode: 'auditor',
       isTreeShow: true,
       show_details: false,//显示基本信息详情
+      is_btn: false,//是否显示按钮
 
     }
   },
