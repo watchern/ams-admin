@@ -10,11 +10,11 @@
                       placeholder="申请名称"></el-input>
           </el-form-item>
           <el-form-item label="申请人:">
-            <el-input v-model="personalSpace.personalSpaceApproving"
-                      placeholder="审批人"></el-input>
+            <el-input v-model="personalSpace.personalSpaceApplication"
+                      placeholder="申请人"></el-input>
           </el-form-item>
           <el-form-item label="列表类型:">
-            <el-select v-model="personalSpace.personalSpaceStatus"
+            <el-select v-model="personalSpace.personalSpaceType"
                        placeholder="状态选择">
               <el-option label="待办"
                          value="待办"></el-option>
@@ -25,13 +25,15 @@
           <el-form-item label="申请时间范围:">
             <el-date-picker v-model="personalSpace.personalSpaceDate"
                             type="datetimerange"
+                            format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd"
                             range-separator="至"
                             start-placeholder="开始日期"
                             end-placeholder="结束日期">
             </el-date-picker>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary">查询</el-button>
+            <el-button type="primary" @click="initPersonalSpaceData">查询</el-button>
             <el-button type="primary"
                        @click="onReInput">重置</el-button>
           </el-form-item>
@@ -54,7 +56,7 @@
     </div>
     <div class="padding10">
 
-      <el-table :data="tableData"
+      <el-table :data="personalSpaceDataList"
                 border
                 style="width: 100%"
                 @selection-change="handleSelectionChange">
@@ -62,19 +64,19 @@
                          width="55">
         </el-table-column>
         <el-table-column fixed
-                         prop="date"
+                         prop="personalSpaceName"
                          label="申请名称">
         </el-table-column>
-        <el-table-column prop="name"
+        <el-table-column prop="personalSpaceCapacity"
                          label="扩容大小">
         </el-table-column>
-        <el-table-column prop="province"
+        <el-table-column prop="personalSpaceDate"
                          label="申请时间">
         </el-table-column>
-        <el-table-column prop="city"
+        <el-table-column prop="personalSpaceType"
                          label="状态">
         </el-table-column>
-        <el-table-column prop="address"
+        <el-table-column prop="personalSpaceApplication"
                          label="申请人">
         </el-table-column>
         <el-table-column label="操作">
@@ -85,7 +87,7 @@
         <el-pagination @size-change="handleSizeChange"
                        @current-change="handleCurrentChange"
                        :current-page="query.pageNo"
-                       :page-sizes="[10, 20, 30, 40]"
+                       :page-sizes="[5, 10, 15, 20]"
                        :page-size="query.pageSize"
                        layout="total, sizes, prev, pager, next, jumper"
                        :total="dataTotal">
@@ -107,7 +109,11 @@
         <el-form-item label="扩容容量">
           <el-input v-model="personalSpace.personalSpaceCapacity"
                     placeholder="扩容容量"
-                    style="width: 550px"></el-input>
+                    type="number"
+                    :max="1024"
+                    :min="0"
+                    @input="inputChange"
+                    style="width: 540px"></el-input>
           <el-select v-model="personalSpaceCapacityNeed"
                      placeholder="容量单位">
             <el-option label="GB"
@@ -137,170 +143,179 @@
 </template>
 
 <script>
-// import {
-//   insertPersonalSpace
-//   , deletePersonalSpace
-//   , queryAllPersonalSpace
-//   , exportAllPersonalSpace
-// } from "../../../api/analysis/personalSpace";
-export default {
-  data () {
-    return {
-      personalSpace: {
-        personalSpaceName: '',
-        personalSpaceApplication: '',
-        personalSpaceType: '',
-        personalSpaceDate: '',
-        personalSpaceCapacity: '',
-        personalSpaceStatus: '',
-        personalSpaceApproving: '',
-      },
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1518 弄',
-        zip: 200333
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1517 弄',
-        zip: 200333
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1519 弄',
-        zip: 200333
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1516 弄',
-        zip: 200333
-      }],
-      openInsertDialog: false,
-      personalSpaceCapacityNeed: '',//该变量为容量的单位 在最后会和容量做一个拼接
-      personalSpaceUuidList: [], //删除或者批量删除 id集合
-      dataTotal: 200,//数据的总数
-      query: {
-        pageNo: 1,
-        pageSize: 10
-      },
-    }
-  },
-  mounted () {
-    // this.initPersonalSpaceData()
-  },
-  methods: {
-    initPersonalSpaceData () {
-      const params = this.query
-      queryAllPersonalSpace(params)
-        .then((res) => {
-          // this.tableData = res.data
-          // this.dataTotal = res.data.length
-        })
-        .catch((err) => {
-
-        })
-    },
-    exportAllData () {
-      exportAllPersonalSpace()
-        .then((res) => {
-
-        })
-        .catch((err) => {
-
-        })
-    },
-    handleSelectionChange (val) {
-      // forEach((value,index)=>{
-      //     this.personalSpaceUuidList.push(val.personalSpaceUuid)
-      // })
-    },
-    onReInput () {
-      console.log(this.personalSpace.personalSpaceDate, "date")
-      this.personalSpace = {
-        personalSpaceName: '',
-        personalSpaceApplication: '',
-        personalSpaceType: '',
-        personalSpaceDate: '',
-        personalSpaceCapacity: '',
-        personalSpaceStatus: '',
-        personalSpaceApproving: '',
+  import {insertPersonalSpace
+    ,deletePersonalSpace
+    ,queryAllPersonalSpace
+    ,exportAllPersonalSpace
+    ,setPersonalSpaceSession
+  } from "@/api/analysis/personalSpace";
+  export default {
+    data(){
+      return{
+        personalSpace: {
+          personalSpaceName: '',
+          personalSpaceApplication: '',
+          personalSpaceType:'',
+          personalSpaceDate:'',
+          personalSpaceCapacity:'',
+          personalSpaceStatus:'',
+          personalSpaceApproving:'',
+        },
+        personalSpaceDataList: [],//查询并展示的数据集合
+        openInsertDialog: false,//打开添加弹窗
+        personalSpaceCapacityNeed:'',//该变量为容量的单位 在最后会和容量做一个拼接
+        personalSpaceUuidList:[], //删除或者批量删除 id集合
+        dataTotal: 100,//数据的总数
+        query:{
+          condition:{},
+          pageNo:1,
+          pageSize: 5
+        },
       }
     },
-    backToUpPage () {
-      this.$router.go(-1)
+    mounted() {
+      this.initPersonalSpaceData()
     },
-    joinInsertDialog () {
-      console.log("进入打开dialog方法")
-      this.openInsertDialog = true
-    },
-    closeInsertDialog () {
-      this.openInsertDialog = false
-      this.personalSpace = {
-        personalSpaceName: '',
-        personalSpaceApplication: '',
-        personalSpaceType: '',
-        personalSpaceDate: '',
-        personalSpaceCapacity: '',
-        personalSpaceStatus: '',
-        personalSpaceApproving: '',
-      }
-    },
-    onSubmit () {
-      this.$nextTick(() => {
+    methods:{
+      initPersonalSpaceData(){
+        var date1 = ''
+        date1 = this.personalSpace.personalSpaceDate.toString()
+        this.personalSpace.personalSpaceDate = date1
+        this.query.condition = this.personalSpace
+        queryAllPersonalSpace(this.query)
+          .then((res)=>{
+            this.personalSpaceDataList = res.data.records
+            this.dataTotal = res.data.total
+            this.query.pageSize = res.data.size
+            this.query.pageNo = res.data.current
+            this.clearParams()
+          })
+          .catch((err)=>{
+
+          })
+      },
+      exportAllData(){
+        if(this.personalSpaceUuidList.length == 0 || this.personalSpaceUuidList.length == undefined){
+          this.$confirm('未选择指定数据将导出全部?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+          })
+          .then(()=>{
+            // setPersonalSpaceSession(this.personalSpaceUuidList)
+            // .then((res)=>{
+              exportAllPersonalSpace()
+            // })
+          })
+        }else{
+          setPersonalSpaceSession(this.personalSpaceUuidList)
+          .then((res)=>{
+            if(res.msg == "成功"){
+              exportAllPersonalSpace()
+            }
+          })
+        }
+      },
+      handleSelectionChange(val){
+        this.personalSpaceUuidList = []
+        val.forEach((value,index)=>{
+          this.personalSpaceUuidList.push(value.personalSpaceUuid)
+        })
+      },
+      onReInput(){
+        this.clearParams()
+      },
+      backToUpPage(){
+        this.$router.go(-1)
+      },
+      joinInsertDialog(){
+        this.$nextTick(()=>{
+          this.clearParams()
+        })
+        this.openInsertDialog = true
+      },
+      closeInsertDialog(){
+        this.openInsertDialog = false
+        this.clearParams()
+      },
+      onSubmit(){
+        const capacity1 = this.personalSpace.personalSpaceCapacity
+        const capacity2 = this.personalSpaceCapacityNeed
+        this.personalSpace.personalSpaceCapacity = capacity1+capacity2
+        const param = this.personalSpace
+        if(this.personalSpace.personalSpaceName == undefined || this.personalSpace.personalSpaceName == null || this.personalSpace.personalSpaceName == ''
+        || this.personalSpace.personalSpaceCapacity == undefined || this.personalSpace.personalSpaceCapacity == null || this.personalSpace.personalSpaceCapacity == ''
+        || this.personalSpaceCapacityNeed == undefined || this.personalSpaceCapacityNeed == null || this.personalSpaceCapacityNeed == ''
+        || this.personalSpace.personalSpaceApproving == undefined || this.personalSpace.personalSpaceApproving == null || this.personalSpace.personalSpaceApproving == ''
+        ){
+          const h = this.$createElement;
+          this.$notify({
+            title: '提示',
+            message: h('i', { style: 'color: teal'}, '输入不能为空')
+          });
+          return;
+        }
+        insertPersonalSpace(param)
+                .then((res)=>{
+                  if(res.data == 200){
+                    this.$message({
+                      type: 'success',
+                      message: '添加成功'
+                    })
+                    this.openInsertDialog = false
+                    this.clearParams()
+                  }
+                  this.initPersonalSpaceData()
+                })
+                .catch((err)=>{
+                  console.log("新增失败")
+                })
+      },
+      onDelete(){
+        const params = this.personalSpaceUuidList
+        if(params.length == 0){
+          this.$message({
+            type: 'warning',
+            message: '未选择删除对象'
+          })
+        }else{
+          deletePersonalSpace(params)
+            .then((res)=>{
+              this.initPersonalSpaceData()
+              // location.reload()
+            })
+        }
+      },
+      handleSizeChange(val){
+        this.query.pageSize = val
+        this.initPersonalSpaceData()
+      },
+      handleCurrentChange(val){
+        this.query.pageNo = val
+        this.initPersonalSpaceData()
+      },
+      clearParams(){
         this.personalSpace = {
           personalSpaceName: '',
           personalSpaceApplication: '',
-          personalSpaceType: '',
-          personalSpaceDate: '',
-          personalSpaceCapacity: '',
-          personalSpaceStatus: '',
-          personalSpaceApproving: '',
+          personalSpaceType:'',
+          personalSpaceDate:'',
+          personalSpaceCapacity:'',
+          personalSpaceStatus:'',
+          personalSpaceApproving:'',
         }
-      })
-      const capacity1 = this.personalSpace.personalSpaceCapacity
-      const capacity2 = this.personalSpaceCapacityNeed
-      this.personalSpace.personalSpaceCapacity = capacity1 + capacity2
-      const param = this.personalSpace
-      insertPersonalSpace(param)
-        .then((res) => {
-          console.log("新增成功")
-        })
-        .catch((err) => { })
-      console.log("新增失败")
-    },
-    onDelete () {
-      const params = this.personalSpaceUuidList
-      if (params.length == 0) {
-        this.$message({
-          type: 'warning',
-          message: '未选择删除对象'
-        })
-      } else {
-        deletePersonalSpace(params)
-          .then((res) => {
-            console.log("删除成功")
-          })
-      }
-    },
-    handleSizeChange (val) {
-      console.log(val, "sizeChange")
-      // this.initPersonalSpaceData()
-    },
-    handleCurrentChange (val) {
-      console.log(val, "currentChange")
-      // this.initPersonalSpaceData()
+        this.personalSpaceCapacityNeed = ''
+      },
+      inputChange(val){
+        if(val<0){
+          this.personalSpace.personalSpaceCapacity = 0
+        }
+        if(val >1024){
+          this.personalSpace.personalSpaceCapacity = 1024
+        }
+      },
     }
   }
-}
 </script>
 
 <style scoped>
