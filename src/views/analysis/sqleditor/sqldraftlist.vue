@@ -9,7 +9,9 @@
     <el-table :key="tableKey" ref="sqlDraftListTable" v-loading="listLoading" :data="list" border fit highlight-current-row height="300px">
       <el-table-column type="selection" width="55" />
       <el-table-column label="草稿名称" width="300px" align="center" prop="draftTitle" />
-      <el-table-column label="草稿创建时间" width="300px" align="center" prop="createTime" :formatter="dateFormatter" />
+      <el-table-column label="草稿创建时间" width="150px" align="center" prop="createTime" :formatter="dateFormatter" />
+      <el-table-column label="草稿使用人" width="120px" align="center" prop="createUserName"/>
+      <el-table-column label="草稿使用人账号" width="120px" align="center" prop="createUserId" />
       <el-table-column label="操作" align="center" width="150px" prop="" >
         <template slot-scope="scope">
           <el-button @click="selectDetail(scope)">查看详情</el-button>
@@ -116,8 +118,13 @@ export default {
      */
     getList(query) {
       this.listLoading = true
-      if (query) {
+      if(query && query.draftTitle !=null && query.draftTitle !=""){
+        this.pageQuery.condition.draftTitle = query.draftTitle
+      }else if (query) {
         this.pageQuery.condition = query
+        this.queryFields = [
+          { label: 'SQL标题', name: 'draftTitle', type: 'fuzzyText', value: '' },
+        ]
       }
       findSqlDraft(this.pageQuery).then(resp => {
         this.total = resp.data.total

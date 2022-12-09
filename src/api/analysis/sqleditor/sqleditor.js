@@ -107,6 +107,11 @@ var functionIconPath = require("@/styles/icons/function.png")
  */
 var draftIconPath = require("@/styles/icons/param.png")
 /**
+ * SQL草稿文件夹图标路径
+ * @type {string}
+ */
+var draftFolderIconPath = require("@/styles/icons/foldericon.png")
+/**
  * 参数对象
  * @type {{}}
  */
@@ -175,11 +180,12 @@ export function getParamsTree() {
 /**
  * 获取SQL草稿树
  */
-export function getDraftTree() {
+export function getDraftTree(isShowDraft) {
   return request({
     baseURL: analysisUrl,
     url: '/sqlDraft/getDraftTree',
-    method: 'post'
+    method: 'post',
+    params: {isShowDraft: isShowDraft}
   })
 }
 
@@ -1408,6 +1414,13 @@ export function initDraftTree() {
         })
 
       },
+      beforeDrag: function (treeId, treeNodes) {
+        // 如果是SQL草稿 允许拖动 否则不可以
+        var thisNode = treeNodes[0]
+        if (thisNode.type !== 'draft') {
+          return false
+        }
+      },
     },
     edit: {
       enable: true,
@@ -1420,22 +1433,39 @@ export function initDraftTree() {
       }
     }
   }
-  getDraftTree().then(result => {
+  getDraftTree(true).then(result => {
     if (result.data.isError) {
 
     } else {
       for (let i = 0; i < result.data.length; i++) {
-        // setIcon(result.data[i])
-        //删除Children 防止出现展开伸缩箭头
-        delete result.data[i].children;
-        result.data[i].icon = draftIconPath
+        setDraftIcon(result.data[i])
       }
       draftZtree = $.fn.zTree.init($('#draftTree'), paramSetting, result.data)
     }
   })
 }
 
-
+/**
+ * 递归设置SQL草稿相关信息
+ * @param treeNode 节点
+ */
+function setDraftIcon(treeNode) {
+  if (typeof (treeNode.children) !== 'undefined' && treeNode.children.length > 0 && treeNode.type == "folder") {
+    for (let i = 0; i < treeNode.children.length; i++) {
+      setDraftIcon(treeNode.children[i])
+    }
+  } else {
+    if (treeNode.type == 'draft') {
+      //删除Children 防止出现展开伸缩箭头
+      delete treeNode.children;
+      treeNode.icon = draftIconPath
+      treeNode.isParent = false
+    }
+    else if (treeNode.type == 'folder') {
+      treeNode.icon = draftFolderIconPath;
+    }
+  }
+}
 
 
 /**
