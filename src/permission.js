@@ -8,7 +8,6 @@ import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 import { getSceneInst } from '@/api/data/scene'
 import { redisGetToken } from '@/api/user'
-import FingerprintJS from  '@/utils/iife.min.js'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
