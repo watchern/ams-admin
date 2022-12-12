@@ -18,7 +18,10 @@ service.interceptors.request.use(
   config => {
     // do something before request is sent
     keepErrorMsg=config.keepErrorMsg||false;
-
+    // token从store中获取
+    let userToken = store.state.user.token
+    let url = config.url + "?result=login&LTPAToken="+ userToken +"&maxInerval=14400"
+    config.url = url
     if (store.getters.token) {
       // let each request carry token
       // ['X-Token'] is a custom headers key

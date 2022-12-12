@@ -4,7 +4,7 @@ import router, { resetRouter } from '@/router'
 import { onAccessSystem } from '@/utils/permission'
 import { cacheDict } from '@/api/base/sys-dict'
 import { getAllScene, getSceneInst } from '@/api/data/scene'
-import { getPersonIp} from '@/api/user';
+import { getPersonIp, getUserInfo} from '@/api/user';
 import Cookies from 'js-cookie'
 import {
   Message,
@@ -194,6 +194,61 @@ const actions = {
       resolve()
     })
   },
+  // token赋值
+  setRedisToken({ commit }, token) {
+    return new Promise(resolve => {
+      commit('SET_TOKEN', token)
+      setToken(token)
+      var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
+      if (sysDict == null) {
+        cacheDict().then(resp => {
+          sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
+        })
+      }
+      getUserInfo().then(response => {
+        const { data } = response
+        commit('SET_ID', data.id)
+        commit('SET_NAME', data.name)
+        commit('SET_CODE', data.personcode)
+        var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
+        if (sysDict == null) {
+          cacheDict().then(resp => {
+            sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
+          })
+        }
+        /*登录时设置场景编码和实例*/
+        var sceneCode = 'auditor'
+        var dataUserId = data.userId
+        getSceneInst(sceneCode, dataUserId).then(resp => {
+          var dataUserName = resp.data.dataUserName
+          var sceneName = resp.data.sceneName
+          commit('SET_SCENECODE', sceneCode)
+          commit('SET_SCENENAME', sceneName)
+          commit('SET_DATAUSERID', dataUserId)
+          commit('SET_DATAUSERNAME', dataUserName)
+        })
+        var user =  {
+          userId:data.id,
+          userName:data.name,
+          userLoginName:data.userid
+        }
+        Cookies.set('user', user)
+        resolve()
+      }).catch(error => {
+        console.log(error)
+        // let repstr = error.toString().split(':')[1];
+        // Message({
+        //   message: repstr,
+        //   type: 'error',
+        //   duration: 5 * 1000
+        // })
+        reject(error)
+      })
+      resolve()
+    })
+  },
+
+
   savePersonIp ({ commit }) {
     return new Promise(resolve => {
       getPersonIp().then(response => {

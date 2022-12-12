@@ -7,6 +7,7 @@ import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 import { getSceneInst } from '@/api/data/scene'
+import { redisGetToken } from '@/api/user'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -42,7 +43,7 @@ router.beforeEach(async(to, from, next) =>
    }
 
   if (hasToken) {
-    if (to.path === '/login') {
+    if (to.path === '/') {
       // if is logged in, redirect to the home page
       next({ path: '/' })
       NProgress.done() // hack: https://github.com/PanJiaChen/vue-element-admin/pull/2939
@@ -53,19 +54,26 @@ router.beforeEach(async(to, from, next) =>
     }
   } else {
     /* has no token*/
+    // 获取到redis里的token
+    redisGetToken().then(resp => {
+      // token = resp.data
+      // 把获取到的token存到cookie和store里
+      store.dispatch('user/setRedisToken', resp.data)
+    });
+    next()
 
-    if (whiteList.indexOf(to.path) !== -1) {
-      // in the free login whitelist, go directly
-      next()
-    } else {
-      // other pages that do not have permission to access are redirected to the login page.
-      if (`/` === to.path) {
-        next(`/login`)
-      } else {
-        next(`/login?redirect=${to.path}`)
-      }
-      NProgress.done()
-    }
+    // if (whiteList.indexOf(to.path) !== -1) {
+    //   // in the free login whitelist, go directly
+    //   next()
+    // } else {
+    //   // other pages that do not have permission to access are redirected to the login page.
+    //   // if (`/` === to.path) {
+    //   //   next(`/login`)
+    //   // } else {
+    //   //   next(`/login?redirect=${to.path}`)
+    //   // }
+    //   NProgress.done()
+    // }
   }
 })
 

@@ -15,9 +15,9 @@
       <el-tab-pane label="分层"
                    :disabled="tabclick"
                    name="2"></el-tab-pane>
-      <el-tab-pane label="目录"
+      <!-- <el-tab-pane label="目录"
                    :disabled="tabclick"
-                   name="3"></el-tab-pane>
+                   name="3"></el-tab-pane> -->
     </el-tabs>
     <div class="padding10">
       <el-input v-model="filterText1"
@@ -25,12 +25,12 @@
                 placeholder="输入关键字进行过滤" />
     </div>
     <!-- 数据源 -->
-    <div class="padding10_l">
+    <div class="padding10_l data_s">
       <el-form :inline="true"
                :model="query"
                label-position="bottom">
         <el-form-item label="数据源："
-                      label-width="70px">
+                      label-width="65px">
           <el-select v-model="query.dataSource"
                      @change="selectdata"
                      :disabled="tabclick"
@@ -162,7 +162,10 @@
       </MyElTree>
       <!-- </div> -->
     </div>
-
+    <!-- 扩容 -->
+    <div class="Expansion _width padding10">
+      <el-progress :percentage="50"></el-progress> <span @click="on_expansion()">扩容</span>
+    </div>
   </div>
 </template>
 
@@ -288,21 +291,21 @@ export default {
       });
     },
     // 目录
-    post_getDataTreeNode () {
-      this.loading = true
-      getResELTree({
-        dataUserId: this.dataUserId,
-        sceneCode: this.sceneCode,
-        type: this.treeType,
-      }).then((resp) => {
-        // this.treeLoading = false;
-        this.treeData1 = resp.data;
-        this.loading = false
-        this.tabclick = false
-        //默认展开所有文件夹
-        // this.openlist = ["ROOT"];
-      });
-    },
+    // post_getDataTreeNode () {
+    //   this.loading = true
+    //   getResELTree({
+    //     dataUserId: this.dataUserId,
+    //     sceneCode: this.sceneCode,
+    //     type: this.treeType,
+    //   }).then((resp) => {
+    //     // this.treeLoading = false;
+    //     this.treeData1 = resp.data;
+    //     this.loading = false
+    //     this.tabclick = false
+    //     //默认展开所有文件夹
+    //     // this.openlist = ["ROOT"];
+    //   });
+    // },
 
     // tab切换
     handleClick (tab, event) {
@@ -316,9 +319,10 @@ export default {
         this.post_getThemeTree();//主题
       } else if (tab.index == '2') {
         this.post_getLayeredTree();//分层
-      } else {
-        this.post_getDataTreeNode();//目录
       }
+      // else {
+      //   this.post_getDataTreeNode();//目录
+      // }
     },
     // 选择数据源
     selectdata (val) {
@@ -332,10 +336,11 @@ export default {
       } else if (this.activeName == '2') {
         // 分层
         this.post_getLayeredTree();//分层
-      } else {
-        // 目录 
-        this.post_getDataTreeNode();//目录
       }
+      // else {
+      //   // 目录 
+      //   this.post_getDataTreeNode();//目录
+      // }
     },
 
 
@@ -478,16 +483,24 @@ export default {
         }
       }
     },
+    // 扩容
+    on_expansion () {
+      this.$router.push({
+        path: '/data/expansion'
+      })
+    }
   }, // 注册
 };
 </script>
 
 <style scoped>
 @import url("./../../../assets/css/common.css");
-
+.data_s >>> .el-form-item__label {
+  min-width: 65px;
+}
 .tree-containerall {
   /* height: 75vh; */
-  height: calc(100% - 140px);
+  height: calc(100% - 160px);
   overflow: auto;
 }
 .app-container >>> .el-form-item {
@@ -573,5 +586,24 @@ export default {
 }
 .tree-line-btn {
   background: rgba(255, 255, 255, 0) !important;
+}
+
+// Expansion
+.Expansion {
+  color: #5ac3eb;
+}
+// .Expansion >>> .progressbar {
+//   width: calc(100% - 50px);
+// }
+.Expansion span {
+  width: 100%;
+  text-align: center;
+  color: #1890ff;
+  display: block;
+  transition: 0.2s;
+}
+.Expansion span:hover {
+  font-weight: 500;
+  cursor: pointer;
 }
 </style>

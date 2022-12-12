@@ -44,6 +44,11 @@ var sqlZtreeObj
  * 参数树对象
  */
 var paramZtree
+
+/**
+ * SQL草稿树对象
+ */
+var draftZtree
 /**
  * 标记树对象
  */
@@ -94,6 +99,18 @@ var viewIconPath = require("@/styles/icons/view.png")
  * 函数图标路径
  */
 var functionIconPath = require("@/styles/icons/function.png")
+
+
+/**
+ * SQL草稿图标路径
+ * @type {string}
+ */
+var draftIconPath = require("@/styles/icons/param.png")
+/**
+ * SQL草稿文件夹图标路径
+ * @type {string}
+ */
+var draftFolderIconPath = require("@/styles/icons/foldericon.png")
 /**
  * 参数对象
  * @type {{}}
@@ -157,6 +174,18 @@ export function getParamsTree() {
     baseURL: analysisUrl,
     url: '/ParamFolderController/getParamsTree',
     method: 'get'
+  })
+}
+
+/**
+ * 获取SQL草稿树
+ */
+export function getDraftTree(isShowDraft) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/sqlDraft/getDraftTree',
+    method: 'post',
+    params: {isShowDraft: isShowDraft}
   })
 }
 
@@ -246,21 +275,25 @@ export function initDragAndDrop() {
     $('#sidebar div').removeClass('add-sidiv')
     $('.left-dataTree').fadeOut(0)
     $('.left-paramTree').fadeOut(0)
+    $('.left-draftTree').fadeOut(0)
     $('.left-sqlFunTree').fadeOut(0)
     $('.left-bjTree').fadeOut(0)
     tree_shuju = false
     tree_canshu = false
     tree_sql = false
     tree_bj = false
+    tree_draft = false
   }
-  // 分别显示隐藏三个表
+  // 分别显示隐藏四个表
   var tree_shuju = true
   var tree_canshu = false
   var tree_sql = false
   var tree_bj = false
+  var tree_draft = false
   $('.left-paramTree').fadeOut(300)
   $('.left-sqlFunTree').fadeOut(300)
   $('.left-bjTree').fadeOut(300)
+  $('.left-draftTree').fadeOut(300)
   $('.unfold-shuju').on('click', function () {
     if (tree_shuju == true) {
       $('.left-dataTree').fadeOut(300)
@@ -315,6 +348,20 @@ export function initDragAndDrop() {
       $('.left-bjTree').fadeIn(300)
       $(this).addClass('add-sidiv')
       tree_bj = true
+    }
+  })
+  $('.unfold-draft').on('click', function () {
+    if (tree_draft== true) {
+      $('.left-draftTree').fadeOut(300)
+      $(this).removeClass('add-sidiv')
+      tree_draft = false
+      tree_zy_zhanhe()
+    } else if (tree_bj == false) {
+      tree_zy_zhan()
+      tree_zy_all()
+      $('.left-draftTree').fadeIn(300)
+      $(this).addClass('add-sidiv')
+      tree_draft = true
     }
   })
 
@@ -1323,7 +1370,103 @@ export function initParamTreeNew(modelFolderPath) {
       paramZtree = $.fn.zTree.init($('#paramTree'), paramSetting, result.data.paramNode)
     }
   })
+}/**
+ * 初始化SQL草稿树
+ */
+export function initDraftTree() {
+  var paramSetting = {
+    data: {
+      key: {
+        checked: 'isChecked',
+        name: 'label',
+        title: 'label'
+      },
+      // 设置数据格式
+      simpleData: {
+        enable: true,
+        idKey: 'id',
+        PidKey: 'pid'
+      }
+    },
+    check: {
+      enable: false,
+      chkStyle: 'radio',
+      radioType: 'all'
+    },
+    view: {
+      selectedMulti: false
+    },
+    callback: {
+      onDrop: function (event, treeId, treeNodes) {
+        // 获取SQL草稿内容
+        var draftId = treeNodes[0].id
+        getDraftById(draftId).then(result =>{
+          var width = $('.CodeMirror').width()
+          var height = $('#sqlEditorDiv').height()
+          var offLeft = $('.leftCon').width()
+          var offTop = $('.table-view-caption').height()
+          if ((mouseX < (offLeft + 30) || (mouseX > (offLeft + width)) || (mouseY < offTop) || (mouseY > height))) {
+            return
+          }
+          var cursor = editorObj.getCursor()
+          dragOne(result.data.draftSql + " ", cursor, cursor)
+
+        })
+
+      },
+      beforeDrag: function (treeId, treeNodes) {
+        // 如果是SQL草稿 允许拖动 否则不可以
+        var thisNode = treeNodes[0]
+        if (thisNode.type !== 'draft') {
+          return false
+        }
+      },
+    },
+    edit: {
+      enable: true,
+      showRenameBtn: false,
+      showRemoveBtn: false,
+      drag: {
+        prev: false,
+        next: false,
+        inner: false
+      }
+    }
+  }
+  getDraftTree(true).then(result => {
+    if (result.data.isError) {
+
+    } else {
+      for (let i = 0; i < result.data.length; i++) {
+        setDraftIcon(result.data[i])
+      }
+      draftZtree = $.fn.zTree.init($('#draftTree'), paramSetting, result.data)
+    }
+  })
 }
+
+/**
+ * 递归设置SQL草稿相关信息
+ * @param treeNode 节点
+ */
+function setDraftIcon(treeNode) {
+  if (typeof (treeNode.children) !== 'undefined' && treeNode.children.length > 0 && treeNode.type == "folder") {
+    for (let i = 0; i < treeNode.children.length; i++) {
+      setDraftIcon(treeNode.children[i])
+    }
+  } else {
+    if (treeNode.type == 'draft') {
+      //删除Children 防止出现展开伸缩箭头
+      delete treeNode.children;
+      treeNode.icon = draftIconPath
+      treeNode.isParent = false
+    }
+    else if (treeNode.type == 'folder') {
+      treeNode.icon = draftFolderIconPath;
+    }
+  }
+}
+
 
 /**
  * 递归设置参数相关信息
@@ -1785,6 +1928,34 @@ export function functionTreeSearch() {
   } else {
     views['fontCss'] = resetFontCss
     sqlZtreeObj.refresh()
+  }
+}
+/**
+ * SQL草稿树搜索
+ */
+export function draftTreeSearch() {
+  var searchText = $('#draftSearch').val()
+  isHiddenNodes(false, draftZtree)
+  if (searchText === '') {
+    // 当输入结果为空时，使树节点全部收回，恢复成初始状态
+    draftZtree.expandAll(false)
+    draftZtree.expandNode(draftZtree.getNodeByParam('pid', null, null), true)
+  }
+  var views = draftZtree.setting.view
+  views['fontCss'] = setFontCss
+  if (searchText !== '') {
+    var nodes = draftZtree.getNodesByParam('type', 'draft')
+    var allNodeList = draftZtree.transformToArray(nodes)
+    updateNodes(allNodeList, false, draftZtree)
+    var nodeList = draftZtree.getNodesByParamFuzzy('label', searchText)
+    expandNodes(nodeList, draftZtree)
+    if (nodeList && nodeList.length > 0) {
+      updateNodes(nodeList, true, draftZtree)
+      hiddenNodes(nodeList, draftZtree)
+    }
+  } else {
+    views['fontCss'] = resetFontCss
+    draftZtree.refresh()
   }
 }
 
@@ -2654,4 +2825,17 @@ export async function getGraphSaveInfo(dataSource){
 export function getZtreeSelectNode() {
   var nodes = zTreeObj.getSelectedNodes()
   return nodes
+}
+
+/**
+ * 根据id获取sql草稿
+ * @param data id
+ * @returns {AxiosPromise}
+ */
+export function getDraftById(id){
+  return request({
+    baseURL: analysisUrl,
+    url: `/sqlDraft/getById/${id}`,
+    method: 'get'
+  })
 }
