@@ -81,6 +81,15 @@
         <div id="sqlEditorDiv" class="sql-editor-div">
           <el-row type="flex" class="row-bg">
             <el-col>
+              <span>数据量：</span>
+              <el-select v-model="resultDataMaxCount" style="font-weight: bolder;width: 100px">
+                <el-option
+                        v-for="item in resultDataMaxCountList"
+                        :key="item"
+                        :label="item"
+                        :value="item"
+                />
+              </el-select>
               <el-button
                 type="primary"
                 size="small"
@@ -312,6 +321,18 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="sqlDraftDialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="choosePath()">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog
+      v-if="sqlDraftFolderDialogFormVisible"
+      title="请选择SQL草稿保存路径"
+      :visible.sync="sqlDraftFolderDialogFormVisible"
+      :append-to-body="true"
+    >
+      <sqlDraftTree ref="sqlDraftTree"  @refreshDraftList="refreshDraftList" :isShowDraft="false" openType="save"/>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="sqlDraftFolderDialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="saveSqlDialog()">确 定</el-button>
       </div>
     </el-dialog>
@@ -320,9 +341,16 @@
       title="SQL草稿列表"
       :visible.sync="sqlDraftDialog"
       :append-to-body="true"
-      width="50%"
+      width="75%"
     >
-      <sqlDraftList ref="sqlDraftList" />
+      <el-container class="content-box">
+        <el-aside class="tree-side">
+          <sqlDraftTree ref="sqlDraftTree"  @refreshDraftList="refreshDraftList" :isShowDraft="true" openType="show"/>
+        </el-aside>
+        <div class="list-side" ref="listSide">
+          <sqlDraftList ref="sqlDraftList" />
+        </div>
+      </el-container>
       <div slot="footer" class="dialog-footer">
         <el-button @click="sqlDraftDialog = false">关闭</el-button>
         <el-button type="primary" @click="useSql">使用SQL</el-button>
@@ -513,6 +541,7 @@ import {
   sendSettingVue
 } from "@/api/analysis/sqleditor/sqleditor";
 import sqlDraftList from "@/views/analysis/sqleditor/sqldraftlist";
+import sqlDraftTree from "@/views/analysis/sqleditor/sqldrafttree";
 import { updateDraft } from "@/api/analysis/sqleditor/sqldraft";
 import childTabs from "@/views/analysis/auditmodelresult/childtabs";
 import paramDraw from "@/views/analysis/modelparam/paramdraw";
@@ -526,6 +555,7 @@ import {
   delFolder,
   listByAmmParam,
 } from "@/api/analysis/parammanagerlist";
+import {isAdmin} from "@/api/user";
 /**
  * 当前执行进度
  * @type {number}
@@ -561,6 +591,7 @@ let lastSqlIndex = -1;
 export default {
   name: "SQLEditor",
   components: {
+    sqlDraftTree,
     sqlDraftList,
     childTabs,
     paramDraw,
@@ -588,9 +619,21 @@ export default {
       this.sceneCode = this.sceneCode1;
     }
     sendSettingVue(this);
+    // 校验用户权限
+    isAdmin().then((res) => {
+      // 是管理员
+      if (res.data) {
+        this.isManager = true
+      } else {
+        // 不是管理员
+        this.isManager = false
+      }
+    })
   },
   data() {
     return {
+      resultDataMaxCountList:[200,500,1000,10000,100000],
+      resultDataMaxCount: 200,
       dataSource: "Postgre",
       dataSourceList: [{
         value:"Hive",
@@ -645,7 +688,10 @@ export default {
         draftTitle: "",
         draftSql: "",
         paramJson: "",
-        dataSource: "Postgre"
+        dataSource: "Postgre",
+        parentUuid: "",
+        sceneInstUuid: "",
+        createUserId: "",
       },
       sqlDraftFormRules: {
         draftTitle: [
@@ -659,6 +705,8 @@ export default {
       },
       // SQL草稿dialog
       sqlDraftDialogFormVisible: false,
+      // SQL草稿选择保存路径dialog
+      sqlDraftFolderDialogFormVisible: false,
       // SQL草稿列表dialog
       sqlDraftDialog: false,
       // 参数dialog
@@ -716,6 +764,8 @@ export default {
       pushUuid: "",
       maintableindex:'',
       personalTitle: '审计人员场景',
+      // 是否为管理员身份
+      isManager: false,
     };
   },
   watch: {
@@ -774,6 +824,19 @@ export default {
     this.$refs.maxSize.style.display = "none"
   },
   methods: {
+    choosePath(){
+      this.$refs["sqlDraftForm"].validate((valid) => {
+        if (valid) {
+          this.sqlDraftDialogFormVisible = false
+          this.sqlDraftFolderDialogFormVisible = true
+        }
+      });
+    },
+    refreshDraftList(data){
+      let query = {}
+      data.type == "draft"? query = { sqlDraftUuid: data.id} : query = { parentUuid: data.id , path: data.path  }
+      this.$refs.sqlDraftList.getList(query)
+    },
     // dataSourceChange(){
     // sessionStorage.setItem("dataSource", this.dataSource));
     // },
@@ -1257,6 +1320,10 @@ export default {
           if (!sqlObj.isOld) {
             this.sqlDraftDialogFormVisible = true;
           } else {
+            if(sqlObj.sceneInstUuid == null && !this.isManager){
+              this.$message({type:"info", message:"非管理员无法修改公共文件夹的SQL草稿！"})
+              return
+            }
             updateDraft(sqlObj).then((result) => {
               if (result.code == 0) {
                 this.$notify({
@@ -1286,16 +1353,24 @@ export default {
      *保存sql草稿
      */
     saveSqlDialog() {
-      let verResult = false;
-      this.$refs["sqlDraftForm"].validate((valid) => {
-        if (valid) {
-          verResult = valid;
+        const treeNode = this.$refs.sqlDraftTree.selectTreeNode;
+      let dataUserId = this.$store.getters.datauserid
+        if(treeNode.id == "0" || treeNode.id == dataUserId){
+          this.$message({type:"info", message:"不可以保存至根文件夹！"})
+          return;
         }
-      });
-      if (verResult) {
+      const rootId = treeNode.path.split("/")[0];
+        if( rootId == "0" && !this.isManager){
+            this.$message({type:"info", message:"非管理员无法保存SQL草稿至公共文件夹！"})
+          return;
+        }
+
         const sqlObj = getSaveSqlDraftObj(1);
         this.sqlDraftForm.draftSql = sqlObj.draftSql;
         this.sqlDraftForm.paramJson = sqlObj.paramJson;
+        this.sqlDraftForm.parentUuid = treeNode.id;
+        this.sqlDraftForm.sceneInstUuid = rootId == dataUserId ? dataUserId : null;
+        this.sqlDraftForm.createUserId = dataUserId;
         saveSqlDraft(this.sqlDraftForm).then((result) => {
           if (result.code == 0) {
             this.$notify({
@@ -1305,14 +1380,18 @@ export default {
               duration: 2000,
               position: "bottom-right",
             });
-            this.sqlDraftDialogFormVisible = false;
+            this.sqlDraftFolderDialogFormVisible = false
             // 手动销毁数据  多层dialog v-if失效 不知道为啥 没找到解决办法
             this.sqlDraftForm = {
               sqlDraftUuid: "",
-              draftTitle: "",
-              draftSql: "",
-              paramJson: "",
-            };
+                      draftTitle: "",
+                      draftSql: "",
+                      paramJson: "",
+                      dataSource: "Postgre",
+                      parentUuid: "",
+                      sceneInstUuid: "",
+                      createUserId: "",
+            }
           } else {
             this.$notify({
               title: "提示",
@@ -1323,7 +1402,6 @@ export default {
             });
           }
         });
-      }
     },
     /**
      *打开sql草稿列表
@@ -1400,6 +1478,7 @@ export default {
                   _this.createTreeNode = result.data.treeNodeInfo;
                   _this.resultShow.push({ id: 1 });
                   result.data.dataSource = _this.dataSource
+                  result.data.maxCount = _this.resultDataMaxCount
                   // if (executeflag === true) {
                   //   // 界面渲染完成之后开始执行sql,将sql送入调度
                   // 显示放大按钮
@@ -1511,6 +1590,7 @@ export default {
           this.resultShow.push({ id: 1 });
           // 界面渲染完成之后开始执行sql,将sql送入调度
           result.data.dataSource = this.dataSource
+          result.data.maxCount = this.resultDataMaxCount
           startExecuteSql(result.data)
             .then((result) => {
               this.executeLoading = false;
@@ -1935,4 +2015,11 @@ div.rightMenu ul li:hover {
   display: inline-block;
   position: relative;
 }
+.content-box {
+  position: relative;
+  overflow-y: hidden;
+}
+  .list-side{
+    margin-left: 10px;
+  }
 </style>
