@@ -183,7 +183,8 @@
                 </ul>
               </el-form-item>
               <div class="son">
-                <el-button type="primary">查看SQL语句</el-button>
+                <el-button type="primary"
+                           @click="previewSql()">查看SQL语句</el-button>
               </div>
 
             </el-form>
@@ -198,19 +199,24 @@
             <el-table :data="tableData"
                       style="width: 100%">
               <el-table-column prop="date"
+                               align="center"
                                label="字段名称">
               </el-table-column>
               <el-table-column prop="name"
+                               align="center"
                                label="字段中文名">
               </el-table-column>
               <el-table-column prop="address"
+                               align="center"
                                label="字段类型">
               </el-table-column>
               <el-table-column prop="address"
+                               align="center"
                                label="字段长度">
               </el-table-column>
 
               <el-table-column prop="address"
+                               align="center"
                                label="字段说明">
               </el-table-column>
 
@@ -244,15 +250,25 @@
         <div class="rightList_child"
              id="id3">
           <h2 :class="{'isActive': navgatorIndex == 3}">数据表关联关系</h2>
-          <!-- <ProcessTree></ProcessTree> -->
+          <div class="padding20"
+               style="text-align: right;">
+            <el-button type="primary"
+                       class="oper-btn"
+                       @click="add_table()">新增</el-button>
+          </div>
+          <div style="padding: 0 20px;">
+            <ProcessTree></ProcessTree>
+          </div>
         </div>
         <!-- 数据表关联关系 -->
         <div class="rightList_child"
              id="id4">
           <h2 :class="{'isActive': navgatorIndex == 4}">数据表字典信息</h2>
           数据表字典信息
-          <!-- <LineMap></LineMap> -->
-          <EditMap></EditMap>
+          <div class="padding20">
+            <!-- <LineMap></LineMap> -->
+            <EditMap></EditMap>
+          </div>
 
         </div>
 
@@ -263,6 +279,69 @@
       </div>
     </div>
 
+    <!-- 查看sql -->
+    <el-dialog title="查看sql"
+               :visible.sync="visible_sql"
+               width="30%">
+      <div>
+        <el-input type="textarea"
+                  v-model="sql">
+        </el-input>
+      </div>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="visible_sql = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="visible_sql = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 新增关联关系 -->
+    <el-dialog title="新增关联关系"
+               :visible.sync="visible_sql"
+               width="30%">
+      <div>
+
+        <div class="padding10">
+          <el-button type="primary"
+                     @click="visible_sql = false">新增一行</el-button>
+        </div>
+        <el-table :data="tableData"
+                  style="width: 100%">
+          <el-table-column prop="date"
+                           label="主表">
+          </el-table-column>
+          <el-table-column prop="name"
+                           label="关联表">
+          </el-table-column>
+          <el-table-column prop="name"
+                           label="表关联方式">
+          </el-table-column>
+
+          <el-table-column prop="address"
+                           label="主表字段">
+          </el-table-column>
+
+          <el-table-column prop="address"
+                           label="字段关联条件">
+          </el-table-column>
+
+          <el-table-column prop="address"
+                           label="关联字段">
+          </el-table-column>
+
+          <el-table-column prop="address"
+                           label="连接条件">
+          </el-table-column>
+        </el-table>
+      </div>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="visible_sql = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="visible_sql = false">保存</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -338,7 +417,9 @@ export default {
         name: '王小虎',
         address: '上海市普陀区金沙江路 1516 弄'
       }],
-
+      // 查看sql
+      sql: ['SYS_USER_NAMESYS_USER_NAME'],
+      visible_sql: false,//查看sql
     };
   },
   computed: {
@@ -436,7 +517,15 @@ export default {
       this.$nextTick(() => {
         this.$refs.inputTag.focus();
       })
-    }
+    },
+    // 查看sql
+    previewSql () {
+      this.visible_sql = true
+    },
+    // 新增数据表
+    add_table () {
+
+    },
 
   }
 }
@@ -462,10 +551,12 @@ export default {
   cursor: pointer;
   text-align: left;
   margin-bottom: 20px;
+  transition: 0.3s;
 }
 .isActive {
   color: #0271be;
   font-weight: 600;
+  font-size: 18px;
 }
 
 .right_details {
@@ -532,7 +623,7 @@ export default {
   cursor: pointer;
   transition: all 0.3s;
   box-sizing: border-box;
-  border-bottom: 1px solid #fff;
+  /* border-bottom: 1px solid #fff; */
   /* padding: 0 10px; */
   height: 40px;
   line-height: 40px;
