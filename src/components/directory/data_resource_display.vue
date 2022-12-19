@@ -33,12 +33,13 @@
 
     <!-- 是否显示按钮 数据注册显示 -->
     <div class="common_btn "
-         v-if="is_btn == true">
+         v-if="isBtn == true">
       <div class="click_btn">
         <el-button type="primary">数据字典导入导出</el-button>
         <div class="show_btn">
           <el-button type="primary">模版下载</el-button>
-          <el-button type="primary">导入数据资源</el-button>
+          <el-button type="primary"
+                     @click="Importdata_dictionary()">导入数据资源</el-button>
         </div>
       </div>
 
@@ -46,7 +47,8 @@
         <el-button type="primary">汉化信息导入导出</el-button>
         <div class="show_btn">
           <el-button type="primary">模版下载</el-button>
-          <el-button type="primary">导入汉化信息</el-button>
+          <el-button type="primary"
+                     @click="Important_cn()">导入汉化信息</el-button>
         </div>
       </div>
 
@@ -54,69 +56,97 @@
         <el-button type="primary">表关系导入导出</el-button>
         <div class="show_btn">
           <el-button type="primary">模版下载</el-button>
-          <el-button type="primary">导入表关系</el-button>
+          <el-button type="primary"
+                     @click="Important_table()">导入表关系</el-button>
         </div>
       </div>
 
       <el-button type="primary">同步数据结构</el-button>
 
-      <el-button type="primary">任权管理</el-button>
+      <el-button type="primary"
+                 @click="Recognition()">任权管理</el-button>
 
-      <el-button type="primary">注册资产</el-button>
-      <el-button type="primary">修改</el-button>
-
-    </div>
-
-    <!-- 内容 -->
-    <div class="box_ard"
-         v-for="(item,index) in list"
-         :key="index">
-      <div class="check">
-        <el-checkbox v-model="item.isCheck"
-                     @change="handleCheckAllChange(item)"></el-checkbox>
-      </div>
-
-      <div class="conter_list">
-        <div class="box_ard_header _width"
-             @click="on_deails('1111')">
-          <p class="new_num">{{item.name}}</p>
-          <p class="new_title">{{item.title}}</p>
-          <span class="new_type">{{item.title1}}</span>
-        </div>
-
-        <div class="new_left padding10">
-          <i><img src="../../assets/img/activity.png"
-                 alt=""></i>
-        </div>
-
-        <div class="new_right">
-          <div class="table_type">
-            <p class="one">表关联数量：<span>1</span>
-              <el-card class="show_tips">
-                <p>BIBIUU</p>
-                <p>BIBIUU</p>
-                <p>BIBIUU</p>
-              </el-card>
-
-            </p>
-            <p class="two">使用此表模型数：<span>1</span>
-              <el-card class="show_tips">
-                <p>BIBIUU</p>
-                <p>BIBIUU</p>
-                <p>BIBIUU</p>
-              </el-card>
-            </p>
-          </div>
-          <p class="text">描述：213123213123</p>
-          <p class="text">字段：12321321313213</p>
-          <div class="data_list">
-            <span class="data_time">数据日期 2022-11-06</span>
-            <span class="data_number">数据量 2,530,000 条</span>
-          </div>
-        </div>
-      </div>
+      <el-button type="primary"
+                 @click="on_register()">注册资产</el-button>
+      <el-button type="primary"
+                 @click="edit_list()">修改</el-button>
 
     </div>
+    <el-table ref="multipleTable"
+              :data="list"
+              style="width: 100%"
+              :header-cell-class-name="headerCellClass"
+              @selection-change="handleSelectionChange">
+      <el-table-column type="selection"
+                       v-if="isBtn == true"
+                       width="30">
+      </el-table-column>
+      <el-table-column>
+        <template slot-scope="scope">
+          <div class="box_ard">
+            <div class="conter_list">
+              <div class="box_ard_header _width"
+                   @click="on_deails('1111')">
+                <p class="new_num">{{scope.row.name}}</p>
+                <p class="new_title">{{scope.row.title}}</p>
+                <span class="new_type">{{scope.row.title1}}</span>
+              </div>
+
+              <div class="new_left padding10">
+                <i><img src="../../assets/img/activity.png"
+                       alt=""></i>
+              </div>
+
+              <div class="new_right">
+                <div class="table_type">
+                  <p class="one">表关联数量：<span>1</span>
+                    <el-card class="show_tips">
+                      <p>BIBIUU</p>
+                      <p>BIBIUU</p>
+                      <p>BIBIUU</p>
+                    </el-card>
+
+                  </p>
+                  <p class="two">使用此表模型数：<span>1</span>
+                    <el-card class="show_tips">
+                      <p>BIBIUU</p>
+                      <p>BIBIUU</p>
+                      <p>BIBIUU</p>
+                    </el-card>
+                  </p>
+                </div>
+                <p class="text">描述：213123213123</p>
+                <p class="text">字段：12321321313213</p>
+                <div class="data_list">
+                  <span class="data_time">数据日期 2022-11-06</span>
+                  <span class="data_number">数据量 2,530,000 条</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <el-dialog :title="title"
+               :visible.sync="common_dialog"
+               width="30%">
+
+      <!-- 模版下载 -->
+
+      <!-- 认权管理 -->
+      <div>
+
+      </div>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="common_dialog = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="common_dialog = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -126,7 +156,7 @@
 export default {
   components: {},
   props: {
-    parentArr: {
+    itemsArr: {
       type: Array,
       default () {
         return []
@@ -137,7 +167,7 @@ export default {
       type: Number,
 
     },
-    is_btn: {
+    isBtn: {
       type: Boolean,
       default () {
         return []
@@ -153,13 +183,16 @@ export default {
       search_name: '',
       TagsAll: [],
       inputLength: '',
-
-
       list: [
+        { name: 'GIUDUDION', title: '这是标题', title1: '存款业务主体', title2: '描述描述描述', title4: '字段21321313123', isCheck: 'false' },
         { name: 'GIUDUDION', title: '这是标题', title1: '存款业务主体', title2: '描述描述描述', title4: '字段21321313123', isCheck: 'true' },
-        { name: 'GIUDUDION', title: '这是标题', title1: '存款业务主体', title2: '描述描述描述', title4: '字段21321313123', isCheck: 'true' }
+        { name: 'GIUDUDION', title: '这是标题', title1: '存款业务主体', title2: '描述描述描述', title4: '字段21321313123', isCheck: 'true' },
+        { name: 'GIUDUDION', title: '这是标题', title1: '存款业务主体', title2: '描述描述描述', title4: '字段21321313123', isCheck: 'true' },
       ],
 
+      common_dialog: false,//导入数据源
+      title: '',//弹窗共用标题
+      check_list: [],//多选批量的数量
     };
   },
   watch: {
@@ -171,8 +204,8 @@ export default {
       this.inputLength = this.$refs.inputTag.value.length * 12 + 50;
 
     },
-    parentArr () {
-      this.TagsAll = this.parentArr.length ? this.parentArr : []
+    itemsArr () {
+      this.TagsAll = this.itemsArr.length ? this.itemsArr : []
     }
   },
   computed: {
@@ -186,7 +219,7 @@ export default {
     }
   },
   mounted () {
-    this.TagsAll = this.parentArr;
+    this.TagsAll = this.itemsArr;
   },
   methods: {
     // 删除标签
@@ -221,28 +254,79 @@ export default {
       })
     },
 
+    // 导入数据字典
+    Importdata_dictionary () {
+      // this.common_dialog = true;
+      this.$emit("Importdata_dictionary", '导入数据字典')
 
+    },
+
+    // 导入汉化信息
+    Important_cn () {
+      this.$emit("Important_cn", '导入汉化信息')
+    },
+    // 表关系
+    Important_table () {
+      this.$emit("Important_table", '表关系')
+    },
+    // 注册资产
+    on_register () {
+      this.$emit("on_register", '11');
+    },
+    // 认权
+    Recognition () {
+      this.$emit("Recognition", '11');
+
+    },
+    // 修改
+    edit_list () {
+      if (this.check_list.length !== 0) {
+
+      }
+    },
+    // 设置条件隐藏多选
+    headerCellClass (row) {
+      if (row.columnIndex === 0) {
+        return 'DisableSelection'
+      }
+    },
 
     // 查看基本信息详情
     on_deails (data) {
       this.$emit("on_deails", data);
 
     },
-    handleCheckAllChange (node) {
-      console.log(node);
-      let arr = []
-      arr.push(node)
-      console.log(arr);
-      return false
-      if (node.children && node.children instanceof Array && node.children.length > 0) {
-        node.children.forEach(item => {
-          item.isCheck = node.isCheck
-        })
-      }
+    // // 全选
+    // handleCheckAllChange () {
+    //   if (this.list && this.list.length > 0) {
+    //     for (var i = 0; i < this.list.length; i++) {
+    //       this.list[i].isCheck = this.checkAll;
+    //     }
+    //   }
+    // },
+    // // 单选
+    // handleCheckChange (val) {
+
+    //   // val.isCheck = val.children.every(item => item.isCheck)
+    //   for (let i = 0, l = this.list.length; i < l; i++) {
+    //     if (this.list[i].isCheck !== val.isCheck) {
+    //       this.checkAll = false;
+    //     } else {
+    //       this.checkAll = val.isCheck;
+    //     }
+    //   }
+    //   console.log(this.list);
+    //   // return false
+
+    // },
+    // 全选
+    handleSelectionChange (val) {
+      console.log(val);
+      this.check_list = val
     },
-    handleCheckedCitiesChange (parent) {
-      parent.isCheck = parent.children.every(item => item.isCheck)
-    },
+
+
+
 
   }
 }
@@ -264,20 +348,23 @@ export default {
   opacity: 0;
   /* height: 0; */
   display: flex;
-  transition: all 0.35s;
   justify-content: space-around;
-  transform: scale(0);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: blur(10px);
   background-color: rgba(255, 255, 255, 0.7);
   box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
+  -moz-transform: scale(0);
+  -webkit-transform: scale(0);
+  transform-origin: left top;
+  z-index: 99;
+  transition: all 0.35s;
 }
 .click_btn:hover .show_btn {
   top: 70px;
-  /* height: 40px !important; */
+  zoom: 1;
+  -moz-transform: scale(1);
+  -webkit-transform: scale(1);
   opacity: 1 !important;
-  z-index: 99;
-  transform: scale(1);
   transform: translate(-50%, -50%);
 }
 
@@ -347,7 +434,7 @@ export default {
   border: none;
   box-shadow: none;
   outline: none;
-  background-color: transparent;
+  background-color: transitems;
   padding: 0;
   width: auto;
   min-width: 250px;
@@ -364,11 +451,17 @@ export default {
   display: flex;
   flex-wrap: wrap;
   background-color: #fff;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
   border-radius: 15px;
   padding: 10px;
-  box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
   box-sizing: border-box;
+  border: 1px solid #fff;
+  transition: 0.3s;
+  margin: 10px 0;
+}
+.box_ard:hover {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 12px 0 rgb(0 0 0 / 10%);
 }
 
 .check {
@@ -392,6 +485,7 @@ export default {
 .new_num {
   font-weight: 800;
   font-size: 18px;
+  cursor: pointer;
 }
 
 .new_title {
@@ -456,17 +550,17 @@ export default {
 }
 .show_tips {
   position: absolute;
-  top: 30px;
+  /* top: 25px; */
   z-index: 9;
-  /* transform: translate(-50%, -50%); */
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: blur(10px);
-  background-color: rgba(255, 255, 255, 0.5);
-  padding: 10px;
+  width: 100px;
   box-sizing: border-box;
-  opacity: 0;
+  /* height: 50px; */
   transition: 0.35s;
-  padding: 10px !important;
+  /* opacity: 0.5; */
+  /* zoom: 0.4; */
+  -moz-transform: scale(0);
+  -webkit-transform: scale(0);
+  transform-origin: left top;
 }
 .one .show_tips {
   left: 90px;
@@ -478,12 +572,27 @@ export default {
   padding: 0 !important;
 }
 .show_tips >>> .el-card__body p {
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
+/* 显示更多数量，模型数 */
 .table_type p:hover .show_tips {
+  zoom: 1;
+  -moz-transform: scale(1);
+  -webkit-transform: scale(1);
   opacity: 1 !important;
+  padding: 10px !important;
+  /* height: 100px !important; */
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.5);
 }
-
+.table_type .show_tips p {
+  transition: 0.3s;
+}
+.table_type .show_tips p:hover {
+  color: rgba(0, 0, 0, 0.9);
+  cursor: pointer;
+}
 .data_list {
 }
 .data_list span {
@@ -510,5 +619,37 @@ export default {
 }
 .common_btn >>> .el-button {
   margin: 0 10px;
+}
+.chellAll {
+  background-color: #ffff;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.preview_conter >>> .el-table tbody tr:hover > td,
+.preview_conter >>> table tr:nth-child(odd) {
+  background-color: transparent !important;
+}
+.preview_conter >>> .el-table .el-table__cell {
+  padding: 0 !important;
+}
+.preview_conter >>> .el-table__header {
+  border-top: none !important;
+  margin-top: 0 !important;
+  background-color: #fff;
+}
+.preview_conter
+  >>> .el-table__header
+  .el-table-column--selection
+  .cell
+  .el-checkbox:after {
+  color: #333;
+  content: "全选";
+  font-size: 14px;
+  margin-left: 12px;
+}
+/* 隐藏全选 */
+
+.DisableSelection {
+  display: none !important;
 }
 </style>

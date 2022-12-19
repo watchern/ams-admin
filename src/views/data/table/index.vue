@@ -15,9 +15,9 @@
         <el-tab-pane label="分层"
                      :disabled="tabclick"
                      name="2"></el-tab-pane>
-        <el-tab-pane label="目录"
+        <!-- <el-tab-pane label="目录"
                      :disabled="tabclick"
-                     name="3"></el-tab-pane>
+                     name="3"></el-tab-pane> -->
       </el-tabs>
       <div class="padding10">
         <el-input v-model="filterText2"
@@ -30,7 +30,7 @@
                  :model="query"
                  label-position="bottom">
           <el-form-item label="数据源："
-                        label-width="70px">
+                        label-width="90px">
             <el-select v-model="query.dataSource"
                        :disabled="tabclick"
                        @change="selectdata"
@@ -53,7 +53,8 @@
         </div>
       </div>
 
-      <div v-show="loading== false">
+      <div v-show="loading== false"
+           class="conter_vh">
 
         <div class="padding10">
           <!-- 系统 主题 分层  目录-->
@@ -128,10 +129,14 @@
 
     <!-- right_conter -->
     <div class="right_conter padding10">
-      <DataResourceDisplay @on_deails="on_deails_change"
-                           :is_btn="is_btn"
+      <DataResourceDisplay @Important_cn='ImportantCn'
+                           @Importdata_dictionary="ImportdataDictionary"
+                           @Important_table='ImportantTable'
+                           @on_deails="onDeailsChange"
+                           :isBtn="isBtn"
+                           @on_register="registTable"
+                           @Recognition='recognitionChange'
                            v-if="show_details == false"></DataResourceDisplay>
-
       <!-- 基本信息详情 -->
       <Details ref="Details_ref"
                v-if="show_details == true"></Details>
@@ -217,10 +222,11 @@
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div> -->
       <!-- 注册资产 -->
-      <!-- <el-dialog :close-on-click-modal="false"
+      <el-dialog :close-on-click-modal="false"
                  :default-expand-all="true"
                  :title="'选择注册表'"
                  :visible.sync="registTableFlag"
+                 class="dlag_width"
                  width="600px">
         <el-input style="width: 70%"
                   v-model="filterText1"
@@ -263,19 +269,79 @@
                      v-if="is_next == true"
                      @click="next()">下一步</el-button>
         </span>
-      </el-dialog> -->
+      </el-dialog>
+
+      <!-- 如果选多个表 -->
+      <el-dialog :visible.sync="dialogVisible_forms"
+                 width="600px"
+                 class="dlag_width"
+                 :before-close="handleClose">
+        <el-table :data="formList "
+                  style="width: 100%">
+          <el-table-column prop="date"
+                           label="表字段">
+          </el-table-column>
+          <el-table-column prop="title"
+                           label="表名称">
+          </el-table-column>
+        </el-table>
+        <span slot="footer"
+              class="dialog-footer">
+          <el-button @click="dialogVisible_forms = false">关闭</el-button>
+          <el-button type="primary"
+                     @click="next_save()">确 定</el-button>
+        </span>
+      </el-dialog>
 
       <!-- 下一步 基本信息-->
       <el-dialog title="基本信息"
-                 class="data_res"
+                 class="data_res dlag_width"
                  :visible.sync="dialogVisible_information"
                  @close="handleClose('form')"
-                 width="40%">
+                 width="60%">
         <el-form :rules="rules"
                  ref="form"
                  label-width="100px"
                  :model="form"
                  :inline="false">
+          <!-- 表名-->
+          <div class="son">
+            <el-form-item label="表名:"
+                          prop="tableCode">
+              <el-input type="text"
+                        placeholder="请输入表名"
+                        v-model="form.tableCode"
+                        :rows="4">
+              </el-input>
+            </el-form-item>
+
+          </div>
+          <!-- 表中文名 -->
+          <div class="son">
+
+            <el-form-item label="表中文名:"
+                          prop="tableType">
+              <el-input type="text"
+                        placeholder="请输入表中文名"
+                        v-model="form.tableCode"
+                        :rows="4">
+              </el-input>
+
+            </el-form-item>
+          </div>
+
+          <!--  表说明-->
+          <div class="son">
+            <el-form-item label="表说明:"
+                          prop="tableRemarks">
+              <el-input type="textarea"
+                        placeholder="请输入表说明"
+                        v-model="form.tableRemarks">
+              </el-input>
+            </el-form-item>
+
+          </div>
+
           <!-- 资产编码 && 资产类型：-->
           <div class="son">
             <el-form-item label="资产编码:"
@@ -300,7 +366,7 @@
             </el-form-item>
           </div>
 
-          <!-- 资产主题 && 所属系统-->
+          <!-- 资产主题 && 资产分层 -->
           <div class="son">
             <el-form-item label="资产主题:"
                           prop="tableThemeId">
@@ -314,21 +380,6 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="所属系统:"
-                          prop="businessSystemId">
-              <el-select v-model="form.businessSystemId"
-                         :rows="4"
-                         placeholder="请选择所属系统">
-                <el-option v-for="item in next_data.businessSystemList"
-                           :key="item.businessSystemUuid"
-                           :label="item.businessSystemName"
-                           :value="item.businessSystemUuid" />
-              </el-select>
-            </el-form-item>
-          </div>
-
-          <!-- 资产分层 && 所属目录-->
-          <div class="son">
             <el-form-item label="资产分层:"
                           prop="tableLayeredId">
               <el-select v-model="form.tableLayeredId"
@@ -341,7 +392,53 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="所属目录:"
+          </div>
+
+          <!-- 所属系统 && 文件名-->
+          <div class="son">
+
+            <el-form-item label="id:"
+                          prop="businessSystemId">
+              <el-select v-model="form.businessSystemId"
+                         :rows="4"
+                         placeholder="请选择所属系统">
+                <el-option v-for="item in next_data.businessSystemList"
+                           :key="item.businessSystemUuid"
+                           :label="item.businessSystemName"
+                           :value="item.businessSystemUuid" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="文件名:"
+                          prop="folderUuid">
+              <el-input type="text"
+                        placeholder="请输入文件名称"
+                        v-model="form.tableCode"
+                        :rows="4">
+              </el-input>
+            </el-form-item>
+          </div>
+
+          <!-- 数据日期 && 表大小-->
+          <div class="son">
+
+            <el-form-item label="数据日期:"
+                          prop="businessSystemId">
+              <el-input type="text"
+                        placeholder="请输入数据日期"
+                        v-model="form.tableCode"
+                        :rows="4">
+              </el-input>
+            </el-form-item>
+            <el-form-item label="表大小:"
+                          prop="folderUuid">
+              <el-input type="text"
+                        placeholder="请输入文件名称"
+                        v-model="form.tableCode"
+                        :rows="4">
+              </el-input>
+            </el-form-item>
+          </div>
+          <!-- <el-form-item label="所属目录:"
                           prop="folderUuid">
               <el-cascader v-model="form.folderUuid"
                            :options="next_contentsList"
@@ -350,12 +447,57 @@
                            :props="props2"
                            ref="cascaderArr"
                            @change="handleChange"></el-cascader>
-            </el-form-item>
-          </div>
-          <!--是否增量，是否推送文件-->
-          <div class="son ">
+            </el-form-item> -->
 
-            <el-form-item label="是否增量:"
+          <!-- 表数据量 &&   负责人-->
+          <div class="son ">
+            <el-form-item label="表数据量:"
+                          prop="folderUuid">
+              <el-input type="text"
+                        placeholder="请输入表数据量"
+                        v-model="form.tableCode"
+                        :rows="4">
+              </el-input>
+            </el-form-item>
+
+            <div class="son_check">
+
+              <el-form-item label="负责人:"
+                            prop="personName_str">
+                <el-input type="text"
+                          disabled
+                          v-model="form.personName_str">
+                </el-input>
+
+              </el-form-item>
+              <el-button type="primary"
+                         class="oper-btn"
+                         @click="check_people()">选择</el-button>
+            </div>
+
+          </div>
+
+          <!--表分区 && 增全量 -->
+          <div class="son ">
+            <el-form-item label="表分区:"
+                          prop="tableData">
+              <!-- <el-table :data="form.tableData"
+                        style="width: 100%">
+                <el-table-column prop="address"
+                                 label="日期">
+                </el-table-column>
+              </el-table> -->
+              <ul class="table">
+                <li class="head">
+                  分区名称
+                </li>
+                <li v-for="(item,index) in form.tableData"
+                    class="li_son"
+                    key="index">{{item.address}}}</li>
+              </ul>
+            </el-form-item>
+
+            <el-form-item label="增全量:"
                           prop="isSpike">
               <el-select v-model="form.isSpike"
                          :rows="4"
@@ -367,7 +509,7 @@
               </el-select>
 
             </el-form-item>
-            <el-form-item label="是否推送文件:"
+            <!-- <el-form-item label="是否推送文件:"
                           prop="isSentFile">
               <el-select v-model="form.isSentFile"
                          :rows="4"
@@ -377,11 +519,11 @@
                            :label="item.label"
                            :value="item.value" />
               </el-select>
-            </el-form-item>
+            </el-form-item> -->
 
           </div>
           <!--表名 文件名称 -->
-          <div class="son "
+          <!-- <div class="son "
                v-for="(item,index) in form.check_list"
                :key="index"
                :ref="`ruleForm${index}`">
@@ -404,39 +546,74 @@
                         @input="checkFileName_change(item.fileName)">
               </el-input>
             </el-form-item>
-          </div>
-
-          <!--  资产负责人-->
-          <div class="son ">
-            <div class="son_check">
-
-              <el-form-item label="资产负责人:"
-                            prop="personName_str">
-                <el-input type="text"
-                          disabled
-                          v-model="form.personName_str">
-                </el-input>
-
-              </el-form-item>
-              <el-button type="primary"
-                         class="oper-btn"
-                         @click="check_people()">选择</el-button>
-            </div>
-
-          </div>
+          </div> -->
 
           <!--  资产备注-->
-          <div class="son">
+          <!-- <div class="son">
             <el-form-item label="资产备注:"
                           prop="tableRemarks">
               <el-input type="textarea"
+                        placeholder="请输入表资产备注"
                         v-model="form.tableRemarks">
               </el-input>
             </el-form-item>
 
+          </div> -->
+
+          <!-- 数据标签：-->
+          <div class="son ">
+            <div class="son_check">
+
+              <el-form-item label="数据标签：:"
+                            prop="personName_str">
+                <!-- <el-input type="text"
+                          disabled
+                          v-model="form.personName_str">
+                </el-input> -->
+
+                <div class="_width tag_conter">
+                  <el-tag :key="tag"
+                          v-for="tag in tagsarr"
+                          closable
+                          :disable-transitions="false"
+                          @close="handleClose(tag)">
+                    {{tag}}
+                  </el-tag>
+
+                </div>
+
+              </el-form-item>
+              <el-button type="primary"
+                         class="oper-btn"
+                         @click="check_tag()">选择</el-button>
+            </div>
+
           </div>
 
         </el-form>
+        <div class="padding10_l">
+          <p style="text-align: center;">列信息</p>
+          <el-table :data="tableData"
+                    style="width: 100%">
+            <el-table-column prop="date"
+                             label="字段名称">
+            </el-table-column>
+            <el-table-column prop="name"
+                             label="字段中文名">
+            </el-table-column>
+            <el-table-column prop="address"
+                             label="字段类型">
+            </el-table-column>
+
+            <el-table-column prop="address"
+                             label="字段长度">
+            </el-table-column>
+
+            <el-table-column prop="address"
+                             label="字段说明">
+            </el-table-column>
+          </el-table>
+        </div>
 
         <span slot="footer"
               class="dialog-footer">
@@ -486,6 +663,155 @@
                      @click="dialogStatus === 'create' ? createFolder() : updateFolder()">保存</el-button>
         </span>
       </el-dialog>
+
+      <!-- 选择标签 -->
+      <el-dialog title="选择标签"
+                 :visible.sync="dialogVisible_tag"
+                 width="60%"
+                 class="dlag_width">
+        <div>
+          <div class="right_query">
+            <el-form :inline="true"
+                     :model="tag_query"
+                     label-position="bottom">
+              <el-form-item>
+                <el-input v-model="tag_query.name"
+                          placeholder="标签名"
+                          clearable />
+              </el-form-item>
+
+              <el-form-item>
+                <el-select v-model="tag_query.status"
+                           :rows="4"
+                           placeholder="请选择是否增量">
+                  <el-option v-for="item in option_isSpike"
+                             :key="item.value"
+                             :label="item.label"
+                             :value="item.value" />
+                </el-select>
+
+              </el-form-item>
+
+              <el-form-item>
+                <el-button type="primary"
+                           @keyup.enter.native="search">查询</el-button>
+                <el-button type="primary">清空</el-button>
+
+              </el-form-item>
+
+            </el-form>
+          </div>
+          <div class="padding10_l">
+            <el-table :data="tableData"
+                      style="width: 100%">
+              <el-table-column prop="date"
+                               align="center"
+                               label="标签树">
+              </el-table-column>
+              <el-table-column prop="name"
+                               align="center"
+                               label="被引用次数">
+              </el-table-column>
+              <el-table-column prop="address"
+                               align="center"
+                               label="标签状态">
+              </el-table-column>
+
+              <el-table-column prop="address"
+                               align="center"
+                               label="创建人">
+              </el-table-column>
+
+              <el-table-column prop="address"
+                               align="center"
+                               label="创建时间">
+              </el-table-column>
+
+              <el-table-column label="操作"
+                               align="center"
+                               prop="address"
+                               width="100px">
+                <template slot-scope="scope"
+                          v-if="!scope.row.noShow">
+                  <el-button type="primary"
+                             size="mini">操作</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+
+        </div>
+        <span slot="footer"
+              class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary"
+                     @click="dialogVisible_tag = false">确 定</el-button>
+        </span>
+      </el-dialog>
+
+      <!-- 认权管理 -->
+      <el-dialog title="认权管理"
+                 :visible.sync="visible_Recognition"
+                 width="60%"
+                 class="dlag_width">
+        <div>
+          <div class="data_res com">
+            <el-form ref="form"
+                     :model="Recognition">
+              <el-form-item label="认权人:"
+                            prop="people">
+                <el-input type="text"
+                          placeholder="请选择认权人"
+                          v-model="Recognition.people">
+                </el-input>
+                <el-button type="primary"
+                           class="oper-btn"
+                           @click="check_people()">选择</el-button>
+              </el-form-item>
+
+            </el-form>
+
+          </div>
+          <div class="padding10_l">
+            <el-table :data="tableData"
+                      style="width: 100%">
+              <el-table-column prop="date"
+                               align="center"
+                               label="表名称">
+              </el-table-column>
+              <el-table-column prop="name"
+                               align="center"
+                               label="表类型">
+              </el-table-column>
+            </el-table>
+          </div>
+        </div>
+        <span slot="footer"
+              class="dialog-footer">
+          <el-button @click="visible_Recognition = false">取 消</el-button>
+          <el-button type="primary"
+                     @click="visible_Recognition = false">确 定</el-button>
+        </span>
+      </el-dialog>
+
+      <!-- 弹窗2 导入数据-->
+      <el-dialog v-if="importVisible"
+                 :title="textMap[dialogStatus]"
+                 :visible.sync="importVisible"
+                 :close-on-click-modal="false"
+                 width="800px">
+        <el-row>
+          <el-col>
+            <directory-file-import @fileuploadname="fileuploadname" />
+          </el-col>
+        </el-row>
+        <span slot="footer">
+          <el-button @click="importVisible = false">取消</el-button>
+          <el-button type="primary"
+                     @click="importTable">导入</el-button>
+        </span>
+      </el-dialog>
+
     </div>
     <!-- right_conter end-->
 
@@ -514,6 +840,9 @@ import {
 } from "@/api/analysis/auditmodelresult";
 import DataResourceDisplay from "@/components/directory/data_resource_display.vue"
 import Details from "@/components/directory/details.vue"
+import directoryFileImport from '@/views/data/tableupload'//导入
+import { listByPage, selectOne, importTable } from '@/api/data/dict'
+
 
 import {
   // page_list_data,//列表
@@ -532,6 +861,7 @@ export default {
   components: {
     MyElTree, tabledatatabs, QueryField,
     DataResourceDisplay, Details,
+    directoryFileImport,
     personTree: () => import('@/components/publicpersontree/index')
   },
   data () {
@@ -590,7 +920,7 @@ export default {
         dataSource: 'Postgre',//筛选条件
         pageNo: 1,
         pageSize: 10,
-        businessSystemId: '',//所属系统主键
+        businessSystemId: '',//id主键
         tableThemeId: '',//主题
         tableLayeredId: '',//分层
         folderUuid: '',//目录ID
@@ -617,7 +947,7 @@ export default {
           { required: true, message: '请选择所属主题', trigger: 'change' },
         ],
         businessSystemId: [
-          { required: true, message: '请选择所属系统', trigger: 'change' },
+          { required: true, message: '请选择id', trigger: 'change' },
         ],
 
         tableLayeredId: [
@@ -651,7 +981,7 @@ export default {
         tableCode: '',// 资产编码
         tableType: '',// 资产类型
         tableThemeId: '',// 资产主题
-        businessSystemId: '',//所属系统
+        businessSystemId: '',//id
         tableLayeredId: '',//资产分层
         folderUuid: '',//所属目录
         // increment: '',//是否增量
@@ -664,6 +994,12 @@ export default {
         personLiables: [],
         // fileName: [],//文件名称
 
+        tableData: [{
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }],
+
         file_name: '',
         check_list: [
           {
@@ -675,6 +1011,7 @@ export default {
         ],//选择的数据表
       },
 
+      // 增量全量
       option_isSpike: [
         {
           value: 0,
@@ -685,6 +1022,7 @@ export default {
           label: '增量'
         },
       ],
+      // 是否推送
       option_isSentFile: [
         {
           value: 0,
@@ -724,7 +1062,45 @@ export default {
       tabclick: false,
 
       show_details: false,//显示基本信息详情
-      is_btn: true,//是否显示按钮
+      isBtn: true,//是否显示按钮
+
+
+
+
+      visible_Recognition: false,//认权管理
+      Recognition: {
+        people: '',
+      },
+
+      // 如果选择了多个表
+      dialogVisible_forms: false,
+      formList: [],//
+
+      tableData: [{
+        date: '2016-05-02',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }],
+
+      dialogVisible_tag: false,//选择标签
+      // 标签
+      tag_query: {
+        name: '',
+        status: '',
+      },
+      // 选择的标签
+      tagsarr: ['标签一', '标签二', '标签三'],
+      inputValue: '',
+
+      // 汉化
+      importVisible: false,
+      dialogStatus: '',
+      textMap: {
+        preview: '数据字典导入',
+        import: '汉化信息导入',
+        table: '表关系导入',
+      },
+      importtemp: {},
 
     };
   },
@@ -762,8 +1138,62 @@ export default {
     // this.post_getDataTreeNode();//目录
   },
   methods: {
+
+    // 数据字典导入
+    ImportdataDictionary () {
+      this.dialogStatus = 'preview'
+      this.importVisible = true
+    },
+
+    // 汉化信息导入
+    ImportantCn () {
+      this.dialogStatus = 'import'
+      this.importVisible = true
+    },
+
+    // 表关系导入
+    ImportantTable () {
+      this.dialogStatus = 'table'
+      this.importVisible = true
+    },
+
+
+    // 上传文件信息
+    fileuploadname (data) {
+      // 文件名
+      this.importtemp.tableFileName = data
+
+    },
+
+    // 确认导入
+    importTable () {
+      importTable(this.importtemp).then(res => {
+        if (res.data.code === '200') {
+          this.importVisible = false
+          this.$notify({
+            title: '成功',
+            message: res.data.msg,
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+          alert('刷新列表')
+          // this.getList()//
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.msg
+          })
+        }
+      })
+    },
+
+    // 认权管理
+    recognitionChange () {
+      this.visible_Recognition = true
+    },
     // 显示基本信息详情
-    on_deails_change (data) {
+    onDeailsChange (data) {
       this.show_details = true
 
     },
@@ -808,9 +1238,10 @@ export default {
         this.post_getThemeTree();//主题
       } else if (tab.index == '2') {
         this.post_getLayeredTree();//分层
-      } else {
-        this.post_getDataTreeNode(this.query.dataSource);//目录
       }
+      // else {
+      //   this.post_getDataTreeNode(this.query.dataSource);//目录
+      // }
     },
     filterNode (value, data) {
       if (!value) return true;
@@ -848,16 +1279,16 @@ export default {
       });
     },
     // 目录
-    post_getDataTreeNode () {
-      this.loading = true
-      this.tabclick = true
-      getDataTreeNode(this.query.dataSource).then((resp) => {
-        this.tree_list = resp.data
-        this.loading = false
-        this.tabclick = false
+    // post_getDataTreeNode () {
+    //   this.loading = true
+    //   this.tabclick = true
+    //   getDataTreeNode(this.query.dataSource).then((resp) => {
+    //     this.tree_list = resp.data
+    //     this.loading = false
+    //     this.tabclick = false
 
-      });
-    },
+    //   });
+    // },
 
     // loadNode2 (node, resolve) {
     // if (!node.data) {
@@ -869,15 +1300,11 @@ export default {
     // }
     // },
     // loadNode2 (node, resolve) {
-    //
-    //   alert(0)
     //   if (node.level === 0) {
-    //     //
     //     //  父级
     //     resolve(this.treeData);
     //   }
     //   if (node.level >= 1) {
-    //     alert(1)
     //     // 子级
     //     that.loadNodeChildren(node.data.id, resolve);
 
@@ -969,25 +1396,24 @@ export default {
           this.query.folderUuid = '';
           this.query_lisy();
 
-        } else if (node.data.type === "folder") {
-          // 目录
-
-          // let _node = this.$refs.tree.getNode(node);
-          // //  设置未进行懒加载状态
-          // _node.loaded = false;
-          // // 重新展开节点就会间接重新触发load达到刷新效果
-          // _node.expand();
-          this.post_getDataTreeNode();//目录
-
-          // this.getTagList('ROOT', this.query.dataSource)
-          // this.getTagList(node.data.id, this.query.dataSource);//目录
-          this.query.businessSystemId = ''
-          this.query.tableThemeId = '';
-          this.query.tableLayeredId = '';
-          this.query.folderUuid = node.data.id;
-          this.query_lisy();
-
         }
+        // else if (node.data.type === "folder") {
+        // 目录
+        // let _node = this.$refs.tree.getNode(node);
+        // //  设置未进行懒加载状态
+        // _node.loaded = false;
+        // // 重新展开节点就会间接重新触发load达到刷新效果
+        //   // _node.expand();
+        //   this.post_getDataTreeNode();//目录
+        //   // this.getTagList('ROOT', this.query.dataSource)
+        //   // this.getTagList(node.data.id, this.query.dataSource);//目录
+        //   this.query.businessSystemId = ''
+        //   this.query.tableThemeId = '';
+        //   this.query.tableLayeredId = '';
+        //   this.query.folderUuid = node.data.id;
+        //   this.query_lisy();
+
+        // }
         // 分页
       }
     },
@@ -996,7 +1422,7 @@ export default {
     query_lisy () {
       this.listLoading = true;
       let params = {
-        businessSystemId: this.query.businessSystemId,//所属系统主键
+        businessSystemId: this.query.businessSystemId,//id主键
         tableThemeId: this.query.tableThemeId,//主题
         tableLayeredId: this.query.tableLayeredId,//分层
         folderUuid: this.query.folderUuid,//目录
@@ -1214,8 +1640,6 @@ export default {
       //获取所有选中的节点 start
       let res = this.$refs.tree1.getCheckedNodes()
       var check_list = []
-      console.log(res);
-
       for (var i = 0; i < res.length; i++) {
         let obj = {
           label: res[i].label,
@@ -1226,7 +1650,9 @@ export default {
         check_list.push(obj)
       }
       this.form.check_list = check_list
-      if (data) {
+      console.log(this.form.check_list);
+
+      if (this.form.check_list.length !== 0) {
         // 显示保存按钮
         this.is_next = true;
         this.ischeck_data = data
@@ -1237,10 +1663,37 @@ export default {
     },
 
 
-    // 注册资产 下一步
+    // 注册资产 单挑数据 下一步
     next () {
-      this.registTableFlag = false;//关闭上一步
-      this.dialogVisible_information = true//显示下一步 基本信息
+      var list = []
+      this.form.check_list.forEach((item) => {
+        // let ids = {
+        //   pid: item.pid,
+        // }
+        list.push(item.pid)
+      })
+      // console.log(list);
+      // return false
+      // 选择多个数据表
+      if (this.form.check_list.length >= 2) {
+        this.dialogVisible_forms = true
+      } else {
+        this.registTableFlag = false;//关闭上一步
+        this.dialogVisible_information = true//显示下一步 基本信息
+        this.getListTree_data()
+      }
+
+    },
+
+    // 选择多个的情况  下一步的确认
+    next_save () {
+      alert('选择多个的情况 下一步的确认')
+      // this.dialogVisible_forms = false;//关闭多选的表单弹窗显示
+      // this.dialogVisible_information = true//显示下一步 基本信息
+      // this.getListTree_data()
+
+    },
+    getListTree_data () {
       getListTree().then((res) => {
         this.next_data = res.data
         this.next_contentsList = res.data.contentsList.children
@@ -1262,6 +1715,11 @@ export default {
 
       })
     },
+
+
+
+
+
     // 点击 所属目录层级联动
     handleChange (val) {
       // const checkedNode = this.$refs["cascaderArr"].getCheckedNodes();
@@ -1336,7 +1794,7 @@ export default {
                 isSpike: this.form.isSpike, //是否增量
                 tableRelationQuery: {
                   tableDataSource: this.query.dataSource, //数据源
-                  businessSystemId: this.form.businessSystemId, //所属系统主键
+                  businessSystemId: this.form.businessSystemId, //id主键
                   tableCode: this.form.tableCode, //资产编码
                   tableLayeredId: this.form.tableLayeredId, //资产分层主键
                   tableMetaUuid: this.form.check_list[i].id, //资产主键
@@ -1390,6 +1848,7 @@ export default {
         }
       })
     },
+
     // 选择责任人
     check_people () {
       this.resultShareDialogIsSee = true;
@@ -1401,6 +1860,14 @@ export default {
       //     }
       //   }
       // })
+    },
+    // 选择标签
+    check_tag () {
+      this.dialogVisible_tag = true
+    },
+    // 删除标签
+    handleClose (tag) {
+      this.tagsarr.splice(this.tagsarr.indexOf(tag), 1);
     },
 
     // 清除多选框
@@ -1504,6 +1971,10 @@ export default {
   display: flex;
   width: 100%;
 }
+.conter_vh {
+  height: calc(100% - 158px);
+  overflow: auto;
+}
 
 .left_conter >>> .el-tabs__header {
   margin: 0;
@@ -1555,7 +2026,66 @@ export default {
 .son_check >>> .el-button {
   margin-left: 10px;
 }
+
+.table {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+.table .head {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  height: 30px;
+  line-height: 30px;
+  color: rgba(0, 0, 0, 0.5);
+  font-weight: 400;
+}
+.table .li_son {
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 20px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+/* 标签回显框 */
+.tag_conter {
+  color: #c0c4cc;
+  cursor: not-allowed;
+  box-sizing: border-box;
+  width: 100%;
+  font-size: inherit;
+  color: #606266;
+  background-color: #ffffff;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  padding: 0 15px;
+}
+
+.tag_conter span {
+  margin: 0 3px;
+}
+
+/* 认权人 */
+.com >>> .el-form {
+  width: 100%;
+}
+.com >>> .el-form-item__content {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.com >>> .el-form-item {
+  display: flex;
+}
+.com >>> .el-input {
+  width: 300px;
+}
+.com >>> .el-button {
+  margin: 0 10px;
+}
 </style>
+
+
 <style lang="scss" scoped>
 .trees {
   width: 45%;

@@ -25,12 +25,12 @@
                 placeholder="输入关键字进行过滤" />
     </div>
     <!-- 数据源 -->
-    <div class="padding10_l">
+    <div class="padding10_l data_s">
       <el-form :inline="true"
                :model="query"
                label-position="bottom">
         <el-form-item label="数据源："
-                      label-width="70px">
+                      label-width="65px">
           <el-select v-model="query.dataSource"
                      @change="selectdata"
                      :disabled="tabclick"
@@ -495,7 +495,9 @@ export default {
 
 <style scoped>
 @import url("./../../../assets/css/common.css");
-
+.data_s >>> .el-form-item__label {
+  min-width: 65px;
+}
 .tree-containerall {
   /* height: 75vh; */
   height: calc(100% - 160px);
