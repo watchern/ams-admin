@@ -129,11 +129,13 @@
 
     <!-- right_conter -->
     <div class="right_conter padding10">
-      <DataResourceDisplay @Important_cn='importFile'
-                           @on_deails="on_deails_change"
-                           :is_btn="is_btn"
+      <DataResourceDisplay @Important_cn='ImportantCn'
+                           @Importdata_dictionary="ImportdataDictionary"
+                           @Important_table='ImportantTable'
+                           @on_deails="onDeailsChange"
+                           :isBtn="isBtn"
                            @on_register="registTable"
-                           @Recognition='recognition_change'
+                           @Recognition='recognitionChange'
                            v-if="show_details == false"></DataResourceDisplay>
       <!-- 基本信息详情 -->
       <Details ref="Details_ref"
@@ -1060,7 +1062,7 @@ export default {
       tabclick: false,
 
       show_details: false,//显示基本信息详情
-      is_btn: true,//是否显示按钮
+      isBtn: true,//是否显示按钮
 
 
 
@@ -1094,8 +1096,9 @@ export default {
       importVisible: false,
       dialogStatus: '',
       textMap: {
-        preview: '查看数据表字典',
-        import: '导入数据表字典'
+        preview: '数据字典导入',
+        import: '汉化信息导入',
+        table: '表关系导入',
       },
       importtemp: {},
 
@@ -1136,11 +1139,25 @@ export default {
   },
   methods: {
 
-    // 汉化导入
-    importFile () {
+    // 数据字典导入
+    ImportdataDictionary () {
+      this.dialogStatus = 'preview'
+      this.importVisible = true
+    },
+
+    // 汉化信息导入
+    ImportantCn () {
       this.dialogStatus = 'import'
       this.importVisible = true
     },
+
+    // 表关系导入
+    ImportantTable () {
+      this.dialogStatus = 'table'
+      this.importVisible = true
+    },
+
+
     // 上传文件信息
     fileuploadname (data) {
       // 文件名
@@ -1172,11 +1189,11 @@ export default {
     },
 
     // 认权管理
-    recognition_change () {
+    recognitionChange () {
       this.visible_Recognition = true
     },
     // 显示基本信息详情
-    on_deails_change (data) {
+    onDeailsChange (data) {
       this.show_details = true
 
     },

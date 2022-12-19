@@ -33,13 +33,13 @@
 
     <!-- 是否显示按钮 数据注册显示 -->
     <div class="common_btn "
-         v-if="is_btn == true">
+         v-if="isBtn == true">
       <div class="click_btn">
         <el-button type="primary">数据字典导入导出</el-button>
         <div class="show_btn">
           <el-button type="primary">模版下载</el-button>
           <el-button type="primary"
-                     @click="Importdata()">导入数据资源</el-button>
+                     @click="Importdata_dictionary()">导入数据资源</el-button>
         </div>
       </div>
 
@@ -48,7 +48,7 @@
         <div class="show_btn">
           <el-button type="primary">模版下载</el-button>
           <el-button type="primary"
-                     @click="Important_cn">导入汉化信息</el-button>
+                     @click="Important_cn()">导入汉化信息</el-button>
         </div>
       </div>
 
@@ -56,7 +56,8 @@
         <el-button type="primary">表关系导入导出</el-button>
         <div class="show_btn">
           <el-button type="primary">模版下载</el-button>
-          <el-button type="primary">导入表关系</el-button>
+          <el-button type="primary"
+                     @click="Important_table()">导入表关系</el-button>
         </div>
       </div>
 
@@ -67,7 +68,8 @@
 
       <el-button type="primary"
                  @click="on_register()">注册资产</el-button>
-      <el-button type="primary">修改</el-button>
+      <el-button type="primary"
+                 @click="edit_list()">修改</el-button>
 
     </div>
     <el-table ref="multipleTable"
@@ -76,7 +78,7 @@
               :header-cell-class-name="headerCellClass"
               @selection-change="handleSelectionChange">
       <el-table-column type="selection"
-                       v-if="is_btn == true"
+                       v-if="isBtn == true"
                        width="30">
       </el-table-column>
       <el-table-column>
@@ -165,7 +167,7 @@ export default {
       type: Number,
 
     },
-    is_btn: {
+    isBtn: {
       type: Boolean,
       default () {
         return []
@@ -183,11 +185,14 @@ export default {
       inputLength: '',
       list: [
         { name: 'GIUDUDION', title: '这是标题', title1: '存款业务主体', title2: '描述描述描述', title4: '字段21321313123', isCheck: 'false' },
-        { name: 'GIUDUDION', title: '这是标题', title1: '存款业务主体', title2: '描述描述描述', title4: '字段21321313123', isCheck: 'true' }
+        { name: 'GIUDUDION', title: '这是标题', title1: '存款业务主体', title2: '描述描述描述', title4: '字段21321313123', isCheck: 'true' },
+        { name: 'GIUDUDION', title: '这是标题', title1: '存款业务主体', title2: '描述描述描述', title4: '字段21321313123', isCheck: 'true' },
+        { name: 'GIUDUDION', title: '这是标题', title1: '存款业务主体', title2: '描述描述描述', title4: '字段21321313123', isCheck: 'true' },
       ],
 
       common_dialog: false,//导入数据源
       title: '',//弹窗共用标题
+      check_list: [],//多选批量的数量
     };
   },
   watch: {
@@ -248,13 +253,21 @@ export default {
         this.$refs.inputTag.focus();
       })
     },
+
+    // 导入数据字典
+    Importdata_dictionary () {
+      // this.common_dialog = true;
+      this.$emit("Importdata_dictionary", '导入数据字典')
+
+    },
+
     // 导入汉化信息
     Important_cn () {
-      this.$emit("Important_cn", '11')
+      this.$emit("Important_cn", '导入汉化信息')
     },
-    // 导入数据源
-    Importdata () {
-      this.common_dialog = true;
+    // 表关系
+    Important_table () {
+      this.$emit("Important_table", '表关系')
     },
     // 注册资产
     on_register () {
@@ -264,6 +277,12 @@ export default {
     Recognition () {
       this.$emit("Recognition", '11');
 
+    },
+    // 修改
+    edit_list () {
+      if (this.check_list.length !== 0) {
+
+      }
     },
     // 设置条件隐藏多选
     headerCellClass (row) {
@@ -303,6 +322,7 @@ export default {
     // 全选
     handleSelectionChange (val) {
       console.log(val);
+      this.check_list = val
     },
 
 
