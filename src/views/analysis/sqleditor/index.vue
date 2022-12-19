@@ -112,6 +112,13 @@
               <el-button
                 type="primary"
                 size="small"
+                class="oper-btn"
+                @click="openNewEditor"
+                style="width: 120px"
+              >打开新SQL编辑器</el-button>
+              <el-button
+                type="primary"
+                size="small"
                 class="oper-btn sqlcheck btn-width-md"
                 @click="getColumnSqlInfo"
               />
@@ -205,6 +212,9 @@
             <div id="iconImg" class="iconImg" alt="最大化" @click="maxOpen" />
             <div id="iconImg-huifu" class="iconImg" @click="maxOpen" />
           </div> -->
+          <div  v-if="resultShow.length == 0" style="margin-top:20px">
+            <pre style="color: red;background-color: white;font-size: 16px;padding: 10px">{{remindMessage}}</pre>
+          </div>
           <div id="maxOpen" class="max-size" ref="maxSize">
             <div id="iconImg" class="iconImg" alt="最大化" @click="maxOpen('big')" />
             <div id="iconImg-huifu" class="iconImg" @click="maxOpen('normal')" />
@@ -250,8 +260,8 @@
       <div id="tableMenu" class="rightMenu">
         <ul>
           <li @click="getSelectSql('tableMenu')">生成SELECT语句</li>
-          <li @click="selectTableRelInfo('tableMenu')">查看表关联信息</li>
-          <!--<li onclick="">查看表信息</li>-->
+<!--          <li @click="selectTableRelInfo('tableMenu')">查看表关联信息</li>-->
+          <li @click="selectTableInfo('tableMenu')">查看表信息</li>
         </ul>
       </div>
       <div id="paramfolderMenu" class="rightMenu">
@@ -412,6 +422,19 @@
       </div>
     </el-dialog>
     <el-dialog
+      title="表信息"
+      :visible.sync="selectTableInfoDialog"
+      width="60%"
+      :append-to-body="true"
+      class="tableInfo"
+    >
+      <!-- 基本信息详情 -->
+      <Details ref="Details_ref"></Details>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="selectTableInfoDialog = false">关闭</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog
       :close-on-click-modal="false"
       v-if="dialogFolderVisible"
       title="请填写分类信息"
@@ -556,6 +579,7 @@ import {
   listByAmmParam,
 } from "@/api/analysis/parammanagerlist";
 import {isAdmin} from "@/api/user";
+import Details from "@/components/directory/details.vue"
 /**
  * 当前执行进度
  * @type {number}
@@ -599,6 +623,7 @@ export default {
     paramDrawNew,
     tablerelation,
     addParam,
+    Details,
   },
   props: [
     "sqlEditorParamObj",
@@ -632,6 +657,7 @@ export default {
   },
   data() {
     return {
+      remindMessage:"注意事项：\n（1）【' ' as xx】字段时,空列必须要空格,例如【select ' ' as a from dual】\n（2）where条件中使用参数时，in(参数)无需加单引号,例如【select a from dual where a in (参数名称)】\n（3）where条件中使用参数时，使用非in(参数)时需加单引号,例如【select a from dual where a =‘参数名称’\n（4）注释：/*注释内容*/写法即可完成，注释里面不要包含系统中的参数\n（5）开发模型时，SQL必须全部执行后才可保存\n（6）编写模型语句时，DROP语句需放在最后\n（7）当前SQL将使用最后一个select语句结果集进行输出结果定义配置\n（8）编写含有参数的SQL条件语句并符合以下条件时，需特殊处理：\n  ① in条件语句，括号内不能出现空格，例：where name in (参数XX)\n ② 存在于括号内的条件，条件应与括号之间存在空格，例：where ( name='参数X' and type='参数2' ) or type='参数3'",
       resultDataMaxCountList:[200,500,1000,10000,100000],
       resultDataMaxCount: 200,
       dataSource: "Postgre",
@@ -681,6 +707,8 @@ export default {
       openTypeOne: "showTable",
       selectTableRelInfoDialog: false,
       selectTableRelInfoTableId: "",
+      selectTableInfoDialog: false,
+      selectTableInfoTableId: "",
       errorMessage: "",
       isExecuteError: true,
       sqlDraftForm: {
@@ -824,6 +852,9 @@ export default {
     this.$refs.maxSize.style.display = "none"
   },
   methods: {
+    openNewEditor(){
+      window.open(window.location.href);
+    },
     choosePath(){
       this.$refs["sqlDraftForm"].validate((valid) => {
         if (valid) {
@@ -1774,6 +1805,15 @@ export default {
       this.selectTableRelInfoDialog = true;
       hideRMenu(tableMenu);
     },
+    /**
+     * 查看表信息
+     */
+    selectTableInfo(tableMenu) {
+      var nodes = getZtreeSelectNode();
+      this.selectTableInfoTableId = nodes[0].id;
+      this.selectTableInfoDialog = true;
+      hideRMenu(tableMenu);
+    },
   },
 };
 </script>
@@ -2005,6 +2045,9 @@ div.rightMenu ul li:hover {
 .modelParamsDia >>> .el-dialog {
   min-width: 850px
 
+}
+.tableInfo >>> .el-dialog {
+ margin-top: 5vh !important;
 }
 >>>.errorHighlight{
   background: rgba(244,38,12,.5);
