@@ -1,0 +1,109 @@
+<template>
+    <div>
+            <el-form :model="personalSpace"
+                     class="demo-form-inline"
+                     label-width="80px">
+                <el-form-item label="申请名称">
+                    <el-input v-model="personalSpace.personalSpaceName"
+                              placeholder="申请名称"></el-input>
+                </el-form-item>
+                <el-form-item label="扩容容量">
+                    <el-input v-model="personalSpace.personalSpaceCapacity"
+                              placeholder="扩容容量"
+                              type="number"
+                              :max="1024"
+                              :min="0"
+                              @input="inputChange"
+                              style="width: 540px"></el-input>
+                    <el-select v-model="personalSpaceCapacityNeed"
+                               placeholder="容量单位">
+                        <el-option label="GB"
+                                   value="GB"></el-option>
+                        <el-option label="MB"
+                                   value="MB"></el-option>
+                        <el-option label="KB"
+                                   value="KB"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="审批人">
+                    <el-input v-model="personalSpace.personalSpaceApproving"
+                              placeholder="选择审批人"
+                              style="width: 670px"></el-input>
+                    <el-button type="primary">选择</el-button>
+                </el-form-item>
+                <el-row type="flex"
+                        justify="end">
+                  <el-button type="primary"
+                             @click="onUpdate">保存</el-button>
+                  <el-button type="primary"
+                             @click="closeUpdateDialog">关闭</el-button>
+                </el-row>
+            </el-form>
+    </div>
+</template>
+
+<script>
+    import {
+        batchUpdateForFinishHandle
+        ,queryByPersonalSpaceUuid
+        ,updatePersonalSpace
+    } from "@/api/analysis/personalSpace";
+    export default {
+        name: "expansionDetail",
+        props:{
+            applyUuid: ''
+        },
+        data(){
+            return{
+                personalSpace: {
+                    personalSpaceName: '',
+                    personalSpaceApplication: '',
+                    personalSpaceType:'',
+                    personalSpaceDate:'',
+                    personalSpaceCapacity:'',
+                    personalSpaceStatus:'',
+                    personalSpaceApproving:'',
+                },
+                personalSpaceCapacityNeed:'',//该变量为容量的单位 在最后会和容量做一个拼接
+
+            }
+        },
+        mounted() {
+            //因为生命周期问题 只能出此下策多调用一次 后期应该进行调整
+            this.$emit("fromSon")
+        },
+        methods:{
+            queryByUuid(value){
+                queryByPersonalSpaceUuid(value)
+                    .then((res)=>{
+                        this.personalSpace = res.data
+                        var length = res.data.personalSpaceCapacity.length
+                        this.personalSpaceCapacityNeed = res.data.personalSpaceCapacity.substring(length-2)
+                        this.personalSpace.personalSpaceCapacity = res.data.personalSpaceCapacity.substring(0,length-2)
+                    })
+            },
+            updateApplyStatus(value){
+                batchUpdateForFinishHandle(value)
+            },
+            inputChange(val){
+                if(val<0){
+                    this.personalSpace.personalSpaceCapacity = 0
+                }
+                if(val >1024){
+                    this.personalSpace.personalSpaceCapacity = 1024
+                }
+            },
+            onUpdate(){
+                this.$emit('fromSonUpdate',this.personalSpace,this.personalSpaceCapacityNeed)
+            },
+            closeUpdateDialog(){
+                this.$emit('fromSonDialog')
+            },
+
+        }
+    }
+</script>
+
+<style scoped>
+
+</style>

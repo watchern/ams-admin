@@ -1,0 +1,105 @@
+.grid-table{
+   width:100%;
+   height:100%;
+}
+
+.ag-header-cell-label .ag-header-cell-text {
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.85);
+}
+
+.ag-header-group-text{
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.85);
+}
+
+.ag-theme-balham .ag-header{
+    background-color: #f8f9fb;
+    border-bottom: 1px solid #EBEEF5;
+}
+
+.ag-theme-balham .ag-root {
+    border: 1px solid #EBEEF5;
+}
+
+.ag-theme-balham .ag-row {
+    border-color: #EBEEF5;
+}
+
+.ag-theme-balham .ag-header-cell, .ag-theme-balham .ag-header-group-cell {
+    border-color: #EBEEF5!important;
+}
+
+.ag-theme-material .ag-icon-checkbox-checked{
+    color:#496FF4!important;
+}
+
+.ag-theme-material .ag-icon-checkbox-unchecked:before {
+    color: #DCDFE6;
+}
+
+.ag-theme-material .ag-icon-checkbox-indeterminate:before{
+    color: #496FF4!important;
+}
+
+.ag-icon-checkbox-checked{
+    height: 20px;
+    width: 20px;
+    font-size: 20px;
+    line-height: 20px;
+}
+/* .ag-theme-material .ag-icon{
+    color: #DCDFE6!important;
+} */
+
+
+.ag-cell{
+    background-color: #FFF;
+}
+
+
+.ag-theme-material .ag-row-even {
+    background-color: unset;
+}
+
+.ag-theme-material .ag-row-odd {
+    background-color: unset;
+}
+.ag-theme-material .ag-ltr .ag-cell{
+    border-bottom: 1px solid #EBEEF5;
+    border-left: 1px solid #EBEEF5;
+    background-color: #FFF;
+}
+.ag-theme-material .ag-row:not(.ag-row-first){
+    border: 0;
+}
+
+.ag-theme-material .ag-header-cell{
+    border-right: 1px solid #EBEEF5;
+    background: #f8f9fb;
+}
+.ag-theme-material .ag-header-row:first-child .ag-header-group-cell{
+    border-right: 1px solid #EBEEF5;
+    background: #f8f9fb;
+}
+
+.ag-theme-material .ag-ltr .ag-has-focus .ag-cell-focus:not(.ag-cell-range-selected), .ag-theme-material .ag-ltr .ag-has-focus .ag-cell-focus.ag-cell-range-single-cell, .ag-theme-material .ag-ltr .ag-cell-focus.ag-cell-range-single-cell.ag-cell-range-handle, .ag-theme-material .ag-rtl .ag-has-focus .ag-cell-focus:not(.ag-cell-range-selected), .ag-theme-material .ag-rtl .ag-has-focus .ag-cell-focus.ag-cell-range-single-cell, .ag-theme-material .ag-rtl .ag-cell-focus.ag-cell-range-single-cell.ag-cell-range-handle{
+    border-bottom: 1px solid #EBEEF5;
+    border-left: 1px solid #EBEEF5;
+    border-top: 0px;
+    border-right: 0px;
+}
+
+.ag-theme-material .ag-root{
+    border: 1px solid #EBEEF5;
+}
+
+.ag-header-cell-label {
+    text-align: center;
+    display:inline;
+}
+.ag-header-group-cell-label{
+    text-align: center;
+    display: inline;
+    line-height: 40px;
+}

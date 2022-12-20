@@ -266,7 +266,8 @@ import AV from "leancloud-storage";
 import { getParamSettingArr } from "@/api/analysis/auditparam";
 import personTree from "@/components/publicpersontree/index";
 import { getDictList } from '@/utils'
-import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
+// import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
+import flowItem from "@/components/starflow/todowork/flowItem";
 import BaseVue from '@/utils/baseVue'
 let baseVue = new BaseVue({
     targetel: "resultTable",
