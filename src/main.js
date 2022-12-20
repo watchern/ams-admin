@@ -101,9 +101,9 @@ import clipboard from 'clipboard'
 import axios from 'axios'
 import dataV from '@jiaminghi/data-view'
 // import dict from "ams-starflow-vue/src/components/common/dict";
-import dict from "@/components/common/dict";
+import dict from "@/components/starflow/common/dict";
 // import common from "ams-starflow-vue/src/components/common/common";
-import common from "@/components/common/common";
+import common from "@/components/starflow/common/common";
 //import VueAxios from 'vue-axios'
 //Vue.use(VueAxios, axios)
 Vue.prototype.$clipboard = clipboard
