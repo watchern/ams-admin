@@ -1,0 +1,39 @@
+.btns_wrap {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 22px 0;
+}
+.btns_rigth {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-direction: row;
+}
+.btns_rigth >>> button {
+  height: 36px;
+  line-height: 36px;
+  width: 88px;
+  text-align: center;
+  padding: 0 !important;
+}
+.btns_rigth >>> .el-button-group > .el-button:last-child {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.btn_editor {
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: #39475b;
+  letter-spacing: 0;
+  margin-right: 21px;
+  border: 1px solid #39475b;
+  box-sizing: border-box;
+}
+
+.btn_type {
+  font-size: 14px;
+  background: #39475b;
+  border-radius: 4px 0px 0px 4px;
+}

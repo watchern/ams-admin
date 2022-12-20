@@ -21,24 +21,28 @@ const AmsRoutes = [
       {
         path: '/todowork',
         name: 'todowork',
-        component: () => import('ams-starflow-vue/src/components/todowork/todowork')
+        // component: () => import('ams-starflow-vue/src/components/todowork/todowork')
+        component: () => import('@/components/starflow/todowork/todowork')
       },
       {
         path: '/todoDetail',
         name: 'todoDetail',
-        component: () => import('ams-starflow-vue/src/components/todowork/todoDetail')
+        // component: () => import('ams-starflow-vue/src/components/todowork/todoDetail')
+        component: () => import('@/components/starflow/todowork/todoDetail')
       },
     ]
   },
   {
     path: '/todoDetailOut',
     name: 'todoDetailOut',
-    component: () => import('ams-starflow-vue/src/components/todowork/todoDetailOut')
+    // component: () => import('ams-starflow-vue/src/components/todowork/todoDetailOut')
+    component: () => import('@/components/starflow/todowork/todoDetailOut')
   },
   {
     path: '/earlyWaringPenetrateList',
     name: 'earlyWaringPenetrateList',
     component: () => import('ams-clue-vue/src/components/todowork/earlyWaringPenetrateList')
+    //hx_base 分支不存在 ams-starflow-vue 不存在页面
   },
   {
     path: '/',
