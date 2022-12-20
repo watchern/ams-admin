@@ -174,6 +174,14 @@ const dataRouter = {
         title: "数据管理-扩容",
       },
     },
+    {
+      path: 'data_oam_resource',
+      name: '数据质量规则管理维护',
+      component: () => import('@/views/data/data_oam_resource/index'),
+      meta: {
+        title: "数据管理-数据准备-数据质量规则管理维护"
+      }
+    },
   ],
 };
 export default dataRouter;
