@@ -212,7 +212,8 @@
             <div id="iconImg" class="iconImg" alt="最大化" @click="maxOpen" />
             <div id="iconImg-huifu" class="iconImg" @click="maxOpen" />
           </div> -->
-          <div  v-if="resultShow.length == 0" style="margin-top:20px">
+<!--          && isExecuteErro条件是为了避免显示错误信息的时候还显示该remindMessage-->
+          <div  v-if="resultShow.length == 0 && isExecuteError" style="margin-top:20px">
             <pre style="color: red;background-color: white;font-size: 16px;padding: 10px">{{remindMessage}}</pre>
           </div>
           <div id="maxOpen" class="max-size" ref="maxSize">
