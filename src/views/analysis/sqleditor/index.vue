@@ -1765,9 +1765,9 @@ export default {
             }else{
               this.executeLoading = false;
               this.loadText = "";
-              this.$message({ type: "error", message: resp.msg });
+              var message = positionSqlError(resp.msg);
+              this.$message({ type: "error", message: message});
               // positionSqlError('SQL校验失败,错误信息:TODO : pos 10, line 1, column 7, token LITERAL_ALIAS "id"')
-              positionSqlError(resp.msg)
             }
           })
           .catch((result) => {
