@@ -428,9 +428,6 @@ export function initEvent() {
     mouseY = e.pageY || e.clientY + scroolY
   })
 }
-export function highLightStr(str){
-  editor.execCommand("hiliteColor",true,'yellow')
-}
 /**
  * 初始化SQL编辑器
  * @param textarea 编辑器id
@@ -2268,10 +2265,10 @@ function replaceParam(paramObj) {
  */
 export function findAndReplace(type) {
   if (type === 1) {
-    CodeMirror.commands.replace(editorObj, true)
+    editorObj.execCommand("replace"); //触发
   }
   if (type === 2) {
-    CodeMirror.commands.find(editorObj)
+    editorObj.execCommand("find"); //触发
   }
 }
 

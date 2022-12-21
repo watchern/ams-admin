@@ -140,12 +140,23 @@
                   class="oper-btn maintain btn-width-md"
                 />
                 <el-dropdown-menu slot="dropdown">
-                  <!-- <el-dropdown-item
-                                        @click.native="findAndReplace(2)"
-                                    >查找</el-dropdown-item>
-                                    <el-dropdown-item
-                                        @click.native="findAndReplace(1)"
-                                    >替换</el-dropdown-item> -->
+                  <el-dropdown-item
+                          @click.native="findAndReplace(2)"
+                  >查找
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                          @click.native="findAndReplace(1)"
+                  >替换
+                  </el-dropdown-item>
+
+                  <el-dropdown-item
+                          @click.native="changeSize(2)"
+                  >字体缩小
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                          @click.native="changeSize(1)"
+                  >字体放大
+                  </el-dropdown-item>
                   <el-dropdown-item @click.native="caseTransformation(1)"
                     >转大写</el-dropdown-item
                   >
@@ -157,12 +168,6 @@
                   >
                   <el-dropdown-item @click.native="selectSqlCancelNotes()"
                     >取消注释</el-dropdown-item
-                  >
-                  <el-dropdown-item  @click.native="searchCode(1)"
-                    >查找</el-dropdown-item
-                  >
-                  <el-dropdown-item  @click.native="searchCode(2)"
-                    >替换</el-dropdown-item
                   >
                   <!-- <el-dropdown-item @click.native="bjSqlNotes()"
                     >标记</el-dropdown-item
@@ -243,20 +248,21 @@
               :chartModelUuid="modelUuid"
               :modelId="modelUuid"
               id="childTabs1"
-            />
-          </div>
-          <div v-if="!isExecuteError" class="data-show">
-            <el-tabs type="border-card" style="height: 30px">
-              <el-tab-pane label="错误信息">
-                <el-card class="box-card" style="height: 100px" align="center">
-                  <div style="font-weight: lighter; font-size: 15px">
-                    {{ errorMessage}}
-                  </div>
-                </el-card>
-              </el-tab-pane>
-            </el-tabs>
-          </div>
-        </div>
+                :executeSqlViewData="executeSqlViewData"
+        />
+      </div>
+      <div v-if="!isExecuteError" class="data-show">
+        <el-tabs type="border-card" style="height: 30px">
+          <el-tab-pane label="错误信息">
+            <el-card class="box-card" style="height: 100px" align="center">
+              <div style="font-weight: lighter; font-size: 15px">
+                {{ errorMessage}}
+              </div>
+            </el-card>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+    </div>
       </div>
       <div id="vertical"><i class="el-icon-d-caret skin-textColor" /></div>
       <input
@@ -442,26 +448,6 @@
       </div>
     </el-dialog>
     <el-dialog
-      title="请输入查找/替换内容"
-      :visible.sync="searchCodeDialog"
-      width="40%"
-      :append-to-body="true"
-      class="searchCodeDialog"
-    >
-      <el-form :model="searchCodeData" class="detail-form">
-        <el-form-item label="查找内容">
-          <el-input v-model="searchCodeData.find" autocomplete="off" />
-        </el-form-item>
-        <el-form-item label="替换内容" v-if="searchType == 2">
-          <el-input v-model="searchCodeData.replace" autocomplete="off" />
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="searchCodeCancel">取 消</el-button>
-        <el-button type="primary" @click="searchCodeEnter">确 定</el-button>
-      </span>
-    </el-dialog>
-    <el-dialog
       :close-on-click-modal="false"
       v-if="dialogFolderVisible"
       title="请填写分类信息"
@@ -541,6 +527,10 @@ import "@/components/ams-codemirror/lib/codemirror.css";
 
 import "@/components/ams-codemirror/addon/hint/show-hint.css";
 import "@/components/ams-ztree/css/zTreeStyle/zTreeStyle.css";
+import "@/components/ams-codemirror/addon/dialog/dialog.js";
+import "@/components/ams-codemirror/addon/dialog/dialog.css";
+import "@/components/ams-codemirror/addon/search/searchcursor.js";
+import "@/components/ams-codemirror/addon/search/search.js";
 import {
   initSQLEditor,
   initDragAndDrop,
@@ -588,8 +578,7 @@ import {
   getGraphSaveInfo,
   getZtreeSelectNode,
   hideRMenu,
-  sendSettingVue,
-  highLightStr,
+  sendSettingVue
 } from "@/api/analysis/sqleditor/sqleditor";
 import sqlDraftList from "@/views/analysis/sqleditor/sqldraftlist";
 import sqlDraftTree from "@/views/analysis/sqleditor/sqldrafttree";
@@ -822,12 +811,6 @@ export default {
       personalTitle: '审计人员场景',
       // 是否为管理员身份
       isManager: false,
-      searchType: 1,
-      searchCodeDialog: false,
-      searchCodeData: {
-        find: "",
-        replace: "",
-      },
     };
   },
   watch: {
@@ -886,25 +869,6 @@ export default {
     this.$refs.maxSize.style.display = "none"
   },
   methods: {
-    searchCodeEnter(){
-      var data = this.searchCodeData;
-      highLightStr(data.find)
-    },
-    searchCodeCancel(){
-      this.searchCodeDialog = false;
-      this.searchCodeData = {find: "",replace: ""}
-    },
-    searchCode(type){
-      if(type == 1){
-        this.searchType = 1
-        // this.$refs.sql.execCommand('find')
-        // return
-
-      }else if(type == 2){
-        this.searchType = 2
-      }
-      this.searchCodeDialog = true;
-    },
     openNewEditor(){
       window.open(window.location.href);
     },
@@ -1319,6 +1283,19 @@ export default {
      */
     findAndReplace(type) {
       findAndReplace(type);
+    },
+    changeSize(type) {
+      var thisEle = $(".CodeMirror").css("font-size");
+      var textFontSize = parseFloat(thisEle, 10);
+      var unit = thisEle.slice(-2); //获取单位
+      if (type === 1) {
+        textFontSize += 2;
+        $(".CodeMirror").css("font-size", textFontSize + unit);
+      }
+      if (type === 2) {
+        textFontSize -= 2;
+        $(".CodeMirror").css("font-size", textFontSize + unit);
+      }
     },
     /**
      * 转大小写
