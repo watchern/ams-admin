@@ -14,6 +14,7 @@ import '../node_modules/bootstrap/dist/js/bootstrap.min.js';
 // import "bootstrap/dist/js/bootstrap.min.js"
 import Element from 'element-ui'
 import './styles/element-variables.scss'
+import "./styles/common.scss"
 import 'font-awesome/css/font-awesome.min.css'
 // Ace start
 import tool from '@/styles/js/tool'
