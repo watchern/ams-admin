@@ -428,6 +428,9 @@ export function initEvent() {
     mouseY = e.pageY || e.clientY + scroolY
   })
 }
+export function highLightStr(str){
+  editor.execCommand("hiliteColor",true,'yellow')
+}
 /**
  * 初始化SQL编辑器
  * @param textarea 编辑器id

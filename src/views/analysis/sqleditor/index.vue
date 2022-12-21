@@ -158,6 +158,12 @@
                   <el-dropdown-item @click.native="selectSqlCancelNotes()"
                     >取消注释</el-dropdown-item
                   >
+                  <el-dropdown-item  @click.native="searchCode(1)"
+                    >查找</el-dropdown-item
+                  >
+                  <el-dropdown-item  @click.native="searchCode(2)"
+                    >替换</el-dropdown-item
+                  >
                   <!-- <el-dropdown-item @click.native="bjSqlNotes()"
                     >标记</el-dropdown-item
                   > -->
@@ -436,6 +442,26 @@
       </div>
     </el-dialog>
     <el-dialog
+      title="请输入查找/替换内容"
+      :visible.sync="searchCodeDialog"
+      width="40%"
+      :append-to-body="true"
+      class="searchCodeDialog"
+    >
+      <el-form :model="searchCodeData" class="detail-form">
+        <el-form-item label="查找内容">
+          <el-input v-model="searchCodeData.find" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="替换内容" v-if="searchType == 2">
+          <el-input v-model="searchCodeData.replace" autocomplete="off" />
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="searchCodeCancel">取 消</el-button>
+        <el-button type="primary" @click="searchCodeEnter">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
       :close-on-click-modal="false"
       v-if="dialogFolderVisible"
       title="请填写分类信息"
@@ -562,7 +588,8 @@ import {
   getGraphSaveInfo,
   getZtreeSelectNode,
   hideRMenu,
-  sendSettingVue
+  sendSettingVue,
+  highLightStr,
 } from "@/api/analysis/sqleditor/sqleditor";
 import sqlDraftList from "@/views/analysis/sqleditor/sqldraftlist";
 import sqlDraftTree from "@/views/analysis/sqleditor/sqldrafttree";
@@ -795,6 +822,12 @@ export default {
       personalTitle: '审计人员场景',
       // 是否为管理员身份
       isManager: false,
+      searchType: 1,
+      searchCodeDialog: false,
+      searchCodeData: {
+        find: "",
+        replace: "",
+      },
     };
   },
   watch: {
@@ -853,6 +886,25 @@ export default {
     this.$refs.maxSize.style.display = "none"
   },
   methods: {
+    searchCodeEnter(){
+      var data = this.searchCodeData;
+      highLightStr(data.find)
+    },
+    searchCodeCancel(){
+      this.searchCodeDialog = false;
+      this.searchCodeData = {find: "",replace: ""}
+    },
+    searchCode(type){
+      if(type == 1){
+        this.searchType = 1
+        // this.$refs.sql.execCommand('find')
+        // return
+
+      }else if(type == 2){
+        this.searchType = 2
+      }
+      this.searchCodeDialog = true;
+    },
     openNewEditor(){
       window.open(window.location.href);
     },
