@@ -29,12 +29,7 @@
       </el-form-item>
       <el-form-item label="数据使用人" prop="loginname" class="item-a">
         <div
-          style="
-            width: 100%;
-            height: 200px;
-            position: absolute;
-            overflow: auto;
-          "
+          style="width: 100%; height: 200px; position: absolute; overflow: auto"
         >
           <el-tree :props="defaultProps" :load="loadNode" lazy>
             <span slot-scope="{ data }">
@@ -76,13 +71,15 @@
         </el-input>
         <el-tree
           class="filter-tree"
-          :data="data"
+          :data="treeData"
           show-checkbox
           node-key="id"
           :props="defaultPropsData"
           default-expand-all
           :filter-node-method="filterNode"
           ref="tree"
+          :render-content="renderContent"
+          :check-strictly="true"
         >
         </el-tree>
       </div>
@@ -91,11 +88,13 @@
           size="mini"
           type="primary"
           class="btn_top"
+          @click="towardsLeft"
           >></el-button
         ><el-button
           size="mini"
           type="primary"
           class="btn_bottom"
+          @click="towardsRight"
           ><</el-button
         >
       </div>
@@ -111,13 +110,13 @@
           height="400px"
         >
           <el-table-column type="selection" width="55"> </el-table-column>
-          <el-table-column label="表路径" prop="date" width="180">
+          <el-table-column label="表路径" prop="label" width="180">
           </el-table-column>
           <el-table-column label="筛选条件">
             <template slot-scope="scope">
               <div style="display: flex">
                 <el-input
-                  v-model="scope.row.name"
+                  v-model="scope.row.id"
                   placeholder="请输入内容"
                 ></el-input>
                 <el-button
@@ -149,28 +148,7 @@ export default {
   components: {},
   data() {
     return {
-      tableData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
-        },
-      ],
+      tableData: [],
       // tree节点配置
       defaultProps: {
         label: "name",
@@ -216,7 +194,7 @@ export default {
       },
       loading: false,
       filterText: "",
-      data: [
+      treeData: [
         {
           id: 1,
           label: "一级 1",
@@ -270,6 +248,8 @@ export default {
         children: "children",
         label: "label",
       },
+      checkedNodes: [],
+      multipleSelection: [],
     };
   },
   watch: {
@@ -371,6 +351,20 @@ export default {
         });
       }
       if (node.data.isParent === false) return resolve([]);
+    },
+    // 向左
+    towardsLeft() {
+      this.tableData = this.$refs.tree.getCheckedNodes();
+      this.checkedNodes = this.$refs.tree.getCheckedNodes();
+    },
+    // 向右
+    towardsRight() {
+      this.multipleSelection.forEach((item) => {
+        const index = this.checkedNodes.findIndex((d) => d.id === item.id);
+        this.checkedNodes.splice(index, 1);
+      });
+      this.tableData = this.checkedNodes
+      this.$refs.tree.setCheckedNodes(this.checkedNodes);
     },
   },
   created() {
