@@ -31,6 +31,7 @@
       <el-table-column label="代码类别名称" prop="dataSortName"/>
       <el-table-column label="代码类别编码" width="300px" align="center" prop="dataSortValue" />
       <el-table-column label="代码类别描述" prop="dataSortDesc"/>
+
       <!-- <el-table-column label="创建时间" width="300px" align="center" prop="createTime" /> -->
       <el-table-column label="展现形式" prop="extendTag" :formatter="formatTag" align="center"/>
     </el-table>
@@ -110,6 +111,12 @@
             v-model="tempSecond.codeDesc"  />
         </el-form-item>
         <el-form-item
+           label="通用代码码值"
+           prop="codeWorth">
+          <el-input
+            v-model="tempSecond.codeWorth"  />
+        </el-form-item>
+        <el-form-item
           label="代码排序号"
           prop="codeIndex">
           <el-input
@@ -155,6 +162,7 @@
         <el-table-column label="通用代码名称" width="200px" align="center" prop="codeName" />
         <el-table-column label="通用代码编码" width="200px" align="center" prop="codeValue" />
         <el-table-column label="通用代码描述" width="200px" align="center" prop="codeDesc" />
+        <el-table-column label="通用代码码值" width="200px" align="center" prop="codeWorth" />
         <el-table-column label="通用代码排序" width="150px" align="center" prop="codeIndex" />
         <el-table-column label="状态" width="100px" align="center" prop="codeState" :formatter="formatState" />
       </el-table>
@@ -225,6 +233,8 @@ export default {
         codeVaule: '',
         codeName: '',
         codeDesc: '',
+        //新增字段：代码码值
+        codeWorth: '',
         codeState: -1,
         codeIndex: ''
       },
@@ -344,6 +354,8 @@ export default {
         codeVaule: '',
         codeName: '',
         codeDesc: '',
+        //新增字段 通用代码码值
+        codeWorth:'',
         codeState: '',
         codeIndex: ''
       }
