@@ -2,8 +2,9 @@ import request from '@/utils/request'
 
 const baseURL = '/data'
 const controllerName = 'tableMeta'
+const tableRelation = 'tableRelation'
 
-export function listByPage(data) {
+export function listByPage (data) {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/listByPage`,
@@ -11,8 +12,8 @@ export function listByPage(data) {
     data
   })
 }
-
-export function selectOne(tableMetaUuid) {
+// 详情
+export function getBasicInfo (tableMetaUuid) {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/getTableInfo`,
@@ -21,7 +22,7 @@ export function selectOne(tableMetaUuid) {
   })
 }
 
-export function exportFile() {
+export function exportFile () {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/exportFile`,
@@ -29,15 +30,25 @@ export function exportFile() {
   })
 }
 
-export function del(ids) {
+export function del (ids) {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/delete/${ids}`,
     method: 'delete'
   })
 }
+// 数据字典
+export function import_dictionary (data) {
+  return request({
+    baseURL: baseURL,
+    url: `/tableMeta/importTableInfo`,
+    method: 'post',
+    data
+  })
+}
 
-export function importTable(data) {
+// 汉化
+export function importTable (data) {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/importDicTable`,
@@ -45,3 +56,13 @@ export function importTable(data) {
     data
   })
 }
+// 表关系
+export function importTable_table (data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${tableRelation}/importDicTable`,
+    method: 'post',
+    data
+  })
+}
+

@@ -37,7 +37,8 @@
       <div class="click_btn">
         <el-button type="primary">数据字典导入导出</el-button>
         <div class="show_btn">
-          <el-button type="primary">模版下载</el-button>
+          <el-button type="primary"
+                     @click="down_template_dictionary()">模版下载</el-button>
           <el-button type="primary"
                      @click="Importdata_dictionary()">导入数据资源</el-button>
         </div>
@@ -46,7 +47,8 @@
       <div class="click_btn">
         <el-button type="primary">汉化信息导入导出</el-button>
         <div class="show_btn">
-          <el-button type="primary">模版下载</el-button>
+          <el-button type="primary"
+                     @click="down_template_cn()">模版下载</el-button>
           <el-button type="primary"
                      @click="Important_cn()">导入汉化信息</el-button>
         </div>
@@ -55,13 +57,15 @@
       <div class="click_btn">
         <el-button type="primary">表关系导入导出</el-button>
         <div class="show_btn">
-          <el-button type="primary">模版下载</el-button>
+          <el-button type="primary"
+                     @click="down_template_table()">模版下载</el-button>
           <el-button type="primary"
                      @click="Important_table()">导入表关系</el-button>
         </div>
       </div>
 
-      <el-button type="primary">同步数据结构</el-button>
+      <el-button type="primary"
+                 @click="sync_data()">同步数据结构</el-button>
 
       <el-button type="primary"
                  @click="Recognition()">任权管理</el-button>
@@ -72,62 +76,118 @@
                  @click="edit_list()">修改</el-button>
 
     </div>
-    <el-table ref="multipleTable"
-              :data="list"
-              style="width: 100%"
-              :header-cell-class-name="headerCellClass"
-              @selection-change="handleSelectionChange">
-      <el-table-column type="selection"
-                       v-if="isBtn == true"
-                       width="30">
-      </el-table-column>
-      <el-table-column>
-        <template slot-scope="scope">
-          <div class="box_ard">
-            <div class="conter_list">
-              <div class="box_ard_header _width"
-                   @click="on_deails('1111')">
-                <p class="new_num">{{scope.row.name}}</p>
-                <p class="new_title">{{scope.row.title}}</p>
-                <span class="new_type">{{scope.row.title1}}</span>
-              </div>
 
-              <div class="new_left padding10">
-                <i><img src="../../assets/img/activity.png"
-                       alt=""></i>
-              </div>
+    <el-skeleton style="width:100%"
+                 animated
+                 :loading="list_loading"
+                 :count="5">
+      <template slot="template">
+        <div class="box_ard">
+          <div class="conter_list">
 
-              <div class="new_right">
-                <div class="table_type">
-                  <p class="one">表关联数量：<span>1</span>
-                    <el-card class="show_tips">
-                      <p>BIBIUU</p>
-                      <p>BIBIUU</p>
-                      <p>BIBIUU</p>
-                    </el-card>
-
-                  </p>
-                  <p class="two">使用此表模型数：<span>1</span>
-                    <el-card class="show_tips">
-                      <p>BIBIUU</p>
-                      <p>BIBIUU</p>
-                      <p>BIBIUU</p>
-                    </el-card>
-                  </p>
-                </div>
-                <p class="text">描述：213123213123</p>
-                <p class="text">字段：12321321313213</p>
-                <div class="data_list">
-                  <span class="data_time">数据日期 2022-11-06</span>
-                  <span class="data_number">数据量 2,530,000 条</span>
-                </div>
-              </div>
+            <div class="box_ard_header">
+              <el-skeleton-item variant="h3"
+                                style="width: 30%;" />
             </div>
+            <div class="new_left">
+              <el-skeleton-item variant="image"
+                                style="width: 130px; height: 130px;" />
+            </div>
+            <div class="new_right">
+              <div class="table_type">
+                <el-skeleton-item variant="h3"
+                                  style="width: 10%;margin-right: 60px;" />
+                <el-skeleton-item variant="h3"
+                                  style="width: 10%;" />
+              </div>
+              <div class="text">
+                <el-skeleton-item variant="h3"
+                                  style="width: 30%;" />
+                <el-skeleton-item variant="text"
+                                  style="margin-right: 16px;" />
+                <el-skeleton-item variant="text"
+                                  style="width: 30%;" />
+              </div>
+              <div class="data_list">
+                <el-skeleton-item variant="text"
+                                  style="width: 10%;margin-right:20px" />
+                <el-skeleton-item variant="text"
+                                  style="width: 10%;" />
+              </div>
 
+            </div>
           </div>
-        </template>
-      </el-table-column>
-    </el-table>
+        </div>
+      </template>
+      <div class="list_table"
+           style="height: calc(100vh - 230px);overflow: auto;">
+        <el-table ref="multipleTable"
+                  :data="list"
+                  style="width: 100%"
+                  :header-cell-class-name="headerCellClass"
+                  @selection-change="handleSelectionChange">
+          <el-table-column type="selection"
+                           v-if="isBtn == true"
+                           width="30">
+          </el-table-column>
+          <el-table-column>
+            <template slot-scope="scope">
+              <div class="box_ard">
+                <div class="conter_list">
+                  <div class="box_ard_header _width"
+                       @click="on_deails(scope.row)">
+                    <p class="new_num">{{scope.row.tbName}}</p>
+                    <p class="new_title">{{scope.row.chnName}}</p>
+                    <span class="new_type">{{scope.row.title1}}</span>
+                  </div>
+
+                  <div class="new_left padding10">
+                    <i><img src="../../assets/img/msq.png"
+                           alt=""></i>
+                  </div>
+
+                  <div class="new_right">
+                    <div class="table_type">
+                      <div class="one tt">表关联数量：<span
+                              v-if="scope.row.relations">{{scope.row.relations.records.length}}</span>
+                        <el-card class="show_tips"
+                                 v-if="scope.row.relations.records.length!==0">
+                          <p v-for="(its,index_relations) in scope.row.relations.records"
+                             :key="index_relations">{{its.relationTableName}}</p>
+                        </el-card>
+
+                      </div>
+                      <div class="two tt">使用此表模型数：<span>{{scope.row.models.length}}</span>
+                        <el-card class="show_tips"
+                                 v-if="scope.row.models.length!==0">
+                          <p v-for="(it,index_model) in scope.row.models"
+                             :key="index_model">{{it.MODEL_NAME}}</p>
+                        </el-card>
+                      </div>
+                    </div>
+                    <p class="text"
+                       v-if="scope.row.tableRelationQuery">描述：{{scope.row.tableRelationQuery.tableRemarks}}</p>
+                    <p class="text"
+                       v-else>描述：暂无</p>
+                    <p class="text"
+                       v-if="scope.row.colMeta">字段：{{scope.row.colMeta}}</p>
+                    <p class="text"
+                       v-else>字段：暂无</p>
+
+                    <div class="data_list">
+                      <span class="data_time">数据日期 2022-11-06</span>
+                      <span class="data_number">数据量 {{scope.row.rowNum}} 条</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+
+    </el-skeleton>
 
     <el-dialog :title="title"
                :visible.sync="common_dialog"
@@ -172,29 +232,46 @@ export default {
       default () {
         return []
       }
-    }
+    },
+    list: {
+      type: Array,
+      default () {
+        return []
+      }
+    },
+    list_loading: {
+      type: Boolean,
+      default () {
+        return []
+      }
+    },
   },
 
   data () {
     return {
+      // list_loading: false,
       form: {
         title: '',
       },
       search_name: '',
       TagsAll: [],
       inputLength: '',
-      list: [
-        { name: 'GIUDUDION', title: '这是标题', title1: '存款业务主体', title2: '描述描述描述', title4: '字段21321313123', isCheck: 'false' },
-        { name: 'GIUDUDION', title: '这是标题', title1: '存款业务主体', title2: '描述描述描述', title4: '字段21321313123', isCheck: 'true' },
-        { name: 'GIUDUDION', title: '这是标题', title1: '存款业务主体', title2: '描述描述描述', title4: '字段21321313123', isCheck: 'true' },
-        { name: 'GIUDUDION', title: '这是标题', title1: '存款业务主体', title2: '描述描述描述', title4: '字段21321313123', isCheck: 'true' },
-      ],
-
       common_dialog: false,//导入数据源
       title: '',//弹窗共用标题
       check_list: [],//多选批量的数量
     };
   },
+  created () {
+    console.log(this.list);
+    // if (this.list && this.list.length == 0) {
+    //   this.list_loading = true;
+    // } else {
+    //   this.list_loading = false;
+
+    // }
+    // this.setLoading();
+  },
+
   watch: {
     TagsAll () {
       this.$emit('on-change', this.TagsAll)
@@ -222,6 +299,13 @@ export default {
     this.TagsAll = this.itemsArr;
   },
   methods: {
+
+    // setLoading () {
+    //   this.list_loading = true
+    //   setTimeout(() => (this.list_loading = false), 2000)
+    // },
+
+
     // 删除标签
     removeTag (index, item) {
       console.log(item)
@@ -253,6 +337,14 @@ export default {
         this.$refs.inputTag.focus();
       })
     },
+    // 数据字典下载模版
+    down_template_dictionary () {
+      // if (this.check_list.length !== 0) {
+      this.$emit("down_template_dictionary", this.check_list)
+      // } else {
+      //   this.$message({ type: "warning", message: "请选择一条数据进行下载" });
+      // }
+    },
 
     // 导入数据字典
     Importdata_dictionary () {
@@ -260,7 +352,14 @@ export default {
       this.$emit("Importdata_dictionary", '导入数据字典')
 
     },
-
+    // 汉化模版下载
+    down_template_cn () {
+      if (this.check_list.length !== 0) {
+        this.$emit("down_template_cn", this.check_list)
+      } else {
+        this.$message({ type: "warning", message: "请选择一条数据进行下载" });
+      }
+    },
     // 导入汉化信息
     Important_cn () {
       this.$emit("Important_cn", '导入汉化信息')
@@ -269,19 +368,41 @@ export default {
     Important_table () {
       this.$emit("Important_table", '表关系')
     },
+    // 表关系下载模版
+    down_template_table () {
+      //  if (this.check_list.length !== 0) {
+      this.$emit("down_template_table", this.check_list)
+      // } else {
+      //   this.$message({ type: "warning", message: "请选择一条数据进行下载" });
+      // }
+    },
     // 注册资产
     on_register () {
-      this.$emit("on_register", '11');
+      this.$emit("on_register", this.check_list);
     },
     // 认权
     Recognition () {
-      this.$emit("Recognition", '11');
-
+      if (this.check_list.length !== 0) {
+        this.$emit("Recognition", this.check_list);
+      } else {
+        this.$message({ type: "warning", message: "请选择一条数据进行认权" });
+      }
     },
+    // 同步数据机构
+    sync_data () {
+      if (this.check_list.length !== 0) {
+        this.$emit("sync_data", this.check_list);
+      } else {
+        this.$message({ type: "warning", message: "请最少一条数据进行同步" });
+      }
+    },
+
     // 修改
     edit_list () {
       if (this.check_list.length !== 0) {
 
+      } else {
+        this.$message({ type: "warning", message: "请选择一条数据进行修改" });
       }
     },
     // 设置条件隐藏多选
@@ -343,7 +464,7 @@ export default {
   padding: 10px;
   box-sizing: border-box;
   position: absolute;
-  top: 40px;
+  top: 36px;
   left: 50%;
   opacity: 0;
   /* height: 0; */
@@ -360,7 +481,7 @@ export default {
   transition: all 0.35s;
 }
 .click_btn:hover .show_btn {
-  top: 70px;
+  top: 65px;
   zoom: 1;
   -moz-transform: scale(1);
   -webkit-transform: scale(1);
@@ -393,7 +514,7 @@ export default {
 .spanbox {
   display: inline-block;
   font-size: 14px;
-  margin: 3px 4px 3px 0;
+  margin: 3px 0px 3px 4px;
   background-color: rgb(229, 229, 229);
   border: 1px solid #e8eaec;
   border-radius: 3px;
@@ -472,7 +593,8 @@ export default {
   box-sizing: border-box;
 }
 .conter_list {
-  width: calc(100% - 40px);
+  /* width: calc(100% - 40px); */
+  width: 100%;
   box-sizing: border-box;
 }
 .box_ard_header {
@@ -486,6 +608,10 @@ export default {
   font-weight: 800;
   font-size: 18px;
   cursor: pointer;
+}
+.new_num:hover,
+.new_title:hover {
+  text-decoration: underline;
 }
 
 .new_title {
@@ -523,6 +649,8 @@ export default {
 }
 
 .new_right {
+  width: calc(100% - 150px);
+  min-height: 140px;
   float: left;
   padding: 0 20px;
   box-sizing: border-box;
@@ -538,8 +666,8 @@ export default {
   height: 30px;
   margin-bottom: 15px;
 }
-.table_type p {
-  margin-right: 10px;
+.table_type .tt {
+  margin-right: 60px;
   position: relative;
   color: #7f7f7f;
   font-size: 16px;
@@ -552,15 +680,17 @@ export default {
   position: absolute;
   /* top: 25px; */
   z-index: 9;
-  width: 100px;
+  width: 150px;
   box-sizing: border-box;
-  /* height: 50px; */
   transition: 0.35s;
   /* opacity: 0.5; */
   /* zoom: 0.4; */
   -moz-transform: scale(0);
   -webkit-transform: scale(0);
   transform-origin: left top;
+  overflow: auto;
+  height: 140px;
+  padding: 10px !important;
 }
 .one .show_tips {
   left: 90px;
@@ -573,14 +703,15 @@ export default {
 }
 .show_tips >>> .el-card__body p {
   margin-bottom: 5px;
+  color: #7f7f7f;
+  font-size: 16px;
 }
 /* 显示更多数量，模型数 */
-.table_type p:hover .show_tips {
+.table_type .tt:hover .show_tips {
   zoom: 1;
   -moz-transform: scale(1);
   -webkit-transform: scale(1);
   opacity: 1 !important;
-  padding: 10px !important;
   /* height: 100px !important; */
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: blur(10px);
@@ -592,6 +723,8 @@ export default {
 .table_type .show_tips p:hover {
   color: rgba(0, 0, 0, 0.9);
   cursor: pointer;
+  /* border-bottom: 1px solid #333; */
+  text-decoration: underline;
 }
 .data_list {
 }
@@ -651,5 +784,10 @@ export default {
 
 .DisableSelection {
   display: none !important;
+}
+
+.list_table >>> .el-table__empty-block {
+  height: 400px !important;
+  background: #fff;
 }
 </style>
