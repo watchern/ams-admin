@@ -248,7 +248,6 @@
               :chartModelUuid="modelUuid"
               :modelId="modelUuid"
               id="childTabs1"
-                :executeSqlViewData="executeSqlViewData"
         />
       </div>
       <div v-if="!isExecuteError" class="data-show">
