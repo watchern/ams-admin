@@ -138,7 +138,8 @@
                        @click="on_deails(scope.row)">
                     <p class="new_num">{{scope.row.tbName}}</p>
                     <p class="new_title">{{scope.row.chnName}}</p>
-                    <span class="new_type">{{scope.row.title1}}</span>
+                    <span class="new_type"
+                          v-if="scope.row.tableRelationQuery">{{scope.row.tableRelationQuery.tableThemeName}}</span>
                   </div>
 
                   <div class="new_left padding10">
@@ -175,7 +176,11 @@
                        v-else>字段：暂无</p>
 
                     <div class="data_list">
-                      <span class="data_time">数据日期 2022-11-06</span>
+                      <span class="data_time"
+                            v-if="scope.row.tableRelationQuery">数据日期：{{scope.row.tableRelationQuery
+.dataDate}}</span>
+                      <span class="data_time"
+                            v-else>数据日期：暂无</span>
                       <span class="data_number">数据量 {{scope.row.rowNum}} 条</span>
                     </div>
                   </div>
