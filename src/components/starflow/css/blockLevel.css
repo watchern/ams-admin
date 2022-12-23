@@ -1,0 +1,244 @@
+.closeImg {
+  position: absolute;
+  top: 24px;
+  right: 22px;
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+.admin_right_main_detail >>> .el-textarea.is-disabled .el-textarea__inner {
+  background: transparent;
+  cursor: auto;
+}
+.admin_right_main_detail >>> .el-input.is-disabled .el-input__inner {
+  background: transparent;
+  cursor: auto;
+}
+.admin_right_main_detail >>> .el-textarea .el-textarea__inner {
+  background: #f5f8fc;
+  cursor: auto;
+}
+.admin_right_main_detail >>> .el-input .el-input__inner {
+  background: #f5f8fc;
+  cursor: auto;
+}
+.default_main_info {
+  font-family: PingFangSC-Regular;
+  font-size: 13px;
+  color: #68707a;
+  letter-spacing: 0;
+  text-align: right;
+  line-height: 16px;
+  margin-top: 10px;
+  
+}
+.box >>> .el-textarea__inner {
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: #39475b;
+  letter-spacing: 0;
+  line-height: 19px;
+}
+.box >>> .el-input--small .el-input__inner {
+  height: 36px;
+  line-height: 36px;
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: #39475b;
+  letter-spacing: 0;
+  line-height: 16px;
+}
+.title_obj {
+  font-family: PingFangSC-Regular;
+  font-size: 13px;
+  color: #68707a;
+  letter-spacing: 0;
+  text-align: right;
+  line-height: 16px;
+  margin: 20px 0 8px 0;
+}
+.box .box_title {
+  text-align: left;
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: #39475b;
+  letter-spacing: 0;
+  line-height: 14px;
+}
+.box {
+  width: 100%;
+  height: 310px;
+  background: #ffffff;
+  border: 1px solid #d9dce1;
+  border-radius: 10px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  padding: 22px;
+  margin-bottom: 20px;
+  position: relative;
+}
+.default_box {
+  width: 100%;
+  height: 310px;
+  border-radius: 10px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom: 20px;
+  background: rgba(57, 71, 91, 0.04);
+  border-radius: 8px;
+  border-radius: 8px;
+  padding: 20px;
+}
+.default_main {
+  width: 100%;
+  height: 100%;
+  border: 1px dotted rgba(57, 71, 91, 0.32);
+  border-radius: 8px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.btns_rigth >>> .el-button-group > .el-button:last-child {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+.del_icon {
+  padding: 8px;
+}
+.file_left >>> button {
+  width: 56px;
+  height: 24px;
+  background-image: linear-gradient(
+    0deg,
+    #6e6e71 0%,
+    #6a6b6e 47%,
+    #66676a 100%
+  );
+  box-shadow: inset 0 1px 0 0 #7e7f82;
+  border-radius: 4px;
+  border-radius: 4px;
+  line-height: 23px;
+  padding: 0;
+}
+.btns_rigth >>> .el-button--primary {
+  border-color: #9ca3ad;
+}
+.btn_editor {
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: #39475b;
+  letter-spacing: 0;
+  margin-right: 21px;
+  border: 1px solid #39475b;
+  box-sizing: border-box;
+}
+.btn_type {
+  font-size: 14px;
+  background: #39475b;
+  border-radius: 4px 0px 0px 4px;
+}
+.btns_rigth {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-direction: row;
+}
+.btns_rigth >>> button {
+  height: 36px;
+  line-height: 36px;
+  width: 88px;
+  text-align: center;
+  padding: 0 !important;
+}
+.btns_wrap {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 22px 0;
+}
+.file_box:hover {
+  background: #f9fafc;
+  color: #0070c6;
+}
+.file_box > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  max-width: 80%;
+}
+.file_box {
+  font-family: PingFangSC-Regular;
+  font-size: 13px;
+  color: #8998ac;
+  letter-spacing: 0;
+  line-height: 38px;
+  height: 38px;
+  width: 100%;
+  padding: 0 12px;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.file_right {
+  flex: 1;
+}
+.file_left {
+  width: 100px;
+  text-align: center;
+  font-family: PingFangSC-Regular;
+  font-size: 13px;
+  color: #68707a;
+  letter-spacing: 0;
+  line-height: 38px;
+}
+.file_wrap {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: row;
+  border-bottom: 1px solid #f0f1f1;
+  padding-bottom: 20px;
+}
+.header_btn_right {
+  background: #f0f3f7;
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: #0070c6;
+  letter-spacing: 0;
+  text-align: center;
+  border: none;
+  width: 88px;
+  height: 30px;
+}
+.header_btn_left {
+  font-family: PingFangSC-Medium;
+  font-size: 16px;
+  color: #3b4859;
+  letter-spacing: 0;
+  line-height: 24px;
+  font-weight: 600;
+}
+.header_btn {
+  background: #fbfcfd;
+  height: 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  padding: 0 18px;
+  border-bottom: 1px solid #d9dce1;
+  margin-bottom: 17px;
+}

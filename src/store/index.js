@@ -7,7 +7,8 @@ import datasource from './modules/datasource'
 import projects from './modules/projects'
 import monitor from './modules/monitor'
 import resource from './modules/resource'
-import applyInfo from 'ams-starflow-vue/src/store/modules/applyInfo'
+// import applyInfo from 'ams-starflow-vue/src/store/modules/applyInfo'
+import applyInfo from '@/store/modules/applyInfo'
 
 
 Vue.use(Vuex)

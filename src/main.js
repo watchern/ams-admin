@@ -14,6 +14,7 @@ import '../node_modules/bootstrap/dist/js/bootstrap.min.js';
 // import "bootstrap/dist/js/bootstrap.min.js"
 import Element from 'element-ui'
 import './styles/element-variables.scss'
+import "./styles/common.scss"
 import 'font-awesome/css/font-awesome.min.css'
 // Ace start
 import tool from '@/styles/js/tool'
@@ -100,8 +101,10 @@ import baseConfig from 'ams-datamax/src/config/config'
 import clipboard from 'clipboard'
 import axios from 'axios'
 import dataV from '@jiaminghi/data-view'
-import dict from "ams-starflow-vue/src/components/common/dict";
-import common from "ams-starflow-vue/src/components/common/common";
+// import dict from "ams-starflow-vue/src/components/common/dict";
+import dict from "@/components/starflow/common/dict";
+// import common from "ams-starflow-vue/src/components/common/common";
+import common from "@/components/starflow/common/common";
 //import VueAxios from 'vue-axios'
 //Vue.use(VueAxios, axios)
 Vue.prototype.$clipboard = clipboard

@@ -1,0 +1,215 @@
+.table_header_btn {
+  background: linear-gradient(135deg, #6f8fea 100%, #474ad9 0%);
+  height: 24px;
+  padding: 0px 15px;
+  line-height: 23px;
+  border-radius: 4px;
+  color: #ffffff;
+}
+.el-button--info:focus,
+.el-button--info:hover {
+  background: linear-gradient(135deg, #6f8fea 100%, #474ad9 0%);
+}
+.btn_action_img_box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  width: 100%;
+}
+.btn_action_img {
+  width: 13px;
+  height: 13px;
+}
+.filter_icon {
+  margin-top: 3px;
+}
+.table_header_default_title >>> .el-badge__content--primary {
+  background-image: linear-gradient(-49deg, #0070c6 1%, #83c5ff 100%);
+  font-family: PingFangSC-Medium;
+  font-size: 12px;
+  color: #ffffff;
+  letter-spacing: 0;
+  text-align: center;
+  line-height: 15px;
+}
+.table_header_default_title >>> .el-badge__content.is-fixed {
+  right: 5px;
+}
+.table_header_default_title >>> .el-badge__content {
+  padding: 0 4px;
+}
+.marginR14 {
+  margin-right: 14px;
+}
+
+.el-select__tags {
+  flex-wrap: nowrap;
+}
+
+.marginR40 {
+  margin-right: 40px;
+}
+.table_template >>> .el-radio__inner {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #aeb9ca;
+}
+.table_template >>> .el-radio__inner::after {
+  width: 8px;
+  height: 8px;
+}
+.table_template >>> .el-radio__label {
+  font-family: PingFangSC-Regular;
+  font-size: 12px;
+  color: #8998ac;
+  letter-spacing: 0;
+  line-height: 16px;
+}
+.table_template >>> .el-radio__input.is-checked + .el-radio__label {
+  font-family: PingFangSC-Regular;
+  font-size: 12px;
+  color: #8998ac;
+  letter-spacing: 0;
+  line-height: 16px;
+}
+.table_template >>> .el-radio__input.is-checked .el-radio__inner {
+  background: #0070c6;
+  border-color: #0070c6;
+}
+.title_font {
+  font-family: PingFangSC-Medium;
+  font-size: 14px;
+  color: #42444d;
+  font-weight: 600;
+}
+.table_template >>> .el-table th.is-leaf {
+  background: #f8f9fb;
+}
+.table_template >>> textarea {
+  height: 36px !important;
+}
+.el-tooltip__popper {
+  font-size: 14px;
+  max-width: 50%;
+}
+.table_template >>> thead.has-gutter tr th {
+  background: #f9f9f9;
+}
+.table_template >>> tbody tr.el-table__row:hover {
+  background: #eaf6ff;
+  color: #4480d3;
+}
+.table_template >>> tbody tr.el-table__row:focus {
+  background: #eaf6ff;
+  color: #4480d3;
+}
+.table_template >>> .el-pagination__total {
+  position: absolute;
+  left: 20px;
+}
+.table_template >>> .el-table thead {
+  font-family: PingFangSC-Medium;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.85);
+  line-height: 21px;
+}
+.table_template >>> .el-table tbody {
+  font-family: PingFangSC-Regular;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 21px;
+}
+.badge_item i {
+  font-size: 17px;
+}
+.badge_item {
+  position: relative;
+  top: 6px;
+  left: 20px;
+}
+.table_header_default_title {
+  font-family: PingFangSC-Medium;
+  font-size: 14px;
+  color: #42444d;
+}
+.table_page {
+  height: 44px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  border: 1px solid #e8e8e8;
+  margin-top: -1px;
+}
+.table_header {
+  height: auto;
+  border: 1px solid #e8e8e8;
+}
+.table_header_default {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  /* width: 100%; */
+  padding: 10px 20px 10px 20px;
+}
+.operate_template {
+  margin-right: 10px;
+  margin-left: 10px;
+  margin-top: -9px;
+  border-top: 1px solid #e8e8e8;
+  padding: 10px 0;
+}
+.operate_template_content {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 3px;
+}
+.linkClass {
+  color: #1d83d2;
+}
+.search_template {
+  margin-top: 10px;
+  margin-bottom: 30px;
+  border: 1px solid #e8e8e8;
+}
+.title_template {
+  padding: 10px 20px 0px 20px;
+}
+.content {
+  padding: 10px;
+}
+.content_form {
+  padding-top: 10px;
+  background-color: #fcfcfc;
+}
+.operate_btn {
+  height: 24px;
+  padding: 0px 15px;
+  line-height: 23px;
+  border-radius: 4px;
+}
+.search_btn {
+  background: linear-gradient(135deg, #6f8fea 100%, #474ad9 0%);
+}
+.reset_btn {
+  border: #39475b solid 1px;
+  background: linear-gradient(135deg, #6f8fea 100%, #474ad9 0%);
+}
+.form_item >>> .el-form-item__label {
+  font-family: PingFangSC-Regular;
+  font-size: 13px;
+  color: #68707a;
+  letter-spacing: 0;
+  text-align: right;
+}
+.form_item >>> input {
+  font-family: PingFangSC-Regular;
+  font-size: 13px;
+  color: #39475b;
+  letter-spacing: 0;
+  width: 180px;
+}
+.header_operate_btn {
+  display: flex;
+  justify-content: flex-end;
+}
