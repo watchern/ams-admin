@@ -437,11 +437,15 @@
           <div class="son">
 
             <el-form-item label="数据日期:">
-              <el-input type="text"
-                        placeholder="请输入数据日期"
-                        v-model="form.tableCode"
-                        :rows="4">
-              </el-input>
+              <el-date-picker format="yyyy-MM-dd"
+                              type="date"
+                              value-format="yyyy-MM-dd"
+                              @change="changeRelationParam"
+                              placeholder="请输入数据日期"
+                              :rows="4"
+                              v-model="form.dataDate">
+              </el-date-picker>
+
             </el-form-item>
             <el-form-item label="表大小:">
               <el-input type="text"
@@ -476,8 +480,8 @@
 
             <div class="son_check">
 
-              <el-form-item label="负责人:"
-                            prop="personName_str">
+              <!-- prop="personName_str" -->
+              <el-form-item label="负责人:">
                 <el-input type="text"
                           disabled
                           v-model="form.personName_str">
@@ -1023,7 +1027,7 @@ export default {
         tableSize: '',//表大小:
         partitions: '',//表分区
         fileName: '',//文件名称
-
+        dataDate: '',//数据日期
 
         tableCode: '',// 资产编码
         tableType: '',// 资产类型
@@ -2002,7 +2006,9 @@ export default {
     getListTree_data () {
       getListTree().then((res) => {
         this.next_data = res.data
-        this.next_contentsList = res.data.contentsList.children
+        if (res.data.contentsList.children) {
+          this.next_contentsList = res.data.contentsList.children
+        }
         this.next_contentsList.forEach(item => {
           //
           // debugger;
@@ -2061,6 +2067,12 @@ export default {
       this.clear()
     },
 
+    // 数据日期:
+    changeRelationParam (value) {
+      this.form.dataDate = value
+      console.log(this.form.dataDate);
+      // console.log(that.form.tableCode);
+    },
 
     // 下一步的关闭
     close_diag () {
@@ -2086,40 +2098,37 @@ export default {
 
           if (nameSet.size == names.length) {
             // 
-            // for (var i = 0; i < this.form.check_list.length; i++) {
-            // this.form.file_name = this.form.check_list[i].fileName//文件夹名称
-            // this.form.file_name = this.form.fileName[i]
-            const tableForm = {
-              tbName: this.Column_table_query.tbName,//表名
-              tableMetaUuid: this.form.check_list[i].id,
-              displayTbName: this.form.check_list[i].label,
-              dbName: this.form.check_list[i].pid,
-              tbName: this.form.check_list[i].label,
-              folderUuid: this.form.folderUuid,//目录id
-              personLiables: this.form.personLiables,// 资产责任人
-              // increment: this.form.increment,//是否增量
-              isSpike: this.form.isSpike, //是否增量
-              tableRelationQuery: {
-                tableDataSource: this.query.dataSource, //数据源
-                businessSystemId: this.form.businessSystemId, //id主键
-                tableCode: this.form.tableCode, //资产编码
-                tableLayeredId: this.form.tableLayeredId, //资产分层主键
-                tableMetaUuid: this.form.check_list[i].id, //资产主键
-
-                tableRemarks: this.form.tableRemarks, //资产备注
-                tableThemeId: this.form.tableThemeId, //资产主题主键
-                tableType: this.form.tableType, //资产类型
+            for (var i = 0; i < this.form.check_list.length; i++) {
+              this.form.file_name = this.form.check_list[i].fileName//文件夹名称
+              // this.form.file_name = this.form.fileName[i]
+              const tableForm = {
+                tbName: this.Column_table_query.tbName,//表名
+                tableMetaUuid: this.form.check_list[i].id,
+                displayTbName: this.form.check_list[i].label,
+                dbName: this.form.check_list[i].pid,
+                tbName: this.form.check_list[i].label,
+                folderUuid: this.form.folderUuid,//目录id
+                personLiables: this.form.personLiables,// 资产责任人
+                // increment: this.form.increment,//是否增量
                 isSpike: this.form.isSpike, //是否增量
-                isSentFile: this.form.isSentFile, //是否推送文件
-                // fileName: this.form.fileName //文件名称
-                fileName: this.form.file_name
-              },
-            };
-            this.chooseTables.push(tableForm);
-            // }
-            // 
+                tableRelationQuery: {
+                  tableDataSource: this.query.dataSource, //数据源
+                  businessSystemId: this.form.businessSystemId, //id主键
+                  tableCode: this.form.tableCode, //资产编码
+                  tableLayeredId: this.form.tableLayeredId, //资产分层主键
+                  tableMetaUuid: this.form.check_list[i].id, //资产主键
 
-
+                  tableRemarks: this.form.tableRemarks, //资产备注
+                  tableThemeId: this.form.tableThemeId, //资产主题主键
+                  tableType: this.form.tableType, //资产类型
+                  isSpike: this.form.isSpike, //是否增量
+                  isSentFile: this.form.isSentFile, //是否推送文件
+                  // fileName: this.form.fileName //文件名称
+                  fileName: this.form.file_name
+                },
+              };
+              this.chooseTables.push(tableForm);
+            }
             batchSaveTable_save(this.chooseTables).then((resp) => {
               if (resp.code == 0) {
                 this.$message({
