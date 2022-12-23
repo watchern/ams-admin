@@ -385,7 +385,7 @@
         this.clearParams()
       },
       onSubmit(){
-        const capacity1 = this.personalSpace.personalSpaceCapacity
+        const capacity1 = this.personalSpace.personalSpaceCapacity;
         const capacity2 = this.personalSpaceCapacityNeed
         this.personalSpace.personalSpaceCapacity = capacity1+capacity2
         const param = this.personalSpace
@@ -419,6 +419,12 @@
       },
       onDelete(){
         const params = this.personalSpaceUuidList
+        // const personalSpace = {
+        //   personalSpaceUuid: this.personalSpaceUuidList[0]
+        // }
+        // const relParam = []
+        // relParam.push(personalSpace)
+        // batchUpdateForFinishHandle(relParam)
         if(params.length == 0){
           this.$message({
             type: 'warning',
@@ -428,7 +434,6 @@
           deletePersonalSpace(params)
             .then((res)=>{
               this.initPersonalSpaceData()
-              // location.reload()
             })
         }
       },
@@ -465,15 +470,16 @@
         console.log(this.personalSpaceSelectionList[0],"this.personalSpaceSelectionList[0]")
         console.log(this.temp,"this.temp")
         // alert(JSON.stringify(this.temp))
+        //业务主键
         this.flowItem.appDataUuid=this.temp.personalSpaceUuid;
+        //版本id 随机生成
         this.flowItem.versionUuid= this.common.randomString4Len(8);
         // this.flowItem.applyTitle="场景详情流程";
+        //申请业务的名字（待办标题）
         this.flowItem.applyTitle=this.temp.personalSpaceName;
         console.log(this.flowItem,"flowItem")
         this.dialogFlowItemShow=true;
 
-        //将状态修改为办理中
-        // batchUpdateForHandle(this.personalSpaceSelectionList)
       },
       joinUpdateDialog(){
         const param = this.personalSpaceUuidList[0]
@@ -546,6 +552,9 @@
         //保存业务数据成功后
         setTimeout(() => {
           this.$refs["flowItem"].submitFlow();
+          //将状态修改为办理中
+          batchUpdateForHandle(this.personalSpaceSelectionList)
+          location.reload()
         }, 20);
       },
     }
