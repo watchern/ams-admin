@@ -38,7 +38,7 @@
       </el-form>
     </div>
 
-    <div>
+<!--    <div>-->
 <!--      需要动态引入各个业务的详情页面 进行展示-->
 <!--       <el-button @click="qihuan">展开详情</el-button>-->
        <div v-if="displayBus">
@@ -52,300 +52,303 @@
 <!--              :actionIdList="actionIdList"-->
 <!--              :approvalData="approvalData"-->
 <!--      ></businessDetail>-->
+<!--         <button @click="templateButton">111111</button>-->
+      <component :is="bottomPanel" ref="applyPage" @fromSon=sonFun />
+         <!-- 流程内容：审核意见、填写意见、选择下一步 -->
+         <div class="flow_template">
+           <template v-if="flowSetup.opinionList">
+             <div class="table_template">
+               <div class="title_template title_font">
+                 <span>审核列表</span>
+               </div>
+               <el-table
+                       ref="opinionTable"
+                       :data="tableData"
+                       border
+                       style="width: 100%"
+               >
+                 <el-table-column label="序号" type="index"></el-table-column>
+                 <el-table-column
+                         prop="activityName"
+                         label="活动"
+                         width
+                 ></el-table-column>
+                 <el-table-column prop="noteText" label="意见"></el-table-column>
+                 <el-table-column
+                         prop="personName"
+                         label="姓名"
+                         width
+                 ></el-table-column>
+                 <el-table-column prop="noteDate" label="办理时间"></el-table-column>
+               </el-table>
+             </div>
+           </template>
+           <template v-if="flowSetup.opinion">
+             <div class="opinion_template">
+               <div class="title_template">
+                 <span class="title_font">审核意见</span>
+               </div>
+               <div class="content">
+                 <div class>
+                   <el-form
+                           ref="form"
+                           :model="opinionform"
+                           label-width="128px"
+                           size="mini"
+                   >
+                     <!-- 是否同意，切换工作流分支 -->
+                     <el-row :gutter="20">
+                       <el-col :span="12">
+                         <el-form-item
+                                 label="是否同意"
+                                 class="form_item"
+                                 v-if="showDoAgree"
+                         >
+                           <el-switch
+                                   v-if="forbiddoAgree || forbidAgree4Yw"
+                                   v-model="opinionform.doAgree"
+                                   @change="fetchBranch"
+                                   disabled
+                           ></el-switch>
+                           <el-switch
+                                   v-else
+                                   v-model="opinionform.doAgree"
+                                   @change="fetchBranch"
+                           ></el-switch>
+                         </el-form-item>
+                       </el-col>
+                     </el-row>
+                     <el-row :gutter="20">
+                       <el-col :span="8">
+                         <el-form-item
+                                 label="处理意见"
+                                 class="form_item"
+                                 prop="opinion"
+                         >
+                           <el-input
+                                   type="textarea"
+                                   v-model="opinionform.opinion"
+                           ></el-input>
+                         </el-form-item>
+                       </el-col>
+                       <el-col :span="12">
+                         <div v-if="yancheng">
+                           常用语：
+                           <el-select
+                                   v-model="id"
+                                   clearable
+                                   placeholder="请选择"
+                                   @change="selectedValue"
+                           >
+                             <el-option
+                                     v-for="item in reportNameList"
+                                     :key="item.id"
+                                     :label="item.name"
+                                     :value="item.name"
+                             >
+                             </el-option>
+                           </el-select>
+                         </div>
+                       </el-col>
+                     </el-row>
+                     <el-row :gutter="20" v-if="showDoCheck">
+                       <el-col :span="8">
+                         <el-form-item
+                                 label="是否通过"
+                                 class="form_item"
+                                 prop="doCheck"
+                         >
+                           <el-switch v-model="opinionform.doCheck"></el-switch>
+                         </el-form-item>
+                       </el-col>
+                     </el-row>
+                   </el-form>
+                 </div>
+               </div>
+             </div>
+           </template>
+           <template v-if="flowSetup.nextStep && this.isLast">
+             <div class="person_template">
+               <div class="title_template">
+                 <span class="title_font">选择下一步</span>
+               </div>
+               <div class="content">
+                 <div class>
+                   <el-form
+                           ref="form"
+                           :model="personform"
+                           label-width="128px"
+                           size="mini"
+                   >
+                     <el-row :gutter="20">
+                       <el-col :span="12">
+                         <el-form-item label="流程节点" class="form_item">
+                           <el-radio-group
+                                   v-model="personform.activity"
+                                   @change="handleChange"
+                           >
+                             <el-radio
+                                     v-for="(item, index) in activityList"
+                                     :key="index"
+                                     :label="item.activityId"
+                             >{{ item.activityName }}</el-radio
+                             >
+                           </el-radio-group>
+                         </el-form-item>
+                       </el-col>
+                     </el-row>
+                     <el-row :gutter="20">
+                       <el-col :span="24">
+                         <el-form-item label="办理人" class="form_item">
+                           <el-checkbox-group
+                                   v-model="checkedPerList"
+                                   @change="checkedPersonList"
+                                   v-if="this.isAllAssignment == 'checkbox'"
+                           >
+                             <el-row :gutter="20">
+                               <el-col :span="12">
+                                 <el-checkbox
+                                         v-for="item in personItem"
+                                         :key="item.personUuid"
+                                         :label="item.personUuid"
+                                 >{{ item.personName }}</el-checkbox
+                                 >
+                               </el-col>
+                             </el-row>
+                           </el-checkbox-group>
 
-      <component :is="bottomPanel" ref="ceshi" @fromSon="sonFun"/>
-       </div>
-    </div>
-
-    <!-- 流程内容：审核意见、填写意见、选择下一步 -->
-    <div class="flow_template">
-      <template v-if="flowSetup.opinionList">
-        <div class="table_template">
-          <div class="title_template title_font">
-            <span>审核列表</span>
-          </div>
-          <el-table
-                  ref="opinionTable"
-                  :data="tableData"
-                  border
-                  style="width: 100%"
-          >
-            <el-table-column label="序号" type="index"></el-table-column>
-            <el-table-column
-                    prop="activityName"
-                    label="活动"
-                    width
-            ></el-table-column>
-            <el-table-column prop="noteText" label="意见"></el-table-column>
-            <el-table-column
-                    prop="personName"
-                    label="姓名"
-                    width
-            ></el-table-column>
-            <el-table-column prop="noteDate" label="办理时间"></el-table-column>
-          </el-table>
-        </div>
-      </template>
-      <template v-if="flowSetup.opinion">
-        <div class="opinion_template">
-          <div class="title_template">
-            <span class="title_font">审核意见</span>
-          </div>
-          <div class="content">
-            <div class>
-              <el-form
-                      ref="form"
-                      :model="opinionform"
-                      label-width="128px"
-                      size="mini"
-              >
-                <!-- 是否同意，切换工作流分支 -->
-                <el-row :gutter="20">
-                  <el-col :span="12">
-                    <el-form-item
-                            label="是否同意"
-                            class="form_item"
-                            v-if="showDoAgree"
-                    >
-                      <el-switch
-                              v-if="forbiddoAgree || forbidAgree4Yw"
-                              v-model="opinionform.doAgree"
-                              @change="fetchBranch"
-                              disabled
-                      ></el-switch>
-                      <el-switch
-                              v-else
-                              v-model="opinionform.doAgree"
-                              @change="fetchBranch"
-                      ></el-switch>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-                <el-row :gutter="20">
-                  <el-col :span="8">
-                    <el-form-item
-                            label="处理意见"
-                            class="form_item"
-                            prop="opinion"
-                    >
-                      <el-input
-                              type="textarea"
-                              v-model="opinionform.opinion"
-                      ></el-input>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="12">
-                    <div v-if="yancheng">
-                      常用语：
-                      <el-select
-                              v-model="id"
-                              clearable
-                              placeholder="请选择"
-                              @change="selectedValue"
-                      >
-                        <el-option
-                                v-for="item in reportNameList"
-                                :key="item.id"
-                                :label="item.name"
-                                :value="item.name"
-                        >
-                        </el-option>
-                      </el-select>
-                    </div>
-                  </el-col>
-                </el-row>
-                <el-row :gutter="20" v-if="showDoCheck">
-                  <el-col :span="8">
-                    <el-form-item
-                            label="是否通过"
-                            class="form_item"
-                            prop="doCheck"
-                    >
-                      <el-switch v-model="opinionform.doCheck"></el-switch>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-              </el-form>
-            </div>
-          </div>
-        </div>
-      </template>
-      <template v-if="flowSetup.nextStep && this.isLast">
-        <div class="person_template">
-          <div class="title_template">
-            <span class="title_font">选择下一步</span>
-          </div>
-          <div class="content">
-            <div class>
-              <el-form
-                      ref="form"
-                      :model="personform"
-                      label-width="128px"
-                      size="mini"
-              >
-                <el-row :gutter="20">
-                  <el-col :span="12">
-                    <el-form-item label="流程节点" class="form_item">
-                      <el-radio-group
-                              v-model="personform.activity"
-                              @change="handleChange"
-                      >
-                        <el-radio
-                                v-for="(item, index) in activityList"
-                                :key="index"
-                                :label="item.activityId"
-                        >{{ item.activityName }}</el-radio
-                        >
-                      </el-radio-group>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-                <el-row :gutter="20">
-                  <el-col :span="24">
-                    <el-form-item label="办理人" class="form_item">
-                      <el-checkbox-group
-                              v-model="checkedPerList"
-                              @change="checkedPersonList"
-                              v-if="this.isAllAssignment == 'checkbox'"
-                      >
-                        <el-row :gutter="20">
-                          <el-col :span="12">
-                            <el-checkbox
-                                    v-for="item in personItem"
-                                    :key="item.personUuid"
-                                    :label="item.personUuid"
-                            >{{ item.personName }}</el-checkbox
-                            >
-                          </el-col>
-                        </el-row>
-                      </el-checkbox-group>
-
-                      <el-radio-group
-                              v-model="personform.transactor"
-                              v-if="this.isAllAssignment == 'radio'"
-                      >
-                        <el-row :gutter="20">
-                          <el-col
-                                  :span="12"
-                                  v-for="(item, index) in personItem"
-                                  :key="index"
-                          >
-                            <el-radio :label="item.personUuid">{{
-                              item.personName
-                              }}</el-radio>
-                          </el-col>
-                        </el-row>
-                      </el-radio-group>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-              </el-form>
-            </div>
-          </div>
-        </div>
-      </template>
-      <!-- 流程最后一个节点flowEnd展示选择知会人 -->
-      <template v-if="this.notifyPersonTag">
-        <div class="person_template">
-          <div class="title_template">
-            <span class="title_font">选择知会人</span>
-          </div>
-          <div class="content">
-            <div class>
-              <el-form ref="form" :model="form" label-width="128px" size="mini">
-                <el-row :gutter="20">
-                  <el-col :span="12">
-                    <el-form-item
-                            label="知会人："
-                            class="form_item"
-                            prop="personName"
-                    >
-                      <el-input
-                              v-model="form.personName"
-                              style="width: 180px"
-                              readonly="readonly"
-                      ></el-input>
-                      <el-input
-                              v-model="form.personCode"
-                              v-if="(show = false)"
-                      ></el-input>
-                      <el-button
-                              size="mini"
-                              type="info"
-                              class="table_header_btn"
-                              @click="selectNotifyPerson"
-                      >选择</el-button
-                      >
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-              </el-form>
-              <!-- 选择知会人 -->
-              <!-- <el-dialog
-                title="选择人员"
-                :visible.sync="dialogVisibleNotifyPerson"
-                v-if="dialogVisibleNotifyPerson"
-                :destroy-on-close="true"
-                :close-on-click-modal="false"
-                append-to-body
-                width="70%"
-              >
-                <span>
-                  <OrgPersonListOut
-                    ref="auditObjLeader"
-                    @closeMain="closeObjLeader"
-                    @closeObjLeader="closeLeaderdialog"
-                  ></OrgPersonListOut>
-                </span>
-              </el-dialog> -->
-            </div>
-          </div>
-        </div>
-      </template>
-    </div>
-    <div class="btns_wrap">
-      <div class="btns_rigth">
-        <el-button
-                class="btn_editor"
-                type="primary"
-                @click="back"
-                v-if="!isRemingMessage"
-        >返回</el-button
-        >
-        <el-button
-                class="btn_editor"
-                type="primary"
-                @click="saveNew"
-                v-if="!flowSetup.done"
-        >提交</el-button
-        >
-        <el-button
-                type="primary"
-                class="btn_editor"
-                @click="takeBack"
-                v-if="
+                           <el-radio-group
+                                   v-model="personform.transactor"
+                                   v-if="this.isAllAssignment == 'radio'"
+                           >
+                             <el-row :gutter="20">
+                               <el-col
+                                       :span="12"
+                                       v-for="(item, index) in personItem"
+                                       :key="index"
+                               >
+                                 <el-radio :label="item.personUuid">{{
+                                   item.personName
+                                   }}</el-radio>
+                               </el-col>
+                             </el-row>
+                           </el-radio-group>
+                         </el-form-item>
+                       </el-col>
+                     </el-row>
+                   </el-form>
+                 </div>
+               </div>
+             </div>
+           </template>
+           <!-- 流程最后一个节点flowEnd展示选择知会人 -->
+           <template v-if="this.notifyPersonTag">
+             <div class="person_template">
+               <div class="title_template">
+                 <span class="title_font">选择知会人</span>
+               </div>
+               <div class="content">
+                 <div class>
+                   <el-form ref="form" :model="form" label-width="128px" size="mini">
+                     <el-row :gutter="20">
+                       <el-col :span="12">
+                         <el-form-item
+                                 label="知会人："
+                                 class="form_item"
+                                 prop="personName"
+                         >
+                           <el-input
+                                   v-model="form.personName"
+                                   style="width: 180px"
+                                   readonly="readonly"
+                           ></el-input>
+                           <el-input
+                                   v-model="form.personCode"
+                                   v-if="(show = false)"
+                           ></el-input>
+                           <el-button
+                                   size="mini"
+                                   type="info"
+                                   class="table_header_btn"
+                                   @click="selectNotifyPerson"
+                           >选择</el-button
+                           >
+                         </el-form-item>
+                       </el-col>
+                     </el-row>
+                   </el-form>
+                   <!-- 选择知会人 -->
+                   <!-- <el-dialog
+                     title="选择人员"
+                     :visible.sync="dialogVisibleNotifyPerson"
+                     v-if="dialogVisibleNotifyPerson"
+                     :destroy-on-close="true"
+                     :close-on-click-modal="false"
+                     append-to-body
+                     width="70%"
+                   >
+                     <span>
+                       <OrgPersonListOut
+                         ref="auditObjLeader"
+                         @closeMain="closeObjLeader"
+                         @closeObjLeader="closeLeaderdialog"
+                       ></OrgPersonListOut>
+                     </span>
+                   </el-dialog> -->
+                 </div>
+               </div>
+             </div>
+           </template>
+         </div>
+         <div class="btns_wrap">
+           <div class="btns_rigth">
+             <el-button
+                     class="btn_editor"
+                     type="primary"
+                     @click="back"
+                     v-if="!isRemingMessage"
+             >返回</el-button
+             >
+             <el-button
+                     class="btn_editor"
+                     type="primary"
+                     @click="saveNew"
+                     v-if="!flowSetup.done"
+             >提交</el-button
+             >
+             <el-button
+                     type="primary"
+                     class="btn_editor"
+                     @click="takeBack"
+                     v-if="
             flowSetup.done &&
             approvalData.applyState == 1 &&
             this.flowItemParam.stopSuspendSign != '2' &&
             this.out != '1'
           "
-        >收回</el-button
-        >
-        <el-button
-                type="primary"
-                class="btn_editor"
-                @click="stopSuspend"
-                v-if="this.flowItemParam.stopSuspendSign == '2' && this.out != '1'"
-        >终止</el-button
-        >
-      </div>
-    </div>
+             >收回</el-button
+             >
+             <el-button
+                     type="primary"
+                     class="btn_editor"
+                     @click="stopSuspend"
+                     v-if="this.flowItemParam.stopSuspendSign == '2' && this.out != '1'"
+             >终止</el-button
+             >
+           </div>
+         </div>
+
+       </div>
+<!--    </div>-->
+
+
   </div>
 </template>
 <script>
 
   import { selectInitDetail,submitToPerson } from "@/api/starflow";
-  import { resolve } from "path";
+  import {inItCode} from '@/api/base/sysdata'
+  // import { resolve } from "path";
   //用于知会人
   // import OrgPersonListOut from "@/components/common/orgPersonListOut";
   // import businessDetail from "@/views/dataDetail/businessDetail";
@@ -353,12 +356,18 @@
   // const loadComponent = (value) => {
   //   // return (resolve) => require([`@/components/starflow/todowork/${value}`],resolve)
   //   return require([`./${value}`],resolve);
-  // };
+  // }
   const loadComponent = (view) => {
-    return (resolve) => require([`./${view}`], resolve)
+    return (resolve) => require([`@/views/${view}`], resolve)
     // return (resolve) => require([`${view}`], resolve)
   }
+  // const loadComponent = (value) =>{return import(`${value}`)} ;
   export default {
+    computed: {
+      fieldType () {
+        return () => import(`${this.type}`)
+      }
+    },
     data() {
       return {
         applyUuid:'', //业务主键id
@@ -449,46 +458,79 @@
       clearInterval(this.timer);
     },
     created(){
-      this.activePage = 'ExpansionDetail'
+      // activePage 需要调接口 动态查询页面
+
+      // this.activePage = '@/views/data/dataPermission/index'
       // this.add()
     },
     mounted: function () {
-      let out = this.$route.query.out;
-      // //该部分为其它工程接入审计系统用
-      if ("1" == out) {
-        //判断路由跳转过来的是否携带参数
-        this.projectStatus = this.$route.query.projectStatus;
-        this.projectType = this.$route.query.projectType;
-        if ("1" == this.projectStatus) {
-          this.yancheng = true;
-          this.applyIdiomTest();
-        }
-        this.fetchApply(this.$route.query.applyUuid);
+      //当前状态 待办或者已办
+      // const currentStatus = this.$route.params.approvalData.currentState
+      // CAL_COMPLETED 已办 CAL_ACCEPTED 待办
+      const param = {
+        condition:{
+          baseCodeInfo: '',
+          dataSortDesc: '',
+          dataSortName: '工作流待办路径配置',
+          dataSortUuid: 'd4cad8fef4284b5a90deda982311f9ae',
+          dataSortValue: '',
+          editTag: null,
+          extendTag: '0',
+          isDeleted: 0,
+          keyword: null,
+          remark: null,
+        },
+        pageNo: 1,
+        pageSize: 20,
+        sortBy: 'asc',
+        sortName: 'create_time'
       }
-      this.out = out;
-      if (
-              this.$route.params.approvalData &&
-              this.$route.params.approvalData != null
-      ) {
-        // 这是正常点开待办已办详情，用的this.$router.push，name跳转params传参
-        this.approvalData = this.$route.params.approvalData;
-        //判断flowItem是从引用组件传递来的，还是通过跳转传递过来的。
-        this.flowItemParam = this.$route.params.flowItem;
-        this.flowSetup = this.$route.params.flowSet;
-        this.applyDetail = this.$route.params.applyDetail;
-        this.applyTitleform.applyTitle = this.approvalData.applyTitle;
-        this.applyTitleform.applyTypeName = this.approvalData.applyTypeName;
-        this.applyTitleform.applyType = this.approvalData.applyType;
-        this.jumpTag = this.$route.params.jumpTag;
-        this.projectStatus = this.$route.params.projectStatus;
-        this.projectType = this.$route.params.projectType;
-        this.flowSetup.projectType = this.projectType;
-        if ("1" == this.projectStatus) {
-          this.yancheng = true;
-          this.applyIdiomTest();
-        }
-        this.init();
-      }
+      const needType = this.$route.params.applyDetail.type
+      inItCode(param)
+        .then((res)=>{
+          const result = res.data.records
+          result.forEach((value,index)=>{
+            if(value.codeName == needType){
+              this.activePage = value.codeDesc
+            }
+          })
+          let out = this.$route.query.out;
+          // //该部分为其它工程接入审计系统用
+          if ("1" == out) {
+            //判断路由跳转过来的是否携带参数
+            this.projectStatus = this.$route.query.projectStatus;
+            this.projectType = this.$route.query.projectType;
+            if ("1" == this.projectStatus) {
+              this.yancheng = true;
+              this.applyIdiomTest();
+            }
+            this.fetchApply(this.$route.query.applyUuid);
+          }
+          this.out = out;
+          if (
+                  this.$route.params.approvalData &&
+                  this.$route.params.approvalData != null
+          ) {
+            // 这是正常点开待办已办详情，用的this.$router.push，name跳转params传参
+            this.approvalData = this.$route.params.approvalData;
+            //判断flowItem是从引用组件传递来的，还是通过跳转传递过来的。
+            this.flowItemParam = this.$route.params.flowItem;
+            this.flowSetup = this.$route.params.flowSet;
+            this.applyDetail = this.$route.params.applyDetail;
+            this.applyTitleform.applyTitle = this.approvalData.applyTitle;
+            this.applyTitleform.applyTypeName = this.approvalData.applyTypeName;
+            this.applyTitleform.applyType = this.approvalData.applyType;
+            this.jumpTag = this.$route.params.jumpTag;
+            this.projectStatus = this.$route.params.projectStatus;
+            this.projectType = this.$route.params.projectType;
+            this.flowSetup.projectType = this.projectType;
+            if ("1" == this.projectStatus) {
+              this.yancheng = true;
+              this.applyIdiomTest();
+            }
+            this.init();
+          }
+        })
     },
     computed: {
       lessionMstate() {
@@ -526,7 +568,9 @@
       },
       activePage: {
         handler(value) {
-          this.bottomPanel = loadComponent(value)
+          if(value){
+            this.bottomPanel = loadComponent(value)
+          }
         },
         immediate: true,
       },
@@ -608,10 +652,9 @@
                 });
       },
       add(){
-        console.log(this.$refs,"refs")
-        var templateParam = 'cf6e8874-d1d3-43be-83fc-1038704edaba'
-        // var templateParam = this.$route.query.applyUuid
-        this.$refs.ceshi.queryByUuid(templateParam)
+        var templateParam = this.$route.params.approvalData.appDataUuid
+        console.log(templateParam,"templateParam")
+        this.$refs.applyPage.queryByUuid(templateParam)
       },
       init() {
         //临时参数 因为切换账号 太鸡肋 先写死id 进行测试
@@ -890,7 +933,6 @@
           this.common.alertMsg(2, "请填写意见后再提交流程");
           return;
         }
-        // alert(JSON.stringify(this.personItem))
         // alert(this.isLast)
         if (this.personItem.length != 0 && this.personItem[0].personUuid) {
           //结束点
@@ -954,7 +996,7 @@
                 type: "warning",
               })
                       .then(() => {
-                        this.save();
+                        this.save()
                       })
                       .catch(() => {});
               // this.save();
@@ -989,12 +1031,16 @@
             this.$store.dispatch("applyInfo/setStatus", "3");
           }
         }
-        //在详情页中写一个更新业务状态的方法供此页面调用
         setTimeout(() => {
-          var templateParam = this.$route.query.applyUuid
-          this.$refs["ceshi"].updateApplyStatus(templateParam);
+          //判断是否为最后一个节点 最后一个节点就将状态改为办理完成
+          this.personItem.forEach((value,index)=>{
+            if(value.personUuid == 'flowEnd'){
+              var templateParam = this.$route.params.approvalData.appDataUuid
+              this.$refs["applyPage"].updateApplyStatus(templateParam);
+            }
+        })
+          this.submitFlow();
         }, 20);
-        this.submitFlow();
       },
       submitFlow() {
         // this.formData.personUuId = this.personform.transactor;
@@ -1092,10 +1138,7 @@
                     }
                   });
         } else {
-
           submitToPerson(this.formData).then((resp) => {
-            console.log("进入submittoperson")
-            console.log(resp,"resp")
             if (resp.code == "0") {
               this.common.endLoading();
               this.common.alertMsg(1, "保存成功");
@@ -1380,34 +1423,42 @@
       },
       sonFun(){
         this.add()
+      },
+      templateButton(){
+        this.activePage = 'data/expansion/index'
       }
     },
   };
 </script>
-<style src="../css/tableItem.css" scoped>
+<style src="../css/tableItem.css">
 </style>
-<style src="../css/form.css" scoped>
+<style src="../css/form.css">
 </style>
-<style>
-  .admin_right_main .content_form .el-input .el-input__inner {
+<style scoped >
+  .admin_right_main{
+    height: calc(100vh - 100px);
+    overflow: auto;
+  }
+
+  .admin_right_main >>> .content_form .el-input .el-input__inner {
     width: 360px;
   }
 
-  .todoDetail .el-form-item__label {
+  .todoDetail  >>>.el-form-item__label {
     float: left !important;
   }
 
-  .todoDetail .form_item_one .el-form-item__content {
+  .todoDetail .form_item_one >>>.el-form-item__content {
     margin-left: 0px !important;
   }
-  .todoDetail .el-form-item__label {
+  .todoDetail >>> .el-form-item__label {
     font-weight: normal !important;
   }
-  .todoDetail .el-radio__label {
+  .todoDetail >>> .el-radio__label {
     /* color: #68707a !important; */
     font-size: 13px !important;
   }
-  .todoDetail .el-radio {
+  .todoDetail >>>.el-radio {
     color: #68707a !important;
   }
 </style>

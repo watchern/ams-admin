@@ -365,12 +365,12 @@ export default {
       },
       //初始化审批页面参数
       flowItem: {
-        wftype: "",
+        wftype: "",//流程id
         applyUuid: "",
         detailUuids: "",
-        versionUuid: "",
-        workEffortId: "",
-        activityId: "",
+        versionUuid: "",//版本id
+        workEffortId: "",//节点id
+        activityId: "",//下一流程节点id
       },
       //审核信息的状态
       applyInfo: {
@@ -642,11 +642,14 @@ export default {
     //更新we_party_Assignment 表中的 CURRENT_STATE  工作项改为已受理
 
     updateToAccepted(row) {
-      updateToAccepted(row).then((resp) => {
-        if (resp.data.code == "0") {
-            this.partyAssignment = true;
-          }
-        });
+      console.log("进入到updateToAccepted方法")
+      // 因为下面方法暂时不好用 没有权限 先写死
+      this.partyAssignment = true;
+      // updateToAccepted(row).then((resp) => {
+      //   if (resp.data.code == "0") {
+      //       this.partyAssignment = true;
+      //     }
+      //   });
     },
   },
 };

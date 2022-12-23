@@ -97,7 +97,7 @@
                 this.$emit('fromSonUpdate',this.personalSpace,this.personalSpaceCapacityNeed)
             },
             closeUpdateDialog(){
-                this.$emit('fromSonDialog')
+                this.$emit('fromSonCloseDiaglog')
             },
 
         }

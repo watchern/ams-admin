@@ -75,7 +75,14 @@
                 })
             },
             updateApplyStatus(value){
-                batchUpdateForFinishHandle(value)
+                console.log("进入最后的更改为已办的方法")
+                console.log(value,"最后一步传过来的id值")
+                var personalSpace = {
+                    personalSpaceUuid: value
+                }
+                var relParam = []
+                relParam.push(personalSpace)
+                batchUpdateForFinishHandle(relParam)
             }
         }
     }

@@ -107,7 +107,7 @@ export function getEtlInfoByTableId (tableMetaUuid) {
     baseURL: baseURL,
     url: `/${controller2}/getEtlInfoByTableId`,
     method: 'get',
-    params:{tableMetaUuid:tableMetaUuid}
+    params: { tableMetaUuid: tableMetaUuid }
   })
 }
 
@@ -332,6 +332,30 @@ export function delete_data (data) {
     baseURL: baseURL,
     url: `/${controller2}/delete/${param[0]}/${param[1]}`,
     method: 'delete',
+    data
+  })
+}
+
+
+
+// 新增功能=====
+
+// 列信息
+export function getColsInfoByTableName (data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/getColsInfoByTableName`,
+    method: 'post',
+    data
+  })
+}
+
+// 同步数据
+export function synDataStructure (data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/synDataStructure`,
+    method: 'post',
     data
   })
 }

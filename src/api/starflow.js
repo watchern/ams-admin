@@ -10,7 +10,8 @@ export function auditDataList(data) {
 
 export function updateToAccepted(data) {
   return request({
-    url: '/starflow/applyMes/sf/apply/updateToAccepted',
+    // url: '/starflow/applyMes/sf/apply/updateToAccepted',
+    url: '/applyMes/sf/apply/updateToAccepted',
     method: 'post',
     data
   })

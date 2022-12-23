@@ -1,6 +1,8 @@
 <template>
   <div class="_width  resources">
     <!-- 基本信息详情 -->
+    <!-- =={{ this.list_details }}===== -->
+
     <div class="top_tag">
       <ul>
         <li class="navgatorLi"
@@ -8,7 +10,6 @@
             @click="handleLeft(index)"
             v-for="(item,index) in tag"
             :key="item">{{item}}</li>
-
       </ul>
     </div>
     <div class="right_details"
@@ -24,13 +25,13 @@
             <el-form ref="form"
                      :model="form"
                      label-width="80px">
-              <el-form-item label="表名称:">
-                <el-input v-model="form.name"></el-input>
+              <el-form-item label="表名称：">
+                <el-input v-model="form.tbName"></el-input>
               </el-form-item>
-              <el-form-item label="表中文名:">
-                <el-input v-model="form.name"></el-input>
+              <el-form-item label="表中文名：">
+                <el-input v-model="form.chnName"></el-input>
               </el-form-item>
-              <el-form-item label="表说明:">
+              <el-form-item label="表说明：">
                 <el-input v-model="form.name"
                           type="textarea"></el-input>
               </el-form-item>
@@ -109,13 +110,14 @@
                   </el-select>
                 </el-form-item>
                 <el-form-item label="表大小：">
-                  <el-input placeholder="请输入表大小"></el-input>
+                  <el-input placeholder="请输入表大小"
+                            v-model="form.tableSize"></el-input>
                 </el-form-item>
               </div>
 
               <div class="son">
                 <el-form-item label="数据数量：">
-                  <el-select v-model="form.name"
+                  <el-select v-model="form.rowNum"
                              placeholder="请输入数据数量">
                     <el-option v-for="item in options"
                                :key="item.value"
@@ -124,13 +126,13 @@
                     </el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="负责人">
+                <el-form-item label="负责人：">
                   <el-input placeholder="请输入负责人"></el-input>
                 </el-form-item>
               </div>
 
               <div class="son">
-                <el-form-item label="表分区">
+                <el-form-item label="表分区：">
                   <el-select v-model="form.name"
                              placeholder="请输入数据数量">
                     <el-option v-for="item in options"
@@ -140,7 +142,7 @@
                     </el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="增全量">
+                <el-form-item label="增全量：">
                   <el-select v-model="form.name"
                              placeholder="请选择增量全量">
                     <el-option v-for="item in options"
@@ -152,7 +154,7 @@
                 </el-form-item>
               </div>
 
-              <el-form-item label="数据标签:">
+              <el-form-item label="数据标签：">
                 <div class="input_blue"
                      @click="onclick_infotion_tag()">
                   <div v-for="(item,index) in TagsAll"
@@ -174,7 +176,7 @@
 
               </el-form-item>
 
-              <el-form-item label="表热度:">
+              <el-form-item label="表热度：">
                 <ul class="Heat_ul _width">
                   <li v-for="(it,i) in Heat"
                       :key="i">
@@ -196,29 +198,29 @@
              id="id1">
           <h2 :class="{'isActive': navgatorIndex == 1}">列信息</h2>
           <div class="padding10">
-            <el-table :data="tableData"
+            <el-table :data="Column_tableData.colMetas"
                       style="width: 100%">
-              <el-table-column prop="date"
+              <el-table-column prop="colName"
                                align="center"
                                label="字段名称">
               </el-table-column>
-              <el-table-column prop="name"
+              <el-table-column prop="chnName"
                                align="center"
                                label="字段中文名">
               </el-table-column>
-              <el-table-column prop="address"
+              <el-table-column prop="dataType"
                                align="center"
                                label="字段类型">
               </el-table-column>
-              <el-table-column prop="address"
+              <el-table-column prop="dataLength"
                                align="center"
                                label="字段长度">
               </el-table-column>
 
-              <el-table-column prop="address"
+              <!-- <el-table-column prop="address"
                                align="center"
                                label="字段说明">
-              </el-table-column>
+              </el-table-column> -->
 
             </el-table>
           </div>
@@ -228,7 +230,7 @@
              id="id2">
           <h2 :class="{'isActive': navgatorIndex == 2}">索引信息</h2>
           <div class="padding10">
-            <el-table :data="tableData"
+            <el-table :data="Column_tableData.colMetas"
                       style="width: 100%">
               <el-table-column prop="date"
                                label="名称">
@@ -253,10 +255,10 @@
           <div class="padding20"
                style="text-align: right;">
             <el-button type="primary"
-                       class="oper-btn"
                        @click="add_table()">新增</el-button>
           </div>
           <div style="padding: 0 20px;">
+            <!-- 数据表关联关系 -->
             <ProcessTree></ProcessTree>
           </div>
         </div>
@@ -267,7 +269,7 @@
           数据表字典信息
           <div class="padding20">
             <!-- <LineMap></LineMap> -->
-            <EditMap></EditMap>
+            <!-- <EditMap></EditMap> -->
           </div>
 
         </div>
@@ -349,7 +351,10 @@
 import ProcessTree from "@/components/directory/process_tree.vue"
 import LineMap from "@/components/directory/lineMap.vue"
 import EditMap from "@/components/directory/edit_map.vue"
-
+import {
+  getBasicInfo,//列表点击详情
+  getColsInfo,//列信息
+} from "@/api/data/table-info";
 export default {
   components: { ProcessTree, LineMap, EditMap },
   props: {
@@ -362,8 +367,14 @@ export default {
     limit: {
       // 最多生成标签数量
       type: Number,
-
     },
+    tableMetaUuid: {
+      type: String,
+      default () {
+        return []
+      }
+    },
+
   },
   data () {
     return {
@@ -371,10 +382,17 @@ export default {
       listBoxState: true,//点击导航栏时，暂时停止监听页面滚动
       dom_scrollTop: 0,//元素滚动距离
       tag: ['基本信息', '列信息', '索引信息', '数据表关联关系', '数据表字典信息'],
+      list_details: {},//基本信息
       // 基本信息
       form: {
         name: '',
+        tbName: '',//表名称
+        chnName: '',//中文名
+        tableSize: '',//表大小
+        rowNum: '',//表数据量
       },
+
+
 
       options: [{
         value: '选项1',
@@ -400,23 +418,7 @@ export default {
       ],//表热度
 
       // 列信息
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }],
+      Column_tableData: [],
       // 查看sql
       sql: ['SYS_USER_NAMESYS_USER_NAME'],
       visible_sql: false,//查看sql
@@ -458,9 +460,42 @@ export default {
     // this.$nextTick(function () {
     //   let height_conter = this.$refs.element.offsetHeight;  //100
     // })
+    this.details(this.tableMetaUuid)
+    this.table_list(this.tableMetaUuid)
 
   },
   methods: {
+    // 基本信息
+    details (tableId) {
+      getBasicInfo(tableId).then(resp => {
+        console.log(resp.data);
+        this.list_details = resp.data
+        this.form.tbName = resp.data.tbName//表名称
+        this.form.chnName = resp.data.chnName//中文名
+        this.form.tableSize = resp.data.tableSize//表大小
+        this.form.rowNum = resp.data.rowNum//表数据量
+        console.log(this.list_details);
+      })
+    },
+
+
+    table_list (tableId) {
+      getColsInfo(tableId).then((resp) => {
+        console.log(resp);
+        this.Column_tableData = resp.data
+        // 返回两个新的数组
+        // this.oldName = resp.data.displayTbName;
+        // this.tempTable.displayTbName = resp.data.displayTbName;
+        // this.temp = resp.data.colMetas;
+        // this.temp.forEach((row) => {
+        //   this.$set(row, "tempIndex", ++this.tempIndex);
+        //   this.changeDataType(row);
+        // })
+      });
+    },
+
+
+
     // 点击导航菜单，页面滚动到指定位置
     handleLeft (index) {
       this.navgatorIndex = index;
@@ -639,6 +674,7 @@ export default {
 }
 .Heat_ul li:hover p {
   color: #115f94 !important;
+  text-decoration: underline;
 
   /* border-bottom: 1px solid #0271be; */
 }
@@ -667,7 +703,7 @@ export default {
   border-radius: 4px;
   font-size: 12px;
   text-align: left;
-  padding-left: 5px;
+  /* padding-left: 5px; */
   word-wrap: break-word;
   overflow: hidden;
 }

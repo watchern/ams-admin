@@ -78,7 +78,6 @@
           default-expand-all
           :filter-node-method="filterNode"
           ref="tree"
-          :render-content="renderContent"
           :check-strictly="true"
         >
         </el-tree>
