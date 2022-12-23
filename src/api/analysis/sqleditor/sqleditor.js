@@ -2265,10 +2265,10 @@ function replaceParam(paramObj) {
  */
 export function findAndReplace(type) {
   if (type === 1) {
-    CodeMirror.commands.replace(editorObj, true)
+    editorObj.execCommand("replace"); //触发
   }
   if (type === 2) {
-    CodeMirror.commands.find(editorObj)
+    editorObj.execCommand("find"); //触发
   }
 }
 

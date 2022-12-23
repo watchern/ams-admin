@@ -1,0 +1,171 @@
+.searchBlock {
+    padding: 24px 12px 12px;
+    overflow: hidden;
+
+    .search {
+        display: inline-block;
+        margin-right: 16px;
+        margin-bottom: 8px;
+        width: 28%;
+    }
+
+    .search-title {
+        display: inline-block;
+        font-size: 14px;
+        color: #173e67;
+        line-height: 17px;
+        width: 100px;
+        text-align: right;
+    }
+
+    .search-operation {
+        display: inline-block;
+        margin-left: 4px;
+        width: calc(100% - 110px);
+        height: 32px;
+
+        .el-select {
+            width: 100%;
+        }
+
+        .el-range-editor {
+            width: 100%;
+        }
+    }
+
+    .search-operation1 {
+        display: inline-block;
+        margin-left: 4px;
+        min-width: 176px;
+        height: 32px;
+    }
+
+    .search-input {
+        width: 300px;
+        display: inline-block;
+        margin-right: 16px;
+    }
+
+    .search-btn {
+        display: inline-block;
+        float: right;
+    }
+
+    .function-btn {
+        display: inline-block;
+        float: right;
+    }
+
+    .function-btn2 {
+        margin-left: 16px;
+    }
+
+}
+
+.listDisplay {
+    padding: 0 12px;
+    // border-top: 1px solid #eff3f6;
+
+    .operation {
+        height: 45px;
+
+        .num {
+            display: inline-block;
+            line-height: 40px;
+            font-size: 16px;
+
+            span {
+                color: #F5A623
+            }
+        }
+
+        .operationBut {
+            display: flex;
+            float: right;
+
+            .el-button {
+                margin-top: 7px
+            }
+        }
+    }
+
+    .detailsBtn {
+        color: #0070ff;
+        display: inline-block;
+        cursor: pointer;
+        margin-left: 24px;
+    }
+
+    .editBtn {
+        color: #89a1c5;
+        display: inline-block;
+        cursor: pointer;
+    }
+}
+
+.pager {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    z-index: 2;
+
+    .el-pagination {
+        padding: 16px 12px 16px 12px;
+        white-space: nowrap;
+        text-align: right;
+    }
+}
+
+
+.item-a {
+    width: 50%;
+    display: inline-block;
+}
+
+.item-b {
+    width: 100%;
+}
+
+.itemBtn {
+    width: 230px;
+    margin: 0 auto;
+}
+
+.title {
+    font-size: 18px;
+    height: 40px;
+    line-height: 40px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+
+.shuttle {
+    margin-bottom: 20px;
+    display: flex;
+
+    .shuttle_left {
+        width: 30%;
+    }
+
+    .shuttle_middle {
+        width: 100px;
+    }
+
+    .shuttle_right {
+        width: 50%;
+    }
+
+    .btn_top {
+        display: block;
+        margin:0 auto;
+        margin-top:150px !important
+    }
+
+    .btn_bottom {
+        display: block;
+        margin:0 auto !important;
+        margin-top:50px !important
+        // margin-left: 0 !important;
+    }
+}

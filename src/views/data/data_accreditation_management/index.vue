@@ -44,18 +44,17 @@
               </el-select>
             </el-form-item> -->
 
-<!--            <el-form-item>-->
-<!--              <el-select v-model="query.personName"-->
-<!--                         clearable-->
-<!--                         @change="selectdata_people"-->
-<!--                         placeholder="请选择认权人">-->
-<!--                <el-option v-for="item in options_type_list"-->
-<!--                           :key="item.value"-->
-<!--                           :label="item.label"-->
-<!--                           :value="item.value" />-->
-<!--              </el-select>-->
-<!--            </el-form-item>-->
-
+            <!--            <el-form-item>-->
+            <!--              <el-select v-model="query.personName"-->
+            <!--                         clearable-->
+            <!--                         @change="selectdata_people"-->
+            <!--                         placeholder="请选择认权人">-->
+            <!--                <el-option v-for="item in options_type_list"-->
+            <!--                           :key="item.value"-->
+            <!--                           :label="item.label"-->
+            <!--                           :value="item.value" />-->
+            <!--              </el-select>-->
+            <!--            </el-form-item>-->
 
             <el-form-item>
               <el-input v-model="query.personName"
@@ -130,10 +129,11 @@
                          align="center"
                          prop="createUserName" /> -->
         <el-table-column label="所属主题"
-                         align="center"
-                         prop="tableThemeName">
+                         align="center">
           <template slot-scope="scope">
-            {{scope.row.tableRelationQuery.tableThemeName}}
+            <div v-if="scope.row.tableRelationQuery">
+              {{scope.row.tableRelationQuery.tableThemeName}}
+            </div>
           </template>
         </el-table-column>
 

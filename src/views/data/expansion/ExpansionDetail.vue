@@ -1,0 +1,93 @@
+<template>
+    <div>
+        <el-form :model="personalSpace"
+                 class="demo-form-inline"
+                 label-width="80px">
+            <el-form-item label="申请名称">
+                <el-input v-model="personalSpace.personalSpaceName"
+                          placeholder="申请名称"
+                          disabled="true"
+                ></el-input>
+            </el-form-item>
+            <el-form-item label="扩容容量">
+                <el-input v-model="personalSpace.personalSpaceCapacity"
+                          placeholder="扩容容量"
+                          type="number"
+                          :max="1024"
+                          :min="0"
+                          disabled="true"
+                          style="width: 540px"></el-input>
+                <el-select v-model="personalSpaceCapacityNeed"
+                           placeholder="容量单位"
+                           disabled="true"
+                >
+                    <el-option label="GB"
+                               value="GB"></el-option>
+                    <el-option label="MB"
+                               value="MB"></el-option>
+                    <el-option label="KB"
+                               value="KB"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="审批人">
+                <el-input v-model="personalSpace.personalSpaceApproving"
+                          placeholder="选择审批人"
+                          disabled="true"
+                          style="width: 670px"></el-input>
+            </el-form-item>
+
+        </el-form>
+    </div>
+</template>
+
+<script>
+    import {
+        batchUpdateForFinishHandle
+        ,queryByPersonalSpaceUuid
+    } from "@/api/analysis/personalSpace";
+    export default {
+        name: "expansionDetail",
+        data(){
+            return{
+                personalSpace: {
+                    personalSpaceName: '',
+                    personalSpaceApplication: '',
+                    personalSpaceType:'',
+                    personalSpaceDate:'',
+                    personalSpaceCapacity:'',
+                    personalSpaceStatus:'',
+                    personalSpaceApproving:'',
+                },
+                personalSpaceCapacityNeed:'',//该变量为容量的单位 在最后会和容量做一个拼接
+            }
+        },
+        mounted() {
+            this.$emit("fromSon")
+        },
+        methods:{
+            queryByUuid(value){
+                queryByPersonalSpaceUuid(value)
+                .then((res)=>{
+                    this.personalSpace = res.data
+                    var length = res.data.personalSpaceCapacity.length
+                    this.personalSpaceCapacityNeed = res.data.personalSpaceCapacity.substring(length-2)
+                    this.personalSpace.personalSpaceCapacity = res.data.personalSpaceCapacity.substring(0,length-2)
+                })
+            },
+            updateApplyStatus(value){
+                console.log("进入最后的更改为已办的方法")
+                console.log(value,"最后一步传过来的id值")
+                var personalSpace = {
+                    personalSpaceUuid: value
+                }
+                var relParam = []
+                relParam.push(personalSpace)
+                batchUpdateForFinishHandle(relParam)
+            }
+        }
+    }
+</script>
+
+<style scoped>
+
+</style>
