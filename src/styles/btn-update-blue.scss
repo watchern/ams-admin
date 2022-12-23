@@ -467,7 +467,10 @@
 }
 
 .oper-btn.skip:after {
-  content:'\e612  跳过'!important;
+  content:'\e612  跳过环节'!important;
+}
+.oper-btn.skip-success:after{
+  content:'\E626 跳过任务'!important;
 }
 
 // 导入汉化内容
