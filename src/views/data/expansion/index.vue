@@ -16,12 +16,12 @@
           <el-form-item label="列表类型:">
             <el-select v-model="personalSpace.personalSpaceType"
                        placeholder="状态选择">
-              <el-option label="待办"
-                         value="待办"></el-option>
+              <el-option label="草稿"
+                         value="草稿"></el-option>
               <el-option label="办理中"
                          value="办理中"></el-option>
-              <el-option label="已办"
-                         value="已办"></el-option>
+              <el-option label="办理完成"
+                         value="办理完成"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="申请时间范围:">
@@ -248,7 +248,7 @@
     ,queryByPersonalSpaceUuid
   } from "@/api/analysis/personalSpace";
   import FlowItem from '@/components/starflow/todowork/flowItem'
-  import ExpansionUpdate from "@/components/starflow/todowork/ExpansionUpdate";
+  import ExpansionUpdate from "@/views/data/expansion/ExpansionUpdate";
   export default {
     // components: { Pagination, QueryField, FlowItem },
     components: {
@@ -488,7 +488,14 @@
           this.$notify.warning("请选择对象")
           return
         }
-        console.log(param,"param")
+        if(this.personalSpaceSelectionList.length >1){
+          this.$notify.warning("一次只能修改一个对象")
+          return
+        }
+        if(this.personalSpaceSelectionList[0].personalSpaceType !== '草稿'){
+          this.$notify.warning("只有草稿状态可修改")
+          return
+        }
         this.openUpdateDialog = true
         //当在业务管理页面时候 不应该调用这个方法  在工作流中才调用 后期需要标识
         this.$refs.expansionUpdatePage.queryByUuid(param)
@@ -554,7 +561,9 @@
           this.$refs["flowItem"].submitFlow();
           //将状态修改为办理中
           batchUpdateForHandle(this.personalSpaceSelectionList)
-          location.reload()
+          .then((res)=>{
+            location.reload()
+          })
         }, 20);
       },
     }
