@@ -1538,7 +1538,7 @@ export default {
                   _this.createTreeNode = result.data.treeNodeInfo;
                   _this.resultShow.push({ id: 1 });
                   result.data.dataSource = _this.dataSource
-                  result.data.maxCount = _this.resultDataMaxCount
+                  result.data.resultDataMaxCount = _this.resultDataMaxCount
                   // if (executeflag === true) {
                   //   // 界面渲染完成之后开始执行sql,将sql送入调度
                   // 显示放大按钮
@@ -1650,7 +1650,7 @@ export default {
           this.resultShow.push({ id: 1 });
           // 界面渲染完成之后开始执行sql,将sql送入调度
           result.data.dataSource = this.dataSource
-          result.data.maxCount = this.resultDataMaxCount
+          result.data.resultDataMaxCount = this.resultDataMaxCount
           startExecuteSql(result.data)
             .then((result) => {
               this.executeLoading = false;
