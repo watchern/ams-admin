@@ -177,8 +177,7 @@
 
                     <div class="data_list">
                       <span class="data_time"
-                            v-if="scope.row.tableRelationQuery">数据日期：{{scope.row.tableRelationQuery
-.dataDate}}</span>
+                            v-if="scope.row.tableRelationQuery">数据日期：{{scope.row.tableRelationQuery.dataDate}}</span>
                       <span class="data_time"
                             v-else>数据日期：暂无</span>
                       <span class="data_number">数据量 {{scope.row.rowNum}} 条</span>
@@ -242,12 +241,6 @@ export default {
       type: Number,
 
     },
-    isBtn: {
-      type: Boolean,
-      default () {
-        return []
-      }
-    },
     list: {
       type: Array,
       default () {
@@ -258,13 +251,9 @@ export default {
       type: Object,
       default: () => ({})
     },
+    isBtn: Boolean,
+    list_loading: Boolean,
 
-    list_loading: {
-      type: Boolean,
-      default () {
-        return []
-      }
-    },
   },
 
   data () {
@@ -395,10 +384,13 @@ export default {
     Important_table () {
       this.$emit("Important_table", '导入表关系')
     },
-
-    // 注册资产
-    on_register () {
-      this.$emit("on_register", this.check_list);
+    // 同步数据机构
+    sync_data () {
+      if (this.check_list.length !== 0) {
+        this.$emit("sync_data", this.check_list);
+      } else {
+        this.$message({ type: "warning", message: "请最少一条数据进行同步" });
+      }
     },
     // 认权
     Recognition () {
@@ -408,19 +400,14 @@ export default {
         this.$message({ type: "warning", message: "请选择一条数据进行认权" });
       }
     },
-    // 同步数据机构
-    sync_data () {
-      if (this.check_list.length !== 0) {
-        this.$emit("sync_data", this.check_list);
-      } else {
-        this.$message({ type: "warning", message: "请最少一条数据进行同步" });
-      }
+    // 注册资产
+    on_register () {
+      this.$emit("on_register", this.check_list);
     },
-
     // 修改
     edit_list () {
-      if (this.check_list.length !== 0) {
-
+      if (this.check_list.length == 1) {
+        this.$emit("edit_list", this.check_list);
       } else {
         this.$message({ type: "warning", message: "请选择一条数据进行修改" });
       }
