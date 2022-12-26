@@ -26,16 +26,18 @@
               <el-form-item label="表名称："
                             prop="tbName">
                 <el-input v-model="form.tbName"
-                          :disabled="isDisable_input"></el-input>
+                          :disabled="disabled"></el-input>
               </el-form-item>
               <el-form-item label="表中文名："
                             prop="chnName">
                 <el-input v-model="form.chnName"
+                          @input="change($event)"
                           :disabled="isDisable_input"></el-input>
               </el-form-item>
               <el-form-item label="表说明：">
                 <el-input v-model="form.tableRemarks"
                           style="resize:none;"
+                          @input="change($event)"
                           :disabled="isDisable_input"
                           type="textarea"></el-input>
               </el-form-item>
@@ -45,15 +47,15 @@
                               prop="tableCode">
                   <el-input type="text"
                             :disabled="isDisable_input"
-                            placeholder="请输入资源编码"
+                            @input="change($event)"
                             v-model="form.tableCode"
                             :rows="4">
                   </el-input>
                 </el-form-item>
                 <el-form-item label="资源类型：">
                   <el-select v-model="form.tableType"
-                             :disabled="isDisable_input"
-                             placeholder="请选择">
+                             @input="change($event)"
+                             :disabled="isDisable_input">
                     <el-option v-for="item in data_type"
                                :key="item.value"
                                :label="item.label"
@@ -64,9 +66,10 @@
 
               <div class="son">
                 <el-form-item label="资产主题：">
-                  <el-select v-model="form.tableThemeName"
-                             :disabled="isDisable_input"
-                             placeholder="请选择资产主题">
+                  <el-select v-model="form.tableThemeId"
+                             @input="change($event)"
+                             @change="tableThemeName_change"
+                             :disabled="isDisable_input">
                     <el-option v-for="item in next_data.themeList"
                                :key="item.codeUuid"
                                :label="item.codeName"
@@ -74,9 +77,9 @@
                   </el-select>
                 </el-form-item>
                 <el-form-item label="资源分层：">
-                  <el-select v-model="form.tableThemeName"
-                             :disabled="isDisable_input"
-                             placeholder="请选择资源分层">
+                  <el-select v-model="form.tableLayeredId"
+                             @input="change($event)"
+                             :disabled="isDisable_input">
                     <el-option v-for="item in next_data.layeredList"
                                :key="item.codeUuid"
                                :label="item.codeName"
@@ -87,10 +90,10 @@
 
               <div class="son">
                 <el-form-item label="所属系统：">
-                  <el-select v-model="form.businessSystemName"
+                  <el-select v-model="form.businessSystemId"
+                             @input="change($event)"
                              :disabled="isDisable_input"
-                             :rows="4"
-                             placeholder="请选择所属系统">
+                             :rows="4">
                     <el-option v-for="item in next_data.businessSystemList"
                                :key="item.businessSystemUuid"
                                :label="item.businessSystemName"
@@ -98,8 +101,8 @@
                   </el-select>
                 </el-form-item>
                 <el-form-item label="文件名：">
-                  <el-input placeholder="请输入文件名称"
-                            :disabled="isDisable_input"
+                  <el-input :disabled="isDisable_input"
+                            @input="change($event)"
                             v-model="form.fileName"
                             :rows="4"></el-input>
                 </el-form-item>
@@ -108,26 +111,18 @@
               <div class="son">
                 <el-form-item label="数据日期：">
                   <el-date-picker format="yyyy-MM-dd"
+                                  @input="change($event)"
                                   :disabled="isDisable_input"
                                   type="date"
                                   value-format="yyyy-MM-dd"
                                   @change="changeRelationParam"
-                                  placeholder="请输入数据日期"
                                   :rows="4"
                                   v-model="form.dataDate" />
-
-                  <!-- <el-select v-model="form.name"
-                             placeholder="请输入数据日期">
-                    <el-option v-for="item in options"
-                               :key="item.value"
-                               :label="item.label"
-                               :value="item.value">
-                    </el-option>
-                  </el-select> -->
                 </el-form-item>
                 <el-form-item label="表大小：">
                   <el-input placeholder="请输入表大小"
-                            :disabled="isDisable_input"
+                            @input="change($event)"
+                            :disabled="disabled"
                             v-model="form.tableSize"></el-input>
                 </el-form-item>
               </div>
@@ -135,54 +130,54 @@
               <div class="son">
                 <el-form-item label="数据数量：">
                   <el-input type="text"
-                            placeholder="请输入表数据量"
-                            :disabled="isDisable_input"
+                            :disabled="disabled"
+                            @input="change($event)"
                             v-model="form.rowNum"
                             :rows="4">
                   </el-input>
                 </el-form-item>
                 <div class="son_people">
                   <el-form-item label="负责人：">
-                    <el-input placeholder="请输入负责人"
-                              :disabled="isDisable_input"
+                    <el-input :disabled="disabled"
                               v-model="form.personLiables"></el-input>
 
                   </el-form-item>
                   <el-button type="primary"
+                             :disabled="isDisable_input"
                              class="oper-btn"
                              @click="check_people()">选择</el-button>
                 </div>
               </div>
 
               <div class="son">
-                <!-- <el-form-item label="表分区：">
-                  <el-select v-model="form.name"
-                             placeholder="请输入表分区：">
-                    <el-option v-for="item in options"
-                               :key="item.value"
-                               :label="item.label"
-                               :value="item.value">
-                    </el-option>
-                  </el-select>
-                </el-form-item> -->
                 <el-form-item label="表分区:"
-                              :disabled="isDisable_input"
+                              :disabled="disabled"
                               prop="partitions">
-                  <ul class="table">
-                    <li class="head">
+                  <div class="table">
+                    <div class="head">
                       分区名称
-                    </li>
-                    <li v-for="(item,index_partitions) in form.partitions"
-                        :key="index_partitions"
-                        class="li_son"
-                        key="index">{{item}}</li>
-                  </ul>
+                    </div>
+
+                    <div v-if="form.partitions==null"> -- </div>
+                    <div v-else>
+                      <div v-for="
+                         (item,index_partitions)
+                         in
+                         form.partitions"
+                           :key="index_partitions"
+                           class="li_son">
+                        {{item}}
+                        <div>{{item}}</div>
+                      </div>
+                    </div>
+
+                  </div>
                 </el-form-item>
 
                 <el-form-item label="增全量：">
                   <el-select v-model="form.isSpike"
-                             :disabled="isDisable_input"
-                             placeholder="请选择增量全量">
+                             @input="change($event)"
+                             :disabled="isDisable_input">
                     <el-option v-for="item in option_isSpike"
                                :key="item.value"
                                :label="item.label"
@@ -201,7 +196,6 @@
                     <i class="span_close"
                        @click="removeTag_infotion_tag(index,item)"></i>
                   </div>
-                  <!-- 输入框 -->
                   <input v-model="search_name_infotion"
                          :disabled="isDisable_input"
                          @keyup.enter="addTags_infotion_tag"
@@ -269,7 +263,7 @@
              id="id2">
           <h2 :class="{'isActive': navgatorIndex == 2}">索引信息</h2>
           <div class="padding10">
-            <el-table :data="Column_tableData.colMetas"
+            <el-table :data="Column_tableData_index"
                       style="width: 100%">
               <el-table-column prop="date"
                                label="名称">
@@ -317,6 +311,7 @@
         <div class="rightList_child"
              style="text-align: right;">
           <el-button type="primary"
+                     @click="update_save()"
                      :disabled="isDisable_input">保存</el-button>
         </div>
       </div>
@@ -395,7 +390,11 @@ import EditMap from "@/components/directory/edit_map.vue"
 import {
   getBasicInfo,//列表点击详情
   getColsInfo,//列信息
+  updateTableInfo,//修改保存
 } from "@/api/data/table-info";
+import {
+  getListTree,//注册资产下一步
+} from "@/api/lhg/register.js";
 export default {
   components: { ProcessTree, LineMap, EditMap },
   props: {
@@ -412,17 +411,35 @@ export default {
     tableMetaUuid: {
       type: String,
       default () {
-        return []
+        return ''
       }
     },
+    // isDisable_input: Boolean,
+
     isDisable_input: {
       type: Boolean,
-      default: true,
+      default () {
+        return ''
+      }
     },
+    is_Edit_list: {
+      type: Number,
+      default () {
+        return ''
+      }
+    }
+    // tableRelationQueryUuid: {
+    //   type: String,
+    //   default () {
+    //     return []
+    //   }
+    // },
+
 
   },
   data () {
     return {
+      disabled: true,
       navgatorIndex: 0,
       listBoxState: true,//点击导航栏时，暂时停止监听页面滚动
       dom_scrollTop: 0,//元素滚动距离
@@ -430,6 +447,7 @@ export default {
       list_details: {},//基本信息
       // 基本信息
       form: {
+        tableRelationQueryUuid: '',//id
         name: '',
         tbName: '',//表名称
         chnName: '',//中文名
@@ -446,14 +464,15 @@ export default {
         dataDate: '',//数据日期
         tableSize: '',//表大小:
         rowNum: '',//表数据量
-        personLiables: [],//负责人
         // personName_str: '',//责任人
+        personLiables: '',//负责人
         personUuid: '',//资产责任人
         partitions: '',//表分区
         isSpike: 1,//是否增量
       },
       tableData: [],
 
+      Column_tableData_index: [],//索引信息
       TagsAll: ['aa'],
       inputLength: '',
       search_name_infotion: '',//标签
@@ -471,16 +490,16 @@ export default {
         },
       ],
       // 是否推送
-      option_isSentFile: [
-        {
-          value: 0,
-          label: '不推送'
-        },
-        {
-          value: 1,
-          label: '推送'
-        },
-      ],
+      // option_isSentFile: [
+      //   {
+      //     value: 0,
+      //     label: '不推送'
+      //   },
+      //   {
+      //     value: 1,
+      //     label: '推送'
+      //   },
+      // ],
       data_type: [
         {
           value: 1,
@@ -537,6 +556,13 @@ export default {
       this.handleScroll()
       //   }, 100);
     }, true);
+
+
+    // 查看||编辑
+    // if (this.is_Edit_list == 1) {
+    //   this.isDisable_input = false
+    // }
+
   },
   created () {
     // this.$nextTick(function () {
@@ -544,6 +570,8 @@ export default {
     // })
     this.details(this.tableMetaUuid)
     this.table_list(this.tableMetaUuid)
+    this.getListTree_data();//下拉框默认值
+
 
   },
   methods: {
@@ -551,68 +579,128 @@ export default {
     changeRelationParam (value) {
       this.form.dataDate = value
     },
+    // 更新视图
+    change (e) {
+      this.$forceUpdate()
+    },
     // 基本信息
     details (tableId) {
+      this.form = JSON.parse(JSON.stringify(this.form));
+      this.$forceUpdate()
       getBasicInfo(tableId).then(resp => {
-        console.log(resp.data);
         this.form = resp.data
-        console.log(resp.data);
-
         this.form.tbName = resp.data.tbName//表名称
         this.form.chnName = resp.data.chnName//中文名
         this.form.tableRemarks = resp.data.tableRelationQuery.tableRemarks//表说明
-
         this.form.tableSize = resp.data.tableSize//表大小
         this.form.rowNum = resp.data.rowNum//表数据量
-
         let tableCode = resp.data.tableRelationQuery.tableCode.substring(0, resp.data.tableRelationQuery.tableCode.lastIndexOf(">"))
-        this.form.tableCode = tableCode//资源编码
-        // this.form.tableType =//资源类型
 
+
+        this.form.fileName = resp.data.tableRelationQuery.fileName//文件名
+        this.form.tableCode = tableCode//资源编码
+        //资源类型
         if (resp.data.tableRelationQuery.tableType == '1') {
           this.form.tableType = '表'
         } else {
           this.form.tableType = '视图'
         }
-
-
-
+        this.form.tableRelationQueryUuid = resp.data.tableRelationQuery.tableRelationQueryUuid
         this.form.tableThemeId = resp.data.tableRelationQuery.tableThemeId//资源主题
         this.form.tableThemeName = resp.data.tableRelationQuery.tableThemeName//资源主题 name
-
         this.form.tableLayeredId = resp.data.tableRelationQuery.tableLayeredId//资源分层
         this.form.tableLayeredName = resp.data.tableRelationQuery.tableLayeredName//资源分层 name
         this.form.businessSystemId = resp.data.tableRelationQuery.businessSystemId//所属主题
         this.form.businessSystemName = resp.data.tableRelationQuery.businessSystemName//所属主题
         this.form.dataDate = resp.data.tableRelationQuery.dataDate//数据日期
-
         this.form.tableSize = resp.data.tableSize//数据数量：
-
-        console.log(resp.data.personLiables);
-
-        if (resp.data.personLiables) {
-
+        if (resp.data.personLiables.length !== 0) {
           let personName = []
-          let personUuid = []
+          // let personUuid = []
           resp.data.personLiables.forEach(item => {
             personName.push(item.personName)
-            personUuid.push(item.personUuid)
+            // personUuid.push(item.personUuid)
             this.form.personLiables = personName.join(",");//负责人
-            this.form.personUuid = personUuid
+            // this.form.personUuid = personUuid.join(",")
+            console.log(this.form.personLiables);
+            let objs = {
+              personUuid: item.personUuid,
+              personName: item.personName
+            }
+            this.form.personName_str.push(objs)
           })
           // var personLiables = resp.data.personLiables.toString();//负责人
+        } else {
+          this.form.personLiables = '';
         }
         this.form.partitions = resp.data.partitions//表分区
         this.form.isSpike = resp.data.tableRelationQuery.isSpike//增量全量
-        console.log(this.list_details);
+
+
+
+
 
       })
     },
 
+    // 资产主题
+    tableThemeName_change (val) {
+      this.form.tableThemeId = val
+      this.next_data.themeList.forEach(item => {
+        if (val == item.codeUuid) {
+          this.form.tableThemeName = item.codeName
+        }
+      })
 
+
+    },
+
+    // 修改保存
+    update_save () {
+      // this.form.tableRelationQueryUuid = this.tableRelationQueryUuid
+      let params = {
+        tableMetaUuid: this.tableMetaUuid,
+        chnName: this.form.chnName,
+        tableRelationQuery: {
+          tableRelationQueryUuid: this.form.tableRelationQueryUuid,
+          tableMetaUuid: this.tableMetaUuid,
+          tableCode: this.form.tableCode,
+          tableType: this.form.tableType,
+          businessSystemId: this.form.businessSystemId,
+          tableThemeId: this.form.tableThemeId,
+          tableLayeredId: this.form.tableLayeredId,
+          tableRemarks: this.form.tableRemarks,
+          fileName: this.form.fileName,
+          isSpike: this.form.isSpike,
+          dataDate: this.form.dataDate
+        },
+        personLiables: this.form.personName_str,
+
+      }
+
+      // return false
+      updateTableInfo(params).then(resp => {
+        if (resp.code == 0) {
+          this.$message({
+            type: "success",
+            message: "修改成功!",
+          });
+          this.$emit("update_list");
+        } else {
+          this.$message({
+            type: "error",
+            message: resp.msg,
+          });
+        }
+      })
+    },
+
+
+
+    //  列信息
     table_list (tableId) {
       getColsInfo(tableId).then((resp) => {
-        console.log(resp);
+        // 
         this.Column_tableData = resp.data
         // 返回两个新的数组
         // this.oldName = resp.data.displayTbName;
@@ -623,6 +711,32 @@ export default {
         //   this.changeDataType(row);
         // })
       });
+    },
+
+    // 下拉框默认值
+    getListTree_data () {
+      getListTree().then((res) => {
+        this.next_data = res.data
+
+        // if (res.data.contentsList.children) {
+        //   this.next_contentsList = res.data.contentsList.children
+        // }
+
+
+        // this.next_contentsList.forEach(item => {
+        //   // 所属目录三级联动判断
+        //   if (item.children.length == 0) {
+        //     item.children = undefined
+        //   } else {
+        //     this.formatCascaderData(item.children)
+        //   }
+        // })
+        // businessSystemList//系统
+        // contentsList//目录
+        // layeredList//分层
+        // themeList//主题
+
+      })
     },
 
 
@@ -692,6 +806,7 @@ export default {
     add_table () {
 
     },
+
 
   }
 }
@@ -787,7 +902,6 @@ export default {
   align-items: center;
   padding-right: 20px;
   margin-bottom: 20px;
-  cursor: pointer;
   transition: all 0.3s;
   box-sizing: border-box;
   /* border-bottom: 1px solid #fff; */
@@ -804,12 +918,12 @@ export default {
   color: #5f9fcb;
   transition: color 0.3s;
 }
-.Heat_ul li:hover p {
+/* .Heat_ul div .null_click:hover p {
   color: #115f94 !important;
+  cursor: pointer;
   text-decoration: underline;
-
   /* border-bottom: 1px solid #0271be; */
-}
+/* }  */
 .Heat_ul li:nth-child(4n) {
   padding-right: 0 !important;
 }
@@ -923,5 +1037,7 @@ export default {
   line-height: 20px;
   padding: 10px;
   box-sizing: border-box;
+}
+.is_click:hover {
 }
 </style>
