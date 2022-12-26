@@ -1,5 +1,5 @@
 <template>
-  <div class="query-field" :class="skinMisalignment?(componentMisalignment?'re-or':'ab-or'):'re-or'">
+  <div class="query-field" :class="skinMisalignment?(componentMisalignment?'re-or':'ab-or'):'re-or'" :style="queryFieldStyle">
     <el-form :inline="true" :model="query" label-position="bottom">
 <!--      <div class="switch-btn">-->
 <!--        <img :src="this.switchImg" @click="onSwitchWith">-->
@@ -72,7 +72,8 @@ export default {
       skinMisalignment: true,
       textWidth:163,
       selectWidth:163,
-      timePeriodWidth:220
+      timePeriodWidth:220,
+      queryFieldHeight: 45
     }
   },
   computed: {
@@ -84,6 +85,10 @@ export default {
     },
     timeStyle() {
       return `width: ${this.timePeriodWidth}px`
+    },
+    // 解决两层搜索框高度折叠问题
+    queryFieldStyle() {
+      return `height: ${this.queryFieldHeight}px !important`
     }
   },
   watch: {
@@ -236,15 +241,29 @@ export default {
           widthCount += 1
         }
       }
+      this.componentMisalignment = false
+      this.queryFieldHeight = 45
       // 判断应该减少宽度的情况
-      if (this.screenWidth < 1920 && widthCount >= 3) {
+      if (this.screenWidth < 1920 && widthCount > 3) {
+          // // 调度流程实例使用
+          if (widthCount >= 7) {
+              let inPutWords = (30 * (1920 - this.screenWidth) / 520).toFixed(1)
+              this.textWidth = 153 - inPutWords
+              this.selectWidth = 153 - inPutWords
+              let inPutTimes = (85 * (1920 - this.screenWidth) / 520).toFixed(1)
+              this.timePeriodWidth = 230 - inPutTimes
+              this.componentMisalignment = true
+               // 多行的时候修改高度
+              this.componentMisalignment ? this.queryFieldHeight = 90 : this.queryFieldHeight = 45
+              return
+          }
         // 如果减少宽度仍旧不够 则放开限制 自动换行
         if (this.screenWidth >= 1400 && this.screenWidth< 1920) {
           let inPutWords = (30 * (1920 - this.screenWidth) / 520).toFixed(1)
           this.textWidth = 153 - inPutWords
           this.selectWidth = 153 - inPutWords
           let inPutTimes = (85 * (1920 - this.screenWidth) / 520).toFixed(1)
-          this.timePeriodWidth = 200 - inPutTimes
+          this.timePeriodWidth = 210 - inPutTimes
           this.componentMisalignment = false
         } else {
           this.textWidth = 90

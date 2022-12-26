@@ -7,7 +7,7 @@
            @click="onclick()">
         <div v-for="(item,index) in TagsAll"
              :key="index"
-             class="spanbox">
+             class="spanbox22">
           <span class="tagspan">{{item}}</span>
           <i class="span_close"
              @click="removeTag(index,item)"></i>
@@ -120,7 +120,7 @@
         </div>
       </template>
       <div class="list_table"
-           style="height: calc(100vh - 230px);overflow: auto;">
+           style="height: calc(100vh - 280px);overflow: auto;">
         <el-table ref="multipleTable"
                   :data="list"
                   style="width: 100%"
@@ -192,6 +192,16 @@
         </el-table>
       </div>
 
+      <div class="padding10">
+        <el-pagination @size-change="handleSizeChange"
+                       @current-change="handleCurrentChange"
+                       :page-size="this.list_data.size"
+                       background
+                       :current-page-sync="this.list_data.current"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="this.list_data.total"></el-pagination>
+      </div>
+
     </el-skeleton>
 
     <el-dialog :title="title"
@@ -244,6 +254,11 @@ export default {
         return []
       }
     },
+    list_data: {
+      type: Object,
+      default: () => ({})
+    },
+
     list_loading: {
       type: Boolean,
       default () {
@@ -267,7 +282,6 @@ export default {
     };
   },
   created () {
-    console.log(this.list);
     // if (this.list && this.list.length == 0) {
     //   this.list_loading = true;
     // } else {
@@ -282,7 +296,7 @@ export default {
       this.$emit('on-change', this.TagsAll)
     },
     search_name (val) {
-      console.log(val)
+
       this.inputLength = this.$refs.inputTag.value.length * 12 + 50;
 
     },
@@ -313,7 +327,7 @@ export default {
 
     // 删除标签
     removeTag (index, item) {
-      console.log(item)
+
       this.TagsAll.splice(index, 1)
     },
 
@@ -331,7 +345,7 @@ export default {
     },
     // 查询
     search () {
-      console.log(this.TagsAll);
+
     },
     //键盘删除键删除tag
     deleteTags () {
@@ -350,13 +364,6 @@ export default {
       //   this.$message({ type: "warning", message: "请选择一条数据进行下载" });
       // }
     },
-
-    // 导入数据字典
-    Importdata_dictionary () {
-      // this.common_dialog = true;
-      this.$emit("Importdata_dictionary", '导入数据字典')
-
-    },
     // 汉化模版下载
     down_template_cn () {
       if (this.check_list.length !== 0) {
@@ -365,14 +372,7 @@ export default {
         this.$message({ type: "warning", message: "请选择一条数据进行下载" });
       }
     },
-    // 导入汉化信息
-    Important_cn () {
-      this.$emit("Important_cn", '导入汉化信息')
-    },
-    // 表关系
-    Important_table () {
-      this.$emit("Important_table", '表关系')
-    },
+
     // 表关系下载模版
     down_template_table () {
       //  if (this.check_list.length !== 0) {
@@ -381,6 +381,21 @@ export default {
       //   this.$message({ type: "warning", message: "请选择一条数据进行下载" });
       // }
     },
+
+    // 导入数据字典
+    Importdata_dictionary () {
+      // this.common_dialog = true;
+      this.$emit("Importdata_dictionary", '导入数据字典')
+    },
+    // 导入汉化信息
+    Important_cn () {
+      this.$emit("Important_cn", '导入汉化信息')
+    },
+    //导入 表关系
+    Important_table () {
+      this.$emit("Important_table", '导入表关系')
+    },
+
     // 注册资产
     on_register () {
       this.$emit("on_register", this.check_list);
@@ -422,37 +437,20 @@ export default {
       this.$emit("on_deails", data);
 
     },
-    // // 全选
-    // handleCheckAllChange () {
-    //   if (this.list && this.list.length > 0) {
-    //     for (var i = 0; i < this.list.length; i++) {
-    //       this.list[i].isCheck = this.checkAll;
-    //     }
-    //   }
-    // },
-    // // 单选
-    // handleCheckChange (val) {
 
-    //   // val.isCheck = val.children.every(item => item.isCheck)
-    //   for (let i = 0, l = this.list.length; i < l; i++) {
-    //     if (this.list[i].isCheck !== val.isCheck) {
-    //       this.checkAll = false;
-    //     } else {
-    //       this.checkAll = val.isCheck;
-    //     }
-    //   }
-    //   console.log(this.list);
-    //   // return false
-
-    // },
+    // 分页
+    handleCurrentChange (val) {
+      this.$emit("handleCurrentChange", val);
+    },
+    // 每页多少条
+    handleSizeChange (val) {
+      this.$emit("handleSizeChange", val);
+    },
     // 全选
     handleSelectionChange (val) {
-      console.log(val);
+
       this.check_list = val
     },
-
-
-
 
   }
 }
@@ -516,7 +514,7 @@ export default {
   word-wrap: break-word;
   overflow: hidden;
 }
-.spanbox {
+.spanbox22 {
   display: inline-block;
   font-size: 14px;
   margin: 3px 0px 3px 4px;

@@ -657,3 +657,10 @@
 .oper-btn.skip:hover::before{
   content:'跳过指定环节'!important;
 }
+
+.oper-btn.skip-success:after{
+  content:'\E626'!important;
+}
+.oper-btn.skip-success:hover::before{
+  content:'跳过任务'!important;
+}
