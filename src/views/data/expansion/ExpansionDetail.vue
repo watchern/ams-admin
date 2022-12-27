@@ -6,7 +6,7 @@
             <el-form-item label="申请名称">
                 <el-input v-model="personalSpace.personalSpaceName"
                           placeholder="申请名称"
-                          disabled="true"
+                          disabled
                 ></el-input>
             </el-form-item>
             <el-form-item label="扩容容量">
@@ -15,11 +15,11 @@
                           type="number"
                           :max="1024"
                           :min="0"
-                          disabled="true"
+                          disabled
                           style="width: 540px"></el-input>
                 <el-select v-model="personalSpaceCapacityNeed"
                            placeholder="容量单位"
-                           disabled="true"
+                           disabled
                 >
                     <el-option label="GB"
                                value="GB"></el-option>
@@ -29,12 +29,12 @@
                                value="KB"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="审批人">
-                <el-input v-model="personalSpace.personalSpaceApproving"
-                          placeholder="选择审批人"
-                          disabled="true"
-                          style="width: 670px"></el-input>
-            </el-form-item>
+<!--            <el-form-item label="审批人">-->
+<!--                <el-input v-model="personalSpace.personalSpaceApproving"-->
+<!--                          placeholder="选择审批人"-->
+<!--                          disabled="true"-->
+<!--                          style="width: 670px"></el-input>-->
+<!--            </el-form-item>-->
 
         </el-form>
     </div>
@@ -56,7 +56,7 @@
                     personalSpaceDate:'',
                     personalSpaceCapacity:'',
                     personalSpaceStatus:'',
-                    personalSpaceApproving:'',
+                    // personalSpaceApproving:'',
                 },
                 personalSpaceCapacityNeed:'',//该变量为容量的单位 在最后会和容量做一个拼接
             }
@@ -75,8 +75,6 @@
                 })
             },
             updateApplyStatus(value){
-                console.log("进入最后的更改为已办的方法")
-                console.log(value,"最后一步传过来的id值")
                 var personalSpace = {
                     personalSpaceUuid: value
                 }

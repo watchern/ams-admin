@@ -202,7 +202,6 @@
                          <el-form-item label="办理人" class="form_item">
                            <el-checkbox-group
                                    v-model="checkedPerList"
-                                   @change="checkedPersonList"
                                    v-if="this.isAllAssignment == 'checkbox'"
                            >
                              <el-row :gutter="20">
@@ -218,6 +217,7 @@
                            </el-checkbox-group>
 
                            <el-radio-group
+                                   @change="checkedPersonList"
                                    v-model="personform.transactor"
                                    v-if="this.isAllAssignment == 'radio'"
                            >
@@ -452,6 +452,7 @@
         //动态组件相关
         activePage: "", // 变量
         bottomPanel: null, // 定义组件
+        selectPersonUuidList: [] //被选中的人员的id集合
       };
     },
     destroyed() {
@@ -676,7 +677,6 @@
       },
       add(){
         var templateParam = this.$route.params.approvalData.appDataUuid
-        // console.log(templateParam,"templateParam")
         this.$refs.applyPage.queryByUuid(templateParam)
       },
       init() {
@@ -1067,7 +1067,7 @@
       },
       submitFlow() {
         // this.formData.personUuId = this.personform.transactor;
-        alert(11)
+        // alert(11)
 
         if (this.isAllAssignment == "checkbox") {
           this.formData.personUuId = this.checkedPerList.join(",");
@@ -1124,10 +1124,9 @@
           this.formData.userCode = this.form.personCode;
           this.formData.isInformed = "Y";
         }
-        // console.log("ceshi----------" + JSON.stringify(this.formData));
         this.common.endLoading();
         this.common.startLoading();
-        alert(this.isLast)
+        // alert(this.isLast)
         if (!this.isLast) {
           this.$axios
                   .post("/starflow/applyMes/sf/apply/saveOpinions", this.formData)
@@ -1272,7 +1271,6 @@
                   }
                   //存储消息提醒的审批类型
                   this.formData.applyTypeName = this.applyTitleform.applyTypeName;
-                  // console.log("ceshi----------" + JSON.stringify(this.formData));
                   this.common.endLoading();
                   this.common.startLoading();
                   this.$axios
@@ -1401,7 +1399,6 @@
         }
         //存储消息提醒的审批类型
         this.formData.applyTypeName = this.applyTitleform.applyTypeName;
-        // console.log("ceshi----------" + JSON.stringify(this.formData));
         this.common.endLoading();
         this.common.startLoading();
         this.$axios
@@ -1447,8 +1444,9 @@
       sonFun(){
         this.add()
       },
-      templateButton(){
-        this.activePage = 'data/expansion/index'
+      checkedPersonList(value){
+        this.selectPersonUuidList = []
+        this.selectPersonUuidList.push(value)
       }
     },
   };

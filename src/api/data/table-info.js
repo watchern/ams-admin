@@ -369,3 +369,12 @@ export function updateTableInfo (data) {
     data
   })
 }
+export function createSql (data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/createSql`,
+    method: 'post',
+    data
+  })
+}
+
