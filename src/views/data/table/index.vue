@@ -145,11 +145,14 @@
                            :list="list"
                            :list_data="list_data"
                            :list_loading="list_loading"
+                           @edit_list="Edit_list"
                            v-if="show_details == false"></DataResourceDisplay>
       <!-- 基本信息详情 -->
       <Details ref="Details_ref"
                :tableMetaUuid="tableMetaUuid"
-               :isDisable="isDisable"
+               :isDisable_input="isDisable_input"
+               @update_list="UpdateList"
+               :is_Edit_list="is_Edit_list"
                v-if="show_details == true"></Details>
 
       <!-- 注册资产 -->
@@ -196,7 +199,6 @@
           <el-button @click="registTableFlag = false">取消</el-button>
 
           <el-button type="primary"
-                     :disabled="isDisable_input"
                      v-if="is_next == true"
                      @click="next()">下一步</el-button>
         </span>
@@ -264,7 +266,7 @@
             <el-form-item label="表中文名：">
               <el-input type="text"
                         placeholder="请输入表中文名"
-                        v-model="form.chName"
+                        v-model="form.chnName"
                         :rows="4">
               </el-input>
 
@@ -860,7 +862,7 @@ export default {
       // 新增的数据
       form: {
         tbName: '', //表名
-        chName: '', //表中文名（后台给
+        chnName: '', //表中文名（后台给
         tableRemarks: '',//表说明
         tableCode: '',// 资产编码
         tableType: '',// 资产类型
@@ -927,7 +929,7 @@ export default {
         children: 'children',
         value: 'id'
       },
-      next_contentsList: [],//目录
+      // next_contentsList: [],//目录
       // check_next_contentsList: {},//选择的目录
       is_next: false,//是否显示下一步
       ischeck_data: {},//第一步选择的数据库
@@ -948,7 +950,7 @@ export default {
 
       show_details: false,//显示基本信息详情
       isBtn: true,//是否显示按钮
-      isDisable_input: false,//详情禁止输入修改
+      isDisable_input: true,//详情禁止输入修改
 
 
 
@@ -1002,6 +1004,8 @@ export default {
 
       // list_details: {},// 点击列表进入详情
       tableMetaUuid: '',//详情id
+      // tableRelationQueryUuid: '',//id
+      is_Edit_list: 0,//是否编辑
 
     };
   },
@@ -1043,6 +1047,11 @@ export default {
 
   },
   methods: {
+    // 修改后 刷新列表
+    UpdateList () {
+      this.show_details = false
+      this.query_lisy();
+    },
 
     // 数据字典导入
     ImportdataDictionary (data) {
@@ -1121,7 +1130,7 @@ export default {
     // 表关系下载
     DownTemplateTable () {
       // 导出表信息作为模板
-      this.$message({ type: 'info', message: '无选择表,失败!' })
+      // this.$message({ type: 'info', message: '无选择表,失败!' })
       axios.post(`/data/tableRelation/exportFile`, qs.stringify({}),
         {
           responseType: 'blob', headers: {
@@ -1249,7 +1258,6 @@ export default {
 
     // 认权管理
     recognitionChange (data) {
-
       this.Recognition_check_list = data
       this.visible_Recognition = true
     },
@@ -1285,6 +1293,7 @@ export default {
     onDeailsChange (data) {
       // let tableId = data.tableMetaUuid
       // return false
+
       this.tableMetaUuid = data.tableMetaUuid
       this.show_details = true
       this.isDisable_input = true
@@ -1891,17 +1900,17 @@ export default {
     getListTree_data () {
       getListTree().then((res) => {
         this.next_data = res.data
-        if (res.data.contentsList.children) {
-          this.next_contentsList = res.data.contentsList.children
-        }
-        this.next_contentsList.forEach(item => {
-          // 所属目录三级联动判断
-          if (item.children.length == 0) {
-            item.children = undefined
-          } else {
-            this.formatCascaderData(item.children)
-          }
-        })
+        // if (res.data.contentsList.children) {
+        //   this.next_contentsList = res.data.contentsList.children
+        // }
+        // this.next_contentsList.forEach(item => {
+        //   // 所属目录三级联动判断
+        //   if (item.children.length == 0) {
+        //     item.children = undefined
+        //   } else {
+        //     this.formatCascaderData(item.children)
+        //   }
+        // })
         // businessSystemList//系统
         // contentsList//目录
         // layeredList//分层
@@ -1919,11 +1928,7 @@ export default {
       // this.check_next_contentsList = checkedNode[0]
       // this.form.folderUuid = checkedNode[0].id
       let folderUuid = val.toString();
-
-
       this.form.folderUuid = folderUuid
-
-      //
     },
 
     // 格式化数据，递归将空的children置为undefined
@@ -1967,11 +1972,8 @@ export default {
         if (valid) {
           // var ckFolder = this.$refs.tree2.getCurrentNode();
           // ckTbs.filter((tb) => { return tb.type === "TABLE"; }).forEach((node) => {
-
-
           let names = this.form.check_list.map(item => item["fileName"]);
           let nameSet = new Set(names);
-
           if (nameSet.size == names.length) {
             // 
             for (var i = 0; i < this.form.check_list.length; i++) {
@@ -1979,7 +1981,7 @@ export default {
               // this.form.file_name = this.form.fileName[i]
               const tableForm = {
                 // tbName: this.Column_table_query.tbName,//表名
-                chName: this.form.chName,
+                chnName: this.form.chnName,
                 tableMetaUuid: this.form.check_list[i].id,
                 displayTbName: this.form.check_list[i].label,
                 dbName: this.form.check_list[i].pid,
@@ -2000,13 +2002,14 @@ export default {
                   tableType: this.form.tableType, //资产类型
                   isSpike: this.form.isSpike, //是否增量
                   isSentFile: this.form.isSentFile, //是否推送文件
-                  // fileName: this.form.fileName //文件名称
-                  fileName: this.form.file_name
+                  fileName: this.form.fileName, //文件名称
+                  dataDate: this.form.dataDate, //时间
+                  // fileName: this.form.file_name
                 },
               };
               this.chooseTables.push(tableForm);
             }
-            console.log(this.chooseTables);
+
             batchSaveTable_save(this.chooseTables).then((resp) => {
               if (resp.code == 0) {
                 this.$message({
@@ -2019,6 +2022,7 @@ export default {
                 this.post_getThemeTree();//主题
                 this.post_getLayeredTree();//分层
                 // this.post_getDataTreeNode();//目录
+                this.query_lisy();
 
               } else {
                 this.btnLoading = false
@@ -2082,9 +2086,7 @@ export default {
         }
       })
     },
-
-
-
+    // 确定责任人
     modelResultShare () {
       // this.listLoading = true;
       var runTaskRelUuids = [];
@@ -2117,7 +2119,18 @@ export default {
 
       this.resultShareDialogIsSee = false;
     },
+    // 修改
+    Edit_list (data) {
 
+      this.is_Edit_list = 1;
+      for (var i = 0; i < data.length; i++) {
+        // this.tableRelationQueryUuid = data[i].tableRelationQuery.tableRelationQueryUuid
+        this.tableMetaUuid = data[i].tableMetaUuid
+      }
+      this.show_details = true
+      this.isDisable_input = false
+
+    },
 
 
     // 右侧表单
