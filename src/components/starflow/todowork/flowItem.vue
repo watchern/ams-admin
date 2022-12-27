@@ -147,8 +147,6 @@
         },
         methods: {
             init() {
-                alert(JSON.stringify(this.flowItem))
-                console.log(JSON.stringify(this.flowItem),"JSON.stringify(this.flowItem)")
                 selectPerson4Data(this.flowItem).then((resp) => {
                     //初始化列表数据
                     if (resp.data) {
@@ -252,7 +250,6 @@
                 } else {
                     this.formData.temp1 = "";
                 }
-                console.log(this.formData,"this.formData");
                 submitToPerson(this.formData).then((resp) => {
                     console.info(JSON.stringify(resp.code))
                     if (resp.code == 0) {
