@@ -1287,6 +1287,47 @@ export default {
         //   arr.push(obj)
         // }
         //   this.form.personLiables = arr
+
+
+        var personUuids = [];
+        var personNames = [];
+        var arr = []
+        var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
+        for (var i = 0; i < selectedNode.length; i++) {
+          personUuids.push(selectedNode[i].personuuid);
+          personNames.push(selectedNode[i].cnname);
+          let obj = {
+            personuuid: selectedNode[i].personuuid, personName: selectedNode[i].cnname
+          }
+          arr.push(obj)
+        }
+        this.form.personLiables = arr
+        let params = {
+          tableMetaUuids: this.form.tableMetaUuid,
+          personLiables: this.form.personLiables,// 资产责任
+        }
+        // 
+        // 修改
+        // if (this.click_type == '0') {
+        update_data(params).then(res => {
+          if (res.code == 0) {
+            this.$message({
+              message: '修改成功',
+              type: 'success',
+              showClose: true,
+            })
+
+            this.resultShareDialogIsSee = false//关闭
+            this.getList();//刷新列表
+            this.clearcheckbox();
+          } else {
+            this.$message({
+              message: res.msg,
+              type: 'error',
+              showClose: true,
+            })
+          }
+        })
       }
     },
     // 显示基本信息详情
@@ -2165,6 +2206,9 @@ export default {
 </script>
 <style scoped>
 @import url("./../../../assets/css/common.css");
+.dlag_width >>> .el-dialog {
+  min-width: 600px !important;
+}
 .left_conter {
   position: relative;
 }

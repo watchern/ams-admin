@@ -143,8 +143,13 @@
                   </div>
 
                   <div class="new_left padding10">
-                    <i><img src="../../assets/img/msq.png"
-                           alt=""></i>
+                    <div class="cover">
+                      <!-- <img src="../../assets/img/msq.png"
+                           alt=""> -->
+                      <h2>{{scope.row.tableRelationQuery.tableLayeredName}}</h2>
+                      <span class="_title">{{scope.row.tableRelationQuery.businessSystemName}}</span>
+                    </div>
+
                   </div>
 
                   <div class="new_right">
@@ -176,8 +181,9 @@
                        v-else>字段：暂无</p>
 
                     <div class="data_list">
+                      <!-- {{scope.row.tableRelationQuery}} -->
                       <span class="data_time"
-                            v-if="scope.row.tableRelationQuery">数据日期：{{scope.row.tableRelationQuery.dataDate}}</span>
+                            v-if="scope.row.tableRelationQuery.dataDate!=null">数据日期：{{scope.row.tableRelationQuery.dataDate}}</span>
                       <span class="data_time"
                             v-else>数据日期：暂无</span>
                       <span class="data_number">数据量 {{scope.row.rowNum}} 条</span>
@@ -203,13 +209,11 @@
 
     </el-skeleton>
 
-    <el-dialog :title="title"
+    <!-- <el-dialog :title="title"
                :visible.sync="common_dialog"
                width="30%">
 
-      <!-- 模版下载 -->
 
-      <!-- 认权管理 -->
       <div>
 
       </div>
@@ -219,7 +223,7 @@
         <el-button type="primary"
                    @click="common_dialog = false">确 定</el-button>
       </span>
-    </el-dialog>
+    </el-dialog> -->
 
   </div>
 </template>
@@ -265,7 +269,7 @@ export default {
       search_name: '',
       TagsAll: [],
       inputLength: '',
-      common_dialog: false,//导入数据源
+      // common_dialog: false,//导入数据源
       title: '',//弹窗共用标题
       check_list: [],//多选批量的数量
     };
@@ -626,18 +630,69 @@ export default {
 .new_left {
   float: left;
 }
-.new_left i {
+.new_left .cover {
   width: 130px;
   height: 130px;
   float: left;
   border-radius: 15px;
   overflow: hidden;
+  background: #04cd6f;
+  position: relative;
+  color: #fff;
 }
-.new_left img {
+/* .new_left img {
   width: 100%;
   height: 100%;
+} */
+.new_left h2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  text-align: center;
+  justify-content: center;
+  padding: 30px 5px 0;
+  font-weight: bold;
+  font-size: 40px;
 }
-
+.new_left ._title {
+  font-size: 16px;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: #01ea7e;
+  color: #fff;
+  text-align: center;
+  padding: 0 5px;
+  height: 40px;
+  line-height: 40px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  transition: all 0.3s;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  color: rgba(0, 0, 0, 0.5);
+}
+.new_left ._title:hover {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  line-height: 20px;
+  height: 100%;
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: blur(10px);
+  /* background-color: rgba(255, 255, 255, 0.7); */
+  box-sizing: border-box;
+}
 .new_right {
   width: calc(100% - 150px);
   min-height: 140px;

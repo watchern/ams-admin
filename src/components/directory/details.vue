@@ -319,10 +319,12 @@
 
     <!-- 查看sql -->
     <el-dialog title="查看sql"
+               class="dlag_width"
                :visible.sync="visible_sql"
-               width="30%">
+               width="40%">
       <div>
         <el-input type="textarea"
+                  style="resize:none;"
                   v-model="sql">
         </el-input>
       </div>
@@ -336,13 +338,13 @@
 
     <!-- 新增关联关系 -->
     <el-dialog title="新增关联关系"
-               :visible.sync="visible_sql"
-               width="30%">
+               class="dlag_width"
+               :visible.sync="visibleTable"
+               width="60%">
       <div>
-
         <div class="padding10">
           <el-button type="primary"
-                     @click="visible_sql = false">新增一行</el-button>
+                     @click="addTable()">新增一行</el-button>
         </div>
         <el-table :data="tableData"
                   style="width: 100%">
@@ -375,11 +377,64 @@
       </div>
       <span slot="footer"
             class="dialog-footer">
-        <el-button @click="visible_sql = false">取 消</el-button>
+        <el-button @click="visibleTable = false">取 消</el-button>
         <el-button type="primary"
-                   @click="visible_sql = false">保存</el-button>
+                   @click="visibleTable = false">保存</el-button>
       </span>
     </el-dialog>
+
+    <!-- 新增一行表关系 -->
+    <el-dialog title="新增"
+               class="dlag_width add_table_class"
+               :visible.sync="add_table_visible"
+               @close="handleClose_table('table_visible_form')"
+               width="60%">
+      <div class="information_form padding10">
+        <el-form ref="table_visible_form"
+                 :rules="rules_table"
+                 :inline="false"
+                 :model="table_visible_form"
+                 label-width="90px">
+          <el-form-item label="表名称："
+                        prop="tbName">
+            <el-input v-model="table_visible_form.tbName"></el-input>
+          </el-form-item>
+          <el-form-item label="字段名称："
+                        prop="chnName">
+            <el-input v-model="table_visible_form.chnName"></el-input>
+          </el-form-item>
+          <el-form-item label="从表名称："
+                        prop="chnName2">
+            <el-input v-model="table_visible_form.chnName2"></el-input>
+          </el-form-item>
+
+          <el-form-item label="从表字段："
+                        prop="chnName2">
+            <el-input v-model="table_visible_form.chnName2"></el-input>
+          </el-form-item>
+
+          <el-form-item label="关联关系："
+                        prop="relationship">
+            <el-select v-model="table_visible_form.relationship"
+                       style="width:100%">
+              <el-option v-for="item in relationship"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </el-form-item>
+
+        </el-form>
+
+      </div>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="add_table_visible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="add_table_save('table_visible_form')">确 定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -391,6 +446,7 @@ import {
   getBasicInfo,//列表点击详情
   getColsInfo,//列信息
   updateTableInfo,//修改保存
+  createSql,//查看sql
 } from "@/api/data/table-info";
 import {
   getListTree,//注册资产下一步
@@ -521,8 +577,37 @@ export default {
       // 列信息
       Column_tableData: [],
       // 查看sql
-      sql: ['SYS_USER_NAMESYS_USER_NAME'],
+      sql: '',
       visible_sql: false,//查看sql
+      visibleTable: false,//新增表关系
+      add_table_visible: false,//新增一行表
+      //新增的表关系信息
+      table_visible_form: {
+        tbName: '',//中文名
+        chnName: '',//字段名称
+        chnName2: '',//从表名称
+        relationship: '',//关联关系：
+      },
+      rules_table: {
+        tbName: [
+          { required: true, message: '请输入字段名称', trigger: 'blur' },
+        ],
+        tbName: [
+          { required: true, message: '请输入从表字段', trigger: 'blur' },
+        ],
+        chnName2: [
+          { required: true, message: '请输入从表字段', trigger: 'blur' },
+        ],
+        relationship: [
+          { required: true, message: '请选择关联关系', trigger: 'change' },
+        ],
+      },
+      relationship: [
+        {
+          value: 1,
+          label: '表'
+        }
+      ],
     };
   },
   computed: {
@@ -801,18 +886,56 @@ export default {
     // 查看sql
     previewSql () {
       this.visible_sql = true
+      let params = {
+        tableMetaUuid: this.tableMetaUuid
+      }
+      createSql(params).then(resp => {
+        console.log(resp.data);
+        this.sql = resp.data
+      })
     },
-    // 新增数据表
+    // 数据表关系列表
     add_table () {
-
+      this.visibleTable = true;//数据表关系列表
+    },
+    // 新增一行表关系
+    addTable () {
+      this.add_table_visible = true;
+      this.table_visible_form.tbName = '';
+      this.table_visible_form.chnName = '';
+      this.table_visible_form.chnName2 = '';
+      this.table_visible_form.relationship = '';
+    },
+    // 关闭弹窗
+    handleClose_table (table_visible_form) {
+      this.$refs[table_visible_form].resetFields() //清空添加的值
     },
 
 
-  }
+    // 保存新增的数据表
+    add_table_save (table_visible_form) {
+      this.$refs[table_visible_form].validate((valid) => {
+        if (valid) {
+          alert(1)
+        } else {
+          this.btnLoading = false;//保存loadnin
+          this.$message({
+            message: '请填写信息',
+            type: 'info',
+            showClose: true,
+          })
+          return false
+        }
+      })
+    },
+  },
 }
 </script>
 
 <style scoped >
+.dlag_width >>> .el-dialog {
+  min-width: 600px !important;
+}
 .resources {
   display: flex;
   /* overflow-y: auto; */
@@ -1039,5 +1162,9 @@ export default {
   box-sizing: border-box;
 }
 .is_click:hover {
+}
+
+.add_table_class >>> .el-form-item__label {
+  text-align: right !important;
 }
 </style>
