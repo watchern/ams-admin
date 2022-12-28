@@ -248,6 +248,7 @@
               :chartModelUuid="modelUuid"
               :modelId="modelUuid"
               id="childTabs1"
+                :executeSqlViewData="executeSqlViewData"
         />
       </div>
       <div v-if="!isExecuteError" class="data-show">
@@ -577,7 +578,8 @@ import {
   getGraphSaveInfo,
   getZtreeSelectNode,
   hideRMenu,
-  sendSettingVue
+  sendSettingVue,
+  loadResultDataMaxCountList
 } from "@/api/analysis/sqleditor/sqleditor";
 import sqlDraftList from "@/views/analysis/sqleditor/sqldraftlist";
 import sqlDraftTree from "@/views/analysis/sqleditor/sqldrafttree";
@@ -670,9 +672,17 @@ export default {
         this.isManager = false
       }
     })
+    loadResultDataMaxCountList().then(res =>{
+      if(res.data.length > 0){
+        this.resultDataMaxCountList = res.data
+        this.resultDataMaxCount = res.data[0]
+      }
+    })
   },
   data() {
     return {
+      // 显示执行sql的弹窗数据（getexecutetask接口传入的第一个参数）
+      executeSqlViewData: {},
       remindMessage:"注意事项：\n（1）【' ' as xx】字段时,空列必须要空格,例如【select ' ' as a from dual】\n（2）where条件中使用参数时，in(参数)无需加单引号,例如【select a from dual where a in (参数名称)】\n（3）where条件中使用参数时，使用非in(参数)时需加单引号,例如【select a from dual where a =‘参数名称’\n（4）注释：/*注释内容*/写法即可完成，注释里面不要包含系统中的参数\n（5）开发模型时，SQL必须全部执行后才可保存\n（6）编写模型语句时，DROP语句需放在最后\n（7）当前SQL将使用最后一个select语句结果集进行输出结果定义配置\n（8）编写含有参数的SQL条件语句并符合以下条件时，需特殊处理：\n  ① in条件语句，括号内不能出现空格，例：where name in (参数XX)\n ② 存在于括号内的条件，条件应与括号之间存在空格，例：where ( name='参数X' and type='参数2' ) or type='参数3'",
       resultDataMaxCountList:[200,500,1000,10000,100000],
       resultDataMaxCount: 200,
@@ -1538,7 +1548,7 @@ export default {
                   _this.createTreeNode = result.data.treeNodeInfo;
                   _this.resultShow.push({ id: 1 });
                   result.data.dataSource = _this.dataSource
-                  result.data.resultDataMaxCount = _this.resultDataMaxCount
+                  result.data.resultDataMaxCount = parseInt(_this.resultDataMaxCount)
                   // if (executeflag === true) {
                   //   // 界面渲染完成之后开始执行sql,将sql送入调度
                   // 显示放大按钮
@@ -1601,6 +1611,7 @@ export default {
         obj.modelResultSavePathId = this.modelResultSavePathId;
         obj.pushUuid = this.pushUuid;
         obj.modelType = 'SQL';
+        this.executeSqlViewData = obj.sqls;
         callback(obj)
       // });
     },
@@ -1650,7 +1661,7 @@ export default {
           this.resultShow.push({ id: 1 });
           // 界面渲染完成之后开始执行sql,将sql送入调度
           result.data.dataSource = this.dataSource
-          result.data.resultDataMaxCount = this.resultDataMaxCount
+          result.data.resultDataMaxCount = parseInt(this.resultDataMaxCount)
           startExecuteSql(result.data)
             .then((result) => {
               this.executeLoading = false;
