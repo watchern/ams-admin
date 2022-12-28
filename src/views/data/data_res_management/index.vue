@@ -95,61 +95,61 @@
           </template>
         </el-table-column>
       </el-table>
-      </div>
-      <el-pagination v-show="page_list.total>0"
-                     :total="page_list.total"
-                     :current-page="page_list.currentPage"
-                     background
-                     @current-change="handleCurrentChange"
-                     @size-change="handleSizeChange"
-                     layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+    </div>
+    <el-pagination v-show="page_list.total>0"
+                   :total="page_list.total"
+                   :current-page="page_list.currentPage"
+                   background
+                   @current-change="handleCurrentChange"
+                   @size-change="handleSizeChange"
+                   layout="total, sizes, prev, pager, next, jumper"></el-pagination>
 
-      <!-- 新增编辑 -->
-      <el-dialog :title="title"
-                 class="data_res"
-                 :visible.sync="dialogVisible"
-                 @close="handleClose('form')"
-                 width="40%">
-        <el-form :rules="rules"
-                 ref="form"
-                 label-width="130px"
-                 :model="form"
-                 :inline="false">
+    <!-- 新增编辑 -->
+    <el-dialog :title="title"
+               class="data_res"
+               :visible.sync="dialogVisible"
+               @close="handleClose('form')"
+               width="40%">
+      <el-form :rules="rules"
+               ref="form"
+               label-width="130px"
+               :model="form"
+               :inline="false">
 
-          <el-form-item label="系统名称:"
-                        prop="businessSystemName">
-            <el-input type="text"
-                      v-model="form.businessSystemName"
-                      style="width: 80%;"
-                      :disabled="title == '查看业务系统'"
-                      :rows="4">
-            </el-input>
-          </el-form-item>
-          <el-form-item label="系统代码:"
-                        prop="businessSystemCode">
-            <el-input style="width: 80%;"
-                      type="textarea"
-                      :disabled="title == '查看业务系统'"
-                      v-model="form.businessSystemCode"></el-input>
-          </el-form-item>
-          <el-form-item label="执行时间间隔:"
-                        prop="businessSystemEtldate">
-            <!-- <el-date-picker v-model="form.businessSystemEtldate"
+        <el-form-item label="系统名称:"
+                      prop="businessSystemName">
+          <el-input type="text"
+                    v-model="form.businessSystemName"
+                    style="width: 80%;"
+                    :disabled="title == '查看业务系统'"
+                    :rows="4">
+          </el-input>
+        </el-form-item>
+        <el-form-item label="系统代码:"
+                      prop="businessSystemCode">
+          <el-input style="width: 80%;"
+                    type="textarea"
+                    :disabled="title == '查看业务系统'"
+                    v-model="form.businessSystemCode"></el-input>
+        </el-form-item>
+        <el-form-item label="执行时间间隔:"
+                      prop="businessSystemEtldate">
+          <!-- <el-date-picker v-model="form.businessSystemEtldate"
                             type="date"
                             :disabled="title == '查看业务系统'"
                             format="yyyy-MM-dd"
                             value-format="yyyy-MM-dd"
                             placeholder="选择日期"> -->
 
-            <el-input style="width: 80%;"
-                      type="input"
-                      :disabled="title == '查看业务系统'"
-                      v-model.number="form.businessSystemEtldate"></el-input>
+          <el-input style="width: 80%;"
+                    type="input"
+                    :disabled="title == '查看业务系统'"
+                    v-model.number="form.businessSystemEtldate"></el-input>
 
-            <!-- </el-date-picker> -->
+          <!-- </el-date-picker> -->
 
-          </el-form-item>
-          <!-- <el-form-item label="创建人:"
+        </el-form-item>
+        <!-- <el-form-item label="创建人:"
                         prop="createUserName">
             <el-input type="textarea"
                       style="width: 80%;"
@@ -159,49 +159,49 @@
             </el-input>
           </el-form-item> -->
 
-          <el-form-item label="文件推送路径:"
-                        prop="filePushPath">
-            <el-input type="textarea"
-                      style="width: 80%;"
-                      :rows="4"
-                      :disabled="title == '查看业务系统'"
-                      v-model="form.filePushPath">
-            </el-input>
-          </el-form-item>
+        <el-form-item label="文件推送路径:"
+                      prop="filePushPath">
+          <el-input type="textarea"
+                    style="width: 80%;"
+                    :rows="4"
+                    :disabled="title == '查看业务系统'"
+                    v-model="form.filePushPath">
+          </el-input>
+        </el-form-item>
 
-          <el-form-item label="数据备份路径:"
-                        prop="dataBackupPath">
-            <el-input type="textarea"
-                      style="width: 80%;"
-                      :rows="4"
-                      :disabled="title == '查看业务系统'"
-                      v-model="form.dataBackupPath">
-            </el-input>
-          </el-form-item>
+        <el-form-item label="数据备份路径:"
+                      prop="dataBackupPath">
+          <el-input type="textarea"
+                    style="width: 80%;"
+                    :rows="4"
+                    :disabled="title == '查看业务系统'"
+                    v-model="form.dataBackupPath">
+          </el-input>
+        </el-form-item>
 
-          <el-form-item label="数据移动目录:"
-                        prop="dataMoveDir">
-            <el-input type="textarea"
-                      style="width: 80%;"
-                      :rows="4"
-                      :disabled="title == '查看业务系统'"
-                      v-model="form.dataMoveDir">
-            </el-input>
-          </el-form-item>
-        </el-form>
+        <el-form-item label="数据移动目录:"
+                      prop="dataMoveDir">
+          <el-input type="textarea"
+                    style="width: 80%;"
+                    :rows="4"
+                    :disabled="title == '查看业务系统'"
+                    v-model="form.dataMoveDir">
+          </el-input>
+        </el-form-item>
+      </el-form>
 
-        <span slot="footer"
-              class="dialog-footer">
-          <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary"
-                     :disabled="isDisable"
-                     v-if="title !== '查看业务系统'"
-                     @click="save('form')">保存</el-button>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   :disabled="isDisable"
+                   v-if="title !== '查看业务系统'"
+                   @click="save('form')">保存</el-button>
 
-        </span>
-      </el-dialog>
+      </span>
+    </el-dialog>
 
-    </div>
+  </div>
 
 </template>
 

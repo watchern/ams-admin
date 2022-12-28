@@ -202,7 +202,6 @@
                          <el-form-item label="办理人" class="form_item">
                            <el-checkbox-group
                                    v-model="checkedPerList"
-                                   @change="checkedPersonList"
                                    v-if="this.isAllAssignment == 'checkbox'"
                            >
                              <el-row :gutter="20">
@@ -218,6 +217,7 @@
                            </el-checkbox-group>
 
                            <el-radio-group
+                                   @change="checkedPersonList"
                                    v-model="personform.transactor"
                                    v-if="this.isAllAssignment == 'radio'"
                            >
@@ -347,7 +347,7 @@
 <script>
 
   import { selectInitDetail,submitToPerson } from "@/api/starflow";
-  import {inItCode} from '@/api/base/sysdata'
+  import {inItCode,listByPage} from '@/api/base/sysdata'
   // import { resolve } from "path";
   //用于知会人
   // import OrgPersonListOut from "@/components/common/orgPersonListOut";
@@ -452,6 +452,7 @@
         //动态组件相关
         activePage: "", // 变量
         bottomPanel: null, // 定义组件
+        selectPersonUuidList: [] //被选中的人员的id集合
       };
     },
     destroyed() {
@@ -467,70 +468,93 @@
       //当前状态 待办或者已办
       // const currentStatus = this.$route.params.approvalData.currentState
       // CAL_COMPLETED 已办 CAL_ACCEPTED 待办
-      const param = {
-        condition:{
-          baseCodeInfo: '',
-          dataSortDesc: '',
-          dataSortName: '工作流待办路径配置',
-          dataSortUuid: 'd4cad8fef4284b5a90deda982311f9ae',
-          dataSortValue: '',
-          editTag: null,
-          extendTag: '0',
-          isDeleted: 0,
-          keyword: null,
-          remark: null,
+      // let dynamicDataSortValue = ''
+      // if(currentStatus == 'CAL_ACCEPTED'){
+      //   dynamicDataSortValue = '00000000'
+      // }
+      // if(currentStatus == 'CAL_COMPLETED'){
+      //   dynamicDataSortValue = '00000001'
+      // }
+      const baseDataSortParam = {
+        condition: {
+          dataSortName: '',
+          dataSortValue: '00000000'
         },
         pageNo: 1,
-        pageSize: 20,
+        pageNum: 20,
         sortBy: 'asc',
         sortName: 'create_time'
       }
-      const needType = this.$route.params.applyDetail.type
-      inItCode(param)
+      listByPage(baseDataSortParam)
+      .then((res)=>{
+        const dataSortUuid = res.data.records[0].dataSortUuid
+        const dataSortName = res.data.records[0].dataSortName
+        const baseCodeInfoParam = {
+          condition:{
+            baseCodeInfo: '',
+            dataSortDesc: '',
+            dataSortName: dataSortName,
+            dataSortUuid: dataSortUuid,
+            dataSortValue: '',
+            editTag: null,
+            extendTag: '0',
+            isDeleted: 0,
+            keyword: null,
+            remark: null,
+          },
+          pageNo: 1,
+          pageSize: 20,
+          sortBy: 'asc',
+          sortName: 'create_time'
+        }
+        const needType = this.$route.params.applyDetail.type
+        inItCode(baseCodeInfoParam)
         .then((res)=>{
-          const result = res.data.records
-          result.forEach((value,index)=>{
-            if(value.codeName == needType){
-              this.activePage = value.codeDesc
-            }
-          })
-          let out = this.$route.query.out;
-          // //该部分为其它工程接入审计系统用
-          if ("1" == out) {
-            //判断路由跳转过来的是否携带参数
-            this.projectStatus = this.$route.query.projectStatus;
-            this.projectType = this.$route.query.projectType;
-            if ("1" == this.projectStatus) {
-              this.yancheng = true;
-              this.applyIdiomTest();
-            }
-            this.fetchApply(this.$route.query.applyUuid);
-          }
-          this.out = out;
-          if (
-                  this.$route.params.approvalData &&
-                  this.$route.params.approvalData != null
-          ) {
-            // 这是正常点开待办已办详情，用的this.$router.push，name跳转params传参
-            this.approvalData = this.$route.params.approvalData;
-            //判断flowItem是从引用组件传递来的，还是通过跳转传递过来的。
-            this.flowItemParam = this.$route.params.flowItem;
-            this.flowSetup = this.$route.params.flowSet;
-            this.applyDetail = this.$route.params.applyDetail;
-            this.applyTitleform.applyTitle = this.approvalData.applyTitle;
-            this.applyTitleform.applyTypeName = this.approvalData.applyTypeName;
-            this.applyTitleform.applyType = this.approvalData.applyType;
-            this.jumpTag = this.$route.params.jumpTag;
-            this.projectStatus = this.$route.params.projectStatus;
-            this.projectType = this.$route.params.projectType;
-            this.flowSetup.projectType = this.projectType;
-            if ("1" == this.projectStatus) {
-              this.yancheng = true;
-              this.applyIdiomTest();
-            }
-            this.init();
+        const result = res.data.records
+        result.forEach((value,index)=>{
+          if(value.codeName == needType){
+            this.activePage = value.codeDesc
           }
         })
+        let out = this.$route.query.out;
+        //该部分为其它工程接入审计系统用
+        if ("1" == out) {
+          //判断路由跳转过来的是否携带参数
+          this.projectStatus = this.$route.query.projectStatus;
+          this.projectType = this.$route.query.projectType;
+          if ("1" == this.projectStatus) {
+            this.yancheng = true;
+            this.applyIdiomTest();
+          }
+          this.fetchApply(this.$route.query.applyUuid);
+        }
+        this.out = out;
+        if (
+                this.$route.params.approvalData &&
+                this.$route.params.approvalData != null
+        ) {
+          // 这是正常点开待办已办详情，用的this.$router.push，name跳转params传参
+          this.approvalData = this.$route.params.approvalData;
+          //判断flowItem是从引用组件传递来的，还是通过跳转传递过来的。
+          this.flowItemParam = this.$route.params.flowItem;
+          this.flowSetup = this.$route.params.flowSet;
+          this.applyDetail = this.$route.params.applyDetail;
+          this.applyTitleform.applyTitle = this.approvalData.applyTitle;
+          this.applyTitleform.applyTypeName = this.approvalData.applyTypeName;
+          this.applyTitleform.applyType = this.approvalData.applyType;
+          this.jumpTag = this.$route.params.jumpTag;
+          this.projectStatus = this.$route.params.projectStatus;
+          this.projectType = this.$route.params.projectType;
+          this.flowSetup.projectType = this.projectType;
+          if ("1" == this.projectStatus) {
+            this.yancheng = true;
+            this.applyIdiomTest();
+          }
+          this.init();
+        }
+        })
+      })
+
     },
     computed: {
       lessionMstate() {
@@ -586,7 +610,7 @@
       },
       //关闭子组件调用的方法，整理数据
       closeObjLeader(val, nodeLabel) {
-        console.log(val, nodeLabel); //被审计对象选定时，这里可以收到信息，在这里接收label
+        // console.log(val, nodeLabel); //被审计对象选定时，这里可以收到信息，在这里接收label
         this.dialogVisibleNotifyPerson = false;
         var prjPersonArr = val;
         var PersonName = "";
@@ -634,7 +658,7 @@
                     applyInfoVO.newFstate = "";
                     //初始化vuex里的审核状态，或者覆盖之前存储的值
                     this.$store.dispatch("applyInfo/setApplyInfo", applyInfoVO);
-                    console.log(JSON.stringify(applyInfoVO));
+                    // console.log(JSON.stringify(applyInfoVO));
                     this.approvalData = applyInfoVO;
                     this.flowItemParam = applyInfoVO;
                     this.flowSetup = flowSet;
@@ -653,7 +677,6 @@
       },
       add(){
         var templateParam = this.$route.params.approvalData.appDataUuid
-        console.log(templateParam,"templateParam")
         this.$refs.applyPage.queryByUuid(templateParam)
       },
       init() {
@@ -1044,7 +1067,7 @@
       },
       submitFlow() {
         // this.formData.personUuId = this.personform.transactor;
-        alert(11)
+        // alert(11)
 
         if (this.isAllAssignment == "checkbox") {
           this.formData.personUuId = this.checkedPerList.join(",");
@@ -1101,10 +1124,9 @@
           this.formData.userCode = this.form.personCode;
           this.formData.isInformed = "Y";
         }
-        console.log("ceshi----------" + JSON.stringify(this.formData));
         this.common.endLoading();
         this.common.startLoading();
-        alert(this.isLast)
+        // alert(this.isLast)
         if (!this.isLast) {
           this.$axios
                   .post("/starflow/applyMes/sf/apply/saveOpinions", this.formData)
@@ -1249,7 +1271,6 @@
                   }
                   //存储消息提醒的审批类型
                   this.formData.applyTypeName = this.applyTitleform.applyTypeName;
-                  console.log("ceshi----------" + JSON.stringify(this.formData));
                   this.common.endLoading();
                   this.common.startLoading();
                   this.$axios
@@ -1378,7 +1399,6 @@
         }
         //存储消息提醒的审批类型
         this.formData.applyTypeName = this.applyTitleform.applyTypeName;
-        console.log("ceshi----------" + JSON.stringify(this.formData));
         this.common.endLoading();
         this.common.startLoading();
         this.$axios
@@ -1424,8 +1444,9 @@
       sonFun(){
         this.add()
       },
-      templateButton(){
-        this.activePage = 'data/expansion/index'
+      checkedPersonList(value){
+        this.selectPersonUuidList = []
+        this.selectPersonUuidList.push(value)
       }
     },
   };

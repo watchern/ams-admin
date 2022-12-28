@@ -199,7 +199,8 @@
 }
 .el-input.is-disabled .el-input__inner{
   color: #606266!important;
-  background-color: #ffffff!important;
+    background-color: rgba(0, 0, 0, 0.05) !important;
+  // background-color: #ffffff!important;
 }
 .el-tabs--border-card>.el-tabs__content{
   padding: 15px 0 0 0;

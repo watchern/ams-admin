@@ -25,12 +25,12 @@
                                    value="KB"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="审批人">
-                    <el-input v-model="personalSpace.personalSpaceApproving"
-                              placeholder="选择审批人"
-                              style="width: 670px"></el-input>
-                    <el-button type="primary">选择</el-button>
-                </el-form-item>
+<!--                <el-form-item label="审批人">-->
+<!--                    <el-input v-model="personalSpace.personalSpaceApproving"-->
+<!--                              placeholder="选择审批人"-->
+<!--                              style="width: 670px"></el-input>-->
+<!--                    <el-button type="primary">选择</el-button>-->
+<!--                </el-form-item>-->
                 <el-row type="flex"
                         justify="end">
                   <el-button type="primary"
@@ -62,7 +62,7 @@
                     personalSpaceDate:'',
                     personalSpaceCapacity:'',
                     personalSpaceStatus:'',
-                    personalSpaceApproving:'',
+                    // personalSpaceApproving:'',
                 },
                 personalSpaceCapacityNeed:'',//该变量为容量的单位 在最后会和容量做一个拼接
 

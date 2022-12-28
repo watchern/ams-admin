@@ -34,6 +34,14 @@ const dataRouter = {
         title: "数据管理-数据准备-数据使用权限申请",
       },
     },
+    {
+      path: "sensitiveData",
+      name: "敏感数据识别",
+      component: () => import("@/views/data/sensitiveData/index"),
+      meta: {
+        title: "数据管理-数据安全-敏感数据识别",
+      },
+    },
     /* 数据角色管理*/
     {
       path: "directory",

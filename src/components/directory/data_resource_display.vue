@@ -7,7 +7,7 @@
            @click="onclick()">
         <div v-for="(item,index) in TagsAll"
              :key="index"
-             class="spanbox">
+             class="spanbox22">
           <span class="tagspan">{{item}}</span>
           <i class="span_close"
              @click="removeTag(index,item)"></i>
@@ -120,7 +120,7 @@
         </div>
       </template>
       <div class="list_table"
-           style="height: calc(100vh - 230px);overflow: auto;">
+           style="height: calc(100vh - 280px);overflow: auto;">
         <el-table ref="multipleTable"
                   :data="list"
                   style="width: 100%"
@@ -143,8 +143,13 @@
                   </div>
 
                   <div class="new_left padding10">
-                    <i><img src="../../assets/img/msq.png"
-                           alt=""></i>
+                    <div class="cover">
+                      <!-- <img src="../../assets/img/msq.png"
+                           alt=""> -->
+                      <h2>{{scope.row.tableRelationQuery.tableLayeredName}}</h2>
+                      <span class="_title">{{scope.row.tableRelationQuery.businessSystemName}}</span>
+                    </div>
+
                   </div>
 
                   <div class="new_right">
@@ -176,9 +181,9 @@
                        v-else>字段：暂无</p>
 
                     <div class="data_list">
+                      <!-- {{scope.row.tableRelationQuery}} -->
                       <span class="data_time"
-                            v-if="scope.row.tableRelationQuery">数据日期：{{scope.row.tableRelationQuery
-.dataDate}}</span>
+                            v-if="scope.row.tableRelationQuery.dataDate!=null">数据日期：{{scope.row.tableRelationQuery.dataDate}}</span>
                       <span class="data_time"
                             v-else>数据日期：暂无</span>
                       <span class="data_number">数据量 {{scope.row.rowNum}} 条</span>
@@ -192,15 +197,23 @@
         </el-table>
       </div>
 
+      <div class="padding10">
+        <el-pagination @size-change="handleSizeChange"
+                       @current-change="handleCurrentChange"
+                       :page-size="this.list_data.size"
+                       background
+                       :current-page-sync="this.list_data.current"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="this.list_data.total"></el-pagination>
+      </div>
+
     </el-skeleton>
 
-    <el-dialog :title="title"
+    <!-- <el-dialog :title="title"
                :visible.sync="common_dialog"
                width="30%">
 
-      <!-- 模版下载 -->
 
-      <!-- 认权管理 -->
       <div>
 
       </div>
@@ -210,7 +223,7 @@
         <el-button type="primary"
                    @click="common_dialog = false">确 定</el-button>
       </span>
-    </el-dialog>
+    </el-dialog> -->
 
   </div>
 </template>
@@ -232,24 +245,19 @@ export default {
       type: Number,
 
     },
-    isBtn: {
-      type: Boolean,
-      default () {
-        return []
-      }
-    },
     list: {
       type: Array,
       default () {
         return []
       }
     },
-    list_loading: {
-      type: Boolean,
-      default () {
-        return []
-      }
+    list_data: {
+      type: Object,
+      default: () => ({})
     },
+    isBtn: Boolean,
+    list_loading: Boolean,
+
   },
 
   data () {
@@ -261,13 +269,12 @@ export default {
       search_name: '',
       TagsAll: [],
       inputLength: '',
-      common_dialog: false,//导入数据源
+      // common_dialog: false,//导入数据源
       title: '',//弹窗共用标题
       check_list: [],//多选批量的数量
     };
   },
   created () {
-    console.log(this.list);
     // if (this.list && this.list.length == 0) {
     //   this.list_loading = true;
     // } else {
@@ -282,7 +289,7 @@ export default {
       this.$emit('on-change', this.TagsAll)
     },
     search_name (val) {
-      console.log(val)
+
       this.inputLength = this.$refs.inputTag.value.length * 12 + 50;
 
     },
@@ -313,7 +320,7 @@ export default {
 
     // 删除标签
     removeTag (index, item) {
-      console.log(item)
+
       this.TagsAll.splice(index, 1)
     },
 
@@ -331,7 +338,7 @@ export default {
     },
     // 查询
     search () {
-      console.log(this.TagsAll);
+
     },
     //键盘删除键删除tag
     deleteTags () {
@@ -350,13 +357,6 @@ export default {
       //   this.$message({ type: "warning", message: "请选择一条数据进行下载" });
       // }
     },
-
-    // 导入数据字典
-    Importdata_dictionary () {
-      // this.common_dialog = true;
-      this.$emit("Importdata_dictionary", '导入数据字典')
-
-    },
     // 汉化模版下载
     down_template_cn () {
       if (this.check_list.length !== 0) {
@@ -365,14 +365,7 @@ export default {
         this.$message({ type: "warning", message: "请选择一条数据进行下载" });
       }
     },
-    // 导入汉化信息
-    Important_cn () {
-      this.$emit("Important_cn", '导入汉化信息')
-    },
-    // 表关系
-    Important_table () {
-      this.$emit("Important_table", '表关系')
-    },
+
     // 表关系下载模版
     down_template_table () {
       //  if (this.check_list.length !== 0) {
@@ -381,17 +374,19 @@ export default {
       //   this.$message({ type: "warning", message: "请选择一条数据进行下载" });
       // }
     },
-    // 注册资产
-    on_register () {
-      this.$emit("on_register", this.check_list);
+
+    // 导入数据字典
+    Importdata_dictionary () {
+      // this.common_dialog = true;
+      this.$emit("Importdata_dictionary", '导入数据字典')
     },
-    // 认权
-    Recognition () {
-      if (this.check_list.length !== 0) {
-        this.$emit("Recognition", this.check_list);
-      } else {
-        this.$message({ type: "warning", message: "请选择一条数据进行认权" });
-      }
+    // 导入汉化信息
+    Important_cn () {
+      this.$emit("Important_cn", '导入汉化信息')
+    },
+    //导入 表关系
+    Important_table () {
+      this.$emit("Important_table", '导入表关系')
     },
     // 同步数据机构
     sync_data () {
@@ -401,11 +396,22 @@ export default {
         this.$message({ type: "warning", message: "请最少一条数据进行同步" });
       }
     },
-
+    // 认权
+    Recognition () {
+      if (this.check_list.length !== 0) {
+        this.$emit("Recognition", this.check_list);
+      } else {
+        this.$message({ type: "warning", message: "请选择一条数据进行认权" });
+      }
+    },
+    // 注册资产
+    on_register () {
+      this.$emit("on_register", this.check_list);
+    },
     // 修改
     edit_list () {
-      if (this.check_list.length !== 0) {
-
+      if (this.check_list.length == 1) {
+        this.$emit("edit_list", this.check_list);
       } else {
         this.$message({ type: "warning", message: "请选择一条数据进行修改" });
       }
@@ -422,37 +428,20 @@ export default {
       this.$emit("on_deails", data);
 
     },
-    // // 全选
-    // handleCheckAllChange () {
-    //   if (this.list && this.list.length > 0) {
-    //     for (var i = 0; i < this.list.length; i++) {
-    //       this.list[i].isCheck = this.checkAll;
-    //     }
-    //   }
-    // },
-    // // 单选
-    // handleCheckChange (val) {
 
-    //   // val.isCheck = val.children.every(item => item.isCheck)
-    //   for (let i = 0, l = this.list.length; i < l; i++) {
-    //     if (this.list[i].isCheck !== val.isCheck) {
-    //       this.checkAll = false;
-    //     } else {
-    //       this.checkAll = val.isCheck;
-    //     }
-    //   }
-    //   console.log(this.list);
-    //   // return false
-
-    // },
+    // 分页
+    handleCurrentChange (val) {
+      this.$emit("handleCurrentChange", val);
+    },
+    // 每页多少条
+    handleSizeChange (val) {
+      this.$emit("handleSizeChange", val);
+    },
     // 全选
     handleSelectionChange (val) {
-      console.log(val);
+
       this.check_list = val
     },
-
-
-
 
   }
 }
@@ -516,7 +505,7 @@ export default {
   word-wrap: break-word;
   overflow: hidden;
 }
-.spanbox {
+.spanbox22 {
   display: inline-block;
   font-size: 14px;
   margin: 3px 0px 3px 4px;
@@ -641,18 +630,69 @@ export default {
 .new_left {
   float: left;
 }
-.new_left i {
+.new_left .cover {
   width: 130px;
   height: 130px;
   float: left;
   border-radius: 15px;
   overflow: hidden;
+  background: #04cd6f;
+  position: relative;
+  color: #fff;
 }
-.new_left img {
+/* .new_left img {
   width: 100%;
   height: 100%;
+} */
+.new_left h2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  text-align: center;
+  justify-content: center;
+  padding: 30px 5px 0;
+  font-weight: bold;
+  font-size: 40px;
 }
-
+.new_left ._title {
+  font-size: 16px;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: #01ea7e;
+  color: #fff;
+  text-align: center;
+  padding: 0 5px;
+  height: 40px;
+  line-height: 40px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  transition: all 0.3s;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  color: rgba(0, 0, 0, 0.5);
+}
+.new_left ._title:hover {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  line-height: 20px;
+  height: 100%;
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: blur(10px);
+  /* background-color: rgba(255, 255, 255, 0.7); */
+  box-sizing: border-box;
+}
 .new_right {
   width: calc(100% - 150px);
   min-height: 140px;

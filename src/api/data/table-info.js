@@ -259,7 +259,7 @@ export function getBasicInfo (tableMetaUuid) {
 export function getColsInfo (tableMetaUuid) {
   return request({
     baseURL: baseURL,
-    url: `/${controller2}/getColsInfo`,
+    url: `/${controller2}/getTableInfo`,
     method: 'post',
     params: { tableMetaUuid: tableMetaUuid }
   })
@@ -359,3 +359,22 @@ export function synDataStructure (data) {
     data
   })
 }
+
+// 修改详情保存
+export function updateTableInfo (data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/updateTableInfo`,
+    method: 'post',
+    data
+  })
+}
+export function createSql (data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/createSql`,
+    method: 'post',
+    data
+  })
+}
+

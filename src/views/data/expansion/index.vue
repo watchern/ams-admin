@@ -51,7 +51,7 @@
                    @click="onDelete">删除</el-button>
         <el-button type="primary"
                    @click="joinUpdateDialog">修改</el-button>
-        <el-button type="primary" @click="handleEvent">办理</el-button>
+        <el-button type="primary" @click="handleEvent">提交</el-button>
         <el-button type="primary"
                    @click="exportAllData">导出</el-button>
         <el-button type="primary"
@@ -128,12 +128,12 @@
                        value="KB"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="审批人">
-          <el-input v-model="personalSpace.personalSpaceApproving"
-                    placeholder="选择审批人"
-                    style="width: 670px"></el-input>
-          <el-button type="primary">选择</el-button>
-        </el-form-item>
+<!--        <el-form-item label="审批人">-->
+<!--          <el-input v-model="personalSpace.personalSpaceApproving"-->
+<!--                    placeholder="选择审批人"-->
+<!--                    style="width: 670px"></el-input>-->
+<!--          <el-button type="primary">选择</el-button>-->
+<!--        </el-form-item>-->
         <el-row type="flex"
                 justify="end">
           <el-button type="primary"
@@ -244,13 +244,10 @@
     ,setPersonalSpaceSession
     ,updatePersonalSpace
     ,batchUpdateForHandle
-    ,batchUpdateForFinishHandle
-    ,queryByPersonalSpaceUuid
   } from "@/api/analysis/personalSpace";
   import FlowItem from '@/components/starflow/todowork/flowItem'
   import ExpansionUpdate from "@/views/data/expansion/ExpansionUpdate";
   export default {
-    // components: { Pagination, QueryField, FlowItem },
     components: {
       FlowItem
       ,ExpansionUpdate
@@ -264,7 +261,7 @@
           personalSpaceDate:'',
           personalSpaceCapacity:'',
           personalSpaceStatus:'',
-          personalSpaceApproving:'',
+          // personalSpaceApproving:'',
         },
         personalSpaceDataList: [],//查询并展示的数据集合
         openInsertDialog: false,//打开添加弹窗
@@ -343,10 +340,7 @@
             type: 'warning',
           })
           .then(()=>{
-            // setPersonalSpaceSession(this.personalSpaceUuidList)
-            // .then((res)=>{
               exportAllPersonalSpace()
-            // })
           })
         }else{
           setPersonalSpaceSession(this.personalSpaceUuidList)
@@ -392,7 +386,7 @@
         if(this.personalSpace.personalSpaceName == undefined || this.personalSpace.personalSpaceName == null || this.personalSpace.personalSpaceName == ''
         || this.personalSpace.personalSpaceCapacity == undefined || this.personalSpace.personalSpaceCapacity == null || this.personalSpace.personalSpaceCapacity == ''
         || this.personalSpaceCapacityNeed == undefined || this.personalSpaceCapacityNeed == null || this.personalSpaceCapacityNeed == ''
-        || this.personalSpace.personalSpaceApproving == undefined || this.personalSpace.personalSpaceApproving == null || this.personalSpace.personalSpaceApproving == ''
+        // || this.personalSpace.personalSpaceApproving == undefined || this.personalSpace.personalSpaceApproving == null || this.personalSpace.personalSpaceApproving == ''
         ){
           const h = this.$createElement;
           this.$notify({
@@ -404,27 +398,22 @@
         insertPersonalSpace(param)
           .then((res)=>{
             if(res.data == 200){
-              this.$message({
-                type: 'success',
-                message: '添加成功'
-              })
+              // this.$message({
+              //   type: 'success',
+              //   message: '添加成功'
+              // })
+              this.$notify.success("添加成功")
               this.openInsertDialog = false
               this.clearParams()
             }
             this.initPersonalSpaceData()
           })
           .catch((err)=>{
-            console.log("新增失败")
+            this.$notify.error("添加失败")
           })
       },
       onDelete(){
         const params = this.personalSpaceUuidList
-        // const personalSpace = {
-        //   personalSpaceUuid: this.personalSpaceUuidList[0]
-        // }
-        // const relParam = []
-        // relParam.push(personalSpace)
-        // batchUpdateForFinishHandle(relParam)
         if(params.length == 0){
           this.$message({
             type: 'warning',
@@ -433,6 +422,7 @@
         }else{
           deletePersonalSpace(params)
             .then((res)=>{
+              this.$notify.success("删除成功")
               this.initPersonalSpaceData()
             })
         }
@@ -453,7 +443,7 @@
           personalSpaceDate:'',
           personalSpaceCapacity:'',
           personalSpaceStatus:'',
-          personalSpaceApproving:'',
+          // personalSpaceApproving:'',
         }
         this.personalSpaceCapacityNeed = ''
       },
@@ -469,12 +459,10 @@
         this.temp = Object.assign({}, this.personalSpaceSelectionList[0])
         console.log(this.personalSpaceSelectionList[0],"this.personalSpaceSelectionList[0]")
         console.log(this.temp,"this.temp")
-        // alert(JSON.stringify(this.temp))
         //业务主键
         this.flowItem.appDataUuid=this.temp.personalSpaceUuid;
         //版本id 随机生成
         this.flowItem.versionUuid= this.common.randomString4Len(8);
-        // this.flowItem.applyTitle="场景详情流程";
         //申请业务的名字（待办标题）
         this.flowItem.applyTitle=this.temp.personalSpaceName;
         console.log(this.flowItem,"flowItem")
@@ -499,19 +487,10 @@
         this.openUpdateDialog = true
         //当在业务管理页面时候 不应该调用这个方法  在工作流中才调用 后期需要标识
         this.$refs.expansionUpdatePage.queryByUuid(param)
-        // queryByPersonalSpaceUuid(param).then((res)=>{
-        //   this.personalSpace = res.data
-        //   var length = res.data.personalSpaceCapacity.length
-        //   console.log(length,"length")
-        //   this.personalSpaceCapacityNeed = res.data.personalSpaceCapacity.substring(length-2)
-        //   this.personalSpace.personalSpaceCapacity = res.data.personalSpaceCapacity.substring(0,length-2)
-        // })
 
       },
       onUpdate(personalSpace,personalSpaceCapacityNeed){
-        // const capacity1 = this.personalSpace.personalSpaceCapacity
         const capacity1 = personalSpace.personalSpaceCapacity
-        // const capacity2 = this.personalSpaceCapacityNeed
         const capacity2 = personalSpaceCapacityNeed
         personalSpace.personalSpaceCapacity = capacity1+capacity2
         const param = personalSpace
@@ -539,21 +518,6 @@
       },
       delectData(val) {
         this.dialogFlowItemShow = val;
-        // var data = {
-        //   busRelationUuid: this.$store.state.applyInfo.applyInfo.appDataUuid,
-        // };
-        // this.$axios
-        //   .post("/ams-clue/busRelation/delete/rollBackData", data)
-        //   .then((response) => {
-        //     if (response.data.code == "0") {
-        //       this.flowItem.appDataUuid = response.data.data.busRelationUuid;
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     this.CommonUtil.alertMsg(1, "操作失败！");
-        //     console.log(error);
-        //   });
-        // this.initData();
       },
       saveOpinion() {
         //保存业务数据成功后

@@ -140,94 +140,21 @@
                            :isBtn="isBtn"
                            @on_register="registTable"
                            @Recognition='recognitionChange'
+                           @handleCurrentChange="handleCurrent"
+                           @handleSizeChange="handleSize"
                            :list="list"
+                           :list_data="list_data"
                            :list_loading="list_loading"
+                           @edit_list="Edit_list"
                            v-if="show_details == false"></DataResourceDisplay>
       <!-- 基本信息详情 -->
       <Details ref="Details_ref"
                :tableMetaUuid="tableMetaUuid"
+               :isDisable_input="isDisable_input"
+               @update_list="UpdateList"
+               :is_Edit_list="is_Edit_list"
                v-if="show_details == true"></Details>
 
-      <!-- 默认表单 -->
-      <!-- <div v-if="divInfo == false">
-        <div class="padding10">
-          <el-row>
-            <el-col align="right">
-              <el-button type="primary"
-                         style="padding:0 10px;width:auto"
-                         class="oper-btn "
-                         @click="registTable()">注册资产-{{query.dataSource}}</el-button>
-            </el-col>
-          </el-row>
-        </div>
-        <el-table v-loading="listLoading"
-                  :data="list.records"
-                  border
-                  fit
-                  highlight-current-row
-                  style="width: 100%;height:calc(100% - 140px);overflow: auto;">
-          <el-table-column type="selection"
-                           width="55" />
-          <el-table-column label="表名称"
-                           prop="displayTbName" />
-          <el-table-column label="表代码"
-                           prop="chnName">
-            <template slot-scope="scope">
-              <div v-if="scope.row.tableRelationQuery.tableCode">
-                {{scope.row.tableRelationQuery.tableCode.substring(0,scope.row.tableRelationQuery.tableCode.lastIndexOf(">"))}}
-              </div>
-
-            </template>
-          </el-table-column>
-          <el-table-column label="表类型"
-                           prop="chnName">
-            <template slot-scope="scope">
-              {{
-                scope.row.tableRelationQuery.tableType == 1
-                      ? '表'
-                      : scope.row.tableRelationQuery.tableType == 2
-                      ? '视图'
-                      : scope.row.tableRelationQuery.tableType == 3
-                      ? '存储过程'
-                      : scope.row.tableRelationQuery.tableType == 4
-                      ? '接口'
-                      : scope.row.tableRelationQuery.tableType == 5
-                       ? '报表'
-                      : scope.row.tableRelationQuery.tableType == 6
-                      ? '指标'
-                      : scope.row.tableRelationQuery.tableType == 7
-                      ? '标签' : '其它'
-              }}
-            </template>
-          </el-table-column>
-          <el-table-column label="创建人"
-                           align="center"
-                           prop="createUserName">
-            <template slot-scope="scope">
-              {{scope.row.tableRelationQuery.createUserName}}
-            </template>
-          </el-table-column>
-
-          <el-table-column label="操作"
-                           align="center"
-                           min-width="100">
-            <template slot-scope="scope">
-              <el-button type="primary"
-                         class="oper-btn delete"
-                         title="删除"
-                         size="mini"
-                         @click="delete_table(scope.row.tableMetaUuid)" />
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination v-show="list.total>0"
-                       :total="list.total"
-                       :current-page="list.currentPage"
-                       background
-                       @current-change="handleCurrentChange"
-                       @size-change="handleSizeChange"
-                       layout="total, sizes, prev, pager, next, jumper"></el-pagination>
-      </div> -->
       <!-- 注册资产 -->
       <el-dialog :close-on-click-modal="false"
                  :default-expand-all="true"
@@ -272,7 +199,6 @@
           <el-button @click="registTableFlag = false">取消</el-button>
 
           <el-button type="primary"
-                     :disabled="isDisable"
                      v-if="is_next == true"
                      @click="next()">下一步</el-button>
         </span>
@@ -323,11 +249,11 @@
                  :inline="false">
           <!-- 表名-->
           <div class="son">
-            <el-form-item label="表名:"
+            <el-form-item label="表名称："
                           prop="tbName">
               <el-input type="text"
                         disabled
-                        placeholder="请输入表名"
+                        placeholder="请输入表名称"
                         v-model="form.tbName"
                         :rows="4">
               </el-input>
@@ -337,10 +263,10 @@
           <!-- 表中文名 -->
           <div class="son">
 
-            <el-form-item label="表中文名:">
+            <el-form-item label="表中文名：">
               <el-input type="text"
                         placeholder="请输入表中文名"
-                        v-model="form.chName"
+                        v-model="form.chnName"
                         :rows="4">
               </el-input>
 
@@ -352,6 +278,7 @@
             <el-form-item label="表说明:">
               <el-input type="textarea"
                         placeholder="请输入表说明"
+                        style="resize:none;"
                         v-model="form.tableRemarks">
               </el-input>
             </el-form-item>
@@ -360,7 +287,7 @@
 
           <!-- 资产编码 && 资产类型：-->
           <div class="son">
-            <el-form-item label="资产编码:"
+            <el-form-item label="资产编码："
                           prop="tableCode">
               <el-input type="text"
                         placeholder="请输入资产编码"
@@ -450,23 +377,12 @@
             <el-form-item label="表大小:">
               <el-input type="text"
                         disabled
-                        placeholder="请输入文件名称"
+                        placeholder="请输入表大小"
                         v-model="form.tableSize"
                         :rows="4">
               </el-input>
             </el-form-item>
           </div>
-          <!-- <el-form-item label="所属目录:"
-                          prop="folderUuid">
-              <el-cascader v-model="form.folderUuid"
-                           :options="next_contentsList"
-                           placeholder="请选择所属目录"
-                           clearable
-                           :props="props2"
-                           ref="cascaderArr"
-                           @change="handleChange"></el-cascader>
-            </el-form-item> -->
-
           <!-- 表数据量 &&   负责人-->
           <div class="son ">
             <el-form-item label="表数据量:">
@@ -479,8 +395,6 @@
             </el-form-item>
 
             <div class="son_check">
-
-              <!-- prop="personName_str" -->
               <el-form-item label="负责人:">
                 <el-input type="text"
                           disabled
@@ -499,12 +413,6 @@
           <div class="son ">
             <el-form-item label="表分区:"
                           prop="partitions">
-              <!-- <el-table :data="form.tableData"
-                        style="width: 100%">
-                <el-table-column prop="address"
-                                 label="日期">
-                </el-table-column>
-              </el-table> -->
               <ul class="table">
                 <li class="head">
                   分区名称
@@ -526,68 +434,14 @@
                            :label="item.label"
                            :value="item.value" />
               </el-select>
-
             </el-form-item>
-            <!-- <el-form-item label="是否推送文件:"
-                          prop="isSentFile">
-              <el-select v-model="form.isSentFile"
-                         :rows="4"
-                         placeholder="请选择是否推送文件">
-                <el-option v-for="item in option_isSentFile"
-                           :key="item.value"
-                           :label="item.label"
-                           :value="item.value" />
-              </el-select>
-            </el-form-item> -->
-
           </div>
-          <!--表名 文件名称 -->
-          <!-- <div class="son "
-               v-for="(item,index) in form.check_list"
-               :key="index"
-               :ref="`ruleForm${index}`">
-
-            <el-form-item label="表名:">
-              <p>{{item.label}}</p>
-            </el-form-item>
-
-            <el-form-item label="文件名称:"
-                          :prop="'check_list.' + index + '.fileName'"
-                          :rules="{
-            required: true,
-            message: '请输入文件名称',
-            trigger: 'blur',
-          }">
-              <el-input type="text"
-                        placeholder="请输入文件名称"
-                        v-model="item.fileName"
-                        :rows="4"
-                        @input="checkFileName_change(item.fileName)">
-              </el-input>
-            </el-form-item>
-          </div> -->
-
-          <!--  资产备注-->
-          <!-- <div class="son">
-            <el-form-item label="资产备注:"
-                          prop="tableRemarks">
-              <el-input type="textarea"
-                        placeholder="请输入表资产备注"
-                        v-model="form.tableRemarks">
-              </el-input>
-            </el-form-item>
-
-          </div> -->
 
           <!-- 数据标签：-->
           <div class="son ">
             <div class="son_check">
 
               <el-form-item label="数据标签：:">
-                <!-- <el-input type="text"
-                          disabled
-                          v-model="form.personName_str">
-                </el-input> -->
 
                 <div class="_width tag_conter">
                   <el-tag :key="tag"
@@ -620,9 +474,6 @@
               </template>
 
             </el-table-column>
-            <!-- <el-table-column prop="name"
-                             label="字段中文名">
-            </el-table-column> -->
             <el-table-column prop="address"
                              label="字段类型">
               <template slot-scope="scope">
@@ -636,21 +487,12 @@
                 {{ scope.row.dataLength}}
               </template>
             </el-table-column>
-
-            <!-- <el-table-column prop="address"
-                             label="字段说明">
-            </el-table-column> -->
           </el-table>
         </div>
 
         <span slot="footer"
               class="dialog-footer">
           <el-button @click="step()">上一步</el-button>
-          <!-- <el-button type="primary"
-                     :disabled="isDisable"
-                     @click="save('form')"
-                     v-if="ifFileNameExist">保存</el-button> -->
-
           <el-button type="primary"
                      :loading="btnLoading"
                      :disabled="isDisable"
@@ -729,8 +571,8 @@
 
             </el-form>
           </div>
-          <div class="padding10_l">
-            <el-table :data="tableData"
+          <!-- <div class="padding10_l">
+            <el-table :data="tableDatas"
                       style="width: 100%">
               <el-table-column prop="date"
                                align="center"
@@ -766,7 +608,7 @@
                 </template>
               </el-table-column>
             </el-table>
-          </div>
+          </div> -->
 
         </div>
         <span slot="footer"
@@ -836,9 +678,9 @@
         <span slot="footer">
           <el-button @click="importVisible = false">取消</el-button>
           <el-button @click="importTableDictionary()"
-                     v-if="upload_title = '数据字典导入'">导入</el-button>
+                     v-if="upload_title == '导入数据字典'">导入</el-button>
           <el-button @click="importTablCn()"
-                     v-else-if="upload_title = '汉化信息导入'">导入</el-button>
+                     v-else-if="upload_title == '导入汉化信息'">导入</el-button>
           <el-button @click="importTableTable()"
                      v-else>导入</el-button>
 
@@ -960,7 +802,7 @@ export default {
       query: {
         dataSource: 'Postgre',//筛选条件
         pageNo: 1,
-        pageSize: 10,
+        pageSize: 5,
         businessSystemId: '',//id主键
         tableThemeId: '',//主题
         tableLayeredId: '',//分层
@@ -1019,38 +861,32 @@ export default {
       btnLoading: false,//保存loading
       // 新增的数据
       form: {
-
         tbName: '', //表名
-        chName: '', //表中文名（后台给
-
-        rowNum: '',//表数据量
-        tableSize: '',//表大小:
-        partitions: '',//表分区
-        fileName: '',//文件名称
-        dataDate: '',//数据日期
-
+        chnName: '', //表中文名（后台给
+        tableRemarks: '',//表说明
         tableCode: '',// 资产编码
         tableType: '',// 资产类型
-        tableThemeId: '',// 资产主题
-        businessSystemId: '',//id
-        tableLayeredId: '',//资产分层
-        folderUuid: '',//所属目录
-        // increment: '',//是否增量
-        isSpike: 1,//是否增量
-        isSentFile: 0,//是否推送文件
-        tableRemarks: '',//资产备注
-        personName: '',
-        personUuid: '',//资产责任人
+        tableThemeName: '',//所属主题
+        tableThemeId: '',// 资产主题 id
+        tableLayeredName: '',//资产分层
+        tableLayeredId: '',//资产分层 id
+        businessSystemName: '',//所属系统
+        businessSystemId: '',//所属系统 id
+        fileName: '',//文件名
+        dataDate: '',//数据日期
+        tableSize: '',//表大小:
+        rowNum: '',//表数据量
+        personLiables: [],//负责人
         personName_str: '',//责任人
-        personLiables: [],
+        personUuid: '',//资产责任人
+        partitions: '',//表分区
+        isSpike: 1,//是否增量
+
+        // folderUuid: '',//所属目录
+        // increment: '',//是否增量
+        isSentFile: 0,//是否推送文件
+        personName: '',
         // fileName: [],//文件名称
-
-        tableData: [{
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }],
-
         file_name: '',
         check_list: [
           {
@@ -1093,7 +929,7 @@ export default {
         children: 'children',
         value: 'id'
       },
-      next_contentsList: [],//目录
+      // next_contentsList: [],//目录
       // check_next_contentsList: {},//选择的目录
       is_next: false,//是否显示下一步
       ischeck_data: {},//第一步选择的数据库
@@ -1114,6 +950,7 @@ export default {
 
       show_details: false,//显示基本信息详情
       isBtn: true,//是否显示按钮
+      isDisable_input: true,//详情禁止输入修改
 
 
 
@@ -1127,7 +964,7 @@ export default {
       dialogVisible_forms: false,
       formList: [],//
 
-      tableData: [{
+      tableDatas: [{
         date: '2016-05-02',
         name: '王小虎',
         address: '上海市普陀区金沙江路 1518 弄'
@@ -1160,12 +997,15 @@ export default {
       },
       list_loading: false,//列表loading
       list: [],
+      list_data: {},//分页信息
 
       Recognition_check_list: [],//认权列表
 
 
       // list_details: {},// 点击列表进入详情
       tableMetaUuid: '',//详情id
+      // tableRelationQueryUuid: '',//id
+      is_Edit_list: 0,//是否编辑
 
     };
   },
@@ -1207,6 +1047,29 @@ export default {
 
   },
   methods: {
+    // 修改后 刷新列表
+    UpdateList () {
+      this.show_details = false
+      this.query_lisy();
+    },
+
+    // 数据字典导入
+    ImportdataDictionary (data) {
+      this.upload_title = data
+      this.importVisible = true
+    },
+    // 汉化信息导入
+    ImportantCn (data) {
+      this.upload_title = data
+      this.importVisible = true
+    },
+
+    // 表关系导入
+    ImportantTable (data) {
+      this.upload_title = data
+      this.importVisible = true
+    },
+
     // 数据字典下载
     DownTemplateDictionary () {
       // 导出表信息作为模板
@@ -1236,14 +1099,6 @@ export default {
     },
 
 
-    // 数据字典导入
-    ImportdataDictionary (data) {
-
-      this.upload_title = data
-      this.importVisible = true
-    },
-
-
     // 汉化模版下载
     DownTemplateCN (data) {
       // 导出表信息作为模板
@@ -1270,23 +1125,12 @@ export default {
         link.click()
       })
     },
-    // 汉化信息导入
-    ImportantCn (data) {
-      this.upload_title = data
-      this.importVisible = true
-    },
 
-    // 表关系导入
-    ImportantTable (data) {
-
-      this.upload_title = data
-      this.importVisible = true
-    },
 
     // 表关系下载
     DownTemplateTable () {
       // 导出表信息作为模板
-      this.$message({ type: 'info', message: '无选择表,失败!' })
+      // this.$message({ type: 'info', message: '无选择表,失败!' })
       axios.post(`/data/tableRelation/exportFile`, qs.stringify({}),
         {
           responseType: 'blob', headers: {
@@ -1414,7 +1258,6 @@ export default {
 
     // 认权管理
     recognitionChange (data) {
-
       this.Recognition_check_list = data
       this.visible_Recognition = true
     },
@@ -1427,7 +1270,6 @@ export default {
         this.$message({ type: "warning", message: "请选择认权人" });
       } else {
         this.visible_Recognition = false
-
         // var arr = []
         // var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
         // for (var i = 0; i < selectedNode.length; i++) {
@@ -1447,21 +1289,55 @@ export default {
         //   this.form.personLiables = arr
 
 
+        var personUuids = [];
+        var personNames = [];
+        var arr = []
+        var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
+        for (var i = 0; i < selectedNode.length; i++) {
+          personUuids.push(selectedNode[i].personuuid);
+          personNames.push(selectedNode[i].cnname);
+          let obj = {
+            personuuid: selectedNode[i].personuuid, personName: selectedNode[i].cnname
+          }
+          arr.push(obj)
+        }
+        this.form.personLiables = arr
+        let params = {
+          tableMetaUuids: this.form.tableMetaUuid,
+          personLiables: this.form.personLiables,// 资产责任
+        }
+        // 
+        // 修改
+        // if (this.click_type == '0') {
+        update_data(params).then(res => {
+          if (res.code == 0) {
+            this.$message({
+              message: '修改成功',
+              type: 'success',
+              showClose: true,
+            })
 
-
+            this.resultShareDialogIsSee = false//关闭
+            this.getList();//刷新列表
+            this.clearcheckbox();
+          } else {
+            this.$message({
+              message: res.msg,
+              type: 'error',
+              showClose: true,
+            })
+          }
+        })
       }
     },
-
-
-
-
     // 显示基本信息详情
     onDeailsChange (data) {
-
       // let tableId = data.tableMetaUuid
       // return false
+
       this.tableMetaUuid = data.tableMetaUuid
       this.show_details = true
+      this.isDisable_input = true
       // if (this.openType !== 'addTable') {
 
       // }
@@ -1703,6 +1579,8 @@ export default {
       }
       listByTreePage(params).then((resp) => {
         this.list_loading = false//子组件loading
+
+        this.list_data = resp.data
         this.list = resp.data.records
 
         // this.listLoading = false
@@ -1991,35 +1869,89 @@ export default {
           this.form.tableSize = resp.data[0].tableSize//表大小
           this.form.partitions = resp.data[0].partitions//表分区
           this.form.tableCode = resp.data[0].tableRelationQuery.tableCode//资产编码
+          this.form.tableRemarks = resp.data[0].tableRelationQuery.tableRemarks//表说明
+
         }
       })
     },
 
-    // 选择多个的情况  下一步的确认
+    // 选择多个的情况  下一步的确认 批量多个注册
     next_save () {
       // alert('选择多个的情况 下一步的确认')
-      // this.dialogVisible_forms = false;//关闭多选的表单弹窗显示
       // this.dialogVisible_information = true//显示下一步 基本信息
       // this.getListTree_data()
+
+      for (var i = 0; i < this.form.check_list.length; i++) {
+        // this.form.file_name = this.form.check_list[i].fileName//文件夹名称
+        // this.form.file_name = this.form.fileName[i]
+        const tableForm = {
+          tbName: this.Column_table_query.tbName,//表名
+          tableMetaUuid: this.form.check_list[i].id,
+          displayTbName: this.form.check_list[i].label,
+          dbName: this.form.check_list[i].pid,
+          tbName: this.form.check_list[i].label,
+          folderUuid: this.form.folderUuid,//目录id
+          personLiables: this.form.personLiables,// 资产责任人
+          // increment: this.form.increment,//是否增量
+          isSpike: this.form.isSpike, //是否增量
+          tableRelationQuery: {
+            tableDataSource: this.query.dataSource, //数据源
+            businessSystemId: '0', //id主键
+            tableCode: '', //资产编码
+            tableLayeredId: '0', //资产分层主键
+            tableMetaUuid: this.form.check_list[i].id, //资产主键
+            tableRemarks: '', //资产备注
+            tableThemeId: '0', //资产主题主键
+            tableType: '1', //资产类型
+            isSpike: this.form.isSpike, //是否增量
+            isSentFile: 0, //是否推送文件
+            fileName: ''
+          },
+        };
+        this.chooseTables.push(tableForm);
+      }
+
+      batchSaveTable_save(this.chooseTables).then((resp) => {
+        if (resp.code == 0) {
+          this.$message({
+            type: "success",
+            message: "新增成功!",
+          });
+          this.btnLoading = false;//保存loadnin
+          this.chooseTables = []//传输的数据
+          this.post_getBusinessSystemTree();//系统
+          this.post_getThemeTree();//主题
+          this.post_getLayeredTree();//分层
+          // this.post_getDataTreeNode();//目录
+
+        } else {
+          this.btnLoading = false
+          this.$message({
+            type: "error",
+            message: res.msg,
+          });
+        }
+        this.dialogVisible_information = false;
+        this.registTableFlag = false;//关闭上一步
+      })
+      this.dialogVisible_forms = false;//关闭多选的表单弹窗显示
+
 
     },
     getListTree_data () {
       getListTree().then((res) => {
         this.next_data = res.data
-        if (res.data.contentsList.children) {
-          this.next_contentsList = res.data.contentsList.children
-        }
-        this.next_contentsList.forEach(item => {
-          //
-          // debugger;
-
-          // 所属目录三级联动判断
-          if (item.children.length == 0) {
-            item.children = undefined
-          } else {
-            this.formatCascaderData(item.children)
-          }
-        })
+        // if (res.data.contentsList.children) {
+        //   this.next_contentsList = res.data.contentsList.children
+        // }
+        // this.next_contentsList.forEach(item => {
+        //   // 所属目录三级联动判断
+        //   if (item.children.length == 0) {
+        //     item.children = undefined
+        //   } else {
+        //     this.formatCascaderData(item.children)
+        //   }
+        // })
         // businessSystemList//系统
         // contentsList//目录
         // layeredList//分层
@@ -2027,10 +1959,6 @@ export default {
 
       })
     },
-
-
-
-
 
     // 点击 所属目录层级联动
     handleChange (val) {
@@ -2041,11 +1969,7 @@ export default {
       // this.check_next_contentsList = checkedNode[0]
       // this.form.folderUuid = checkedNode[0].id
       let folderUuid = val.toString();
-
-
       this.form.folderUuid = folderUuid
-
-      //
     },
 
     // 格式化数据，递归将空的children置为undefined
@@ -2070,8 +1994,6 @@ export default {
     // 数据日期:
     changeRelationParam (value) {
       this.form.dataDate = value
-      console.log(this.form.dataDate);
-      // console.log(that.form.tableCode);
     },
 
     // 下一步的关闭
@@ -2082,7 +2004,7 @@ export default {
 
     // 下一步的保存
     save (form) {
-      // this.btnLoading = true
+      this.btnLoading = true
       this.isDisable = true
       setTimeout(() => {
         this.isDisable = false
@@ -2091,18 +2013,16 @@ export default {
         if (valid) {
           // var ckFolder = this.$refs.tree2.getCurrentNode();
           // ckTbs.filter((tb) => { return tb.type === "TABLE"; }).forEach((node) => {
-
-
           let names = this.form.check_list.map(item => item["fileName"]);
           let nameSet = new Set(names);
-
           if (nameSet.size == names.length) {
             // 
             for (var i = 0; i < this.form.check_list.length; i++) {
               this.form.file_name = this.form.check_list[i].fileName//文件夹名称
               // this.form.file_name = this.form.fileName[i]
               const tableForm = {
-                tbName: this.Column_table_query.tbName,//表名
+                // tbName: this.Column_table_query.tbName,//表名
+                chnName: this.form.chnName,
                 tableMetaUuid: this.form.check_list[i].id,
                 displayTbName: this.form.check_list[i].label,
                 dbName: this.form.check_list[i].pid,
@@ -2123,12 +2043,14 @@ export default {
                   tableType: this.form.tableType, //资产类型
                   isSpike: this.form.isSpike, //是否增量
                   isSentFile: this.form.isSentFile, //是否推送文件
-                  // fileName: this.form.fileName //文件名称
-                  fileName: this.form.file_name
+                  fileName: this.form.fileName, //文件名称
+                  dataDate: this.form.dataDate, //时间
+                  // fileName: this.form.file_name
                 },
               };
               this.chooseTables.push(tableForm);
             }
+
             batchSaveTable_save(this.chooseTables).then((resp) => {
               if (resp.code == 0) {
                 this.$message({
@@ -2141,6 +2063,7 @@ export default {
                 this.post_getThemeTree();//主题
                 this.post_getLayeredTree();//分层
                 // this.post_getDataTreeNode();//目录
+                this.query_lisy();
 
               } else {
                 this.btnLoading = false
@@ -2204,9 +2127,7 @@ export default {
         }
       })
     },
-
-
-
+    // 确定责任人
     modelResultShare () {
       // this.listLoading = true;
       var runTaskRelUuids = [];
@@ -2239,7 +2160,18 @@ export default {
 
       this.resultShareDialogIsSee = false;
     },
+    // 修改
+    Edit_list (data) {
 
+      this.is_Edit_list = 1;
+      for (var i = 0; i < data.length; i++) {
+        // this.tableRelationQueryUuid = data[i].tableRelationQuery.tableRelationQueryUuid
+        this.tableMetaUuid = data[i].tableMetaUuid
+      }
+      this.show_details = true
+      this.isDisable_input = false
+
+    },
 
 
     // 右侧表单
@@ -2256,25 +2188,15 @@ export default {
     // },
 
     // 分页
-    handleCurrentChange (val) {
+    handleCurrent (val) {
       this.query.pageNo = val
       this.query_lisy()
-      // this.findSonNodeTreeList(
-      //   this.addForm.superLabel,
-      //   this.queryInfo.currentPage,
-      //   this.queryInfo.pageSize,
-      // )
     },
     // 每页多少条
-    handleSizeChange (val) {
+    handleSize (val) {
+      this.query.pageNo = 1
       this.query.pageSize = val
       this.query_lisy()
-      // this.queryInfo.pageSize = val
-      // this.findSonNodeTreeList(
-      //   this.defaultExpandKeys[0],
-      //   this.queryInfo.currentPage,
-      //   this.queryInfo.pageSize,
-      // )
     },
   },
 
@@ -2284,6 +2206,9 @@ export default {
 </script>
 <style scoped>
 @import url("./../../../assets/css/common.css");
+.dlag_width >>> .el-dialog {
+  min-width: 600px !important;
+}
 .left_conter {
   position: relative;
 }
@@ -2325,7 +2250,8 @@ export default {
   display: flex;
   margin-bottom: 0 !important;
 }
-.data_res >>> .el-form-item__content {
+.data_res >>> .el-form-item__content,
+.data_res >>> .el-date-editor {
   flex: 1;
   margin-left: 0 !important;
   float: left;
@@ -2543,4 +2469,9 @@ export default {
 .tree-line-btn {
   background: rgba(255, 255, 255, 0) !important;
 }
+
+// .left_conter >>> .el-input.is-disabled .el-input__inner,
+// .right_conter >>> .el-input.is-disabled .el-input__inner {
+//   background-color: rgba(0, 0, 0, 0.1) !important;
+// }
 </style>
