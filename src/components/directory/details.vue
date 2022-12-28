@@ -265,17 +265,20 @@
           <div class="padding10">
             <el-table :data="Column_tableData_index"
                       style="width: 100%">
-              <el-table-column prop="date"
+              <el-table-column prop="indexName"
                                label="名称">
               </el-table-column>
-              <el-table-column prop="name"
+              <el-table-column prop="indexType"
                                label="类型">
               </el-table-column>
-              <el-table-column prop="address"
+              <el-table-column prop="columnName"
                                label="列">
               </el-table-column>
-              <el-table-column prop="address"
+              <el-table-column prop="onlyIndex"
                                label="是否唯一">
+                <template slot-scope="scope">
+                  {{ scope.row.onlyIndex ? "是" : "否" }}
+                </template>
               </el-table-column>
 
             </el-table>
@@ -447,6 +450,7 @@ import {
   getColsInfo,//列信息
   updateTableInfo,//修改保存
   createSql,//查看sql
+  selectIndexInfo//查询索引信息
 } from "@/api/data/table-info";
 import {
   getListTree,//注册资产下一步
@@ -656,7 +660,7 @@ export default {
     this.details(this.tableMetaUuid)
     this.table_list(this.tableMetaUuid)
     this.getListTree_data();//下拉框默认值
-
+    this.getIndexInfo(this.tableMetaUuid)
 
   },
   methods: {
@@ -780,7 +784,13 @@ export default {
       })
     },
 
-
+    // 索引信息
+    getIndexInfo(tableId) {
+      selectIndexInfo(tableId).then((res => {
+        console.log("索引信息", res)
+        this.Column_tableData_index = res.data
+      }))
+    },
 
     //  列信息
     table_list (tableId) {
