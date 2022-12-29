@@ -167,6 +167,18 @@ export const sendSqlEditorVue = ((this_) => {
 })
 
 /**
+ * 加载SQL编辑器执行结果最大数列表
+ */
+export function loadResultDataMaxCountList() {
+  return request({
+    baseURL: analysisUrl,
+    url: '/SQLEditorController/loadResultDataMaxCountList',
+    method: 'get'
+  })
+}
+
+
+/**
  * 获取参数树
  */
 export function getParamsTree() {

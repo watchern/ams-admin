@@ -53,6 +53,7 @@
         :preLength="useType=='sqlEditor'||useType=='modelPreview'?preValue.length:1"
         :myIndex="useType=='sqlEditor'||useType=='modelPreview'?key:1"
         :modelData="modelData"
+          :executeSqlViewData="executeSqlViewData"
         @triggerSearch="triggerSearch"/>
     </el-tab-pane>
   </el-tabs>
@@ -250,7 +251,8 @@ export default {
     "sceneCode",
     "maintableindex",
     "modelType",
-    "modelData"
+    "modelData",
+    "executeSqlViewData"
   ],
 };
 </script>
