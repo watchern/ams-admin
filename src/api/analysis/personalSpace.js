@@ -80,13 +80,4 @@ export function queryByPersonalSpaceUuid(data){
     })
 }
 
-export function batchUpdateForBackApplicationHandle(data){
-    return request ({
-        baseURL: analysisUrl,
-        url: '/personalSpace/batchUpdateForBackApplicationHandle',
-        method: 'post',
-        data
-    })
-}
-
 
