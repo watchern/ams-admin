@@ -83,8 +83,21 @@
         <el-table-column prop="personalSpaceApplication"
                          label="申请人">
         </el-table-column>
-        <el-table-column label="操作">
-          <el-button type="text">流程查看</el-button>
+        <el-table-column
+                prop="viewProcess"
+                label="操作"
+                show-overflow-tooltip
+                width
+        >
+          <template slot-scope="scope">
+            <el-link
+                    @click="todoOpinionList(scope.row)"
+                    type="primary"
+                    :underline="false"
+                    class="linkClass"
+            >流程跟踪</el-link
+            >
+          </template>
         </el-table-column>
       </el-table>
       <el-row style="left: 250px">
@@ -233,6 +246,26 @@
         >
       </span>
     </el-dialog>
+<!--流程跟踪弹窗-->
+    <el-dialog
+            title="流程跟踪"
+            :visible.sync="todoFlow"
+            v-if="todoFlow"
+            width="80%"
+    >
+      <div>
+        <flowOpinionList :applyUuid="applyUuid" :pageFrom="applyPage"></flowOpinionList>
+      </div>
+      <span slot="footer">
+            <el-button
+                    size="mini"
+                    type="info"
+                    class="table_header_btn"
+                    @click="todoFlow = false"
+            >关闭</el-button
+            >
+          </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -247,10 +280,12 @@
   } from "@/api/analysis/personalSpace";
   import FlowItem from '@/components/starflow/todowork/flowItem'
   import ExpansionUpdate from "@/views/data/expansion/ExpansionUpdate";
+  import flowOpinionList from "@/components/starflow/todowork/flowOpinionList"
   export default {
     components: {
       FlowItem
       ,ExpansionUpdate
+      ,flowOpinionList
     },
     data(){
       return{
@@ -309,6 +344,8 @@
           sceneName: '',
           sceneCode: ''
         },
+        todoFlow: false, //流程查看的弹窗控制
+        applyPage: 'applyPage' //有这个标识 查询流程的时候会走相对应的方法
       }
     },
     mounted() {
@@ -413,6 +450,16 @@
           })
       },
       onDelete(){
+        var result = ''
+        this.personalSpaceSelectionList.forEach((value,index)=>{
+          if(value.personalSpaceType != '草稿'){
+            this.$notify.warning("只有草稿状态才可以删除")
+            result = 'break'
+          }
+        })
+        if(result == 'break'){
+          return
+        }
         const params = this.personalSpaceUuidList
         if(params.length == 0){
           this.$message({
@@ -456,22 +503,25 @@
         }
       },
       handleEvent(){
+        if(this.personalSpaceSelectionList.length >1){
+          this.$notify.warning("一次只能提交一条数据")
+          return
+        }
+        if(this.personalSpaceSelectionList[0].personalSpaceType !== '草稿'){
+          this.$notify.warning("办理中或办理完成的业务不可提交")
+          return
+        }
         this.temp = Object.assign({}, this.personalSpaceSelectionList[0])
-        console.log(this.personalSpaceSelectionList[0],"this.personalSpaceSelectionList[0]")
-        console.log(this.temp,"this.temp")
         //业务主键
         this.flowItem.appDataUuid=this.temp.personalSpaceUuid;
         //版本id 随机生成
         this.flowItem.versionUuid= this.common.randomString4Len(8);
         //申请业务的名字（待办标题）
         this.flowItem.applyTitle=this.temp.personalSpaceName;
-        console.log(this.flowItem,"flowItem")
         this.dialogFlowItemShow=true;
-
       },
       joinUpdateDialog(){
         const param = this.personalSpaceUuidList[0]
-        console.log(param,"param")
         if(param == undefined || param == null || param.length == 0){
           this.$notify.warning("请选择对象")
           return
@@ -494,7 +544,6 @@
         const capacity2 = personalSpaceCapacityNeed
         personalSpace.personalSpaceCapacity = capacity1+capacity2
         const param = personalSpace
-        console.log(param,"param")
         updatePersonalSpace(param)
         .then((res)=>{
           this.$notify.success("修改成功")
@@ -530,6 +579,14 @@
           })
         }, 20);
       },
+      todoOpinionList(row){
+        //正常情况下 applyUuid 为 审批单主键
+        //在业务页面 因为拿到 审批单主键比较麻烦
+        // 所以在子页面中引入了 根据业务id 查询的方法
+        //父页面 传给子组件一个 applyPage 即可 (写死)
+        this.applyUuid = row.personalSpaceUuid;
+        this.todoFlow = true;
+      }
     }
   }
 </script>

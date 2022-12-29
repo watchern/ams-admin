@@ -46,7 +46,6 @@
     import {
         batchUpdateForFinishHandle
         ,queryByPersonalSpaceUuid
-        ,updatePersonalSpace
     } from "@/api/analysis/personalSpace";
     export default {
         name: "expansionDetail",
@@ -62,7 +61,6 @@
                     personalSpaceDate:'',
                     personalSpaceCapacity:'',
                     personalSpaceStatus:'',
-                    // personalSpaceApproving:'',
                 },
                 personalSpaceCapacityNeed:'',//该变量为容量的单位 在最后会和容量做一个拼接
 

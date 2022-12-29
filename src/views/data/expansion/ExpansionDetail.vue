@@ -44,6 +44,7 @@
     import {
         batchUpdateForFinishHandle
         ,queryByPersonalSpaceUuid
+        ,batchUpdateForBackApplicationHandle
     } from "@/api/analysis/personalSpace";
     export default {
         name: "expansionDetail",
@@ -74,6 +75,7 @@
                     this.personalSpace.personalSpaceCapacity = res.data.personalSpaceCapacity.substring(0,length-2)
                 })
             },
+            //更新对应业务状态方法 可以加入自己的style
             updateApplyStatus(value){
                 var personalSpace = {
                     personalSpaceUuid: value
@@ -81,6 +83,15 @@
                 var relParam = []
                 relParam.push(personalSpace)
                 batchUpdateForFinishHandle(relParam)
+            },
+            updateApplyStatusBecauseBackApplication(value){
+                //以后可能会出现扩展 这边先自己拼装一个 实体类 传到后台
+                var personalSpace = {
+                    personalSpaceUuid: value
+                }
+                var relParam = []
+                relParam.push(personalSpace)
+                batchUpdateForBackApplicationHandle(relParam)
             }
         }
     }
