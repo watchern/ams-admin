@@ -19,7 +19,8 @@
         <div class="information rightList_child"
              id="id0">
           <h2 :class="{'isActive': navgatorIndex == 0}">基本信息</h2>
-          <div class="information_form padding10">
+          <div class="information_form padding10"
+               :class="isDisable_input == true ?'is_disabled':'yes_disabled'">
             <el-form ref="form"
                      :model="form"
                      label-width="80px">
@@ -218,7 +219,6 @@
               </el-form-item>
               <div class="son">
                 <el-button type="primary"
-                           :disabled="isDisable_input"
                            @click="previewSql()">查看SQL语句</el-button>
               </div>
 
@@ -291,9 +291,13 @@
                        :disabled="isDisable_input"
                        @click="add_table()">新增</el-button>
           </div>
-          <div style="padding: 0 20px;">
+          <div style="padding: 0 20px;"
+               class="mose">
+
             <!-- 数据表关联关系 -->
-            <ProcessTree></ProcessTree>
+            <ProcessTree :tableMetaUuid="tableMetaUuid"></ProcessTree>
+            <div class="mose_bag"
+                 v-if="isDisable_input== true"></div>
           </div>
         </div>
         <!-- 数据表关联关系 -->
@@ -319,10 +323,11 @@
 
     <!-- 查看sql -->
     <el-dialog title="查看sql"
+               :close-on-click-modal="false"
                class="dlag_width"
                :visible.sync="visible_sql"
                width="40%">
-      <div>
+      <div class="preview_sql">
         <el-input type="textarea"
                   style="resize:none;"
                   v-model="sql">
@@ -339,6 +344,7 @@
     <!-- 新增关联关系 -->
     <el-dialog title="新增关联关系"
                class="dlag_width"
+               :close-on-click-modal="false"
                :visible.sync="visibleTable"
                width="60%">
       <div>
@@ -346,7 +352,7 @@
           <el-button type="primary"
                      @click="addTable()">新增一行</el-button>
         </div>
-        <el-table :data="tableData"
+        <el-table :data="tableData_relationship"
                   style="width: 100%">
           <el-table-column prop="date"
                            label="主表">
@@ -379,12 +385,13 @@
             class="dialog-footer">
         <el-button @click="visibleTable = false">取 消</el-button>
         <el-button type="primary"
-                   @click="visibleTable = false">保存</el-button>
+                   @click="save_table_go()">保存</el-button>
       </span>
     </el-dialog>
 
-    <!-- 新增一行表关系 -->
+    <!-- 新增表关系 弹窗-->
     <el-dialog title="新增"
+               :close-on-click-modal="false"
                class="dlag_width add_table_class"
                :visible.sync="add_table_visible"
                @close="handleClose_table('table_visible_form')"
@@ -400,24 +407,24 @@
             <el-input v-model="table_visible_form.tbName"></el-input>
           </el-form-item>
           <el-form-item label="字段名称："
-                        prop="chnName">
-            <el-input v-model="table_visible_form.chnName"></el-input>
+                        prop="colName">
+            <el-input v-model="table_visible_form.colName"></el-input>
           </el-form-item>
           <el-form-item label="从表名称："
-                        prop="chnName2">
-            <el-input v-model="table_visible_form.chnName2"></el-input>
+                        prop="relationTableName">
+            <el-input v-model="table_visible_form.relationTableName"></el-input>
           </el-form-item>
 
           <el-form-item label="从表字段："
-                        prop="chnName2">
-            <el-input v-model="table_visible_form.chnName2"></el-input>
+                        prop="relationCol">
+            <el-input v-model="table_visible_form.relationCol"></el-input>
           </el-form-item>
 
           <el-form-item label="关联关系："
-                        prop="relationship">
-            <el-select v-model="table_visible_form.relationship"
+                        prop="selectType">
+            <el-select v-model="table_visible_form.selectType"
                        style="width:100%">
-              <el-option v-for="item in relationship"
+              <el-option v-for="item in relationship_option"
                          :key="item.value"
                          :label="item.label"
                          :value="item.value" />
@@ -435,6 +442,20 @@
       </span>
     </el-dialog>
 
+    <!-- 选择责任人 -->
+    <el-dialog title="选择责任人"
+               :close-on-click-modal="false"
+               :visible.sync="resultShareDialogIsSee"
+               width="50%">
+      <personTree ref="orgPeopleTree"></personTree>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="close_people()">取 消</el-button>
+        <el-button type="primary"
+                   @click="modelResultShare()">确 定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -442,6 +463,14 @@
 import ProcessTree from "@/components/directory/process_tree.vue"
 import LineMap from "@/components/directory/lineMap.vue"
 import EditMap from "@/components/directory/edit_map.vue"
+import personTree from "@/components/publicpersontree/index";
+import {
+  relationship_save,//新增表关系
+  getById//表关系列表
+} from '@/api/data/dict'
+
+
+
 import {
   getBasicInfo,//列表点击详情
   getColsInfo,//列信息
@@ -451,8 +480,12 @@ import {
 import {
   getListTree,//注册资产下一步
 } from "@/api/lhg/register.js";
+import { Query } from "leancloud-storage";
 export default {
-  components: { ProcessTree, LineMap, EditMap },
+  components: {
+    ProcessTree, LineMap, EditMap,
+    personTree: () => import('@/components/publicpersontree/index')
+  },
   props: {
     parentArr: {
       type: Array,
@@ -520,7 +553,7 @@ export default {
         dataDate: '',//数据日期
         tableSize: '',//表大小:
         rowNum: '',//表数据量
-        // personName_str: '',//责任人
+        personName_str: [],//责任人
         personLiables: '',//负责人
         personUuid: '',//资产责任人
         partitions: '',//表分区
@@ -579,26 +612,56 @@ export default {
       // 查看sql
       sql: '',
       visible_sql: false,//查看sql
+
+      // 表关系
       visibleTable: false,//新增表关系
+      tableData_relationship: [],//表关系列表
       add_table_visible: false,//新增一行表
       //新增的表关系信息
       table_visible_form: {
-        tbName: '',//中文名
-        chnName: '',//字段名称
-        chnName2: '',//从表名称
-        relationship: '',//关联关系：
+        tableMetaUuid: "ods>ods_xdhtb",
+        tbName: "ods_xdhtb",// 表名称
+        colName: "nbjgh",// 字段名称
+        colMetaUuid: "ods>ods_xdhtb>6",
+        relColMetaUuid: "ods>a01_atme>3",
+        tableRelationUuid: "",
+        relationTableName: "a01_atme",// 从表名称
+        selectType: 1,//关联关系
+        sqlGenJoinType: 2,
+        relationCol: "eod_date",// 从表字段
+        relTableMetaUuid: "ods>ods_xdhtb"
       },
+      // 选择表关系
+      relationship_option: [
+        {
+          value: 1,
+          label: ' left join '
+        },
+        {
+          value: 2,
+          label: 'right join'
+        },
+        {
+          value: 3,
+          label: 'full join'
+        },
+        {
+          value: 4,
+          label: 'inner join'
+        },
+
+      ],
       rules_table: {
         tbName: [
           { required: true, message: '请输入字段名称', trigger: 'blur' },
         ],
-        tbName: [
+        relationTableName: [
+          { required: true, message: '请输入从表名称', trigger: 'blur' },
+        ],
+        relationCol: [
           { required: true, message: '请输入从表字段', trigger: 'blur' },
         ],
-        chnName2: [
-          { required: true, message: '请输入从表字段', trigger: 'blur' },
-        ],
-        relationship: [
+        selectType: [
           { required: true, message: '请选择关联关系', trigger: 'change' },
         ],
       },
@@ -608,6 +671,8 @@ export default {
           label: '表'
         }
       ],
+      resultShareDialogIsSee: false,//选择责任人
+
     };
   },
   computed: {
@@ -656,10 +721,9 @@ export default {
     this.details(this.tableMetaUuid)
     this.table_list(this.tableMetaUuid)
     this.getListTree_data();//下拉框默认值
-
-
   },
   methods: {
+
     // 数据日期:
     changeRelationParam (value) {
       this.form.dataDate = value
@@ -668,12 +732,23 @@ export default {
     change (e) {
       this.$forceUpdate()
     },
+    // 资产主题
+    tableThemeName_change (val) {
+      this.form.tableThemeId = val
+      this.next_data.themeList.forEach(item => {
+        if (val == item.codeUuid) {
+          this.form.tableThemeName = item.codeName
+        }
+      })
+    },
+
     // 基本信息
     details (tableId) {
       this.form = JSON.parse(JSON.stringify(this.form));
       this.$forceUpdate()
       getBasicInfo(tableId).then(resp => {
         this.form = resp.data
+        var _data = resp.data
         this.form.tbName = resp.data.tbName//表名称
         this.form.chnName = resp.data.chnName//中文名
         this.form.tableRemarks = resp.data.tableRelationQuery.tableRemarks//表说明
@@ -699,50 +774,59 @@ export default {
         this.form.businessSystemName = resp.data.tableRelationQuery.businessSystemName//所属主题
         this.form.dataDate = resp.data.tableRelationQuery.dataDate//数据日期
         this.form.tableSize = resp.data.tableSize//数据数量：
+        this.form.personName_str = resp.data.personLiables
         if (resp.data.personLiables.length !== 0) {
           let personName = []
-          // let personUuid = []
           resp.data.personLiables.forEach(item => {
             personName.push(item.personName)
             // personUuid.push(item.personUuid)
+
             this.form.personLiables = personName.join(",");//负责人
             // this.form.personUuid = personUuid.join(",")
-            console.log(this.form.personLiables);
-            let objs = {
-              personUuid: item.personUuid,
-              personName: item.personName
-            }
-            this.form.personName_str.push(objs)
+            // 
+
+            // let objs = {
+            //   personUuid: item.personUuid,
+            //   personName: item.personName
+            // }
+            // 
+            // this.form.personName_str.push(objs)
           })
+          // this.form.personLiables = personName.join(",");//负责人
+
           // var personLiables = resp.data.personLiables.toString();//负责人
         } else {
           this.form.personLiables = '';
         }
         this.form.partitions = resp.data.partitions//表分区
         this.form.isSpike = resp.data.tableRelationQuery.isSpike//增量全量
-
-
-
-
-
       })
-    },
-
-    // 资产主题
-    tableThemeName_change (val) {
-      this.form.tableThemeId = val
-      this.next_data.themeList.forEach(item => {
-        if (val == item.codeUuid) {
-          this.form.tableThemeName = item.codeName
-        }
-      })
-
-
     },
 
     // 修改保存
     update_save () {
-      // this.form.tableRelationQueryUuid = this.tableRelationQueryUuid
+      var selectedNodes = this.$refs.orgPeopleTree.getSelectValue();
+      var personLiables = [];
+      // 
+      // 如果修改了责任人
+      if (selectedNodes) {
+        selectedNodes.forEach(item => {
+          let objs = {
+            personUuid: item.personuuid,
+            personName: item.cnname
+          }
+          personLiables.push(objs)
+        })
+      } else {
+        this.form.personName_str.forEach(item => {
+          let objs = {
+            personUuid: item.personUuid,
+            personName: item.personName
+          }
+          personLiables.push(objs)
+        })
+      }
+
       let params = {
         tableMetaUuid: this.tableMetaUuid,
         chnName: this.form.chnName,
@@ -759,11 +843,9 @@ export default {
           isSpike: this.form.isSpike,
           dataDate: this.form.dataDate
         },
-        personLiables: this.form.personName_str,
-
+        personLiables: personLiables,
       }
 
-      // return false
       updateTableInfo(params).then(resp => {
         if (resp.code == 0) {
           this.$message({
@@ -823,6 +905,34 @@ export default {
 
       })
     },
+    // 选择责任人
+    check_people () {
+      this.resultShareDialogIsSee = true;
+      // this.form.personLiables = '';
+    },
+    // 关闭 选择责任人
+    close_people () {
+      this.resultShareDialogIsSee = false
+      this.$refs.orgPeopleTree.$emit('clear')//清空组件 值
+    },
+
+
+    // 确定责任人
+    modelResultShare () {
+      // this.listLoading = true;
+      // var runTaskRelUuids = [];
+      var personUuids = [];
+      var personNames = [];
+      var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
+      for (var i = 0; i < selectedNode.length; i++) {
+        personUuids.push(selectedNode[i].personuuid);
+        personNames.push(selectedNode[i].cnname);
+        this.form.personLiables = personNames.join(",");
+      }
+
+      this.resultShareDialogIsSee = false;
+    },
+
 
 
 
@@ -890,33 +1000,65 @@ export default {
         tableMetaUuid: this.tableMetaUuid
       }
       createSql(params).then(resp => {
-        console.log(resp.data);
+
         this.sql = resp.data
       })
     },
-    // 数据表关系列表
+
+
+    // 新增 数据表关系列表
     add_table () {
       this.visibleTable = true;//数据表关系列表
+      let tableId = this.tableMetaUuid
+      getById(tableId).then(resp => {
+        // this.tableData_relationship = resp.data
+
+
+      })
     },
     // 新增一行表关系
     addTable () {
       this.add_table_visible = true;
-      this.table_visible_form.tbName = '';
-      this.table_visible_form.chnName = '';
-      this.table_visible_form.chnName2 = '';
-      this.table_visible_form.relationship = '';
+      // 清空值
+      // this.table_visible_form.tbName = '';
+      // this.table_visible_form.colName = '';
+      // this.table_visible_form.relationTableName = '';
+      // this.table_visible_form.relationCol = '';
+      // this.table_visible_form.selectType = '';
+      // this.table_visible_form.sqlGenJoinType = '';
+      // this.table_visible_form.relationCol = '';
+      // this.table_visible_form.relTableMetaUuid = '';
     },
-    // 关闭弹窗
-    handleClose_table (table_visible_form) {
-      this.$refs[table_visible_form].resetFields() //清空添加的值
-    },
-
 
     // 保存新增的数据表
     add_table_save (table_visible_form) {
       this.$refs[table_visible_form].validate((valid) => {
         if (valid) {
-          alert(1)
+          // let params = {
+          //   arr: [
+          //     {
+          //       tableMetaUuid: this.table_visible_form.tableMetaUuid,
+          //       tbName: this.table_visible_form.tbName,
+          //       colName: this.table_visible_form.colName,
+          //       colMetaUuid: this.table_visible_form.colMetaUuid,
+          //       relColMetaUuid: this.table_visible_form.relColMetaUuid,
+          //       tableRelationUuid: this.table_visible_form.tableRelationUuid,
+          //       relationTableName: this.table_visible_form.relationTableName,
+          //       selectType: this.table_visible_form.selectType,
+          //       sqlGenJoinType: this.table_visible_form.sqlGenJoinType,
+          //       relationCol: this.table_visible_form.relationCol,
+          //       relTableMetaUuid: this.table_visible_form.relTableMetaUuid,
+          //     },
+          //   ]
+          // }
+
+          // 添加到外层列表
+
+          // this.tableData_relationship.push(this.table_visible_form)
+          // 
+
+
+
         } else {
           this.btnLoading = false;//保存loadnin
           this.$message({
@@ -928,7 +1070,27 @@ export default {
         }
       })
     },
+
+
+    // 关闭弹窗
+    handleClose_table (table_visible_form) {
+      this.$refs[table_visible_form].resetFields() //清空添加的值
+    },
+    // 保存新增表关系至列表
+    save_table_go () {
+      this.add_table_visible = false;
+
+      relationship_save(params).then(resp => {
+
+      })
+    },
+
+
+    beforeDestroy () {
+      window.removeEventListener("scroll", this.scrollTop)
+    },
   },
+
 }
 </script>
 
@@ -971,7 +1133,7 @@ export default {
 .rightList {
 }
 .rightList .rightList_child {
-  /* min-height: 600px; */
+  min-height: 600px;
   /* border: 1px solid red; */
   overflow-y: auto;
   margin-bottom: 30px;
@@ -1002,12 +1164,15 @@ export default {
   /* width: 100%; */
   width: 300px;
 }
-.information_form >>> .el-textarea__inner {
+.is_disabled >>> .el-textarea__inner {
   cursor: not-allowed !important;
 }
-.information_form >>> .el-select,
-.information_form >>> .el-input__inner {
-  /* background-color: #fff !important; */
+.is_disabled >>> .el-textarea__inner {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+.yes_disabled >>> .el-select,
+.yes_disabled >>> .el-input__inner {
+  background-color: #fff !important;
 }
 .son >>> .el-select {
   width: 100%;
@@ -1166,5 +1331,21 @@ export default {
 
 .add_table_class >>> .el-form-item__label {
   text-align: right !important;
+}
+
+.mose {
+  position: relative;
+}
+.mose_bag {
+  background: rgba(0, 0, 0, 0.2);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 99;
+}
+.preview_sql >>> .el-textarea__inner {
+  height: 300px;
 }
 </style>
