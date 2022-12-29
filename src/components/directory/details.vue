@@ -19,7 +19,8 @@
         <div class="information rightList_child"
              id="id0">
           <h2 :class="{'isActive': navgatorIndex == 0}">基本信息</h2>
-          <div class="information_form padding10">
+          <div class="information_form padding10"
+               :class="isDisable_input == true ?'is_disabled':'yes_disabled'">
             <el-form ref="form"
                      :model="form"
                      label-width="80px">
@@ -218,7 +219,6 @@
               </el-form-item>
               <div class="son">
                 <el-button type="primary"
-                           :disabled="isDisable_input"
                            @click="previewSql()">查看SQL语句</el-button>
               </div>
 
@@ -294,9 +294,13 @@
                        :disabled="isDisable_input"
                        @click="add_table()">新增</el-button>
           </div>
-          <div style="padding: 0 20px;">
+          <div style="padding: 0 20px;"
+               class="mose">
+
             <!-- 数据表关联关系 -->
-            <ProcessTree></ProcessTree>
+            <ProcessTree :tableMetaUuid="tableMetaUuid"></ProcessTree>
+            <div class="mose_bag"
+                 v-if="isDisable_input== true"></div>
           </div>
         </div>
         <!-- 数据表关联关系 -->
@@ -322,10 +326,11 @@
 
     <!-- 查看sql -->
     <el-dialog title="查看sql"
+               :close-on-click-modal="false"
                class="dlag_width"
                :visible.sync="visible_sql"
                width="40%">
-      <div>
+      <div class="preview_sql">
         <el-input type="textarea"
                   style="resize:none;"
                   v-model="sql">
@@ -342,6 +347,7 @@
     <!-- 新增关联关系 -->
     <el-dialog title="新增关联关系"
                class="dlag_width"
+               :close-on-click-modal="false"
                :visible.sync="visibleTable"
                width="60%">
       <div>
@@ -388,6 +394,7 @@
 
     <!-- 新增一行表关系 -->
     <el-dialog title="新增"
+               :close-on-click-modal="false"
                class="dlag_width add_table_class"
                :visible.sync="add_table_visible"
                @close="handleClose_table('table_visible_form')"
@@ -438,6 +445,20 @@
       </span>
     </el-dialog>
 
+    <!-- 选择责任人 -->
+    <el-dialog title="选择责任人"
+               :close-on-click-modal="false"
+               :visible.sync="resultShareDialogIsSee"
+               width="50%">
+      <personTree ref="orgPeopleTree"></personTree>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="close_people()">取 消</el-button>
+        <el-button type="primary"
+                   @click="modelResultShare()">确 定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -445,6 +466,8 @@
 import ProcessTree from "@/components/directory/process_tree.vue"
 import LineMap from "@/components/directory/lineMap.vue"
 import EditMap from "@/components/directory/edit_map.vue"
+import personTree from "@/components/publicpersontree/index";
+
 import {
   getBasicInfo,//列表点击详情
   getColsInfo,//列信息
@@ -456,7 +479,10 @@ import {
   getListTree,//注册资产下一步
 } from "@/api/lhg/register.js";
 export default {
-  components: { ProcessTree, LineMap, EditMap },
+  components: {
+    ProcessTree, LineMap, EditMap,
+    personTree: () => import('@/components/publicpersontree/index')
+  },
   props: {
     parentArr: {
       type: Array,
@@ -524,7 +550,7 @@ export default {
         dataDate: '',//数据日期
         tableSize: '',//表大小:
         rowNum: '',//表数据量
-        // personName_str: '',//责任人
+        personName_str: [],//责任人
         personLiables: '',//负责人
         personUuid: '',//资产责任人
         partitions: '',//表分区
@@ -612,6 +638,8 @@ export default {
           label: '表'
         }
       ],
+      resultShareDialogIsSee: false,//选择责任人
+
     };
   },
   computed: {
@@ -672,12 +700,23 @@ export default {
     change (e) {
       this.$forceUpdate()
     },
+    // 资产主题
+    tableThemeName_change (val) {
+      this.form.tableThemeId = val
+      this.next_data.themeList.forEach(item => {
+        if (val == item.codeUuid) {
+          this.form.tableThemeName = item.codeName
+        }
+      })
+    },
+
     // 基本信息
     details (tableId) {
       this.form = JSON.parse(JSON.stringify(this.form));
       this.$forceUpdate()
       getBasicInfo(tableId).then(resp => {
         this.form = resp.data
+        var _data = resp.data
         this.form.tbName = resp.data.tbName//表名称
         this.form.chnName = resp.data.chnName//中文名
         this.form.tableRemarks = resp.data.tableRelationQuery.tableRemarks//表说明
@@ -703,50 +742,59 @@ export default {
         this.form.businessSystemName = resp.data.tableRelationQuery.businessSystemName//所属主题
         this.form.dataDate = resp.data.tableRelationQuery.dataDate//数据日期
         this.form.tableSize = resp.data.tableSize//数据数量：
+        this.form.personName_str = resp.data.personLiables
         if (resp.data.personLiables.length !== 0) {
           let personName = []
-          // let personUuid = []
           resp.data.personLiables.forEach(item => {
             personName.push(item.personName)
             // personUuid.push(item.personUuid)
+
             this.form.personLiables = personName.join(",");//负责人
             // this.form.personUuid = personUuid.join(",")
-            console.log(this.form.personLiables);
-            let objs = {
-              personUuid: item.personUuid,
-              personName: item.personName
-            }
-            this.form.personName_str.push(objs)
+            // console.log(this.form.personLiables);
+
+            // let objs = {
+            //   personUuid: item.personUuid,
+            //   personName: item.personName
+            // }
+            // console.log(objs);
+            // this.form.personName_str.push(objs)
           })
+          // this.form.personLiables = personName.join(",");//负责人
+          console.log();
           // var personLiables = resp.data.personLiables.toString();//负责人
         } else {
           this.form.personLiables = '';
         }
         this.form.partitions = resp.data.partitions//表分区
         this.form.isSpike = resp.data.tableRelationQuery.isSpike//增量全量
-
-
-
-
-
       })
-    },
-
-    // 资产主题
-    tableThemeName_change (val) {
-      this.form.tableThemeId = val
-      this.next_data.themeList.forEach(item => {
-        if (val == item.codeUuid) {
-          this.form.tableThemeName = item.codeName
-        }
-      })
-
-
     },
 
     // 修改保存
     update_save () {
-      // this.form.tableRelationQueryUuid = this.tableRelationQueryUuid
+      var selectedNodes = this.$refs.orgPeopleTree.getSelectValue();
+      var personLiables = [];
+      // console.log(selectedNodes);
+      // 如果修改了责任人
+      if (selectedNodes) {
+        selectedNodes.forEach(item => {
+          let objs = {
+            personUuid: item.personuuid,
+            personName: item.cnname
+          }
+          personLiables.push(objs)
+        })
+      } else {
+        this.form.personName_str.forEach(item => {
+          let objs = {
+            personUuid: item.personUuid,
+            personName: item.personName
+          }
+          personLiables.push(objs)
+        })
+      }
+
       let params = {
         tableMetaUuid: this.tableMetaUuid,
         chnName: this.form.chnName,
@@ -763,11 +811,9 @@ export default {
           isSpike: this.form.isSpike,
           dataDate: this.form.dataDate
         },
-        personLiables: this.form.personName_str,
-
+        personLiables: personLiables,
       }
-
-      // return false
+      console.log(params);
       updateTableInfo(params).then(resp => {
         if (resp.code == 0) {
           this.$message({
@@ -833,6 +879,34 @@ export default {
 
       })
     },
+    // 选择责任人
+    check_people () {
+      this.resultShareDialogIsSee = true;
+      // this.form.personLiables = '';
+    },
+    // 关闭 选择责任人
+    close_people () {
+      this.resultShareDialogIsSee = false
+      this.$refs.orgPeopleTree.$emit('clear')//清空组件 值
+    },
+
+
+    // 确定责任人
+    modelResultShare () {
+      // this.listLoading = true;
+      // var runTaskRelUuids = [];
+      var personUuids = [];
+      var personNames = [];
+      var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
+      for (var i = 0; i < selectedNode.length; i++) {
+        personUuids.push(selectedNode[i].personuuid);
+        personNames.push(selectedNode[i].cnname);
+        this.form.personLiables = personNames.join(",");
+      }
+
+      this.resultShareDialogIsSee = false;
+    },
+
 
 
 
@@ -938,7 +1012,11 @@ export default {
         }
       })
     },
+    beforeDestroy () {
+      window.removeEventListener("scroll", this.scrollTop)
+    },
   },
+
 }
 </script>
 
@@ -981,7 +1059,7 @@ export default {
 .rightList {
 }
 .rightList .rightList_child {
-  /* min-height: 600px; */
+  min-height: 600px;
   /* border: 1px solid red; */
   overflow-y: auto;
   margin-bottom: 30px;
@@ -1012,12 +1090,15 @@ export default {
   /* width: 100%; */
   width: 300px;
 }
-.information_form >>> .el-textarea__inner {
+.is_disabled >>> .el-textarea__inner {
   cursor: not-allowed !important;
 }
-.information_form >>> .el-select,
-.information_form >>> .el-input__inner {
-  /* background-color: #fff !important; */
+.is_disabled >>> .el-textarea__inner {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+.yes_disabled >>> .el-select,
+.yes_disabled >>> .el-input__inner {
+  background-color: #fff !important;
 }
 .son >>> .el-select {
   width: 100%;
@@ -1176,5 +1257,21 @@ export default {
 
 .add_table_class >>> .el-form-item__label {
   text-align: right !important;
+}
+
+.mose {
+  position: relative;
+}
+/* .mose_bag {
+  background: rgba(0, 0, 0, 0.2);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 99;
+} */
+.preview_sql >>> .el-textarea__inner {
+  height: 300px;
 }
 </style>
