@@ -33,7 +33,7 @@ export function save_data (data) {
 		data
 	})
 }
-// 修改保存
+// 修改保存 || 确定认权人
 export function update_data (data) {
 	return request({
 		baseURL: dataUrl,
