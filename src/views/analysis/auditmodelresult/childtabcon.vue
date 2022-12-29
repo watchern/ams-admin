@@ -31,12 +31,12 @@
         >导出结果
         </el-button>
 
-<!--      <el-button
+     <el-button
               class="oper-btn btn-width-md overTabconItem"
               type="primary"
               @click="saveResultTable"
       >保存结果
-      </el-button>-->
+      </el-button>
     </div>
     <!--    页签上面的box2- 为sql编辑器执行结果 且 不是图表 且 报错时显示-->
     <div style="margin-left:10px" v-if="useType == 'sqlEditor' && !chartSwitching && !isSee" class="overTabconBox">
@@ -80,6 +80,24 @@
         >
         <el-button @click="modelResultExport1" :disabled="modelResultExportMsgShow">确 定</el-button>
       </downloadExcel>
+        </span>
+    </el-dialog>
+    <el-dialog
+            title="保存结果"
+            v-if="saveTableNameDialog"
+            :visible.sync="saveTableNameDialog"
+            width="40%"
+            append-to-body
+
+    >
+      <el-form v-model="saveTableForm" v-loading="saveTableNameDialogLoading">
+        <el-form-item label="保存结果表名" prop="saveTableName">
+          <el-input v-model="saveTableForm.saveTableName"/>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="saveTableNameDialogClose" :disabled="saveTableNameDialogLoading">关 闭</el-button>
+        <el-button @click="saveTableNameDialogEnter" :disabled="saveTableNameDialogLoading">确 定</el-button>
         </span>
     </el-dialog>
     <!-- sql编译器页面显示图标 -->
@@ -1104,6 +1122,7 @@ import { string } from "jszip/lib/support";
 import {
   startExecuteSql,
   getExecuteTask,
+  saveTableFromSqlEditorResult,
 } from "@/api/analysis/sqleditor/sqleditor";
 import { getTransMap } from "@/api/data/transCode.js";
 import mtEditor from "ams-datamax";
@@ -1226,10 +1245,17 @@ export default {
     "isModelPreview",
     "modelType",
     "modelData",
-    "executeSqlViewData"
+    "executeSqlViewData",
+    "dataSource"
   ],
   data() {
     return {
+      // 保存执行结果为数据表时输入表名的弹窗遮罩
+      saveTableNameDialogLoading: false,
+      // 保存执行结果为数据表时输入的表单数据
+      saveTableForm:{saveTableName:"",},
+      // 保存执行结果为数据表时输入表名的弹窗
+      saveTableNameDialog: false,
       // 显示报错信息（此变量只针对在清除报错信息时的报错信息显示或隐藏，默认显示。具体显示报错信息还是显示执行结果取决于isSee）
       showErrorMessage: true,
       //显示删除报错信息按钮
@@ -1682,6 +1708,44 @@ export default {
     window.openModelDetailNew = _this.openModelDetailNew;
   },
   methods: {
+    saveTableNameDialogClose(){
+      this.saveTableNameDialog = false;
+      this.saveTableName = "";
+    },
+    // 保存执行结果为数据表显示在左侧树中
+    saveTableNameDialogEnter(){
+      this.saveTableNameDialogLoading = true;
+      const map = {
+        sql:  this.nextValueAll.executeSQL.sql,
+        saveTableName:this.saveTableForm.saveTableName,
+        dataSource:this.dataSource
+      }
+      saveTableFromSqlEditorResult(map).then(res =>{
+        this.saveTableNameDialogLoading = false;
+        if(res.code == 0){
+          this.$notify({
+            title: "提示",
+            message: "保存为数据表\""+this.saveTableForm.saveTableName+"\"成功！",
+            type: "success",
+            duration: 2000,
+            position: "bottom-right",
+          });
+          this.saveTableNameDialog = false;
+          this.saveTableName = "";
+        }else{
+          this.$notify({
+            title: "提示",
+            message: res.msg,
+            type: "error",
+            duration: 2000,
+            position: "bottom-right",
+          });
+        }
+      })
+    },
+    saveResultTable(){
+      this.saveTableNameDialog = true;
+    },
     /**
      * 清除报错信息
      */
@@ -1708,10 +1772,6 @@ export default {
     executeSqlView(){
       this.executeSqlViewDialog = true;
     },
-    // 保存执行结果为数据表显示在左侧树中
-    // saveResultTable(){
-    //
-    // },
     closeChartShow(){
       this.chartShowIsSee = false;
       $('#bottomPart').show();

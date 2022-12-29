@@ -54,6 +54,7 @@
         :myIndex="useType=='sqlEditor'||useType=='modelPreview'?key:1"
         :modelData="modelData"
           :executeSqlViewData="executeSqlViewData"
+          :dataSource="dataSource"
         @triggerSearch="triggerSearch"/>
     </el-tab-pane>
   </el-tabs>
@@ -252,7 +253,8 @@ export default {
     "maintableindex",
     "modelType",
     "modelData",
-    "executeSqlViewData"
+    "executeSqlViewData",
+    "dataSource"
   ],
 };
 </script>
