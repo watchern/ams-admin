@@ -393,7 +393,7 @@ export default {
       if (this.check_list.length !== 0) {
         this.$emit("sync_data", this.check_list);
       } else {
-        this.$message({ type: "warning", message: "请最少一条数据进行同步" });
+        this.$message({ type: "warning", message: "请至少一条数据进行同步" });
       }
     },
     // 认权
@@ -401,7 +401,7 @@ export default {
       if (this.check_list.length !== 0) {
         this.$emit("Recognition", this.check_list);
       } else {
-        this.$message({ type: "warning", message: "请选择一条数据进行认权" });
+        this.$message({ type: "warning", message: "请至少选择一条数据进行认权" });
       }
     },
     // 注册资产
@@ -426,7 +426,6 @@ export default {
     // 查看基本信息详情
     on_deails (data) {
       this.$emit("on_deails", data);
-
     },
 
     // 分页

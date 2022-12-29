@@ -45,17 +45,6 @@
 <script>
 import { findOrgTree, findPeopleByOrgId } from "@/api/base/orgpeople";
 export default {
-  watch: {
-    filterText (val) {
-      // 搜索树
-      this.$refs.tree.filter(val);
-    },
-  },
-  components: {},
-  created () {
-    this.findOrgTree_data();
-    this.initData("");
-  },
   data () {
     return {
       data: [], //组织人员树的数据
@@ -74,6 +63,29 @@ export default {
       selectValue: [], //存放多选框选中的数据
     };
   },
+  watch: {
+    filterText (val) {
+      // 搜索树
+      this.$refs.tree.filter(val);
+    },
+  },
+  components: {},
+  mounted: function () {
+    this.$nextTick(function () {
+      this.$on('clear', function () {
+        this.$refs.multipleTable.clearSelection();//清空选择的认权人
+        this.findOrgTree_data();
+        this.list = [];
+        this.total = 0;
+      })
+    })
+  },
+
+  created () {
+    this.findOrgTree_data();
+    this.initData("");
+  },
+
   methods: {
     /**
      * 初始化组织树
