@@ -49,7 +49,7 @@
         ,updatePersonalSpace
     } from "@/api/analysis/personalSpace";
     export default {
-        name: "expansionDetail",
+        name: "expansionUpdate",
         props:{
             applyUuid: ''
         },

@@ -44,6 +44,7 @@
     import {
         batchUpdateForFinishHandle
         ,queryByPersonalSpaceUuid
+        ,batchUpdateForBackApplicationHandle
     } from "@/api/analysis/personalSpace";
     export default {
         name: "expansionDetail",
@@ -81,6 +82,15 @@
                 var relParam = []
                 relParam.push(personalSpace)
                 batchUpdateForFinishHandle(relParam)
+            },
+            updateApplyStatusBecauseBackApplication(value){
+                // console.log("进入返回主审人的方法")
+                var personalSpace = {
+                    personalSpaceUuid: value
+                }
+                var relParam = []
+                relParam.push(personalSpace)
+                batchUpdateForBackApplicationHandle(relParam)
             }
         }
     }
