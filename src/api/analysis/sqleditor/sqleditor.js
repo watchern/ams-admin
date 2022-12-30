@@ -167,6 +167,31 @@ export const sendSqlEditorVue = ((this_) => {
 })
 
 /**
+ * 将SQL编辑器执行结果保存为数据表
+ */
+export function saveTableFromSqlEditorResult(data) {
+  return request({
+    baseURL: dataUrl,
+    url: '/tableMeta/saveTableFromSqlEditorResult',
+    method: 'post',
+    data
+  })
+}
+
+
+/**
+ * 加载SQL编辑器执行结果最大数列表
+ */
+export function loadResultDataMaxCountList() {
+  return request({
+    baseURL: analysisUrl,
+    url: '/SQLEditorController/loadResultDataMaxCountList',
+    method: 'get'
+  })
+}
+
+
+/**
  * 获取参数树
  */
 export function getParamsTree() {

@@ -352,7 +352,7 @@
           <el-button type="primary"
                      @click="addTable()">新增一行</el-button>
         </div>
-        <el-table :data="tableData"
+        <el-table :data="tableData_relationship"
                   style="width: 100%">
           <el-table-column prop="date"
                            label="主表">
@@ -385,11 +385,11 @@
             class="dialog-footer">
         <el-button @click="visibleTable = false">取 消</el-button>
         <el-button type="primary"
-                   @click="visibleTable = false">保存</el-button>
+                   @click="save_table_go()">保存</el-button>
       </span>
     </el-dialog>
 
-    <!-- 新增一行表关系 -->
+    <!-- 新增表关系 弹窗-->
     <el-dialog title="新增"
                :close-on-click-modal="false"
                class="dlag_width add_table_class"
@@ -407,24 +407,24 @@
             <el-input v-model="table_visible_form.tbName"></el-input>
           </el-form-item>
           <el-form-item label="字段名称："
-                        prop="chnName">
-            <el-input v-model="table_visible_form.chnName"></el-input>
+                        prop="colName">
+            <el-input v-model="table_visible_form.colName"></el-input>
           </el-form-item>
           <el-form-item label="从表名称："
-                        prop="chnName2">
-            <el-input v-model="table_visible_form.chnName2"></el-input>
+                        prop="relationTableName">
+            <el-input v-model="table_visible_form.relationTableName"></el-input>
           </el-form-item>
 
           <el-form-item label="从表字段："
-                        prop="chnName2">
-            <el-input v-model="table_visible_form.chnName2"></el-input>
+                        prop="relationCol">
+            <el-input v-model="table_visible_form.relationCol"></el-input>
           </el-form-item>
 
           <el-form-item label="关联关系："
-                        prop="relationship">
-            <el-select v-model="table_visible_form.relationship"
+                        prop="selectType">
+            <el-select v-model="table_visible_form.selectType"
                        style="width:100%">
-              <el-option v-for="item in relationship"
+              <el-option v-for="item in relationship_option"
                          :key="item.value"
                          :label="item.label"
                          :value="item.value" />
@@ -464,6 +464,12 @@ import ProcessTree from "@/components/directory/process_tree.vue"
 import LineMap from "@/components/directory/lineMap.vue"
 import EditMap from "@/components/directory/edit_map.vue"
 import personTree from "@/components/publicpersontree/index";
+import {
+  relationship_save,//新增表关系
+  getById//表关系列表
+} from '@/api/data/dict'
+
+
 
 import {
   getBasicInfo,//列表点击详情
@@ -474,6 +480,7 @@ import {
 import {
   getListTree,//注册资产下一步
 } from "@/api/lhg/register.js";
+import { Query } from "leancloud-storage";
 export default {
   components: {
     ProcessTree, LineMap, EditMap,
@@ -605,26 +612,56 @@ export default {
       // 查看sql
       sql: '',
       visible_sql: false,//查看sql
+
+      // 表关系
       visibleTable: false,//新增表关系
+      tableData_relationship: [],//表关系列表
       add_table_visible: false,//新增一行表
       //新增的表关系信息
       table_visible_form: {
-        tbName: '',//中文名
-        chnName: '',//字段名称
-        chnName2: '',//从表名称
-        relationship: '',//关联关系：
+        tableMetaUuid: "ods>ods_xdhtb",
+        tbName: "ods_xdhtb",// 表名称
+        colName: "nbjgh",// 字段名称
+        colMetaUuid: "ods>ods_xdhtb>6",
+        relColMetaUuid: "ods>a01_atme>3",
+        tableRelationUuid: "",
+        relationTableName: "a01_atme",// 从表名称
+        selectType: 1,//关联关系
+        sqlGenJoinType: 2,
+        relationCol: "eod_date",// 从表字段
+        relTableMetaUuid: "ods>ods_xdhtb"
       },
+      // 选择表关系
+      relationship_option: [
+        {
+          value: 1,
+          label: ' left join '
+        },
+        {
+          value: 2,
+          label: 'right join'
+        },
+        {
+          value: 3,
+          label: 'full join'
+        },
+        {
+          value: 4,
+          label: 'inner join'
+        },
+
+      ],
       rules_table: {
         tbName: [
           { required: true, message: '请输入字段名称', trigger: 'blur' },
         ],
-        tbName: [
+        relationTableName: [
+          { required: true, message: '请输入从表名称', trigger: 'blur' },
+        ],
+        relationCol: [
           { required: true, message: '请输入从表字段', trigger: 'blur' },
         ],
-        chnName2: [
-          { required: true, message: '请输入从表字段', trigger: 'blur' },
-        ],
-        relationship: [
+        selectType: [
           { required: true, message: '请选择关联关系', trigger: 'change' },
         ],
       },
@@ -684,10 +721,9 @@ export default {
     this.details(this.tableMetaUuid)
     this.table_list(this.tableMetaUuid)
     this.getListTree_data();//下拉框默认值
-
-
   },
   methods: {
+
     // 数据日期:
     changeRelationParam (value) {
       this.form.dataDate = value
@@ -747,17 +783,17 @@ export default {
 
             this.form.personLiables = personName.join(",");//负责人
             // this.form.personUuid = personUuid.join(",")
-            // console.log(this.form.personLiables);
+            // 
 
             // let objs = {
             //   personUuid: item.personUuid,
             //   personName: item.personName
             // }
-            // console.log(objs);
+            // 
             // this.form.personName_str.push(objs)
           })
           // this.form.personLiables = personName.join(",");//负责人
-          console.log();
+
           // var personLiables = resp.data.personLiables.toString();//负责人
         } else {
           this.form.personLiables = '';
@@ -771,7 +807,7 @@ export default {
     update_save () {
       var selectedNodes = this.$refs.orgPeopleTree.getSelectValue();
       var personLiables = [];
-      // console.log(selectedNodes);
+      // 
       // 如果修改了责任人
       if (selectedNodes) {
         selectedNodes.forEach(item => {
@@ -809,7 +845,7 @@ export default {
         },
         personLiables: personLiables,
       }
-      console.log(params);
+
       updateTableInfo(params).then(resp => {
         if (resp.code == 0) {
           this.$message({
@@ -964,33 +1000,65 @@ export default {
         tableMetaUuid: this.tableMetaUuid
       }
       createSql(params).then(resp => {
-        console.log(resp.data);
+
         this.sql = resp.data
       })
     },
-    // 数据表关系列表
+
+
+    // 新增 数据表关系列表
     add_table () {
       this.visibleTable = true;//数据表关系列表
+      let tableId = this.tableMetaUuid
+      getById(tableId).then(resp => {
+        // this.tableData_relationship = resp.data
+
+
+      })
     },
     // 新增一行表关系
     addTable () {
       this.add_table_visible = true;
-      this.table_visible_form.tbName = '';
-      this.table_visible_form.chnName = '';
-      this.table_visible_form.chnName2 = '';
-      this.table_visible_form.relationship = '';
+      // 清空值
+      // this.table_visible_form.tbName = '';
+      // this.table_visible_form.colName = '';
+      // this.table_visible_form.relationTableName = '';
+      // this.table_visible_form.relationCol = '';
+      // this.table_visible_form.selectType = '';
+      // this.table_visible_form.sqlGenJoinType = '';
+      // this.table_visible_form.relationCol = '';
+      // this.table_visible_form.relTableMetaUuid = '';
     },
-    // 关闭弹窗
-    handleClose_table (table_visible_form) {
-      this.$refs[table_visible_form].resetFields() //清空添加的值
-    },
-
 
     // 保存新增的数据表
     add_table_save (table_visible_form) {
       this.$refs[table_visible_form].validate((valid) => {
         if (valid) {
-          alert(1)
+          // let params = {
+          //   arr: [
+          //     {
+          //       tableMetaUuid: this.table_visible_form.tableMetaUuid,
+          //       tbName: this.table_visible_form.tbName,
+          //       colName: this.table_visible_form.colName,
+          //       colMetaUuid: this.table_visible_form.colMetaUuid,
+          //       relColMetaUuid: this.table_visible_form.relColMetaUuid,
+          //       tableRelationUuid: this.table_visible_form.tableRelationUuid,
+          //       relationTableName: this.table_visible_form.relationTableName,
+          //       selectType: this.table_visible_form.selectType,
+          //       sqlGenJoinType: this.table_visible_form.sqlGenJoinType,
+          //       relationCol: this.table_visible_form.relationCol,
+          //       relTableMetaUuid: this.table_visible_form.relTableMetaUuid,
+          //     },
+          //   ]
+          // }
+
+          // 添加到外层列表
+
+          // this.tableData_relationship.push(this.table_visible_form)
+          // 
+
+
+
         } else {
           this.btnLoading = false;//保存loadnin
           this.$message({
@@ -1002,6 +1070,22 @@ export default {
         }
       })
     },
+
+
+    // 关闭弹窗
+    handleClose_table (table_visible_form) {
+      this.$refs[table_visible_form].resetFields() //清空添加的值
+    },
+    // 保存新增表关系至列表
+    save_table_go () {
+      this.add_table_visible = false;
+
+      relationship_save(params).then(resp => {
+
+      })
+    },
+
+
     beforeDestroy () {
       window.removeEventListener("scroll", this.scrollTop)
     },
@@ -1252,7 +1336,7 @@ export default {
 .mose {
   position: relative;
 }
-/* .mose_bag {
+.mose_bag {
   background: rgba(0, 0, 0, 0.2);
   width: 100%;
   height: 100%;
@@ -1260,7 +1344,7 @@ export default {
   left: 0;
   top: 0;
   z-index: 99;
-} */
+}
 .preview_sql >>> .el-textarea__inner {
   height: 300px;
 }

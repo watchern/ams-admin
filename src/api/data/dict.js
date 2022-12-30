@@ -65,6 +65,25 @@ export function importTable_table (data) {
     data
   })
 }
+// 表关系保存
+export function relationship_save (data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${tableRelation}/save`,
+    method: 'post',
+    data
+  })
+}
+
+// 表关联关系列表
+export function getById (id) {
+  return request({
+    baseURL: baseURL,
+    url: `/${tableRelation}/getById`,
+    method: 'get',
+    params: { id: id }
+  })
+}
 
 
 

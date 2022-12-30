@@ -1322,26 +1322,12 @@ export default {
     close_people () {
       this.resultShareDialogIsSee = false
       this.$refs.orgPeopleTree.$emit('clear')//清空组件 值
-      // this.clearcheckbox();
-      // this.$nextTick(() => {
-      //   if (this.$refs.orgPeopleTree) {
-      //     if (this.$refs.multipleTable) {
-      //       this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection();//清空选择的责任人
-      //     }
-      //   }
-      // })
     },
     // 显示基本信息详情
     onDeailsChange (data) {
-      // let tableId = data.tableMetaUuid
-      // return false
-
       this.tableMetaUuid = data.tableMetaUuid
       this.show_details = true
       this.isDisable_input = true
-      // if (this.openType !== 'addTable') {
-
-      // }
     },
     //校验文件名是否存在
     checkFileName_change (fileName) {
@@ -1512,9 +1498,15 @@ export default {
     },
     // 点击切换树 切换 表单
     nodeClick (data, node, tree) {
-      this.divInfo = false;
-      this.show_details = false//显示列表
-
+      // 点击数据表进入详情
+      if (node.data.children.length == 0) {
+        this.tableMetaUuid = node.data.id
+        this.show_details = true
+        this.isDisable_input = true
+      } else {
+        this.divInfo = false;
+        this.show_details = false//显示列表
+      }
       if (node.data.type === "table") {
         this.$nextTick(() => {
           this.divInfo = true;
@@ -1564,7 +1556,6 @@ export default {
         // 分页
       }
     },
-
     // 列表 接口
     query_list () {
       // this.listLoading = true;
@@ -2210,6 +2201,7 @@ export default {
 </script>
 <style scoped>
 @import url("./../../../assets/css/common.css");
+
 .dlag_width >>> .el-dialog {
   min-width: 600px !important;
 }

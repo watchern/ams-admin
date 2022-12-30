@@ -14,6 +14,92 @@
         <el-button type="primary" @click="queryCondition">查 询</el-button>
       </span>
     </el-dialog>
+    <!--    页签上面的box1- 为sql编辑器执行结果 且 不是图表 且 没报错时显示-->
+    <div style="margin-left:10px" v-if="useType == 'sqlEditor' && !chartSwitching && isSee" class="overTabconBox">
+      <span class="overTabconItem">共{{total}}条</span>
+      <el-button
+              class="oper-btn btn-width-md overTabconItem"
+              type="primary"
+              @click="executeSqlView"
+      >查看执行sql
+      </el-button>
+
+        <el-button
+                type="primary"
+                @click="beforeModelResultExport1"
+                class="oper-btn btn-width-md"
+        >导出结果
+        </el-button>
+
+     <el-button
+              class="oper-btn btn-width-md overTabconItem"
+              type="primary"
+              @click="saveResultTable"
+      >保存结果
+      </el-button>
+    </div>
+    <!--    页签上面的box2- 为sql编辑器执行结果 且 不是图表 且 报错时显示-->
+    <div style="margin-left:10px" v-if="useType == 'sqlEditor' && !chartSwitching && !isSee" class="overTabconBox">
+      <el-button
+              v-if="showDeleteErrorMessage"
+              class="oper-btn btn-width-md overTabconItem"
+              type="primary"
+              @click="deleteErrorMessage"
+      >清除报错信息
+      </el-button>
+    </div>
+    <el-dialog
+            title="执行SQL"
+            v-if="executeSqlViewDialog"
+            :visible.sync="executeSqlViewDialog"
+            width="60%"
+            :append-to-body="true"
+    >
+      <span style="margin: 20px">{{executeSqlViewData}}</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="executeSqlViewDialog = false">关 闭</el-button>
+        </span>
+    </el-dialog>
+    <el-dialog
+            title="导出数据行数"
+            v-if="modelResultExportNumDialog"
+            :visible.sync="modelResultExportNumDialog"
+            width="30%"
+            :append-to-body="true"
+    >
+      <el-input  type="text" style="margin-top: 20px"  v-model="modelResultExportNum"/>
+      <span style="color:red !important" v-show="modelResultExportMsgShow">{{modelResultExportMsg}}</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="modelResultExportNumDialog = false">关 闭</el-button>
+        <downloadExcel
+                class="overTabconItem"
+                :data="tableData1"
+                :fields="json_fields1"
+                :name="excelName1"
+                style="display: inline-block"
+        >
+        <el-button @click="modelResultExport1" :disabled="modelResultExportMsgShow">确 定</el-button>
+      </downloadExcel>
+        </span>
+    </el-dialog>
+    <el-dialog
+            title="保存结果"
+            v-if="saveTableNameDialog"
+            :visible.sync="saveTableNameDialog"
+            width="40%"
+            append-to-body
+
+    >
+      <el-form v-model="saveTableForm" v-loading="saveTableNameDialogLoading">
+        <el-form-item label="保存结果表名" prop="saveTableName">
+          <el-input v-model="saveTableForm.saveTableName"/>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="saveTableNameDialogClose" :disabled="saveTableNameDialogLoading">关 闭</el-button>
+        <el-button @click="saveTableNameDialogEnter" :disabled="saveTableNameDialogLoading">确 定</el-button>
+        </span>
+    </el-dialog>
     <!-- sql编译器页面显示图标 -->
     <el-row v-if="useType != 'graph' && ifopen != 0&&false">
       <!--   v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching"   -->
@@ -72,6 +158,7 @@
       </div>
     </el-row>
     <div ref="DragOn" class="drag-on" :key="gridLayKey">
+      <!--      chartSwitching为true是chart-->
       <div v-if="chartSwitching" class="drag-on-table textz">
         <div v-if="myFlag">
           <div
@@ -209,6 +296,7 @@
         :use-css-transforms="true"
         v-if="!chartSwitching"
       >
+        <!--      chartSwitching为false是table-->
         <grid-item
           :key="chartConfigs.layout[0].i"
           :x="chartConfigs.layout[0].x"
@@ -519,7 +607,7 @@
                 />
                 <!-- :sideBar="true"
                 :modules="modules"-->
-                <el-card v-if="!isSee" class="box-card">
+                <el-card v-if="!isSee && showErrorMessage" class="box-card">
                   <div>{{ errorMessage }}</div>
                 </el-card>
                 <pagination
@@ -527,7 +615,7 @@
                     :total="total"
                     :page.sync="pageQuery.pageNo"
                     :limit.sync="pageQuery.pageSize"
-                    @pagination="initData(nowSql)"
+                    @pagination="paginationQuery()"
                 />
                 <el-row>
                   <el-col :span="24">
@@ -1034,6 +1122,7 @@ import { string } from "jszip/lib/support";
 import {
   startExecuteSql,
   getExecuteTask,
+  saveTableFromSqlEditorResult,
 } from "@/api/analysis/sqleditor/sqleditor";
 import { getTransMap } from "@/api/data/transCode.js";
 import mtEditor from "ams-datamax";
@@ -1105,6 +1194,35 @@ export default {
     nowChartJson() {
       this.chartPreview = !this.chartPreview;
     },
+    modelResultExportNum(){
+      if(this.modelResultExportNum == null || this.modelResultExportNum == ""){
+        this.modelResultExportMsgShow = true
+        this.modelResultExportMsg = "请输入导出数据行数"
+        return;
+      }else if(parseInt(this.modelResultExportNum) && parseInt(this.modelResultExportNum) > parseInt(this.total)){
+        this.modelResultExportMsgShow = true
+        this.modelResultExportMsg = "输入行数大于总数： "+this.total
+        return;
+      }else{
+        this.modelResultExportMsgShow = false
+      }
+      if(parseInt(this.modelResultExportNum)) {
+        // 输入导出数据量改变后就初始化需要导出的数据
+        this.modelResultExportNum = parseInt(this.modelResultExportNum);
+        // 根据导出行数剪切导出数据
+        this.tableData1 = this.nextValueAll.result.slice(0, this.modelResultExportNum);
+        this.json_fields1 = {};
+        for (var i = 0; i < this.nextValueAll.columnNames.length; i++) {
+          this.json_fields1[this.nextValueAll.columnNames[i]] = {
+            field: this.nextValueAll.columnNames[i],
+            callback: (value) => {
+              return "&nbsp;" + value;
+            },
+          }
+        }
+        this.excelName1 = "模型结果导出表";
+      }
+    },
   },
   /**
    * 模型运行结果使用变量：nowtable：表示模型结果表对象   modelUuid：根据modelUUid进行表格渲染，只有主表用渲染  useType=modelRunResult 表示是模型运行结果所用
@@ -1126,10 +1244,40 @@ export default {
     "settingInfo",
     "isModelPreview",
     "modelType",
-    "modelData"
+    "modelData",
+    "executeSqlViewData",
+    "dataSource"
   ],
   data() {
     return {
+      // 保存执行结果为数据表时输入表名的弹窗遮罩
+      saveTableNameDialogLoading: false,
+      // 保存执行结果为数据表时输入的表单数据
+      saveTableForm:{saveTableName:"",},
+      // 保存执行结果为数据表时输入表名的弹窗
+      saveTableNameDialog: false,
+      // 显示报错信息（此变量只针对在清除报错信息时的报错信息显示或隐藏，默认显示。具体显示报错信息还是显示执行结果取决于isSee）
+      showErrorMessage: true,
+      //显示删除报错信息按钮
+      showDeleteErrorMessage: false,
+      // 分页前执行结果传进来的值（sql编辑器页面中nextValue为分页后数据）
+      nextValueAll: [],
+      // 存放导出的数据（sql编辑器模型结果界面）
+      tableData1: [],
+      // 导出后excle的名称（sql编辑器模型结果界面）
+      excelName1: "",
+      // 导出表的列名（sql编辑器模型结果界面）
+      json_fields1: {},
+      // 导出数据的行数（sql编辑器模型结果界面）
+      modelResultExportNum: 0,
+      // 导出数据的提示信息（sql编辑器模型结果界面）
+      modelResultExportMsg: "",
+      // 导出数据的提示信息显示状态（sql编辑器模型结果界面）
+      modelResultExportMsgShow: false,
+      // 导出数据弹窗（sql编辑器模型结果界面）
+      modelResultExportNumDialog: false,
+      //  查看执行sql弹窗
+      executeSqlViewDialog: false,
       gridLayKey:0,
       tableType:'normal',
       tableShowHeight:0,
@@ -1560,6 +1708,70 @@ export default {
     window.openModelDetailNew = _this.openModelDetailNew;
   },
   methods: {
+    saveTableNameDialogClose(){
+      this.saveTableNameDialog = false;
+      this.saveTableName = "";
+    },
+    // 保存执行结果为数据表显示在左侧树中
+    saveTableNameDialogEnter(){
+      this.saveTableNameDialogLoading = true;
+      const map = {
+        sql:  this.nextValueAll.executeSQL.sql,
+        saveTableName:this.saveTableForm.saveTableName,
+        dataSource:this.dataSource
+      }
+      saveTableFromSqlEditorResult(map).then(res =>{
+        this.saveTableNameDialogLoading = false;
+        if(res.code == 0){
+          this.$notify({
+            title: "提示",
+            message: "保存为数据表\""+this.saveTableForm.saveTableName+"\"成功！",
+            type: "success",
+            duration: 2000,
+            position: "bottom-right",
+          });
+          this.saveTableNameDialog = false;
+          this.saveTableName = "";
+        }else{
+          this.$notify({
+            title: "提示",
+            message: res.msg,
+            type: "error",
+            duration: 2000,
+            position: "bottom-right",
+          });
+        }
+      })
+    },
+    saveResultTable(){
+      this.saveTableNameDialog = true;
+    },
+    /**
+     * 清除报错信息
+     */
+    deleteErrorMessage(){
+      this.errorMessage = "";
+      this.showDeleteErrorMessage = false;
+      this.showErrorMessage = false;
+    },
+    /**
+     * 点击导出后调用方法，控制导出数量
+     */
+    beforeModelResultExport1(){
+      this.modelResultExportNumDialog = true;
+      this.modelResultExportNum = this.total;
+    },
+    /**
+     * sql编辑器模型结果点击导出后触发的方法
+     */
+    modelResultExport1() {
+      this.modelResultExportMsgShow = false
+      this.modelResultExportNumDialog = false
+    },
+    // 查看执行sql
+    executeSqlView(){
+      this.executeSqlViewDialog = true;
+    },
     closeChartShow(){
       this.chartShowIsSee = false;
       $('#bottomPart').show();
@@ -2094,6 +2306,7 @@ export default {
       // this.gridColumnApi.autoSizeColumns(allColumnIds, skipHeader);
     },
     initData(sql, nextValue, modelName, isPreviewAndFunc) {
+      this.nextValueAll = JSON.parse(JSON.stringify(nextValue))
       this.isPreviewAndFunc = isPreviewAndFunc;
       this.result = {};
       if (this.useType == "modelRunResult") {
@@ -2905,11 +3118,35 @@ export default {
         });
       }
     },
+    /**
+     * SQL编辑器结果分页
+     */
+    paginationQuery() {
+      this.getIntoModelResultDetail(JSON.parse(JSON.stringify(this.nextValueAll)))
+    },
 
     /**
      * 显示模型结果详细提取公共代码
      * */
     getIntoModelResultDetail(nextValue) {
+      if(this.useType == "sqlEditor" && nextValue.executeSQL.state == 2){
+      // 纯前端分页处理开始
+      var resultData = nextValue.result;
+      let index = 0
+      let resIndex = 0
+      let length = resultData.length
+      let size   = this.pageQuery.pageSize
+      let result = new Array(Math.ceil(length / size));
+      while (index < length) {
+        result[resIndex++] = resultData.slice(index, (index += size));
+      }
+      resultData = result[this.pageQuery.pageNo -1]
+      nextValue.result = resultData;
+      // 纯前端分页处理结束
+
+      // 设置结果总数
+      this.total = this.nextValueAll.result.length
+      }
       this.afterAddChartsWithNoConfigure = true;
       this.chartLoading = false;
       this.loading = true;
@@ -2918,6 +3155,7 @@ export default {
       var rowData = [];
       if ("websocketClose" === this.nextValue.state) {
         this.isSee = false;
+        this.showDeleteErrorMessage = true;
         this.modelResultPageIsSee = false;
         this.modelResultButtonIsShow = false;
         this.errorMessage = "WebSocket已断开连接";
@@ -3022,12 +3260,14 @@ export default {
             }
           } else {
             this.isSee = false;
+            this.showDeleteErrorMessage = true;
             this.modelResultPageIsSee = false;
             this.modelResultButtonIsShow = false;
             this.errorMessage = this.nextValue.executeSQL.msg;
           }
         } else if (this.nextValue.executeSQL.state == "3") {
           this.isSee = false;
+          this.showDeleteErrorMessage = true;
           this.modelResultPageIsSee = false;
           this.modelResultButtonIsShow = false;
           this.errorMessage = this.nextValue.executeSQL.msg;
@@ -4569,8 +4809,11 @@ export default {
   left: 0;
   right: 0;
   margin: auto;
-  height: 100%;
+  height: 80%;
   width: 100%;
+}
+.vue-grid-item .textz .pagination-container {
+  margin-top: 25px !important;
 }
 .vue-grid-item .no-drag {
   height: 100%;
@@ -4631,5 +4874,8 @@ export default {
   display: table;
   content:'';
   clear: both;
+}
+.overTabconBox .overTabconItem{
+  margin: 5px;
 }
 </style>
