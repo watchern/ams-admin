@@ -396,6 +396,7 @@
 
             <div class="son_check">
               <el-form-item label="负责人:">
+                =={{form.personName_str}}==
                 <el-input type="text"
                           disabled
                           v-model="form.personName_str">
@@ -505,12 +506,13 @@
 
       <!-- 选择责任人 -->
       <el-dialog title="选择责任人"
+                 :close-on-click-modal="false"
                  :visible.sync="resultShareDialogIsSee"
                  width="50%">
         <personTree ref="orgPeopleTree"></personTree>
         <span slot="footer"
               class="dialog-footer">
-          <el-button @click="resultShareDialogIsSee = false">取 消</el-button>
+          <el-button @click="close_people()">取 消</el-button>
           <el-button type="primary"
                      @click="modelResultShare()">确 定</el-button>
         </span>
@@ -536,6 +538,7 @@
 
       <!-- 选择标签 -->
       <el-dialog title="选择标签"
+                 :close-on-click-modal="false"
                  :visible.sync="dialogVisible_tag"
                  width="60%"
                  class="dlag_width">
@@ -621,6 +624,7 @@
 
       <!-- 认权管理 -->
       <el-dialog title="认权管理"
+                 :close-on-click-modal="false"
                  :visible.sync="visible_Recognition"
                  width="60%"
                  class="dlag_width">
@@ -731,14 +735,15 @@ import {
   // page_list_data,//列表
   // getById,//详情
   // save_data,//新增保存
-  // update_data,//编辑保存
   // delete_data,//删除
   checkFileName,//校验文件名是否已经存在
   batchSaveTable_save,//下一步 保存
   getListTree,//注册资产下一步
 } from "@/api/lhg/register.js";
 
-
+import {
+  update_data,//认权人
+} from "@/api/lhg/data_accreditation_management.js";
 
 export default {
   components: {
@@ -1043,14 +1048,14 @@ export default {
     // this.post_getDataTreeNode();//目录
 
     this.query.businessSystemId = ''
-    this.query_lisy();
+    this.query_list();
 
   },
   methods: {
     // 修改后 刷新列表
     UpdateList () {
       this.show_details = false
-      this.query_lisy();
+      this.query_list();
     },
 
     // 数据字典导入
@@ -1174,7 +1179,7 @@ export default {
             duration: 2000,
             position: 'bottom-right'
           })
-          this.query_lisy()
+          this.query_list()
         } else {
           this.$message({
             type: 'error',
@@ -1196,7 +1201,7 @@ export default {
             duration: 2000,
             position: 'bottom-right'
           })
-          this.query_lisy()
+          this.query_list()
         } else {
           this.$message({
             type: 'error',
@@ -1220,7 +1225,7 @@ export default {
             duration: 2000,
             position: 'bottom-right'
           })
-          this.query_lisy()
+          this.query_list()
         } else {
           this.$message({
             type: 'error',
@@ -1245,7 +1250,7 @@ export default {
             type: "success",
             message: "同步成功!",
           });
-          this.query_lisy();//刷新列表
+          this.query_list();//刷新列表
         } else {
           this.$message({
             type: "error",
@@ -1259,36 +1264,16 @@ export default {
     // 认权管理
     recognitionChange (data) {
       this.Recognition_check_list = data
+      this.Recognition.personName_str = '';
       this.visible_Recognition = true
     },
 
     // 认权确认
     save_people_change () {
       //请选择认权人
-      // this.Recognition.personName_str
       if (this.Recognition.personName_str == '') {
         this.$message({ type: "warning", message: "请选择认权人" });
       } else {
-        this.visible_Recognition = false
-        // var arr = []
-        // var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
-        // for (var i = 0; i < selectedNode.length; i++) {
-        //   personUuids.push(selectedNode[i].personuuid);
-        //   personNames.push(selectedNode[i].cnname);
-
-        //   this.form.personName_str = personNames.join(",");
-        //
-        //   this.form.personUuid = personUuids
-        //   this.form.personName = personNames
-        //   let obj = {
-        //     personUuid: selectedNode[i].personuuid,
-        //     personName: selectedNode[i].cnname
-        //   }
-        //   arr.push(obj)
-        // }
-        //   this.form.personLiables = arr
-
-
         var personUuids = [];
         var personNames = [];
         var arr = []
@@ -1302,23 +1287,25 @@ export default {
           arr.push(obj)
         }
         this.form.personLiables = arr
-        let params = {
-          tableMetaUuids: this.form.tableMetaUuid,
-          personLiables: this.form.personLiables,// 资产责任
+        var tableMetaUuids = [];
+        for (var i = 0; i < this.Recognition_check_list.length; i++) {
+          tableMetaUuids.push(this.Recognition_check_list[i].tableMetaUuid)
         }
-        // 
+        let params = {
+          tableMetaUuids: tableMetaUuids,
+          personLiables: this.form.personLiables,// 资产责任人
+        }
         // 修改
-        // if (this.click_type == '0') {
         update_data(params).then(res => {
           if (res.code == 0) {
             this.$message({
-              message: '修改成功',
+              message: '认权成功',
               type: 'success',
               showClose: true,
             })
-
-            this.resultShareDialogIsSee = false//关闭
-            this.getList();//刷新列表
+            this.query_list()
+            // this.resultShareDialogIsSee = false//关闭
+            this.visible_Recognition = false
             this.clearcheckbox();
           } else {
             this.$message({
@@ -1330,17 +1317,17 @@ export default {
         })
       }
     },
+
+    // 关闭 选择责任人
+    close_people () {
+      this.resultShareDialogIsSee = false
+      this.$refs.orgPeopleTree.$emit('clear')//清空组件 值
+    },
     // 显示基本信息详情
     onDeailsChange (data) {
-      // let tableId = data.tableMetaUuid
-      // return false
-
       this.tableMetaUuid = data.tableMetaUuid
       this.show_details = true
       this.isDisable_input = true
-      // if (this.openType !== 'addTable') {
-
-      // }
     },
     //校验文件名是否存在
     checkFileName_change (fileName) {
@@ -1511,9 +1498,15 @@ export default {
     },
     // 点击切换树 切换 表单
     nodeClick (data, node, tree) {
-      this.divInfo = false;
-      this.show_details = false//显示列表
-
+      // 点击数据表进入详情
+      if (node.data.children.length == 0) {
+        this.tableMetaUuid = node.data.id
+        this.show_details = true
+        this.isDisable_input = true
+      } else {
+        this.divInfo = false;
+        this.show_details = false//显示列表
+      }
       if (node.data.type === "table") {
         this.$nextTick(() => {
           this.divInfo = true;
@@ -1525,7 +1518,7 @@ export default {
           this.query.tableThemeId = '';
           this.query.tableLayeredId = '';
           this.query.folderUuid = '';
-          this.query_lisy();
+          this.query_list();
 
 
         } else if (data.type == "theme") {
@@ -1533,14 +1526,14 @@ export default {
           this.query.tableThemeId = node.data.id;
           this.query.tableLayeredId = '';
           this.query.folderUuid = '';
-          this.query_lisy();
+          this.query_list();
 
         } else if (data.type == "layered") {
           this.query.businessSystemId = ''
           this.query.tableThemeId = '';
           this.query.tableLayeredId = node.data.id;
           this.query.folderUuid = '';
-          this.query_lisy();
+          this.query_list();
 
         }
         // else if (node.data.type === "folder") {
@@ -1557,15 +1550,14 @@ export default {
         //   this.query.tableThemeId = '';
         //   this.query.tableLayeredId = '';
         //   this.query.folderUuid = node.data.id;
-        //   this.query_lisy();
+        //   this.query_list();
 
         // }
         // 分页
       }
     },
-
     // 列表 接口
-    query_lisy () {
+    query_list () {
       // this.listLoading = true;
       this.list_loading = true//子组件loading
       let params = {
@@ -1603,7 +1595,7 @@ export default {
             showClose: true,
           })
         }
-        this.query_lisy()
+        this.query_list()
       });
     },
     resetFolderForm () {
@@ -2063,7 +2055,7 @@ export default {
                 this.post_getThemeTree();//主题
                 this.post_getLayeredTree();//分层
                 // this.post_getDataTreeNode();//目录
-                this.query_lisy();
+                this.query_list();
 
               } else {
                 this.btnLoading = false
@@ -2093,7 +2085,9 @@ export default {
     // 选择责任人
     check_people () {
       this.resultShareDialogIsSee = true;
+      this.form.personLiables = '';
       this.clearcheckbox();
+
       // this.$nextTick(() => {
       //   if (this.$refs.orgPeopleTree) {
       //     if (this.$refs.multipleTable) {
@@ -2190,13 +2184,13 @@ export default {
     // 分页
     handleCurrent (val) {
       this.query.pageNo = val
-      this.query_lisy()
+      this.query_list()
     },
     // 每页多少条
     handleSize (val) {
       this.query.pageNo = 1
       this.query.pageSize = val
-      this.query_lisy()
+      this.query_list()
     },
   },
 
@@ -2206,6 +2200,7 @@ export default {
 </script>
 <style scoped>
 @import url("./../../../assets/css/common.css");
+
 .dlag_width >>> .el-dialog {
   min-width: 600px !important;
 }

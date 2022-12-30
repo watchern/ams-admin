@@ -249,6 +249,7 @@
               :modelId="modelUuid"
               id="childTabs1"
                 :executeSqlViewData="executeSqlViewData"
+                :dataSource="dataSource"
         />
       </div>
       <div v-if="!isExecuteError" class="data-show">
