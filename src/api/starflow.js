@@ -48,13 +48,6 @@ export function viewProcessWithApplyUuid(data) {
     params: data
   })
 }
-export function viewProcessWithAppDataUuid(data) {
-  return request({
-    url: '/applyMes/sf/apply/viewProcessWithAppDataUuid',
-    method: 'get',
-    params: data
-  })
-}
 
 export function selectInitDetail(data,url) {
   return request({

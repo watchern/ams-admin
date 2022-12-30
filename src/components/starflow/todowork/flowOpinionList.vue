@@ -39,9 +39,9 @@
 </template>
 
 <script>
-import { viewProcessWithApplyUuid,viewProcessWithAppDataUuid } from "@/api/starflow";
+import { viewProcessWithApplyUuid } from "@/api/starflow";
 export default {
-  props: ["applyUuid","pageFrom"],
+  props: ["applyUuid"],
   data() {
     return {
       tableOption: { isShowHeader: true, height: "auto" },
@@ -55,29 +55,18 @@ export default {
   computed: {},
   methods: {
     init() {
+      // console.log(this.formData);
       var obj = {
         applyUuid: this.applyUuid,
       };
-      //原方法 只支持在每人的待办中查看流程 因为个人的业务页面中
-      // 拿不到审批单主键id 能拿到也是非常的繁琐
-      //现在只需要父页面 写死applyPage 这个值 就会根据 业务主键id去查询对应的流程
-      if(this.pageFrom == 'applyPage'){
-        viewProcessWithAppDataUuid(obj)
-        .then((res)=>{
-          if (res.data) {
-            //初始化参数流程，人员参数
-            this.tableData = res.data;
-          }
-        })
-      }else{
-        viewProcessWithApplyUuid(obj).then((resp) => {
-          //初始化审核列表数据
-          if (resp.data) {
-            //初始化参数流程，人员参数
-            this.tableData = resp.data;
-          }
-        });
-      }
+      viewProcessWithApplyUuid(obj).then((resp) => {
+        //初始化审核列表数据
+        if (resp.data) {
+          //初始化参数流程，人员参数
+          this.tableData = resp.data;
+        }
+      });
+
       // this.$axios
       //   .get("/starflow/applyMes/sf/apply/viewProcessWithApplyUuid", {
       //       params: {

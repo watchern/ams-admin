@@ -78,6 +78,19 @@ const dataRouter = {
       path: "data_res_management",
       name: "数据资源管理",
       component: () => import("@/views/data/data_res_management/index"),
+    },
+    {
+      path: 'data_load_apply',
+      name: '数据装载与下线',
+      component: () => import('@/views/data/data_load_apply/index'),
+      meta: {
+        title: '数据管理-数据资源展示-数据装载与下线'
+      }
+    },
+    {
+      path: 'data_res_management',
+      name: '数据资源管理',
+      component: () => import('@/views/data/data_res_management/index'),
       meta: {
         title: "数据管理-数据准备-数据资源管理",
       },

@@ -262,10 +262,6 @@
                         this.$emit("delectData", false);
                     }
                 });
-            },
-            checkedPersonList(value){
-                this.selectPersonUuidList = []
-                this.selectPersonUuidList.push(value)
             }
         }
     };
