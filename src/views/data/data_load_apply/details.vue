@@ -78,10 +78,10 @@
                 </el-col>
             </el-row>
             <el-form-item label="文件名" v-if="form.operationType === '0'">
-                    <el-input style="width: 20%;"
+                    <el-input style="width: 40%;"
                               type="text"
                               v-model="form.fileName"
-                              :rows="4" disabled></el-input>
+                              :rows="8" disabled></el-input>
             </el-form-item>
             <el-form-item label="文件路径 " v-if="form.operationType === '0'">
                 <el-input style="width: 100%;"

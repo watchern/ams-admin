@@ -258,6 +258,12 @@
                               v-model="this.fileType"
                               disabled/>
                 </el-form-item>
+                <el-form-item label="文件名 " v-if="this.updateShow">
+                    <el-input style="width: 40%;"
+                              type="text"
+                              v-model="this.form.fileName"
+                              disabled/>
+                </el-form-item>
 
 
                 <el-row  v-if="form.operationType === '1'" style="margin-left: 10%">
@@ -577,6 +583,7 @@
                 filePathNow: '',
                 //新增编辑弹窗状态
                 dialogStatus: '',
+                updateShow: false,
                 applySelectionList:[],
 
                 rules: {
@@ -646,6 +653,7 @@
                 this.applyDialogVisible = true
                 this.dialogStatus = 'create'
                 this.title = '创建申请'
+                this.fileType = ''
                 // 清除校验
                 if (this.$refs.form) {
                     this.$nextTick(() => {
@@ -661,6 +669,7 @@
                 });
                 this.applyDialogVisible = true
                 this.isDisable = false
+                this.updateShow = true
 
                 this.title = '编辑申请'
                 this.dialogStatus = 'update'
@@ -827,6 +836,10 @@
                                     fileName: this.form.fileName,
                                 },
                             }
+                            if (this.fileType == ''){
+                                this.$notify.warning("请选择文件！")
+                                return
+                            }
                             save_data(params).then(res => {
                                 if (res.code == 0) {
                                     this.$message({
@@ -847,21 +860,23 @@
                         }
                         else {
                             let params = {
-                                applyUuid: this.form.applyUuid,
-                                applyName: this.form.applyName,
-                                // applyPerson: this.form.applyPerson,
-                                // currentLink: this.form.currentLink,
-                                operationType: this.form.operationType,
-                                loadType: this.form.loadType,
-                                // applyPersonUuid: this.form.applyPersonUuid,
-                                // status: '',//状态
-                                // applyTime: '',//申请时间
-                                fileType: this.fileType,
-                                lineSeparator: this.form.lineSeparator,
-                                columnSeparator: this.form.columnSeparator,
-                                isHeaderLine: this.form.isHeaderLine,
-                                fileName: this.form.fileName,
-                                fileUuid: this.form.fileUuid,
+                                loadDownApply: {
+                                    applyUuid: this.form.applyUuid,
+                                    applyName: this.form.applyName,
+                                    // applyPerson: this.form.applyPerson,
+                                    // currentLink: this.form.currentLink,
+                                    operationType: this.form.operationType,
+                                    loadType: this.form.loadType,
+                                    // applyPersonUuid: this.form.applyPersonUuid,
+                                    // status: '',//状态
+                                    // applyTime: '',//申请时间
+                                    fileType: this.fileType,
+                                    lineSeparator: this.form.lineSeparator,
+                                    columnSeparator: this.form.columnSeparator,
+                                    isHeaderLine: this.form.isHeaderLine,
+                                    fileName: this.form.fileName,
+                                    fileUuid: this.form.fileUuid,
+                                }
                             }
                             if (this.form.status !== '草稿'){
                                 this.$notify.warning("只有草稿状态可修改")
@@ -898,6 +913,7 @@
             // 关闭弹窗
             handleClose (form) {
                 this.$refs[form].resetFields() //清空添加的值
+                this.updateShow = false
             },
 
             showFileType (fileType){
