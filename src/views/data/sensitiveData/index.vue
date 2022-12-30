@@ -28,11 +28,12 @@
         <div class="search-title">创建时间:</div>
         <div class="search-operation">
           <el-date-picker
-            v-model="dataBaseData.createTime"
+            v-model="createTime"
             type="daterange"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
+            @change="getTime"
           >
           </el-date-picker>
         </div>
@@ -155,13 +156,19 @@ export default {
     return {
       //新增弹窗是否显示
       showAddDialog: false,
+      createTime: [],
       loading: false,
-      dataBaseData: {
-        ruleName: "",
-        createUserName:"",
+      pageQuery: {
+        condition: null,
         pageNo: 1,
         pageSize: 20,
-        total:0
+      },
+      dataBaseData: {
+        ruleName: "",
+        createUserName: "",
+        startTime: null,
+        endTime: null,
+        total: 0,
       },
       tableData: [],
       multipleSelection: [],
@@ -177,18 +184,32 @@ export default {
   methods: {
     init() {
       this.loading = true;
-      getList(this.dataBaseData).then((res) => {
+      this.pageQuery.condition = this.dataBaseData;
+      getList(this.pageQuery).then((res) => {
         this.loading = false;
         this.tableData = res.data.records;
-        this.dataBaseData.total = res.data.total
+        this.dataBaseData.total = res.data.total;
       });
+    },
+    getTime(date) {
+      this.dataBaseData.startTime = date[0];
+      this.dataBaseData.endTime = date[1];
     },
     // 查询
     goQuery() {
       this.init();
     },
     // 重置
-    reset() {},
+    reset() {
+      this.dataBaseData = {
+        ruleName: "",
+        createUserName: "",
+        startTime: null,
+        endTime: null,
+      };
+      this.createTime=[]
+      this.goQuery()
+    },
     // 添加
     add() {
       this.sensitiveTitle = "新增敏感数据识别规则";
@@ -246,13 +267,13 @@ export default {
     },
     // 分页
     handleSizeChange(val) {
-      this.dataBaseData.pageSize = val
-      this.init()
+      this.dataBaseData.pageSize = val;
+      this.init();
     },
     // 分页
     handleCurrentChange(val) {
-      this.dataBaseData.pageNo = val
-      this.init()
+      this.dataBaseData.pageNo = val;
+      this.init();
     },
     // 关闭弹窗
     closeAddDrawer() {
