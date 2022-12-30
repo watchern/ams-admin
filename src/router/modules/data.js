@@ -203,17 +203,17 @@ const dataRouter = {
         title: "数据管理-数据准备-数据质量规则管理维护"
       }
     },
-    {
-      path: 'data_permissions_query',
-      name: '数据权限查询',
-      component: () => import('@/views/data/data_permissions_query/index')
-    },
-
-    {
-      path: 'data_permission_request',
-      name: '数据权限申请',
-      component: () => import('@/views/data/data_permission_request/index')
-    },
+    // {
+    //   path: 'data_permissions_query',
+    //   name: '数据权限查询',
+    //   component: () => import('@/views/data/data_permissions_query/index')
+    // },
+    //
+    // {
+    //   path: 'data_permission_request',
+    //   name: '数据权限申请',
+    //   component: () => import('@/views/data/data_permission_request/index')
+    // },
 
     {
       path: 'data_permission_request_already',
