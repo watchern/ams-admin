@@ -487,3 +487,17 @@
 .oper-btn.down_table:hover::before{
   content:'\e7a3  下载表信息'!important;
 }
+//办理
+.oper-btn.transact:after {
+  content: '\e670  办理' !important;
+}
+//统计
+.oper-btn.count:after {
+  content: '\e671  统计' !important;
+}
+
+//收回
+.oper-btn.recover:after{
+  content:'\e672  收回'!important;
+}
+

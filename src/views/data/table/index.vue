@@ -2,79 +2,73 @@
   <div class="page-container">
     <!-- left_conter -->
     <div class="left_conter">
-
-      <el-tabs v-model="activeName"
-               type="card"
-               @tab-click="handleClick">
-        <el-tab-pane label="系统"
-                     :disabled="tabclick"
-                     name="0"></el-tab-pane>
-        <el-tab-pane label="主题"
-                     :disabled="tabclick"
-                     name="1"></el-tab-pane>
-        <el-tab-pane label="分层"
-                     :disabled="tabclick"
-                     name="2"></el-tab-pane>
+      <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+        <el-tab-pane label="系统" :disabled="tabclick" name="0"></el-tab-pane>
+        <el-tab-pane label="主题" :disabled="tabclick" name="1"></el-tab-pane>
+        <el-tab-pane label="分层" :disabled="tabclick" name="2"></el-tab-pane>
         <!-- <el-tab-pane label="目录"
                      :disabled="tabclick"
                      name="3"></el-tab-pane> -->
       </el-tabs>
       <div class="padding10">
-        <el-input v-model="filterText2"
-                  :disabled="tabclick"
-                  placeholder="输入关键字进行过滤" />
+        <el-input
+          v-model="filterText2"
+          :disabled="tabclick"
+          placeholder="输入关键字进行过滤"
+        />
       </div>
       <!-- 数据源 -->
       <div class="padding10 dataSource">
-        <el-form :inline="true"
-                 :model="query"
-                 label-position="bottom">
-          <el-form-item label="数据源："
-                        label-width="90px">
-            <el-select v-model="query.dataSource"
-                       :disabled="tabclick"
-                       @change="selectdata"
-                       placeholder="请选择数据源">
-              <el-option v-for="item in options"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value" />
+        <el-form :inline="true" :model="query" label-position="bottom">
+          <el-form-item label="数据源：" label-width="90px">
+            <el-select
+              v-model="query.dataSource"
+              :disabled="tabclick"
+              @change="selectdata"
+              placeholder="请选择数据源"
+            >
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
             </el-select>
           </el-form-item>
         </el-form>
-
       </div>
 
-      <div v-show="loading== true"
-           class="loading">
+      <div v-show="loading == true" class="loading">
         <div class="conter_loading">
-          <span><img src="../../../assets/img/loading.gif"
-                 alt=""></span>
+          <span><img src="../../../assets/img/loading.gif" alt="" /></span>
         </div>
       </div>
 
-      <div v-show="loading== false"
-           class="conter_vh">
-
+      <div v-show="loading == false" class="conter_vh">
         <div class="padding10_l">
           <!-- 系统 主题 分层  目录-->
           <div class="tree-containerall">
-
-            <MyElTree ref="tree2"
-                      :props="props"
-                      :data="tree_list"
-                      :filter-node-method="filterNode"
-                      :default-expanded-keys="['ROOT']"
-                      class="filter-tree"
-                      highlight-current="true"
-                      node-key="id"
-                      @node-click="nodeClick">
-              <span slot-scope="{ node, data }"
-                    class="custom-tree-node">
-                <i v-if="data.id === 'ROOT'"
-                   :class="data.icon" />
+            <MyElTree
+              ref="tree2"
+              :props="props"
+              :data="tree_list"
+              :filter-node-method="filterNode"
+              :default-expanded-keys="['ROOT']"
+              class="filter-tree"
+              highlight-current="true"
+              node-key="id"
+              @node-click="nodeClick"
+            >
+              <span slot-scope="{ node, data }" class="custom-tree-node">
+                <i v-if="data.id === 'ROOT'" :class="data.icon" />
                 <i
-                   v-if="data.type === 'folder' || data.type === 'system' || data.type === 'layered' || data.type === 'theme'">
+                  v-if="
+                    data.type === 'folder' ||
+                    data.type === 'system' ||
+                    data.type === 'layered' ||
+                    data.type === 'theme'
+                  "
+                >
                   <span class="agreeicon0"></span>
                 </i>
                 <i v-if="data.type === 'table'">
@@ -84,112 +78,152 @@
                   <span class="icon iconfont agreeicon4"></span>
                 </i>
 
-                <i v-if="data.type === 'column'"
-                   class="el-icon-c-scale-to-original" />
+                <i
+                  v-if="data.type === 'column'"
+                  class="el-icon-c-scale-to-original"
+                />
                 <span>{{ node.label }}</span>
                 <span style="margin-left: 10px">
-                  <el-button v-if="
-                    data.id === 'ROOT' ||
-                    (data.extMap && data.extMap.folder_type === 'maintained')
-                  "
-                             type="text"
-                             size="mini"
-                             @click.stop="() => handleCreateFolder(node, data)">
+                  <el-button
+                    v-if="
+                      data.id === 'ROOT' ||
+                      (data.extMap && data.extMap.folder_type === 'maintained')
+                    "
+                    type="text"
+                    size="mini"
+                    @click.stop="() => handleCreateFolder(node, data)"
+                  >
                     <i class="el-icon-circle-plus" />
                   </el-button>
-                  <el-button v-if="data.extMap && data.extMap.folder_type === 'maintained'"
-                             type="text"
-                             size="mini"
-                             @click.stop="() => handleUpdateFolder(node, data)">
+                  <el-button
+                    v-if="
+                      data.extMap && data.extMap.folder_type === 'maintained'
+                    "
+                    type="text"
+                    size="mini"
+                    @click.stop="() => handleUpdateFolder(node, data)"
+                  >
                     <i class="el-icon-edit" />
                   </el-button>
-                  <el-button v-if="
-                    (data.extMap && data.extMap.folder_type === 'maintained') ||
-                    data.type === 'table'||
-                    data.type === 'view'
-                  "
-                             type="text"
-                             size="mini"
-                             @click.stop="() => handleRemove(node, data)">
+                  <el-button
+                    v-if="
+                      (data.extMap &&
+                        data.extMap.folder_type === 'maintained') ||
+                      data.type === 'table' ||
+                      data.type === 'view'
+                    "
+                    type="text"
+                    size="mini"
+                    @click.stop="() => handleRemove(node, data)"
+                  >
                     <i class="el-icon-delete" />
                   </el-button>
                 </span>
               </span>
             </MyElTree>
-
           </div>
           <!-- 目录 -->
-
         </div>
-
       </div>
-
     </div>
     <!-- left_conter end-->
 
     <!-- right_conter -->
     <div class="right_conter padding10">
-      <DataResourceDisplay @down_template_cn="DownTemplateCN"
-                           @Important_cn='ImportantCn'
-                           @Importdata_dictionary="ImportdataDictionary"
-                           @down_template_dictionary="DownTemplateDictionary"
-                           @Important_table='ImportantTable'
-                           @down_template_table="DownTemplateTable"
-                           @on_deails="onDeailsChange"
-                           @sync_data="SyncData"
-                           :isBtn="isBtn"
-                           @on_register="registTable"
-                           @Recognition='recognitionChange'
-                           @handleCurrentChange="handleCurrent"
-                           @handleSizeChange="handleSize"
-                           :list="list"
-                           :list_data="list_data"
-                           :list_loading="list_loading"
-                           @edit_list="Edit_list"
-                           v-if="show_details == false"></DataResourceDisplay>
+      <DataResourceDisplay
+        @down_template_cn="DownTemplateCN"
+        @Important_cn="ImportantCn"
+        @Importdata_dictionary="ImportdataDictionary"
+        @down_template_dictionary="DownTemplateDictionary"
+        @Important_table="ImportantTable"
+        @down_template_table="DownTemplateTable"
+        @on_deails="onDeailsChange"
+        @sync_data="SyncData"
+        :isBtn="isBtn"
+        @on_register="registTable"
+        @Recognition="recognitionChange"
+        @handleCurrentChange="handleCurrent"
+        @handleSizeChange="handleSize"
+        :list="list"
+        :list_data="list_data"
+        :list_loading="list_loading"
+        @edit_list="Edit_list"
+        v-if="show_details == false"
+      ></DataResourceDisplay>
       <!-- 基本信息详情 -->
-      <Details ref="Details_ref"
-               :tableMetaUuid="tableMetaUuid"
-               :isDisable_input="isDisable_input"
-               @update_list="UpdateList"
-               :is_Edit_list="is_Edit_list"
-               v-if="show_details == true"></Details>
+      <Details
+        ref="Details_ref"
+        :tableMetaUuid="tableMetaUuid"
+        :isDisable_input="isDisable_input"
+        @update_list="UpdateList"
+        :is_Edit_list="is_Edit_list"
+        v-if="show_details == true"
+      ></Details>
 
       <!-- 注册资产 -->
-      <el-dialog :close-on-click-modal="false"
-                 :default-expand-all="true"
-                 :title="'选择注册表'"
-                 :visible.sync="registTableFlag"
-                 class="dlag_width"
-                 width="600px">
-        <el-input style="width: 70%"
-                  v-model="filterText1"
-                  placeholder="输入想要查询的表名称（模糊搜索）" />
+      <el-dialog
+        :close-on-click-modal="false"
+        :default-expand-all="true"
+        :title="'选择注册表'"
+        :visible.sync="registTableFlag"
+        class="dlag_width"
+        width="600px"
+      >
+        <el-input
+          style="width: 70%"
+          v-model="filterText1"
+          placeholder="输入想要查询的表名称（模糊搜索）"
+        />
         <el-button @click="getTables"> 搜索 </el-button>
 
         <div class="tree-containerselect padding10">
-          <MyElTree ref="tree1"
-                    v-loading="treeLoading"
-                    :props="props"
-                    :data="tableData"
-                    class="filter-tree"
-                    show-checkbox
-                    @check-change="nodeClick_table"
-                    @node-click="nodeClick_table"
-                    default-expand-all>
-            <span slot-scope="{ node, data }"
-                  class="custom-tree-node">
+          <MyElTree
+            ref="tree1"
+            v-loading="treeLoading"
+            :props="props"
+            :data="tableData"
+            class="filter-tree"
+            show-checkbox
+            @check-change="nodeClick_table"
+            @node-click="nodeClick_table"
+            default-expand-all
+          >
+            <span slot-scope="{ node, data }" class="custom-tree-node">
               <i v-if="data.type === 'USER'">
-                <img src="../../../assets/img/table_0.png"
-                     style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+                <img
+                  src="../../../assets/img/table_0.png"
+                  style="
+                    height: 16px;
+                    width: 16px;
+                    margin-right: 2px;
+                    vertical-align: top;
+                    *vertical-align: middle;
+                  "
+                />
               </i>
               <i v-if="data.type === 'TABLE'">
-                <img src="../../../assets/img/table_1.png"
-                     style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+                <img
+                  src="../../../assets/img/table_1.png"
+                  style="
+                    height: 16px;
+                    width: 16px;
+                    margin-right: 2px;
+                    vertical-align: top;
+                    *vertical-align: middle;
+                  "
+                />
               </i>
               <i v-if="data.type === 'COLUMN'">
-                <img src="../../../assets/img/table_2.png"
-                     style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+                <img
+                  src="../../../assets/img/table_2.png"
+                  style="
+                    height: 16px;
+                    width: 16px;
+                    margin-right: 2px;
+                    vertical-align: top;
+                    *vertical-align: middle;
+                  "
+                />
               </i>
               <span>{{ node.label }}</span>
             </span>
@@ -198,380 +232,399 @@
         <span slot="footer">
           <el-button @click="registTableFlag = false">取消</el-button>
 
-          <el-button type="primary"
-                     v-if="is_next == true"
-                     @click="next()">下一步</el-button>
+          <el-button type="primary" v-if="is_next == true" @click="next()"
+            >下一步</el-button
+          >
         </span>
       </el-dialog>
 
       <!-- 如果选多个表 -->
-      <el-dialog :visible.sync="dialogVisible_forms"
-                 width="600px"
-                 class="dlag_width"
-                 :before-close="handleClose">
-        <el-table :data="Column_table"
-                  style="width: 100%">
-          <el-table-column prop="date"
-                           label="字段名称">
+      <el-dialog
+        :visible.sync="dialogVisible_forms"
+        width="600px"
+        class="dlag_width"
+        :before-close="handleClose"
+      >
+        <el-table :data="Column_table" style="width: 100%">
+          <el-table-column prop="date" label="字段名称">
             <template slot-scope="scope">
-              <span v-for="(item,index) in scope.row.colMetas"
-                    :key="index">{{item.colName}}
-                <i v-if="scope.row.colMetas.length!==1">、</i>
+              <span v-for="(item, index) in scope.row.colMetas" :key="index"
+                >{{ item.colName }}
+                <i v-if="scope.row.colMetas.length !== 1">、</i>
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="title"
-                           label="表名称">
+          <el-table-column prop="title" label="表名称">
             <template slot-scope="scope">
-              {{ scope.row.tbName}}
+              {{ scope.row.tbName }}
             </template>
-
           </el-table-column>
         </el-table>
-        <span slot="footer"
-              class="dialog-footer">
+        <span slot="footer" class="dialog-footer">
           <el-button @click="dialogVisible_forms = false">关闭</el-button>
-          <el-button type="primary"
-                     @click="next_save()">确 定</el-button>
+          <el-button type="primary" @click="next_save()">确 定</el-button>
         </span>
       </el-dialog>
 
       <!-- 下一步 基本信息-->
-      <el-dialog title="基本信息"
-                 class="data_res dlag_width"
-                 :visible.sync="dialogVisible_information"
-                 @close="handleClose('form')"
-                 width="60%">
-        <el-form :rules="rules"
-                 ref="form"
-                 label-width="100px"
-                 :model="form"
-                 :inline="false">
+      <el-dialog
+        title="基本信息"
+        class="data_res dlag_width"
+        :visible.sync="dialogVisible_information"
+        @close="handleClose('form')"
+        width="60%"
+      >
+        <el-form
+          :rules="rules"
+          ref="form"
+          label-width="100px"
+          :model="form"
+          :inline="false"
+        >
           <!-- 表名-->
           <div class="son">
-            <el-form-item label="表名称："
-                          prop="tbName">
-              <el-input type="text"
-                        disabled
-                        placeholder="请输入表名称"
-                        v-model="form.tbName"
-                        :rows="4">
+            <el-form-item label="表名称：" prop="tbName">
+              <el-input
+                type="text"
+                disabled
+                placeholder="请输入表名称"
+                v-model="form.tbName"
+                :rows="4"
+              >
               </el-input>
             </el-form-item>
-
           </div>
           <!-- 表中文名 -->
           <div class="son">
-
             <el-form-item label="表中文名：">
-              <el-input type="text"
-                        placeholder="请输入表中文名"
-                        v-model="form.chnName"
-                        :rows="4">
+              <el-input
+                type="text"
+                placeholder="请输入表中文名"
+                v-model="form.chnName"
+                :rows="4"
+              >
               </el-input>
-
             </el-form-item>
           </div>
 
           <!--  表说明-->
           <div class="son">
             <el-form-item label="表说明:">
-              <el-input type="textarea"
-                        placeholder="请输入表说明"
-                        style="resize:none;"
-                        v-model="form.tableRemarks">
+              <el-input
+                type="textarea"
+                placeholder="请输入表说明"
+                style="resize: none"
+                v-model="form.tableRemarks"
+              >
               </el-input>
             </el-form-item>
-
           </div>
 
           <!-- 资产编码 && 资产类型：-->
           <div class="son">
-            <el-form-item label="资产编码："
-                          prop="tableCode">
-              <el-input type="text"
-                        placeholder="请输入资产编码"
-                        v-model="form.tableCode"
-                        :rows="4">
+            <el-form-item label="资产编码：" prop="tableCode">
+              <el-input
+                type="text"
+                placeholder="请输入资产编码"
+                v-model="form.tableCode"
+                :rows="4"
+              >
               </el-input>
             </el-form-item>
 
-            <el-form-item label="资产类型:"
-                          prop="tableType">
-              <el-select v-model="form.tableType"
-                         :rows="4"
-                         placeholder="请选择资产类型">
-                <el-option v-for="item in data_type"
-                           :key="item.value"
-                           :label="item.label"
-                           :value="item.value" />
+            <el-form-item label="资产类型:" prop="tableType">
+              <el-select
+                v-model="form.tableType"
+                :rows="4"
+                placeholder="请选择资产类型"
+              >
+                <el-option
+                  v-for="item in data_type"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
               </el-select>
             </el-form-item>
           </div>
 
           <!-- 资产主题 && 资产分层 -->
           <div class="son">
-            <el-form-item label="资产主题:"
-                          prop="tableThemeId">
-              <el-select v-model="form.tableThemeId"
-                         :rows="4"
-                         placeholder="请选择资产主题">
-                <el-option v-for="item in next_data.themeList"
-                           :key="item.codeUuid"
-                           :label="item.codeName"
-                           :value="item.codeUuid" />
+            <el-form-item label="资产主题:" prop="tableThemeId">
+              <el-select
+                v-model="form.tableThemeId"
+                :rows="4"
+                placeholder="请选择资产主题"
+              >
+                <el-option
+                  v-for="item in next_data.themeList"
+                  :key="item.codeUuid"
+                  :label="item.codeName"
+                  :value="item.codeUuid"
+                />
               </el-select>
             </el-form-item>
 
-            <el-form-item label="资产分层:"
-                          prop="tableLayeredId">
-              <el-select v-model="form.tableLayeredId"
-                         :rows="4"
-                         placeholder="请选择资产分层">
-                <el-option v-for="item in next_data.layeredList"
-                           :key="item.codeUuid"
-                           :label="item.codeName"
-                           :value="item.codeUuid" />
+            <el-form-item label="资产分层:" prop="tableLayeredId">
+              <el-select
+                v-model="form.tableLayeredId"
+                :rows="4"
+                placeholder="请选择资产分层"
+              >
+                <el-option
+                  v-for="item in next_data.layeredList"
+                  :key="item.codeUuid"
+                  :label="item.codeName"
+                  :value="item.codeUuid"
+                />
               </el-select>
             </el-form-item>
-
           </div>
 
           <!-- 所属系统 && 文件名-->
           <div class="son">
-
-            <el-form-item label="所属系统:"
-                          prop="businessSystemId">
-              <el-select v-model="form.businessSystemId"
-                         :rows="4"
-                         placeholder="请选择所属系统">
-                <el-option v-for="item in next_data.businessSystemList"
-                           :key="item.businessSystemUuid"
-                           :label="item.businessSystemName"
-                           :value="item.businessSystemUuid" />
+            <el-form-item label="所属系统:" prop="businessSystemId">
+              <el-select
+                v-model="form.businessSystemId"
+                :rows="4"
+                placeholder="请选择所属系统"
+              >
+                <el-option
+                  v-for="item in next_data.businessSystemList"
+                  :key="item.businessSystemUuid"
+                  :label="item.businessSystemName"
+                  :value="item.businessSystemUuid"
+                />
               </el-select>
             </el-form-item>
             <el-form-item label="文件名:">
-              <el-input type="text"
-                        placeholder="请输入文件名称"
-                        v-model="form.fileName"
-                        :rows="4">
+              <el-input
+                type="text"
+                placeholder="请输入文件名称"
+                v-model="form.fileName"
+                :rows="4"
+              >
               </el-input>
             </el-form-item>
           </div>
 
           <!-- 数据日期 && 表大小-->
           <div class="son">
-
             <el-form-item label="数据日期:">
-              <el-date-picker format="yyyy-MM-dd"
-                              type="date"
-                              value-format="yyyy-MM-dd"
-                              @change="changeRelationParam"
-                              placeholder="请输入数据日期"
-                              :rows="4"
-                              v-model="form.dataDate">
+              <el-date-picker
+                format="yyyy-MM-dd"
+                type="date"
+                value-format="yyyy-MM-dd"
+                @change="changeRelationParam"
+                placeholder="请输入数据日期"
+                :rows="4"
+                v-model="form.dataDate"
+              >
               </el-date-picker>
-
             </el-form-item>
             <el-form-item label="表大小:">
-              <el-input type="text"
-                        disabled
-                        placeholder="请输入表大小"
-                        v-model="form.tableSize"
-                        :rows="4">
+              <el-input
+                type="text"
+                disabled
+                placeholder="请输入表大小"
+                v-model="form.tableSize"
+                :rows="4"
+              >
               </el-input>
             </el-form-item>
           </div>
           <!-- 表数据量 &&   负责人-->
-          <div class="son ">
+          <div class="son">
             <el-form-item label="表数据量:">
-              <el-input type="text"
-                        disabled
-                        placeholder="请输入表数据量"
-                        v-model="form.rowNum"
-                        :rows="4">
+              <el-input
+                type="text"
+                disabled
+                placeholder="请输入表数据量"
+                v-model="form.rowNum"
+                :rows="4"
+              >
               </el-input>
             </el-form-item>
 
             <div class="son_check">
               <el-form-item label="负责人:">
-                =={{form.personName_str}}==
-                <el-input type="text"
-                          disabled
-                          v-model="form.personName_str">
+                =={{ form.personName_str }}==
+                <el-input type="text" disabled v-model="form.personName_str">
                 </el-input>
-
               </el-form-item>
-              <el-button type="primary"
-                         class="oper-btn"
-                         @click="check_people()">选择</el-button>
+              <el-button type="primary" class="oper-btn" @click="check_people()"
+                >选择</el-button
+              >
             </div>
-
           </div>
 
           <!--表分区 && 增全量 -->
-          <div class="son ">
-            <el-form-item label="表分区:"
-                          prop="partitions">
+          <div class="son">
+            <el-form-item label="表分区:" prop="partitions">
               <ul class="table">
-                <li class="head">
-                  分区名称
+                <li class="head">分区名称</li>
+                <li
+                  v-for="(item, index_partitions) in form.partitions"
+                  :key="index_partitions"
+                  class="li_son"
+                  key="index"
+                >
+                  {{ item }}
                 </li>
-                <li v-for="(item,index_partitions) in form.partitions"
-                    :key="index_partitions"
-                    class="li_son"
-                    key="index">{{item}}</li>
               </ul>
             </el-form-item>
 
-            <el-form-item label="增全量:"
-                          prop="isSpike">
-              <el-select v-model="form.isSpike"
-                         :rows="4"
-                         placeholder="请选择是否增量">
-                <el-option v-for="item in option_isSpike"
-                           :key="item.value"
-                           :label="item.label"
-                           :value="item.value" />
+            <el-form-item label="增全量:" prop="isSpike">
+              <el-select
+                v-model="form.isSpike"
+                :rows="4"
+                placeholder="请选择是否增量"
+              >
+                <el-option
+                  v-for="item in option_isSpike"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
               </el-select>
             </el-form-item>
           </div>
 
           <!-- 数据标签：-->
-          <div class="son ">
+          <div class="son">
             <div class="son_check">
-
               <el-form-item label="数据标签：:">
-
                 <div class="_width tag_conter">
-                  <el-tag :key="tag"
-                          v-for="tag in tagsarr"
-                          closable
-                          :disable-transitions="false"
-                          @close="handleClose(tag)">
-                    {{tag}}
+                  <el-tag
+                    :key="tag"
+                    v-for="tag in tagsarr"
+                    closable
+                    :disable-transitions="false"
+                    @close="handleClose(tag)"
+                  >
+                    {{ tag }}
                   </el-tag>
-
                 </div>
-
               </el-form-item>
-              <el-button type="primary"
-                         class="oper-btn"
-                         @click="check_tag()">选择</el-button>
+              <el-button type="primary" class="oper-btn" @click="check_tag()"
+                >选择</el-button
+              >
             </div>
-
           </div>
-
         </el-form>
         <div class="padding10_l">
-          <p style="text-align: center;">列信息</p>
-          <el-table :data="Column_table"
-                    style="width: 100%">
-            <el-table-column prop="date"
-                             label="字段名称">
+          <p style="text-align: center">列信息</p>
+          <el-table :data="Column_table" style="width: 100%">
+            <el-table-column prop="date" label="字段名称">
               <template slot-scope="scope">
-                {{ scope.row.colName}}
+                {{ scope.row.colName }}
               </template>
-
             </el-table-column>
-            <el-table-column prop="address"
-                             label="字段类型">
+            <el-table-column prop="address" label="字段类型">
               <template slot-scope="scope">
-                {{ scope.row.dataType}}
+                {{ scope.row.dataType }}
               </template>
             </el-table-column>
 
-            <el-table-column prop="address"
-                             label="字段长度">
+            <el-table-column prop="address" label="字段长度">
               <template slot-scope="scope">
-                {{ scope.row.dataLength}}
+                {{ scope.row.dataLength }}
               </template>
             </el-table-column>
           </el-table>
         </div>
 
-        <span slot="footer"
-              class="dialog-footer">
+        <span slot="footer" class="dialog-footer">
           <el-button @click="step()">上一步</el-button>
-          <el-button type="primary"
-                     :loading="btnLoading"
-                     :disabled="isDisable"
-                     @click="save('form')">{{this.btnLoading == true ? '保存中' : '保存'}}</el-button>
+          <el-button
+            type="primary"
+            :loading="btnLoading"
+            :disabled="isDisable"
+            @click="save('form')"
+            >{{ this.btnLoading == true ? "保存中" : "保存" }}</el-button
+          >
 
           <el-button @click="close_diag()">关闭</el-button>
-
         </span>
       </el-dialog>
 
       <!-- 选择责任人 -->
-      <el-dialog title="选择责任人"
-                 :close-on-click-modal="false"
-                 :visible.sync="resultShareDialogIsSee"
-                 width="50%">
+      <el-dialog
+        title="选择责任人"
+        :close-on-click-modal="false"
+        :visible.sync="resultShareDialogIsSee"
+        width="50%"
+      >
         <personTree ref="orgPeopleTree"></personTree>
-        <span slot="footer"
-              class="dialog-footer">
+        <span slot="footer" class="dialog-footer">
           <el-button @click="close_people()">取 消</el-button>
-          <el-button type="primary"
-                     @click="modelResultShare()">确 定</el-button>
+          <el-button type="primary" @click="modelResultShare()"
+            >确 定</el-button
+          >
         </span>
       </el-dialog>
 
-      <el-dialog :title="dialogTitle"
-                 :visible.sync="folderFormVisible"
-                 width="600px"
-                 :close-on-click-modal="false">
-        <el-form ref="folderForm"
-                 :model="folderForm"
-                 class="detail-form">
+      <el-dialog
+        :title="dialogTitle"
+        :visible.sync="folderFormVisible"
+        width="600px"
+        :close-on-click-modal="false"
+      >
+        <el-form ref="folderForm" :model="folderForm" class="detail-form">
           <el-form-item label="文件夹名称">
             <el-input v-model="folderForm.folderName" />
           </el-form-item>
         </el-form>
         <span slot="footer">
           <el-button @click="folderFormVisible = false">取消</el-button>
-          <el-button type="primary"
-                     @click="dialogStatus === 'create' ? createFolder() : updateFolder()">保存</el-button>
+          <el-button
+            type="primary"
+            @click="dialogStatus === 'create' ? createFolder() : updateFolder()"
+            >保存</el-button
+          >
         </span>
       </el-dialog>
 
       <!-- 选择标签 -->
-      <el-dialog title="选择标签"
-                 :close-on-click-modal="false"
-                 :visible.sync="dialogVisible_tag"
-                 width="60%"
-                 class="dlag_width">
+      <el-dialog
+        title="选择标签"
+        :close-on-click-modal="false"
+        :visible.sync="dialogVisible_tag"
+        width="60%"
+        class="dlag_width"
+      >
         <div>
           <div class="right_query">
-            <el-form :inline="true"
-                     :model="tag_query"
-                     label-position="bottom">
+            <el-form :inline="true" :model="tag_query" label-position="bottom">
               <el-form-item>
-                <el-input v-model="tag_query.name"
-                          placeholder="标签名"
-                          clearable />
+                <el-input
+                  v-model="tag_query.name"
+                  placeholder="标签名"
+                  clearable
+                />
               </el-form-item>
 
               <el-form-item>
-                <el-select v-model="tag_query.status"
-                           :rows="4"
-                           placeholder="请选择是否增量">
-                  <el-option v-for="item in option_isSpike"
-                             :key="item.value"
-                             :label="item.label"
-                             :value="item.value" />
+                <el-select
+                  v-model="tag_query.status"
+                  :rows="4"
+                  placeholder="请选择是否增量"
+                >
+                  <el-option
+                    v-for="item in option_isSpike"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
                 </el-select>
-
               </el-form-item>
 
               <el-form-item>
-                <el-button type="primary"
-                           @keyup.enter.native="search">查询</el-button>
+                <el-button type="primary" @keyup.enter.native="search"
+                  >查询</el-button
+                >
                 <el-button type="primary">清空</el-button>
-
               </el-form-item>
-
             </el-form>
           </div>
           <!-- <div class="padding10_l">
@@ -612,68 +665,65 @@
               </el-table-column>
             </el-table>
           </div> -->
-
         </div>
-        <span slot="footer"
-              class="dialog-footer">
+        <span slot="footer" class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary"
-                     @click="dialogVisible_tag = false">确 定</el-button>
+          <el-button type="primary" @click="dialogVisible_tag = false"
+            >确 定</el-button
+          >
         </span>
       </el-dialog>
 
       <!-- 认权管理 -->
-      <el-dialog title="认权管理"
-                 :close-on-click-modal="false"
-                 :visible.sync="visible_Recognition"
-                 width="60%"
-                 class="dlag_width">
+      <el-dialog
+        title="认权管理"
+        :close-on-click-modal="false"
+        :visible.sync="visible_Recognition"
+        width="60%"
+        class="dlag_width"
+      >
         <div>
           <div class="data_res com">
-            <el-form ref="form"
-                     :model="Recognition">
-              <el-form-item label="认权人:"
-                            prop="people">
-                <el-input type="text"
-                          disabled
-                          placeholder="请选择认权人"
-                          v-model="Recognition.personName_str">
+            <el-form ref="form" :model="Recognition">
+              <el-form-item label="认权人:" prop="people">
+                <el-input
+                  type="text"
+                  disabled
+                  placeholder="请选择认权人"
+                  v-model="Recognition.personName_str"
+                >
                 </el-input>
-                <el-button type="primary"
-                           @click="check_people()">选择</el-button>
+                <el-button type="primary" @click="check_people()"
+                  >选择</el-button
+                >
               </el-form-item>
-
             </el-form>
-
           </div>
           <div class="padding10_l">
-            <el-table :data="Recognition_check_list"
-                      style="width: 100%">
-              <el-table-column prop="tbName"
-                               align="center"
-                               label="表名称">
+            <el-table :data="Recognition_check_list" style="width: 100%">
+              <el-table-column prop="tbName" align="center" label="表名称">
               </el-table-column>
-              <el-table-column prop="name"
-                               align="center"
-                               label="表类型">
+              <el-table-column prop="name" align="center" label="表类型">
               </el-table-column>
             </el-table>
           </div>
         </div>
-        <span slot="footer"
-              class="dialog-footer">
+        <span slot="footer" class="dialog-footer">
           <el-button @click="visible_Recognition = false">取 消</el-button>
-          <el-button type="primary"
-                     @click="save_people_change()">确 定</el-button>
+          <el-button type="primary" @click="save_people_change()"
+            >确 定</el-button
+          >
         </span>
       </el-dialog>
 
       <!-- 弹窗2 导入数据-->
-      <el-dialog v-if="importVisible"
-                 :title="upload_title"
-                 :visible.sync="importVisible"
-                 :close-on-click-modal="false"
-                 width="800px">
+      <el-dialog
+        v-if="importVisible"
+        :title="upload_title"
+        :visible.sync="importVisible"
+        :close-on-click-modal="false"
+        width="800px"
+      >
         <el-row>
           <el-col>
             <directory-file-import @fileuploadname="fileuploadname" />
@@ -681,26 +731,27 @@
         </el-row>
         <span slot="footer">
           <el-button @click="importVisible = false">取消</el-button>
-          <el-button @click="importTableDictionary()"
-                     v-if="upload_title == '导入数据字典'">导入</el-button>
-          <el-button @click="importTablCn()"
-                     v-else-if="upload_title == '导入汉化信息'">导入</el-button>
-          <el-button @click="importTableTable()"
-                     v-else>导入</el-button>
+          <el-button
+            @click="importTableDictionary()"
+            v-if="upload_title == '导入数据字典'"
+            >导入</el-button
+          >
+          <el-button
+            @click="importTablCn()"
+            v-else-if="upload_title == '导入汉化信息'"
+            >导入</el-button
+          >
+          <el-button @click="importTableTable()" v-else>导入</el-button>
 
           <!-- <el-button type="primary"
                      @click="upload_title = '数据字典导入' ? importTableDictionary()
-  :upload_title = '汉化信息导入' ? importTablCn() 
+  :upload_title = '汉化信息导入' ? importTablCn()
    : upload_title = '表关系导入' ? importTableTable() :'' ">导入</el-button> -->
-
         </span>
       </el-dialog>
-
     </div>
     <!-- right_conter end-->
-
   </div>
-
 </template>
 
 <script>
@@ -708,54 +759,63 @@ import tabledatatabs from "@/views/data/table/tabledatatabs";
 import MyElTree from "@/components/public/tree/src/tree.vue";
 import {
   listUnCached,
-  getDataTreeNode,//目录
-  getBusinessSystemTree,//系统
-  getThemeTree,//主题
-  getLayeredTree,//分层
+  getDataTreeNode, //目录
+  getBusinessSystemTree, //系统
+  getThemeTree, //主题
+  getLayeredTree, //分层
   delTable,
-  listByTreePage,//列表
-  getColsInfoByTableName,//获取列信息
-  synDataStructure,//同步数据
+  listByTreePage, //列表
+  getColsInfoByTableName, //获取列信息
+  synDataStructure, //同步数据
 } from "@/api/data/table-info";
 import { saveFolder, updateFolder, delFolder } from "@/api/data/folder";
 import { commonNotify } from "@/utils";
-import QueryField from '@/components/public/query-field/index'
+import QueryField from "@/components/public/query-field/index";
 import personTree from "@/components/publicpersontree/index";
 import {
-  insertRunResultShare,//责任人
+  insertRunResultShare, //责任人
 } from "@/api/analysis/auditmodelresult";
-import DataResourceDisplay from "@/components/directory/data_resource_display.vue"
-import Details from "@/components/directory/details.vue"
-import directoryFileImport from '@/views/data/tableupload'//导入
-import { listByPage, selectOne, importTable, import_dictionary, importTable_table } from '@/api/data/dict'
-import qs from 'qs'
-import axios from 'axios'
+import DataResourceDisplay from "@/components/directory/data_resource_display.vue";
+import Details from "@/components/directory/details.vue";
+import directoryFileImport from "@/views/data/tableupload"; //导入
+import {
+  listByPage,
+  selectOne,
+  importTable,
+  import_dictionary,
+  importTable_table,
+} from "@/api/data/dict";
+import qs from "qs";
+import axios from "axios";
 
 import {
   // page_list_data,//列表
   // getById,//详情
   // save_data,//新增保存
   // delete_data,//删除
-  checkFileName,//校验文件名是否已经存在
-  batchSaveTable_save,//下一步 保存
-  getListTree,//注册资产下一步
+  checkFileName, //校验文件名是否已经存在
+  batchSaveTable_save, //下一步 保存
+  getListTree, //注册资产下一步
 } from "@/api/lhg/register.js";
 
 import {
-  update_data,//认权人
+  update_data, //认权人
 } from "@/api/lhg/data_accreditation_management.js";
 
 export default {
   components: {
-    MyElTree, tabledatatabs, QueryField,
-    DataResourceDisplay, Details,
+    MyElTree,
+    tabledatatabs,
+    QueryField,
+    DataResourceDisplay,
+    Details,
     directoryFileImport,
-    personTree: () => import('@/components/publicpersontree/index')
+    personTree: () => import("@/components/publicpersontree/index"),
   },
-  data () {
+  data() {
     return {
       ifFileNameExist: true,
-      activeName: '0',//tab切换
+      activeName: "0", //tab切换
       ifExpandAll: false, // 是否展开所有树节点
       tabShow: "basicinfo",
       tableId: "",
@@ -777,7 +837,7 @@ export default {
         children: "children",
       },
 
-      tree_list: [],//左侧资料树数据结构
+      tree_list: [], //左侧资料树数据结构
       folderForm: {
         folderUuid: null,
         folderName: null,
@@ -800,150 +860,152 @@ export default {
 
       // 列表
       listLoading: false,
-      list: [],//table 列表
-
+      list: [], //table 列表
 
       // 资料树筛选 数据源
       query: {
-        dataSource: 'Postgre',//筛选条件
+        dataSource: "Postgre", //筛选条件
         pageNo: 1,
         pageSize: 5,
-        businessSystemId: '',//id主键
-        tableThemeId: '',//主题
-        tableLayeredId: '',//分层
-        folderUuid: '',//目录ID
+        businessSystemId: "", //id主键
+        tableThemeId: "", //主题
+        tableLayeredId: "", //分层
+        folderUuid: "", //目录ID
       },
 
-      options: [{
-        value: 'Postgre',
-        label: 'ADS'
-      }, {
-        value: 'Hive',
-        label: 'MRS-DWS'
-      }],
-      dialogVisible_information: false,//下一步 基本信息
+      options: [
+        {
+          value: "Postgre",
+          label: "ADS",
+        },
+        {
+          value: "Hive",
+          label: "MRS-DWS",
+        },
+      ],
+      dialogVisible_information: false, //下一步 基本信息
 
       rules: {
         tableCode: [
-          { required: true, message: '请输入资产编码', trigger: 'blur' },
+          { required: true, message: "请输入资产编码", trigger: "blur" },
         ],
         tableType: [
-          { required: true, message: '请选择资产类型', trigger: 'change' },
+          { required: true, message: "请选择资产类型", trigger: "change" },
         ],
 
         tableThemeId: [
-          { required: true, message: '请选择所属主题', trigger: 'change' },
+          { required: true, message: "请选择所属主题", trigger: "change" },
         ],
         businessSystemId: [
-          { required: true, message: '请选择id', trigger: 'change' },
+          { required: true, message: "请选择id", trigger: "change" },
         ],
 
         tableLayeredId: [
-          { required: true, message: '请选择资产分层', trigger: 'change' },
+          { required: true, message: "请选择资产分层", trigger: "change" },
         ],
 
         folderUuid: [
-          { required: true, message: '请选择所属目录', trigger: 'change' },
+          { required: true, message: "请选择所属目录", trigger: "change" },
         ],
         isSpike: [
-          { required: true, message: '请选择是否增量', trigger: 'change' },
+          { required: true, message: "请选择是否增量", trigger: "change" },
         ],
 
         isSentFile: [
-          { required: true, message: '请选择是否推送文件', trigger: 'change' },
+          { required: true, message: "请选择是否推送文件", trigger: "change" },
         ],
 
         fileName: [
-          { required: true, message: '请输入文件名称', trigger: 'change' },
+          { required: true, message: "请输入文件名称", trigger: "change" },
         ],
         personName_str: [
-          { required: true, message: '请选择资产责任人', trigger: 'change' },
+          { required: true, message: "请选择资产责任人", trigger: "change" },
         ],
         tableRemarks: [
-          { required: true, message: '请输入资产备注', trigger: 'blur' },
+          { required: true, message: "请输入资产备注", trigger: "blur" },
         ],
       },
-      btnLoading: false,//保存loading
+      btnLoading: false, //保存loading
       // 新增的数据
       form: {
-        tbName: '', //表名
-        chnName: '', //表中文名（后台给
-        tableRemarks: '',//表说明
-        tableCode: '',// 资产编码
-        tableType: '',// 资产类型
-        tableThemeName: '',//所属主题
-        tableThemeId: '',// 资产主题 id
-        tableLayeredName: '',//资产分层
-        tableLayeredId: '',//资产分层 id
-        businessSystemName: '',//所属系统
-        businessSystemId: '',//所属系统 id
-        fileName: '',//文件名
-        dataDate: '',//数据日期
-        tableSize: '',//表大小:
-        rowNum: '',//表数据量
-        personLiables: [],//负责人
-        personName_str: '',//责任人
-        personUuid: '',//资产责任人
-        partitions: '',//表分区
-        isSpike: 1,//是否增量
+        tbName: "", //表名
+        chnName: "", //表中文名（后台给
+        tableRemarks: "", //表说明
+        tableCode: "", // 资产编码
+        tableType: "", // 资产类型
+        tableThemeName: "", //所属主题
+        tableThemeId: "", // 资产主题 id
+        tableLayeredName: "", //资产分层
+        tableLayeredId: "", //资产分层 id
+        businessSystemName: "", //所属系统
+        businessSystemId: "", //所属系统 id
+        fileName: "", //文件名
+        dataDate: "", //数据日期
+        tableSize: "", //表大小:
+        rowNum: "", //表数据量
+        personLiables: [], //负责人
+        personName_str: "", //责任人
+        personUuid: "", //资产责任人
+        partitions: "", //表分区
+        isSpike: 1, //是否增量
 
         // folderUuid: '',//所属目录
         // increment: '',//是否增量
-        isSentFile: 0,//是否推送文件
-        personName: '',
+        isSentFile: 0, //是否推送文件
+        personName: "",
         // fileName: [],//文件名称
-        file_name: '',
+        file_name: "",
         check_list: [
           {
-            label: '',
-            fileName: '',
-            pid: '',
-            id: '',
-          }
-        ],//选择的数据表
+            label: "",
+            fileName: "",
+            pid: "",
+            id: "",
+          },
+        ], //选择的数据表
       },
 
       // 增量全量
       option_isSpike: [
         {
           value: 0,
-          label: '全量'
+          label: "全量",
         },
         {
           value: 1,
-          label: '增量'
+          label: "增量",
         },
       ],
       // 是否推送
       option_isSentFile: [
         {
           value: 0,
-          label: '不推送'
+          label: "不推送",
         },
         {
           value: 1,
-          label: '推送'
+          label: "推送",
         },
       ],
       isDisable: false, //防止重复提交
-      resultShareDialogIsSee: false,//选择责任人
+      resultShareDialogIsSee: false, //选择责任人
       selectValue: [], // 存储表格中选中的数据
-      next_data: [],// 点击下一步的数据
+      next_data: [], // 点击下一步的数据
       props2: {
-        label: 'label',
-        children: 'children',
-        value: 'id'
+        label: "label",
+        children: "children",
+        value: "id",
       },
       // next_contentsList: [],//目录
       // check_next_contentsList: {},//选择的目录
-      is_next: false,//是否显示下一步
-      ischeck_data: {},//第一步选择的数据库
+      is_next: false, //是否显示下一步
+      ischeck_data: {}, //第一步选择的数据库
 
       data_type: [
         {
           value: 1,
-          label: '表'
-        }
+          label: "表",
+        },
       ],
       // 点击懒加载tree
 
@@ -953,69 +1015,66 @@ export default {
       loading: true,
       tabclick: false,
 
-      show_details: false,//显示基本信息详情
-      isBtn: true,//是否显示按钮
-      isDisable_input: true,//详情禁止输入修改
+      show_details: false, //显示基本信息详情
+      isBtn: true, //是否显示按钮
+      isDisable_input: true, //详情禁止输入修改
 
-
-
-
-      visible_Recognition: false,//认权管理
+      visible_Recognition: false, //认权管理
       Recognition: {
-        personName_str: '',
+        personName_str: "",
       },
 
       // 如果选择了多个表
       dialogVisible_forms: false,
-      formList: [],//
+      formList: [], //
 
-      tableDatas: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }],
+      tableDatas: [
+        {
+          date: "2016-05-02",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1518 弄",
+        },
+      ],
 
-      dialogVisible_tag: false,//选择标签
+      dialogVisible_tag: false, //选择标签
       // 标签
       tag_query: {
-        name: '',
-        status: '',
+        name: "",
+        status: "",
       },
       // 选择的标签
-      tagsarr: ['标签一', '标签二', '标签三'],
-      inputValue: '',
+      tagsarr: ["标签一", "标签二", "标签三"],
+      inputValue: "",
 
       // 汉化
       importVisible: false,
       // dialogStatus: '',
 
-      upload_title: '',
+      upload_title: "",
       // preview: '数据字典导入',
       // import: '汉化信息导入',
       // table: '表关系导入',
 
       importtemp: {},
-      Column_table: [],//列信息
+      Column_table: [], //列信息
       Column_table_query: {
-        dbName: '',
-        tbName: '',
+        dbName: "",
+        tbName: "",
       },
-      list_loading: false,//列表loading
+      list_loading: false, //列表loading
       list: [],
-      list_data: {},//分页信息
+      list_data: {}, //分页信息
 
-      Recognition_check_list: [],//认权列表
-
+      Recognition_check_list: [], //认权列表
 
       // list_details: {},// 点击列表进入详情
-      tableMetaUuid: '',//详情id
+      tableMetaUuid: "", //详情id
       // tableRelationQueryUuid: '',//id
-      is_Edit_list: 0,//是否编辑
-
+      is_Edit_list: 0, //是否编辑
     };
   },
   computed: {
-    dialogTitle () {
+    dialogTitle() {
       return (
         (this.parentNode.label == null
           ? ""
@@ -1023,314 +1082,313 @@ export default {
         this.textMap[this.dialogStatus]
       );
     },
-    fromDisabled () {
+    fromDisabled() {
       return false;
     },
-    toDisabled () {
+    toDisabled() {
       return false;
     },
   },
   watch: {
-    filterText1 (val) {
+    filterText1(val) {
       this.$refs.tree1.filter(val);
     },
-    filterText2 (val) {
-      this.$refs.tree2.filter(val)
+    filterText2(val) {
+      this.$refs.tree2.filter(val);
     },
-    filterText3 (val) {
-      this.$refs.tree3.filter(val)
-    }
+    filterText3(val) {
+      this.$refs.tree3.filter(val);
+    },
   },
-  created () {
-    this.post_getBusinessSystemTree();//系统
+  created() {
+    this.post_getBusinessSystemTree(); //系统
     // this.post_getThemeTree();//主题
     // this.post_getLayeredTree();//分层
     // this.post_getDataTreeNode();//目录
 
-    this.query.businessSystemId = ''
+    this.query.businessSystemId = "";
     this.query_list();
-
   },
   methods: {
     // 修改后 刷新列表
-    UpdateList () {
-      this.show_details = false
+    UpdateList() {
+      this.show_details = false;
       this.query_list();
     },
 
     // 数据字典导入
-    ImportdataDictionary (data) {
-      this.upload_title = data
-      this.importVisible = true
+    ImportdataDictionary(data) {
+      this.upload_title = data;
+      this.importVisible = true;
     },
     // 汉化信息导入
-    ImportantCn (data) {
-      this.upload_title = data
-      this.importVisible = true
+    ImportantCn(data) {
+      this.upload_title = data;
+      this.importVisible = true;
     },
 
     // 表关系导入
-    ImportantTable (data) {
-      this.upload_title = data
-      this.importVisible = true
+    ImportantTable(data) {
+      this.upload_title = data;
+      this.importVisible = true;
     },
 
     // 数据字典下载
-    DownTemplateDictionary () {
+    DownTemplateDictionary() {
       // 导出表信息作为模板
       // this.$message({ type: 'info', message: '无选择表,失败!' })
-      axios.post(`/data/tableMeta/exportTableFile`, qs.stringify({}),
-        {
-          responseType: 'blob',
+      axios
+        .post(`/data/tableMeta/exportTableFile`, qs.stringify({}), {
+          responseType: "blob",
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded' // 请求的数据类型为form data格式
-          }
-        }
-      ).then(res => {
-        const filename = decodeURI(
-          res.headers['content-disposition'].split(';')[1].split('=')[1]
-        )
-        const blob = new Blob([res.data], {
-          type: 'application/octet-stream'
+            "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式
+          },
         })
-        const url = window.URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.style.display = 'none'
-        link.href = url
-        link.setAttribute('download', filename)
-        document.body.appendChild(link)
-        link.click()
-      })
+        .then((res) => {
+          const filename = decodeURI(
+            res.headers["content-disposition"].split(";")[1].split("=")[1]
+          );
+          const blob = new Blob([res.data], {
+            type: "application/octet-stream",
+          });
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.style.display = "none";
+          link.href = url;
+          link.setAttribute("download", filename);
+          document.body.appendChild(link);
+          link.click();
+        });
     },
-
 
     // 汉化模版下载
-    DownTemplateCN (data) {
+    DownTemplateCN(data) {
       // 导出表信息作为模板
       // this.$message({ type: 'info', message: '无选择表,失败!' })
-      axios.post(`/data/tableMeta/exportFile`, qs.stringify({ tableMetasJson: JSON.stringify(data) }),
-        {
-          responseType: 'blob', headers: {
-            'Content-Type': 'application/x-www-form-urlencoded' // 请求的数据类型为form data格式
+      axios
+        .post(
+          `/data/tableMeta/exportFile`,
+          qs.stringify({ tableMetasJson: JSON.stringify(data) }),
+          {
+            responseType: "blob",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式
+            },
           }
-        }
-      ).then(res => {
-        const filename = decodeURI(
-          res.headers['content-disposition'].split(';')[1].split('=')[1]
         )
-        const blob = new Blob([res.data], {
-          type: 'application/octet-stream'
-        })
-        const url = window.URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.style.display = 'none'
-        link.href = url
-        link.setAttribute('download', filename)
-        document.body.appendChild(link)
-        link.click()
-      })
+        .then((res) => {
+          const filename = decodeURI(
+            res.headers["content-disposition"].split(";")[1].split("=")[1]
+          );
+          const blob = new Blob([res.data], {
+            type: "application/octet-stream",
+          });
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.style.display = "none";
+          link.href = url;
+          link.setAttribute("download", filename);
+          document.body.appendChild(link);
+          link.click();
+        });
     },
 
-
     // 表关系下载
-    DownTemplateTable () {
+    DownTemplateTable() {
       // 导出表信息作为模板
       // this.$message({ type: 'info', message: '无选择表,失败!' })
-      axios.post(`/data/tableRelation/exportFile`, qs.stringify({}),
-        {
-          responseType: 'blob', headers: {
-            'Content-Type': 'application/x-www-form-urlencoded' // 请求的数据类型为form data格式
-          }
-        }
-      ).then(res => {
-        const filename = decodeURI(
-          res.headers['content-disposition'].split(';')[1].split('=')[1]
-        )
-        const blob = new Blob([res.data], {
-          type: 'application/octet-stream'
+      axios
+        .post(`/data/tableRelation/exportFile`, qs.stringify({}), {
+          responseType: "blob",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式
+          },
         })
-        const url = window.URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.style.display = 'none'
-        link.href = url
-        link.setAttribute('download', filename)
-        document.body.appendChild(link)
-        link.click()
-      })
+        .then((res) => {
+          const filename = decodeURI(
+            res.headers["content-disposition"].split(";")[1].split("=")[1]
+          );
+          const blob = new Blob([res.data], {
+            type: "application/octet-stream",
+          });
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.style.display = "none";
+          link.href = url;
+          link.setAttribute("download", filename);
+          document.body.appendChild(link);
+          link.click();
+        });
     },
 
     // 上传文件信息
-    fileuploadname (data) {
+    fileuploadname(data) {
       // 文件名
-      this.importtemp.tableFileName = data
-
+      this.importtemp.tableFileName = data;
     },
 
     // 字典确认导入
-    importTableDictionary () {
-
-      import_dictionary(this.importtemp).then(res => {
-        if (res.data.code === '200') {
-          this.importVisible = false
+    importTableDictionary() {
+      import_dictionary(this.importtemp).then((res) => {
+        if (res.data.code === "200") {
+          this.importVisible = false;
           this.$notify({
-            title: '成功',
+            title: "成功",
             message: res.data.msg,
-            type: 'success',
+            type: "success",
             duration: 2000,
-            position: 'bottom-right'
-          })
-          this.query_list()
+            position: "bottom-right",
+          });
+          this.query_list();
         } else {
           this.$message({
-            type: 'error',
-            message: res.data.msg
-          })
+            type: "error",
+            message: res.data.msg,
+          });
         }
-      })
+      });
     },
 
     // 汉化确认导入
-    importTablCn () {
-      importTable(this.importtemp).then(res => {
-        if (res.data.code === '200') {
-          this.importVisible = false
+    importTablCn() {
+      importTable(this.importtemp).then((res) => {
+        if (res.data.code === "200") {
+          this.importVisible = false;
           this.$notify({
-            title: '成功',
+            title: "成功",
             message: res.data.msg,
-            type: 'success',
+            type: "success",
             duration: 2000,
-            position: 'bottom-right'
-          })
-          this.query_list()
+            position: "bottom-right",
+          });
+          this.query_list();
         } else {
           this.$message({
-            type: 'error',
-            message: res.data.msg
-          })
+            type: "error",
+            message: res.data.msg,
+          });
         }
-      })
+      });
     },
-
-
 
     // 表关系导入
-    importTableTable () {
-      importTable_table(this.importtemp).then(res => {
-        if (res.data.code === '200') {
-          this.importVisible = false
+    importTableTable() {
+      importTable_table(this.importtemp).then((res) => {
+        if (res.data.code === "200") {
+          this.importVisible = false;
           this.$notify({
-            title: '成功',
+            title: "成功",
             message: res.data.msg,
-            type: 'success',
+            type: "success",
             duration: 2000,
-            position: 'bottom-right'
-          })
-          this.query_list()
+            position: "bottom-right",
+          });
+          this.query_list();
         } else {
           this.$message({
-            type: 'error',
-            message: res.data.msg
-          })
+            type: "error",
+            message: res.data.msg,
+          });
         }
-      })
+      });
     },
     // 同步数据
-    SyncData (data) {
-      let arr_str = []
+    SyncData(data) {
+      let arr_str = [];
       for (var i = 0; i < data.length; i++) {
-        arr_str.push(data[i].tableMetaUuid)
+        arr_str.push(data[i].tableMetaUuid);
       }
       let params = {
         dataSource: this.query.dataSource,
         tableMetaUuids: arr_str,
-      }
+      };
       synDataStructure(params).then((resp) => {
         if (resp.code == 0) {
           this.$message({
             type: "success",
             message: "同步成功!",
           });
-          this.query_list();//刷新列表
+          this.query_list(); //刷新列表
         } else {
           this.$message({
             type: "error",
             message: resp.msg,
           });
         }
-
       });
     },
 
     // 认权管理
-    recognitionChange (data) {
-      this.Recognition_check_list = data
-      this.Recognition.personName_str = '';
-      this.visible_Recognition = true
+    recognitionChange(data) {
+      this.Recognition_check_list = data;
+      this.Recognition.personName_str = "";
+      this.visible_Recognition = true;
     },
 
     // 认权确认
-    save_people_change () {
+    save_people_change() {
       //请选择认权人
-      if (this.Recognition.personName_str == '') {
+      if (this.Recognition.personName_str == "") {
         this.$message({ type: "warning", message: "请选择认权人" });
       } else {
         var personUuids = [];
         var personNames = [];
-        var arr = []
+        var arr = [];
         var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
         for (var i = 0; i < selectedNode.length; i++) {
           personUuids.push(selectedNode[i].personuuid);
           personNames.push(selectedNode[i].cnname);
           let obj = {
-            personuuid: selectedNode[i].personuuid, personName: selectedNode[i].cnname
-          }
-          arr.push(obj)
+            personuuid: selectedNode[i].personuuid,
+            personName: selectedNode[i].cnname,
+          };
+          arr.push(obj);
         }
-        this.form.personLiables = arr
+        this.form.personLiables = arr;
         var tableMetaUuids = [];
         for (var i = 0; i < this.Recognition_check_list.length; i++) {
-          tableMetaUuids.push(this.Recognition_check_list[i].tableMetaUuid)
+          tableMetaUuids.push(this.Recognition_check_list[i].tableMetaUuid);
         }
         let params = {
           tableMetaUuids: tableMetaUuids,
-          personLiables: this.form.personLiables,// 资产责任人
-        }
+          personLiables: this.form.personLiables, // 资产责任人
+        };
         // 修改
-        update_data(params).then(res => {
+        update_data(params).then((res) => {
           if (res.code == 0) {
             this.$message({
-              message: '认权成功',
-              type: 'success',
+              message: "认权成功",
+              type: "success",
               showClose: true,
-            })
-            this.query_list()
+            });
+            this.query_list();
             // this.resultShareDialogIsSee = false//关闭
-            this.visible_Recognition = false
+            this.visible_Recognition = false;
             this.clearcheckbox();
           } else {
             this.$message({
               message: res.msg,
-              type: 'error',
+              type: "error",
               showClose: true,
-            })
+            });
           }
-        })
+        });
       }
     },
 
     // 关闭 选择责任人
-    close_people () {
-      this.resultShareDialogIsSee = false
-      this.$refs.orgPeopleTree.$emit('clear')//清空组件 值
+    close_people() {
+      this.resultShareDialogIsSee = false;
+      this.$refs.orgPeopleTree.$emit("clear"); //清空组件 值
     },
     // 显示基本信息详情
-    onDeailsChange (data) {
-      this.tableMetaUuid = data.tableMetaUuid
-      this.show_details = true
-      this.isDisable_input = true
+    onDeailsChange(data) {
+      this.tableMetaUuid = data.tableMetaUuid;
+      this.show_details = true;
+      this.isDisable_input = true;
     },
     //校验文件名是否存在
-    checkFileName_change (fileName) {
+    checkFileName_change(fileName) {
       //
       // checkFileName(fileName).then((res) => {
       //   if (res.data) {
@@ -1339,7 +1397,6 @@ export default {
       //       type: 'success',
       //       showClose: true,
       //     })
-
       //     //隐藏保存按钮
       //     this.ifFileNameExist = false
       //   } else {
@@ -1355,59 +1412,58 @@ export default {
       // }
       // )
       // this.registTableFlag = false;//关闭上一步
-
     },
 
     // tab切换
-    handleClick (tab, event) {
-      if (tab.index == '0') {
+    handleClick(tab, event) {
+      if (tab.index == "0") {
         // this.tabclick = true
         // setTimeout(() => {
         //   this.tabclick = false
         // }, 3000)
-        this.post_getBusinessSystemTree();//系统
-      } else if (tab.index == '1') {
-        this.post_getThemeTree();//主题
-      } else if (tab.index == '2') {
-        this.post_getLayeredTree();//分层
+        this.post_getBusinessSystemTree(); //系统
+      } else if (tab.index == "1") {
+        this.post_getThemeTree(); //主题
+      } else if (tab.index == "2") {
+        this.post_getLayeredTree(); //分层
       }
       // else {
       //   this.post_getDataTreeNode(this.query.dataSource);//目录
       // }
     },
-    filterNode (value, data) {
+    filterNode(value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
 
     // 系统
-    post_getBusinessSystemTree () {
-      this.loading = true
-      this.tabclick = true
+    post_getBusinessSystemTree() {
+      this.loading = true;
+      this.tabclick = true;
       getBusinessSystemTree(true, this.query.dataSource, true).then((resp) => {
-        this.tree_list = resp.data
-        this.loading = false
-        this.tabclick = false
+        this.tree_list = resp.data;
+        this.loading = false;
+        this.tabclick = false;
       });
     },
     // 主题
-    post_getThemeTree () {
-      this.loading = true
-      this.tabclick = true
+    post_getThemeTree() {
+      this.loading = true;
+      this.tabclick = true;
       getThemeTree(true, this.query.dataSource, true).then((resp) => {
-        this.tree_list = resp.data
-        this.loading = false
-        this.tabclick = false
+        this.tree_list = resp.data;
+        this.loading = false;
+        this.tabclick = false;
       });
     },
     // 分层
-    post_getLayeredTree () {
-      this.loading = true
-      this.tabclick = true
+    post_getLayeredTree() {
+      this.loading = true;
+      this.tabclick = true;
       getLayeredTree(true, this.query.dataSource, true).then((resp) => {
-        this.tree_list = resp.data
-        this.loading = false
-        this.tabclick = false
+        this.tree_list = resp.data;
+        this.loading = false;
+        this.tabclick = false;
       });
     },
     // 目录
@@ -1475,15 +1531,14 @@ export default {
     //   });
     // },
 
-
     // 点击注册资源的 数据库列表
-    getTables () {
+    getTables() {
       this.treeLoading = true;
       listUnCached(
         "table",
         "",
         this.filterText1 == null ? "" : this.filterText1,
-        this.query.dataSource,
+        this.query.dataSource
       ).then((resp) => {
         this.treeLoading = false;
         this.tableData = resp.data;
@@ -1491,21 +1546,21 @@ export default {
     },
 
     // 刷根据节点ID刷新节点
-    refreshNodeBy (id) {
+    refreshNodeBy(id) {
       let node = this.$refs.tree2.getNode(id); // 通过节点id找到对应树节点对象
       node.loaded = false;
       node.expand(); // 主动调用展开节点方法，重新查询该节点下的所有子节点
     },
     // 点击切换树 切换 表单
-    nodeClick (data, node, tree) {
+    nodeClick(data, node, tree) {
       // 点击数据表进入详情
-      if (node.data.children.length == 0) {
-        this.tableMetaUuid = node.data.id
-        this.show_details = true
-        this.isDisable_input = true
+      if (node.data.children.length == 0 && node.data.type === "table") {
+        this.tableMetaUuid = node.data.id;
+        this.show_details = true;
+        this.isDisable_input = true;
       } else {
         this.divInfo = false;
-        this.show_details = false//显示列表
+        this.show_details = false; //显示列表
       }
       if (node.data.type === "table") {
         this.$nextTick(() => {
@@ -1515,26 +1570,22 @@ export default {
       } else {
         if (data.type == "system") {
           this.query.businessSystemId = node.data.id;
-          this.query.tableThemeId = '';
-          this.query.tableLayeredId = '';
-          this.query.folderUuid = '';
+          this.query.tableThemeId = "";
+          this.query.tableLayeredId = "";
+          this.query.folderUuid = "";
           this.query_list();
-
-
         } else if (data.type == "theme") {
-          this.query.businessSystemId = ''
+          this.query.businessSystemId = "";
           this.query.tableThemeId = node.data.id;
-          this.query.tableLayeredId = '';
-          this.query.folderUuid = '';
+          this.query.tableLayeredId = "";
+          this.query.folderUuid = "";
           this.query_list();
-
         } else if (data.type == "layered") {
-          this.query.businessSystemId = ''
-          this.query.tableThemeId = '';
+          this.query.businessSystemId = "";
+          this.query.tableThemeId = "";
           this.query.tableLayeredId = node.data.id;
-          this.query.folderUuid = '';
+          this.query.folderUuid = "";
           this.query_list();
-
         }
         // else if (node.data.type === "folder") {
         // 目录
@@ -1557,53 +1608,53 @@ export default {
       }
     },
     // 列表 接口
-    query_list () {
+    query_list() {
       // this.listLoading = true;
-      this.list_loading = true//子组件loading
+      this.list_loading = true; //子组件loading
       let params = {
-        businessSystemId: this.query.businessSystemId,//id主键
-        tableThemeId: this.query.tableThemeId,//主题
-        tableLayeredId: this.query.tableLayeredId,//分层
-        folderUuid: this.query.folderUuid,//目录
-        dataSource: this.query.dataSource,//数据源
+        businessSystemId: this.query.businessSystemId, //id主键
+        tableThemeId: this.query.tableThemeId, //主题
+        tableLayeredId: this.query.tableLayeredId, //分层
+        folderUuid: this.query.folderUuid, //目录
+        dataSource: this.query.dataSource, //数据源
         pageNo: this.query.pageNo,
         pageSize: this.query.pageSize,
-      }
+      };
       listByTreePage(params).then((resp) => {
-        this.list_loading = false//子组件loading
+        this.list_loading = false; //子组件loading
 
-        this.list_data = resp.data
-        this.list = resp.data.records
+        this.list_data = resp.data;
+        this.list = resp.data.records;
 
         // this.listLoading = false
         //
       });
     },
     // 删除
-    delete_table (id) {
+    delete_table(id) {
       delTable(id).then((res) => {
         if (res.code == 0) {
           this.$message({
-            message: '删除成功',
-            type: 'success',
+            message: "删除成功",
+            type: "success",
             showClose: true,
-          })
+          });
         } else {
           this.$message({
             message: res.msg,
-            type: 'error',
+            type: "error",
             showClose: true,
-          })
+          });
         }
-        this.query_list()
+        this.query_list();
       });
     },
-    resetFolderForm () {
+    resetFolderForm() {
       Object.keys(this.folderForm).forEach((key) => {
         this.$set(this.folderForm, key, null);
       });
     },
-    handleCreateFolder (node, data) {
+    handleCreateFolder(node, data) {
       this.resetFolderForm();
       this.parentNode = node;
       this.dialogStatus = "create";
@@ -1617,7 +1668,7 @@ export default {
       this.folderForm.fullPath = fullPath.join("/");
       this.folderFormVisible = true;
     },
-    handleUpdateFolder (node, data) {
+    handleUpdateFolder(node, data) {
       this.resetFolderForm();
       this.tempData = data;
       this.dialogStatus = "update";
@@ -1632,7 +1683,7 @@ export default {
       // this.folderForm.fullPath = fullPath.join("/");
       this.folderFormVisible = true;
     },
-    handleRemove (node, data) {
+    handleRemove(node, data) {
       this.$confirm("是否删除？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -1655,12 +1706,18 @@ export default {
             });
           }
         })
-        .catch(() => { });
+        .catch(() => {});
     },
-    createFolder () {
-      if (this.folderForm.folderName == null || this.folderForm.folderName.trim().length == 0) {
-        this.$message({ type: 'info', message: "文件夹名不可为空，请重新输入文件夹名！" })
-        return
+    createFolder() {
+      if (
+        this.folderForm.folderName == null ||
+        this.folderForm.folderName.trim().length == 0
+      ) {
+        this.$message({
+          type: "info",
+          message: "文件夹名不可为空，请重新输入文件夹名！",
+        });
+        return;
       }
       saveFolder(this.folderForm).then((resp) => {
         var childData = {
@@ -1677,10 +1734,16 @@ export default {
         this.folderFormVisible = false;
       });
     },
-    updateFolder () {
-      if (this.folderForm.folderName == null || this.folderForm.folderName.trim().length == 0) {
-        this.$message({ type: 'info', message: "文件夹名不可为空，请重新输入文件夹名！" })
-        return
+    updateFolder() {
+      if (
+        this.folderForm.folderName == null ||
+        this.folderForm.folderName.trim().length == 0
+      ) {
+        this.$message({
+          type: "info",
+          message: "文件夹名不可为空，请重新输入文件夹名！",
+        });
+        return;
       }
       updateFolder(this.folderForm).then((resp) => {
         this.tempData.label = this.folderForm.folderName;
@@ -1693,8 +1756,8 @@ export default {
         this.refreshNodeBy("ROOT");
       });
     },
-    handleSelectChange (val) { },
-    removeTable () {
+    handleSelectChange(val) {},
+    removeTable() {
       var ids = this.$refs.tree2.getCheckedKeys();
       delTable(ids.join(",")).then((resp) => {
         this.$notify(
@@ -1712,32 +1775,42 @@ export default {
     // ································
 
     // 时间格式化
-    formatCreateTime (row, column) {
+    formatCreateTime(row, column) {
       // 拼接日期规格为YYYY-MM-DD hh:mm:ss
-      var createTime = new Date(row.createTime)
-      var createTimeRow = createTime.getFullYear() + '-' + (createTime.getMonth() + 1) + '-' + createTime.getDate() + ' ' + createTime.getHours() + ':' + createTime.getMinutes() + ':' + createTime.getSeconds()
-      return createTimeRow
+      var createTime = new Date(row.createTime);
+      var createTimeRow =
+        createTime.getFullYear() +
+        "-" +
+        (createTime.getMonth() + 1) +
+        "-" +
+        createTime.getDate() +
+        " " +
+        createTime.getHours() +
+        ":" +
+        createTime.getMinutes() +
+        ":" +
+        createTime.getSeconds();
+      return createTimeRow;
     },
     // 选择数据源
-    selectdata (val) {
-      this.query.dataSource = val
-      if (this.activeName == '0') {
+    selectdata(val) {
+      this.query.dataSource = val;
+      if (this.activeName == "0") {
         // 系统
-        this.post_getBusinessSystemTree();//系统
-      } else if (this.activeName == '1') {
+        this.post_getBusinessSystemTree(); //系统
+      } else if (this.activeName == "1") {
         // 主题
-        this.post_getThemeTree();//主题
-      } else if (this.activeName == '2') {
+        this.post_getThemeTree(); //主题
+      } else if (this.activeName == "2") {
         // 分层
-        this.post_getLayeredTree();//分层
+        this.post_getLayeredTree(); //分层
       } else {
         // 目录
-        this.post_getDataTreeNode();//目录
+        this.post_getDataTreeNode(); //目录
       }
-
     },
     // 注册资产
-    registTable () {
+    registTable() {
       // var ckFolder = this.$refs.tree2.getCurrentNode();
       // //  return;
       // if (!ckFolder || ckFolder.type !== "FOLDER") {
@@ -1746,8 +1819,7 @@ export default {
       //   );
       //   return false;
       // }
-      this.registTableFlag = true
-
+      this.registTableFlag = true;
 
       // this.$nextTick(() => {
       //   if (this.$refs.tree1) {
@@ -1755,121 +1827,114 @@ export default {
       //   }
       // })
 
-      this.getTables()
+      this.getTables();
     },
     // 上一步
-    step () {
+    step() {
       // this.registTableFlag = true;//关闭上一步
-      this.dialogVisible_information = false;//关闭基本信息
+      this.dialogVisible_information = false; //关闭基本信息
 
-      this.clear()
+      this.clear();
     },
     // 清除注册资产第二步的数据
-    clear () {
+    clear() {
       // 清空
-      this.form.tableCode = ''
-      this.form.tableType = ''
-      this.form.tableThemeId = ''
-      this.form.businessSystemId = ''
-      this.form.tableLayeredId = ''
-      this.form.folderUuid = ''
-      this.form.personUuid = ''
-      this.form.tableRemarks = ''
-      this.form.isSpike = 1
-      this.form.isSentFile = 0
-      this.form.check_list.fileName = '',
-        this.form.check_list.pid = '',
-        this.form.check_list.id = '',
-        this.form.check_list.label = '',
-
-        this.personUuid = [];
+      this.form.tableCode = "";
+      this.form.tableType = "";
+      this.form.tableThemeId = "";
+      this.form.businessSystemId = "";
+      this.form.tableLayeredId = "";
+      this.form.folderUuid = "";
+      this.form.personUuid = "";
+      this.form.tableRemarks = "";
+      this.form.isSpike = 1;
+      this.form.isSentFile = 0;
+      (this.form.check_list.fileName = ""),
+        (this.form.check_list.pid = ""),
+        (this.form.check_list.id = ""),
+        (this.form.check_list.label = ""),
+        (this.personUuid = []);
       this.personName = [];
     },
     // 第一步选择的数据库
-    nodeClick_table (data, node, tree) {
+    nodeClick_table(data, node, tree) {
       //获取所有选中的节点 start
-      let res = this.$refs.tree1.getCheckedNodes()
-      var check_list = []
+      let res = this.$refs.tree1.getCheckedNodes();
+      var check_list = [];
       for (var i = 0; i < res.length; i++) {
         let obj = {
           label: res[i].label,
-          fileName: '',
+          fileName: "",
           pid: res[i].pid,
           id: res[i].id,
-        }
-        check_list.push(obj)
+        };
+        check_list.push(obj);
       }
-      this.form.check_list = check_list
-
+      this.form.check_list = check_list;
 
       if (this.form.check_list.length !== 0) {
         // 显示保存按钮
         this.is_next = true;
-
-        this.ischeck_data = data
+        this.ischeck_data = data;
       } else {
-        this.is_next = false
+        this.is_next = false;
       }
       //
     },
 
-
     // 注册资产 单挑数据 下一步
-    next () {
-      var list = []
+    next() {
+      var list = [];
       this.form.check_list.forEach((item) => {
         // let ids = {
         //   pid: item.pid,
         // }
-        list.push(item.pid)
-      })
+        list.push(item.pid);
+      });
       // 选择多个数据表
       if (this.form.check_list.length >= 2) {
-        this.post_getColsInfoByTableName();//获取列信息
-        this.dialogVisible_forms = true
+        this.post_getColsInfoByTableName(); //获取列信息
+        this.dialogVisible_forms = true;
       } else {
         // this.registTableFlag = false;//关闭上一步
-        this.dialogVisible_information = true//显示下一步 基本信息
-        this.post_getColsInfoByTableName();//获取列信息
-        this.getListTree_data()
-        this.form.tbName = this.Column_table_query.tbName.toString()//表名赋值
+        this.dialogVisible_information = true; //显示下一步 基本信息
+        this.post_getColsInfoByTableName(); //获取列信息
+        this.getListTree_data();
+        this.form.tbName = this.Column_table_query.tbName.toString(); //表名赋值
       }
-
     },
 
     // 获取列信息
-    post_getColsInfoByTableName () {
-
-      let arr = []
+    post_getColsInfoByTableName() {
+      let arr = [];
       for (var i = 0; i < this.form.check_list.length; i++) {
         // this.form.file_name = this.form.check_list[i].fileName//文件夹名称
-        this.Column_table_query.dbName = this.form.check_list[i].pid
+        this.Column_table_query.dbName = this.form.check_list[i].pid;
         // = //多个tbName
-        arr.push(this.form.check_list[i].label)
+        arr.push(this.form.check_list[i].label);
       }
-      this.Column_table_query.tbName = arr
+      this.Column_table_query.tbName = arr;
       const params = {
         dbName: this.Column_table_query.dbName,
         tbNames: this.Column_table_query.tbName,
         tableDataSource: this.query.dataSource,
-      }
+      };
       getColsInfoByTableName(params).then((resp) => {
         if (resp.data.length !== 1) {
-          this.Column_table = resp.data
+          this.Column_table = resp.data;
         } else {
-          this.Column_table = resp.data[0].colMetas
-          this.form.rowNum = resp.data[0].rowNum//表数据量
-          this.form.tableSize = resp.data[0].tableSize//表大小
-          this.form.partitions = resp.data[0].partitions//表分区
-          this.form.tableCode = resp.data[0].tableRelationQuery.tableCode//资产编码
-          this.form.tableRemarks = resp.data[0].tableRelationQuery.tableRemarks//表说明
-
+          this.Column_table = resp.data[0].colMetas;
+          this.form.rowNum = resp.data[0].rowNum; //表数据量
+          this.form.tableSize = resp.data[0].tableSize; //表大小
+          this.form.partitions = resp.data[0].partitions; //表分区
+          this.form.tableCode = resp.data[0].tableRelationQuery.tableCode; //资产编码
+          this.form.tableRemarks = resp.data[0].tableRelationQuery.tableRemarks; //表说明
         }
-      })
+      });
     },
 
     // 选择多个的情况  下一步的确认 批量多个注册
-    next_save () {
+    next_save() {
       // alert('选择多个的情况 下一步的确认')
       // this.dialogVisible_information = true//显示下一步 基本信息
       // this.getListTree_data()
@@ -1878,27 +1943,27 @@ export default {
         // this.form.file_name = this.form.check_list[i].fileName//文件夹名称
         // this.form.file_name = this.form.fileName[i]
         const tableForm = {
-          tbName: this.Column_table_query.tbName,//表名
+          tbName: this.Column_table_query.tbName, //表名
           tableMetaUuid: this.form.check_list[i].id,
           displayTbName: this.form.check_list[i].label,
           dbName: this.form.check_list[i].pid,
           tbName: this.form.check_list[i].label,
-          folderUuid: this.form.folderUuid,//目录id
-          personLiables: this.form.personLiables,// 资产责任人
+          folderUuid: this.form.folderUuid, //目录id
+          personLiables: this.form.personLiables, // 资产责任人
           // increment: this.form.increment,//是否增量
           isSpike: this.form.isSpike, //是否增量
           tableRelationQuery: {
             tableDataSource: this.query.dataSource, //数据源
-            businessSystemId: '0', //id主键
-            tableCode: '', //资产编码
-            tableLayeredId: '0', //资产分层主键
+            businessSystemId: "0", //id主键
+            tableCode: "", //资产编码
+            tableLayeredId: "0", //资产分层主键
             tableMetaUuid: this.form.check_list[i].id, //资产主键
-            tableRemarks: '', //资产备注
-            tableThemeId: '0', //资产主题主键
-            tableType: '1', //资产类型
+            tableRemarks: "", //资产备注
+            tableThemeId: "0", //资产主题主键
+            tableType: "1", //资产类型
             isSpike: this.form.isSpike, //是否增量
             isSentFile: 0, //是否推送文件
-            fileName: ''
+            fileName: "",
           },
         };
         this.chooseTables.push(tableForm);
@@ -1910,30 +1975,27 @@ export default {
             type: "success",
             message: "新增成功!",
           });
-          this.btnLoading = false;//保存loadnin
-          this.chooseTables = []//传输的数据
-          this.post_getBusinessSystemTree();//系统
-          this.post_getThemeTree();//主题
-          this.post_getLayeredTree();//分层
+          this.btnLoading = false; //保存loadnin
+          this.chooseTables = []; //传输的数据
+          this.post_getBusinessSystemTree(); //系统
+          this.post_getThemeTree(); //主题
+          this.post_getLayeredTree(); //分层
           // this.post_getDataTreeNode();//目录
-
         } else {
-          this.btnLoading = false
+          this.btnLoading = false;
           this.$message({
             type: "error",
             message: res.msg,
           });
         }
         this.dialogVisible_information = false;
-        this.registTableFlag = false;//关闭上一步
-      })
-      this.dialogVisible_forms = false;//关闭多选的表单弹窗显示
-
-
+        this.registTableFlag = false; //关闭上一步
+      });
+      this.dialogVisible_forms = false; //关闭多选的表单弹窗显示
     },
-    getListTree_data () {
+    getListTree_data() {
       getListTree().then((res) => {
-        this.next_data = res.data
+        this.next_data = res.data;
         // if (res.data.contentsList.children) {
         //   this.next_contentsList = res.data.contentsList.children
         // }
@@ -1949,12 +2011,11 @@ export default {
         // contentsList//目录
         // layeredList//分层
         // themeList//主题
-
-      })
+      });
     },
 
     // 点击 所属目录层级联动
-    handleChange (val) {
+    handleChange(val) {
       // const checkedNode = this.$refs["cascaderArr"].getCheckedNodes();
       //   //获取当前点击节点的label值
       //   //获取由label组成的数组
@@ -1962,56 +2023,56 @@ export default {
       // this.check_next_contentsList = checkedNode[0]
       // this.form.folderUuid = checkedNode[0].id
       let folderUuid = val.toString();
-      this.form.folderUuid = folderUuid
+      this.form.folderUuid = folderUuid;
     },
 
     // 格式化数据，递归将空的children置为undefined
-    formatCascaderData (data) {
+    formatCascaderData(data) {
       for (var i = 0; i < data.length; i++) {
         if (data[i].children.length < 1) {
           // children若为空数组，则将children设为undefined
           data[i].children = undefined;
         } else {
           // children若不为空数组，则继续 递归调用 本方法
-          this.formatCascaderData(data[i].children)
+          this.formatCascaderData(data[i].children);
         }
       }
-      return data
+      return data;
     },
     // 关闭弹窗
-    handleClose (form) {
-      this.$refs[form].resetFields() //清空添加的值
-      this.clear()
+    handleClose(form) {
+      this.$refs[form].resetFields(); //清空添加的值
+      this.clear();
     },
 
     // 数据日期:
-    changeRelationParam (value) {
-      this.form.dataDate = value
+    changeRelationParam(value) {
+      this.form.dataDate = value;
     },
 
     // 下一步的关闭
-    close_diag () {
-      this.dialogVisible_information = false
-      this.chooseTables = []//传输的数据
+    close_diag() {
+      this.dialogVisible_information = false;
+      this.chooseTables = []; //传输的数据
     },
 
     // 下一步的保存
-    save (form) {
-      this.btnLoading = true
-      this.isDisable = true
+    save(form) {
+      this.btnLoading = true;
+      this.isDisable = true;
       setTimeout(() => {
-        this.isDisable = false
-      }, 2000)
+        this.isDisable = false;
+      }, 2000);
       this.$refs[form].validate((valid) => {
         if (valid) {
           // var ckFolder = this.$refs.tree2.getCurrentNode();
           // ckTbs.filter((tb) => { return tb.type === "TABLE"; }).forEach((node) => {
-          let names = this.form.check_list.map(item => item["fileName"]);
+          let names = this.form.check_list.map((item) => item["fileName"]);
           let nameSet = new Set(names);
           if (nameSet.size == names.length) {
-            // 
+            //
             for (var i = 0; i < this.form.check_list.length; i++) {
-              this.form.file_name = this.form.check_list[i].fileName//文件夹名称
+              this.form.file_name = this.form.check_list[i].fileName; //文件夹名称
               // this.form.file_name = this.form.fileName[i]
               const tableForm = {
                 // tbName: this.Column_table_query.tbName,//表名
@@ -2020,8 +2081,8 @@ export default {
                 displayTbName: this.form.check_list[i].label,
                 dbName: this.form.check_list[i].pid,
                 tbName: this.form.check_list[i].label,
-                folderUuid: this.form.folderUuid,//目录id
-                personLiables: this.form.personLiables,// 资产责任人
+                folderUuid: this.form.folderUuid, //目录id
+                personLiables: this.form.personLiables, // 资产责任人
                 // increment: this.form.increment,//是否增量
                 isSpike: this.form.isSpike, //是否增量
                 tableRelationQuery: {
@@ -2050,43 +2111,42 @@ export default {
                   type: "success",
                   message: "新增成功!",
                 });
-                this.btnLoading = false;//保存loadnin
-                this.chooseTables = []//传输的数据
-                this.post_getBusinessSystemTree();//系统
-                this.post_getThemeTree();//主题
-                this.post_getLayeredTree();//分层
+                this.btnLoading = false; //保存loadnin
+                this.chooseTables = []; //传输的数据
+                this.post_getBusinessSystemTree(); //系统
+                this.post_getThemeTree(); //主题
+                this.post_getLayeredTree(); //分层
                 // this.post_getDataTreeNode();//目录
                 this.query_list();
-
               } else {
-                this.btnLoading = false
+                this.btnLoading = false;
                 this.$message({
                   type: "error",
                   message: res.msg,
                 });
               }
               this.dialogVisible_information = false;
-              this.registTableFlag = false;//关闭上一步
-            })
+              this.registTableFlag = false; //关闭上一步
+            });
           } else {
             this.$message({ type: "info", message: "文件名字不可以重复!" });
           }
         } else {
-          this.btnLoading = false;//保存loadnin
+          this.btnLoading = false; //保存loadnin
           this.$message({
-            message: '请填写信息',
-            type: 'info',
+            message: "请填写信息",
+            type: "info",
             showClose: true,
-          })
-          return false
+          });
+          return false;
         }
-      })
+      });
     },
 
     // 选择责任人
-    check_people () {
+    check_people() {
       this.resultShareDialogIsSee = true;
-      this.form.personLiables = '';
+      this.form.personLiables = "";
       this.clearcheckbox();
 
       // this.$nextTick(() => {
@@ -2098,38 +2158,38 @@ export default {
       // })
     },
     // 选择标签
-    check_tag () {
-      this.dialogVisible_tag = true
+    check_tag() {
+      this.dialogVisible_tag = true;
     },
     // 删除标签
-    handleClose (tag) {
+    handleClose(tag) {
       this.tagsarr.splice(this.tagsarr.indexOf(tag), 1);
     },
 
     // 清除多选框
-    clearcheckbox () {
+    clearcheckbox() {
       this.$nextTick(() => {
         if (this.$refs.multipleTable) {
-          this.$refs.multipleTable.clearSelection();//清除多选框
+          this.$refs.multipleTable.clearSelection(); //清除多选框
         }
         if (this.$refs.orgPeopleTree) {
           if (this.$refs.multipleTable) {
-            this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection();//清空选择的认权人
+            this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection(); //清空选择的认权人
             this.$refs.orgPeopleTree.findOrgTree_data();
             this.$refs.orgPeopleTree.list = [];
             this.$refs.orgPeopleTree.total = 0;
           }
         }
-      })
+      });
     },
     // 确定责任人
-    modelResultShare () {
+    modelResultShare() {
       // this.listLoading = true;
       var runTaskRelUuids = [];
       var personUuids = [];
       var personNames = [];
 
-      var arr = []
+      var arr = [];
       var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
       for (var i = 0; i < selectedNode.length; i++) {
         personUuids.push(selectedNode[i].personuuid);
@@ -2138,36 +2198,32 @@ export default {
         // this.form.personName_str = personNames.join(",");
         this.Recognition.personName_str = personNames.join(",");
 
-
-        this.form.personUuid = personUuids
-        this.form.personName = personNames
+        this.form.personUuid = personUuids;
+        this.form.personName = personNames;
         // this.form.personName = personNames.toString();
         //
         //
         //
         let obj = {
           personUuid: selectedNode[i].personuuid,
-          personName: selectedNode[i].cnname
-        }
-        arr.push(obj)
+          personName: selectedNode[i].cnname,
+        };
+        arr.push(obj);
       }
-      this.form.personLiables = arr
+      this.form.personLiables = arr;
 
       this.resultShareDialogIsSee = false;
     },
     // 修改
-    Edit_list (data) {
-
+    Edit_list(data) {
       this.is_Edit_list = 1;
       for (var i = 0; i < data.length; i++) {
         // this.tableRelationQueryUuid = data[i].tableRelationQuery.tableRelationQueryUuid
-        this.tableMetaUuid = data[i].tableMetaUuid
+        this.tableMetaUuid = data[i].tableMetaUuid;
       }
-      this.show_details = true
-      this.isDisable_input = false
-
+      this.show_details = true;
+      this.isDisable_input = false;
     },
-
 
     // 右侧表单
     // 多选
@@ -2176,27 +2232,24 @@ export default {
     // },
 
     /**
-  * 当多选框改变时触发
-  */
+     * 当多选框改变时触发
+     */
     // handleSelectionChange (val) {
     //   this.selectValue = val
     // },
 
     // 分页
-    handleCurrent (val) {
-      this.query.pageNo = val
-      this.query_list()
+    handleCurrent(val) {
+      this.query.pageNo = val;
+      this.query_list();
     },
     // 每页多少条
-    handleSize (val) {
-      this.query.pageNo = 1
-      this.query.pageSize = val
-      this.query_list()
+    handleSize(val) {
+      this.query.pageNo = 1;
+      this.query.pageSize = val;
+      this.query_list();
     },
   },
-
-
-
 };
 </script>
 <style scoped>
@@ -2326,7 +2379,6 @@ export default {
   margin: 0 10px;
 }
 </style>
-
 
 <style lang="scss" scoped>
 .trees {
