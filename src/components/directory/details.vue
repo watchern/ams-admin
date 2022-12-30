@@ -418,6 +418,16 @@
           <el-form-item label="从表名称：" prop="chnName2">
             <el-input v-model="table_visible_form.chnName2"></el-input>
           </el-form-item>
+          <el-form-item prop="colMetaUuid" label="字段名称">
+            <el-row>
+              <el-col :span="22">
+                <el-input v-model="table_visible_form.chnName2"></el-input>
+              </el-col>
+              <el-col :span="2">
+                <el-button @click="showDataTree(1)">选择</el-button>
+              </el-col>
+            </el-row>
+          </el-form-item>
 
           <el-form-item label="从表字段：" prop="chnName2">
             <el-input v-model="table_visible_form.chnName2"></el-input>
@@ -444,6 +454,25 @@
           >确 定</el-button
         >
       </span>
+      <el-dialog
+              v-if="dataTableTree"
+              class="abow_dialog"
+              :destroy-on-close="true"
+              :append-to-body="true"
+              :visible.sync="dataTableTree"
+              title="请选择数据表"
+              width="600px"
+      >
+        <data-tree
+                ref="dataTableTree"
+                :data-user-id="dataUserId"
+                :scene-code="sceneCode"
+        />
+        <div slot="footer">
+          <el-button @click="dataTableTree = false">取消</el-button>
+          <el-button type="primary" @click="getDataTable">确定</el-button>
+        </div>
+      </el-dialog>
     </el-dialog>
 
     <!-- 选择责任人 -->
@@ -563,7 +592,9 @@ export default {
         isSpike: 1, //是否增量
       },
       tableData: [],
-
+      dataTableTree: false,
+      dataUserId: this.$store.getters.personcode,
+      sceneCode: "auditor",
       Column_tableData_index: [], //索引信息
       TagsAll: ["aa"],
       inputLength: "",
@@ -703,6 +734,35 @@ export default {
     // 更新视图
     change(e) {
       this.$forceUpdate();
+    },
+    showDataTree(val) {
+      this.selectType = val;
+      this.dataTableTree = true;
+    },
+    getDataTable() {
+      const dataTree = this.$refs.dataTableTree.getTree();
+      const currentNode = dataTree.getCurrentNode();
+      if (currentNode.type !== "col") {
+        this.$message({ type: "info", message: "请选择数据表列!" });
+        return;
+      }
+      this.loadTable(currentNode.id);
+      if (this.selectType === 1) {
+        this.temp.colName = currentNode.label;
+        const str = currentNode.id;
+        this.temp.colMetaUuid = str;
+        const arr = str.split(">");
+        this.temp.tbName = arr[1];
+        this.temp.tableMetaUuid = arr[0] + ">" + arr[1];
+      } else {
+        this.temp.relationCol = currentNode.label;
+        this.temp.relColMetaUuid = currentNode.id;
+        const str = currentNode.id;
+        const arr = str.split(">");
+        this.temp.relationTableName = arr[1];
+        this.temp.relTableMetaUuid = arr[0] + ">" + arr[1];
+      }
+      this.dataTableTree = false;
     },
     // 资产主题
     tableThemeName_change(val) {
