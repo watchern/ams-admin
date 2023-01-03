@@ -54,8 +54,8 @@
         <el-button type="primary" @click="handleEvent">提交</el-button>
         <el-button type="primary"
                    @click="exportAllData">导出</el-button>
-        <el-button type="primary"
-                   @click="backToUpPage">关闭</el-button>
+<!--        <el-button type="primary"-->
+<!--                   @click="backToUpPage">关闭</el-button>-->
       </el-row>
     </div>
     <div class="padding10">
@@ -63,6 +63,7 @@
       <el-table :data="personalSpaceDataList"
                 border
                 style="width: 100%"
+                height="calc(100vh - 290px)"
                 @selection-change="handleSelectionChange">
         <el-table-column type="selection"
                          width="55">
@@ -100,7 +101,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-row style="left: 250px">
+      <el-row>
         <el-pagination @size-change="handleSizeChange"
                        @current-change="handleCurrentChange"
                        :current-page="query.pageNo"
@@ -124,22 +125,24 @@
                     placeholder="申请名称"></el-input>
         </el-form-item>
         <el-form-item label="扩容容量">
-          <el-input v-model="personalSpace.personalSpaceCapacity"
-                    placeholder="扩容容量"
-                    type="number"
-                    :max="1024"
-                    :min="0"
-                    @input="inputChange"
-                    style="width: 540px"></el-input>
-          <el-select v-model="personalSpaceCapacityNeed"
-                     placeholder="容量单位">
-            <el-option label="GB"
-                       value="GB"></el-option>
-            <el-option label="MB"
-                       value="MB"></el-option>
-            <el-option label="KB"
-                       value="KB"></el-option>
-          </el-select>
+          <div style="display: flex">
+            <el-input v-model="personalSpace.personalSpaceCapacity"
+                      placeholder="扩容容量"
+                      type="number"
+                      :max="1024"
+                      :min="0"
+                      @input="inputChange"
+                      style="width: 540px"></el-input>
+            <el-select v-model="personalSpaceCapacityNeed"
+                       placeholder="容量单位" style="margin-left: 10px">
+              <el-option label="GB"
+                         value="GB"></el-option>
+              <el-option label="MB"
+                         value="MB"></el-option>
+              <el-option label="KB"
+                         value="KB"></el-option>
+            </el-select>
+          </div>
         </el-form-item>
 <!--        <el-form-item label="审批人">-->
 <!--          <el-input v-model="personalSpace.personalSpaceApproving"-->
@@ -451,28 +454,34 @@
       },
       onDelete(){
         var result = ''
-        this.personalSpaceSelectionList.forEach((value,index)=>{
-          if(value.personalSpaceType != '草稿'){
-            this.$notify.warning("只有草稿状态才可以删除")
-            result = 'break'
-          }
-        })
-        if(result == 'break'){
-          return
-        }
+        // this.personalSpaceSelectionList.forEach((value,index)=>{
+        //   if(value.personalSpaceType != '草稿'){
+        //     this.$notify.warning("只有草稿状态才可以删除")
+        //     result = 'break'
+        //   }
+        // })
+        // if(result == 'break'){
+        //   return
+        // }
         const params = this.personalSpaceUuidList
-        if(params.length == 0){
-          this.$message({
-            type: 'warning',
-            message: '未选择删除对象'
-          })
-        }else{
-          deletePersonalSpace(params)
-            .then((res)=>{
+        // if(params.length == 0){
+        //   this.$message({
+        //     type: 'warning',
+        //     message: '未选择删除对象'
+        //   })
+        // }else{
+        //   this.$confirm("是否删除该条数据?", "提示", {
+        //     confirmButtonText: "确定",
+        //     cancelButtonText: "取消",
+        //     type: "warning",
+        //     center: true,
+        //   }).then(() => {
+            deletePersonalSpace(params).then((res)=>{
               this.$notify.success("删除成功")
               this.initPersonalSpaceData()
             })
-        }
+          // })
+        // }
       },
       handleSizeChange(val){
         this.query.pageSize = val
@@ -547,9 +556,12 @@
         updatePersonalSpace(param)
         .then((res)=>{
           this.$notify.success("修改成功")
-          setTimeout(() => {
-              location.reload()
-          }, 20);
+          // setTimeout(() => {
+          //     location.reload()
+          // }, 20);
+          this.openUpdateDialog = false
+          this.initPersonalSpaceData()
+
         })
         .catch((err)=>{
           this.$notify.error("修改失败")
@@ -575,7 +587,8 @@
           //将状态修改为办理中
           batchUpdateForHandle(this.personalSpaceSelectionList)
           .then((res)=>{
-            location.reload()
+            // location.reload()
+            this.initPersonalSpaceData()
           })
         }, 20);
       },

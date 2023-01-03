@@ -8,22 +8,24 @@
                               placeholder="申请名称"></el-input>
                 </el-form-item>
                 <el-form-item label="扩容容量">
-                    <el-input v-model="personalSpace.personalSpaceCapacity"
-                              placeholder="扩容容量"
-                              type="number"
-                              :max="1024"
-                              :min="0"
-                              @input="inputChange"
-                              style="width: 540px"></el-input>
-                    <el-select v-model="personalSpaceCapacityNeed"
-                               placeholder="容量单位">
-                        <el-option label="GB"
-                                   value="GB"></el-option>
-                        <el-option label="MB"
-                                   value="MB"></el-option>
-                        <el-option label="KB"
-                                   value="KB"></el-option>
-                    </el-select>
+                    <div style="display: flex">
+                        <el-input v-model="personalSpace.personalSpaceCapacity"
+                                  placeholder="扩容容量"
+                                  type="number"
+                                  :max="1024"
+                                  :min="0"
+                                  @input="inputChange"
+                                  style="width: 540px"></el-input>
+                        <el-select v-model="personalSpaceCapacityNeed"
+                                   placeholder="容量单位" style="margin-left: 10px">
+                            <el-option label="GB"
+                                       value="GB"></el-option>
+                            <el-option label="MB"
+                                       value="MB"></el-option>
+                            <el-option label="KB"
+                                       value="KB"></el-option>
+                        </el-select>
+                    </div>
                 </el-form-item>
 <!--                <el-form-item label="审批人">-->
 <!--                    <el-input v-model="personalSpace.personalSpaceApproving"-->
