@@ -80,7 +80,7 @@
 <script>
 var timer;
 
-import { config1, config2, config3, config4, config5, config6, config7, config8 } from "../data_res_map/config.js"
+import { config1, config2, config3, config4, config5, config6, config7, config8 } from "../dataResMap/config.js"
 
 export default {
 
