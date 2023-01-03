@@ -4,7 +4,6 @@
                  label-width="130px"
                  :model="form"
                  :inline="false">
-
             <el-row>
                 <el-col :span="12">
                     <el-form-item label="申请名称 ">
@@ -48,7 +47,7 @@
                         <el-input style="width: 100%;"
                                   type="text"
                                   v-model="form.loadType"
-                        :rows="4" disabled></el-input>
+                                  :rows="4" disabled></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -78,10 +77,10 @@
                 </el-col>
             </el-row>
             <el-form-item label="文件名" v-if="form.operationType === '0'">
-                    <el-input style="width: 40%;"
-                              type="text"
-                              v-model="form.fileName"
-                              :rows="8" disabled></el-input>
+                <el-input style="width: 100%;"
+                          type="text"
+                          v-model="form.fileName"
+                          :rows="8" disabled></el-input>
             </el-form-item>
             <el-form-item label="文件路径 " v-if="form.operationType === '0'">
                 <el-input style="width: 100%;"
@@ -90,7 +89,7 @@
                           disabled/>
             </el-form-item>
             <el-form-item v-if="form.operationType === '0'" style="margin-left: 40vh">
-                <el-button @click="showFile(form.filePath)">点击查看文件</el-button>
+                <el-button @click="showFile(form)">点击查看文件内容</el-button>
             </el-form-item>
 
 
@@ -131,20 +130,35 @@
                 </el-col>
             </el-row>
         </el-form>
+        <el-dialog v-if="dialogFileVisible"
+                   :close-on-click-modal="false"
+                   :visible.sync="dialogFileVisible"
+                   append-to-body
+                   title="文件内容"
+                   width="60%"
+                   heigth="60%"
+        >
+            <el-input v-model="this.fileString" :rows="20" type="textarea" disabled="disabled"></el-input>
+            <el-button @click="dialogFileVisible = false">关闭</el-button>
+        </el-dialog>
     </div>
+
 </template>
 
 <script>
     import {
         getById,//详情
-        batchUpdateForFinishHandle
+        batchUpdateForFinishHandle,
+        showFile, //文件查看
     } from "@/api/data/load_apply.js";
+
     export default {
-        props:{
-            detailsUuid:'',
+        props: {
+            detailsUuid: '',
         },
-        data(){
-            return{
+        data() {
+            return {
+                fileString: '',
                 form: {
                     applyName: '',// 申请名称
                     applyPerson: '',// 申请人
@@ -177,31 +191,41 @@
                         label: '数据下线'
                     }
                 ],
+                dialogFileVisible: false,
             }
         },
-        mounted: function() {
-            if (this.detailsUuid!=undefined){
+        mounted: function () {
+            if (this.detailsUuid != undefined) {
                 this.queryByUuid(this.detailsUuid)
             }
             this.$emit("fromSon")
         },
-        methods:{
-            showFile(val){
+        methods: {
+            showFile(val) {
+                console.log("form:", val);
+                showFile(val)
+                    .then((res) => {
+                        this.fileString = res.data
+                        console.log("res.data:", res.data)
+                        console.log("this.fileString:", this.fileString)
+                    })
+                this.dialogFileVisible = true;
             },
-            queryByUuid(value){
+            queryByUuid(value) {
                 getById(value)
-                    .then((res)=>{
+                    .then((res) => {
                         this.form = res.data
+                        console.log("oldForm:", this.form)
                     })
             },
-            updateApplyStatus(value){
+            updateApplyStatus(value) {
                 var loadDownApply = {
                     applyUuid: value
                 }
                 var relParam = []
                 relParam.push(loadDownApply)
                 batchUpdateForFinishHandle(relParam)
-            }
+            },
         }
     }
 </script>
@@ -211,15 +235,18 @@
         margin-top: 25px !important;
         display: flex;
     }
+
     .admin_right_main >>> .el-form-item--medium .el-form-item__label {
         text-align: right;
         float: left !important;
     }
+
     .admin_right_main >>> .el-form-item__content {
         flex: 1;
         margin-left: 0 !important;
         float: left;
     }
+
     .admin_right_main >>> .el-textarea .el-textarea__inner {
         resize: none;
     }

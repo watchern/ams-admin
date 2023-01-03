@@ -295,12 +295,19 @@
             </el-form-item>
           </div>
 
-          <!-- 资产编码 && 资产类型：-->
+          <!-- 资源编码 && 资产类型：-->
           <div class="son">
             <el-form-item label="资产编码："
                           prop="tableCode">
               <el-input type="text"
                         placeholder="请输入资产编码"
+                        v-model="form.tableCode"
+                        :rows="4">
+            <el-form-item label="资源编码："
+                          prop="tableCode">
+              <el-input type="text"
+                        disabled
+                        placeholder="请输入资源编码"
                         v-model="form.tableCode"
                         :rows="4">
               </el-input>
@@ -316,6 +323,8 @@
                            :label="item.label"
                            :value="item.value" />
               </el-select>
+            </el-form-item>
+              </el-input>
             </el-form-item>
           </div>
 
@@ -823,7 +832,7 @@ export default {
 
       rules: {
         tableCode: [
-          { required: true, message: "请输入资产编码", trigger: "blur" },
+          { required: true, message: '请输入资源编码', trigger: 'blur' },
         ],
         tableType: [
           { required: true, message: "请选择资产类型", trigger: "change" },
@@ -864,26 +873,26 @@ export default {
       btnLoading: false, //保存loading
       // 新增的数据
       form: {
-        tbName: "", //表名
-        chnName: "", //表中文名（后台给
-        tableRemarks: "", //表说明
-        tableCode: "", // 资产编码
-        tableType: "", // 资产类型
-        tableThemeName: "", //所属主题
-        tableThemeId: "", // 资产主题 id
-        tableLayeredName: "", //资产分层
-        tableLayeredId: "", //资产分层 id
-        businessSystemName: "", //所属系统
-        businessSystemId: "", //所属系统 id
-        fileName: "", //文件名
-        dataDate: "", //数据日期
-        tableSize: "", //表大小:
-        rowNum: "", //表数据量
-        personLiables: [], //负责人
-        personName_str: "", //责任人
-        personUuid: "", //资产责任人
-        partitions: "", //表分区
-        isSpike: 1, //是否增量
+        tbName: '', //表名
+        chnName: '', //表中文名（后台给
+        tableRemarks: '',//表说明
+        tableCode: '',// 资源编码
+        tableType: '',// 资产类型
+        tableThemeName: '',//所属主题
+        tableThemeId: '',// 资产主题 id
+        tableLayeredName: '',//资产分层
+        tableLayeredId: '',//资产分层 id
+        businessSystemName: '',//所属系统
+        businessSystemId: '',//所属系统 id
+        fileName: '',//文件名
+        dataDate: '',//数据日期
+        tableSize: '',//表大小:
+        rowNum: '',//表数据量
+        personLiables: [],//负责人
+        personName_str: '',//责任人
+        personUuid: '',//资产责任人
+        partitions: '',//表分区
+        isSpike: 1,//是否增量
 
         // folderUuid: '',//所属目录
         // increment: '',//是否增量
@@ -1864,12 +1873,13 @@ export default {
         if (resp.data.length !== 1) {
           this.Column_table = resp.data;
         } else {
-          this.Column_table = resp.data[0].colMetas;
-          this.form.rowNum = resp.data[0].rowNum; //表数据量
-          this.form.tableSize = resp.data[0].tableSize; //表大小
-          this.form.partitions = resp.data[0].partitions; //表分区
-          this.form.tableCode = resp.data[0].tableRelationQuery.tableCode; //资产编码
-          this.form.tableRemarks = resp.data[0].tableRelationQuery.tableRemarks; //表说明
+          this.Column_table = resp.data[0].colMetas
+          this.form.rowNum = resp.data[0].rowNum//表数据量
+          this.form.tableSize = resp.data[0].tableSize//表大小
+          this.form.partitions = resp.data[0].partitions//表分区
+          this.form.tableCode = resp.data[0].tableRelationQuery.tableCode//资源编码
+          this.form.tableRemarks = resp.data[0].tableRelationQuery.tableRemarks//表说明
+
         }
       });
     },
@@ -1895,9 +1905,9 @@ export default {
           isSpike: this.form.isSpike, //是否增量
           tableRelationQuery: {
             tableDataSource: this.query.dataSource, //数据源
-            businessSystemId: "0", //id主键
-            tableCode: "", //资产编码
-            tableLayeredId: "0", //资产分层主键
+            businessSystemId: '0', //id主键
+            tableCode: '', //资源编码
+            tableLayeredId: '0', //资产分层主键
             tableMetaUuid: this.form.check_list[i].id, //资产主键
             tableRemarks: "", //资产备注
             tableThemeId: "0", //资产主题主键
@@ -2029,7 +2039,7 @@ export default {
                 tableRelationQuery: {
                   tableDataSource: this.query.dataSource, //数据源
                   businessSystemId: this.form.businessSystemId, //id主键
-                  tableCode: this.form.tableCode, //资产编码
+                  tableCode: this.form.tableCode, //资源编码
                   tableLayeredId: this.form.tableLayeredId, //资产分层主键
                   tableMetaUuid: this.form.check_list[i].id, //资产主键
 
@@ -2162,8 +2172,9 @@ export default {
         // this.tableRelationQueryUuid = data[i].tableRelationQuery.tableRelationQueryUuid
         this.tableMetaUuid = data[i].tableMetaUuid;
       }
-      this.show_details = true;
-      this.isDisable_input = false;
+      this.show_details = true
+      this.isDisable_input = true
+
     },
 
     // 右侧表单
