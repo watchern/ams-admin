@@ -31,12 +31,12 @@
         >导出结果
         </el-button>
 
-<!--      <el-button
+     <el-button
               class="oper-btn btn-width-md overTabconItem"
               type="primary"
               @click="saveResultTable"
       >保存结果
-      </el-button>-->
+      </el-button>
     </div>
     <!--    页签上面的box2- 为sql编辑器执行结果 且 不是图表 且 报错时显示-->
     <div style="margin-left:10px" v-if="useType == 'sqlEditor' && !chartSwitching && !isSee" class="overTabconBox">
@@ -71,15 +71,25 @@
       <span style="color:red !important" v-show="modelResultExportMsgShow">{{modelResultExportMsg}}</span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="modelResultExportNumDialog = false">关 闭</el-button>
-        <downloadExcel
-                class="overTabconItem"
-                :data="tableData1"
-                :fields="json_fields1"
-                :name="excelName1"
-                style="display: inline-block"
-        >
         <el-button @click="modelResultExport1" :disabled="modelResultExportMsgShow">确 定</el-button>
-      </downloadExcel>
+        </span>
+    </el-dialog>
+    <el-dialog
+            title="保存结果"
+            v-if="saveTableNameDialog"
+            :visible.sync="saveTableNameDialog"
+            width="40%"
+            append-to-body
+
+    >
+      <el-form v-model="saveTableForm" v-loading="saveTableNameDialogLoading">
+        <el-form-item label="保存结果表名" prop="saveTableName">
+          <el-input v-model="saveTableForm.saveTableName"/>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="saveTableNameDialogClose" :disabled="saveTableNameDialogLoading">关 闭</el-button>
+        <el-button @click="saveTableNameDialogEnter" :disabled="saveTableNameDialogLoading">确 定</el-button>
         </span>
     </el-dialog>
     <!-- sql编译器页面显示图标 -->
@@ -1104,6 +1114,7 @@ import { string } from "jszip/lib/support";
 import {
   startExecuteSql,
   getExecuteTask,
+  saveTableFromSqlEditorResult,
 } from "@/api/analysis/sqleditor/sqleditor";
 import { getTransMap } from "@/api/data/transCode.js";
 import mtEditor from "ams-datamax";
@@ -1175,35 +1186,6 @@ export default {
     nowChartJson() {
       this.chartPreview = !this.chartPreview;
     },
-    modelResultExportNum(){
-      if(this.modelResultExportNum == null || this.modelResultExportNum == ""){
-        this.modelResultExportMsgShow = true
-        this.modelResultExportMsg = "请输入导出数据行数"
-        return;
-      }else if(parseInt(this.modelResultExportNum) && parseInt(this.modelResultExportNum) > parseInt(this.total)){
-        this.modelResultExportMsgShow = true
-        this.modelResultExportMsg = "输入行数大于总数： "+this.total
-        return;
-      }else{
-        this.modelResultExportMsgShow = false
-      }
-      if(parseInt(this.modelResultExportNum)) {
-        // 输入导出数据量改变后就初始化需要导出的数据
-        this.modelResultExportNum = parseInt(this.modelResultExportNum);
-        // 根据导出行数剪切导出数据
-        this.tableData1 = this.nextValueAll.result.slice(0, this.modelResultExportNum);
-        this.json_fields1 = {};
-        for (var i = 0; i < this.nextValueAll.columnNames.length; i++) {
-          this.json_fields1[this.nextValueAll.columnNames[i]] = {
-            field: this.nextValueAll.columnNames[i],
-            callback: (value) => {
-              return "&nbsp;" + value;
-            },
-          }
-        }
-        this.excelName1 = "模型结果导出表";
-      }
-    },
   },
   /**
    * 模型运行结果使用变量：nowtable：表示模型结果表对象   modelUuid：根据modelUUid进行表格渲染，只有主表用渲染  useType=modelRunResult 表示是模型运行结果所用
@@ -1226,10 +1208,17 @@ export default {
     "isModelPreview",
     "modelType",
     "modelData",
-    "executeSqlViewData"
+    "executeSqlViewData",
+    "dataSource"
   ],
   data() {
     return {
+      // 保存执行结果为数据表时输入表名的弹窗遮罩
+      saveTableNameDialogLoading: false,
+      // 保存执行结果为数据表时输入的表单数据
+      saveTableForm:{saveTableName:"",},
+      // 保存执行结果为数据表时输入表名的弹窗
+      saveTableNameDialog: false,
       // 显示报错信息（此变量只针对在清除报错信息时的报错信息显示或隐藏，默认显示。具体显示报错信息还是显示执行结果取决于isSee）
       showErrorMessage: true,
       //显示删除报错信息按钮
@@ -1682,6 +1671,44 @@ export default {
     window.openModelDetailNew = _this.openModelDetailNew;
   },
   methods: {
+    saveTableNameDialogClose(){
+      this.saveTableNameDialog = false;
+      this.saveTableName = "";
+    },
+    // 保存执行结果为数据表显示在左侧树中
+    saveTableNameDialogEnter(){
+      this.saveTableNameDialogLoading = true;
+      const map = {
+        sql:  this.nextValueAll.executeSQL.sql,
+        saveTableName:this.saveTableForm.saveTableName,
+        dataSource:this.dataSource
+      }
+      saveTableFromSqlEditorResult(map).then(res =>{
+        this.saveTableNameDialogLoading = false;
+        if(res.code == 0){
+          this.$notify({
+            title: "提示",
+            message: "保存为数据表\""+this.saveTableForm.saveTableName+"\"成功！",
+            type: "success",
+            duration: 2000,
+            position: "bottom-right",
+          });
+          this.saveTableNameDialog = false;
+          this.saveTableName = "";
+        }else{
+          this.$notify({
+            title: "提示",
+            message: res.msg,
+            type: "error",
+            duration: 2000,
+            position: "bottom-right",
+          });
+        }
+      })
+    },
+    saveResultTable(){
+      this.saveTableNameDialog = true;
+    },
     /**
      * 清除报错信息
      */
@@ -1701,6 +1728,22 @@ export default {
      * sql编辑器模型结果点击导出后触发的方法
      */
     modelResultExport1() {
+      if(this.modelResultExportNum == null || this.modelResultExportNum == ""){
+        this.modelResultExportMsgShow = true
+        this.modelResultExportMsg = "请输入导出数据行数"
+        return;
+      }else if(parseInt(this.modelResultExportNum) && parseInt(this.modelResultExportNum) > parseInt(this.total)){
+        this.modelResultExportMsgShow = true
+        this.modelResultExportMsg = "输入行数大于总数： "+this.total
+        return;
+      }else{
+        this.modelResultExportMsgShow = false
+      }
+      if(parseInt(this.modelResultExportNum)) {
+        // 输入导出数据量改变后就初始化需要导出的数据
+        this.modelResultExportNum = parseInt(this.modelResultExportNum);
+        this.createWsSheetForSqlResult();
+      }
       this.modelResultExportMsgShow = false
       this.modelResultExportNumDialog = false
     },
@@ -1708,10 +1751,6 @@ export default {
     executeSqlView(){
       this.executeSqlViewDialog = true;
     },
-    // 保存执行结果为数据表显示在左侧树中
-    // saveResultTable(){
-    //
-    // },
     closeChartShow(){
       this.chartShowIsSee = false;
       $('#bottomPart').show();
@@ -3712,6 +3751,31 @@ export default {
       const dataURL = can.toDataURL('image/png');
       return dataURL;
     },
+    setWatermarkForSqlResult (str,str1,str2) {
+      let id = '1.23452384164.123412416';
+      if (document.getElementById(id) !== null) {
+        document.body.removeChild(document.getElementById(id));
+      }
+      // 创建一个画布
+      let can = document.createElement('canvas');
+      // 设置画布的长宽
+      can.width = 320;
+      can.height = 220;
+      let cans = can.getContext('2d');
+      // 旋转角度
+      cans.rotate(-25 * Math.PI / 180);
+      // 设置字体大小
+      cans.font = "600 20px Microsoft JhengHei";
+      // 设置填充绘画的颜色、渐变或者模式
+      cans.fillStyle = "rgba(130, 142, 162, 0.2)";
+      // 设置文本内容的当前对齐方式
+      cans.textAlign = 'center';
+      // 设置在绘制文本时使用的当前文本基线
+      cans.textBaseline = 'Middle';
+      cans.fillText((str+'   '+str1) , 100, 200);
+      const dataURL = can.toDataURL('image/png');
+      return dataURL;
+    },
     createWsSheet () {
       // 创建工作簿
       const workbook = new ExcelJS.Workbook();
@@ -3752,6 +3816,53 @@ export default {
       });
       workbook.xlsx.writeBuffer().then((res) => {
         saveAs(new Blob([res], { type: 'application/octet-stream' }), `${this.modelData.title}_模型结果.xlsx`)
+      });
+    },
+    createWsSheetForSqlResult () {
+      // 创建工作簿
+      const workbook = new ExcelJS.Workbook();
+      // 获取水印
+      const base64 = this.setWatermarkForSqlResult(this.getUserName, new Date().toLocaleString());
+      const imageId1 = workbook.addImage({ base64, extension: 'png' });
+      // 创建带有红色标签颜色的工作表
+      const worksheet = workbook.addWorksheet('Sheet1', { properties: { tabColor: { argb: '1fbb7d' } } });
+      const columns = []
+      const modelResultExportNum = this.modelResultExportNum
+      console.log( this.nextValueAll);
+      this.nextValueAll.columnNames.map(function(i,index,self){
+        columns.push({
+          key: i,
+          header: i,
+          name: i
+        })
+      })
+      const rows = [];
+      this.nextValueAll.result.map(function(i,index,self){
+        if(index < modelResultExportNum){
+        let rowItem = [];
+        columns.map(j => {
+          if (!i[j.key]) {
+            this.$set(i, j.key, '')
+          }
+          // 将数值类型转成字符串以防导出后数字默认为科学计数法
+          i[j.key] = "\t" + i[j.key].toString()
+          rowItem.push(i[j.key])
+        })
+        rows.push(rowItem)
+
+        }
+      })
+      // 添加背景图片
+      worksheet.addBackgroundImage(imageId1);
+      // 添加数据
+      worksheet.addTable({
+        name: 'SQL执行结果导出表.xlsx',
+        ref: 'A1',// 表格左上角位置
+        columns,
+        rows
+      });
+      workbook.xlsx.writeBuffer().then((res) => {
+        saveAs(new Blob([res], { type: 'application/octet-stream' }), `SQL执行结果导出表.xlsx`)
       });
     },
     /**

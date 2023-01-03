@@ -2,30 +2,41 @@
   <div class="example">
     <div id="my-diagram-div"></div>
     <div></div>
-
   </div>
 </template>
 
 <script>
 import go from "@/utils/go.js";
+import {
+  selectTableRelationInfo
+} from "@/api/lhg/process_tree.js";
 
 export default {
+  props: {
+    tableMetaUuid: {
+      type: String,
+      default () {
+        return ''
+      }
+    },
+  },
   components: {},
   data () {
     return {
-
+      nodeDataArray: [],
+      linkDataArray: [],
     };
   },
   computed: {},
   watch: {},
   mounted () {
-    this.test();
+    this.init();//初始化表关系
   },
   created () {
-
   },
   methods: {
-    test () {
+
+    init () {
       let $ = go.GraphObject.make; // for conciseness in defining templates
       let myDiagram = $(
         go.Diagram,
@@ -34,10 +45,10 @@ export default {
           // allowDelete: false,
           // allowCopy: false,
           // isReadOnly: true, // 只读，无法编辑操作
-          allowMove: true, // 允许拖动画板
+          // allowMove: true, // 允许拖动画板
           allowDragOut: true, // 允许拖拽节点
-          allowDelete: true, // 允许删除节点
-          allowCopy: true, // 允许复制节点
+          // allowDelete: true, // 允许删除节点
+          // allowCopy: true, // 允许复制节点
           allowClipboard: true, // 允许粘贴节点
           allowLink: true,//是否可以绘制新链接。
           allowRelink: true,//是否可以重新连接现有链接
@@ -52,20 +63,10 @@ export default {
           // "clickCreatingTool.archetypeNodeData": { text: "111", color: "white" },//允许在后台双击以创建新node258节点
         }
       );
-      var colors = {
-        'red': '#be4b15',
-        'green': '#52ce60',
-        'blue': '#6ea5f8',
-        'lightred': '#fd8852',
-        'lightblue': '#afd4fe',
-        'lightgreen': '#b9e986',
-        'pink': '#faadc1',
-        'purple': '#d689ff',
-        'orange': '#fdb400',
-      }
-      // the template for each attribute in a node's array of item data
       var itemTempl =
         $(go.Panel, "Horizontal",
+          // 整个控件是蓝色背景
+          // { background: "#44CCFF" },
           $(go.Shape,
             { desiredSize: new go.Size(15, 15), strokeJoin: "round", strokeWidth: 3, stroke: null, margin: 2 },
             new go.Binding("figure", "figure"),
@@ -79,7 +80,7 @@ export default {
             new go.Binding("text", "name"))
         );
 
-      // define the Node template, representing an entity
+      // 定义模板
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",  // the whole node panel
           {
@@ -92,6 +93,7 @@ export default {
             shadowOffset: new go.Point(3, 3),
             shadowColor: "#C5C1AA"
           },
+          // 动态绑定位置信息
           new go.Binding("location", "location").makeTwoWay(),
           // whenever the PanelExpanderButton changes the visible property of the "LIST" panel,
           // clear out any desiredSize set by the ResizingTool.
@@ -106,8 +108,8 @@ export default {
             $(go.TextBlock,
               {
                 row: 0, alignment: go.Spot.Center,
-                margin: new go.Margin(0, 24, 0, 2),  // leave room for Button
-                font: "bold 16px sans-serif"
+                // margin: new go.Margin(0, 24, 0, 20),  // leave room for Button
+                font: "bold 16px sans-serif",
               },
               new go.Binding("text", "key")),
             // the collapse/expand button
@@ -128,7 +130,7 @@ export default {
           )  // end Table Panel
         );  // end Node
 
-      // define the Link template, representing a relationship
+      // 定义连接线
       myDiagram.linkTemplate =
         $(go.Link,  // the whole link panel
           {
@@ -139,13 +141,23 @@ export default {
             corner: 5,
             curve: go.Link.JumpOver
           },
-          $(go.Shape,  // the link shape
-            { stroke: "#303B45", strokeWidth: 2.5 }),
+
+          // 箭头
+          $(go.Shape, { strokeWidth: 2 },
+            new go.Binding("stroke", "color")  // 连接线样式
+          ),
+          $(go.Shape, { toArrow: "Standard", stroke: null },   // 箭头样式
+            new go.Binding("fill", "color")
+          ),
+          // 无箭头
+          // $(go.Shape,  // the link shape
+          //   { stroke: "#303B45", strokeWidth: 2.5 },
+          // ),
           $(go.TextBlock,  // the "from" label
             {
-              textAlign: "center",
+              textAlign: "right",
               font: "bold 14px sans-serif",
-              stroke: "#1967B3",
+              stroke: "#999999",
               segmentIndex: 0,
               segmentOffset: new go.Point(NaN, NaN),
               segmentOrientation: go.Link.OrientUpright
@@ -155,103 +167,120 @@ export default {
             {
               textAlign: "center",
               font: "bold 14px sans-serif",
-              stroke: "#1967B3",
+              stroke: "#000",
               segmentIndex: -1,
               segmentOffset: new go.Point(NaN, NaN),
               segmentOrientation: go.Link.OrientUpright
             },
             new go.Binding("text", "toText"))
+
+
         );
 
-      // create the model for the E-R diagram
-      var nodeDataArray = [
-        {
-          key: "对公信贷担保信息表",
-          items: [{ name: "XDJJH", iskey: true, figure: "Hexagon", color: colors.blue },
-          { name: "DKFHZH", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "KHTYBH", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "KHMC", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "XDHTH", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "YXJGDM", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "JRXKZH", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "NBJGH", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "MXKMBH", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "YXJGMC", iskey: false, figure: "Hexagon", color: colors.blue }]
+      var colors = {
+        'red': '#be4b15',
+        'green': '#52ce60',
+        'blue': '#6ea5f8',
+        'lightred': '#fd8852',
+        'lightblue': '#afd4fe',
+        'lightgreen': '#b9e986',
+        'pink': '#faadc1',
+        'purple': '#d689ff',
+        'orange': '#fdb400',
+      }
+      let params = {
+        tableMetaUuid: this.tableMetaUuid
+      }
+      selectTableRelationInfo(params).then(resp => {
+        // 第一步
+        resp.data.nodeDataArray.forEach(item => {
+          let items = []
+          let obj_arr1 = {
+            key: item.tableMeta.tbName,
+            tableMetaUuid: item.tableMeta.tableMetaUuid,
+            items: items
+          }
+          item.colMetas.forEach(item_son => {
+            let obj = {
+              name: item_son.colName,
+              colMetaUuid: item_son.colMetaUuid,
+              iskey: false,
+              figure: "Hexagon",
+              color: colors.blue,
+            }
+            items.push(obj)
+          })
 
-        },
-        {
-          key: "对公信贷业务借据",
-          items: [{ name: "信贷借据号", iskey: true, figure: "Hexagon", color: colors.blue },
-          { name: "贷款分户账号", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "客户统一编号", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "客户名称", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "信贷合同号", iskey: false, figure: "Hexagon", color: colors.red },
-          { name: "银行机构代码", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "金融许可证号", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "内部机构号", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "明细科目编号", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "银行机构名称", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "明细科目名称", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "信贷业务种类", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "币种", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "借款金额", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "借款余额", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "贷款期限", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "展期次数", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "总期数", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "当前期数", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "放款方式", iskey: false, figure: "Hexagon", color: colors.blue },
-          ]
-        },
-        {
-          key: "信贷业务担保合同",
-          items: [{ name: "担保合同号", iskey: true, figure: "Hexagon", color: colors.blue },
-          { name: "金融许可证号", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "银行机构代码", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "担保类型", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "担保合同类型", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "保证人类别", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "保证人名称", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "证件类别", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "证件号码", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "保证人净资产", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "担保合同状态", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "担保合同签订日期", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "担保合同生效日期", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "担保合同到期日期", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "担保币种", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "担保总金额", iskey: false, figure: "Hexagon", color: colors.blue },
-          ]
-        },
-        {
-          key: "担保关系",
-          items: [{ name: "担保合同号", iskey: true, figure: "Hexagon", color: colors.red },
-          { name: "被担保合同号", iskey: true, figure: "Hexagon", color: colors.blue },
-          { name: "银行机构代码", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "金融许可证号", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "内部机构号", iskey: false, figure: "Hexagon", color: colors.blue },
-          { name: "担保类型", iskey: false, figure: "Hexagon", color: colors.blue },
-          ],
-        },
-      ];
-      var linkDataArray = [
-        { from: "对公信贷担保信息表", to: "对公信贷业务借据", text: "对公信贷担保信息表", },
-        { from: "对公信贷担保信息表", to: "信贷业务担保合同", text: "机构信息关联", },
-        { from: "担保关系", to: "对公信贷担保信息表", text: "担保关系", }
-      ];
-      myDiagram.model = $(go.GraphLinksModel,
-        {
-          copiesArrays: true,
-          copiesArrayObjects: true,
-          nodeDataArray: nodeDataArray,
-          linkDataArray: linkDataArray
-        });
+          this.nodeDataArray.push(obj_arr1)
+        })
+
+        // 第二步
+        resp.data.linkDataArray.forEach(linkData_items => {
+          let color = colors.red
+          let from = ''
+          let to = ''
+          let text = ''
+          this.nodeDataArray.forEach(items_child => {
+            console.log();
+            if (items_child.tableMetaUuid == linkData_items.tableMetaUuid) {
+              from = items_child.key
+              items_child.items.forEach(col_child => {
+                //  主表字段
+                if (col_child.colMetaUuid == linkData_items.colMetaUuid) {
+                  col_child.color = color
+                  // col_child.figure = 'Decision'
+                }
+              })
+            }
+            if (items_child.tableMetaUuid == linkData_items.relTableMetaUuid) {
+              to = items_child.key
+              items_child.items.forEach(col_child => {
+                //  从表字段
+                if (col_child.colMetaUuid == linkData_items.relColMetaUuid) {
+                  col_child.color = color
+                }
+              })
+            }
+          })
+          // 1. left join   2. right join  3.full join  4.inner join")
+          switch (linkData_items.sqlGenJoinType) {
+            case 1:
+              text = 'left join'
+              break
+            case 2:
+              text = 'right join'
+              break
+            case 3:
+              text = 'full join'
+              break
+            case 4:
+              text = 'inner join'
+              break
+            default:
+              //没有对应的值处理
+              text = ''
+              break
+          }
+          let obj_arr2 = {
+            from: from,
+            to: to,
+            text: text,
+          }
+          this.linkDataArray.push(obj_arr2)
+        })
+
+        myDiagram.model = $(go.GraphLinksModel,
+          {
+            copiesArrays: true,
+            copiesArrayObjects: true,
+            nodeDataArray: this.nodeDataArray,
+            linkDataArray: this.linkDataArray
+          });
+      })
     }
-
   }
 };
 </script>
-
  
 <style scoped>
 #my-diagram-div {

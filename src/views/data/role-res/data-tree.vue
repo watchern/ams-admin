@@ -67,14 +67,18 @@
       <!-- <div class="tree-option "
            v-loading="treeLoading"> -->
       <!-- :default-expand-all="true" 展开全部节点 -->
+<!--      :data="treeData1"-->
+<!--      @node-expand="nodeExpand"-->
       <MyElTree ref="tree1"
                 :props="props"
                 class="filter-tree"
                 :highlight-current="true"
-                :data="treeData1"
                 :filter-node-method="filterNode"
                 node-key="id"
                 @node-click="nodeClick"
+                @node-expand="nodeExpand"
+                :load="loadNode"
+                :lazy="true"
                 :expand-on-click-node="false"
                 :show-checkbox="treeType == 'move' || treeType == 'save'"
                 @check="handleCheck"
@@ -86,7 +90,7 @@
              class="el-icon-s-home"
              style="color: #409eff" />
           <!-- class="el-icon-folder" style="color:#409EFF" / -->
-          <i v-if="data.type === 'folder'">
+          <i v-if="data.type === 'folder' || data.type === 'system' || data.type === 'layered' || data.type === 'theme'">
             <img src="../../../assets/img/table_0.png"
                  style="
                 height: 16px;
@@ -338,7 +342,7 @@ export default {
         this.post_getLayeredTree();//分层
       }
       // else {
-      //   // 目录 
+      //   // 目录
       //   this.post_getDataTreeNode();//目录
       // }
     },
@@ -374,6 +378,11 @@ export default {
       parentNode.expand();
     },
     loadNode (node, resolve) {
+      getBusinessSystemTree(true, this.query.dataSource, false).then((resp) => {
+        resolve(resp.data)
+        this.loading = false
+        this.tabclick = false
+      });
       if (node.data.children && node.data.type !== "table") {
         resolve(node.data.children);
       } else if (node.data.type === "table" && node.data.children.length > 0) {
