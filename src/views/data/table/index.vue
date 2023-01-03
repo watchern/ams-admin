@@ -285,12 +285,13 @@
 
           </div>
 
-          <!-- 资产编码 && 资产类型：-->
+          <!-- 资源编码 && 资产类型：-->
           <div class="son">
-            <el-form-item label="资产编码："
+            <el-form-item label="资源编码："
                           prop="tableCode">
               <el-input type="text"
-                        placeholder="请输入资产编码"
+                        disabled
+                        placeholder="请输入资源编码"
                         v-model="form.tableCode"
                         :rows="4">
               </el-input>
@@ -820,7 +821,7 @@ export default {
 
       rules: {
         tableCode: [
-          { required: true, message: '请输入资产编码', trigger: 'blur' },
+          { required: true, message: '请输入资源编码', trigger: 'blur' },
         ],
         tableType: [
           { required: true, message: '请选择资产类型', trigger: 'change' },
@@ -864,7 +865,7 @@ export default {
         tbName: '', //表名
         chnName: '', //表中文名（后台给
         tableRemarks: '',//表说明
-        tableCode: '',// 资产编码
+        tableCode: '',// 资源编码
         tableType: '',// 资产类型
         tableThemeName: '',//所属主题
         tableThemeId: '',// 资产主题 id
@@ -1868,7 +1869,7 @@ export default {
           this.form.rowNum = resp.data[0].rowNum//表数据量
           this.form.tableSize = resp.data[0].tableSize//表大小
           this.form.partitions = resp.data[0].partitions//表分区
-          this.form.tableCode = resp.data[0].tableRelationQuery.tableCode//资产编码
+          this.form.tableCode = resp.data[0].tableRelationQuery.tableCode//资源编码
           this.form.tableRemarks = resp.data[0].tableRelationQuery.tableRemarks//表说明
 
         }
@@ -1897,7 +1898,7 @@ export default {
           tableRelationQuery: {
             tableDataSource: this.query.dataSource, //数据源
             businessSystemId: '0', //id主键
-            tableCode: '', //资产编码
+            tableCode: '', //资源编码
             tableLayeredId: '0', //资产分层主键
             tableMetaUuid: this.form.check_list[i].id, //资产主键
             tableRemarks: '', //资产备注
@@ -2034,7 +2035,7 @@ export default {
                 tableRelationQuery: {
                   tableDataSource: this.query.dataSource, //数据源
                   businessSystemId: this.form.businessSystemId, //id主键
-                  tableCode: this.form.tableCode, //资产编码
+                  tableCode: this.form.tableCode, //资源编码
                   tableLayeredId: this.form.tableLayeredId, //资产分层主键
                   tableMetaUuid: this.form.check_list[i].id, //资产主键
 
@@ -2169,7 +2170,7 @@ export default {
         this.tableMetaUuid = data[i].tableMetaUuid
       }
       this.show_details = true
-      this.isDisable_input = false
+      this.isDisable_input = true
 
     },
 

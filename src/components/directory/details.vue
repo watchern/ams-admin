@@ -512,7 +512,7 @@ export default {
         tbName: '',//表名称
         chnName: '',//中文名
         tableRemarks: '',//表说明
-        tableCode: '',// 资产编码
+        tableCode: '',// 资源编码
         tableType: '',// 资产类型
         tableThemeName: '',//所属主题name
         tableThemeId: '',// 资产主题 id

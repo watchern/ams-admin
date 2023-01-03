@@ -323,7 +323,7 @@ export default {
             tableRelationQuery: {
               tableDataSource: this.relationForm.tableDataSource, //数据源
               businessSystemId: this.relationForm.businessSystemId, //所属系统主键
-              tableCode: this.relationForm.tableCode, //资产编码
+              tableCode: this.relationForm.tableCode, //资源编码
               tableLayeredId: this.relationForm.tableLayeredId, //资产分层主键
               tableRemarks: this.relationForm.tableRemarks, //资产备注
               tableThemeId: this.relationForm.tableThemeId, //资产主题主键

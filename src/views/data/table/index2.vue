@@ -300,12 +300,13 @@
                  label-width="100px"
                  :model="form"
                  :inline="false">
-          <!-- 资产编码 && 资产类型：-->
+          <!-- 资源编码 && 资产类型：-->
           <div class="son">
-            <el-form-item label="资产编码:"
+            <el-form-item label="资源编码:"
                           prop="tableCode">
               <el-input type="text"
-                        placeholder="请输入资产编码"
+                        disabled
+                        placeholder="请输入资源编码"
                         v-model="form.tableCode"
                         :rows="4">
               </el-input>
@@ -628,7 +629,7 @@ export default {
 
       rules: {
         tableCode: [
-          { required: true, message: '请输入资产编码', trigger: 'blur' },
+          { required: true, message: '请输入资源编码', trigger: 'blur' },
         ],
         tableType: [
           { required: true, message: '请选择资产类型', trigger: 'change' },
@@ -669,7 +670,7 @@ export default {
       btnLoading: false,//保存loading
       // 新增的数据
       form: {
-        tableCode: '',// 资产编码
+        tableCode: '',// 资源编码
         tableType: '',// 资产类型
         tableThemeId: '',// 资产主题
         businessSystemId: '',//所属系统
@@ -1351,7 +1352,7 @@ export default {
                 tableRelationQuery: {
                   tableDataSource: this.query.dataSource, //数据源
                   businessSystemId: this.form.businessSystemId, //所属系统主键
-                  tableCode: this.form.tableCode, //资产编码
+                  tableCode: this.form.tableCode, //资源编码
                   tableLayeredId: this.form.tableLayeredId, //资产分层主键
                   tableMetaUuid: this.form.check_list[i].id, //资产主键
 

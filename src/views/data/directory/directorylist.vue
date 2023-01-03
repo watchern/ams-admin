@@ -543,8 +543,8 @@
         >
           <!-- :inline="false" -->
           <div style="width:100%">
-            <el-form-item label="资产编码:" prop="tableCode" >
-              <el-input type="text" placeholder="请输入资产编码" v-model="form.tableCode"  style="width:220px"/>
+            <el-form-item label="资源编码:" prop="tableCode" >
+              <el-input type="text" placeholder="请输入资源编码" v-model="form.tableCode"  style="width:220px"/>
             </el-form-item>
 
             <el-form-item label="资产类型:" prop="tableType">
@@ -774,7 +774,7 @@ export default {
       resultShareDialogIsSee: false,//选择责任人
       rules: {
         tableCode: [
-          { required: true, message: '请输入资产编码', trigger: 'blur' },
+          { required: true, message: '请输入资源编码', trigger: 'blur' },
         ],
         tableType: [
           { required: true, message: '请选择资产类型', trigger: 'change' },
@@ -827,7 +827,7 @@ export default {
         }
       ],
       form: {
-        tableCode: '',// 资产编码
+        tableCode: '',// 资源编码
         tableType: '',// 资产类型
         tableThemeId: '',// 资产主题
         businessSystemId: '',//所属系统
@@ -1787,7 +1787,7 @@ export default {
     addTable() {
       this.nextStep = 1;
       this.form = {
-        tableCode: '',// 资产编码
+        tableCode: '',// 资源编码
         tableType: '',// 资产类型
         tableThemeId: '',// 资产主题
         businessSystemId: '',//所属系统
@@ -1837,7 +1837,7 @@ export default {
       this.nextStep = 2;
       this.relationVisible = true;
       this.form = {
-        tableCode: '',// 资产编码
+        tableCode: '',// 资源编码
         tableType: '',// 资产类型
         tableThemeId: '',// 资产主题
         businessSystemId: '',//所属系统
