@@ -35,7 +35,7 @@
     <div class="common_btn "
          v-if="isBtn == true">
       <div class="click_btn">
-        <el-button type="primary">数据字典导入导出</el-button>
+        <el-button type="primary">数据资源导入导出</el-button>
         <div class="show_btn">
           <el-button type="primary"
                      @click="down_template_dictionary()">模版下载</el-button>
