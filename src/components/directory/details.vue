@@ -467,6 +467,7 @@
 </template>
 
 <script>
+import dataTree from "@/views/data/role-res/data-tree";
 import ProcessTree from "@/components/directory/processTree.vue";
 import LineMap from "@/components/directory/lineMap.vue";
 import EditMap from "@/components/directory/editMap.vue";
@@ -484,6 +485,7 @@ import {
 } from "@/api/lhg/register.js";
 export default {
   components: {
+    dataTree,
     ProcessTree,
     LineMap,
     EditMap,

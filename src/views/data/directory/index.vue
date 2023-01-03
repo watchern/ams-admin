@@ -53,7 +53,7 @@
 <script>
 import dataTree from '@/views/data/role-res/data-tree'
 import BaseDirectoryList from '@/views/data/directory/directorylist'
-import TreeCommon from "@/components/dataAssets/treeCommon.vue"
+import TreeCommon from "@/components/datasAssets/treeCommon.vue"
 import DataResourceDisplay from "@/components/directory/dataResourceDisplay.vue"
 import Details from "@/components/directory/details.vue"
 
