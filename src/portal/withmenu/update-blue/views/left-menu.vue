@@ -635,7 +635,7 @@ export default {
           width: 0;
         }
         .box {
-          width: 90px;
+          min-width: 90px;
           height: 50px;
           padding: 5px 0;
           cursor: pointer;

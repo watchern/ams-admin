@@ -67,8 +67,8 @@
       <!-- <div class="tree-option "
            v-loading="treeLoading"> -->
       <!-- :default-expand-all="true" 展开全部节点 -->
-<!--      :data="treeData1"-->
-<!--      @node-expand="nodeExpand"-->
+      <!--      :data="treeData1"-->
+      <!--      @node-expand="nodeExpand"-->
       <MyElTree ref="tree1"
                 :props="props"
                 class="filter-tree"
@@ -90,7 +90,8 @@
              class="el-icon-s-home"
              style="color: #409eff" />
           <!-- class="el-icon-folder" style="color:#409EFF" / -->
-          <i v-if="data.type === 'folder' || data.type === 'system' || data.type === 'layered' || data.type === 'theme'">
+          <i
+             v-if="data.type === 'folder' || data.type === 'system' || data.type === 'layered' || data.type === 'theme'">
             <img src="../../../assets/img/table_0.png"
                  style="
                 height: 16px;
@@ -355,6 +356,13 @@ export default {
     getTree () {
       return this.$refs.tree1;
     },
+    filterNode (value, data) {
+      if (!value) return true;
+      return data.label.indexOf(value) !== -1;
+    },
+    getTree () {
+      return this.$refs.tree1;
+    },
     nodeClick (data, node, tree) {
       this.$emit("node-click", data, node, tree);
     },
@@ -364,7 +372,7 @@ export default {
       }
       this.$emit("handle-check", data, checkIds.checkedKeys.length > 0);
     },
-    // nodeExpand() {},
+    nodeExpand () { },
     appendnode (childData, parentNode) {
       this.$refs.tree1.append(childData, parentNode);
       parentNode.loaded = false;

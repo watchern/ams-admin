@@ -55,7 +55,9 @@
         :modelData="modelData"
           :executeSqlViewData="executeSqlViewData"
           :dataSource="dataSource"
-        @triggerSearch="triggerSearch"/>
+        @triggerSearch="triggerSearch"
+        @refreshDataTabTree="refreshDataTabTree"
+        />
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -86,6 +88,10 @@ export default {
     this.paramInfoCopy = this.paramInfo
   },
   methods: {
+    //刷新数据表树
+    refreshDataTabTree(){
+      this.$emit('refreshDataTabTree',"")
+    },
     //放大或缩小点击
     zoomChangeTable(type){
       this.tableType=type;

@@ -9,7 +9,7 @@
 import go from "@/utils/go.js";
 import {
   selectTableRelationInfo
-} from "@/api/lhg/process_tree.js";
+} from "@/api/lhg/processTree.js";
 
 export default {
   props: {
