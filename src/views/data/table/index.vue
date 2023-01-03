@@ -2,228 +2,209 @@
   <div class="page-container">
     <!-- left_conter -->
     <div class="left_conter">
-      <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-        <el-tab-pane label="系统" :disabled="tabclick" name="0"></el-tab-pane>
-        <el-tab-pane label="主题" :disabled="tabclick" name="1"></el-tab-pane>
-        <el-tab-pane label="分层" :disabled="tabclick" name="2"></el-tab-pane>
+      <el-tabs v-model="activeName"
+               type="card"
+               @tab-click="handleClick">
+        <el-tab-pane label="系统"
+                     :disabled="tabclick"
+                     name="0"></el-tab-pane>
+        <el-tab-pane label="主题"
+                     :disabled="tabclick"
+                     name="1"></el-tab-pane>
+        <el-tab-pane label="分层"
+                     :disabled="tabclick"
+                     name="2"></el-tab-pane>
         <!-- <el-tab-pane label="目录"
                      :disabled="tabclick"
                      name="3"></el-tab-pane> -->
       </el-tabs>
       <div class="padding10">
-        <el-input
-          v-model="filterText2"
-          :disabled="tabclick"
-          placeholder="输入关键字进行过滤"
-        />
+        <el-input v-model="filterText2"
+                  :disabled="tabclick"
+                  placeholder="输入关键字进行过滤" />
       </div>
       <!-- 数据源 -->
       <div class="padding10 dataSource">
-        <el-form :inline="true" :model="query" label-position="bottom">
-          <el-form-item label="数据源：" label-width="90px">
-            <el-select
-              v-model="query.dataSource"
-              :disabled="tabclick"
-              @change="selectdata"
-              placeholder="请选择数据源"
-            >
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
+        <el-form :inline="true"
+                 :model="query"
+                 label-position="bottom">
+          <el-form-item label="数据源："
+                        label-width="90px">
+            <el-select v-model="query.dataSource"
+                       :disabled="tabclick"
+                       @change="selectdata"
+                       placeholder="请选择数据源">
+              <el-option v-for="item in options"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
             </el-select>
           </el-form-item>
         </el-form>
       </div>
 
-      <div v-show="loading == true" class="loading">
-        <div class="conter_loading">
-          <span><img src="../../../assets/img/loading.gif" alt="" /></span>
+      <div v-if="loading == true"
+           class="loadings">
+        <div class="conter_loadings">
+          <span><img src="../../../assets/img/loading.gif"
+                 alt="" /></span>
         </div>
       </div>
 
-      <div v-show="loading == false" class="conter_vh">
-        <div class="padding10_l">
-          <!-- 系统 主题 分层  目录-->
-          <div class="tree-containerall">
-            <MyElTree
-              ref="tree2"
-              :props="props"
-              :data="tree_list"
-              :filter-node-method="filterNode"
-              :default-expanded-keys="['ROOT']"
-              class="filter-tree"
-              highlight-current="true"
-              node-key="id"
-              @node-click="nodeClick"
-            >
-              <span slot-scope="{ node, data }" class="custom-tree-node">
-                <i v-if="data.id === 'ROOT'" :class="data.icon" />
-                <i
-                  v-if="
+      <div v-else
+           class="conter_vh">
+        <!-- 系统 主题 分层  目录-->
+        <div class="tree-containerall">
+          <MyElTree ref="tree2"
+                    :props="props"
+                    :data="tree_list"
+                    :filter-node-method="filterNode"
+                    :default-expanded-keys="['ROOT']"
+                    class="filter-tree"
+                    highlight-current="true"
+                    node-key="id"
+                    @node-click="nodeClick">
+            <span slot-scope="{ node, data }"
+                  class="custom-tree-node">
+              <i v-if="data.id === 'ROOT'"
+                 :class="data.icon" />
+              <i v-if="
                     data.type === 'folder' ||
                     data.type === 'system' ||
                     data.type === 'layered' ||
                     data.type === 'theme'
-                  "
-                >
-                  <span class="agreeicon0"></span>
-                </i>
-                <i v-if="data.type === 'table'">
-                  <span class="icon iconfont agreeicon1"></span>
-                </i>
-                <i v-if="data.type === 'view'">
-                  <span class="icon iconfont agreeicon4"></span>
-                </i>
+                  ">
+                <span class="agreeicon0"></span>
+              </i>
+              <i v-if="data.type === 'table'">
+                <span class="icon iconfont agreeicon1"></span>
+              </i>
+              <i v-if="data.type === 'view'">
+                <span class="icon iconfont agreeicon4"></span>
+              </i>
 
-                <i
-                  v-if="data.type === 'column'"
-                  class="el-icon-c-scale-to-original"
-                />
-                <span>{{ node.label }}</span>
-                <span style="margin-left: 10px">
-                  <el-button
-                    v-if="
+              <i v-if="data.type === 'column'"
+                 class="el-icon-c-scale-to-original" />
+              <span>{{ node.label }}</span>
+              <span style="margin-left: 10px">
+                <el-button v-if="
                       data.id === 'ROOT' ||
                       (data.extMap && data.extMap.folder_type === 'maintained')
                     "
-                    type="text"
-                    size="mini"
-                    @click.stop="() => handleCreateFolder(node, data)"
-                  >
-                    <i class="el-icon-circle-plus" />
-                  </el-button>
-                  <el-button
-                    v-if="
+                           type="text"
+                           size="mini"
+                           @click.stop="() => handleCreateFolder(node, data)">
+                  <i class="el-icon-circle-plus" />
+                </el-button>
+                <el-button v-if="
                       data.extMap && data.extMap.folder_type === 'maintained'
                     "
-                    type="text"
-                    size="mini"
-                    @click.stop="() => handleUpdateFolder(node, data)"
-                  >
-                    <i class="el-icon-edit" />
-                  </el-button>
-                  <el-button
-                    v-if="
+                           type="text"
+                           size="mini"
+                           @click.stop="() => handleUpdateFolder(node, data)">
+                  <i class="el-icon-edit" />
+                </el-button>
+                <el-button v-if="
                       (data.extMap &&
                         data.extMap.folder_type === 'maintained') ||
                       data.type === 'table' ||
                       data.type === 'view'
                     "
-                    type="text"
-                    size="mini"
-                    @click.stop="() => handleRemove(node, data)"
-                  >
-                    <i class="el-icon-delete" />
-                  </el-button>
-                </span>
+                           type="text"
+                           size="mini"
+                           @click.stop="() => handleRemove(node, data)">
+                  <i class="el-icon-delete" />
+                </el-button>
               </span>
-            </MyElTree>
-          </div>
-          <!-- 目录 -->
+            </span>
+          </MyElTree>
         </div>
+        <!-- 目录 -->
       </div>
     </div>
     <!-- left_conter end-->
 
     <!-- right_conter -->
     <div class="right_conter padding10">
-      <DataResourceDisplay
-        @down_template_cn="DownTemplateCN"
-        @Important_cn="ImportantCn"
-        @Importdata_dictionary="ImportdataDictionary"
-        @down_template_dictionary="DownTemplateDictionary"
-        @Important_table="ImportantTable"
-        @down_template_table="DownTemplateTable"
-        @on_deails="onDeailsChange"
-        @sync_data="SyncData"
-        :isBtn="isBtn"
-        @on_register="registTable"
-        @Recognition="recognitionChange"
-        @handleCurrentChange="handleCurrent"
-        @handleSizeChange="handleSize"
-        :list="list"
-        :list_data="list_data"
-        :list_loading="list_loading"
-        @edit_list="Edit_list"
-        v-if="show_details == false"
-      ></DataResourceDisplay>
+      <DataResourceDisplay @down_template_cn="DownTemplateCN"
+                           @Important_cn="ImportantCn"
+                           @Importdata_dictionary="ImportdataDictionary"
+                           @down_template_dictionary="DownTemplateDictionary"
+                           @Important_table="ImportantTable"
+                           @down_template_table="DownTemplateTable"
+                           @on_deails="onDeailsChange"
+                           @sync_data="SyncData"
+                           :isBtn="isBtn"
+                           @on_register="registTable"
+                           @Recognition="recognitionChange"
+                           @handleCurrentChange="handleCurrent"
+                           @handleSizeChange="handleSize"
+                           :list="list"
+                           :list_data="list_data"
+                           :list_loading="list_loading"
+                           @edit_list="Edit_list"
+                           v-if="show_details == false"></DataResourceDisplay>
       <!-- 基本信息详情 -->
-      <Details
-        ref="Details_ref"
-        :tableMetaUuid="tableMetaUuid"
-        :isDisable_input="isDisable_input"
-        @update_list="UpdateList"
-        :is_Edit_list="is_Edit_list"
-        v-if="show_details == true"
-      ></Details>
+      <Details ref="Details_ref"
+               :tableMetaUuid="tableMetaUuid"
+               :isDisable_input="isDisable_input"
+               @update_list="UpdateList"
+               :is_Edit_list="is_Edit_list"
+               v-if="show_details == true"></Details>
 
       <!-- 注册资产 -->
-      <el-dialog
-        :close-on-click-modal="false"
-        :default-expand-all="true"
-        :title="'选择注册表'"
-        :visible.sync="registTableFlag"
-        class="dlag_width"
-        width="600px"
-      >
-        <el-input
-          style="width: 70%"
-          v-model="filterText1"
-          placeholder="输入想要查询的表名称（模糊搜索）"
-        />
+      <el-dialog :close-on-click-modal="false"
+                 :default-expand-all="true"
+                 :title="'选择注册表'"
+                 :visible.sync="registTableFlag"
+                 class="dlag_width"
+                 width="600px">
+        <el-input style="width: 70%"
+                  v-model="filterText1"
+                  placeholder="输入想要查询的表名称（模糊搜索）" />
         <el-button @click="getTables"> 搜索 </el-button>
 
         <div class="tree-containerselect padding10">
-          <MyElTree
-            ref="tree1"
-            v-loading="treeLoading"
-            :props="props"
-            :data="tableData"
-            class="filter-tree"
-            show-checkbox
-            @check-change="nodeClick_table"
-            @node-click="nodeClick_table"
-            default-expand-all
-          >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
+          <MyElTree ref="tree1"
+                    v-loading="treeLoading"
+                    :props="props"
+                    :data="tableData"
+                    class="filter-tree"
+                    show-checkbox
+                    @check-change="nodeClick_table"
+                    @node-click="nodeClick_table"
+                    default-expand-all>
+            <span slot-scope="{ node, data }"
+                  class="custom-tree-node">
               <i v-if="data.type === 'USER'">
-                <img
-                  src="../../../assets/img/table_0.png"
-                  style="
+                <img src="../../../assets/img/table_0.png"
+                     style="
                     height: 16px;
                     width: 16px;
                     margin-right: 2px;
                     vertical-align: top;
                     *vertical-align: middle;
-                  "
-                />
+                  " />
               </i>
               <i v-if="data.type === 'TABLE'">
-                <img
-                  src="../../../assets/img/table_1.png"
-                  style="
+                <img src="../../../assets/img/table_1.png"
+                     style="
                     height: 16px;
                     width: 16px;
                     margin-right: 2px;
                     vertical-align: top;
                     *vertical-align: middle;
-                  "
-                />
+                  " />
               </i>
               <i v-if="data.type === 'COLUMN'">
-                <img
-                  src="../../../assets/img/table_2.png"
-                  style="
+                <img src="../../../assets/img/table_2.png"
+                     style="
                     height: 16px;
                     width: 16px;
                     margin-right: 2px;
                     vertical-align: top;
                     *vertical-align: middle;
-                  "
-                />
+                  " />
               </i>
               <span>{{ node.label }}</span>
             </span>
@@ -232,77 +213,73 @@
         <span slot="footer">
           <el-button @click="registTableFlag = false">取消</el-button>
 
-          <el-button type="primary" v-if="is_next == true" @click="next()"
-            >下一步</el-button
-          >
+          <el-button type="primary"
+                     v-if="is_next == true"
+                     @click="next()">下一步</el-button>
         </span>
       </el-dialog>
 
       <!-- 如果选多个表 -->
-      <el-dialog
-        :visible.sync="dialogVisible_forms"
-        width="600px"
-        class="dlag_width"
-        :before-close="handleClose"
-      >
-        <el-table :data="Column_table" style="width: 100%">
-          <el-table-column prop="date" label="字段名称">
+      <el-dialog :visible.sync="dialogVisible_forms"
+                 width="600px"
+                 class="dlag_width"
+                 :before-close="handleClose">
+        <el-table :data="Column_table"
+                  style="width: 100%">
+          <el-table-column prop="date"
+                           label="字段名称">
             <template slot-scope="scope">
-              <span v-for="(item, index) in scope.row.colMetas" :key="index"
-                >{{ item.colName }}
+              <span v-for="(item, index) in scope.row.colMetas"
+                    :key="index">{{ item.colName }}
                 <i v-if="scope.row.colMetas.length !== 1">、</i>
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="表名称">
+          <el-table-column prop="title"
+                           label="表名称">
             <template slot-scope="scope">
               {{ scope.row.tbName }}
             </template>
           </el-table-column>
         </el-table>
-        <span slot="footer" class="dialog-footer">
+        <span slot="footer"
+              class="dialog-footer">
           <el-button @click="dialogVisible_forms = false">关闭</el-button>
-          <el-button type="primary" @click="next_save()">确 定</el-button>
+          <el-button type="primary"
+                     @click="next_save()">确 定</el-button>
         </span>
       </el-dialog>
 
       <!-- 下一步 基本信息-->
-      <el-dialog
-        title="基本信息"
-        class="data_res dlag_width"
-        :visible.sync="dialogVisible_information"
-        @close="handleClose('form')"
-        width="60%"
-      >
-        <el-form
-          :rules="rules"
-          ref="form"
-          label-width="100px"
-          :model="form"
-          :inline="false"
-        >
+      <el-dialog title="基本信息"
+                 class="data_res dlag_width"
+                 :visible.sync="dialogVisible_information"
+                 @close="handleClose('form')"
+                 width="60%">
+        <el-form :rules="rules"
+                 ref="form"
+                 label-width="100px"
+                 :model="form"
+                 :inline="false">
           <!-- 表名-->
           <div class="son">
-            <el-form-item label="表名称：" prop="tbName">
-              <el-input
-                type="text"
-                disabled
-                placeholder="请输入表名称"
-                v-model="form.tbName"
-                :rows="4"
-              >
+            <el-form-item label="表名称："
+                          prop="tbName">
+              <el-input type="text"
+                        disabled
+                        placeholder="请输入表名称"
+                        v-model="form.tbName"
+                        :rows="4">
               </el-input>
             </el-form-item>
           </div>
           <!-- 表中文名 -->
           <div class="son">
             <el-form-item label="表中文名：">
-              <el-input
-                type="text"
-                placeholder="请输入表中文名"
-                v-model="form.chnName"
-                :rows="4"
-              >
+              <el-input type="text"
+                        placeholder="请输入表中文名"
+                        v-model="form.chnName"
+                        :rows="4">
               </el-input>
             </el-form-item>
           </div>
@@ -310,18 +287,22 @@
           <!--  表说明-->
           <div class="son">
             <el-form-item label="表说明:">
-              <el-input
-                type="textarea"
-                placeholder="请输入表说明"
-                style="resize: none"
-                v-model="form.tableRemarks"
-              >
+              <el-input type="textarea"
+                        placeholder="请输入表说明"
+                        style="resize: none"
+                        v-model="form.tableRemarks">
               </el-input>
             </el-form-item>
           </div>
 
           <!-- 资源编码 && 资产类型：-->
           <div class="son">
+            <el-form-item label="资产编码："
+                          prop="tableCode">
+              <el-input type="text"
+                        placeholder="请输入资产编码"
+                        v-model="form.tableCode"
+                        :rows="4">
             <el-form-item label="资源编码："
                           prop="tableCode">
               <el-input type="text"
@@ -332,78 +313,66 @@
               </el-input>
             </el-form-item>
 
-            <el-form-item label="资产类型:" prop="tableType">
-              <el-select
-                v-model="form.tableType"
-                :rows="4"
-                placeholder="请选择资产类型"
-              >
-                <el-option
-                  v-for="item in data_type"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
+            <el-form-item label="资产类型:"
+                          prop="tableType">
+              <el-select v-model="form.tableType"
+                         :rows="4"
+                         placeholder="请选择资产类型">
+                <el-option v-for="item in data_type"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
               </el-select>
+            </el-form-item>
+              </el-input>
             </el-form-item>
           </div>
 
           <!-- 资产主题 && 资产分层 -->
           <div class="son">
-            <el-form-item label="资产主题:" prop="tableThemeId">
-              <el-select
-                v-model="form.tableThemeId"
-                :rows="4"
-                placeholder="请选择资产主题"
-              >
-                <el-option
-                  v-for="item in next_data.themeList"
-                  :key="item.codeUuid"
-                  :label="item.codeName"
-                  :value="item.codeUuid"
-                />
+            <el-form-item label="资产主题:"
+                          prop="tableThemeId">
+              <el-select v-model="form.tableThemeId"
+                         :rows="4"
+                         placeholder="请选择资产主题">
+                <el-option v-for="item in next_data.themeList"
+                           :key="item.codeUuid"
+                           :label="item.codeName"
+                           :value="item.codeUuid" />
               </el-select>
             </el-form-item>
 
-            <el-form-item label="资产分层:" prop="tableLayeredId">
-              <el-select
-                v-model="form.tableLayeredId"
-                :rows="4"
-                placeholder="请选择资产分层"
-              >
-                <el-option
-                  v-for="item in next_data.layeredList"
-                  :key="item.codeUuid"
-                  :label="item.codeName"
-                  :value="item.codeUuid"
-                />
+            <el-form-item label="资产分层:"
+                          prop="tableLayeredId">
+              <el-select v-model="form.tableLayeredId"
+                         :rows="4"
+                         placeholder="请选择资产分层">
+                <el-option v-for="item in next_data.layeredList"
+                           :key="item.codeUuid"
+                           :label="item.codeName"
+                           :value="item.codeUuid" />
               </el-select>
             </el-form-item>
           </div>
 
           <!-- 所属系统 && 文件名-->
           <div class="son">
-            <el-form-item label="所属系统:" prop="businessSystemId">
-              <el-select
-                v-model="form.businessSystemId"
-                :rows="4"
-                placeholder="请选择所属系统"
-              >
-                <el-option
-                  v-for="item in next_data.businessSystemList"
-                  :key="item.businessSystemUuid"
-                  :label="item.businessSystemName"
-                  :value="item.businessSystemUuid"
-                />
+            <el-form-item label="所属系统:"
+                          prop="businessSystemId">
+              <el-select v-model="form.businessSystemId"
+                         :rows="4"
+                         placeholder="请选择所属系统">
+                <el-option v-for="item in next_data.businessSystemList"
+                           :key="item.businessSystemUuid"
+                           :label="item.businessSystemName"
+                           :value="item.businessSystemUuid" />
               </el-select>
             </el-form-item>
             <el-form-item label="文件名:">
-              <el-input
-                type="text"
-                placeholder="请输入文件名称"
-                v-model="form.fileName"
-                :rows="4"
-              >
+              <el-input type="text"
+                        placeholder="请输入文件名称"
+                        v-model="form.fileName"
+                        :rows="4">
               </el-input>
             </el-form-item>
           </div>
@@ -411,81 +380,73 @@
           <!-- 数据日期 && 表大小-->
           <div class="son">
             <el-form-item label="数据日期:">
-              <el-date-picker
-                format="yyyy-MM-dd"
-                type="date"
-                value-format="yyyy-MM-dd"
-                @change="changeRelationParam"
-                placeholder="请输入数据日期"
-                :rows="4"
-                v-model="form.dataDate"
-              >
+              <el-date-picker format="yyyy-MM-dd"
+                              type="date"
+                              value-format="yyyy-MM-dd"
+                              @change="changeRelationParam"
+                              placeholder="请输入数据日期"
+                              :rows="4"
+                              v-model="form.dataDate">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="表大小:">
-              <el-input
-                type="text"
-                disabled
-                placeholder="请输入表大小"
-                v-model="form.tableSize"
-                :rows="4"
-              >
+              <el-input type="text"
+                        disabled
+                        placeholder="请输入表大小"
+                        v-model="form.tableSize"
+                        :rows="4">
               </el-input>
             </el-form-item>
           </div>
           <!-- 表数据量 &&   负责人-->
           <div class="son">
             <el-form-item label="表数据量:">
-              <el-input
-                type="text"
-                disabled
-                placeholder="请输入表数据量"
-                v-model="form.rowNum"
-                :rows="4"
-              >
+              <el-input type="text"
+                        disabled
+                        placeholder="请输入表数据量"
+                        v-model="form.rowNum"
+                        :rows="4">
               </el-input>
             </el-form-item>
 
             <div class="son_check">
               <el-form-item label="负责人:">
                 =={{ form.personName_str }}==
-                <el-input type="text" disabled v-model="form.personName_str">
+                <el-input type="text"
+                          disabled
+                          v-model="form.personName_str">
                 </el-input>
               </el-form-item>
-              <el-button type="primary" class="oper-btn" @click="check_people()"
-                >选择</el-button
-              >
+              <el-button type="primary"
+                         class="oper-btn"
+                         @click="check_people()">选择</el-button>
             </div>
           </div>
 
           <!--表分区 && 增全量 -->
           <div class="son">
-            <el-form-item label="表分区:" prop="partitions">
+            <el-form-item label="表分区:"
+                          prop="partitions">
               <ul class="table">
                 <li class="head">分区名称</li>
-                <li
-                  v-for="(item, index_partitions) in form.partitions"
-                  :key="index_partitions"
-                  class="li_son"
-                  key="index"
-                >
+                <li v-for="(item, index_partitions) in form.partitions"
+                    :key="index_partitions"
+                    class="li_son"
+                    key="index">
                   {{ item }}
                 </li>
               </ul>
             </el-form-item>
 
-            <el-form-item label="增全量:" prop="isSpike">
-              <el-select
-                v-model="form.isSpike"
-                :rows="4"
-                placeholder="请选择是否增量"
-              >
-                <el-option
-                  v-for="item in option_isSpike"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
+            <el-form-item label="增全量:"
+                          prop="isSpike">
+              <el-select v-model="form.isSpike"
+                         :rows="4"
+                         placeholder="请选择是否增量">
+                <el-option v-for="item in option_isSpike"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
               </el-select>
             </el-form-item>
           </div>
@@ -495,38 +456,40 @@
             <div class="son_check">
               <el-form-item label="数据标签：:">
                 <div class="_width tag_conter">
-                  <el-tag
-                    :key="tag"
-                    v-for="tag in tagsarr"
-                    closable
-                    :disable-transitions="false"
-                    @close="handleClose(tag)"
-                  >
+                  <el-tag :key="tag"
+                          v-for="tag in tagsarr"
+                          closable
+                          :disable-transitions="false"
+                          @close="handleClose(tag)">
                     {{ tag }}
                   </el-tag>
                 </div>
               </el-form-item>
-              <el-button type="primary" class="oper-btn" @click="check_tag()"
-                >选择</el-button
-              >
+              <el-button type="primary"
+                         class="oper-btn"
+                         @click="check_tag()">选择</el-button>
             </div>
           </div>
         </el-form>
         <div class="padding10_l">
           <p style="text-align: center">列信息</p>
-          <el-table :data="Column_table" style="width: 100%">
-            <el-table-column prop="date" label="字段名称">
+          <el-table :data="Column_table"
+                    style="width: 100%">
+            <el-table-column prop="date"
+                             label="字段名称">
               <template slot-scope="scope">
                 {{ scope.row.colName }}
               </template>
             </el-table-column>
-            <el-table-column prop="address" label="字段类型">
+            <el-table-column prop="address"
+                             label="字段类型">
               <template slot-scope="scope">
                 {{ scope.row.dataType }}
               </template>
             </el-table-column>
 
-            <el-table-column prop="address" label="字段长度">
+            <el-table-column prop="address"
+                             label="字段长度">
               <template slot-scope="scope">
                 {{ scope.row.dataLength }}
               </template>
@@ -534,95 +497,81 @@
           </el-table>
         </div>
 
-        <span slot="footer" class="dialog-footer">
+        <span slot="footer"
+              class="dialog-footer">
           <el-button @click="step()">上一步</el-button>
-          <el-button
-            type="primary"
-            :loading="btnLoading"
-            :disabled="isDisable"
-            @click="save('form')"
-            >{{ this.btnLoading == true ? "保存中" : "保存" }}</el-button
-          >
+          <el-button type="primary"
+                     :loading="btnLoading"
+                     :disabled="isDisable"
+                     @click="save('form')">{{ this.btnLoading == true ? "保存中" : "保存" }}</el-button>
 
           <el-button @click="close_diag()">关闭</el-button>
         </span>
       </el-dialog>
 
       <!-- 选择责任人 -->
-      <el-dialog
-        title="选择责任人"
-        :close-on-click-modal="false"
-        :visible.sync="resultShareDialogIsSee"
-        width="50%"
-      >
+      <el-dialog title="选择责任人"
+                 :close-on-click-modal="false"
+                 :visible.sync="resultShareDialogIsSee"
+                 width="50%">
         <personTree ref="orgPeopleTree"></personTree>
-        <span slot="footer" class="dialog-footer">
+        <span slot="footer"
+              class="dialog-footer">
           <el-button @click="close_people()">取 消</el-button>
-          <el-button type="primary" @click="modelResultShare()"
-            >确 定</el-button
-          >
+          <el-button type="primary"
+                     @click="modelResultShare()">确 定</el-button>
         </span>
       </el-dialog>
 
-      <el-dialog
-        :title="dialogTitle"
-        :visible.sync="folderFormVisible"
-        width="600px"
-        :close-on-click-modal="false"
-      >
-        <el-form ref="folderForm" :model="folderForm" class="detail-form">
+      <el-dialog :title="dialogTitle"
+                 :visible.sync="folderFormVisible"
+                 width="600px"
+                 :close-on-click-modal="false">
+        <el-form ref="folderForm"
+                 :model="folderForm"
+                 class="detail-form">
           <el-form-item label="文件夹名称">
             <el-input v-model="folderForm.folderName" />
           </el-form-item>
         </el-form>
         <span slot="footer">
           <el-button @click="folderFormVisible = false">取消</el-button>
-          <el-button
-            type="primary"
-            @click="dialogStatus === 'create' ? createFolder() : updateFolder()"
-            >保存</el-button
-          >
+          <el-button type="primary"
+                     @click="dialogStatus === 'create' ? createFolder() : updateFolder()">保存</el-button>
         </span>
       </el-dialog>
 
       <!-- 选择标签 -->
-      <el-dialog
-        title="选择标签"
-        :close-on-click-modal="false"
-        :visible.sync="dialogVisible_tag"
-        width="60%"
-        class="dlag_width"
-      >
+      <el-dialog title="选择标签"
+                 :close-on-click-modal="false"
+                 :visible.sync="dialogVisible_tag"
+                 width="60%"
+                 class="dlag_width">
         <div>
           <div class="right_query">
-            <el-form :inline="true" :model="tag_query" label-position="bottom">
+            <el-form :inline="true"
+                     :model="tag_query"
+                     label-position="bottom">
               <el-form-item>
-                <el-input
-                  v-model="tag_query.name"
-                  placeholder="标签名"
-                  clearable
-                />
+                <el-input v-model="tag_query.name"
+                          placeholder="标签名"
+                          clearable />
               </el-form-item>
 
               <el-form-item>
-                <el-select
-                  v-model="tag_query.status"
-                  :rows="4"
-                  placeholder="请选择是否增量"
-                >
-                  <el-option
-                    v-for="item in option_isSpike"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
+                <el-select v-model="tag_query.status"
+                           :rows="4"
+                           placeholder="请选择是否增量">
+                  <el-option v-for="item in option_isSpike"
+                             :key="item.value"
+                             :label="item.label"
+                             :value="item.value" />
                 </el-select>
               </el-form-item>
 
               <el-form-item>
-                <el-button type="primary" @keyup.enter.native="search"
-                  >查询</el-button
-                >
+                <el-button type="primary"
+                           @keyup.enter.native="search">查询</el-button>
                 <el-button type="primary">清空</el-button>
               </el-form-item>
             </el-form>
@@ -666,64 +615,65 @@
             </el-table>
           </div> -->
         </div>
-        <span slot="footer" class="dialog-footer">
+        <span slot="footer"
+              class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="dialogVisible_tag = false"
-            >确 定</el-button
-          >
+          <el-button type="primary"
+                     @click="dialogVisible_tag = false">确 定</el-button>
         </span>
       </el-dialog>
 
       <!-- 认权管理 -->
-      <el-dialog
-        title="认权管理"
-        :close-on-click-modal="false"
-        :visible.sync="visible_Recognition"
-        width="60%"
-        class="dlag_width"
-      >
+      <el-dialog title="认权管理"
+                 :close-on-click-modal="false"
+                 :visible.sync="visible_Recognition"
+                 width="60%"
+                 class="dlag_width">
         <div>
           <div class="data_res com">
-            <el-form ref="form" :model="Recognition">
-              <el-form-item label="认权人:" prop="people">
-                <el-input
-                  type="text"
-                  disabled
-                  placeholder="请选择认权人"
-                  v-model="Recognition.personName_str"
-                >
+            <el-form ref="form"
+                     :model="Recognition">
+              <el-form-item label="认权人:"
+                            prop="people">
+                <el-input type="text"
+                          disabled
+                          placeholder="请选择认权人"
+                          v-model="Recognition.personName_str">
                 </el-input>
-                <el-button type="primary" @click="check_people()"
-                  >选择</el-button
-                >
+                <el-button type="primary"
+                           @click="check_people()">选择</el-button>
               </el-form-item>
             </el-form>
           </div>
           <div class="padding10_l">
-            <el-table :data="Recognition_check_list" style="width: 100%">
-              <el-table-column prop="tbName" align="center" label="表名称">
+            <el-table :data="Recognition_check_list"
+                      style="width: 100%">
+              <el-table-column prop="tbName"
+                               align="center"
+                               label="表名称">
               </el-table-column>
-              <el-table-column prop="name" align="center" label="表类型">
+              <el-table-column prop="name"
+                               align="center"
+                               label="表类型">
               </el-table-column>
             </el-table>
           </div>
         </div>
-        <span slot="footer" class="dialog-footer">
+        <span slot="footer"
+              class="dialog-footer">
           <el-button @click="visible_Recognition = false">取 消</el-button>
-          <el-button type="primary" @click="save_people_change()"
-            >确 定</el-button
-          >
+          <el-button type="primary"
+                     :loading="save_people_Loading"
+                     @click="save_people_change()">确 定</el-button>
         </span>
       </el-dialog>
 
       <!-- 弹窗2 导入数据-->
-      <el-dialog
-        v-if="importVisible"
-        :title="upload_title"
-        :visible.sync="importVisible"
-        :close-on-click-modal="false"
-        width="800px"
-      >
+      <el-dialog v-if="importVisible"
+                 :title="upload_title"
+                 :visible.sync="importVisible"
+                 :close-on-click-modal="false"
+                 width="800px">
         <el-row>
           <el-col>
             <directory-file-import @fileuploadname="fileuploadname" />
@@ -731,17 +681,12 @@
         </el-row>
         <span slot="footer">
           <el-button @click="importVisible = false">取消</el-button>
-          <el-button
-            @click="importTableDictionary()"
-            v-if="upload_title == '导入数据字典'"
-            >导入</el-button
-          >
-          <el-button
-            @click="importTablCn()"
-            v-else-if="upload_title == '导入汉化信息'"
-            >导入</el-button
-          >
-          <el-button @click="importTableTable()" v-else>导入</el-button>
+          <el-button @click="importTableDictionary()"
+                     v-if="upload_title == '导入数据字典'">导入</el-button>
+          <el-button @click="importTablCn()"
+                     v-else-if="upload_title == '导入汉化信息'">导入</el-button>
+          <el-button @click="importTableTable()"
+                     v-else>导入</el-button>
 
           <!-- <el-button type="primary"
                      @click="upload_title = '数据字典导入' ? importTableDictionary()
@@ -775,7 +720,7 @@ import personTree from "@/components/publicpersontree/index";
 import {
   insertRunResultShare, //责任人
 } from "@/api/analysis/auditmodelresult";
-import DataResourceDisplay from "@/components/directory/data_resource_display.vue";
+import DataResourceDisplay from "@/components/directory/dataResourceDisplay.vue";
 import Details from "@/components/directory/details.vue";
 import directoryFileImport from "@/views/data/tableupload"; //导入
 import {
@@ -800,7 +745,7 @@ import {
 
 import {
   update_data, //认权人
-} from "@/api/lhg/data_accreditation_management.js";
+} from "@/api/lhg/dataAccreditationManagement.js";
 
 export default {
   components: {
@@ -812,7 +757,7 @@ export default {
     directoryFileImport,
     personTree: () => import("@/components/publicpersontree/index"),
   },
-  data() {
+  data () {
     return {
       ifFileNameExist: true,
       activeName: "0", //tab切换
@@ -876,11 +821,11 @@ export default {
       options: [
         {
           value: "Postgre",
-          label: "ADS",
+          label: "DWS",
         },
         {
           value: "Hive",
-          label: "MRS-DWS",
+          label: "MRS",
         },
       ],
       dialogVisible_information: false, //下一步 基本信息
@@ -1066,6 +1011,7 @@ export default {
       list_data: {}, //分页信息
 
       Recognition_check_list: [], //认权列表
+      save_people_Loading: false,
 
       // list_details: {},// 点击列表进入详情
       tableMetaUuid: "", //详情id
@@ -1074,7 +1020,7 @@ export default {
     };
   },
   computed: {
-    dialogTitle() {
+    dialogTitle () {
       return (
         (this.parentNode.label == null
           ? ""
@@ -1082,25 +1028,25 @@ export default {
         this.textMap[this.dialogStatus]
       );
     },
-    fromDisabled() {
+    fromDisabled () {
       return false;
     },
-    toDisabled() {
+    toDisabled () {
       return false;
     },
   },
   watch: {
-    filterText1(val) {
+    filterText1 (val) {
       this.$refs.tree1.filter(val);
     },
-    filterText2(val) {
+    filterText2 (val) {
       this.$refs.tree2.filter(val);
     },
-    filterText3(val) {
+    filterText3 (val) {
       this.$refs.tree3.filter(val);
     },
   },
-  created() {
+  created () {
     this.post_getBusinessSystemTree(); //系统
     // this.post_getThemeTree();//主题
     // this.post_getLayeredTree();//分层
@@ -1111,30 +1057,30 @@ export default {
   },
   methods: {
     // 修改后 刷新列表
-    UpdateList() {
+    UpdateList () {
       this.show_details = false;
       this.query_list();
     },
 
     // 数据字典导入
-    ImportdataDictionary(data) {
+    ImportdataDictionary (data) {
       this.upload_title = data;
       this.importVisible = true;
     },
     // 汉化信息导入
-    ImportantCn(data) {
+    ImportantCn (data) {
       this.upload_title = data;
       this.importVisible = true;
     },
 
     // 表关系导入
-    ImportantTable(data) {
+    ImportantTable (data) {
       this.upload_title = data;
       this.importVisible = true;
     },
 
     // 数据字典下载
-    DownTemplateDictionary() {
+    DownTemplateDictionary () {
       // 导出表信息作为模板
       // this.$message({ type: 'info', message: '无选择表,失败!' })
       axios
@@ -1162,7 +1108,7 @@ export default {
     },
 
     // 汉化模版下载
-    DownTemplateCN(data) {
+    DownTemplateCN (data) {
       // 导出表信息作为模板
       // this.$message({ type: 'info', message: '无选择表,失败!' })
       axios
@@ -1194,7 +1140,7 @@ export default {
     },
 
     // 表关系下载
-    DownTemplateTable() {
+    DownTemplateTable () {
       // 导出表信息作为模板
       // this.$message({ type: 'info', message: '无选择表,失败!' })
       axios
@@ -1222,13 +1168,13 @@ export default {
     },
 
     // 上传文件信息
-    fileuploadname(data) {
+    fileuploadname (data) {
       // 文件名
       this.importtemp.tableFileName = data;
     },
 
     // 字典确认导入
-    importTableDictionary() {
+    importTableDictionary () {
       import_dictionary(this.importtemp).then((res) => {
         if (res.data.code === "200") {
           this.importVisible = false;
@@ -1250,7 +1196,7 @@ export default {
     },
 
     // 汉化确认导入
-    importTablCn() {
+    importTablCn () {
       importTable(this.importtemp).then((res) => {
         if (res.data.code === "200") {
           this.importVisible = false;
@@ -1272,7 +1218,7 @@ export default {
     },
 
     // 表关系导入
-    importTableTable() {
+    importTableTable () {
       importTable_table(this.importtemp).then((res) => {
         if (res.data.code === "200") {
           this.importVisible = false;
@@ -1293,7 +1239,7 @@ export default {
       });
     },
     // 同步数据
-    SyncData(data) {
+    SyncData (data) {
       let arr_str = [];
       for (var i = 0; i < data.length; i++) {
         arr_str.push(data[i].tableMetaUuid);
@@ -1319,18 +1265,21 @@ export default {
     },
 
     // 认权管理
-    recognitionChange(data) {
+    recognitionChange (data) {
       this.Recognition_check_list = data;
       this.Recognition.personName_str = "";
       this.visible_Recognition = true;
     },
 
     // 认权确认
-    save_people_change() {
+    save_people_change () {
       //请选择认权人
       if (this.Recognition.personName_str == "") {
         this.$message({ type: "warning", message: "请选择认权人" });
+
       } else {
+        this.save_people_Loading = true;
+
         var personUuids = [];
         var personNames = [];
         var arr = [];
@@ -1355,6 +1304,8 @@ export default {
         };
         // 修改
         update_data(params).then((res) => {
+          this.save_people_Loading = false;
+
           if (res.code == 0) {
             this.$message({
               message: "认权成功",
@@ -1375,20 +1326,19 @@ export default {
         });
       }
     },
-
     // 关闭 选择责任人
-    close_people() {
+    close_people () {
       this.resultShareDialogIsSee = false;
       this.$refs.orgPeopleTree.$emit("clear"); //清空组件 值
     },
     // 显示基本信息详情
-    onDeailsChange(data) {
+    onDeailsChange (data) {
       this.tableMetaUuid = data.tableMetaUuid;
       this.show_details = true;
       this.isDisable_input = true;
     },
     //校验文件名是否存在
-    checkFileName_change(fileName) {
+    checkFileName_change (fileName) {
       //
       // checkFileName(fileName).then((res) => {
       //   if (res.data) {
@@ -1415,7 +1365,7 @@ export default {
     },
 
     // tab切换
-    handleClick(tab, event) {
+    handleClick (tab, event) {
       if (tab.index == "0") {
         // this.tabclick = true
         // setTimeout(() => {
@@ -1431,13 +1381,13 @@ export default {
       //   this.post_getDataTreeNode(this.query.dataSource);//目录
       // }
     },
-    filterNode(value, data) {
+    filterNode (value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
 
     // 系统
-    post_getBusinessSystemTree() {
+    post_getBusinessSystemTree () {
       this.loading = true;
       this.tabclick = true;
       getBusinessSystemTree(true, this.query.dataSource, true).then((resp) => {
@@ -1447,7 +1397,7 @@ export default {
       });
     },
     // 主题
-    post_getThemeTree() {
+    post_getThemeTree () {
       this.loading = true;
       this.tabclick = true;
       getThemeTree(true, this.query.dataSource, true).then((resp) => {
@@ -1457,7 +1407,7 @@ export default {
       });
     },
     // 分层
-    post_getLayeredTree() {
+    post_getLayeredTree () {
       this.loading = true;
       this.tabclick = true;
       getLayeredTree(true, this.query.dataSource, true).then((resp) => {
@@ -1532,7 +1482,7 @@ export default {
     // },
 
     // 点击注册资源的 数据库列表
-    getTables() {
+    getTables () {
       this.treeLoading = true;
       listUnCached(
         "table",
@@ -1546,13 +1496,13 @@ export default {
     },
 
     // 刷根据节点ID刷新节点
-    refreshNodeBy(id) {
+    refreshNodeBy (id) {
       let node = this.$refs.tree2.getNode(id); // 通过节点id找到对应树节点对象
       node.loaded = false;
       node.expand(); // 主动调用展开节点方法，重新查询该节点下的所有子节点
     },
     // 点击切换树 切换 表单
-    nodeClick(data, node, tree) {
+    nodeClick (data, node, tree) {
       // 点击数据表进入详情
       if (node.data.children.length == 0 && node.data.type === "table") {
         this.tableMetaUuid = node.data.id;
@@ -1608,7 +1558,7 @@ export default {
       }
     },
     // 列表 接口
-    query_list() {
+    query_list () {
       // this.listLoading = true;
       this.list_loading = true; //子组件loading
       let params = {
@@ -1631,7 +1581,7 @@ export default {
       });
     },
     // 删除
-    delete_table(id) {
+    delete_table (id) {
       delTable(id).then((res) => {
         if (res.code == 0) {
           this.$message({
@@ -1649,12 +1599,12 @@ export default {
         this.query_list();
       });
     },
-    resetFolderForm() {
+    resetFolderForm () {
       Object.keys(this.folderForm).forEach((key) => {
         this.$set(this.folderForm, key, null);
       });
     },
-    handleCreateFolder(node, data) {
+    handleCreateFolder (node, data) {
       this.resetFolderForm();
       this.parentNode = node;
       this.dialogStatus = "create";
@@ -1668,7 +1618,7 @@ export default {
       this.folderForm.fullPath = fullPath.join("/");
       this.folderFormVisible = true;
     },
-    handleUpdateFolder(node, data) {
+    handleUpdateFolder (node, data) {
       this.resetFolderForm();
       this.tempData = data;
       this.dialogStatus = "update";
@@ -1683,7 +1633,7 @@ export default {
       // this.folderForm.fullPath = fullPath.join("/");
       this.folderFormVisible = true;
     },
-    handleRemove(node, data) {
+    handleRemove (node, data) {
       this.$confirm("是否删除？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -1706,9 +1656,9 @@ export default {
             });
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     },
-    createFolder() {
+    createFolder () {
       if (
         this.folderForm.folderName == null ||
         this.folderForm.folderName.trim().length == 0
@@ -1734,7 +1684,7 @@ export default {
         this.folderFormVisible = false;
       });
     },
-    updateFolder() {
+    updateFolder () {
       if (
         this.folderForm.folderName == null ||
         this.folderForm.folderName.trim().length == 0
@@ -1756,8 +1706,8 @@ export default {
         this.refreshNodeBy("ROOT");
       });
     },
-    handleSelectChange(val) {},
-    removeTable() {
+    handleSelectChange (val) { },
+    removeTable () {
       var ids = this.$refs.tree2.getCheckedKeys();
       delTable(ids.join(",")).then((resp) => {
         this.$notify(
@@ -1775,7 +1725,7 @@ export default {
     // ································
 
     // 时间格式化
-    formatCreateTime(row, column) {
+    formatCreateTime (row, column) {
       // 拼接日期规格为YYYY-MM-DD hh:mm:ss
       var createTime = new Date(row.createTime);
       var createTimeRow =
@@ -1793,7 +1743,7 @@ export default {
       return createTimeRow;
     },
     // 选择数据源
-    selectdata(val) {
+    selectdata (val) {
       this.query.dataSource = val;
       if (this.activeName == "0") {
         // 系统
@@ -1810,7 +1760,7 @@ export default {
       }
     },
     // 注册资产
-    registTable() {
+    registTable () {
       // var ckFolder = this.$refs.tree2.getCurrentNode();
       // //  return;
       // if (!ckFolder || ckFolder.type !== "FOLDER") {
@@ -1830,14 +1780,14 @@ export default {
       this.getTables();
     },
     // 上一步
-    step() {
+    step () {
       // this.registTableFlag = true;//关闭上一步
       this.dialogVisible_information = false; //关闭基本信息
 
       this.clear();
     },
     // 清除注册资产第二步的数据
-    clear() {
+    clear () {
       // 清空
       this.form.tableCode = "";
       this.form.tableType = "";
@@ -1857,7 +1807,7 @@ export default {
       this.personName = [];
     },
     // 第一步选择的数据库
-    nodeClick_table(data, node, tree) {
+    nodeClick_table (data, node, tree) {
       //获取所有选中的节点 start
       let res = this.$refs.tree1.getCheckedNodes();
       var check_list = [];
@@ -1883,7 +1833,7 @@ export default {
     },
 
     // 注册资产 单挑数据 下一步
-    next() {
+    next () {
       var list = [];
       this.form.check_list.forEach((item) => {
         // let ids = {
@@ -1905,7 +1855,7 @@ export default {
     },
 
     // 获取列信息
-    post_getColsInfoByTableName() {
+    post_getColsInfoByTableName () {
       let arr = [];
       for (var i = 0; i < this.form.check_list.length; i++) {
         // this.form.file_name = this.form.check_list[i].fileName//文件夹名称
@@ -1935,7 +1885,7 @@ export default {
     },
 
     // 选择多个的情况  下一步的确认 批量多个注册
-    next_save() {
+    next_save () {
       // alert('选择多个的情况 下一步的确认')
       // this.dialogVisible_information = true//显示下一步 基本信息
       // this.getListTree_data()
@@ -1994,7 +1944,7 @@ export default {
       });
       this.dialogVisible_forms = false; //关闭多选的表单弹窗显示
     },
-    getListTree_data() {
+    getListTree_data () {
       getListTree().then((res) => {
         this.next_data = res.data;
         // if (res.data.contentsList.children) {
@@ -2016,7 +1966,7 @@ export default {
     },
 
     // 点击 所属目录层级联动
-    handleChange(val) {
+    handleChange (val) {
       // const checkedNode = this.$refs["cascaderArr"].getCheckedNodes();
       //   //获取当前点击节点的label值
       //   //获取由label组成的数组
@@ -2028,7 +1978,7 @@ export default {
     },
 
     // 格式化数据，递归将空的children置为undefined
-    formatCascaderData(data) {
+    formatCascaderData (data) {
       for (var i = 0; i < data.length; i++) {
         if (data[i].children.length < 1) {
           // children若为空数组，则将children设为undefined
@@ -2041,24 +1991,24 @@ export default {
       return data;
     },
     // 关闭弹窗
-    handleClose(form) {
+    handleClose (form) {
       this.$refs[form].resetFields(); //清空添加的值
       this.clear();
     },
 
     // 数据日期:
-    changeRelationParam(value) {
+    changeRelationParam (value) {
       this.form.dataDate = value;
     },
 
     // 下一步的关闭
-    close_diag() {
+    close_diag () {
       this.dialogVisible_information = false;
       this.chooseTables = []; //传输的数据
     },
 
     // 下一步的保存
-    save(form) {
+    save (form) {
       this.btnLoading = true;
       this.isDisable = true;
       setTimeout(() => {
@@ -2145,7 +2095,7 @@ export default {
     },
 
     // 选择责任人
-    check_people() {
+    check_people () {
       this.resultShareDialogIsSee = true;
       this.form.personLiables = "";
       this.clearcheckbox();
@@ -2159,16 +2109,16 @@ export default {
       // })
     },
     // 选择标签
-    check_tag() {
+    check_tag () {
       this.dialogVisible_tag = true;
     },
     // 删除标签
-    handleClose(tag) {
+    handleClose (tag) {
       this.tagsarr.splice(this.tagsarr.indexOf(tag), 1);
     },
 
     // 清除多选框
-    clearcheckbox() {
+    clearcheckbox () {
       this.$nextTick(() => {
         if (this.$refs.multipleTable) {
           this.$refs.multipleTable.clearSelection(); //清除多选框
@@ -2184,7 +2134,7 @@ export default {
       });
     },
     // 确定责任人
-    modelResultShare() {
+    modelResultShare () {
       // this.listLoading = true;
       var runTaskRelUuids = [];
       var personUuids = [];
@@ -2216,7 +2166,7 @@ export default {
       this.resultShareDialogIsSee = false;
     },
     // 修改
-    Edit_list(data) {
+    Edit_list (data) {
       this.is_Edit_list = 1;
       for (var i = 0; i < data.length; i++) {
         // this.tableRelationQueryUuid = data[i].tableRelationQuery.tableRelationQueryUuid
@@ -2241,12 +2191,12 @@ export default {
     // },
 
     // 分页
-    handleCurrent(val) {
+    handleCurrent (val) {
       this.query.pageNo = val;
       this.query_list();
     },
     // 每页多少条
-    handleSize(val) {
+    handleSize (val) {
       this.query.pageNo = 1;
       this.query.pageSize = val;
       this.query_list();
@@ -2254,22 +2204,59 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 @import url("./../../../assets/css/common.css");
+
+.loadings {
+  /* position: absolute;
+  left: 0;
+  bottom: 0; */
+  height: calc(100% - 160px);
+  width: 100%;
+  z-index: 9;
+  background: rgba(106, 106, 106, 0.0862745098);
+  border-radius: 15.5px;
+}
+.conter_loadings {
+  width: 100%;
+  height: 100%;
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.7);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.loadings span {
+  width: 60px;
+}
+.loadings span img {
+  width: 100%;
+}
+
+.page-container {
+  display: flex;
+  padding: 0 !important;
+}
+.page-container .tree-containerall {
+  height: 100%;
+  overflow-x: auto;
+}
 
 .dlag_width >>> .el-dialog {
   min-width: 600px !important;
 }
-.left_conter {
+/* .left_conter {
   position: relative;
-}
+} */
 .dataSource >>> .el-form-item {
   display: flex;
   width: 100%;
 }
 .conter_vh {
-  height: calc(100% - 158px);
-  overflow: auto;
+  height: calc(100vh - 280px);
 }
 
 .left_conter >>> .el-tabs__header {
@@ -2282,9 +2269,7 @@ export default {
 .left_conter >>> .el-tabs__nav {
   width: 100%;
 }
-.page-container {
-  display: flex;
-}
+
 .data_res >>> .el-form {
   padding: 20px 20px 0;
   box-sizing: border-box;
@@ -2400,20 +2385,12 @@ export default {
   cursor: pointer;
   margin-left: 10px;
 }
-.page-container .tree-containerselect {
-  height: 55vh;
-  overflow: auto;
-}
-.page-container .tree-containerselect .filter-tree {
-  margin-top: 20px;
-}
-.page-container .tree-containerall {
-  // height: 75vh;
-  overflow: auto;
-}
-.page-container .tree-containerall .filter-tree {
-  margin-top: 20px;
-}
+// .page-container .tree-containerselect {
+//   height: 55vh;
+//   overflow: auto;
+//   border: 1px solid greenyellow;
+// }
+
 .transfer-center-item {
   width: 40px;
   margin: 2px;

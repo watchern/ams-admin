@@ -250,6 +250,7 @@
               id="childTabs1"
                 :executeSqlViewData="executeSqlViewData"
                 :dataSource="dataSource"
+                @refreshDataTabTree="refreshDataTabTree"
         />
       </div>
       <div v-if="!isExecuteError" class="data-show">
@@ -365,18 +366,18 @@
       title="SQL草稿列表"
       :visible.sync="sqlDraftDialog"
       :append-to-body="true"
-      width="75%"
+      width="85%"
     >
       <el-container class="content-box">
         <el-aside class="tree-side">
           <sqlDraftTree ref="sqlDraftTree"  @refreshDraftList="refreshDraftList" :isShowDraft="true" openType="show"/>
         </el-aside>
         <div class="list-side" ref="listSide">
-          <sqlDraftList ref="sqlDraftList" />
+          <sqlDraftList ref="sqlDraftList" @refreshDraftTree="refreshDraftTree" />
         </div>
       </el-container>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="sqlDraftDialog = false">关闭</el-button>
+        <el-button @click="closesqlDraftList">关闭</el-button>
         <el-button type="primary" @click="useSql">使用SQL</el-button>
       </div>
     </el-dialog>
@@ -690,10 +691,10 @@ export default {
       dataSource: "Postgre",
       dataSourceList: [{
         value:"Hive",
-        label:"MRS-DWS"
+        label:"MRS"
       }, {
         value:"Postgre",
-        label:"ADS"
+        label:"DWS"
       }],
       //参数关联dialog
       ParamModelDialog: false,
@@ -842,27 +843,27 @@ export default {
         }
       });
     },
-      dataSource(){
-        // 切换数据源后刷新页面重新获取对应数据源的数据
-          this.executeLoading = true
-          this.loadText = '正在重新加载数据表及函数...'
-          this.getWebSocket();
-          initFunctionTree(this.dataSource)
-          initTableTip(this.dataUserId, this.sceneCode1).then((result) => {
-              initTableTree(result, this.dataSource)
-              var relTableMap = {}
-              var expTableMap = {}
-              if (result.data != null) {
-                  for (let i = 0; i < result.data.length; i++) {
-                      if (result.data[i].type === 'table') {
-                          relTableMap[result.data[i].enName] = []
-                          expTableMap[result.data[i].enName] = result.data[i].extCol
-                      }
+    dataSource(){
+      // 切换数据源后刷新页面重新获取对应数据源的数据
+      this.executeLoading = true
+      this.loadText = '正在重新加载数据表及函数...'
+      this.getWebSocket();
+      initFunctionTree(this.dataSource)
+      initTableTip(this.dataUserId, this.sceneCode1).then((result) => {
+          initTableTree(result, this.dataSource)
+          var relTableMap = {}
+          var expTableMap = {}
+          if (result.data != null) {
+              for (let i = 0; i < result.data.length; i++) {
+                  if (result.data[i].type === 'table') {
+                      relTableMap[result.data[i].enName] = []
+                      expTableMap[result.data[i].enName] = result.data[i].extCol
                   }
               }
-              this.executeLoading = false
-          });
-      }
+          }
+          this.executeLoading = false
+      });
+    }
   },
   mounted() {
     try {
@@ -894,6 +895,27 @@ export default {
       let query = {}
       data.type == "draft"? query = { sqlDraftUuid: data.id} : query = { parentUuid: data.id , path: data.path  }
       this.$refs.sqlDraftList.getList(query)
+    },
+    refreshDraftTree(){
+      this.$refs.sqlDraftTree.refreshTree()
+    },
+    //刷新数据表树
+    refreshDataTabTree(){
+      this.executeLoading = true
+      initTableTip(this.dataUserId, this.sceneCode1).then((result) => {
+          initTableTree(result, this.dataSource)
+          var relTableMap = {}
+          var expTableMap = {}
+          if (result.data != null) {
+              for (let i = 0; i < result.data.length; i++) {
+                  if (result.data[i].type === 'table') {
+                      relTableMap[result.data[i].enName] = []
+                      expTableMap[result.data[i].enName] = result.data[i].extCol
+                  }
+              }
+          }
+          this.executeLoading = false
+      });
     },
     // dataSourceChange(){
     // sessionStorage.setItem("dataSource", this.dataSource));
@@ -1463,6 +1485,8 @@ export default {
                       sceneInstUuid: "",
                       createUserId: "",
             }
+            //重新刷新SOL草稿树
+            initDraftTree();
           } else {
             this.$notify({
               title: "提示",
@@ -1480,6 +1504,12 @@ export default {
     openSqlDraftList() {
       this.sqlDraftDialog = true;
     },
+    ///关闭SOL草稿列表
+    closesqlDraftList(){
+      this.sqlDraftDialog = false;
+      //重新刷新SOL草稿树
+      initDraftTree();
+    },
     /**
      * 使用sql
      */
@@ -1493,6 +1523,8 @@ export default {
         }).then(() => {
           this.sqlDraftDialog = false;
           useSql(returnObj);
+          //重新刷新SOL草稿树
+          initDraftTree();
         });
       } else {
         return;

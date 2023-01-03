@@ -64,7 +64,7 @@
         stripe
         v-loading="loading"
         row-key="id"
-        height="calc(100vh - 230px)"
+        height="calc(100vh - 250px)"
         @selection-change="handleSelectionChange"
       >
         <!-- :reserve-selection="true" -->
