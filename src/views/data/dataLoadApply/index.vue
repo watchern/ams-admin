@@ -406,10 +406,10 @@
 </template>
 
 <script>
-    import FileImport from '@/views/data/data_load_apply/fileupload.vue';
+    import FileImport from '@/views/data/dataLoadApply/fileupload.vue';
     import DataTree from '@/components/public/tree/src/tree.vue';
     import FlowItem from '@/components/starflow/todowork/flowItem';
-    import Details from '@/views/data/data_load_apply/details.vue';
+    import Details from '@/views/data/dataLoadApply/details.vue';
     import {
         page_list_data,//列表
         getById,//详情
