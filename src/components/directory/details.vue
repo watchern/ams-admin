@@ -284,7 +284,8 @@
           <div style="padding: 0 20px"
                class="mose">
             <!-- 数据表关联关系 -->
-            <ProcessTree :tableMetaUuid="tableMetaUuid"></ProcessTree>
+            <ProcessTree :tableMetaUuid="tableMetaUuid"
+                         ref="tableLines"></ProcessTree>
             <div class="mose_bag"
                  v-if="isDisable_input == true"></div>
           </div>
@@ -341,26 +342,26 @@
           <el-button type="primary"
                      @click="addTable()">新增一行</el-button>
         </div>
-        <el-table :data="tableData"
+        <el-table :data="visibleTableList"
                   style="width: 100%">
-          <el-table-column prop="date"
+          <el-table-column prop="chnName2"
                            label="主表"> </el-table-column>
-          <el-table-column prop="name"
+          <el-table-column prop="chnName2"
                            label="关联表"> </el-table-column>
-          <el-table-column prop="name"
+          <el-table-column prop="chnName2"
                            label="表关联方式"> </el-table-column>
 
-          <el-table-column prop="address"
+          <el-table-column prop="chnName2"
                            label="主表字段"> </el-table-column>
 
-          <el-table-column prop="address"
+          <el-table-column prop="chnName2"
                            label="字段关联条件">
           </el-table-column>
 
-          <el-table-column prop="address"
+          <el-table-column prop="chnName2"
                            label="关联字段"> </el-table-column>
 
-          <el-table-column prop="address"
+          <el-table-column prop="chnName2"
                            label="连接条件"> </el-table-column>
         </el-table>
       </div>
@@ -368,7 +369,7 @@
             class="dialog-footer">
         <el-button @click="visibleTable = false">取 消</el-button>
         <el-button type="primary"
-                   @click="visibleTable = false">保存</el-button>
+                   @click="save_table()">保存</el-button>
       </span>
     </el-dialog>
 
@@ -389,16 +390,20 @@
                         prop="tbName">
             <el-input v-model="table_visible_form.tbName"></el-input>
           </el-form-item>
-          <el-form-item label="字段名称："
-                        prop="chnName">
-            <el-input v-model="table_visible_form.chnName"></el-input>
-          </el-form-item>
-          <el-form-item label="从表名称："
-                        prop="chnName2">
-            <el-input v-model="table_visible_form.chnName2"></el-input>
-          </el-form-item>
-          <el-form-item prop="colMetaUuid"
+          <el-form-item prop="chnName"
                         label="字段名称">
+            <el-row>
+              <el-col :span="22">
+                <el-input v-model="table_visible_form.chnName"></el-input>
+              </el-col>
+              <el-col :span="2">
+                <el-button @click="showDataTree(1)">选择</el-button>
+              </el-col>
+            </el-row>
+          </el-form-item>
+
+          <el-form-item prop="chnName2"
+                        label="从表字段：">
             <el-row>
               <el-col :span="22">
                 <el-input v-model="table_visible_form.chnName2"></el-input>
@@ -408,12 +413,6 @@
               </el-col>
             </el-row>
           </el-form-item>
-
-          <el-form-item label="从表字段："
-                        prop="chnName2">
-            <el-input v-model="table_visible_form.chnName2"></el-input>
-          </el-form-item>
-
           <el-form-item label="关联关系："
                         prop="relationship">
             <el-select v-model="table_visible_form.relationship"
@@ -432,6 +431,8 @@
         <el-button type="primary"
                    @click="add_table_save('table_visible_form')">确 定</el-button>
       </span>
+
+      <!-- 选择数据表 -->
       <el-dialog v-if="dataTableTree"
                  class="abow_dialog"
                  :destroy-on-close="true"
@@ -440,6 +441,7 @@
                  title="请选择数据表"
                  width="600px">
         <data-tree ref="dataTableTree"
+                   :is_progress="is_progress"
                    :data-user-id="dataUserId"
                    :scene-code="sceneCode" />
         <div slot="footer">
@@ -472,7 +474,7 @@ import ProcessTree from "@/components/directory/processTree.vue";
 import LineMap from "@/components/directory/lineMap.vue";
 import EditMap from "@/components/directory/editMap.vue";
 import personTree from "@/components/publicpersontree/index";
-
+import { getById } from '@/api/data/tablerelation'
 import {
   getBasicInfo, //列表点击详情
   getColsInfo, //列信息
@@ -623,6 +625,9 @@ export default {
       visible_sql: false, //查看sql
       visibleTable: false, //新增表关系
       add_table_visible: false, //新增一行表
+      visibleTableList: [
+        { chnName2: "111", tbName: '222', chnName: '22', relationship: '44' },
+      ],
       //新增的表关系信息
       table_visible_form: {
         tbName: "", //中文名
@@ -651,6 +656,7 @@ export default {
         },
       ],
       resultShareDialogIsSee: false, //选择责任人
+      is_progress: false,
     };
   },
   computed: {
@@ -798,17 +804,17 @@ export default {
 
             this.form.personLiables = personName.join(","); //负责人
             // this.form.personUuid = personUuid.join(",")
-            // console.log(this.form.personLiables);
+            // 
 
             // let objs = {
             //   personUuid: item.personUuid,
             //   personName: item.personName
             // }
-            // console.log(objs);
+            // 
             // this.form.personName_str.push(objs)
           });
           // this.form.personLiables = personName.join(",");//负责人
-          console.log();
+
           // var personLiables = resp.data.personLiables.toString();//负责人
         } else {
           this.form.personLiables = "";
@@ -822,7 +828,7 @@ export default {
     update_save () {
       var selectedNodes = this.$refs.orgPeopleTree.getSelectValue();
       var personLiables = [];
-      // console.log(selectedNodes);
+      // 
       // 如果修改了责任人
       if (selectedNodes) {
         selectedNodes.forEach((item) => {
@@ -860,7 +866,7 @@ export default {
         },
         personLiables: personLiables,
       };
-      console.log(params);
+
       updateTableInfo(params).then((resp) => {
         if (resp.code == 0) {
           this.$message({
@@ -880,7 +886,7 @@ export default {
     // 索引信息
     getIndexInfo (tableId) {
       selectIndexInfo(tableId).then((res) => {
-        console.log("索引信息", res);
+
         this.Column_tableData_index = res.data;
       });
     },
@@ -1018,7 +1024,7 @@ export default {
         tableMetaUuid: this.tableMetaUuid,
       };
       createSql(params).then((resp) => {
-        console.log(resp.data);
+
         this.sql = resp.data;
       });
     },
@@ -1029,10 +1035,10 @@ export default {
     // 新增一行表关系
     addTable () {
       this.add_table_visible = true;
-      this.table_visible_form.tbName = "";
-      this.table_visible_form.chnName = "";
-      this.table_visible_form.chnName2 = "";
-      this.table_visible_form.relationship = "";
+      // this.table_visible_form.tbName = "";
+      // this.table_visible_form.chnName = "";
+      // this.table_visible_form.chnName2 = "";
+      // this.table_visible_form.relationship = "";
     },
     // 关闭弹窗
     handleClose_table (table_visible_form) {
@@ -1043,7 +1049,19 @@ export default {
     add_table_save (table_visible_form) {
       this.$refs[table_visible_form].validate((valid) => {
         if (valid) {
-          alert(1);
+
+
+
+
+
+          let objs = {
+            tbName: this.table_visible_form.tbName,
+            chnName: this.table_visible_form.chnName,
+            chnName2: this.table_visible_form.chnName2,
+            relationship: this.table_visible_form.relationship,
+          }
+          this.visibleTableList.push(objs)
+          this.add_table_visible = false
         } else {
           this.btnLoading = false; //保存loadnin
           this.$message({
@@ -1054,6 +1072,31 @@ export default {
           return false;
         }
       });
+    },
+
+    // 保存新的关联关系
+    save_table () {
+      // let params = {
+      //   arr: this.visibleTableList
+      // };
+      // getById(params).then((resp) => {
+      //   
+      //   if (resp.code == 0) {
+      //     this.$message({
+      //       type: "success",
+      //       message: "新增表关系成功!",
+      //     });
+      // this.query_list();
+      this.$refs.tableLines.$emit("init") //刷新列表
+      // } else {
+      //   this.$message({
+      //     type: "error",
+      //     message: resp.msg,
+      //   });
+      // }
+      this.visibleTable = false;//关闭弹窗
+      // });
+
     },
     beforeDestroy () {
       window.removeEventListener("scroll", this.scrollTop);
@@ -1068,8 +1111,6 @@ export default {
 }
 .resources {
   display: flex;
-  /* overflow-y: auto; */
-  /* height: 700px; */
   position: relative;
   height: calc(100vh - 180px);
 }
@@ -1102,7 +1143,6 @@ export default {
 }
 .rightList .rightList_child {
   min-height: 600px;
-  /* border: 1px solid red; */
   overflow-y: auto;
   margin-bottom: 30px;
 }
@@ -1129,7 +1169,6 @@ export default {
 }
 .son >>> .el-form-item__content,
 .son >>> .el-date-editor {
-  /* width: 100%; */
   width: 300px;
 }
 .is_disabled >>> .el-textarea__inner {
@@ -1147,7 +1186,6 @@ export default {
 }
 /* 表热度 */
 .Heat_ul {
-  /* border: 1px solid; */
   float: left;
 }
 
@@ -1160,8 +1198,6 @@ export default {
   margin-bottom: 20px;
   transition: all 0.3s;
   box-sizing: border-box;
-  /* border-bottom: 1px solid #fff; */
-  /* padding: 0 10px; */
   height: 40px;
   line-height: 40px;
   width: 20%;
@@ -1174,12 +1210,6 @@ export default {
   color: #5f9fcb;
   transition: color 0.3s;
 }
-/* .Heat_ul div .null_click:hover p {
-  color: #115f94 !important;
-  cursor: pointer;
-  text-decoration: underline;
-  /* border-bottom: 1px solid #0271be; */
-/* }  */
 .Heat_ul li:nth-child(4n) {
   padding-right: 0 !important;
 }
@@ -1205,7 +1235,6 @@ export default {
   border-radius: 4px;
   font-size: 12px;
   text-align: left;
-  /* padding-left: 5px; */
   word-wrap: break-word;
   overflow: hidden;
 }
@@ -1304,7 +1333,7 @@ export default {
 .mose {
   position: relative;
 }
-/* .mose_bag {
+.mose_bag {
   background: rgba(0, 0, 0, 0.2);
   width: 100%;
   height: 100%;
@@ -1312,7 +1341,7 @@ export default {
   left: 0;
   top: 0;
   z-index: 99;
-} */
+}
 .preview_sql >>> .el-textarea__inner {
   height: 300px;
 }
