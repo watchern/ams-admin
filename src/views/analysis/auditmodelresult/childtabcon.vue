@@ -31,12 +31,12 @@
         >导出结果
         </el-button>
 
-     <el-button
+     <!-- <el-button
               class="oper-btn btn-width-md overTabconItem"
               type="primary"
               @click="saveResultTable"
       >保存结果
-      </el-button>
+      </el-button> -->
     </div>
     <!--    页签上面的box2- 为sql编辑器执行结果 且 不是图表 且 报错时显示-->
     <div style="margin-left:10px" v-if="useType == 'sqlEditor' && !chartSwitching && !isSee" class="overTabconBox">
@@ -1694,6 +1694,8 @@ export default {
             position: "bottom-right",
           });
           this.saveTableNameDialog = false;
+          //更新左侧数据表树
+          this.$emit('refreshDataTabTree',"");
           this.saveTableName = "";
         }else{
           this.$notify({
