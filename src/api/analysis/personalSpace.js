@@ -79,5 +79,14 @@ export function queryByPersonalSpaceUuid(data){
         params: {personalSpaceUuid: data}
     })
 }
+//退回到申请人时候调用 更新业务状态为草稿
+export function batchUpdateForBackApplicationHandle(data){
+    return request ({
+        baseURL: analysisUrl,
+        url: '/personalSpace/batchUpdateForBackApplicationHandle',
+        method: 'post',
+        data
+    })
+}
 
 

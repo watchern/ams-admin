@@ -31,6 +31,12 @@ export default {
   watch: {},
   mounted () {
     this.init();//初始化表关系
+    this.$nextTick(function () {
+      this.$on('init', function () {
+
+      });
+    });
+
   },
   created () {
   },
@@ -221,7 +227,7 @@ export default {
           let to = ''
           let text = ''
           this.nodeDataArray.forEach(items_child => {
-            console.log();
+
             if (items_child.tableMetaUuid == linkData_items.tableMetaUuid) {
               from = items_child.key
               items_child.items.forEach(col_child => {

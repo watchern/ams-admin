@@ -262,6 +262,11 @@
                         this.$emit("delectData", false);
                     }
                 });
+            },
+            checkedPersonList(value){
+                //临时存放被选中人的id集合 和 类的集合
+                this.selectPersonUuidList = []
+                this.selectPersonUuidList.push(value)
             }
         }
     };

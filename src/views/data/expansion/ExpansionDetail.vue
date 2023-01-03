@@ -10,24 +10,24 @@
                 ></el-input>
             </el-form-item>
             <el-form-item label="扩容容量">
-                <el-input v-model="personalSpace.personalSpaceCapacity"
-                          placeholder="扩容容量"
-                          type="number"
-                          :max="1024"
-                          :min="0"
-                          disabled
-                          style="width: 540px"></el-input>
-                <el-select v-model="personalSpaceCapacityNeed"
-                           placeholder="容量单位"
-                           disabled
-                >
-                    <el-option label="GB"
-                               value="GB"></el-option>
-                    <el-option label="MB"
-                               value="MB"></el-option>
-                    <el-option label="KB"
-                               value="KB"></el-option>
-                </el-select>
+                <div style="display: flex">
+                    <el-input v-model="personalSpace.personalSpaceCapacity"
+                              placeholder="扩容容量"
+                              type="number"
+                              :max="1024"
+                              :min="0"
+                              style="width: 540px"
+                              disabled></el-input>
+                    <el-select v-model="personalSpaceCapacityNeed"
+                               placeholder="容量单位" style="margin-left: 10px" disabled>
+                        <el-option label="GB"
+                                   value="GB"></el-option>
+                        <el-option label="MB"
+                                   value="MB"></el-option>
+                        <el-option label="KB"
+                                   value="KB"></el-option>
+                    </el-select>
+                </div>
             </el-form-item>
 <!--            <el-form-item label="审批人">-->
 <!--                <el-input v-model="personalSpace.personalSpaceApproving"-->
@@ -44,6 +44,7 @@
     import {
         batchUpdateForFinishHandle
         ,queryByPersonalSpaceUuid
+        ,batchUpdateForBackApplicationHandle
     } from "@/api/analysis/personalSpace";
     export default {
         name: "expansionDetail",
@@ -74,6 +75,7 @@
                     this.personalSpace.personalSpaceCapacity = res.data.personalSpaceCapacity.substring(0,length-2)
                 })
             },
+            //更新对应业务状态方法 可以加入自己的style
             updateApplyStatus(value){
                 var personalSpace = {
                     personalSpaceUuid: value
@@ -81,6 +83,15 @@
                 var relParam = []
                 relParam.push(personalSpace)
                 batchUpdateForFinishHandle(relParam)
+            },
+            updateApplyStatusBecauseBackApplication(value){
+                //以后可能会出现扩展 这边先自己拼装一个 实体类 传到后台
+                var personalSpace = {
+                    personalSpaceUuid: value
+                }
+                var relParam = []
+                relParam.push(personalSpace)
+                batchUpdateForBackApplicationHandle(relParam)
             }
         }
     }
