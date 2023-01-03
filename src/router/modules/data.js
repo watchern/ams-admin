@@ -204,9 +204,9 @@ const dataRouter = {
       }
     },
     {
-      path: 'data_permissions_query',
+      path: 'dataPermissionsQuery',
       name: '数据权限查询',
-      component: () => import('@/views/data/data_permissions_query/index')
+      component: () => import('@/views/data/dataPermissionsQuery/index')
     },
 
     // {
@@ -226,9 +226,9 @@ const dataRouter = {
       component: () => import('@/views/data/exportApproval/index')
     },
     {
-      path: 'data_access_request',
+      path: 'dataAccessRequest',
       name: '数据接入申请',
-      component: () => import('@/views/data/data_access_request/index')
+      component: () => import('@/views/data/dataAccessRequest/index')
     },
 
 

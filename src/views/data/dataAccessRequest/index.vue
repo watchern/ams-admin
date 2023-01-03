@@ -72,11 +72,9 @@
                         <el-input v-model="temp.requestName"/>
                     </el-form-item>
                     <el-form-item prop="requestTableName" label="申请表名称">
-
-                        <el-button @click="add()">添加一行</el-button>
-
-                        <div v-for="item in requestTableNamelist" :key="item.id">
-                            <el-input v-model="item.name" />
+                        <el-button @click="add()" style="float:right">添加一行</el-button>
+                        <div v-for="(item,index) in requestTableNamelist" :key="item.id" style="display:flex">
+                            <el-input v-model="item.name" /> <div @click="goDelete(index)" style="margin-left: 10px;cursor:pointer">×</div>
                         </div>
                     </el-form-item>
                     <el-form-item prop="remark" label="备注">
@@ -108,7 +106,7 @@
     import Pagination from '@/components/Pagination'
 
     //接口
-    import { listByPage } from '@/api/data/accessRequest'
+    import { listByPage,save,del } from '@/api/data/accessRequest'
 
 
     export default {
@@ -158,15 +156,7 @@
                 //表单加载
                 listLoading: false,
                 //表单列表
-                tableData: [{
-                    requestName:'123',
-                    requestTime:'123',
-                    currentCirPerName:'123',
-                    requestTableName:'tableName',
-                    dataStatus:'',
-                    requestPersionName:'',
-                    remark:'',
-                }],
+                tableData: [],
                 //页面列表分页
                 total: 0,
                 pageQuery: {
@@ -183,7 +173,7 @@
                     update: "修改",
                 },
                 temp: {
-                    dataAccessReqUuid: "",
+                    dataAccessReqUuid: undefined,
                     requestName: "",
                     requestTime: "",
                     currentCirPerName:"",
@@ -212,14 +202,14 @@
         //vue声明周期 页面刷新前执行 getList获取总条数
         created() {
             this.getList()
-            let arr = [1,2,3]
-            arr.forEach(item=>{
-                let obj ={
-                    id: Date.now(),
-                    name:item
-                }
-                this.requestTableNamelist.push(obj)
-            })
+            // let arr = [1,2,3]
+            // arr.forEach(item=>{
+            //     let obj ={
+            //         id: Date.now(),
+            //         name:item
+            //     }
+            //     this.requestTableNamelist.push(obj)
+            // })
         },
 
         methods: {
@@ -230,8 +220,15 @@
                 }
                 this.requestTableNamelist.push(obj)
             },
+            goDelete(index){
+                //控制删除添加的必留
+                if(this.requestTableNamelist.length>1){
+                    this.requestTableNamelist.splice(index,1)
+                }
+            },
             resetTemp() {
                 this.temp = {
+                    dataAccessReqUuid:'',
                     requestName: '',
                     requestTableName: '',
                     remark: ''
@@ -250,11 +247,49 @@
                     if(item.name){
                         arr.push(item.name)
                     }
-                } )
-                console.log(arr,"arr")
-                console.log(arr.join(','),"arr,,,,")
-                console.log(arr.splice(","),"3333")
+                })
+                this.$refs['dataForm'].validate((valid) => {
+                    if (valid) {
+                        save(this.temp).then(() => {
+                            this.getList()
+                            this.dialogFormVisible = false
+                            this.$notify({
+                                title: '成功',
+                                message: '创建成功',
+                                type: 'success',
+                                duration: 2000,
+                                position: 'bottom-right'
+                            })
+                        })
+                    }
+                })
+
+                // console.log(arr,"arr")
+                // console.log(arr.join(','),"arr,,,,")
+                // console.log(arr.splice(","),"3333")
             },
+
+            // createData() {
+            //     this.$refs['dataForm'].validate((valid) => {
+            //         if (valid) {
+            //             save(this.temp).then(() => {
+            //                 this.getList()
+            //                 this.dialogFormVisible = false
+            //                 this.$notify({
+            //                     title: '成功',
+            //                     message: '创建成功',
+            //                     type: 'success',
+            //                     duration: 2000,
+            //                     position: 'bottom-right'
+            //                 })
+            //             })
+            //         }
+            //     })
+            // },
+
+
+
+
             //修改
             handleUpdate(){
                 this.temp = Object.assign({}, this.selections[0])
@@ -264,29 +299,27 @@
             },
             updateData(){},
             //删除
+
             handleDel(){
             var ids = []
-            //    dataRoleUuid tabalKey传过来的id
-            // this.selections.forEach((r, i) => { ids.push(r.dataRoleUuid) })
+            this.selections.forEach((r, i) => { ids.push(r.dataAccessReqUuid)})
             this.$confirm('此操作将永久删除这些数据，是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning',
                 center: true
+            }).then(() => {
+                del(ids.join(',')).then(() => {
+                    this.getList()
+                    this.$notify({
+                        title: '成功',
+                        message: '删除成功',
+                        type: 'success',
+                        duration: 2000,
+                        position: 'bottom-right'
+                    })
+                })
             })
-            //     .then(() => {
-            //     //接口换掉
-            //     del(ids.join(',')).then(() => {
-            //         this.getList()
-            //         this.$notify({
-            //             title: '成功',
-            //             message: '删除成功',
-            //             type: 'success',
-            //             duration: 2000,
-            //             position: 'bottom-right'
-            //         })
-            //     })
-            // })
             },
             //办理
             handleTransact(){
@@ -329,6 +362,7 @@
             //复选框操作
             handleSelectionChange(val) {
                 this.selections = val
+                console.log(val)
             },
 
             //查看流程
@@ -346,22 +380,15 @@
             //     // }
             // },
 
-            getList(query){
+            getList(query) {
                 // this.listLoading = true
-                if (query == null) {
-                    query = new Object()
-                }
-                query.tblType = 'T'
                 if (query) this.pageQuery.condition = query
-
-                //调接口
                 listByPage(this.pageQuery).then(resp => {
                     this.total = resp.data.total
-                    this.list = resp.data.records
+                    this.tableData = resp.data.records
                     this.listLoading = false
                 })
             },
-
 
             getSortClass: function(key) {
                 const sort = this.pageQuery.sort
