@@ -185,7 +185,7 @@ import {
   save_data,//新增保存
   update_data,//编辑保存
   delete_data,//删除
-} from "@/api/lhg/data_accreditation_management.js";
+} from "@/api/lhg/dataAccreditationManagement.js";
 
 import personTree from "@/components/publicpersontree/index";
 

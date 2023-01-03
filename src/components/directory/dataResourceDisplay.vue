@@ -120,7 +120,7 @@
         </div>
       </template>
       <div class="list_table"
-           style="height: calc(100vh - 280px);overflow: auto;">
+           style="height: calc(100vh - 310px);overflow: auto;">
         <el-table ref="multipleTable"
                   :data="list"
                   style="width: 100%"
