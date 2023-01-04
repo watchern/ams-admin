@@ -672,7 +672,7 @@
                   }
                 })
                 .catch(function (error) {
-                  console.log(error);
+                  // console.log(error);
                 });
       },
       add(){
@@ -1035,12 +1035,13 @@
       },
 
       save() {
-        //里面存的是 id
         this.common.startLoading();
         this.$store.dispatch(
                 "applyInfo/setDoCheckStatus",
                 this.opinionform.doCheck
-        ); //
+        );
+        //isLast 表示在多人办理时候 当前人是不是最后一个审批人
+        //是最后一个审批人会走提交方法 不是的话会走保存当前审批人意见
         if (this.isLast) {
           if (this.personItem[0].personUuid == "flowEnd") {
             //修改业务审核状态
@@ -1073,16 +1074,20 @@
             // }
           }
         }
-        setTimeout(() => {
-          //判断是否为最后一个节点 最后一个节点就将状态改为办理完成
-          this.personItem.forEach((value,index)=>{
-            if(value.personUuid == 'flowEnd'){
-              var templateParam = this.$route.params.approvalData.appDataUuid
-              this.$refs["applyPage"].updateApplyStatus(templateParam);
-            }
-        })
-          this.submitFlow();
-        }, 20);
+        // setTimeout(() => {
+        //   //判断是否为最后一个节点 最后一个节点就将状态改为办理完成
+        //   this.personItem.forEach((value,index)=>{
+        //     if(value.personUuid == 'flowEnd'){
+        //       //判断是否当前是 多人提交多人办理
+        //       //如果是多人办理 就查询这些人 （除当前登陆人是否都办理完成）到这一步说明当前登录人已经同意
+        //       //如果其他人都办理同意过了 就更新业务状态
+        //       var templateParam = this.$route.params.approvalData.appDataUuid
+        //       this.$refs["applyPage"].updateApplyStatus(templateParam);
+        //     }
+        // })
+        //
+        // }, 20);
+        this.submitFlow();
       },
       submitFlow() {
         if (this.isAllAssignment == "checkbox") {
@@ -1175,8 +1180,19 @@
                     }
                   });
         } else {
+          //现在状况是 后台直接写死的 isLast 是 true  所以只能满足单人办理 多人办理需要一个多人办理的标识
           submitToPerson(this.formData).then((resp) => {
             if (resp.code == "0") {
+              // setTimeout(() => {
+                //判断是否为最后一个节点 最后一个节点就将状态改为办理完成
+                this.personItem.forEach((value,index)=>{
+                  if(value.personUuid == 'flowEnd'){
+                    var templateParam = this.$route.params.approvalData.appDataUuid
+                    this.$refs["applyPage"].updateApplyStatus(templateParam);
+                  }
+              })
+
+              // }, 20);
               this.common.endLoading();
               this.common.alertMsg(1, "保存成功");
               //如果是启动流程提交，关闭模态框。不是跳转待办页面。

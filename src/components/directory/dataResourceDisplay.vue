@@ -64,23 +64,32 @@
         </div>
       </div>
 
-      <el-button type="primary"
-                 @click="sync_data()">同步数据结构</el-button>
+      <div class="click_btn">
+        <el-button type="primary"
+                   @click="sync_data()">同步数据结构</el-button>
+      </div>
 
-      <el-button type="primary"
-                 @click="Recognition()">任权管理</el-button>
+      <div class="click_btn">
+        <el-button type="primary"
+                   @click="Recognition()">任权管理</el-button>
+      </div>
 
-      <el-button type="primary"
-                 @click="on_register()">注册资产</el-button>
-      <el-button type="primary"
-                 @click="edit_list()">修改</el-button>
+      <div class="click_btn">
+        <el-button type="primary"
+                   @click="on_register()">注册资产</el-button>
+      </div>
+
+      <div class="click_btn">
+        <el-button type="primary"
+                   @click="edit_list()">修改</el-button>
+      </div>
 
     </div>
 
-    <el-skeleton style="width:100%"
+    <el-skeleton style="width:100%;float: left;height: calc(100vh - 280px)"
                  animated
                  :loading="list_loading"
-                 :count="5">
+                 :count="4">
       <template slot="template">
         <div class="box_ard">
           <div class="conter_list">
@@ -120,7 +129,7 @@
         </div>
       </template>
       <div class="list_table"
-           style="height: calc(100vh - 310px);overflow: auto;">
+           style="height: calc(100vh - 280px);overflow: auto;">
         <el-table ref="multipleTable"
                   :data="list"
                   style="width: 100%"
@@ -448,8 +457,21 @@ export default {
  
 <style scoped>
 /* 操作btn */
+.common_btn {
+  box-sizing: border-box;
+  float: left;
+  display: block;
+  width: 100%;
+}
+.common_btn >>> .el-button--medium {
+  padding: 10px !important;
+}
 .click_btn {
-  display: table-caption;
+  margin: 0 10px 10px;
+  float: left;
+}
+
+.click_btn {
   position: relative;
 }
 .show_btn {
@@ -460,7 +482,6 @@ export default {
   top: 36px;
   left: 50%;
   opacity: 0;
-  /* height: 0; */
   display: flex;
   justify-content: space-around;
   backdrop-filter: saturate(180%) blur(20px);
@@ -789,14 +810,6 @@ export default {
   color: #727273;
 }
 
-.common_btn {
-  padding: 10px 0 20px;
-  box-sizing: border-box;
-  display: flex;
-}
-.common_btn >>> .el-button {
-  margin: 0 10px;
-}
 .chellAll {
   background-color: #ffff;
   padding: 10px;
