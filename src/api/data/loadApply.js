@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 const baseURL = '/base'
-const amisUrl = '/amis'
+const amsUrl = '/ams'
 const dataUrl = '/data'
 
 const controllerName = 'loadDownApply'
