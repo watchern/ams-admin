@@ -270,7 +270,6 @@ import {
   updateData,
   getDraftTree
 } from "@/api/analysis/dataOamResource.js";
-import {isAdmin} from "@/api/user";
 import {addDraftFolder, getDraftFolderById, removeDraftFolder, updateDraftFolder} from "@/api/analysis/treeOamResoure";
 import MyElTree from "@/components/public/tree/src/tree.vue";
 export default {

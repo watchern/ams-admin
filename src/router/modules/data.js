@@ -196,9 +196,9 @@ const dataRouter = {
       },
     },
     {
-      path: 'data_oam_resource',
+      path: 'dataOamResource',
       name: '数据质量规则管理维护',
-      component: () => import('@/views/data/data_oam_resource/index'),
+      component: () => import('@/views/data/dataOamResource/index'),
       meta: {
         title: "数据管理-数据准备-数据质量规则管理维护"
       }
