@@ -40,10 +40,18 @@ export function deleteRole(id) {
   })
 }
 
-
+//根据审批单id去查询流程进度
 export function viewProcessWithApplyUuid(data) {
   return request({
     url: '/applyMes/sf/apply/viewProcessWithApplyUuid',
+    method: 'get',
+    params: data
+  })
+}
+//根据业务id去查询流程进度
+export function viewProcessWithAppDataUuid(data) {
+  return request({
+    url: '/applyMes/sf/apply/viewProcessWithAppDataUuid',
     method: 'get',
     params: data
   })

@@ -176,6 +176,8 @@ export default {
               duration:2000,
               position:'bottom-right'
             });
+            //刷新左侧sql草稿树
+            this.$emit("refreshDraftTree", "");
           } else {
             this.$message({ type: 'error', message: '删除失败' })
           }

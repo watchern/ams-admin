@@ -5,10 +5,10 @@ const dataRouter = {
   component: (resolve) =>
     require([
       "@/portal/" +
-        (process.env.VUE_APP_BASE_MENU === "withmenu"
-          ? "withmenu/" + process.env.VUE_APP_BASE_SKIN
-          : "withoutmenu") +
-        "/index",
+      (process.env.VUE_APP_BASE_MENU === "withmenu"
+        ? "withmenu/" + process.env.VUE_APP_BASE_SKIN
+        : "withoutmenu") +
+      "/index",
     ], resolve),
   meta: {},
   children: [
@@ -75,31 +75,31 @@ const dataRouter = {
       },
     },
     {
-      path: "data_res_management",
+      path: "dataResManagement",
       name: "数据资源管理",
-      component: () => import("@/views/data/data_res_management/index"),
+      component: () => import("@/views/data/dataResManagement/index"),
     },
     {
-      path: 'data_load_apply',
+      path: 'dataLoadApply',
       name: '数据装载与下线',
-      component: () => import('@/views/data/data_load_apply/index'),
+      component: () => import('@/views/data/dataLoadApply/index'),
       meta: {
         title: '数据管理-数据资源展示-数据装载与下线'
       }
     },
     {
-      path: 'data_res_management',
+      path: 'dataResManagement',
       name: '数据资源管理',
-      component: () => import('@/views/data/data_res_management/index'),
+      component: () => import('@/views/data/dataResManagement/index'),
       meta: {
         title: "数据管理-数据准备-数据资源管理",
       },
     },
     {
-      path: "data_accreditation_management",
+      path: "dataAccreditationManagement",
       name: "数据认权管理",
       component: () =>
-        import("@/views/data/data_accreditation_management/index"),
+        import("@/views/data/dataAccreditationManagement/index"),
       meta: {
         title: "数据管理-数据准备-数据认权管理",
       },
@@ -123,9 +123,9 @@ const dataRouter = {
     },
 
     {
-      path: "data_res_map",
+      path: "dataResMap",
       name: "数据资源地图",
-      component: () => import("@/views/data/data_res_map/index"),
+      component: () => import("@/views/data/dataResMap/index"),
       meta: {
         title: "数据管理-数据准备-数据资源地图",
       },
@@ -204,9 +204,9 @@ const dataRouter = {
       }
     },
     {
-      path: 'data_permissions_query',
+      path: 'dataPermissionsQuery',
       name: '数据权限查询',
-      component: () => import('@/views/data/data_permissions_query/index')
+      component: () => import('@/views/data/dataPermissionsQuery/index')
     },
 
     // {
@@ -226,9 +226,9 @@ const dataRouter = {
       component: () => import('@/views/data/exportApproval/index')
     },
     {
-      path: 'data_access_request',
+      path: 'dataAccessRequest',
       name: '数据接入申请',
-      component: () => import('@/views/data/data_access_request/index')
+      component: () => import('@/views/data/dataAccessRequest/index')
     },
 
 

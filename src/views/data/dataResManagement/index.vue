@@ -212,7 +212,7 @@ import {
   save_data,//新增保存
   update_data,//编辑保存
   delete_data,//删除
-} from "@/api/lhg/data_res_management.js";
+} from "@/api/lhg/dataResManagement.js";
 
 export default {
   components: {},

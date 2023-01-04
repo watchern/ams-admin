@@ -1,6 +1,6 @@
 <template>
 
-  <div class="app-container"
+  <div class="app-container max_width"
        style="width:100%;">
 
     <el-tabs v-model="activeName"
@@ -52,7 +52,7 @@
     </el-row> -->
 
     <div v-if="loading== true"
-         class="loading padding10"
+         class="loading padding10 max_width"
          style="position: inherit;">
       <div class="conter_loading"
            style="background:none">
@@ -62,13 +62,13 @@
     </div>
 
     <!-- 系统 主题 分层  目录-->
-    <div class="tree-containerall padding10"
+    <div class="tree-containerall padding10 max_width"
          v-if="loading== false">
       <!-- <div class="tree-option "
            v-loading="treeLoading"> -->
       <!-- :default-expand-all="true" 展开全部节点 -->
-<!--      :data="treeData1"-->
-<!--      @node-expand="nodeExpand"-->
+      <!--      :data="treeData1"-->
+      <!--      @node-expand="nodeExpand"-->
       <MyElTree ref="tree1"
                 :props="props"
                 class="filter-tree"
@@ -90,7 +90,8 @@
              class="el-icon-s-home"
              style="color: #409eff" />
           <!-- class="el-icon-folder" style="color:#409EFF" / -->
-          <i v-if="data.type === 'folder' || data.type === 'system' || data.type === 'layered' || data.type === 'theme'">
+          <i
+             v-if="data.type === 'folder' || data.type === 'system' || data.type === 'layered' || data.type === 'theme'">
             <img src="../../../assets/img/table_0.png"
                  style="
                 height: 16px;
@@ -167,7 +168,8 @@
       <!-- </div> -->
     </div>
     <!-- 扩容 -->
-    <div class="Expansion _width padding10">
+    <div class="Expansion _width padding10 max_width"
+         v-if="is_progress==true">
       <el-progress :percentage="50"></el-progress> <span @click="on_expansion()">扩容</span>
     </div>
   </div>
@@ -212,6 +214,12 @@ export default {
       type: Boolean,
       default: false // 左侧树操作按钮是否显示
     },
+
+    is_progress: {
+      type: Boolean,
+      default: true // 左侧树操作按钮是否显示
+    },
+
   },
   data () {
     return {
@@ -355,6 +363,13 @@ export default {
     getTree () {
       return this.$refs.tree1;
     },
+    filterNode (value, data) {
+      if (!value) return true;
+      return data.label.indexOf(value) !== -1;
+    },
+    getTree () {
+      return this.$refs.tree1;
+    },
     nodeClick (data, node, tree) {
       this.$emit("node-click", data, node, tree);
     },
@@ -364,7 +379,7 @@ export default {
       }
       this.$emit("handle-check", data, checkIds.checkedKeys.length > 0);
     },
-    // nodeExpand() {},
+    nodeExpand () { },
     appendnode (childData, parentNode) {
       this.$refs.tree1.append(childData, parentNode);
       parentNode.loaded = false;
@@ -507,6 +522,9 @@ export default {
 .data_s >>> .el-form-item__label {
   min-width: 65px;
 }
+/* .max_width {
+  max-width: 280px;
+} */
 .tree-containerall {
   /* height: 75vh; */
   height: calc(100% - 160px);
@@ -522,6 +540,10 @@ export default {
 }
 .tree-containerall >>> .flow-tree {
   height: 100%;
+}
+
+.Expansion >>> .el-progress__text {
+  margin-left: 20px !important;
 }
 </style>
 
@@ -601,9 +623,6 @@ export default {
 .Expansion {
   color: #5ac3eb;
 }
-// .Expansion >>> .progressbar {
-//   width: calc(100% - 50px);
-// }
 .Expansion span {
   width: 100%;
   text-align: center;

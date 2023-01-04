@@ -15,7 +15,7 @@
                     style="display: flex"
             >
               <el-input
-                      v-if="this.approvalData.customizedType == 'isDrafter'"
+                      v-if="this.approvalData.customizedType == 'isdrafter'"
                       type="input"
                       :title="applyTitleform.applyTitle"
                       v-model="applyTitleform.applyTitle"
@@ -465,7 +465,7 @@
       // this.add()
     },
     mounted: function () {
-      //当前状态 待办或者已办
+      //当前状态 待办或者已办 根据待办已办查询去对应的基础数据中查询 放开后需要把 dataSortValue 赋值成 dynamicDataSortValue
       // const currentStatus = this.$route.params.approvalData.currentState
       // CAL_COMPLETED 已办 CAL_ACCEPTED 待办
       // let dynamicDataSortValue = ''
@@ -672,7 +672,7 @@
                   }
                 })
                 .catch(function (error) {
-                  console.log(error);
+                  // console.log(error);
                 });
       },
       add(){
@@ -1035,40 +1035,61 @@
       },
 
       save() {
-        // alert(12312)
-        // alert(this.opinionform.doCheck)
         this.common.startLoading();
         this.$store.dispatch(
                 "applyInfo/setDoCheckStatus",
                 this.opinionform.doCheck
-        ); //
+        );
+        //isLast 表示在多人办理时候 当前人是不是最后一个审批人
+        //是最后一个审批人会走提交方法 不是的话会走保存当前审批人意见
         if (this.isLast) {
           if (this.personItem[0].personUuid == "flowEnd") {
             //修改业务审核状态
             this.$store.dispatch("applyInfo/setStatus", "2");
           } else if (
                   this.personform.customizedType &&
-                  this.personform.customizedType == "isDrafter"
+                  this.personform.customizedType == "isdrafter"
           ) {
+            //上面判断错误 原来写的是 idDrafter 但是传过来的却是 isdrafter
             //修改业务审核状态
             this.$store.dispatch("applyInfo/setStatus", "3");
+            //预留返回主审人修改 回调方法 修改对应业务状态为草稿 使用时放开即可
+            //这个地方 是 进入了返回主审修改的地方 如果返回主审人是申请人 那么就更新业务状态为草稿
+            //业务页面 不写方法虽然不会影响程序正常执行 但是控制台会爆红
+            // var createPersonUuid = this.$route.params.approvalData.createPersonUuid
+            // if(this.isAllAssignment == 'checkbox'){
+            //   this.personItem.forEach((value,index)=>{
+            //     if(value.persoUuid == createPersonUuid){
+            //       var templateParam = this.$route.params.approvalData.appDataUuid
+            //       this.$refs.applyPage.updateApplyStatusBecauseBackApplication(templateParam)
+            //     }
+            //   })
+            // }else{
+            //   this.personItem.forEach((value,index)=>{
+            //     if(value.personUuid == createPersonUuid){
+            //       var templateParam = this.$route.params.approvalData.appDataUuid
+            //       this.$refs.applyPage.updateApplyStatusBecauseBackApplication(templateParam)
+            //     }
+            //   })
+            // }
           }
         }
-        setTimeout(() => {
-          //判断是否为最后一个节点 最后一个节点就将状态改为办理完成
-          this.personItem.forEach((value,index)=>{
-            if(value.personUuid == 'flowEnd'){
-              var templateParam = this.$route.params.approvalData.appDataUuid
-              this.$refs["applyPage"].updateApplyStatus(templateParam);
-            }
-        })
-          this.submitFlow();
-        }, 20);
+        // setTimeout(() => {
+        //   //判断是否为最后一个节点 最后一个节点就将状态改为办理完成
+        //   this.personItem.forEach((value,index)=>{
+        //     if(value.personUuid == 'flowEnd'){
+        //       //判断是否当前是 多人提交多人办理
+        //       //如果是多人办理 就查询这些人 （除当前登陆人是否都办理完成）到这一步说明当前登录人已经同意
+        //       //如果其他人都办理同意过了 就更新业务状态
+        //       var templateParam = this.$route.params.approvalData.appDataUuid
+        //       this.$refs["applyPage"].updateApplyStatus(templateParam);
+        //     }
+        // })
+        //
+        // }, 20);
+        this.submitFlow();
       },
       submitFlow() {
-        // this.formData.personUuId = this.personform.transactor;
-        // alert(11)
-
         if (this.isAllAssignment == "checkbox") {
           this.formData.personUuId = this.checkedPerList.join(",");
         } else {
@@ -1126,7 +1147,6 @@
         }
         this.common.endLoading();
         this.common.startLoading();
-        // alert(this.isLast)
         if (!this.isLast) {
           this.$axios
                   .post("/starflow/applyMes/sf/apply/saveOpinions", this.formData)
@@ -1151,7 +1171,7 @@
                         this.$store.dispatch("applyInfo/setFstate", "1");
                       } else if (
                               this.personform.customizedType &&
-                              this.personform.customizedType == "isDrafter"
+                              this.personform.customizedType == "isdrafter"
                       ) {
                         //修改业务审核状态
                         this.$store.dispatch("applyInfo/setFstate", "1");
@@ -1160,8 +1180,19 @@
                     }
                   });
         } else {
+          //现在状况是 后台直接写死的 isLast 是 true  所以只能满足单人办理 多人办理需要一个多人办理的标识
           submitToPerson(this.formData).then((resp) => {
             if (resp.code == "0") {
+              // setTimeout(() => {
+                //判断是否为最后一个节点 最后一个节点就将状态改为办理完成
+                this.personItem.forEach((value,index)=>{
+                  if(value.personUuid == 'flowEnd'){
+                    var templateParam = this.$route.params.approvalData.appDataUuid
+                    this.$refs["applyPage"].updateApplyStatus(templateParam);
+                  }
+              })
+
+              // }, 20);
               this.common.endLoading();
               this.common.alertMsg(1, "保存成功");
               //如果是启动流程提交，关闭模态框。不是跳转待办页面。
@@ -1362,6 +1393,9 @@
                   ); //
                   //修改业务审核状态
                   this.$store.dispatch("applyInfo/setStatus", "0");
+                  //预留终止之后修改对应业务状态方法 使用时放开即可
+                  // var templateParam = this.$route.params.approvalData.appDataUuid
+                  // this.$refs.applyPage.updateApplyStatusBecauseBackApplication(templateParam)
                 })
                 .catch(() => {});
       },

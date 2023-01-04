@@ -6,57 +6,59 @@
                 <el-form :inline="true"
                          :model="query"
                          label-position="bottom">
-                <el-row>
-                    <el-col :span="6">
-                        <el-form-item label="申请名称：" prop="applyName">
-                            <el-input v-model="query.applyName"
-                                      clearable />
-                        </el-form-item>
-                    </el-col>
+                    <el-row>
                         <el-col :span="6">
-                        <el-form-item label="申请人：" prop="applyPerson">
-                            <el-input v-model="query.applyPerson"
-                                      clearable />
-                        </el-form-item>
+                            <el-form-item label="申请名称：" prop="applyName">
+                                <el-input v-model="query.applyName"
+                                          clearable/>
+                            </el-form-item>
                         </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="列表类型：" prop="status">
-                            <el-select v-model="query.status"
-                                       clearable
-                                       placeholder="请选择列表类型">
-                                <el-option v-for="item in statusType"
-                                           :key="item.value"
-                                           :label="item.label"
-                                           :value="item.value" />
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
+                        <el-col :span="6">
+                            <el-form-item label="申请人：" prop="applyPerson">
+                                <el-input v-model="query.applyPerson"
+                                          clearable/>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="列表类型：" prop="status">
+                                <el-select v-model="query.status"
+                                           clearable
+                                           placeholder="请选择列表类型">
+                                    <el-option v-for="item in statusType"
+                                               :key="item.value"
+                                               :label="item.label"
+                                               :value="item.value"/>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
                     </el-row>
                     <el-row>
                         <el-col :span="18">
-                        <el-form-item label="申请时间范围：" prop="applyTime" style="display: inline-block;">
-                            <el-date-picker
-                                    v-model="query.startTime"
-                                    type="datetime"
-                                    placeholder="开始时间"
-                                    value-format="yyyy-MM-dd HH:mm:ss"/>
-                            <el-date-picker
-                                    v-model="query.endTime"
-                                    type="datetime"
-                                    placeholder="结束时间"
-                                    value-format="yyyy-MM-dd HH:mm:ss"/>
+                            <el-form-item label="申请时间范围：" prop="applyTime" style="display: inline-block;">
+                                <el-date-picker
+                                        v-model="query.startTime"
+                                        type="datetime"
+                                        placeholder="开始时间"
+                                        value-format="yyyy-MM-dd HH:mm:ss"/>
+                                <el-date-picker
+                                        v-model="query.endTime"
+                                        type="datetime"
+                                        placeholder="结束时间"
+                                        value-format="yyyy-MM-dd HH:mm:ss"/>
 
-                        </el-form-item>
+                            </el-form-item>
                         </el-col>
                         <el-col :span="6" style="left: 80px">
-                        <el-form-item>
-                            <el-button type="primary"
-                                       @keyup.enter.native="search"
-                                       @click="search()">查询</el-button>
-                            <el-button type="primary"
-                                       @click="clearAll()">重置</el-button>
+                            <el-form-item>
+                                <el-button type="primary"
+                                           @keyup.enter.native="search"
+                                           @click="search()">查询
+                                </el-button>
+                                <el-button type="primary"
+                                           @click="clearAll()">重置
+                                </el-button>
 
-                        </el-form-item>
+                            </el-form-item>
                         </el-col>
                     </el-row>
 
@@ -65,17 +67,21 @@
             </div>
             <div class="padding10">
                 <div class="right_btn">
-                        <el-button type="primary"
-                                   @click="apply_add()" >添加</el-button>
-                        <el-button type="primary"
-                                   :disabled="Selectval_list.length === 0"
-                                   @click="apply_deletes()" >删除</el-button>
-                        <el-button type="primary"
-                                   :disabled="Selectval_list.length === 0"
-                                   @click="apply_transact()" >办理</el-button>
-                        <el-button type="primary"
-                                   :disabled="Selectval_list.length !== 1"
-                                   @click="apply_edit()" >编辑</el-button>
+                    <el-button type="primary"
+                               @click="apply_add()">添加
+                    </el-button>
+                    <el-button type="primary"
+                               :disabled="Selectval_list.length === 0"
+                               @click="apply_deletes()">删除
+                    </el-button>
+                    <el-button type="primary"
+                               :disabled="Selectval_list.length === 0"
+                               @click="apply_transact()">办理
+                    </el-button>
+                    <el-button type="primary"
+                               :disabled="Selectval_list.length !== 1"
+                               @click="apply_edit()">编辑
+                    </el-button>
                 </div>
             </div>
 
@@ -88,47 +94,47 @@
                       style="width: 100%;height:calc(100% - 140px);overflow: auto;"
                       @selection-change="handleSelectionChange">
                 <el-table-column type="selection"
-                                 width="55" />
+                                 width="55"/>
                 <el-table-column label="申请名称"
                                  prop="applyName">
                 </el-table-column>
                 <el-table-column label="申请时间"
                                  align="center"
                                  :formatter="formatApplyTime"
-                                 prop="applyTime" />
+                                 prop="applyTime"/>
                 <el-table-column label="当前环节"
                                  align="center"
-                                 prop="currentLink" />
+                                 prop="currentLink"/>
                 <el-table-column label="上一办理人"
                                  align="center"
-                                 prop="" />
+                                 prop=""/>
                 <el-table-column label="状态"
                                  align="center"
                                  prop="status">
                 </el-table-column>
                 <el-table-column label="申请人"
                                  align="center"
-                                 prop="applyPerson" />
+                                 prop="applyPerson"/>
                 <el-table-column label="操作"
                                  align="center"
-                                 prop="applyPerson" >
+                                 prop="applyPerson">
                     <template slot-scope="scope">
                         <el-button type="primary"
                                    class="oper-btn detail"
                                    title="详情"
-                                   @click="show_details(scope.row.applyUuid)" />
+                                   @click="show_details(scope.row.applyUuid)"/>
                     </template>
                 </el-table-column>
-<!--                <el-table-column label=""-->
-<!--                                 align="center"-->
-<!--                                 prop="applyPerson" >-->
-<!--                    <template slot-scope="scope">-->
-<!--                        <el-button type="primary"-->
-<!--                                   class="oper-btn detail"-->
-<!--                                   title="流程跟踪"-->
-<!--                                   @click="show_(scope.row.applyUuid)" />-->
-<!--                    </template>-->
-<!--                </el-table-column>-->
+                <!--                <el-table-column label=""-->
+                <!--                                 align="center"-->
+                <!--                                 prop="applyPerson" >-->
+                <!--                    <template slot-scope="scope">-->
+                <!--                        <el-button type="primary"-->
+                <!--                                   class="oper-btn detail"-->
+                <!--                                   title="流程跟踪"-->
+                <!--                                   @click="show_(scope.row.applyUuid)" />-->
+                <!--                    </template>-->
+                <!--                </el-table-column>-->
             </el-table>
         </div>
         <el-pagination v-show="page_list.total>0"
@@ -153,92 +159,92 @@
 
                 <el-row>
                     <el-col :span="12">
-                <el-form-item label="申请名称 "
-                              prop="applyName">
-                    <el-input type="text"
-                              v-model="form.applyName"
-                              style="width: 100%;"
-                              :rows="4">
-                    </el-input>
-                </el-form-item>
+                        <el-form-item label="申请名称 "
+                                      prop="applyName">
+                            <el-input type="text"
+                                      v-model="form.applyName"
+                                      style="width: 100%;"
+                                      :rows="4">
+                            </el-input>
+                        </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                <el-form-item label="申请人 "
-                              prop="applyPerson">
-                    <el-input style="width: 100%;"
-                              type="text"
-                              placeholder="默认为当前登录人"
-                              v-model="form.applyPerson"
-                              :rows="4" disabled></el-input>
-                </el-form-item>
+                        <el-form-item label="申请人 "
+                                      prop="applyPerson">
+                            <el-input style="width: 100%;"
+                                      type="text"
+                                      placeholder="默认为当前登录人"
+                                      v-model="form.applyPerson"
+                                      :rows="4" disabled></el-input>
+                        </el-form-item>
                     </el-col>
                 </el-row>
                 <el-row>
                     <el-col :span="12">
-                <el-form-item label="操作类型" prop="operationType">
-                    <el-select
-                            v-model="form.operationType"
-                            id="operationType"
-                            name="operationType"
-                            :disabled="this.dialogStatus === 'update'?true:false"
-                    >
-                        <el-option
-                                v-for="operationType in this.operationTypes"
-                                :value="operationType.value"
-                                :key="operationType.value"
-                                :label="operationType.label"
-                        ></el-option>
-                    </el-select>
-                </el-form-item>
+                        <el-form-item label="操作类型" prop="operationType">
+                            <el-select
+                                    v-model="form.operationType"
+                                    id="operationType"
+                                    name="operationType"
+                                    :disabled="this.dialogStatus === 'update'?true:false"
+                            >
+                                <el-option
+                                        v-for="operationType in this.operationTypes"
+                                        :value="operationType.value"
+                                        :key="operationType.value"
+                                        :label="operationType.label"
+                                ></el-option>
+                            </el-select>
+                        </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                <el-form-item  v-if="form.operationType === '0'" label="装载类型 " prop="loadType">
-                    <el-select
-                            v-model="form.loadType"
-                            id="loadType"
-                            name="loadType"
-                    >
-                        <el-option value="">请选择</el-option>
-                        <el-option value="个人数据">个人数据</el-option>
-                        <el-option value="全行数据">全行数据</el-option>
-                    </el-select>
-                </el-form-item>
+                        <el-form-item v-if="form.operationType === '0'" label="装载类型 " prop="loadType">
+                            <el-select
+                                    v-model="form.loadType"
+                                    id="loadType"
+                                    name="loadType"
+                            >
+                                <el-option value="">请选择</el-option>
+                                <el-option value="个人数据">个人数据</el-option>
+                                <el-option value="全行数据">全行数据</el-option>
+                            </el-select>
+                        </el-form-item>
                     </el-col>
                 </el-row>
                 <el-row>
                     <el-col :span="5">
-                <el-form-item v-if="form.operationType === '0'" label="行分隔符" prop="lineSeparator">
-                    <el-select
-                            v-model="form.lineSeparator"
-                            id="lineSeparator"
-                            name="lineSeparator"
-                            style="width: 150%"
-                    >
-                        <el-option
-                                v-for="lineSeparator in this.lineSeparators"
-                                :value="lineSeparator.value"
-                                :key="lineSeparator.value"
-                                :label="lineSeparator.label"
-                        ></el-option>
-                    </el-select>
-                </el-form-item>
+                        <el-form-item v-if="form.operationType === '0'" label="行分隔符" prop="lineSeparator">
+                            <el-select
+                                    v-model="form.lineSeparator"
+                                    id="lineSeparator"
+                                    name="lineSeparator"
+                                    style="width: 150%"
+                            >
+                                <el-option
+                                        v-for="lineSeparator in this.lineSeparators"
+                                        :value="lineSeparator.value"
+                                        :key="lineSeparator.value"
+                                        :label="lineSeparator.label"
+                                ></el-option>
+                            </el-select>
+                        </el-form-item>
                     </el-col>
                     <el-col :span="6">
-                <el-form-item v-if="form.operationType === '0'" label="列分隔符" prop="columnSeparator">
-                    <el-select
-                            v-model="form.columnSeparator"
-                            id="columnSeparator"
-                            name="columnSeparator"
-                            style="width: 80%"
-                    >
-                        <el-option
-                                v-for="columnSeparator in this.columnSeparators"
-                                :value="columnSeparator.value"
-                                :key="columnSeparator.value"
-                                :label="columnSeparator.label"
-                        ></el-option>
-                    </el-select>
-                </el-form-item >
+                        <el-form-item v-if="form.operationType === '0'" label="列分隔符" prop="columnSeparator">
+                            <el-select
+                                    v-model="form.columnSeparator"
+                                    id="columnSeparator"
+                                    name="columnSeparator"
+                                    style="width: 80%"
+                            >
+                                <el-option
+                                        v-for="columnSeparator in this.columnSeparators"
+                                        :value="columnSeparator.value"
+                                        :key="columnSeparator.value"
+                                        :label="columnSeparator.label"
+                                ></el-option>
+                            </el-select>
+                        </el-form-item>
                     </el-col>
                     <el-col :span="2">
                         <el-form-item v-if="form.operationType === '0'">
@@ -248,7 +254,7 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <el-form-item label="文件选择" v-if="form.operationType === '0'" >
+                <el-form-item label="文件选择" v-if="form.operationType === '0'">
                     <FileImport @handleChange="showFileType" @filePath="showFilePath" style="color: #6D8A88;">
                     </FileImport>
                 </el-form-item>
@@ -266,7 +272,7 @@
                 </el-form-item>
 
 
-                <el-row  v-if="form.operationType === '1'" style="margin-left: 10%">
+                <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
                     <el-col :span="6">
                         <el-form-item>
                             <DataTree>
@@ -303,8 +309,8 @@
                                   highlight-current-row
                                   style="width: 100%;"
                                   @selection-change="handleSelectionChange">
-                            <el-table-column width="40px" type="selection" />
-                            <el-table-column label="序号" width="60px" align="center" prop="applyId" />
+                            <el-table-column width="40px" type="selection"/>
+                            <el-table-column label="序号" width="60px" align="center" prop="applyId"/>
                             <el-table-column label="表路径" align="center">
 
                             </el-table-column>
@@ -397,7 +403,8 @@
                     type="primary"
                     class="table_header_btn"
                     @click="dialogDetailVisible = false"
-            >关闭</el-button
+            >关闭
+            </el-button
             >
         </el-dialog>
 
@@ -406,10 +413,10 @@
 </template>
 
 <script>
-    import FileImport from '@/views/data/data_load_apply/fileupload.vue';
+    import FileImport from '@/views/data/dataLoadApply/fileupload.vue';
     import DataTree from '@/components/public/tree/src/tree.vue';
     import FlowItem from '@/components/starflow/todowork/flowItem';
-    import Details from '@/views/data/data_load_apply/details.vue';
+    import Details from '@/views/data/dataLoadApply/details.vue';
     import {
         page_list_data,//列表
         getById,//详情
@@ -421,7 +428,7 @@
 
     export default {
         components: {FileImport, DataTree, FlowItem, Details},
-        data () {
+        data() {
             return {
                 // 查询列表
                 query: {
@@ -433,7 +440,7 @@
                     pageNo: 1,
                     pageSize: 10,
                 },
-                statusType:[
+                statusType: [
                     {
                         value: '草稿',
                         label: '草稿'
@@ -449,7 +456,7 @@
                 ],
                 listLoading: false,
                 page_list: [],//列表
-                details:{
+                details: {
                     applyName: '',// 申请名称
                     applyPerson: '',// 申请人
                     applyPersonUuid: '',//申请人主键
@@ -584,26 +591,26 @@
                 //新增编辑弹窗状态
                 dialogStatus: '',
                 updateShow: false,
-                applySelectionList:[],
+                applySelectionList: [],
 
                 rules: {
                     applyName: [
-                        { required: true, message: '请输入名称', trigger: 'blur' },
+                        {required: true, message: '请输入名称', trigger: 'blur'},
                     ],
                     // applyPerson: [
                     //     // { required: true, message: '请输入申请人', trigger: 'blur' },
                     // ],
                     operationType: [
-                        { required: true, message: '请选择操作类型', trigger: 'change' },
+                        {required: true, message: '请选择操作类型', trigger: 'change'},
                     ],
                     loadType: [
-                        { required: true, message: '请选择装载类型', trigger: 'change' },
+                        {required: true, message: '请选择装载类型', trigger: 'change'},
                     ],
                     lineSeparator: [
-                        { required: true, message: '请选择行操作符', trigger: 'change' },
+                        {required: true, message: '请选择行操作符', trigger: 'change'},
                     ],
                     columnSeparator: [
-                        { required: true, message: '请选择列操作符', trigger: 'change' },
+                        {required: true, message: '请选择列操作符', trigger: 'change'},
                     ],
                 },
                 flowSet: {
@@ -639,12 +646,12 @@
                     sceneName: '',
                     sceneCode: ''
                 },
-                detailsUuid:'',
+                detailsUuid: '',
             };
         },
         computed: {},
         watch: {},
-        created () {
+        created() {
             this.getList();//刷新列表
         },
         methods: {
@@ -662,7 +669,7 @@
                 }
             },
             // 编辑
-            apply_edit () {
+            apply_edit() {
                 var applyUuid = '';
                 this.Selectval_list.forEach((r, i) => {
                     applyUuid = r.applyUuid;
@@ -706,12 +713,12 @@
                 this.temp = Object.assign({}, this.applySelectionList[0])
                 // alert(JSON.stringify(this.temp))
                 //业务主键
-                this.flowItem.appDataUuid=this.temp.applyUuid;
+                this.flowItem.appDataUuid = this.temp.applyUuid;
                 //版本id 随机生成
-                this.flowItem.versionUuid= this.common.randomString4Len(8);
+                this.flowItem.versionUuid = this.common.randomString4Len(8);
                 // this.flowItem.applyTitle="场景详情流程";
                 //申请业务的名字（待办标题）
-                this.flowItem.applyTitle=this.temp.applyName;
+                this.flowItem.applyTitle = this.temp.applyName;
                 this.dialogVisible = true
             },
             closeFlowItem(val) {
@@ -727,11 +734,11 @@
 
             },
             // 请选择列表类型
-            selectlist_type (val) {
+            selectlist_type(val) {
 
             },
             // 时间格式化、
-            formatApplyTime (row, column) {
+            formatApplyTime(row, column) {
                 // 拼接日期规格为YYYY-MM-DD hh:mm:ss
                 var applyTime = new Date(row.applyTime)
                 var applyTimeRow = applyTime.getFullYear() + '-' + (applyTime.getMonth() + 1) + '-' + applyTime.getDate() + ' ' + applyTime.getHours() + ':' + applyTime.getMinutes() + ':' + applyTime.getSeconds()
@@ -739,19 +746,19 @@
             },
 
             // 清空
-            clearAll () {
+            clearAll() {
                 this.query.applyName = ''
                 this.query.applyPerson = ''
                 this.query.status = ''
                 this.query.startTime = ''
                 this.query.endTime = ''
             },
-            search () {
+            search() {
                 this.query.pageNo = 1
                 this.getList();//刷新列表
             },
             // 刷新列表
-            getList () {
+            getList() {
                 this.listLoading = true
                 let params = {
                     condition: {
@@ -770,13 +777,13 @@
                 })
             },
             //详情
-            show_details (applyUuid) {
+            show_details(applyUuid) {
                 this.form.applyUuid = applyUuid
                 this.detailsUuid = applyUuid
                 this.dialogDetailVisible = true
             },
             // 编辑
-            show_detail (applyUuid) {
+            show_detail(applyUuid) {
                 this.form.applyUuid = applyUuid
                 this.detailsUuid = applyUuid
                 this.dialogDetailVisible = true
@@ -784,7 +791,7 @@
             },
 
             // 编辑 接口
-            details_details () {
+            details_details() {
                 let params = {
                     applyUuid: this.form.applyUuid
                 }
@@ -794,27 +801,27 @@
 
             },
             // 多选
-            handleSelectionChange (val) {
+            handleSelectionChange(val) {
                 this.applySelectionList = []
                 this.Selectval_list = val;
-                val.forEach((value,index)=>{
+                val.forEach((value, index) => {
                     this.applySelectionList.push(value)
                 })
             },
             // 分页
-            handleCurrentChange (val) {
+            handleCurrentChange(val) {
                 this.query.pageNo = val
                 this.getList()
             },
             // 每页多少条
-            handleSizeChange (val) {
+            handleSizeChange(val) {
                 this.query.pageSize = val
                 this.getList()
             },
 
 
             // 新建保存 && 编辑保存
-            save (form) {
+            save(form) {
                 this.isDisable = true
                 setTimeout(() => {
                     this.isDisable = false
@@ -822,9 +829,9 @@
 
                 this.$refs[form].validate((valid) => {
                     if (valid) {
-                        if (this.title == '创建申请') {
+                        if (this.title === '创建申请') {
                             let params = {
-                                loadDownApply:{
+                                loadDownApply: {
                                     applyName: this.form.applyName,
                                     applyPerson: this.form.applyPerson,
                                     operationType: this.form.operationType,
@@ -836,12 +843,12 @@
                                     fileName: this.form.fileName,
                                 },
                             }
-                            if (this.fileType == ''){
+                            if (this.fileType === '') {
                                 this.$notify.warning("请选择文件！")
                                 return
                             }
                             save_data(params).then(res => {
-                                if (res.code == 0) {
+                                if (res.code === 0) {
                                     this.$message({
                                         message: '新增成功',
                                         type: 'success',
@@ -857,8 +864,7 @@
                                     })
                                 }
                             })
-                        }
-                        else {
+                        } else {
                             let params = {
                                 loadDownApply: {
                                     applyUuid: this.form.applyUuid,
@@ -878,28 +884,29 @@
                                     fileUuid: this.form.fileUuid,
                                 }
                             }
-                            if (this.form.status !== '草稿'){
+                            if (this.form.status !== '草稿') {
                                 this.$notify.warning("只有草稿状态可修改")
                                 return
                             }
-                                update_data(params).then(res => {
-                                    if (res.code == 0) {
-                                        this.$message({
-                                            message: '编辑成功',
-                                            type: 'success',
-                                            showClose: true,
-                                        })
-                                        this.applyDialogVisible = false
-                                        this.getList()
-                                    } else {
-                                        this.$message({
-                                            message: res.msg,
-                                            type: 'error',
-                                            showClose: true,
-                                        })
-                                    }
-                                })
-                            }}else {
+                            update_data(params).then(res => {
+                                if (res.code === 0) {
+                                    this.$message({
+                                        message: '编辑成功',
+                                        type: 'success',
+                                        showClose: true,
+                                    })
+                                    this.applyDialogVisible = false
+                                    this.getList()
+                                } else {
+                                    this.$message({
+                                        message: res.msg,
+                                        type: 'error',
+                                        showClose: true,
+                                    })
+                                }
+                            })
+                        }
+                    } else {
                         this.$message({
                             message: '请填写信息',
                             type: 'info',
@@ -911,24 +918,24 @@
             },
 
             // 关闭弹窗
-            handleClose (form) {
+            handleClose(form) {
                 this.$refs[form].resetFields() //清空添加的值
                 this.updateShow = false
             },
 
-            showFileType (fileType){
+            showFileType(fileType) {
                 this.fileType = fileType;
             },
 
-            showFilePath (filePath){
+            showFilePath(filePath) {
                 this.form.fileName = filePath;
             },
 
-            addApply (){
+            addApply() {
 
             },
 
-            delApply (){
+            delApply() {
 
             },
             saveOpinion() {
@@ -937,7 +944,7 @@
                     this.$refs["flowItem"].submitFlow();
                     //将状态修改为办理中
                     batchUpdateForHandle(this.applySelectionList)
-                        .then((res)=>{
+                        .then((res) => {
                             location.reload()
                         })
                 }, 20);
@@ -947,29 +954,34 @@
     };
 </script>
 
-<style scoped >
+<style scoped>
     .right_btn {
         float: right;
     }
+
     @import url("./../../../assets/css/common.css");
 
     .data_res >>> .el-form-item {
         margin-top: 25px !important;
         display: flex;
     }
+
     .data_res >>> .el-form-item--medium .el-form-item__label {
         text-align: right;
         float: left !important;
     }
+
     .data_res >>> .el-form-item__content {
         flex: 1;
         margin-left: 0 !important;
         float: left;
     }
+
     .data_res >>> .el-textarea .el-textarea__inner {
         resize: none;
     }
-    .transfer-center-item{
+
+    .transfer-center-item {
         width: 40px;
         height: 80px;
     }

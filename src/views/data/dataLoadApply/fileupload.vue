@@ -10,17 +10,18 @@
                 @file-progress="onFileProgress"
                 @file-error="onFileError"
         >
-            <uploader-unsupport />
-<!--            <uploader-drop>-->
-<!--                <uploader-btn :attrs="attrs" single-->
-<!--                >选择文件或者拖拽文件至此处</uploader-btn-->
-<!--                >-->
-<!--            </uploader-drop>-->
-<!--             <uploader-btn :attrs="attrs"><el-button title="上传" icon="el-icon-upload" class="oper-btn" type="primary" /></uploader-btn>-->
-<!--             <uploader-btn :attrs="attrs" title="上传" icon="el-icon-upload" class="oper-btn el-button el-button&#45;&#45;primary el-button&#45;&#45;medium" />-->
-             <uploader-btn :attrs="attrs" title="上传" icon="el-icon-upload" class="oper-btn" type="primary">选择文件</uploader-btn>
+            <uploader-unsupport/>
+            <!--            <uploader-drop>-->
+            <!--                <uploader-btn :attrs="attrs" single-->
+            <!--                >选择文件或者拖拽文件至此处</uploader-btn-->
+            <!--                >-->
+            <!--            </uploader-drop>-->
+            <!--             <uploader-btn :attrs="attrs"><el-button title="上传" icon="el-icon-upload" class="oper-btn" type="primary" /></uploader-btn>-->
+            <!--             <uploader-btn :attrs="attrs" title="上传" icon="el-icon-upload" class="oper-btn el-button el-button&#45;&#45;primary el-button&#45;&#45;medium" />-->
+            <uploader-btn :attrs="attrs" title="上传" icon="el-icon-upload" class="oper-btn" type="primary">选择文件
+            </uploader-btn>
             <!-- <uploader-btn :attrs="attrs" title="上传" icon="el-icon-upload" class="oper-btn" type="primary" /> -->
-            <uploader-list />
+            <uploader-list/>
         </uploader>
     </div>
 </template>
@@ -37,13 +38,14 @@
                     target: "/base/file/uploadFile",
                     testChunks: false,
                     singleFile: true, // 启用单个文件上传。上传一个文件后，第二个文件将超过现有文件，第一个文件将被取消
-                    query: { path: "E:\\0" },
+                    query: {path: "E:\\0"},
                 },
                 // TODO
                 attrs: {
                     accept: [".txt", ".xls", ".xlsx"],
                 },
-                fileType : '',
+                fileType: '',
+                fileName: '',
             };
         },
         methods: {
@@ -63,7 +65,10 @@
                         });
                     }
                 }
-                this.$emit('filePath', file.relativePath)
+                this.fileName = JSON.parse(response).data;
+                // this.$emit('filePath', file.relativePath)
+                this.$emit('filePath', this.fileName)
+                console.log("this.fileName:", this.fileName);
             },
             onFileProgress(rootFile, file, chunk) {
                 console.log(
@@ -177,7 +182,9 @@
         overflow-x: hidden;
         overflow-y: auto;
     }
+
     .oper-btn {
-        width: 80px;height: 30px;
+        width: 80px;
+        height: 30px;
     }
 </style>

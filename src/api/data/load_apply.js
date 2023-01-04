@@ -69,3 +69,11 @@ export function batchUpdateForFinishHandle(data){
         data
     })
 }
+export function showFile(data){
+    return request ({
+        baseURL: dataUrl,
+        url: `/${controllerName}/showFile`,
+        method: 'post',
+        data
+    })
+}
