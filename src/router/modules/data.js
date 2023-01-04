@@ -27,7 +27,7 @@ const dataRouter = {
       },
     },
     {
-      path: "dataPermission",
+      path: "datapermission",
       name: "数据使用权限申请",
       component: () => import("@/views/data/dataPermission/index"),
       meta: {
@@ -35,7 +35,7 @@ const dataRouter = {
       },
     },
     {
-      path: "sensitiveData",
+      path: "sensitivedata",
       name: "敏感数据识别",
       component: () => import("@/views/data/sensitiveData/index"),
       meta: {
