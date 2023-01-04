@@ -1,9 +1,10 @@
 <template>
   <div class="home flex a-start flex-column j-start w100">
     <div class="home-top flex-shrink w100">
-      <LeftMenu @changestyle="changestyle"/>
+      <LeftMenu @changestyle="changestyle" />
     </div>
-    <div class="home-right flex1 flex a-start j-start flex-column change-box" :style="stylestring">
+    <div class="home-right flex1 flex a-start j-start flex-column change-box"
+         :style="stylestring">
       <div class="home-right-content flex1 w100 skin-home-rc">
         <!-- <keep-alive> -->
         <router-view />
@@ -12,14 +13,20 @@
           <i class="el-icon-question seat" @click="getHelp()" style="color:rgb(90,195,235)"></i>
         </el-tooltip> -->
       </div>
-      <div v-if="isShowRightFooter" class="home-right-footer flex-shrink w100">
+      <div v-if="isShowRightFooter"
+           class="home-right-footer flex-shrink w100">
         <RightFooter />
       </div>
     </div>
-    <div class="readonlyTo" v-if="showHelpHeight" v-loading="loading">
-      <div class="readonlyChild" id="readonlyChild"></div>
-      <div @click="showHelpHeight = false" class="readonlyToX">X</div>
-      <div class="readonlyClose" @click="showHelpHeight = false"></div>
+    <div class="readonlyTo"
+         v-if="showHelpHeight"
+         v-loading="loading">
+      <div class="readonlyChild"
+           id="readonlyChild"></div>
+      <div @click="showHelpHeight = false"
+           class="readonlyToX">X</div>
+      <div class="readonlyClose"
+           @click="showHelpHeight = false"></div>
     </div>
   </div>
 </template>
@@ -37,11 +44,11 @@ export default {
     return {
       showHelpHeight: false,
       loading: false,
-      stylestring:'left:200px;width:calc(100vw - 200px);'
+      stylestring: 'left:200px;width:calc(100vw - 200px);'
     }
   },
   computed: {
-    isShowRightFooter() {
+    isShowRightFooter () {
       // const result = this.$route.meta && this.$route.meta.isShowRightFooter
       // return result || false
       if (this.$store.state.aceState.rightFooterTags.length > 0) {
@@ -51,7 +58,7 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     if (sessionStorage.getItem('store')) {
       this.$store.replaceState(Object.assign({}, this.$store.state, JSON.parse(sessionStorage.getItem('store'))))
     }
@@ -68,20 +75,20 @@ export default {
       this.loading = true
       this.showHelpHeight = true
       getHelpByMenuPath(saveData[0]).then(resp => {
-        if(resp.code === 0 && resp.data !== null){
+        if (resp.code === 0 && resp.data !== null) {
           if (resp.data.helpDocument !== '') {
             document.getElementById('readonlyChild').innerHTML = resp.data.helpDocument
           } else {
             document.getElementById('readonlyChild').innerHTML = '<p>暂无新手引导</p>'
           }
           this.loading = false
-        } else if (resp.code === 0 && resp.data === null){
+        } else if (resp.code === 0 && resp.data === null) {
           document.getElementById('readonlyChild').innerHTML = '<p>暂无新手引导</p>'
           this.loading = false
         }
       })
     },
-    changestyle(stylestring){
+    changestyle (stylestring) {
       this.stylestring = stylestring
     }
   }
@@ -89,40 +96,40 @@ export default {
 </script>
 
 <style lang="scss" scoped >
-.home{
+.home {
   height: 100vh;
-  background: #fff url('style/images/bg.png') no-repeat left center fixed;
+  background: #fff url("style/images/bg.png") no-repeat left center fixed;
   background-size: 100% 100%;
-  &-left{
+  &-left {
     height: 100vh;
   }
-  &-right{
+  &-right {
     height: calc(100vh - 62px);
-    &-content{
+    &-content {
       height: calc(100% - 95px);
     }
-    &-footer{
+    &-footer {
       height: 30px;
     }
   }
-  .homezz{
+  .homezz {
     height: 100% !important;
   }
 }
-.home-top{
+.home-top {
   //z-index:20201111;
-  z-index: 1999
+  z-index: 1999;
 }
-.home-right{
+.home-right {
   //#eaeaea url('style/images/bg.png') no-repeat left center fixed
-  background: #fff ;
+  background: #fff;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
   width: 100vw;
 }
-.home-right-content{
+.home-right-content {
   overflow: auto;
   width: calc(100% - 24px);
   height: calc(100% - 32px);
@@ -130,7 +137,7 @@ export default {
   margin: 16px 10px;
   background: #ffffff !important;
 }
-.seat{
+.seat {
   position: absolute;
   right: 4px;
   bottom: 4px;
@@ -139,7 +146,7 @@ export default {
   border-radius: 100%;
   cursor: pointer;
 }
-.readonlyTo{
+.readonlyTo {
   width: 100%;
   height: 100%;
   top: 0;
@@ -148,10 +155,10 @@ export default {
   z-index: 10001;
   animation: whiteIn 0.8s forwards;
 }
-.readonlyChild{
+.readonlyChild {
   position: absolute;
   top: 0;
-  right:0;
+  right: 0;
   width: 50vw;
   height: 100%;
   background-color: #fff;
@@ -161,18 +168,22 @@ export default {
   z-index: 100;
 }
 @keyframes whiteIn {
-  0%{width:0}
-  100%{width:50vw}
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 50vw;
+  }
 }
-.readonlyClose{
+.readonlyClose {
   position: fixed;
   top: 0;
   right: 0;
   width: 100vw;
   height: 100%;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.5);
 }
-.readonlyToX{
+.readonlyToX {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -186,7 +197,7 @@ export default {
   z-index: 1001;
   cursor: pointer;
 }
-.change-box{
+.change-box {
   position: absolute;
   top: 60px;
 }

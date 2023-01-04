@@ -3,7 +3,7 @@ import request from '@/utils/request'
 const baseURL = '/data'
 const controllerName = 'tableRelation'
 
-export function listByPage(data) {
+export function listByPage (data) {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/selectPage`,
@@ -12,7 +12,7 @@ export function listByPage(data) {
   })
 }
 
-export function save(data) {
+export function save (data) {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/save`,
@@ -21,7 +21,7 @@ export function save(data) {
   })
 }
 
-export function saveTableRelation(data) {
+export function saveTableRelation (data) {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/saveTableRelation`,
@@ -30,7 +30,7 @@ export function saveTableRelation(data) {
   })
 }
 
-export function update(data) {
+export function update (data) {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/update`,
@@ -39,7 +39,7 @@ export function update(data) {
   })
 }
 
-export function del(ids) {
+export function del (ids) {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/delete/${ids}`,
@@ -47,7 +47,7 @@ export function del(ids) {
   })
 }
 
-export function delByTableId(id) {
+export function delByTableId (id) {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/delByTableId`,
@@ -56,10 +56,19 @@ export function delByTableId(id) {
   })
 }
 
-export function getById(id) {
+export function getById (id) {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/getById`,
+    method: 'get',
+    params: { id: id }
+  })
+}
+
+export function save_data (id) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/save`,
     method: 'get',
     params: { id: id }
   })

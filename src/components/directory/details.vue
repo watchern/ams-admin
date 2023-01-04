@@ -45,15 +45,17 @@
               </el-form-item>
 
               <div class="son">
-                <el-form-item label="资源编码："
-                              prop="tableCode">
-                  <el-input type="text"
-                            :disabled="isDisable_input"
-                            @input="change($event)"
-                            v-model="form.tableCode"
-                            :rows="4">
-                  </el-input>
-                </el-form-item>
+                <div class="is_disabled">
+                  <el-form-item label="资源编码："
+                                prop="tableCode">
+                    <el-input type="text"
+                              disabled
+                              @input="change($event)"
+                              v-model="form.tableCode"
+                              :rows="4">
+                    </el-input>
+                  </el-form-item>
+                </div>
                 <el-form-item label="资源类型：">
                   <el-select v-model="form.tableType"
                              @input="change($event)"
@@ -138,9 +140,10 @@
                             :rows="4">
                   </el-input>
                 </el-form-item>
-                <div class="son_people">
+                <div class="son_people is_disabled">
                   <el-form-item label="负责人：">
                     <el-input :disabled="disabled"
+                              style="  background-color: rgba(0, 0, 0, 0.05) !important;"
                               v-model="form.personLiables"></el-input>
                   </el-form-item>
                   <el-button type="primary"
@@ -350,21 +353,21 @@
         </div>
         <el-table :data="visibleTableList"
                   style="width: 100%">
-          <el-table-column prop="chnName2"
+          <el-table-column prop="tbName"
                            label="主表"> </el-table-column>
-          <el-table-column prop="chnName2"
+          <el-table-column prop="relationTableName"
                            label="关联表"> </el-table-column>
           <el-table-column prop="selectType"
                            label="表关联方式"> </el-table-column>
 
-          <el-table-column prop="chnName2"
+          <el-table-column prop="colName"
                            label="主表字段"> </el-table-column>
 
-          <el-table-column prop="chnName2"
+          <el-table-column prop="tbName"
                            label="字段关联条件">
           </el-table-column>
 
-          <el-table-column prop="chnName2"
+          <el-table-column prop="relationCol"
                            label="关联字段"> </el-table-column>
 
           <el-table-column prop="selectType"
@@ -489,7 +492,7 @@ import ProcessTree from "@/components/directory/processTree.vue";
 import LineMap from "@/components/directory/lineMap.vue";
 import EditMap from "@/components/directory/editMap.vue";
 import personTree from "@/components/publicpersontree/index";
-import { getById } from '@/api/data/tablerelation'
+import { save_data } from '@/api/data/tablerelation'
 import {
   getBasicInfo, //列表点击详情
   getColsInfo, //列信息
@@ -1161,26 +1164,26 @@ export default {
 
     // 保存新的关联关系
     save_table () {
-      // let params = {
-      //   arr: this.visibleTableList
-      // };
-      // getById(params).then((resp) => {
-      //   
-      //   if (resp.code == 0) {
-      //     this.$message({
-      //       type: "success",
-      //       message: "新增表关系成功!",
-      //     });
-      // this.query_list();
-      this.$refs.tableLines.$emit("init") //刷新列表
-      // } else {
-      //   this.$message({
-      //     type: "error",
-      //     message: resp.msg,
-      //   });
-      // }
-      this.visibleTable = false;//关闭弹窗
-      // });
+      let params = {
+        arr: this.visibleTableList
+      };
+      save_data(params).then((resp) => {
+
+        if (resp.code == 0) {
+          this.$message({
+            type: "success",
+            message: "新增表关系成功!",
+          });
+          // this.query_list();
+          this.$refs.tableLines.$emit("init") //刷新列表
+        } else {
+          this.$message({
+            type: "error",
+            message: resp.msg,
+          });
+        }
+        this.visibleTable = false;//关闭弹窗
+      });
 
     },
     beforeDestroy () {
