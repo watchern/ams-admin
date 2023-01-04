@@ -296,6 +296,12 @@
           <h2 :class="{ isActive: navgatorIndex == 4 }">数据表字典信息</h2>
           数据表字典信息
           <div class="padding20">
+            <el-table :data="Column_tableData_dict" style="width: 100%">
+              <el-table-column prop="tableVersionNo" label="版本号"></el-table-column>
+              <el-table-column prop="tableUpdateStructure" label="数据结构"></el-table-column>
+              <el-table-column prop="createUserName" label="创建人"></el-table-column>
+              <el-table-column prop="createTime" label="创建时间"></el-table-column>
+            </el-table>
             <!-- <LineMap></LineMap> -->
             <!-- <EditMap></EditMap> -->
           </div>
@@ -583,6 +589,7 @@ export default {
       tableData: [],
       sceneCode: "auditor",
       Column_tableData_index: [], //索引信息
+      Column_tableData_dict: [], //表历史信息
       TagsAll: ["aa"],
       inputLength: "",
       search_name_infotion: "", //标签
