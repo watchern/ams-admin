@@ -3110,19 +3110,19 @@ export default {
      * 显示模型结果详细提取公共代码
      * */
     getIntoModelResultDetail(nextValue) {
-      if(this.useType == "sqlEditor" && nextValue.executeSQL.state == 2){
+      if(this.useType == "sqlEditor" && nextValue.executeSQL.state == 2 && nextValue.result.length > 0 ){
       // 纯前端分页处理开始
-      var resultData = nextValue.result;
+      var pageResultData = nextValue.result;
       let index = 0
       let resIndex = 0
-      let length = resultData.length
+      let length = pageResultData.length
       let size   = this.pageQuery.pageSize
       let result = new Array(Math.ceil(length / size));
       while (index < length) {
-        result[resIndex++] = resultData.slice(index, (index += size));
+        result[resIndex++] = pageResultData.slice(index, (index += size));
       }
-      resultData = result[this.pageQuery.pageNo -1]
-      nextValue.result = resultData;
+        pageResultData = result[this.pageQuery.pageNo -1]
+      nextValue.result = pageResultData;
       // 纯前端分页处理结束
 
       // 设置结果总数
