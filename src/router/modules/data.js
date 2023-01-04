@@ -27,7 +27,7 @@ const dataRouter = {
       },
     },
     {
-      path: "dataPermission",
+      path: "datapermission",
       name: "数据使用权限申请",
       component: () => import("@/views/data/dataPermission/index"),
       meta: {
@@ -35,7 +35,7 @@ const dataRouter = {
       },
     },
     {
-      path: "sensitiveData",
+      path: "sensitivedata",
       name: "敏感数据识别",
       component: () => import("@/views/data/sensitiveData/index"),
       meta: {
@@ -80,9 +80,9 @@ const dataRouter = {
       component: () => import("@/views/data/dataResManagement/index"),
     },
     {
-      path: 'dataLoadApply',
+      path: 'dataloadapply',
       name: '数据装载与下线',
-      component: () => import('@/views/data/dataLoadApply/index'),
+      component: () => import("@/views/data/dataloadapply/index"),
       meta: {
         title: '数据管理-数据资源展示-数据装载与下线'
       }
@@ -196,9 +196,9 @@ const dataRouter = {
       },
     },
     {
-      path: 'dataoamresource',
+      path: 'dataOamResource',
       name: '数据质量规则管理维护',
-      component: () => import('@/views/data/dataoamresource/index'),
+      component: () => import('@/views/data/dataOamResource/index'),
       meta: {
         title: "数据管理-数据准备-数据质量规则管理维护"
       }

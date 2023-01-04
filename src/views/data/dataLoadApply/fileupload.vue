@@ -10,7 +10,7 @@
                 @file-progress="onFileProgress"
                 @file-error="onFileError"
         >
-            <uploader-unsupport/>
+<!--            <uploader-unsupport/>-->
             <!--            <uploader-drop>-->
             <!--                <uploader-btn :attrs="attrs" single-->
             <!--                >选择文件或者拖拽文件至此处</uploader-btn-->
@@ -21,7 +21,7 @@
             <uploader-btn :attrs="attrs" title="上传" icon="el-icon-upload" class="oper-btn" type="primary">选择文件
             </uploader-btn>
             <!-- <uploader-btn :attrs="attrs" title="上传" icon="el-icon-upload" class="oper-btn" type="primary" /> -->
-            <uploader-list/>
+<!--            <uploader-list/>-->
         </uploader>
     </div>
 </template>
@@ -50,12 +50,11 @@
         },
         methods: {
             onFileSuccess: function (rootFile, file, response, chunk) {
-                if (chunk.offset == file.chunks.length - 1) {
+                if (chunk.offset === file.chunks.length - 1) {
                     if (JSON.parse(response).code !== 0) {
                         this.$message.error(this.$t(JSON.parse(response).msg));
                         file.cancel();
                     } else {
-                        const filename = JSON.parse(response).data;
                         this.$notify({
                             title: this.$t("message.title"),
                             message: this.$t(JSON.parse(response).data + "上传成功"),
@@ -77,7 +76,7 @@
                     }`
                 );
             },
-            onFileError(rootFile, file, response, chunk) {
+            onFileError(rootFile, file, response) {
                 this.$message.error(this.$t(JSON.parse(response).msg));
                 file.error();
             },
@@ -91,9 +90,10 @@
                 const fileReader = new FileReader();
                 const time = new Date().getTime();
                 const blobSlice =
-                    File.prototype.slice ||
-                    File.prototype.mozSlice ||
-                    File.prototype.webkitSlice;
+                    File.prototype.slice;
+                // ||
+                    // File.prototype.mozSlice ||
+                    // File.prototype.webkitSlice;
                 let currentChunk = 0;
                 // const chunkSize = this.chunkSize
                 const chunkSize = 10 * 1024 * 1024;
@@ -123,7 +123,7 @@
                     }
                 };
                 fileReader.onerror = function () {
-                    this.error(`文件${file.name}读取出错，请检查该文件`);
+                    this.$message.error(`文件${file.name}读取出错，请检查该文件`);
                     loading.close();
                     file.cancel();
                 };
@@ -139,13 +139,13 @@
                 file.uniqueIdentifier = md5; // 把md5值作为文件的识别码
                 file.resume(); // 开始上传
             },
-            filesAdded(file, event) {
+            filesAdded(file) {
                 // 大小判断
                 // const isLt100M = file.size / 1024 / 1024 < 10
                 const isLt100M = true;
-                var AllImgExt = ".txt|.xls|.xlsx|";
-                var extName = file.name.substring(file.name.lastIndexOf(".")).toLowerCase(); //（把路径中的所有字母全部转换为小写）
-                if (AllImgExt.indexOf(extName + "|") == -1) {
+                let AllImgExt = ".txt|.xls|.xlsx|";
+                let extName = file.name.substring(file.name.lastIndexOf(".")).toLowerCase(); //（把路径中的所有字母全部转换为小写）
+                if (AllImgExt.indexOf(extName + "|") === -1) {
                     let ErrMsg =
                         "该文件类型不允许上传。请上传 " +
                         AllImgExt +
@@ -155,11 +155,11 @@
                     return false;
                 }
                 //判断文件类型,赋值给fileType
-                if (extName == '.txt') {
+                if (extName === '.txt') {
                     this.fileType = '文本文档'
-                } else if (extName == '.xls') {
+                } else if (extName === '.xls') {
                     this.fileType = 'xls表格'
-                } else if (extName == '.xlsx') {
+                } else if (extName === '.xlsx') {
                     this.fileType = 'xlsx表格'
                 } else {
                     this.fileType = '其他类型'
@@ -176,11 +176,24 @@
 </script>
 
 <style scoped>
-    .uploader-example .uploader-list {
+    .uploader-example  {
         max-height: 440px;
         overflow: auto;
         overflow-x: hidden;
-        overflow-y: auto;
+    }
+
+    .uploader-btn {
+        margin-right: 4px;
+        display: inline-block;
+        position: relative;
+        padding: 4px 8px;
+        font-size: 100%;
+        line-height: 1.4;
+        color: #666;
+        border: 1px solid #666;
+        cursor: pointer;
+        border-radius: 2px;
+        outline: none;
     }
 
     .oper-btn {

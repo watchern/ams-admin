@@ -97,7 +97,6 @@
                 <el-col :span="24">
                     <el-table key="colMetaUuid"
                               v-loading="listLoading"
-                              border
                               fit
                               height="200px"
                               highlight-current-row
@@ -150,7 +149,7 @@
         getById,//详情
         batchUpdateForFinishHandle,
         showFile, //文件查看
-    } from "@/api/data/load_apply.js";
+    } from "@/api/data/loadApply";
 
     export default {
         props: {
@@ -195,7 +194,7 @@
             }
         },
         mounted: function () {
-            if (this.detailsUuid != undefined) {
+            if (this.detailsUuid !== undefined) {
                 this.queryByUuid(this.detailsUuid)
             }
             this.$emit("fromSon")
@@ -219,10 +218,10 @@
                     })
             },
             updateApplyStatus(value) {
-                var loadDownApply = {
+                let loadDownApply = {
                     applyUuid: value
                 }
-                var relParam = []
+                let relParam = []
                 relParam.push(loadDownApply)
                 batchUpdateForFinishHandle(relParam)
             },

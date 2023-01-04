@@ -54,6 +54,11 @@ const baseRouter = {
       path: 'helpDocument',
       name: '系统帮助',
       component: () => import('@/views/base/helpDocument/index')
+    },
+    {
+      path: 'excellist',
+      name: 'excel列表测试',
+      component: () => import('@/views/base/excelList/index')
     }
   ]
 }

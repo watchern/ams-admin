@@ -87,11 +87,10 @@
 
             <el-table v-loading="listLoading"
                       :data="page_list.records"
-                      height="400px"
-                      border
                       fit
                       highlight-current-row
-                      style="width: 100%;height:calc(100% - 140px);overflow: auto;"
+                      style="width: 100%"
+                      height="calc(100vh - 360px)"
                       @selection-change="handleSelectionChange">
                 <el-table-column type="selection"
                                  width="55"/>
@@ -99,24 +98,25 @@
                                  prop="applyName">
                 </el-table-column>
                 <el-table-column label="申请时间"
-                                 align="center"
                                  :formatter="formatApplyTime"
-                                 prop="applyTime"/>
+                                 text-align="center"
+                                 prop="applyTime"
+                />
                 <el-table-column label="当前环节"
-                                 align="center"
+                                 text-align="center"
                                  prop="currentLink"/>
                 <el-table-column label="上一办理人"
-                                 align="center"
+                                 text-align="center"
                                  prop=""/>
                 <el-table-column label="状态"
-                                 align="center"
+                                 text-align="center"
                                  prop="status">
                 </el-table-column>
                 <el-table-column label="申请人"
-                                 align="center"
+                                 text-align="center"
                                  prop="applyPerson"/>
                 <el-table-column label="操作"
-                                 align="center"
+                                 text-align="center"
                                  prop="applyPerson">
                     <template slot-scope="scope">
                         <el-button type="primary"
@@ -186,7 +186,7 @@
                                     v-model="form.operationType"
                                     id="operationType"
                                     name="operationType"
-                                    :disabled="this.dialogStatus === 'update'?true:false"
+                                    :disabled="dialogStatusValue"
                             >
                                 <el-option
                                         v-for="operationType in this.operationTypes"
@@ -413,18 +413,19 @@
 </template>
 
 <script>
-    import FileImport from '@/views/data/dataLoadApply/fileupload.vue';
-    import DataTree from '@/components/public/tree/src/tree.vue';
-    import FlowItem from '@/components/starflow/todowork/flowItem';
-    import Details from '@/views/data/dataLoadApply/details.vue';
     import {
         page_list_data,//列表
         getById,//详情
         save_data,//新增保存
         update_data,//编辑保存
         delete_data,//删除
-        batchUpdateForHandle,
-    } from "@/api/data/load_apply.js";
+        batchUpdateForHandle
+    } from "@/api/data/loadApply";
+    import FileImport from '@/views/data/dataLoadApply/fileupload';
+    import DataTree from '@/components/public/tree/src/tree';
+    import FlowItem from '@/components/starflow/todowork/flowItem';
+    import Details from '@/views/data/dataLoadApply/details';
+
 
     export default {
         components: {FileImport, DataTree, FlowItem, Details},
@@ -647,6 +648,7 @@
                     sceneCode: ''
                 },
                 detailsUuid: '',
+                dialogStatusValue: false,
             };
         },
         computed: {},
@@ -670,13 +672,14 @@
             },
             // 编辑
             apply_edit() {
-                var applyUuid = '';
-                this.Selectval_list.forEach((r, i) => {
+                let applyUuid = '';
+                this.Selectval_list.forEach((r) => {
                     applyUuid = r.applyUuid;
                 });
                 this.applyDialogVisible = true
                 this.isDisable = false
                 this.updateShow = true
+                this.dialogStatusValue = true
 
                 this.title = '编辑申请'
                 this.dialogStatus = 'update'
@@ -686,8 +689,8 @@
             },
             //删除
             apply_deletes() {
-                var applyUuids = [];
-                this.Selectval_list.forEach((r, i) => {
+                let applyUuids = [];
+                this.Selectval_list.forEach((r) => {
                     applyUuids.push(r.applyUuid);
                 });
                 this.$confirm("确定删除所选申请?", "提示", {
@@ -729,20 +732,11 @@
             delectData(val) {
                 this.dialogVisible = val;
             },
-            //导出
-            apply_export() {
-
-            },
-            // 请选择列表类型
-            selectlist_type(val) {
-
-            },
-            // 时间格式化、
-            formatApplyTime(row, column) {
+            // 时间格式化
+            formatApplyTime(row) {
                 // 拼接日期规格为YYYY-MM-DD hh:mm:ss
-                var applyTime = new Date(row.applyTime)
-                var applyTimeRow = applyTime.getFullYear() + '-' + (applyTime.getMonth() + 1) + '-' + applyTime.getDate() + ' ' + applyTime.getHours() + ':' + applyTime.getMinutes() + ':' + applyTime.getSeconds()
-                return applyTimeRow
+                let applyTime = new Date(row.applyTime)
+                return applyTime.getFullYear() + '-' + (applyTime.getMonth() + 1) + '-' + applyTime.getDate() + ' ' + applyTime.getHours() + ':' + applyTime.getMinutes() + ':' + applyTime.getSeconds()
             },
 
             // 清空
@@ -783,18 +777,15 @@
                 this.dialogDetailVisible = true
             },
             // 编辑
-            show_detail(applyUuid) {
-                this.form.applyUuid = applyUuid
-                this.detailsUuid = applyUuid
-                this.dialogDetailVisible = true
-                this.details_details();
-            },
+            // show_detail(applyUuid) {
+            //     this.form.applyUuid = applyUuid
+            //     this.detailsUuid = applyUuid
+            //     this.dialogDetailVisible = true
+            //     this.details_details();
+            // },
 
             // 编辑 接口
             details_details() {
-                let params = {
-                    applyUuid: this.form.applyUuid
-                }
                 getById(this.form.applyUuid).then(res => {
                     this.form = res.data
                 })
@@ -804,7 +795,7 @@
             handleSelectionChange(val) {
                 this.applySelectionList = []
                 this.Selectval_list = val;
-                val.forEach((value, index) => {
+                val.forEach((value) => {
                     this.applySelectionList.push(value)
                 })
             },
@@ -896,6 +887,7 @@
                                         showClose: true,
                                     })
                                     this.applyDialogVisible = false
+                                    this.dialogStatusValue = false
                                     this.getList()
                                 } else {
                                     this.$message({
@@ -930,11 +922,9 @@
             showFilePath(filePath) {
                 this.form.fileName = filePath;
             },
-
             addApply() {
 
             },
-
             delApply() {
 
             },
@@ -944,7 +934,7 @@
                     this.$refs["flowItem"].submitFlow();
                     //将状态修改为办理中
                     batchUpdateForHandle(this.applySelectionList)
-                        .then((res) => {
+                        .then(() => {
                             location.reload()
                         })
                 }, 20);
