@@ -1,15 +1,15 @@
 <template>
-  <div class="app-container" ref="sqlEditorDiv">
-    <div
-      id="container"
-      v-loading="executeLoading"
-      :element-loading-text="loadText"
-    >
+  <div class="app-container"
+       ref="sqlEditorDiv">
+    <div id="container"
+         v-loading="executeLoading"
+         :element-loading-text="loadText">
       <div id="sidebar">
         <div class="unfold-shuju add-sidiv">
           <img :src="shuju" /><span>数据表</span>
         </div>
-        <div class="unfold-canshu" v-if="callType != 'graphModel'">
+        <div class="unfold-canshu"
+             v-if="callType != 'graphModel'">
           <img :src="canshu" /><span>参数</span>
         </div>
         <div class="unfold-sql"><img :src="sql" /><span>函数</span></div>
@@ -18,275 +18,252 @@
           <img :src="sql" /><span>标记</span>
         </div> -->
       </div>
-      <div id="leftPart" class="left-part">
+      <div id="leftPart"
+           class="left-part">
         <div class="left-dataTree">
-          <el-input
-            id="dataSearch"
-            style="margin-top: 5px"
-            v-model="tableSearchInput"
-            placeholder="输入关键字进行过滤"
-            @change="tableTreeSearch"
-            suffix-icon="el-icon-search"
-          />
-          <ul id="dataTree" class="ztree" style="margin-top: 5px" />
+          <el-input id="dataSearch"
+                    style="margin-top: 5px"
+                    v-model="tableSearchInput"
+                    placeholder="输入关键字进行过滤"
+                    @change="tableTreeSearch"
+                    suffix-icon="el-icon-search" />
+          <ul id="dataTree"
+              class="ztree"
+              style="margin-top: 5px" />
         </div>
         <div class="left-paramTree">
-          <el-input
-            id="paramSearch"
-            style="margin-top: 5px"
-            v-model="paramSearchInput"
-            placeholder="输入关键字进行过滤"
-            @change="paramTreeSearch"
-            suffix-icon="el-icon-search"
-          />
+          <el-input id="paramSearch"
+                    style="margin-top: 5px"
+                    v-model="paramSearchInput"
+                    placeholder="输入关键字进行过滤"
+                    @change="paramTreeSearch"
+                    suffix-icon="el-icon-search" />
           <div style="height: 30px; padding: 5px 10px 5px 0">
-            <el-button
-              type="primary"
-              size="mini"
-              @click="refshParamList()"
-              style="float: right"
-              >刷新</el-button
-            >
+            <el-button type="primary"
+                       size="mini"
+                       @click="refshParamList()"
+                       style="float: right">刷新</el-button>
           </div>
-          <ul id="paramTree" class="ztree" style="margin-top: 5px" />
+          <ul id="paramTree"
+              class="ztree"
+              style="margin-top: 5px" />
         </div>
         <div class="left-sqlFunTree">
-          <el-input
-            id="sqlSearch"
-            style="margin-top: 5px"
-            v-model="functionInput"
-            placeholder="输入关键字进行过滤"
-            @change="functionTreeSearch"
-            suffix-icon="el-icon-search"
-          />
-          <ul id="sqlFunTree" class="ztree" style="margin-top: 5px" />
+          <el-input id="sqlSearch"
+                    style="margin-top: 5px"
+                    v-model="functionInput"
+                    placeholder="输入关键字进行过滤"
+                    @change="functionTreeSearch"
+                    suffix-icon="el-icon-search" />
+          <ul id="sqlFunTree"
+              class="ztree"
+              style="margin-top: 5px" />
         </div>
         <!--        SQL草稿树-->
         <div class="left-draftTree">
-          <el-input
-                  id="draftSearch"
-                  style="margin-top: 5px"
-                  v-model="draftInput"
-                  placeholder="输入关键字进行过滤"
-                  @change="draftTreeSearch"
-                  suffix-icon="el-icon-search"
-          />
-          <ul id="draftTree" class="ztree" style="margin-top: 5px" />
+          <el-input id="draftSearch"
+                    style="margin-top: 5px"
+                    v-model="draftInput"
+                    placeholder="输入关键字进行过滤"
+                    @change="draftTreeSearch"
+                    suffix-icon="el-icon-search" />
+          <ul id="draftTree"
+              class="ztree"
+              style="margin-top: 5px" />
         </div>
         <div class="left-bjTree">
-          <ul id="bjTree" class="ztree" style="margin-top: 5px;padding:20px 0 0 30px;" />
+          <ul id="bjTree"
+              class="ztree"
+              style="margin-top: 5px;padding:20px 0 0 30px;" />
         </div>
       </div>
-      <div id="rightPart" style="height: 100%">
-        <div id="sqlEditorDiv" class="sql-editor-div">
-          <el-row type="flex" class="row-bg">
+      <div id="rightPart"
+           style="height: 100%">
+        <div id="sqlEditorDiv"
+             class="sql-editor-div">
+          <el-row type="flex"
+                  class="row-bg">
             <el-col>
               <span>数据量：</span>
-              <el-select v-model="resultDataMaxCount" style="font-weight: bolder;width: 100px">
-                <el-option
-                        v-for="item in resultDataMaxCountList"
-                        :key="item"
-                        :label="item"
-                        :value="item"
-                />
+              <el-select v-model="resultDataMaxCount"
+                         style="font-weight: bolder;width: 100px">
+                <el-option v-for="item in resultDataMaxCountList"
+                           :key="item"
+                           :label="item"
+                           :value="item" />
               </el-select>
-              <el-button
-                type="primary"
-                size="small"
-                class="oper-btn format btn-width-max"
-                @click="sqlFormat"
-                style="margin-left: 18px"
-              />
-              <el-button
-                type="primary"
-                size="small"
-                class="oper-btn start"
-                @click="executeSQL"
-              />
-              <el-button
-                type="primary"
-                size="small"
-                class="oper-btn opensql btn-width-md"
-                @click="openSqlDraftList"
-              />
-              <el-button
-                type="primary"
-                size="small"
-                class="oper-btn"
-                @click="openNewEditor"
-                style="width: 120px"
-              >打开新SQL编辑器</el-button>
-              <el-button
-                type="primary"
-                size="small"
-                class="oper-btn sqlcheck btn-width-md"
-                @click="getColumnSqlInfo"
-              />
+              <el-button type="primary"
+                         size="small"
+                         class="oper-btn format btn-width-max"
+                         @click="sqlFormat"
+                         style="margin-left: 18px" />
+              <el-button type="primary"
+                         size="small"
+                         class="oper-btn start"
+                         @click="executeSQL" />
+              <el-button type="primary"
+                         size="small"
+                         class="oper-btn opensql btn-width-md"
+                         @click="openSqlDraftList" />
+              <el-button type="primary"
+                         size="small"
+                         class="oper-btn"
+                         @click="openNewEditor"
+                         style="width: 120px">打开新SQL编辑器</el-button>
+              <el-button type="primary"
+                         size="small"
+                         class="oper-btn sqlcheck btn-width-md"
+                         @click="getColumnSqlInfo" />
               <el-dropdown style="margin-left: 10px">
-                <el-button type="primary" size="small" class="oper-btn draft" />
+                <el-button type="primary"
+                           size="small"
+                           class="oper-btn draft" />
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item @click.native="openSaveSqlDialog(1)"
-                    >SQL保存</el-dropdown-item
-                  >
-                  <el-dropdown-item @click.native="openSaveSqlDialog(2)"
-                    >SQL另存为</el-dropdown-item
-                  >
+                  <el-dropdown-item @click.native="openSaveSqlDialog(1)">SQL保存</el-dropdown-item>
+                  <el-dropdown-item @click.native="openSaveSqlDialog(2)">SQL另存为</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
-              <el-dropdown type="primary" style="margin-left: 10px">
-                <el-button
-                  type="primary"
-                  size="small"
-                  class="oper-btn maintain btn-width-md"
-                />
+              <el-dropdown type="primary"
+                           style="margin-left: 10px">
+                <el-button type="primary"
+                           size="small"
+                           class="oper-btn maintain btn-width-md" />
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item
-                          @click.native="findAndReplace(2)"
-                  >查找
+                  <el-dropdown-item @click.native="findAndReplace(2)">查找
                   </el-dropdown-item>
-                  <el-dropdown-item
-                          @click.native="findAndReplace(1)"
-                  >替换
+                  <el-dropdown-item @click.native="findAndReplace(1)">替换
                   </el-dropdown-item>
 
-                  <el-dropdown-item
-                          @click.native="changeSize(2)"
-                  >字体缩小
+                  <el-dropdown-item @click.native="changeSize(2)">字体缩小
                   </el-dropdown-item>
-                  <el-dropdown-item
-                          @click.native="changeSize(1)"
-                  >字体放大
+                  <el-dropdown-item @click.native="changeSize(1)">字体放大
                   </el-dropdown-item>
-                  <el-dropdown-item @click.native="caseTransformation(1)"
-                    >转大写</el-dropdown-item
-                  >
-                  <el-dropdown-item @click.native="caseTransformation(2)"
-                    >转小写</el-dropdown-item
-                  >
-                  <el-dropdown-item @click.native="selectSqlNotes()"
-                    >注释选中行</el-dropdown-item
-                  >
-                  <el-dropdown-item @click.native="selectSqlCancelNotes()"
-                    >取消注释</el-dropdown-item
-                  >
+                  <el-dropdown-item @click.native="caseTransformation(1)">转大写</el-dropdown-item>
+                  <el-dropdown-item @click.native="caseTransformation(2)">转小写</el-dropdown-item>
+                  <el-dropdown-item @click.native="selectSqlNotes()">注释选中行</el-dropdown-item>
+                  <el-dropdown-item @click.native="selectSqlCancelNotes()">取消注释</el-dropdown-item>
                   <!-- <el-dropdown-item @click.native="bjSqlNotes()"
                     >标记</el-dropdown-item
                   > -->
                 </el-dropdown-menu>
               </el-dropdown>
-              <label
-                style="
+              <label style="
                   margin-right: -43px;
                   color: #9b4c4c;
                   margin-left: 10px;
                   margin-left: 15px;
                   cursor: pointer;
                 "
-                @click="modelResultSavePathDialog = true"
-                >{{ path }} <i class="el-icon-edit" style="font-size: 16px"></i
-              ></label>
+                     @click="modelResultSavePathDialog = true">{{ path }} <i class="el-icon-edit"
+                   style="font-size: 16px"></i></label>
               <!-- 切换数据源下拉框 -->
-              <div class="chooseDataSource" v-if="typeof callType == 'undefined'">
+              <div class="chooseDataSource"
+                   v-if="typeof callType == 'undefined'">
                 数据源：
-                <el-select
-                        v-model="dataSource"
-                        style="width: 120px"
-                >
-                  <el-option
-                          v-for=" item in dataSourceList"
-                          :key="item.value"
-                          :label="item.label"
-                          :value="item.value"
-                  />
+                <el-select v-model="dataSource"
+                           style="width: 120px">
+                  <el-option v-for=" item in dataSourceList"
+                             :key="item.value"
+                             :label="item.label"
+                             :value="item.value" />
                 </el-select>
               </div>
             </el-col>
           </el-row>
-          <div
-            id="sqlDraft"
-            class="row"
-            style="
+          <div id="sqlDraft"
+               class="row"
+               style="
               display: none;
               margin-left: 30px;
               height: 30px;
               line-height: 30px;
               font-weight: bold;
-            "
-          />
-          <textarea ref="sql" style="width: 100%; height: 320px" />
+            " />
+          <textarea ref="sql"
+                    style="width: 100%; height: 320px" />
         </div>
         <div id="horizontal" />
 
         <!-- 结果展示和参数输入区域 -->
-        <div id="bottomPart" lay-filter="result-data">
+        <div id="bottomPart"
+             lay-filter="result-data">
           <!-- <div id="maxOpen" class="max-size" ref="maxSize">
             <div id="iconImg" class="iconImg" alt="最大化" @click="maxOpen" />
             <div id="iconImg-huifu" class="iconImg" @click="maxOpen" />
           </div> -->
-<!--          && isExecuteErro条件是为了避免显示错误信息的时候还显示该remindMessage-->
-          <div  v-if="resultShow.length == 0 && isExecuteError" style="margin-top:20px">
+          <!--          && isExecuteErro条件是为了避免显示错误信息的时候还显示该remindMessage-->
+          <div v-if="resultShow.length == 0 && isExecuteError"
+               style="margin-top:20px">
             <pre style="color: red;background-color: white;font-size: 16px;padding: 10px">{{remindMessage}}</pre>
           </div>
-          <div id="maxOpen" class="max-size" ref="maxSize">
-            <div id="iconImg" class="iconImg" alt="最大化" @click="maxOpen('big')" />
-            <div id="iconImg-huifu" class="iconImg" @click="maxOpen('normal')" />
+          <div id="maxOpen"
+               class="max-size"
+               ref="maxSize">
+            <div id="iconImg"
+                 class="iconImg"
+                 alt="最大化"
+                 @click="maxOpen('big')" />
+            <div id="iconImg-huifu"
+                 class="iconImg"
+                 @click="maxOpen('normal')" />
           </div>
-          <div
-            v-for="result in resultShow"
-            id="dataShow"
-            class="data-show"
-            v-if="isExecuteError"
-          >
-            <childTabs
-                :callType="callType"
-              ref="childTabsRef"
-              :key="result.id"
-              :pre-value="currentExecuteSQL"
-              :maintableindex="maintableindex"
-              use-type="sqlEditor"
-              style="width: 100%"
-              :chartModelUuid="modelUuid"
-              :modelId="modelUuid"
-              id="childTabs1"
-                :executeSqlViewData="executeSqlViewData"
-                :dataSource="dataSource"
-                @refreshDataTabTree="refreshDataTabTree"
-        />
-      </div>
-      <div v-if="!isExecuteError" class="data-show">
-        <el-tabs type="border-card" style="height: 30px">
-          <el-tab-pane label="错误信息">
-            <el-card class="box-card" style="height: 100px" align="center">
-              <div style="font-weight: lighter; font-size: 15px">
-                {{ errorMessage}}
-              </div>
-            </el-card>
-          </el-tab-pane>
-        </el-tabs>
-      </div>
-    </div>
+          <div v-for="result in resultShow"
+               id="dataShow"
+               class="data-show"
+               v-if="isExecuteError">
+            <childTabs :callType="callType"
+                       ref="childTabsRef"
+                       :key="result.id"
+                       :pre-value="currentExecuteSQL"
+                       :maintableindex="maintableindex"
+                       use-type="sqlEditor"
+                       style="width: 100%"
+                       :chartModelUuid="modelUuid"
+                       :modelId="modelUuid"
+                       id="childTabs1"
+                       :executeSqlViewData="executeSqlViewData"
+                       :dataSource="dataSource"
+                       @refreshDataTabTree="refreshDataTabTree" />
+          </div>
+          <div v-if="!isExecuteError"
+               class="data-show">
+            <el-tabs type="border-card"
+                     style="height: 30px">
+              <el-tab-pane label="错误信息">
+                <el-card class="box-card"
+                         style="height: 100px"
+                         align="center">
+                  <div style="font-weight: lighter; font-size: 15px">
+                    {{ errorMessage}}
+                  </div>
+                </el-card>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
+        </div>
       </div>
       <div id="vertical"><i class="el-icon-d-caret skin-textColor" /></div>
-      <input
-        id="personId"
-        type="hidden"
-        value="<%=LoginUserInfo.getLoginUserId()%>"
-      />
-      <div id="tableMenu" class="rightMenu">
+      <input id="personId"
+             type="hidden"
+             value="<%=LoginUserInfo.getLoginUserId()%>" />
+      <div id="tableMenu"
+           class="rightMenu">
         <ul>
           <li @click="getSelectSql('tableMenu')">生成SELECT语句</li>
-<!--          <li @click="selectTableRelInfo('tableMenu')">查看表关联信息</li>-->
+          <!--          <li @click="selectTableRelInfo('tableMenu')">查看表关联信息</li>-->
           <li @click="selectTableInfo('tableMenu')">查看表信息</li>
         </ul>
       </div>
-      <div id="paramfolderMenu" class="rightMenu">
+      <div id="paramfolderMenu"
+           class="rightMenu">
         <ul>
           <li @click="addParamForm()">添加参数</li>
           <li @click="setSelectTreeNode(1)">添加分类</li>
           <!--<li onclick="">查看表信息</li>-->
         </ul>
       </div>
-      <div id="paramMenu" class="rightMenu">
+      <div id="paramMenu"
+           class="rightMenu">
         <ul>
           <li @click="updateParamForm()">修改参数</li>
           <li @click="deleteParam()">删除参数</li>
@@ -295,213 +272,211 @@
         </ul>
       </div>
     </div>
-    <form id="countForm" class="form-horizontal" style="display: none">
+    <form id="countForm"
+          class="form-horizontal"
+          style="display: none">
       <div class="form-group">
         <label class="control-label">视图SQL:</label>
         <div>
-          <textarea
-            id="viewSql"
-            name="viewSql"
-            type="text"
-            class="form-control"
-            style="height: 400px"
-            readonly
-          />
+          <textarea id="viewSql"
+                    name="viewSql"
+                    type="text"
+                    class="form-control"
+                    style="height: 400px"
+                    readonly />
         </div>
       </div>
     </form>
-    <div id="tableNameDiv" style="display: none" class="col-sm-12">
-      <div class="col-sm-10" style="margin: 20px">
-        <label
-          id="saveTips"
-          class="col-sm-10 control-label"
-          style="color: red"
-        />
-        <input
-          id="tableName"
-          name="tableName"
-          type="text"
-          class="form-control"
-        />
+    <div id="tableNameDiv"
+         style="display: none"
+         class="col-sm-12">
+      <div class="col-sm-10"
+           style="margin: 20px">
+        <label id="saveTips"
+               class="col-sm-10 control-label"
+               style="color: red" />
+        <input id="tableName"
+               name="tableName"
+               type="text"
+               class="form-control" />
       </div>
     </div>
-    <el-dialog
-      v-if="sqlDraftDialogFormVisible"
-      title="请填写SQL草稿名称"
-      :visible.sync="sqlDraftDialogFormVisible"
-      :append-to-body="true"
-    >
-      <el-form
-        ref="sqlDraftForm"
-        :model="sqlDraftForm"
-        :rules="sqlDraftFormRules"
-      >
-        <el-form-item
-          label="草稿名称"
-          :label-width="formLabelWidth"
-          prop="draftTitle"
-        >
-          <el-input v-model="sqlDraftForm.draftTitle" autocomplete="off" />
+    <el-dialog v-if="sqlDraftDialogFormVisible"
+               title="请填写SQL草稿名称"
+               :visible.sync="sqlDraftDialogFormVisible"
+               :append-to-body="true">
+      <el-form ref="sqlDraftForm"
+               :model="sqlDraftForm"
+               :rules="sqlDraftFormRules">
+        <el-form-item label="草稿名称"
+                      :label-width="formLabelWidth"
+                      prop="draftTitle">
+          <el-input v-model="sqlDraftForm.draftTitle"
+                    autocomplete="off" />
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer"
+           class="dialog-footer">
         <el-button @click="sqlDraftDialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="choosePath()">确 定</el-button>
+        <el-button type="primary"
+                   @click="choosePath()">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog
-      v-if="sqlDraftFolderDialogFormVisible"
-      title="请选择SQL草稿保存路径"
-      :visible.sync="sqlDraftFolderDialogFormVisible"
-      :append-to-body="true"
-    >
-      <sqlDraftTree ref="sqlDraftTree"  @refreshDraftList="refreshDraftList" :isShowDraft="false" openType="save"/>
-      <div slot="footer" class="dialog-footer">
+    <el-dialog v-if="sqlDraftFolderDialogFormVisible"
+               title="请选择SQL草稿保存路径"
+               :visible.sync="sqlDraftFolderDialogFormVisible"
+               :append-to-body="true">
+      <sqlDraftTree ref="sqlDraftTree"
+                    @refreshDraftList="refreshDraftList"
+                    :isShowDraft="false"
+                    openType="save" />
+      <div slot="footer"
+           class="dialog-footer">
         <el-button @click="sqlDraftFolderDialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveSqlDialog()">确 定</el-button>
+        <el-button type="primary"
+                   @click="saveSqlDialog()">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog
-      v-if="sqlDraftDialog"
-      title="SQL草稿列表"
-      :visible.sync="sqlDraftDialog"
-      :append-to-body="true"
-      width="85%"
-    >
+    <el-dialog v-if="sqlDraftDialog"
+               title="SQL草稿列表"
+               :visible.sync="sqlDraftDialog"
+               :append-to-body="true"
+               width="85%">
       <el-container class="content-box">
         <el-aside class="tree-side">
-          <sqlDraftTree ref="sqlDraftTree"  @refreshDraftList="refreshDraftList" :isShowDraft="true" openType="show"/>
+          <sqlDraftTree ref="sqlDraftTree"
+                        @refreshDraftList="refreshDraftList"
+                        :isShowDraft="true"
+                        openType="show" />
         </el-aside>
-        <div class="list-side" ref="listSide">
-          <sqlDraftList ref="sqlDraftList" @refreshDraftTree="refreshDraftTree" />
+        <div class="list-side"
+             ref="listSide">
+          <sqlDraftList ref="sqlDraftList"
+                        @refreshDraftTree="refreshDraftTree" />
         </div>
       </el-container>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer"
+           class="dialog-footer">
         <el-button @click="closesqlDraftList">关闭</el-button>
-        <el-button type="primary" @click="useSql">使用SQL</el-button>
+        <el-button type="primary"
+                   @click="useSql">使用SQL</el-button>
       </div>
     </el-dialog>
-    <el-dialog
-      v-if="dialogFormVisible"
-      title="请输入参数"
-      :visible.sync="dialogFormVisible"
-      :append-to-body="true"
-    >
+    <el-dialog v-if="dialogFormVisible"
+               title="请输入参数"
+               :visible.sync="dialogFormVisible"
+               :append-to-body="true">
       <!--            <paramDraw v-if="dialogFormVisible" ref="paramDrawRef" :my-id="paramDrawUuid" />-->
-      <paramDrawNew
-        v-if="dialogFormVisible"
-        :sql="this.executeData.sql"
-        :arr="this.executeData.arr"
-        v-bind:paramDrawUuid.sync="paramDrawUuid"
-        ref="paramDrawRefNew"
-      ></paramDrawNew>
-      <div slot="footer" class="dialog-footer">
+      <paramDrawNew v-if="dialogFormVisible"
+                    :sql="this.executeData.sql"
+                    :arr="this.executeData.arr"
+                    v-bind:paramDrawUuid.sync="paramDrawUuid"
+                    ref="paramDrawRefNew"></paramDrawNew>
+      <div slot="footer"
+           class="dialog-footer">
         <el-button @click="dialogFormVisible = false">关闭</el-button>
-        <el-button type="primary" @click="replaceNodeParam">确定</el-button>
+        <el-button type="primary"
+                   @click="replaceNodeParam">确定</el-button>
       </div>
     </el-dialog>
-    <el-dialog
-      title="选择SQL结果保存路径"
-      v-if="modelResultSavePathDialog"
-      :visible.sync="modelResultSavePathDialog"
-      width="30%"
-      :append-to-body="true"
-    >
-      <data-tree
-        :data-user-id="personCode"
-        :scene-code="sceneCode"
-        :tree-type="treeType"
-        style="height: 500px; overflow-y: scroll"
-        @node-click="handleClick"
-        @handle-check="handleCheck"
-      />
-      <span slot="footer" class="dialog-footer">
+    <el-dialog title="选择SQL结果保存路径"
+               v-if="modelResultSavePathDialog"
+               :visible.sync="modelResultSavePathDialog"
+               width="30%"
+               :append-to-body="true">
+      <dataTree :data-user-id="personCode"
+                :scene-code="sceneCode"
+                :tree-type="treeType"
+                style="height: 500px; overflow-y: scroll"
+                @node-click="handleClick"
+                @handle-check="handleCheck" />
+      <span slot="footer"
+            class="dialog-footer">
         <el-button @click="cancelSave">取 消</el-button>
-        <el-button type="primary" @click="modelResultSavePathDetermine"
-          >确 定</el-button
-        >
+        <el-button type="primary"
+                   @click="modelResultSavePathDetermine">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog
-      title="表关联信息"
-      :visible.sync="selectTableRelInfoDialog"
-      width="60%"
-      :append-to-body="true"
-    >
-      <tablerelation
-        :table-id="selectTableRelInfoTableId"
-        :open-type="openTypeOne"
-      />
-      <div slot="footer" class="dialog-footer">
+    <el-dialog title="表关联信息"
+               :visible.sync="selectTableRelInfoDialog"
+               width="60%"
+               :append-to-body="true">
+      <tablerelation :table-id="selectTableRelInfoTableId"
+                     :open-type="openTypeOne" />
+      <div slot="footer"
+           class="dialog-footer">
         <el-button @click="selectTableRelInfoDialog = false">关闭</el-button>
       </div>
     </el-dialog>
-    <el-dialog
-      title="表信息"
-      :visible.sync="selectTableInfoDialog"
-      width="60%"
-      :append-to-body="true"
-      class="tableInfo"
-    >
+    <el-dialog title="表信息"
+               :visible.sync="selectTableInfoDialog"
+               width="60%"
+               :append-to-body="true"
+               class="tableInfo">
       <!-- 基本信息详情 -->
       <Details ref="Details_ref"></Details>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer"
+           class="dialog-footer">
         <el-button @click="selectTableInfoDialog = false">关闭</el-button>
       </div>
     </el-dialog>
-    <el-dialog
-      :close-on-click-modal="false"
-      v-if="dialogFolderVisible"
-      title="请填写分类信息"
-      :visible.sync="dialogFolderVisible"
-    >
-      <el-form :model="folderform" class="detail-form">
+    <el-dialog :close-on-click-modal="false"
+               v-if="dialogFolderVisible"
+               title="请填写分类信息"
+               :visible.sync="dialogFolderVisible">
+      <el-form :model="folderform"
+               class="detail-form">
         <el-form-item label="分类名称">
-          <el-input v-model="folderform.folderName" autocomplete="off" />
+          <el-input v-model="folderform.folderName"
+                    autocomplete="off" />
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer"
+           class="dialog-footer">
         <el-button @click="dialogFolderVisible = false">取 消</el-button>
-        <el-button type="primary" @click="() => enterBtn()">确 定</el-button>
+        <el-button type="primary"
+                   @click="() => enterBtn()">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog
-      :append-to-body="false"
-      :close-on-click-modal="false"
-      v-if="addParamDialog"
-      :title="textMap[dialogStatus]"
-      :visible.sync="addParamDialog"
-      class="modelParamsDia"
-    >
-      <addParam
-        :selectTreeNode="selectTreeNode"
-        @refshParamList="refshParamList"
-        :operationObj="operationObj"
-        ref="addParam"
-      ></addParam>
-      <div slot="footer" class="dialog-footer">
+    <el-dialog :append-to-body="false"
+               :close-on-click-modal="false"
+               v-if="addParamDialog"
+               :title="textMap[dialogStatus]"
+               :visible.sync="addParamDialog"
+               class="modelParamsDia">
+      <addParam :selectTreeNode="selectTreeNode"
+                @refshParamList="refshParamList"
+                :operationObj="operationObj"
+                ref="addParam"></addParam>
+      <div slot="footer"
+           class="dialog-footer">
         <el-button @click="addParamDialog = false">取 消</el-button>
-        <el-button type="primary" @click="() => saveParam()">确 定</el-button>
+        <el-button type="primary"
+                   @click="() => saveParam()">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog
-      :append-to-body="false"
-      :close-on-click-modal="false"
-      v-if="ParamModelDialog"
-      title="参数关联信息"
-      :visible.sync="ParamModelDialog"
-    >
+    <el-dialog :append-to-body="false"
+               :close-on-click-modal="false"
+               v-if="ParamModelDialog"
+               title="参数关联信息"
+               :visible.sync="ParamModelDialog">
       <div>
-          <el-form ref="parammodelform" :model="parammodelform" >
-<el-form-item label="图形化模型">
-    <el-input type="textarea" v-model="parammodelform.model" disabled></el-input>
-  </el-form-item>
-  <el-form-item label="模型">
-    <el-input type="textarea" v-model="parammodelform.graph" disabled></el-input>
-  </el-form-item>
-          </el-form>
+        <el-form ref="parammodelform"
+                 :model="parammodelform">
+          <el-form-item label="图形化模型">
+            <el-input type="textarea"
+                      v-model="parammodelform.model"
+                      disabled></el-input>
+          </el-form-item>
+          <el-form-item label="模型">
+            <el-input type="textarea"
+                      v-model="parammodelform.graph"
+                      disabled></el-input>
+          </el-form-item>
+        </el-form>
       </div>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer"
+           class="dialog-footer">
         <el-button @click="ParamModelDialog = false">关 闭</el-button>
       </div>
     </el-dialog>
@@ -598,7 +573,7 @@ import {
   delFolder,
   listByAmmParam,
 } from "@/api/analysis/parammanagerlist";
-import {isAdmin} from "@/api/user";
+import { isAdmin } from "@/api/user";
 import Details from "@/components/directory/details.vue"
 /**
  * 当前执行进度
@@ -658,7 +633,7 @@ export default {
     'modelFolderPath',
     "callType",
   ],
-  created() {
+  created () {
     if (this.dataUserId != undefined && this.sceneCode1 != undefined) {
       this.personCode = this.dataUserId;
       this.sceneCode = this.sceneCode1;
@@ -674,34 +649,34 @@ export default {
         this.isManager = false
       }
     })
-    loadResultDataMaxCountList().then(res =>{
-      if(res.data.length > 0){
+    loadResultDataMaxCountList().then(res => {
+      if (res.data.length > 0) {
         this.resultDataMaxCountList = res.data
         this.resultDataMaxCount = res.data[0]
       }
     })
   },
-  data() {
+  data () {
     return {
       // 显示执行sql的弹窗数据（getexecutetask接口传入的第一个参数）
       executeSqlViewData: {},
-      remindMessage:"注意事项：\n（1）【' ' as xx】字段时,空列必须要空格,例如【select ' ' as a from dual】\n（2）where条件中使用参数时，in(参数)无需加单引号,例如【select a from dual where a in (参数名称)】\n（3）where条件中使用参数时，使用非in(参数)时需加单引号,例如【select a from dual where a =‘参数名称’\n（4）注释：/*注释内容*/写法即可完成，注释里面不要包含系统中的参数\n（5）开发模型时，SQL必须全部执行后才可保存\n（6）编写模型语句时，DROP语句需放在最后\n（7）当前SQL将使用最后一个select语句结果集进行输出结果定义配置\n（8）编写含有参数的SQL条件语句并符合以下条件时，需特殊处理：\n  ① in条件语句，括号内不能出现空格，例：where name in (参数XX)\n ② 存在于括号内的条件，条件应与括号之间存在空格，例：where ( name='参数X' and type='参数2' ) or type='参数3'",
-      resultDataMaxCountList:[200,500,1000,10000,100000],
+      remindMessage: "注意事项：\n（1）【' ' as xx】字段时,空列必须要空格,例如【select ' ' as a from dual】\n（2）where条件中使用参数时，in(参数)无需加单引号,例如【select a from dual where a in (参数名称)】\n（3）where条件中使用参数时，使用非in(参数)时需加单引号,例如【select a from dual where a =‘参数名称’\n（4）注释：/*注释内容*/写法即可完成，注释里面不要包含系统中的参数\n（5）开发模型时，SQL必须全部执行后才可保存\n（6）编写模型语句时，DROP语句需放在最后\n（7）当前SQL将使用最后一个select语句结果集进行输出结果定义配置\n（8）编写含有参数的SQL条件语句并符合以下条件时，需特殊处理：\n  ① in条件语句，括号内不能出现空格，例：where name in (参数XX)\n ② 存在于括号内的条件，条件应与括号之间存在空格，例：where ( name='参数X' and type='参数2' ) or type='参数3'",
+      resultDataMaxCountList: [200, 500, 1000, 10000, 100000],
       resultDataMaxCount: 200,
       dataSource: "Postgre",
       dataSourceList: [{
-        value:"Hive",
-        label:"MRS"
+        value: "Hive",
+        label: "MRS"
       }, {
-        value:"Postgre",
-        label:"DWS"
+        value: "Postgre",
+        label: "DWS"
       }],
       //参数关联dialog
       ParamModelDialog: false,
       //参数关联表单
-      parammodelform:{
-          model:'',
-          graph:''
+      parammodelform: {
+        model: '',
+        graph: ''
       },
       //添加文件夹dialog
       dialogFolderVisible: false,
@@ -818,14 +793,14 @@ export default {
       sceneCode: "auditor",
       treeType: "save",
       pushUuid: "",
-      maintableindex:'',
+      maintableindex: '',
       personalTitle: '审计人员场景',
       // 是否为管理员身份
       isManager: false,
     };
   },
   watch: {
-    dialogFormVisible(value) {
+    dialogFormVisible (value) {
       // this.$nextTick(function() {
       //     if (value) {
       //         this.$refs.paramDrawRef.initParamHtmlSS(
@@ -843,36 +818,36 @@ export default {
         }
       });
     },
-    dataSource(){
+    dataSource () {
       // 切换数据源后刷新页面重新获取对应数据源的数据
       this.executeLoading = true
       this.loadText = '正在重新加载数据表及函数...'
       this.getWebSocket();
       initFunctionTree(this.dataSource)
       initTableTip(this.dataUserId, this.sceneCode1).then((result) => {
-          initTableTree(result, this.dataSource)
-          var relTableMap = {}
-          var expTableMap = {}
-          if (result.data != null) {
-              for (let i = 0; i < result.data.length; i++) {
-                  if (result.data[i].type === 'table') {
-                      relTableMap[result.data[i].enName] = []
-                      expTableMap[result.data[i].enName] = result.data[i].extCol
-                  }
-              }
+        initTableTree(result, this.dataSource)
+        var relTableMap = {}
+        var expTableMap = {}
+        if (result.data != null) {
+          for (let i = 0; i < result.data.length; i++) {
+            if (result.data[i].type === 'table') {
+              relTableMap[result.data[i].enName] = []
+              expTableMap[result.data[i].enName] = result.data[i].extCol
+            }
           }
-          this.executeLoading = false
+        }
+        this.executeLoading = false
       });
     }
   },
-  mounted() {
+  mounted () {
     try {
       let graphToolDiv = this.$parent.$parent.$refs.graphToolDiv;
       if (graphToolDiv) {
         this.$refs.sqlEditorDiv.style.height =
           $(graphToolDiv).height() - 120 + "px";
       }
-    } catch (e) {}
+    } catch (e) { }
     this.initData();
     this.initWebSocket();
     sendSqlEditorVue(this);
@@ -880,10 +855,10 @@ export default {
     this.$refs.maxSize.style.display = "none"
   },
   methods: {
-    openNewEditor(){
+    openNewEditor () {
       window.open(window.location.href);
     },
-    choosePath(){
+    choosePath () {
       this.$refs["sqlDraftForm"].validate((valid) => {
         if (valid) {
           this.sqlDraftDialogFormVisible = false
@@ -891,30 +866,30 @@ export default {
         }
       });
     },
-    refreshDraftList(data){
+    refreshDraftList (data) {
       let query = {}
-      data.type == "draft"? query = { sqlDraftUuid: data.id} : query = { parentUuid: data.id , path: data.path  }
+      data.type == "draft" ? query = { sqlDraftUuid: data.id } : query = { parentUuid: data.id, path: data.path }
       this.$refs.sqlDraftList.getList(query)
     },
-    refreshDraftTree(){
+    refreshDraftTree () {
       this.$refs.sqlDraftTree.refreshTree()
     },
     //刷新数据表树
-    refreshDataTabTree(){
+    refreshDataTabTree () {
       this.executeLoading = true
       initTableTip(this.dataUserId, this.sceneCode1).then((result) => {
-          initTableTree(result, this.dataSource)
-          var relTableMap = {}
-          var expTableMap = {}
-          if (result.data != null) {
-              for (let i = 0; i < result.data.length; i++) {
-                  if (result.data[i].type === 'table') {
-                      relTableMap[result.data[i].enName] = []
-                      expTableMap[result.data[i].enName] = result.data[i].extCol
-                  }
-              }
+        initTableTree(result, this.dataSource)
+        var relTableMap = {}
+        var expTableMap = {}
+        if (result.data != null) {
+          for (let i = 0; i < result.data.length; i++) {
+            if (result.data[i].type === 'table') {
+              relTableMap[result.data[i].enName] = []
+              expTableMap[result.data[i].enName] = result.data[i].extCol
+            }
           }
-          this.executeLoading = false
+        }
+        this.executeLoading = false
       });
     },
     // dataSourceChange(){
@@ -923,7 +898,7 @@ export default {
     /**
      * 表单确定按钮
      */
-    enterBtn() {
+    enterBtn () {
       if (this.operationType === 1) {
         this.addModelParamFolder();
       } else {
@@ -936,7 +911,7 @@ export default {
      * @param data 数据 要设置的节点数据
      * @param operationType 1、添加；2、修改
      */
-    setSelectTreeNode(operationType) {
+    setSelectTreeNode (operationType) {
       this.pfd = $("#paramfolderdatabox").val();
       console.log(this.pfd);
       this.operationType = operationType;
@@ -950,7 +925,7 @@ export default {
       }
       this.dialogFolderVisible = true;
     },
-    addModelParamFolder() {
+    addModelParamFolder () {
       this.folderform.folderId = getUuid();
       this.folderform.parentFolderId = this.selectTreeNode.id;
       this.folderform.folderSort = 0;
@@ -965,7 +940,7 @@ export default {
         }
       });
     },
-    updateModelParamFolder() {
+    updateModelParamFolder () {
       this.form.folderId = this.selectTreeNode.id;
       this.form.parentFolderId = null;
       this.form.folderPath = null;
@@ -983,7 +958,7 @@ export default {
     /**
      *添加参数窗体
      */
-    addParamForm() {
+    addParamForm () {
       this.pfd = $("#paramfolderdatabox").val();
       this.selectTreeNode = this.pfd;
       if (this.selectTreeNode == null) {
@@ -1002,7 +977,7 @@ export default {
     /**
      * 修改参数
      */
-    updateParamForm() {
+    updateParamForm () {
       this.pfd = $("#paramfolderdatabox").val();
       this.selectTreeNode = this.pfd;
       var selectObj = $("#paramdatabox").val();
@@ -1015,7 +990,7 @@ export default {
       this.dialogStatus = "update";
       this.addParamDialog = true;
     },
-    deleteParam() {
+    deleteParam () {
       let that = this;
       var selectObj = $("#paramdatabox").val();
       if (!selectObj) {
@@ -1073,17 +1048,17 @@ export default {
     /**
      *保存参数对象
      */
-    saveParam() {
+    saveParam () {
       this.$refs.addParam.okBtn();
     },
     /**
      * 获取参数关联
      */
-    getParamModel() {},
+    getParamModel () { },
     /**
      * 查看参数关联
      */
-    selectParamModel() {
+    selectParamModel () {
       this.ParamModelDialog = true;
       this.getParamModel();
     },
@@ -1091,14 +1066,14 @@ export default {
     /**
      * 刷新参数列表
      */
-    refshParamList() {
+    refshParamList () {
       initParamTreeNew();
       this.addParamDialog = false;
     },
     /**
      *初始化webSocket
      */
-    initWebSocket() {
+    initWebSocket () {
       this.webSocket = this.getWebSocket();
     },
     /**
@@ -1107,7 +1082,7 @@ export default {
      * 1、WebSocket客户端通过回调函数来接收服务端消息。例如：webSocket.onmessage
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
-    getWebSocket() {
+    getWebSocket () {
       this.pushUuid = uuid2() + Date.parse(new Date());
       /*      const webSocketPath =
                   'ws://localhost:8086/analysis/websocket?' +
@@ -1120,7 +1095,7 @@ export default {
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
       // 当服务端打开连接
-      this.webSocket.onopen = function (event) {};
+      this.webSocket.onopen = function (event) { };
       // 发送消息
       this.webSocket.onmessage = function (event) {
         const dataObj = JSON.parse(event.data);
@@ -1175,7 +1150,7 @@ export default {
           dropTable(dataObj.dropTableNameList);
         }
       };
-      const func2 = function func3(val) {
+      const func2 = function func3 (val) {
         this.$refs.childTabsRef[0].loadTableData(val);
         // 已经全部执行完成，调用父组件方法初始化参数列等信息
         if (isAllExecuteSuccess) {
@@ -1197,13 +1172,13 @@ export default {
       };
 
       // 通信失败
-      this.webSocket.onerror = function (event) {};
+      this.webSocket.onerror = function (event) { };
     },
     /**
      * 通过WebSocket对象发送消息给服务端
      * 此处没有主动发消息给服务端，如果调用此方法，则会发送消息至socket服务端onMessage()方法上
      */
-    sendMsgToServer() {
+    sendMsgToServer () {
       const message = "";
       if (message) {
         this.webSocket.send(
@@ -1214,7 +1189,7 @@ export default {
     /**
      * 初始化sql编辑器基础数据
      */
-    initData() {
+    initData () {
       const userId = this.$store.state.user.code;
       initDragAndDrop();
       initIcon();
@@ -1282,41 +1257,41 @@ export default {
     /**
      * 数据表树搜索
      */
-    tableTreeSearch() {
+    tableTreeSearch () {
       tableTreeSearch();
     },
     /**
      * 参数树搜索
      */
-    paramTreeSearch() {
+    paramTreeSearch () {
       paramTreeSearch();
     },
     /**
      * 函数树搜索
      */
-    functionTreeSearch() {
+    functionTreeSearch () {
       functionTreeSearch();
     },
     /**
      * SQL草稿树搜索
      */
-    draftTreeSearch() {
+    draftTreeSearch () {
       draftTreeSearch();
     },
     /**
      * sql格式化
      */
-    sqlFormat() {
+    sqlFormat () {
       sqlFormat(this.dataSource)
     },
     /**
      * 查找和替换
      * @param type 1替换 2查找
      */
-    findAndReplace(type) {
+    findAndReplace (type) {
       findAndReplace(type);
     },
-    changeSize(type) {
+    changeSize (type) {
       var thisEle = $(".CodeMirror").css("font-size");
       var textFontSize = parseFloat(thisEle, 10);
       var unit = thisEle.slice(-2); //获取单位
@@ -1333,32 +1308,32 @@ export default {
      * 转大小写
      * @param type 1大写2小写
      */
-    caseTransformation(type) {
+    caseTransformation (type) {
       caseTransformation(type);
     },
     /**
      * 注释选中行
      */
-    selectSqlNotes() {
+    selectSqlNotes () {
       selectSqlNotes();
     },
     /**
      * 取消注释
      */
-    selectSqlCancelNotes() {
+    selectSqlCancelNotes () {
       selectSqlCancelNotes();
     },
     /**
      * 标记选中行
      */
-    bjSqlNotes() {
+    bjSqlNotes () {
       bjSqlNotes();
     },
     /**
      * 获取保存的对象
      * @returns {{arr: *[], flag: (jQuery|string|undefined|*), InfoFlag: jQuery, outColumn: jQuery, flag2: (jQuery|string|undefined), sql: *}}
      */
-    getSaveInfo() {
+    getSaveInfo () {
       if (this.callType != "editorModel" && this.callType != "graphModel") {
         return;
       }
@@ -1395,13 +1370,13 @@ export default {
     /**
      * 生成select语句
      */
-    getSelectSql(menuId) {
+    getSelectSql (menuId) {
       getSelectSql(menuId, this.dataSource)
     },
     /**
      *打开sql保存草稿窗体
      */
-    openSaveSqlDialog(type) {
+    openSaveSqlDialog (type) {
       if (type == 1) {
         // 如果对象是旧的对象则证明是打开的sql草稿 因此直接保存  否则直接修改
         const sqlObj = getSaveSqlDraftObj(type);
@@ -1413,8 +1388,8 @@ export default {
           if (!sqlObj.isOld) {
             this.sqlDraftDialogFormVisible = true;
           } else {
-            if(sqlObj.sceneInstUuid == null && !this.isManager){
-              this.$message({type:"info", message:"非管理员无法修改公共文件夹的SQL草稿！"})
+            if (sqlObj.sceneInstUuid == null && !this.isManager) {
+              this.$message({ type: "info", message: "非管理员无法修改公共文件夹的SQL草稿！" })
               return
             }
             updateDraft(sqlObj).then((result) => {
@@ -1445,67 +1420,67 @@ export default {
     /**
      *保存sql草稿
      */
-    saveSqlDialog() {
-        const treeNode = this.$refs.sqlDraftTree.selectTreeNode;
+    saveSqlDialog () {
+      const treeNode = this.$refs.sqlDraftTree.selectTreeNode;
       let dataUserId = this.$store.getters.datauserid
-        if(treeNode.id == "0" || treeNode.id == dataUserId){
-          this.$message({type:"info", message:"不可以保存至根文件夹！"})
-          return;
-        }
+      if (treeNode.id == "0" || treeNode.id == dataUserId) {
+        this.$message({ type: "info", message: "不可以保存至根文件夹！" })
+        return;
+      }
       const rootId = treeNode.path.split("/")[0];
-        if( rootId == "0" && !this.isManager){
-            this.$message({type:"info", message:"非管理员无法保存SQL草稿至公共文件夹！"})
-          return;
-        }
+      if (rootId == "0" && !this.isManager) {
+        this.$message({ type: "info", message: "非管理员无法保存SQL草稿至公共文件夹！" })
+        return;
+      }
 
-        const sqlObj = getSaveSqlDraftObj(1);
-        this.sqlDraftForm.draftSql = sqlObj.draftSql;
-        this.sqlDraftForm.paramJson = sqlObj.paramJson;
-        this.sqlDraftForm.parentUuid = treeNode.id;
-        this.sqlDraftForm.sceneInstUuid = rootId == dataUserId ? dataUserId : null;
-        this.sqlDraftForm.createUserId = dataUserId;
-        saveSqlDraft(this.sqlDraftForm).then((result) => {
-          if (result.code == 0) {
-            this.$notify({
-              title: "提示",
-              message: "保存成功",
-              type: "success",
-              duration: 2000,
-              position: "bottom-right",
-            });
-            this.sqlDraftFolderDialogFormVisible = false
-            // 手动销毁数据  多层dialog v-if失效 不知道为啥 没找到解决办法
-            this.sqlDraftForm = {
-              sqlDraftUuid: "",
-                      draftTitle: "",
-                      draftSql: "",
-                      paramJson: "",
-                      dataSource: "Postgre",
-                      parentUuid: "",
-                      sceneInstUuid: "",
-                      createUserId: "",
-            }
-            //重新刷新SOL草稿树
-            initDraftTree();
-          } else {
-            this.$notify({
-              title: "提示",
-              message: "保存失败",
-              type: "error",
-              duration: 2000,
-              position: "bottom-right",
-            });
+      const sqlObj = getSaveSqlDraftObj(1);
+      this.sqlDraftForm.draftSql = sqlObj.draftSql;
+      this.sqlDraftForm.paramJson = sqlObj.paramJson;
+      this.sqlDraftForm.parentUuid = treeNode.id;
+      this.sqlDraftForm.sceneInstUuid = rootId == dataUserId ? dataUserId : null;
+      this.sqlDraftForm.createUserId = dataUserId;
+      saveSqlDraft(this.sqlDraftForm).then((result) => {
+        if (result.code == 0) {
+          this.$notify({
+            title: "提示",
+            message: "保存成功",
+            type: "success",
+            duration: 2000,
+            position: "bottom-right",
+          });
+          this.sqlDraftFolderDialogFormVisible = false
+          // 手动销毁数据  多层dialog v-if失效 不知道为啥 没找到解决办法
+          this.sqlDraftForm = {
+            sqlDraftUuid: "",
+            draftTitle: "",
+            draftSql: "",
+            paramJson: "",
+            dataSource: "Postgre",
+            parentUuid: "",
+            sceneInstUuid: "",
+            createUserId: "",
           }
-        });
+          //重新刷新SOL草稿树
+          initDraftTree();
+        } else {
+          this.$notify({
+            title: "提示",
+            message: "保存失败",
+            type: "error",
+            duration: 2000,
+            position: "bottom-right",
+          });
+        }
+      });
     },
     /**
      *打开sql草稿列表
      */
-    openSqlDraftList() {
+    openSqlDraftList () {
       this.sqlDraftDialog = true;
     },
     ///关闭SOL草稿列表
-    closesqlDraftList(){
+    closesqlDraftList () {
       this.sqlDraftDialog = false;
       //重新刷新SOL草稿树
       initDraftTree();
@@ -1513,7 +1488,7 @@ export default {
     /**
      * 使用sql
      */
-    useSql() {
+    useSql () {
       const returnObj = this.$refs.sqlDraftList.getSelectRow();
       if (returnObj.verify) {
         this.$confirm("该操作会清空当前SQL编辑器中的语句,是否继续？", "提示", {
@@ -1533,9 +1508,9 @@ export default {
     /**
      * 执行sql
      */
-    executeSQL() {
+    executeSQL () {
       var _this = this
-      this.executeSQL2(function(obj) {
+      this.executeSQL2(function (obj) {
         // // 界面渲染完成之后开始执行sql,将sql送入调度
         // startExecuteSql(result.data)
         //     .then((result) => {
@@ -1549,57 +1524,57 @@ export default {
           // this.executeLoading = true
           _this.loadText = "正在获取SQL信息...";
           getExecuteTask(obj, _this.dataUserId, _this.sceneCode1, _this.dataSource).then(
-              (result) => {
-                //在这如果报错就加一个新页签，如果不报错就显示我的
-                if (result.data.isError) {
-                  _this.isExecuteError = false;
-                  // _this.errorMessage = result.data.message;
-                  _this.errorMessage =positionSqlError(result.data.message)
-                  _this.executeLoading = false;
-                } else {
-                  _this.isExecuteError = true;
-                  _this.executeLoading = false;
-                  _this.loadText = "";
-                  lastSqlIndex = result.data.lastSqlIndex;
-                  _this.executeLoading = false;
-                  _this.currentExecuteSQL = result.data.executeSQLList;
-                  _this.maintableindex = result.data.lastSqlIndex||''
-                  if (
-                      _this.currentExecuteSQL != null &&
-                      _this.currentExecuteSQL.length > 0 &&
-                      lastSqlIndex >= 0
-                  ) {
-                    for (var i = 0; i < _this.currentExecuteSQL.length; i++) {
-                      if (_this.currentExecuteSQL[i].type === null) {
-                        // 等于lastSqlIndex 标记主表，否则辅表
-                        _this.currentExecuteSQL[i].type =
-                            i === lastSqlIndex ? "1" : "2";
-                      }
+            (result) => {
+              //在这如果报错就加一个新页签，如果不报错就显示我的
+              if (result.data.isError) {
+                _this.isExecuteError = false;
+                // _this.errorMessage = result.data.message;
+                _this.errorMessage = positionSqlError(result.data.message)
+                _this.executeLoading = false;
+              } else {
+                _this.isExecuteError = true;
+                _this.executeLoading = false;
+                _this.loadText = "";
+                lastSqlIndex = result.data.lastSqlIndex;
+                _this.executeLoading = false;
+                _this.currentExecuteSQL = result.data.executeSQLList;
+                _this.maintableindex = result.data.lastSqlIndex || ''
+                if (
+                  _this.currentExecuteSQL != null &&
+                  _this.currentExecuteSQL.length > 0 &&
+                  lastSqlIndex >= 0
+                ) {
+                  for (var i = 0; i < _this.currentExecuteSQL.length; i++) {
+                    if (_this.currentExecuteSQL[i].type === null) {
+                      // 等于lastSqlIndex 标记主表，否则辅表
+                      _this.currentExecuteSQL[i].type =
+                        i === lastSqlIndex ? "1" : "2";
                     }
                   }
-                  _this.modelOriginalTable = result.data.tables;
-                  _this.createTreeNode = result.data.treeNodeInfo;
-                  _this.resultShow.push({ id: 1 });
-                  result.data.dataSource = _this.dataSource
-                  result.data.resultDataMaxCount = parseInt(_this.resultDataMaxCount)
-                  // if (executeflag === true) {
-                  //   // 界面渲染完成之后开始执行sql,将sql送入调度
-                  // 显示放大按钮
-                  _this.$refs.maxSize.style.display = "block"
-                  startExecuteSql(result.data)
-                      .then((result) => {
-                        _this.executeLoading = false;
-                        _this.loadText = "";
-                      })
-                      .catch((result) => {
-                        _this.executeLoading = false;
-                      });
-                  // } else {
-                  //   setIsUpdate(false);
-                  //   _this.$emit("getSqlObj");
-                  // }
                 }
+                _this.modelOriginalTable = result.data.tables;
+                _this.createTreeNode = result.data.treeNodeInfo;
+                _this.resultShow.push({ id: 1 });
+                result.data.dataSource = _this.dataSource
+                result.data.resultDataMaxCount = parseInt(_this.resultDataMaxCount)
+                // if (executeflag === true) {
+                //   // 界面渲染完成之后开始执行sql,将sql送入调度
+                // 显示放大按钮
+                _this.$refs.maxSize.style.display = "block"
+                startExecuteSql(result.data)
+                  .then((result) => {
+                    _this.executeLoading = false;
+                    _this.loadText = "";
+                  })
+                  .catch((result) => {
+                    _this.executeLoading = false;
+                  });
+                // } else {
+                //   setIsUpdate(false);
+                //   _this.$emit("getSqlObj");
+                // }
               }
+            }
           );
         } else {
           _this.openParamDraw(obj);
@@ -1609,7 +1584,7 @@ export default {
     /**
      * 执行sql
      */
-    executeSQL2(callback) {
+    executeSQL2 (callback) {
       if (this.tempId === "") {
         this.$message({ type: "info", message: "请选择SQL执行保存路径!" });
         this.modelResultSavePathDialog = true;
@@ -1624,34 +1599,34 @@ export default {
       this.loadText = "正在检验SQL是否符合语法规范...";
       //大亚湾跳过校验
       // verifySql().then((result) => {
-        this.executeLoading = false;
-        this.loadText = "";
-        //大亚湾跳过校验
-        // if (!result.data.verify) {
-        //   this.$message({
-        //     type: "info",
-        //     message: "SQL不符合语法规范，请重新输入",
-        //   });
-        //   return;
-        // }
-        this.resultShow = []; // 清空数据展示对象
-        isAllExecuteSuccess = false;
-        currentExecuteProgress = 0;
-        this.currentExecuteSQL = [];
-        lastResultColumn = [];
-        const obj = executeSQL();
-        obj.businessField = "sqleditor";
-        obj.modelResultSavePathId = this.modelResultSavePathId;
-        obj.pushUuid = this.pushUuid;
-        obj.modelType = 'SQL';
-        this.executeSqlViewData = obj.sqls;
-        callback(obj)
+      this.executeLoading = false;
+      this.loadText = "";
+      //大亚湾跳过校验
+      // if (!result.data.verify) {
+      //   this.$message({
+      //     type: "info",
+      //     message: "SQL不符合语法规范，请重新输入",
+      //   });
+      //   return;
+      // }
+      this.resultShow = []; // 清空数据展示对象
+      isAllExecuteSuccess = false;
+      currentExecuteProgress = 0;
+      this.currentExecuteSQL = [];
+      lastResultColumn = [];
+      const obj = executeSQL();
+      obj.businessField = "sqleditor";
+      obj.modelResultSavePathId = this.modelResultSavePathId;
+      obj.pushUuid = this.pushUuid;
+      obj.modelType = 'SQL';
+      this.executeSqlViewData = obj.sqls;
+      callback(obj)
       // });
     },
     /**
      * 打开参数渲染窗体
      */
-    openParamDraw(data) {
+    openParamDraw (data) {
       const timestamp = new Date().getTime();
       this.paramDrawUuid = timestamp;
       this.dialogFormVisible = true;
@@ -1661,7 +1636,7 @@ export default {
     /**
      * 获取替换参数后的sql  直接直接
      */
-    replaceNodeParam() {
+    replaceNodeParam () {
       // var obj = replaceNodeParam(this.paramDrawUuid, 'sqlEditor')
       var obj = this.$refs.paramDrawRefNew.replaceNodeParam(this.paramDrawUuid);
       if (!obj.verify) {
@@ -1688,7 +1663,7 @@ export default {
           lastSqlIndex = result.data.lastSqlIndex;
           this.executeLoading = false;
           this.currentExecuteSQL = result.data.executeSQLList;
-          this.maintableindex = result.data.lastSqlIndex||''
+          this.maintableindex = result.data.lastSqlIndex || ''
           this.modelOriginalTable = result.data.tables;
           this.createTreeNode = result.data.treeNodeInfo;
           this.resultShow.push({ id: 1 });
@@ -1717,19 +1692,19 @@ export default {
                 });*/
       this.dialogFormVisible = false;
     },
-    maxOpen(type) {
+    maxOpen (type) {
       maxOpenOne();
       // console.log(this.$refs.childTabsRef,1461)
-      for(let i in this.$refs.childTabsRef){
+      for (let i in this.$refs.childTabsRef) {
         this.$refs.childTabsRef[i].zoomChangeTable(type);
       }
       // this.$refs.childTabsRef[0].zoomChangeTable(type);
     },
-    handleClick(data, node, tree) {
+    handleClick (data, node, tree) {
       // this.tempPath = data.label
       // this.tempId = data.id
       // this.nodeType = data.type
-      if (data.label == this.personalTitle && data.pid == 'ROOT' ) {
+      if (data.label == this.personalTitle && data.pid == 'ROOT') {
         this.$message({
           type: 'info',
           message: this.personalTitle + '跟目录没有操作权限！',
@@ -1744,17 +1719,17 @@ export default {
         return
       }
     },
-    handleCheck(data, check){
+    handleCheck (data, check) {
       this.savePath = null
       if (check) {
         this.savePath = data
       }
     },
-    cancelSave(){
+    cancelSave () {
       this.modelResultSavePathDialog = false
       this.savePath == null
     },
-    modelResultSavePathDetermine() {
+    modelResultSavePathDetermine () {
       if (this.savePath == null) {
         this.$message({
           type: 'info',
@@ -1780,7 +1755,7 @@ export default {
           data.sqlLocationId = this.tempId;
           data.sqlLocationName = this.tempPath;
         }
-        saveSqlEditorExecuteDefaultPath(data).then((result) => {});
+        saveSqlEditorExecuteDefaultPath(data).then((result) => { });
       } else if (this.nodeType == "") {
         this.$message({
           message: "请选择路径",
@@ -1793,7 +1768,7 @@ export default {
         });
       }
     },
-    getColumnSqlInfo() {
+    getColumnSqlInfo () {
       const result = getSql();
       if (result.sql === "") {
         this.$message({ type: "info", message: "请输入SQL!" });
@@ -1804,62 +1779,62 @@ export default {
       this.loadText = "正在校验sql是否符合语法规范...";
       //大亚湾跳过校验
       // verifySql(this.dataSource).then((verSqlResult) => {
-        this.executeLoading = false;
-        //大亚湾跳过校验
-        // if (!verSqlResult.data.verify) {
-        //   this.$message({
-        //     type: "info",
-        //     message: "SQL不符合语法规范，请重新输入",
-        //   });
-        //   return;
-        // }
-        this.resultShow = []; // 清空数据展示对象
-        $('.max-size').hide();
-        isAllExecuteSuccess = false;
-        currentExecuteProgress = 0;
-        this.currentExecuteSQL = [];
-        lastResultColumn = [];
-        const data = { sql: result.sql , dataSource: this.dataSource};
-        this.executeLoading = true;
-        this.loadText = "正在获取SQL列...";
-        getColumnSqlInfo(data)
-          .then((resp) => {
-            console.log(resp.code)
-            if (resp.code == 0 || resp.code == 20000){
-              // 修改执行成功状态
-              isAllExecuteSuccess = true;
-              lastResultColumn = resp.data.columnName;
-              lastResultColumnType = resp.data.columnType;
-              setIsUpdate(false);
-              this.$emit("getSqlObj");
-              this.executeLoading = false;
-              this.loadText = "";
-              this.$message({ type: "success", message: "SQL校验通过" });
-            }else{
-              this.executeLoading = false;
-              this.loadText = "";
-              var message = positionSqlError(resp.msg);
-              this.$message({ type: "error", message: message});
-              // positionSqlError('SQL校验失败,错误信息:TODO : pos 10, line 1, column 7, token LITERAL_ALIAS "id"')
-            }
-          })
-          .catch((result) => {
+      this.executeLoading = false;
+      //大亚湾跳过校验
+      // if (!verSqlResult.data.verify) {
+      //   this.$message({
+      //     type: "info",
+      //     message: "SQL不符合语法规范，请重新输入",
+      //   });
+      //   return;
+      // }
+      this.resultShow = []; // 清空数据展示对象
+      $('.max-size').hide();
+      isAllExecuteSuccess = false;
+      currentExecuteProgress = 0;
+      this.currentExecuteSQL = [];
+      lastResultColumn = [];
+      const data = { sql: result.sql, dataSource: this.dataSource };
+      this.executeLoading = true;
+      this.loadText = "正在获取SQL列...";
+      getColumnSqlInfo(data)
+        .then((resp) => {
+          console.log(resp.code)
+          if (resp.code == 0 || resp.code == 20000) {
+            // 修改执行成功状态
+            isAllExecuteSuccess = true;
+            lastResultColumn = resp.data.columnName;
+            lastResultColumnType = resp.data.columnType;
+            setIsUpdate(false);
+            this.$emit("getSqlObj");
             this.executeLoading = false;
             this.loadText = "";
-          });
+            this.$message({ type: "success", message: "SQL校验通过" });
+          } else {
+            this.executeLoading = false;
+            this.loadText = "";
+            var message = positionSqlError(resp.msg);
+            this.$message({ type: "error", message: message });
+            // positionSqlError('SQL校验失败,错误信息:TODO : pos 10, line 1, column 7, token LITERAL_ALIAS "id"')
+          }
+        })
+        .catch((result) => {
+          this.executeLoading = false;
+          this.loadText = "";
+        });
       // });
     },
     /**
      * 获取sql编辑器里的slq是否被修改
      * @returns {boolean}
      */
-    getSQLIsUpdate() {
+    getSQLIsUpdate () {
       return getIsUpdate();
     },
     /**
      * 接口：获取SQL编辑器节点的信息（图形化工具SQL编辑器节点专属方法                                     ）
      */
-    async saveSqlInfo() {
+    async saveSqlInfo () {
       return await getGraphSaveInfo(this.dataSource);
     },
     /**
@@ -1872,7 +1847,7 @@ export default {
     /**
      * 查看表关联信息
      */
-    selectTableRelInfo(tableMenu) {
+    selectTableRelInfo (tableMenu) {
       var nodes = getZtreeSelectNode();
       this.selectTableRelInfoTableId = nodes[0].id;
       this.selectTableRelInfoDialog = true;
@@ -1881,7 +1856,7 @@ export default {
     /**
      * 查看表信息
      */
-    selectTableInfo(tableMenu) {
+    selectTableInfo (tableMenu) {
       var nodes = getZtreeSelectNode();
       this.selectTableInfoTableId = nodes[0].id;
       this.selectTableInfoDialog = true;
@@ -2020,7 +1995,7 @@ export default {
 .successHighlight {
   background-color: transparent !important;
 }
->>>.CodeMirror-hints {
+>>> .CodeMirror-hints {
   z-index: 999999999;
 }
 
@@ -2116,17 +2091,16 @@ div.rightMenu ul li:hover {
 }
 
 .modelParamsDia >>> .el-dialog {
-  min-width: 850px
-
+  min-width: 850px;
 }
 .tableInfo >>> .el-dialog {
- margin-top: 5vh !important;
+  margin-top: 5vh !important;
 }
->>>.errorHighlight{
-  background: rgba(244,38,12,.5);
-  color:#fff;
+>>> .errorHighlight {
+  background: rgba(244, 38, 12, 0.5);
+  color: #fff;
 }
-.chooseDataSource{
+.chooseDataSource {
   left: 55px;
   display: inline-block;
   position: relative;
@@ -2135,7 +2109,7 @@ div.rightMenu ul li:hover {
   position: relative;
   overflow-y: hidden;
 }
-  .list-side{
-    margin-left: 10px;
-  }
+.list-side {
+  margin-left: 10px;
+}
 </style>
