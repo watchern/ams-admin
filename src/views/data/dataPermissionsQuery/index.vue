@@ -262,7 +262,6 @@ export default {
     this.init();
   },
   methods: {
-
     init() {
       let id = "1";
       getById(id).then((res) => {
