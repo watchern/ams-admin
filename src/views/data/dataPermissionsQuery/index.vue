@@ -20,7 +20,6 @@
             />
           </div>
         </div>
-
         <div style="width: 100%; padding-top: 5px">
           <el-form style="padding-left: 1%">
             <el-form-item>
@@ -63,7 +62,6 @@
                       </el-table-column>
                   </el-table>
               </div>
-
           </el-form>
         </div>
       </el-main>
@@ -77,7 +75,6 @@
                 <el-button type="primary" @click="exportList">确定</el-button>
             </span>
         </el-dialog>
-
         <el-dialog title="统计" :visible.sync="dialogCountVisible" :close-on-click-modal="false">
             <div class="detail-form">
                 <template class="detail-form">
@@ -93,7 +90,6 @@
                                 highlight-current-row
                         >
 <!--                            @current-change="handleCurrentChange"-->
-
                             <el-table-column type="index" width="50"/>
                             <el-table-column label="角色" align="center" prop="cole" />
                             <el-table-column label="工号" align="center" prop="coleNumber"/>
@@ -112,7 +108,6 @@
                                 highlight-current-row
                         >
 <!--                            @current-change="handleCurrentChange"-->
-
                             <el-table-column type="index" width="50"/>
                             <el-table-column label="角色" align="center" prop="角色" />
                             <el-table-column label="表名称" align="center" prop="tableName"/>
@@ -120,12 +115,10 @@
                             <el-table-column label="筛选条件" align="center" prop="filter" />
                             <el-table-column label="创建人" align="center" prop="createUserName" />
                         </el-table>
-
                    <pagination
                             :page.sync="pageCountDataList.pageNo"
                             :limit.sync="pageCountDataList.pageSize"
                             @pagination="getCountDataList" />
-
                     </div>
                 </template>
             </div>
@@ -201,7 +194,6 @@ export default {
         children: "children",
         label: "label",
       },
-
       //查询条件
       queryFields: [
         {
@@ -224,20 +216,23 @@ export default {
           default: "-1",
         },
       ],
+      //  人员清单
       personTable:[],
+      //  数据列表
       dataTable:[],
-
-
+      //  默认展示人员清单
       showPersonList:true,
       showDataList:false,
       // 导出弹框
       dialogExportVisible:false,
       // 统计弹框
       dialogCountVisible:false,
+      //  统计弹框默认展示人员清单
       showCountPersonList:true,
       showCountDataList:false,
-
+      //  统计弹框人员清单列表
       countPersonList:[],
+      // 统计弹框数据列表
       countDataList:[],
       //统计弹框数据清单分页
       pageCountDataList:{
@@ -245,23 +240,17 @@ export default {
         pageNo: 1,
         pageSize: 10,
       },
-        radio:'',
-
-
+      //导出按钮
+      radio:'',
       // 被选中树节点的id
       treeId: "",
-
-      ColeName: "",
-      EffectTime: "",
-      CreateUser: "",
-      CreateTime: "",
-
-      textWidth: 163,
-      selectWidth: 163,
-      timePeriodWidth: 220,
-
-
-     
+      // ColeName: "",
+      // EffectTime: "",
+      // CreateUser: "",
+      // CreateTime: "",
+      // textWidth: 163,
+      // selectWidth: 163,
+      // timePeriodWidth: 220,
     };
   },
   computed: {
@@ -274,25 +263,23 @@ export default {
   },
   methods: {
     init() {
-      debugger
-      console.log(document.getElementById("personId"))
       let id = "1";
       getById(id).then((res) => {
-        console.log(res);
-        this.treeData = res.data;
+          this.treeData = res.data;
       });
     },
+      //页面展示人员列表
       showPersonListTable(){
         this.showPersonList=true,
         this.showDataList=false
       },
+      //页面展示数据清单列表
       showDataListTable(){
          this.showPersonList=false,
          this.showDataList=true
       },
-
-      getList(){},
-      // 导出按钮：
+    getList(){},
+    // 导出按钮：
     showExportList(){
       this.dialogExportVisible=true,
       this.radio=1
@@ -302,15 +289,17 @@ export default {
       this.dialogCountVisible=true,
       this.dialogExportVisible=false
     },
-      showCountPersonTable(){
+     // 统计弹框展示人员列表
+     showCountPersonTable(){
         this.showCountPersonList=true,
         this.showCountDataList=false
       },
-      showCountDataListTable(){
+     // 统计弹框展示数据清单
+     showCountDataListTable(){
           this.showCountPersonList=false,
           this.showCountDataList=true
       },
-    //  导出
+    // 导出
     exportList(){
         if (this.selections.length == 0 || this.selections.length == undefined) {
             this.$confirm('未选择指定数据将导出全部?', '提示', {
@@ -318,6 +307,7 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning',
             })
+
             //         .then(()=>{
             //         exportAllData()
             //         })
@@ -332,15 +322,8 @@ export default {
             //  }
         }
     },
-
-
-
       // 统计弹框数据清单分页
     getCountDataList(){},
-
-
-
-
     handleNodeClick(id) {
       this.treeId = id;
     },

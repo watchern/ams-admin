@@ -303,6 +303,7 @@
                         disabled
                         placeholder="请输入资源编码"
                         v-model="form.tableCode"
+                        disabled
                         :rows="4">
               </el-input>
             </el-form-item>
@@ -1994,7 +1995,7 @@ export default {
 
     // 下一步的关闭
     close_diag () {
-      this.dialogVisible_information = false;
+      // this.dialogVisible_information = false;
       this.chooseTables = []; //传输的数据
     },
 
@@ -2090,7 +2091,6 @@ export default {
       this.resultShareDialogIsSee = true;
       this.form.personLiables = "";
       this.clearcheckbox();
-
       // this.$nextTick(() => {
       //   if (this.$refs.orgPeopleTree) {
       //     if (this.$refs.multipleTable) {
@@ -2139,13 +2139,12 @@ export default {
 
         // this.form.personName_str = personNames.join(",");
         this.Recognition.personName_str = personNames.join(",");
+        this.form.personName_str = personNames.join(",");
 
         this.form.personUuid = personUuids;
         this.form.personName = personNames;
         // this.form.personName = personNames.toString();
-        //
-        //
-        //
+
         let obj = {
           personUuid: selectedNode[i].personuuid,
           personName: selectedNode[i].cnname,
@@ -2153,7 +2152,6 @@ export default {
         arr.push(obj);
       }
       this.form.personLiables = arr;
-
       this.resultShareDialogIsSee = false;
     },
     // 修改
@@ -2198,7 +2196,9 @@ export default {
 
 <style scoped>
 @import url("./../../../assets/css/common.css");
-
+.right_conter {
+  min-width: 900px;
+}
 .loadings {
   /* position: absolute;
   left: 0;

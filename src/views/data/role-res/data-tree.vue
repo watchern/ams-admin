@@ -254,13 +254,23 @@ export default {
         dataSource: 'Postgre',//筛选条件
       },
       loading: false,
-      options: [{
-        value: 'Postgre',
-        label: 'ADS'
-      }, {
-        value: 'Hive',
-        label: 'MRS-DWS'
-      }],
+      // options: [{
+      //   value: 'Postgre',
+      //   label: 'ADS'
+      // }, {
+      //   value: 'Hive',
+      //   label: 'MRS-DWS'
+      // }],
+      options: [
+        {
+          value: "Postgre",
+          label: "DWS",
+        },
+        {
+          value: "Hive",
+          label: "MRS",
+        },
+      ],
     };
   },
   computed: {},
@@ -522,9 +532,12 @@ export default {
 /* .max_width {
   max-width: 280px;
 } */
+.app-container {
+  /* height: calc(100% - 80px); */
+}
 .tree-containerall {
   /* height: 75vh; */
-  height: calc(100% - 160px);
+  height: calc(100% - 190px);
   overflow: auto;
 }
 .app-container >>> .el-form-item {

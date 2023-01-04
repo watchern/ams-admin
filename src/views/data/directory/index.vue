@@ -1,21 +1,7 @@
 <template>
-  <div class="tree-list-container"
-       style="display:flex; justify-content:space-around">
+  <div class="page-container">
     <!-- left_conter -->
     <div class="left_conter">
-      <!-- <div class="tree"> -->
-      <!-- <el-row>
-        <el-col>
-          <el-select v-model="currentSceneUuid" placeholder="请选择">
-            <el-option
-              v-for="scene in allScene"
-              :key="scene.sceneCode"
-              :label="scene.sceneName"
-              :value="scene.sceneCode"
-            />
-          </el-select>
-        </el-col>
-      </el-row> -->
       <dataTree v-if="isTreeShow"
                 ref="dataTree"
                 :data-user-id="directyDataUserId"
@@ -46,11 +32,11 @@
                v-if="show_details == true"></Details>
 
     </div>
-
   </div>
 </template>
 
 <script>
+
 import dataTree from '@/views/data/role-res/data-tree'
 import BaseDirectoryList from '@/views/data/directory/directorylist'
 import TreeCommon from "@/components/datasAssets/treeCommon.vue"
@@ -75,7 +61,8 @@ export default {
   computed: {
     currentScene () {
       return this.allScene.filter(e => { return e.sceneCode === this.currentSceneUuid })[0]
-    }
+    },
+
   },
   created () {
     this.initDirectory()
@@ -138,10 +125,12 @@ export default {
 <style scoped>
 @import url("./../../../assets/css/common.css");
 .page-container {
-  padding: 0 0 0 20px !important;
+  display: flex;
+  padding: 0 !important;
 }
 .left_conter {
   position: relative;
+  height: calc(100vh - 120px);
 }
 
 .left_conter >>> .el-tabs__item {
