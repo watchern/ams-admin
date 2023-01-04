@@ -324,7 +324,6 @@ export default {
     },
       // 统计弹框数据清单分页
     getCountDataList(){},
-
     handleNodeClick(id) {
       this.treeId = id;
     },
