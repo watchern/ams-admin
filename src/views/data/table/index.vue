@@ -303,27 +303,27 @@
                         placeholder="请输入资产编码"
                         v-model="form.tableCode"
                         :rows="4">
-            <el-form-item label="资源编码："
-                          prop="tableCode">
-              <el-input type="text"
-                        disabled
-                        placeholder="请输入资源编码"
-                        v-model="form.tableCode"
-                        :rows="4">
-              </el-input>
-            </el-form-item>
+                <el-form-item label="资源编码："
+                              prop="tableCode">
+                  <el-input type="text"
+                            disabled
+                            placeholder="请输入资源编码"
+                            v-model="form.tableCode"
+                            :rows="4">
+                  </el-input>
+                </el-form-item>
 
-            <el-form-item label="资产类型:"
-                          prop="tableType">
-              <el-select v-model="form.tableType"
-                         :rows="4"
-                         placeholder="请选择资产类型">
-                <el-option v-for="item in data_type"
-                           :key="item.value"
-                           :label="item.label"
-                           :value="item.value" />
-              </el-select>
-            </el-form-item>
+                <el-form-item label="资产类型:"
+                              prop="tableType">
+                  <el-select v-model="form.tableType"
+                             :rows="4"
+                             placeholder="请选择资产类型">
+                    <el-option v-for="item in data_type"
+                               :key="item.value"
+                               :label="item.label"
+                               :value="item.value" />
+                  </el-select>
+                </el-form-item>
               </el-input>
             </el-form-item>
           </div>
@@ -411,7 +411,6 @@
 
             <div class="son_check">
               <el-form-item label="负责人:">
-                =={{ form.personName_str }}==
                 <el-input type="text"
                           disabled
                           v-model="form.personName_str">
@@ -1575,7 +1574,7 @@ export default {
 
         this.list_data = resp.data;
         this.list = resp.data.records;
-
+        console.log(this.list);
         // this.listLoading = false
         //
       });
@@ -2173,7 +2172,7 @@ export default {
         this.tableMetaUuid = data[i].tableMetaUuid;
       }
       this.show_details = true
-      this.isDisable_input = true
+      this.isDisable_input = false
 
     },
 
@@ -2265,6 +2264,9 @@ export default {
 .left_conter >>> .el-tabs__item {
   width: 25%;
   text-align: center;
+}
+.left_conter >>> .el-tabs--card > .el-tabs__header .el-tabs__item.is-active {
+  border-bottom-color: transparent;
 }
 .left_conter >>> .el-tabs__nav {
   width: 100%;
