@@ -297,34 +297,26 @@
 
           <!-- 资源编码 && 资产类型：-->
           <div class="son">
-            <el-form-item label="资产编码："
+            <el-form-item label="资源编码："
                           prop="tableCode">
               <el-input type="text"
-                        placeholder="请输入资产编码"
+                        disabled
+                        placeholder="请输入资源编码"
                         v-model="form.tableCode"
                         :rows="4">
-                <el-form-item label="资源编码："
-                              prop="tableCode">
-                  <el-input type="text"
-                            disabled
-                            placeholder="请输入资源编码"
-                            v-model="form.tableCode"
-                            :rows="4">
-                  </el-input>
-                </el-form-item>
-
-                <el-form-item label="资产类型:"
-                              prop="tableType">
-                  <el-select v-model="form.tableType"
-                             :rows="4"
-                             placeholder="请选择资产类型">
-                    <el-option v-for="item in data_type"
-                               :key="item.value"
-                               :label="item.label"
-                               :value="item.value" />
-                  </el-select>
-                </el-form-item>
               </el-input>
+            </el-form-item>
+
+            <el-form-item label="资产类型:"
+                          prop="tableType">
+              <el-select v-model="form.tableType"
+                          :rows="4"
+                          placeholder="请选择资产类型">
+                <el-option v-for="item in data_type"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value" />
+              </el-select>
             </el-form-item>
           </div>
 

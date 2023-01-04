@@ -48,7 +48,7 @@
                 <el-form-item label="资源编码："
                               prop="tableCode">
                   <el-input type="text"
-                            :disabled="isDisable_input"
+                            disabled
                             @input="change($event)"
                             v-model="form.tableCode"
                             :rows="4">
