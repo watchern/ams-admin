@@ -82,7 +82,7 @@ const dataRouter = {
     {
       path: 'dataloadapply',
       name: '数据装载与下线',
-      component: () => import("@/views/data/dataloadapply/index"),
+      component: () => import("@/views/data/dataLoadApply/index"),
       meta: {
         title: '数据管理-数据资源展示-数据装载与下线'
       }
