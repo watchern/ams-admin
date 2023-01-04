@@ -431,15 +431,15 @@ import { deleteGraphInfoById } from "@/api/graphtool/apiJs/graphList";
 import QueryField from "@/components/public/query-field/index";
 import Pagination from "@/components/Pagination/index";
 import ModelFolderTree from "@/views/analysis/auditmodel/modelfoldertree";
-import EditModel from "@/views/analysis/auditmodel/editmodel";
+// import EditModel from "@/views/analysis/auditmodel/editmodel";
 import { getDictList, getOneDict } from "@/utils/index";
 import childTabs from "@/views/analysis/auditmodelresult/childtabs";
 import {
   getExecuteTask,
   startExecuteSql,
 } from "@/api/analysis/sqleditor/sqleditor";
-import crossrangeParam from "@/views/analysis/modelparam/crossrangeparam";
-import paramDraw from "@/views/analysis/modelparam/paramdraw";
+// import crossrangeParam from "@/views/analysis/modelparam/crossrangeparam";
+// import paramDraw from "@/views/analysis/modelparam/paramdraw";
 import paramDrawNew from "@/views/analysis/modelparam/paramdrawnew";
 import {getInfo, isAdmin} from '@/api/user'
 import modelshoppingcart from "@/views/analysis/auditmodel/modelshoppingcart";
@@ -458,11 +458,11 @@ export default {
     paramDrawNew,
     Pagination,
     QueryField,
-    EditModel,
+    // EditModel,
     ModelFolderTree,
     childTabs,
-    crossrangeParam,
-    paramDraw,
+    // crossrangeParam,
+    // paramDraw,
     modelshoppingcart,
     personTree,
   },
