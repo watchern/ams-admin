@@ -1,25 +1,29 @@
 <template>
     <div>
         <el-form :model="personalSpace"
-                 class="demo-form-inline"
+                 class="demo-ruleForm"
                  label-width="80px">
-            <el-form-item label="申请名称">
+            <el-form-item label="申请名称" class="item-b">
                 <el-input v-model="personalSpace.personalSpaceName"
                           placeholder="申请名称"
                           disabled
                 ></el-input>
             </el-form-item>
-            <el-form-item label="扩容容量">
+            <el-form-item label="扩容容量" class="item-b">
                 <div style="display: flex">
                     <el-input v-model="personalSpace.personalSpaceCapacity"
                               placeholder="扩容容量"
                               type="number"
                               :max="1024"
                               :min="0"
-                              style="width: 540px"
-                              disabled></el-input>
+                              style="width: 80%"
+                              disabled
+                    ></el-input>
                     <el-select v-model="personalSpaceCapacityNeed"
-                               placeholder="容量单位" style="margin-left: 10px" disabled>
+                               placeholder="容量单位"
+                               style="margin-left: 10px"
+                               disabled
+                    >
                         <el-option label="GB"
                                    value="GB"></el-option>
                         <el-option label="MB"
@@ -29,12 +33,12 @@
                     </el-select>
                 </div>
             </el-form-item>
-<!--            <el-form-item label="审批人">-->
-<!--                <el-input v-model="personalSpace.personalSpaceApproving"-->
-<!--                          placeholder="选择审批人"-->
-<!--                          disabled="true"-->
-<!--                          style="width: 670px"></el-input>-->
-<!--            </el-form-item>-->
+            <!--        <el-form-item label="审批人">-->
+            <!--          <el-input v-model="personalSpace.personalSpaceApproving"-->
+            <!--                    placeholder="选择审批人"-->
+            <!--                    style="width: 670px"></el-input>-->
+            <!--          <el-button type="primary">选择</el-button>-->
+            <!--        </el-form-item>-->
 
         </el-form>
     </div>
@@ -97,6 +101,25 @@
     }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+    .padding10 {
+        padding: 10px;
+        box-sizing: border-box;
+    }
+    .header_Filter {
+        width: 100%;
+    }
+    .demo-ruleForm {
+        margin-top:20px;
+        display: flex;
+        flex-wrap: wrap;
+        ::v-deep .el-form-item {
+            margin-bottom: 22px !important;
+        }
+        ::v-deep .el-form-item__label {
+            text-align: right;
+            vertical-align: middle;
+            float: left !important;
+        }
+    }
 </style>
