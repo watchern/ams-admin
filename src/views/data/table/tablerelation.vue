@@ -1,27 +1,42 @@
 <template>
-<!--  在点击详情按钮之后会出现加载页面-->
-  <div class="app-container" v-loading="relationLoading">
+  <!--  在点击详情按钮之后会出现加载页面-->
+  <div class="app-container"
+       v-loading="relationLoading">
     <el-row>
-      <el-col v-if="openType !== 'showTable' && openType !== 'tableRegister'" align="right">
-        <el-button type="primary" size="mini" class="oper-btn add" @click="addCol()" />
-        <el-button type="primary" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="delCol()" />
+      <el-col v-if="openType !== 'showTable' && openType !== 'tableRegister'"
+              align="right">
+        <el-button type="primary"
+                   size="mini"
+                   class="oper-btn add"
+                   @click="addCol()" />
+        <el-button type="primary"
+                   size="mini"
+                   class="oper-btn delete"
+                   :disabled="selections.length === 0"
+                   @click="delCol()" />
       </el-col>
     </el-row>
     <!-- 如果进行查看 -->
-    <el-table
-      v-if="openType === 'showTable' || openType === 'tableRegister'"
-      :data="temp"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%;"
-
-    >
-      <el-table-column label="表名称" width="150px" prop="tbName" />
+    <el-table v-if="openType === 'showTable' || openType === 'tableRegister'"
+              :data="temp"
+              border
+              fit
+              highlight-current-row
+              style="width: 100%;">
+      <el-table-column label="表名称"
+                       width="150px"
+                       prop="tbName" />
       <!-- <el-table-column label="字段名称" width="150px" prop="colName" /> -->
-      <el-table-column label="从表名称" width="200px" prop="relationTableName" />
-      <el-table-column label="关联字段" width="150px" prop="relationCol" />
-      <el-table-column label="关联关系" align="center" prop="sqlGenJoinType" :formatter="formatSqlGenJoinType" />
+      <el-table-column label="从表名称"
+                       width="200px"
+                       prop="relationTableName" />
+      <el-table-column label="关联字段"
+                       width="150px"
+                       prop="relationCol" />
+      <el-table-column label="关联关系"
+                       align="center"
+                       prop="sqlGenJoinType"
+                       :formatter="formatSqlGenJoinType" />
       <!-- <el-table-column label="过滤条件" prop="describtion">
         <template v-if="scope.row.sqlGenOnStr!=null && scope.row.sqlGenOnStr.length>0" slot-scope="scope">
           <el-popover trigger="hover" placement="top" width="500">
@@ -39,100 +54,138 @@
       </el-table-column> -->
     </el-table>
     <!-- 如果进行关联操作 -->
-    <el-table v-if="openType !== 'showTable' && openType !== 'tableRegister'" :data="temp" max-height="500px" @selection-change="handleSelectionChange" class="detail-form">
-      <el-table-column type="selection" width="55" />
-      <el-table-column prop="colMetaUuid" label="关联字段">
+    <el-table v-if="openType !== 'showTable' && openType !== 'tableRegister'"
+              :data="temp"
+              max-height="500px"
+              @selection-change="handleSelectionChange"
+              class="detail-form">
+      <el-table-column type="selection"
+                       width="55" />
+      <el-table-column prop="colMetaUuid"
+                       label="关联字段">
         <template slot-scope="scope">
-          <el-select v-model="scope.row.colMetaUuid" filterable style="width:90%" placeholder="请选择关联列">
-            <el-option
-              v-for="item in colNames"
-              :key="item.colMetaUuid"
-              :label="item.colName"
-              :value="item.colMetaUuid"
-              :disabled="item.disabled"
-            />
+          <el-select v-model="scope.row.colMetaUuid"
+                     filterable
+                     style="width:90%"
+                     placeholder="请选择关联列">
+            <el-option v-for="item in colNames"
+                       :key="item.colMetaUuid"
+                       :label="item.colName"
+                       :value="item.colMetaUuid"
+                       :disabled="item.disabled" />
           </el-select>
         </template>
       </el-table-column>
       <!-- <el-table :data="temp.relationObject"> -->
-      <el-table-column prop="relTableMetaUuid" label="从表名称">
+      <el-table-column prop="relTableMetaUuid"
+                       label="从表名称">
         <template slot-scope="scope">
           <el-row>
             <el-col :span="16">
-              <el-input v-model="scope.row.relTableMetaUuid" style="display: none" :disabled="true" />
-              <el-input v-model="scope.row.relationTableName" :disabled="true" />
+              <el-input v-model="scope.row.relTableMetaUuid"
+                        style="display: none"
+                        :disabled="true" />
+              <el-input v-model="scope.row.relationTableName"
+                        :disabled="true" />
             </el-col>
             <el-col :span="6">
-              <el-button size="mini" style="padding:10px;" @click="showDataTree(scope.row.index)">选择</el-button>
+              <el-button size="mini"
+                         style="padding:10px;"
+                         @click="showDataTree(scope.row.index)">选择</el-button>
             </el-col>
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column prop="relColMetaUuid" label="关联字段">
+      <el-table-column prop="relColMetaUuid"
+                       label="关联字段">
         <template slot-scope="scope">
-          <el-select v-model="scope.row.relColMetaUuid" filterable style="width:90%" placeholder="请选择关联列">
-            <el-option
-              v-for="item in scope.row.relationCols"
-              :key="item.colMetaUuid"
-              :label="item.colName"
-              :value="item.colMetaUuid"
-              :disabled="item.disabled"
-            />
+          <el-select v-model="scope.row.relColMetaUuid"
+                     filterable
+                     style="width:90%"
+                     placeholder="请选择关联列">
+            <el-option v-for="item in scope.row.relationCols"
+                       :key="item.colMetaUuid"
+                       :label="item.colName"
+                       :value="item.colMetaUuid"
+                       :disabled="item.disabled" />
           </el-select>
         </template>
       </el-table-column>
-      <el-table-column prop="sqlGenJoinType" label="关联关系">
+      <el-table-column prop="sqlGenJoinType"
+                       label="关联关系">
         <template slot-scope="scope">
-          <el-select v-model="scope.row.sqlGenJoinType" filterable style="width:90%" placeholder="请选择关联关系">
-            <el-option
-              v-for="item in sqlJoinCols"
-              :key="item.sqlGenJoinType"
-              :label="item.sqlGenJoinName"
-              :value="item.sqlGenJoinType"
-              :disabled="item.disabled"
-            />
+          <el-select v-model="scope.row.sqlGenJoinType"
+                     filterable
+                     style="width:90%"
+                     placeholder="请选择关联关系">
+            <el-option v-for="item in sqlJoinCols"
+                       :key="item.sqlGenJoinType"
+                       :label="item.sqlGenJoinName"
+                       :value="item.sqlGenJoinType"
+                       :disabled="item.disabled" />
           </el-select>
         </template>
       </el-table-column>
-      <el-table-column label="过滤条件" align="center" prop="sqlGenOnStr">
+      <el-table-column label="过滤条件"
+                       align="center"
+                       prop="sqlGenOnStr">
         <template slot-scope="scope">
           <el-row>
             <el-col :span="5">
-              <el-popover trigger="hover" placement="top" width="500">
+              <el-popover trigger="hover"
+                          placement="top"
+                          width="500">
                 <el-row>
                   <el-col :span="24">
                     {{ scope.row.sqlGenOnStr }}
                   </el-col>
                 </el-row>
-                <div slot="reference" class="name-wrapper">
+                <div slot="reference"
+                     class="name-wrapper">
                   <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
-                  <el-link :underline="false" type="primary">查看过滤</el-link>
+                  <el-link :underline="false"
+                           type="primary">查看过滤</el-link>
                 </div>
               </el-popover>
-              <el-input v-show="false" v-model="scope.row.sqlGenOnStrJson " :disabled="true" />
+              <el-input v-show="false"
+                        v-model="scope.row.sqlGenOnStrJson "
+                        :disabled="true" />
             </el-col>
             <el-button @click="openQueryBuilder(scope.row.index)">设置</el-button>
           </el-row>
-          <el-dialog title="条件设置" :visible.sync="queryBuilderDialogVisible" width="30%" :append-to-body="true" :close-on-click-modal="false">
-            <myQueryBuilder
-              v-if="queryBuilderDialogVisible"
-              ref="myQueryBuilder"
-              :columns="columnList"
-              :data="queryBuilderJson"
-              :inputselectvalue="scope.row.outputColum"
-            />
-            <span slot="footer" class="dialog-footer">
+          <el-dialog title="条件设置"
+                     :visible.sync="queryBuilderDialogVisible"
+                     width="30%"
+                     :append-to-body="true"
+                     :close-on-click-modal="false">
+            <myQueryBuilder v-if="queryBuilderDialogVisible"
+                            ref="myQueryBuilder"
+                            :columns="columnList"
+                            :data="queryBuilderJson"
+                            :inputselectvalue="scope.row.outputColum" />
+            <span slot="footer"
+                  class="dialog-footer">
               <el-button @click="queryBuilderDialogVisible = false">取消</el-button>
-              <el-button type="primary" @click="queryCondition">确定</el-button>
+              <el-button type="primary"
+                         @click="queryCondition">确定</el-button>
             </span>
           </el-dialog>
         </template>
       </el-table-column>
       <!-- </el-table> -->
-      <el-dialog v-if="dataTableTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="dataTableTree" title="请选择数据表" width="80%" :close-on-click-modal="false">
-        <data-tree ref="dataTableTree" :data-user-id="dataUserId" :scene-code="sceneCode" />
+      <el-dialog v-if="dataTableTree"
+                 :destroy-on-close="true"
+                 :append-to-body="true"
+                 :visible.sync="dataTableTree"
+                 title="请选择数据表"
+                 width="80%"
+                 :close-on-click-modal="false">
+        <dataTree ref="dataTableTree"
+                  :data-user-id="dataUserId"
+                  :scene-code="sceneCode" />
         <div slot="footer">
-          <el-button type="primary" @click="getDataTable">确定</el-button>
+          <el-button type="primary"
+                     @click="getDataTable">确定</el-button>
           <el-button @click="dataTableTree = false">取消</el-button>
         </div>
       </el-dialog>
@@ -149,9 +202,9 @@ export default {
   components: { dataTree, myQueryBuilder },
   // eslint-disable-next-line vue/require-prop-types
   props: ['tableId', 'openType'],
-  data() {
+  data () {
     return {
-      relationLoading:false,
+      relationLoading: false,
       sceneCode: 'auditor',
       dataUserId: this.$store.getters.personcode,
       columnList: {},
@@ -200,13 +253,13 @@ export default {
       curItempItemInd: 0,
     }
   },
-  created() {
+  created () {
     if (this.openType !== 'addTable') {
       this.initTable(this.tableId)
     }
   },
   methods: {
-    initTable(tableId) {
+    initTable (tableId) {
       this.relationLoading = true
       this.temp = []
       getById(tableId).then(resp => {
@@ -230,19 +283,19 @@ export default {
         this.columnList.columnList = columObjs
       })
     },
-    queryCondition() {
+    queryCondition () {
       const obj = this.$refs.myQueryBuilder.getSelectSql()
       this.queryBuilderDialogVisible = false
       this.setFilter(obj.sql, JSON.stringify(obj.queryJson))
     },
-    setFilter(sql, queryJson) {
+    setFilter (sql, queryJson) {
       this.temp[this.currentFilterInputId].sqlGenOnStr = sql
       this.temp[this.currentFilterInputId].sqlGenOnStrJson = queryJson
     },
-    handleSelectionChange(val) {
+    handleSelectionChange (val) {
       this.selections = val
     },
-    addCol() {
+    addCol () {
       var newObj = {} // copy obj
       newObj.index = this.tempItemInd
       newObj.colMetaUuid = ''
@@ -258,17 +311,17 @@ export default {
       this.temp.push(newObj)
       this.tempItemInd++
     },
-    showDataTree(ind) {
+    showDataTree (ind) {
       this.curItempItemInd = ind
       this.dataTableTree = true
     },
-    delCol() {
+    delCol () {
       this.selections.forEach((r, i) => {
         var index = this.temp.findIndex(v => JSON.stringify(v) === JSON.stringify(r))
         this.temp.splice(index, 1)
       })
     },
-    getDataTable() {
+    getDataTable () {
       const dataTree = this.$refs.dataTableTree.getTree()
       const currentNode = dataTree.getCurrentNode()
       if (currentNode.type !== 'table') {
@@ -293,7 +346,7 @@ export default {
       }
       this.dataTableTree = false
     },
-    formatSqlGenJoinType(row) {
+    formatSqlGenJoinType (row) {
       let sqlGenJoinType = ''
       switch (row.sqlGenJoinType) {
         case 1:
@@ -311,7 +364,7 @@ export default {
       }
       return sqlGenJoinType
     },
-    loadTableCol(id) {
+    loadTableCol (id) {
       // 获取选中表的列id，列名称等信息
       getColsInfo(id).then(result => {
         if (result.data == null) {
@@ -321,14 +374,14 @@ export default {
         this.relTableColumn = result.data
       })
     },
-    openQueryBuilder(id) {
+    openQueryBuilder (id) {
       if (this.temp[id].sqlGenOnStrJson !== '') {
         this.queryBuilderJson = JSON.parse(this.temp[id].sqlGenOnStrJson)
       }
       this.queryBuilderDialogVisible = true
       this.currentFilterInputId = id
     },
-    saveTableRelation() {
+    saveTableRelation () {
       saveTableRelation(this.temp).then(() => {
         this.$notify({
           title: '成功',
@@ -339,7 +392,7 @@ export default {
         })
       })
     },
-    clickitem(row, e) {
+    clickitem (row, e) {
       // 当点击已经选中的把 onlyIndex 置0，就是取消选中，并返回
       if (this.temp[row].onlyIndex === e) {
         this.temp[row].onlyIndex = '0'
@@ -348,5 +401,6 @@ export default {
       // 不是选中，选中当前点击 Radio
       this.temp[row].onlyIndex = e
     }
-  }}
+  }
+}
 </script>

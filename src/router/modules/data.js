@@ -163,7 +163,7 @@ const dataRouter = {
       },
     },
     {
-      path: "roleRes/:roleUuid",
+      path: "role-res/:roleUuid",
       name: "数据角色维护-角色资源绑定",
       component: () => import("@/views/data/role-res/index"),
     },
