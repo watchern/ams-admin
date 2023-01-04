@@ -1,105 +1,123 @@
 <template>
   <div class="page-container">
     <div class="filter-container">
-      <QueryField
-        ref="queryfield"
-        :form-data="queryFields"
-        @submit="getList"
-      />
+      <QueryField ref="queryfield"
+                  :form-data="queryFields"
+                  @submit="getList" />
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" class="oper-btn add" @click="handleCreate()" />
-        <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
-        <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
-        <el-button type="primary" class="oper-btn link-bindres btn-width-md" :disabled="selections.length !== 1" @click="bindRes()" />
-        <el-button type="primary" class="oper-btn auth" :disabled="selections.length !== 1" @click="authentic()" />
+        <el-button type="primary"
+                   class="oper-btn add"
+                   @click="handleCreate()" />
+        <el-button type="primary"
+                   class="oper-btn edit"
+                   :disabled="selections.length !== 1"
+                   @click="handleUpdate()" />
+        <el-button type="primary"
+                   class="oper-btn delete"
+                   :disabled="selections.length === 0"
+                   @click="handleDelete()" />
+        <el-button type="primary"
+                   class="oper-btn link-bindres btn-width-md"
+                   :disabled="selections.length !== 1"
+                   @click="bindRes()" />
+        <el-button type="primary"
+                   class="oper-btn auth"
+                   :disabled="selections.length !== 1"
+                   @click="authentic()" />
       </el-col>
     </el-row>
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      height="400px"
-      stripe
-      border
-      fit
-      highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="selection" width="55" />
-      <el-table-column label="数据角色名称" width="200px" prop="dataRoleName" />
-      <el-table-column
-        label="创建时间"
-        width="300px"
-        align="center"
-        prop="createTime"
-      />
-      <el-table-column label="授权方式" width="100px" align="center" prop="authenType" :formatter="formatAuthenType" />
+    <el-table :key="tableKey"
+              v-loading="listLoading"
+              :data="list"
+              height="400px"
+              stripe
+              border
+              fit
+              highlight-current-row
+              style="width: 100%;"
+              @sort-change="sortChange"
+              @selection-change="handleSelectionChange">
+      <el-table-column type="selection"
+                       width="55" />
+      <el-table-column label="数据角色名称"
+                       width="200px"
+                       prop="dataRoleName" />
+      <el-table-column label="创建时间"
+                       width="300px"
+                       align="center"
+                       prop="createTime" />
+      <el-table-column label="授权方式"
+                       width="100px"
+                       align="center"
+                       prop="authenType"
+                       :formatter="formatAuthenType" />
       <!-- <el-table-column label="数据筛选" style="width: 50px" align="center">
         <template slot-scope="scope">
           <el-button type="primary" class="oper-btn preview" size="mini" @click="openFilterPanel(scope.row.dataRoleUuid)" />
         </template>
       </el-table-column> -->
-      <el-table-column
-        label="数据有效期"
-        align="center"
-        prop="timeDuring"
-        :formatter="formatDuring"
-        style="width: 400px;"
-      />
+      <el-table-column label="数据有效期"
+                       align="center"
+                       prop="timeDuring"
+                       :formatter="formatDuring"
+                       style="width: 400px;" />
     </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
+    <pagination v-show="total>0"
+                :total="total"
+                :page.sync="pageQuery.pageNo"
+                :limit.sync="pageQuery.pageSize"
+                @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
+    <el-dialog :title="textMap[dialogStatus]"
+               :visible.sync="dialogFormVisible"
+               :close-on-click-modal="false">
       <div class="detail-form">
         <template class="detail-form">
-          <el-form
-            ref="dataForm"
-            :rules="rules"
-            :model="temp"
-            label-position="right"
-          >
-            <el-form-item label="数据角色名称" prop="dataRoleName">
+          <el-form ref="dataForm"
+                   :rules="rules"
+                   :model="temp"
+                   label-position="right">
+            <el-form-item label="数据角色名称"
+                          prop="dataRoleName">
               <el-input v-model="temp.dataRoleName" />
             </el-form-item>
-            <el-form-item label="授权方式" prop="authenType">
-              <el-select ref="authenType" v-model="temp.authenType" placeholder="请选择授权方式" style="width: 100%">
-                <el-option
-                  v-for="item in authenTypeJson"
-                  :key="item.codeValue"
-                  :label="item.codeName"
-                  :value="item.codeValue"
-                />
+            <el-form-item label="授权方式"
+                          prop="authenType">
+              <el-select ref="authenType"
+                         v-model="temp.authenType"
+                         placeholder="请选择授权方式"
+                         style="width: 100%">
+                <el-option v-for="item in authenTypeJson"
+                           :key="item.codeValue"
+                           :label="item.codeName"
+                           :value="item.codeValue" />
               </el-select>
             </el-form-item>
-            <el-form-item label="开始时间" prop="startTime">
-              <el-date-picker
-                v-model="temp.startTime"
-                format="yyyy-MM-dd HH:mm:ss"
-                value-format="yyyy-MM-dd HH:mm:ss"
-                clearable
-                style="width: 100%"
-                :picker-options="startDatePicker"
-                :disabled="dialogStatus=='view'"
-                type="datetime"
-                :placeholder="dialogStatus=='view'?'':'请输入生效开始时间'"
-              />
+            <el-form-item label="开始时间"
+                          prop="startTime">
+              <el-date-picker v-model="temp.startTime"
+                              format="yyyy-MM-dd HH:mm:ss"
+                              value-format="yyyy-MM-dd HH:mm:ss"
+                              clearable
+                              style="width: 100%"
+                              :picker-options="startDatePicker"
+                              :disabled="dialogStatus=='view'"
+                              type="datetime"
+                              :placeholder="dialogStatus=='view'?'':'请输入生效开始时间'" />
             </el-form-item>
-            <el-form-item label="结束时间" prop="endTime">
-              <el-date-picker
-                v-model="temp.endTime"
-                format="yyyy-MM-dd HH:mm:ss"
-                value-format="yyyy-MM-dd HH:mm:ss"
-                clearable
-                style="width: 100%"
-                :picker-options="endDatePicker"
-                :disabled="dialogStatus=='view'"
-                type="datetime"
-                :placeholder="dialogStatus=='view'?'':'请输入生效结束时间'"
-              />
+            <el-form-item label="结束时间"
+                          prop="endTime">
+              <el-date-picker v-model="temp.endTime"
+                              format="yyyy-MM-dd HH:mm:ss"
+                              value-format="yyyy-MM-dd HH:mm:ss"
+                              clearable
+                              style="width: 100%"
+                              :picker-options="endDatePicker"
+                              :disabled="dialogStatus=='view'"
+                              type="datetime"
+                              :placeholder="dialogStatus=='view'?'':'请输入生效结束时间'" />
             </el-form-item>
           </el-form>
         </template>
@@ -107,21 +125,28 @@
       </div>
       <div slot="footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
+        <el-button type="primary"
+                   @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
       </div>
     </el-dialog>
 
-    <el-dialog title="数据筛选选择" :visible.sync="filterVisible" :close-on-click-modal="false">
+    <el-dialog title="数据筛选选择"
+               :visible.sync="filterVisible"
+               :close-on-click-modal="false">
       <template class="detail-form">
         <el-form>
           <el-form-item>
-            <el-checkbox v-for="filter in allFilters" :key="filter.filterName" v-model="filter.roleUuid" :label="filter.filterName" />
+            <el-checkbox v-for="filter in allFilters"
+                         :key="filter.filterName"
+                         v-model="filter.roleUuid"
+                         :label="filter.filterName" />
           </el-form-item>
         </el-form>
       </template>
       <div slot="footer">
         <el-button @click="filterVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSaveRoleFilter">保存</el-button>
+        <el-button type="primary"
+                   @click="handleSaveRoleFilter">保存</el-button>
       </div>
     </el-dialog>
   </div>
@@ -135,7 +160,7 @@ import { getDictList, commonNotify } from '@/utils'
 
 export default {
   components: { Pagination, QueryField },
-  data() {
+  data () {
     return {
       sceneCode: this.$route.params.sceneCode,
       startDatePicker: this.beginDate(),
@@ -191,14 +216,14 @@ export default {
     })*/
 
   },
-  created() {
+  created () {
     this.getList()
   },
   methods: {
-    beginDate() {
+    beginDate () {
       const self = this
       return {
-        disabledDate(time) {
+        disabledDate (time) {
           if (self.temp.endTime) { // 如果结束时间不为空，则小于结束时间
             return new Date(self.temp.endTime).getTime() < time.getTime()
           } else {
@@ -207,10 +232,10 @@ export default {
         }
       }
     },
-    processDate() {
+    processDate () {
       const self = this
       return {
-        disabledDate(time) {
+        disabledDate (time) {
           if (self.temp.startTime) { // 如果开始时间不为空，则结束时间大于开始时间
             return new Date(self.temp.startTime).getTime() > time.getTime()
           } else {
@@ -219,7 +244,7 @@ export default {
         }
       }
     },
-    getList(query) {
+    getList (query) {
       this.authenTypeJson = getDictList('004001')
       this.listLoading = true
       if (query) this.pageQuery.condition = query
@@ -229,17 +254,17 @@ export default {
         this.listLoading = false
       })
     },
-    handleFilter() {
+    handleFilter () {
       this.pageQuery.pageNo = 1
       this.getList()
     },
-    sortChange(data) {
+    sortChange (data) {
       const { prop, order } = data
       this.pageQuery.sortBy = order
       this.pageQuery.sortName = prop
       this.handleFilter()
     },
-    resetTemp() {
+    resetTemp () {
       this.temp = {
         dataRoleUuid: undefined,
         dataRoleName: '',
@@ -249,7 +274,7 @@ export default {
         endTime: ''
       }
     },
-    handleCreate() {
+    handleCreate () {
       /* console.log(this.$store.getters.personuuid);
       getDict('sex').then(data => {
         console.log(data)
@@ -261,7 +286,7 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    createData() {
+    createData () {
       if (this.temp.startTime > this.temp.endTime) {
         this.$notify({
           title: '警告',
@@ -293,7 +318,7 @@ export default {
         }
       })
     },
-    handleUpdate() {
+    handleUpdate () {
       this.temp = Object.assign({}, this.selections[0]) // copy obj
       // var startTime = new Date(this.temp.startTime)
       // this.temp.startTime = startTime.getFullYear() + '-' + (startTime.getMonth() + 1) + '-' + startTime.getDate() + ' ' + startTime.getHours() + ':' + startTime.getMinutes() + ':' + startTime.getSeconds()
@@ -311,14 +336,14 @@ export default {
     //   var createTimeRow = createTime.getFullYear() + '-' + (createTime.getMonth() + 1) + '-' + createTime.getDate() + ' ' + createTime.getHours() + ':' + createTime.getMinutes() + ':' + createTime.getSeconds()
     //   return createTimeRow
     // },
-    formatAuthenType(row, column) {
+    formatAuthenType (row, column) {
       var data = getDictList('004001')
       var authenObj = data.filter(obj => { return obj.codeValue === row.authenType })
       if (authenObj !== null) {
         return authenObj[0].codeName
       }
     },
-    formatDuring(row, column) {
+    formatDuring (row, column) {
       return row.startTime + '至' + row.endTime
       // var startDate = new Date(row.startTime)
       // var rowStart = startDate.getFullYear() + '-' + (startDate.getMonth() + 1) + '-' + startDate.getDate() + ' ' + startDate.getHours() + ':' + startDate.getMinutes() + ':' + startDate.getSeconds()
@@ -326,7 +351,7 @@ export default {
       // var rowEnd = endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate() + ' ' + endDate.getHours() + ':' + endDate.getMinutes() + ':' + endDate.getSeconds()
       // return rowStart + '至' + rowEnd
     },
-    updateData() {
+    updateData () {
       // var starDate = new Date(this.temp.startTime)
       // this.temp.startTime = starDate
       // var endDate = new Date(this.temp.endTime)
@@ -349,7 +374,7 @@ export default {
         }
       })
     },
-    handleDelete() {
+    handleDelete () {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.dataRoleUuid) })
       this.$confirm('确定删除该角色?', '提示', {
@@ -370,27 +395,27 @@ export default {
         })
       })
     },
-    handleSelectionChange(val) {
+    handleSelectionChange (val) {
       this.selections = val
     },
-    getSortClass: function(key) {
+    getSortClass: function (key) {
       const sort = this.pageQuery.sort
       return sort === `+${key}` ? 'asc' : 'desc'
     },
-    authentic() {
+    authentic () {
       var roleUuid = this.selections[0].dataRoleUuid
       var sceneCode = this.sceneCode;
       this.$router.push({
         path: `/data/roleGrp/${roleUuid}/${sceneCode}`
       })
     },
-    bindRes() {
+    bindRes () {
       var roleUuid = this.selections[0].dataRoleUuid
       this.$router.push({
-        path: '/data/roleRes/' + roleUuid
+        path: '/data/role-res/' + roleUuid
       })
     },
-    openFilterPanel(roleUuid) {
+    openFilterPanel (roleUuid) {
       getSceneFilter(roleUuid, this.sceneCode).then(resp => {
         console.log(resp.data)
         resp.data.forEach(f => {
@@ -401,7 +426,7 @@ export default {
         this.currentRoleUuid = roleUuid
       })
     },
-    handleSaveRoleFilter() {
+    handleSaveRoleFilter () {
       var datas = []
       this.allFilters.forEach(f => {
         datas.push({

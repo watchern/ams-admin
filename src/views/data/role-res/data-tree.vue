@@ -196,6 +196,7 @@ import {
 } from "@/api/data/table-info";
 import { commonNotify } from "@/utils";
 import { truncate } from "fs";
+import { log } from 'console';
 
 export default {
   components: { MyElTree },
@@ -393,11 +394,9 @@ export default {
       parentNode.expand();
     },
     loadNode (node, resolve) {
-      getBusinessSystemTree(true, this.query.dataSource, false).then((resp) => {
-        resolve(resp.data)
-        this.loading = false
-        this.tabclick = false
-      });
+      if (node.level === 0) {
+        return resolve(this.treeData1)
+      }
       if (node.data.children && node.data.type !== "table") {
         resolve(node.data.children);
       } else if (node.data.type === "table" && node.data.children.length > 0) {
@@ -421,8 +420,6 @@ export default {
           });
           resolve(nodes);
         });
-      } else {
-        // debugger;
       }
     },
     // 是否可读
