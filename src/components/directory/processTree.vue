@@ -1,6 +1,6 @@
 <template>
   <div class="example">
-    <div id="my-diagram-div"></div>
+    <div id="myDiagramDiv"></div>
     <div></div>
   </div>
 </template>
@@ -23,6 +23,7 @@ export default {
   components: {},
   data () {
     return {
+      diagram: {},
       nodeDataArray: [],
       linkDataArray: [],
     };
@@ -33,7 +34,10 @@ export default {
     this.init();//初始化表关系
     this.$nextTick(function () {
       this.$on('init', function () {
-
+        //重新渲染的问题
+        // if (typeof (myDiagram) !== "undefined") {
+        //   myDiagram.div = null;
+        // }
       });
     });
 
@@ -41,12 +45,21 @@ export default {
   created () {
   },
   methods: {
+    //   update_cavans () {
+    //     // 清空当前画布
+    //     myDiagram.diagram.div = null;
+    //     // 数据清空一次
+    //     this.nodeDataArray = [];
+    //     this.linkDataArray = [];
+    //     this.init();
+    //   },
 
     init () {
+      // 
       let $ = go.GraphObject.make; // for conciseness in defining templates
-      let myDiagram = $(
+      var myDiagram = $(
         go.Diagram,
-        "my-diagram-div", // id挂载dome节点
+        "myDiagramDiv", // id挂载dome节点
         {
           // allowDelete: false,
           // allowCopy: false,
@@ -99,6 +112,7 @@ export default {
             shadowOffset: new go.Point(3, 3),
             shadowColor: "#C5C1AA"
           },
+
           // 动态绑定位置信息
           new go.Binding("location", "location").makeTwoWay(),
           // whenever the PanelExpanderButton changes the visible property of the "LIST" panel,
@@ -289,7 +303,7 @@ export default {
 </script>
  
 <style scoped>
-#my-diagram-div {
+#myDiagramDiv {
   width: 100%;
   height: 900px;
   border: 1px solid;
