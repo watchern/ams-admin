@@ -842,9 +842,12 @@ export default {
 .DisableSelection {
   display: none !important;
 }
+.list_table {
+  height: calc(100vh - 300px);
+  background: #fff;
+}
 
 .list_table >>> .el-table__empty-block {
-  height: 400px !important;
-  background: #fff;
+  /* height: 400px !important; */
 }
 </style>
