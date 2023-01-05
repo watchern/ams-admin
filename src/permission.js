@@ -55,10 +55,10 @@ router.beforeEach(async(to, from, next) =>
   } else {
     /* has no token*/
     // 获取到redis里的token
-    redisGetToken().then(resp => {
+    redisGetToken().then(async resp => {
       // token = resp.data
       // 把获取到的token存到cookie和store里
-      store.dispatch('user/setRedisToken', resp.data)
+      await store.dispatch('user/setRedisToken', resp.data)
     });
     next()
 
