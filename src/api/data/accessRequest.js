@@ -10,3 +10,29 @@ export function listByPage(data) {
         data
     })
 }
+
+export function del(ids) {
+    return request({
+        baseURL: baseURL,
+        url: `/${controllerName}/delete/${ids}`,
+        method: 'delete'
+    })
+}
+
+export function save(data) {
+    return request({
+        baseURL: baseURL,
+        url: `/${controllerName}/save`,
+        method: 'post',
+        data
+    })
+}
+
+export function update(data) {
+    return request({
+        baseURL: baseURL,
+        url: `/${controllerName}/update`,
+        method: 'put',
+        data
+    })
+}
