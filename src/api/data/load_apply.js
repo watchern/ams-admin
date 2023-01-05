@@ -1,6 +1,5 @@
 import request from '@/utils/request'
 const baseURL = '/base'
-const amisUrl = '/amis'
 const dataUrl = '/data'
 
 const controllerName = 'loadDownApply'
@@ -46,31 +45,31 @@ export function update_data (data) {
     })
 }
 // 删除
-export function delete_data(ids) {
+export function delete_data (ids) {
     return request({
         baseURL: dataUrl,
         url: `/${controllerName}/delete/${ids}`,
         method: 'delete',
     })
 }
-export function batchUpdateForHandle(data){
-    return request ({
+export function batchUpdateForHandle (data) {
+    return request({
         baseURL: dataUrl,
         url: `/${controllerName}/batchUpdateForHandle`,
         method: 'post',
         data
     })
 }
-export function batchUpdateForFinishHandle(data){
-    return request ({
+export function batchUpdateForFinishHandle (data) {
+    return request({
         baseURL: dataUrl,
         url: `/${controllerName}/batchUpdateForFinishHandle`,
         method: 'post',
         data
     })
 }
-export function showFile(data){
-    return request ({
+export function showFile (data) {
+    return request({
         baseURL: dataUrl,
         url: `/${controllerName}/showFile`,
         method: 'post',
