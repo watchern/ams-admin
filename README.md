@@ -1,5 +1,10 @@
 # ams-admin
 
+## npm源设置
+````
+npm config set registry http://139.159.246.94:1057/repository/npm-group/
+````
+
 ## 前端依赖下载
 ```
 npm install
