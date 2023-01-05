@@ -49,7 +49,7 @@
         batchUpdateForFinishHandle
         ,queryByPersonalSpaceUuid
         ,batchUpdateForBackApplicationHandle
-    } from "@/api/analysis/personalSpace";
+    } from "@/api/data/personalSpace";
     export default {
         name: "expansionDetail",
         data(){
