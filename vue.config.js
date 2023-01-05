@@ -129,14 +129,7 @@ module.exports = {
           '^/ams-clue/': '/'
         },
       },
-      '/amis': {
-        timeout: 1800000,
-        target: process.env.AMIS_API,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/amis/': '/'
-        },
-      },
+
       // ,
       // '/sess': {
       //   timeout: 1800000,

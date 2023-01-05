@@ -1,6 +1,5 @@
 import request from '@/utils/request'
 // const baseURL = '/base'
-// const amisUrl = '/amis'
 const dataUrl = '/data'
 
 // 列表查询
@@ -53,7 +52,7 @@ export function getById (data) {
  * 获取获取数据校验规则树
  */
 // export function getDraftTree(isShowDraft) {
-export function getDraftTree() {
+export function getDraftTree () {
     return request({
         baseURL: dataUrl,
         url: '/oamDataResource/getDraftTree',
