@@ -115,6 +115,15 @@
                 <el-table-column label="申请人"
                                  text-align="center"
                                  prop="applyPerson"/>
+                <el-table-column label="流程查看"
+                                 text-align="center"
+                                 prop="viewProcess">
+                    <template slot-scope="scope">
+                        <el-link type="primary"
+                                 :underline="false"
+                                 @click="todoOpinionList(scope.row)">流程跟踪</el-link>
+                    </template>
+                </el-table-column>
                 <el-table-column label="操作"
                                  text-align="center"
                                  prop="applyPerson">
@@ -125,16 +134,6 @@
                                    @click="show_details(scope.row.applyUuid)"/>
                     </template>
                 </el-table-column>
-                <!--                <el-table-column label=""-->
-                <!--                                 align="center"-->
-                <!--                                 prop="applyPerson" >-->
-                <!--                    <template slot-scope="scope">-->
-                <!--                        <el-button type="primary"-->
-                <!--                                   class="oper-btn detail"-->
-                <!--                                   title="流程跟踪"-->
-                <!--                                   @click="show_(scope.row.applyUuid)" />-->
-                <!--                    </template>-->
-                <!--                </el-table-column>-->
             </el-table>
         </div>
         <el-pagination v-show="page_list.total>0"
@@ -408,6 +407,27 @@
             >
         </el-dialog>
 
+        <!--流程跟踪弹窗-->
+        <el-dialog
+                title="流程跟踪"
+                :visible.sync="todoFlow"
+                v-if="todoFlow"
+                width="80%"
+        >
+            <div>
+                <flowOpinionList :applyUuid="applyUuid" :pageFrom="applyPage"></flowOpinionList>
+            </div>
+            <span slot="footer">
+            <el-button
+                    size="mini"
+                    type="info"
+                    class="table_header_btn"
+                    @click="todoFlow = false"
+            >关闭</el-button
+            >
+          </span>
+        </el-dialog>
+
     </div>
 
 </template>
@@ -425,10 +445,11 @@
     import DataTree from '@/components/public/tree/src/tree';
     import FlowItem from '@/components/starflow/todowork/flowItem';
     import Details from '@/views/data/dataLoadApply/details';
+    import flowOpinionList from "@/components/starflow/todowork/flowOpinionList"
 
 
     export default {
-        components: {FileImport, DataTree, FlowItem, Details},
+        components: {FileImport, DataTree, FlowItem, Details, flowOpinionList},
         data() {
             return {
                 // 查询列表
@@ -597,6 +618,8 @@
                 dialogStatus: '',
                 updateShow: false,
                 applySelectionList: [],
+                todoFlow: false, //流程查看的弹窗控制
+                applyPage: 'applyPage', //有这个标识 查询流程的时候会走相对应的方法
 
                 rules: {
                     applyName: [
@@ -923,6 +946,11 @@
             //子组件fileupload传值给父组件，用showFilePath事件接收值赋给变量fileType
             showFilePath(filePath) {
                 this.form.fileName = filePath;
+            },
+            //打开流程跟踪弹窗
+            todoOpinionList(row){
+                this.applyUuid = row.applyUuid;
+                this.todoFlow = true;
             },
             addApply() {
 
