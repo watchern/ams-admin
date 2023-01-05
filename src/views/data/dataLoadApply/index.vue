@@ -441,6 +441,7 @@
                     pageNo: 1,
                     pageSize: 10,
                 },
+                //工作流办理状态
                 statusType: [
                     {
                         value: '草稿',
@@ -478,8 +479,10 @@
                     filingMove: '',//归档方式
                     filingFile: '',//归档文件
                     fileType: '',
-                },//详情
+                },
+                //详情
                 Selectval_list: [],//多选的值
+                //装载类型
                 operationTypes: [
                     {
                         value: '0',
@@ -490,6 +493,7 @@
                         label: '数据下线'
                     }
                 ],
+                //行分隔符
                 lineSeparators: [
                     {
                         value: '回车换行符',
@@ -524,6 +528,7 @@
                         label: '竖线'
                     }
                 ],
+                //列分隔符
                 columnSeparators: [
                     {
                         value: '回车换行符',
@@ -588,7 +593,6 @@
                 dialogDetailVisible: false,//详情弹窗
                 title: '', //弹窗标题
                 fileType: '',
-                filePathNow: '',
                 //新增编辑弹窗状态
                 dialogStatus: '',
                 updateShow: false,
@@ -614,12 +618,14 @@
                         {required: true, message: '请选择列操作符', trigger: 'change'},
                     ],
                 },
+                //工作流相关
                 flowSet: {
                     opinionList: false,
                     opinion: false,
                     nextStep: true,
                     isSecond: false,
                 },
+                //工作流相关
                 flowItem: {
                     //动态赋值
                     wftype: "auditNotice",
@@ -632,8 +638,11 @@
                     isSecond: false,
                     temp1: "",
                 },
+                //工作流相关
                 flowParam: 0,
+                //工作流相关
                 columnDefs: [],
+                //工作流相关
                 submitData: {
                     versionUuid: "tlLuwUhC",
                     busTableName: "", //表名
@@ -642,12 +651,14 @@
                     status: "1", //预警数据状态
                     busdatas: [],
                 },
+                //工作流相关
                 temp: {
                     sceneUuid: undefined,
                     sceneName: '',
                     sceneCode: ''
                 },
                 detailsUuid: '',
+                //判断是新增还是修改，状态标识符
                 dialogStatusValue: false,
             };
         },
@@ -724,11 +735,13 @@
                 this.flowItem.applyTitle = this.temp.applyName;
                 this.dialogVisible = true
             },
+            //工作流相关
             closeFlowItem(val) {
                 this.dialogVisible = val;
                 this.flowParam = 0;
                 // this.initData();
             },
+            //工作流相关
             delectData(val) {
                 this.dialogVisible = val;
             },
@@ -776,20 +789,12 @@
                 this.detailsUuid = applyUuid
                 this.dialogDetailVisible = true
             },
-            // 编辑
-            // show_detail(applyUuid) {
-            //     this.form.applyUuid = applyUuid
-            //     this.detailsUuid = applyUuid
-            //     this.dialogDetailVisible = true
-            //     this.details_details();
-            // },
 
             // 编辑 接口
             details_details() {
                 getById(this.form.applyUuid).then(res => {
                     this.form = res.data
                 })
-
             },
             // 多选
             handleSelectionChange(val) {
@@ -809,7 +814,6 @@
                 this.query.pageSize = val
                 this.getList()
             },
-
 
             // 新建保存 && 编辑保存
             save(form) {
@@ -838,6 +842,7 @@
                                 this.$notify.warning("请选择文件！")
                                 return
                             }
+                            //save_data方法调用后台save接口实现新增功能
                             save_data(params).then(res => {
                                 if (res.code === 0) {
                                     this.$message({
@@ -860,13 +865,8 @@
                                 loadDownApply: {
                                     applyUuid: this.form.applyUuid,
                                     applyName: this.form.applyName,
-                                    // applyPerson: this.form.applyPerson,
-                                    // currentLink: this.form.currentLink,
                                     operationType: this.form.operationType,
                                     loadType: this.form.loadType,
-                                    // applyPersonUuid: this.form.applyPersonUuid,
-                                    // status: '',//状态
-                                    // applyTime: '',//申请时间
                                     fileType: this.fileType,
                                     lineSeparator: this.form.lineSeparator,
                                     columnSeparator: this.form.columnSeparator,
@@ -875,10 +875,12 @@
                                     fileUuid: this.form.fileUuid,
                                 }
                             }
+                            //只有状态为草稿时才能实现对数据的编辑修改
                             if (this.form.status !== '草稿') {
                                 this.$notify.warning("只有草稿状态可修改")
                                 return
                             }
+                            //update_data方法调用后台update接口实现编辑功能
                             update_data(params).then(res => {
                                 if (res.code === 0) {
                                     this.$message({
@@ -914,11 +916,11 @@
                 this.$refs[form].resetFields() //清空添加的值
                 this.updateShow = false
             },
-
+            //子组件fileupload传值给父组件，用showFileType事件接收值赋给变量fileType
             showFileType(fileType) {
                 this.fileType = fileType;
             },
-
+            //子组件fileupload传值给父组件，用showFilePath事件接收值赋给变量fileType
             showFilePath(filePath) {
                 this.form.fileName = filePath;
             },
@@ -928,6 +930,7 @@
             delApply() {
 
             },
+            //工作流相关
             saveOpinion() {
                 //保存业务数据成功后
                 setTimeout(() => {
