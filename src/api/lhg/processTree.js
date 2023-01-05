@@ -1,6 +1,5 @@
 import request from '@/utils/request'
 const baseURL = '/base'
-const amisUrl = '/amis'
 const dataUrl = '/data'
 const tableRelation = '/tableRelation'
 

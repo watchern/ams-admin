@@ -12,7 +12,6 @@
                 @rename-resource="renameResource"
                 @del-data="delData" />
     </div>
-    <!-- </div> -->
     <div class="right_conter padding10">
 
       <!-- <BaseDirectoryList ref="listData"
@@ -23,12 +22,26 @@
                          @refresh="refresh" /> -->
 
       <!-- 数据资源展示 -->
-      <DataResourceDisplay @on_deails="on_deails_change"
+      <!-- <DataResourceDisplay @on_deails="on_deails_change"
                            :is_btn="is_btn"
+                           v-if="show_details == false"></DataResourceDisplay> -->
+
+      <DataResourceDisplay @on_deails="onDeailsChange"
+                           :isBtn="isBtn"
+                           @handleCurrentChange="handleCurrent"
+                           @handleSizeChange="handleSize"
+                           :list="list"
+                           :list_data="list_data"
+                           :list_loading="list_loading"
+                           @edit_list="Edit_list"
                            v-if="show_details == false"></DataResourceDisplay>
 
       <!-- 基本信息详情 -->
       <Details ref="Details_ref"
+               :tableMetaUuid="tableMetaUuid"
+               :isDisable_input="isDisable_input"
+               @update_list="UpdateList"
+               :is_Edit_list="is_Edit_list"
                v-if="show_details == true"></Details>
 
     </div>
@@ -42,9 +55,20 @@ import BaseDirectoryList from '@/views/data/directory/directorylist'
 import TreeCommon from "@/components/datasAssets/treeCommon.vue"
 import DataResourceDisplay from "@/components/directory/dataResourceDisplay.vue"
 import Details from "@/components/directory/details.vue"
+import {
+  listUnCached,
+  getDataTreeNode, //目录
+  getBusinessSystemTree, //系统
+  getThemeTree, //主题
+  getLayeredTree, //分层
+  delTable,
+  listByTreePage, //列表
+  getColsInfoByTableName, //获取列信息
+  synDataStructure, //同步数据
+} from "@/api/data/table-info";
 
 export default {
-  components: { dataTree, TreeCommon, DataResourceDisplay, Details },
+  components: { BaseDirectoryList, dataTree, TreeCommon, DataResourceDisplay, Details },
   props: ['dataUserId', 'sceneCode'],
   data () {
     return {
@@ -53,9 +77,27 @@ export default {
       directyDataUserId: this.$store.state.user.datauserid,
       directySceneCode: 'auditor',
       isTreeShow: true,
-      show_details: false,//显示基本信息详情
-      is_btn: false,//是否显示按钮
 
+      show_details: false, //显示基本信息详情
+      isBtn: false, //是否显示按钮
+      list_loading: false, //列表loading
+      list: [],
+      list_data: {}, //分页信息
+      // list_details: {},// 点击列表进入详情
+      tableMetaUuid: "", //详情id
+      // tableRelationQueryUuid: '',//id
+      is_Edit_list: 0, //是否编辑
+      isDisable_input: true, //详情禁止输入修改
+      // 资料树筛选 数据源
+      query: {
+        dataSource: "Postgre", //筛选条件
+        pageNo: 1,
+        pageSize: 5,
+        businessSystemId: "", //id主键
+        tableThemeId: "", //主题
+        tableLayeredId: "", //分层
+        folderUuid: "", //目录ID
+      },
     }
   },
   computed: {
@@ -65,7 +107,9 @@ export default {
 
   },
   created () {
-    this.initDirectory()
+    // this.initDirectory()
+    this.query.businessSystemId = "";
+    this.query_list();
   },
   mounted () {
     //手动触发一次点击事件展示默认结构
@@ -88,9 +132,8 @@ export default {
       this.isRouterAlive = false
       this.$nextTick(() => (this.isTreeShow = true))
     },
-    nodeclick (data, node, tree) {
-      this.$refs.listData.getList(data, node, tree)
-    },
+
+
     //创建文件夹
     createFolder (node) {
       this.$refs.listData.createFolderByTree(node)
@@ -114,10 +157,134 @@ export default {
     },
 
     // 显示基本信息详情
-    on_deails_change (data) {
-      this.show_details = true
+    // on_deails_change (data) {
+    //   this.show_details = true
 
-    }
+    // },
+    //   nodeclick (data, node, tree) {
+    //   this.$refs.listData.getList(data, node, tree)
+    // },
+
+    // 点击切换树 切换 表单
+    nodeclick (data, node, tree) {
+
+      // 点击数据表进入详情
+      if (node.level !== 3) {
+        if (node.data.children.length == 0 && node.data.type === "table") {
+          this.tableMetaUuid = node.data.id;
+          this.show_details = true;
+          this.isDisable_input = true;
+        } else {
+          this.divInfo = false;
+          this.show_details = false; //显示列表
+        }
+
+        if (node.data.type === "table") {
+          this.$nextTick(() => {
+            this.divInfo = true;
+            this.tableId = node.data.id;
+          });
+        } else {
+          if (data.type == "system") {
+            this.query.businessSystemId = node.data.id;
+            this.query.tableThemeId = "";
+            this.query.tableLayeredId = "";
+            this.query.folderUuid = "";
+            this.query_list();
+          } else if (data.type == "theme") {
+            this.query.businessSystemId = "";
+            this.query.tableThemeId = node.data.id;
+            this.query.tableLayeredId = "";
+            this.query.folderUuid = "";
+            this.query_list();
+          } else if (data.type == "layered") {
+            this.query.businessSystemId = "";
+            this.query.tableThemeId = "";
+            this.query.tableLayeredId = node.data.id;
+            this.query.folderUuid = "";
+            this.query_list();
+          }
+          // else if (node.data.type === "folder") {
+          // 目录
+          // let _node = this.$refs.tree.getNode(node);
+          // //  设置未进行懒加载状态
+          // _node.loaded = false;
+          // // 重新展开节点就会间接重新触发load达到刷新效果
+          //   // _node.expand();
+          //   this.post_getDataTreeNode();//目录
+          //   // this.getTagList('ROOT', this.query.dataSource)
+          //   // this.getTagList(node.data.id, this.query.dataSource);//目录
+          //   this.query.businessSystemId = ''
+          //   this.query.tableThemeId = '';
+          //   this.query.tableLayeredId = '';
+          //   this.query.folderUuid = node.data.id;
+          //   this.query_list();
+
+          // }
+          // 分页
+        }
+      }
+
+    },
+
+    // 列表 接口
+    query_list () {
+      // this.listLoading = true;
+      this.list_loading = true; //子组件loading
+      let params = {
+        businessSystemId: this.query.businessSystemId, //id主键
+        tableThemeId: this.query.tableThemeId, //主题
+        tableLayeredId: this.query.tableLayeredId, //分层
+        folderUuid: this.query.folderUuid, //目录
+        dataSource: this.query.dataSource, //数据源
+        pageNo: this.query.pageNo,
+        pageSize: this.query.pageSize,
+      };
+      listByTreePage(params).then((resp) => {
+        this.list_loading = false; //子组件loading
+
+        this.list_data = resp.data;
+        this.list = resp.data.records;
+
+        // this.listLoading = false
+        //
+      });
+    },
+    // 修改
+    Edit_list (data) {
+      this.is_Edit_list = 1;
+      for (var i = 0; i < data.length; i++) {
+        // this.tableRelationQueryUuid = data[i].tableRelationQuery.tableRelationQueryUuid
+        this.tableMetaUuid = data[i].tableMetaUuid;
+      }
+      this.show_details = true
+      this.isDisable_input = false
+
+    },
+    // 修改后 刷新列表
+    UpdateList () {
+      this.show_details = false;
+      this.query_list();
+    },
+
+    // 显示基本信息详情
+    onDeailsChange (data) {
+      this.tableMetaUuid = data.tableMetaUuid;
+      this.show_details = true;
+      this.isDisable_input = true;
+    },
+
+    // 分页
+    handleCurrent (val) {
+      this.query.pageNo = val;
+      this.query_list();
+    },
+    // 每页多少条
+    handleSize (val) {
+      this.query.pageNo = 1;
+      this.query.pageSize = val;
+      this.query_list();
+    },
   }
 }
 </script>

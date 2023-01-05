@@ -20,113 +20,119 @@
         <div class="information rightList_child"
              id="id0">
           <h2 :class="{ isActive: navgatorIndex == 0 }">基本信息</h2>
-          <div class="information_form padding10"
-               :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
+          <div class="information_form padding10">
             <el-form ref="form"
                      :model="form"
                      label-width="80px">
-              <el-form-item label="表名称："
-                            prop="tbName">
-                <el-input v-model="form.tbName"
-                          :disabled="disabled"></el-input>
-              </el-form-item>
-              <el-form-item label="表中文名："
-                            prop="chnName">
-                <el-input v-model="form.chnName"
-                          @input="change($event)"
-                          :disabled="isDisable_input"></el-input>
-              </el-form-item>
-              <el-form-item label="表说明：">
-                <el-input v-model="form.tableRemarks"
-                          style="resize: none"
-                          @input="change($event)"
-                          :disabled="isDisable_input"
-                          type="textarea"></el-input>
-              </el-form-item>
-
-              <div class="son">
-                <el-form-item label="资源编码："
-                              prop="tableCode">
-                  <el-input type="text"
-                            disabled
-                            @input="change($event)"
-                            v-model="form.tableCode"
-                            :rows="4">
-                  </el-input>
+              <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
+                <el-form-item label="表名称："
+                              prop="tbName">
+                  <el-input v-model="form.tbName"
+                            :disabled="disabled"></el-input>
                 </el-form-item>
-                <el-form-item label="资源类型：">
-                  <el-select v-model="form.tableType"
-                             @input="change($event)"
-                             :disabled="isDisable_input">
-                    <el-option v-for="item in data_type"
-                               :key="item.value"
-                               :label="item.label"
-                               :value="item.value" />
-                  </el-select>
+                <el-form-item label="表中文名："
+                              prop="chnName">
+                  <el-input v-model="form.chnName"
+                            @input="change($event)"
+                            :disabled="isDisable_input"></el-input>
+                </el-form-item>
+                <el-form-item label="表说明：">
+                  <el-input v-model="form.tableRemarks"
+                            style="resize: none"
+                            @input="change($event)"
+                            :disabled="isDisable_input"
+                            type="textarea"></el-input>
                 </el-form-item>
               </div>
 
               <div class="son">
-                <el-form-item label="资产主题：">
-                  <el-select v-model="form.tableThemeId"
-                             @input="change($event)"
-                             @change="tableThemeName_change"
-                             :disabled="isDisable_input">
-                    <el-option v-for="item in next_data.themeList"
-                               :key="item.codeUuid"
-                               :label="item.codeName"
-                               :value="item.codeUuid" />
-                  </el-select>
-                </el-form-item>
-                <el-form-item label="资源分层：">
-                  <el-select v-model="form.tableLayeredId"
-                             @input="change($event)"
-                             :disabled="isDisable_input">
-                    <el-option v-for="item in next_data.layeredList"
-                               :key="item.codeUuid"
-                               :label="item.codeName"
-                               :value="item.codeUuid" />
-                  </el-select>
-                </el-form-item>
+                <div class="is_disabled">
+                  <el-form-item label="资源编码："
+                                prop="tableCode">
+                    <el-input type="text"
+                              disabled
+                              @input="change($event)"
+                              v-model="form.tableCode"
+                              :rows="4">
+                    </el-input>
+                  </el-form-item>
+                </div>
+                <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
+                  <el-form-item label="资源类型：">
+                    <el-select v-model="form.tableType"
+                               @input="change($event)"
+                               :disabled="isDisable_input">
+                      <el-option v-for="item in data_type"
+                                 :key="item.value"
+                                 :label="item.label"
+                                 :value="item.value" />
+                    </el-select>
+                  </el-form-item>
+                </div>
               </div>
+              <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
+                <div class="son">
+                  <el-form-item label="资产主题：">
+                    <el-select v-model="form.tableThemeId"
+                               @input="change($event)"
+                               @change="tableThemeName_change"
+                               :disabled="isDisable_input">
+                      <el-option v-for="item in next_data.themeList"
+                                 :key="item.codeUuid"
+                                 :label="item.codeName"
+                                 :value="item.codeUuid" />
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="资源分层：">
+                    <el-select v-model="form.tableLayeredId"
+                               @input="change($event)"
+                               :disabled="isDisable_input">
+                      <el-option v-for="item in next_data.layeredList"
+                                 :key="item.codeUuid"
+                                 :label="item.codeName"
+                                 :value="item.codeUuid" />
+                    </el-select>
+                  </el-form-item>
+                </div>
 
-              <div class="son">
-                <el-form-item label="所属系统：">
-                  <el-select v-model="form.businessSystemId"
-                             @input="change($event)"
-                             :disabled="isDisable_input"
-                             :rows="4">
-                    <el-option v-for="item in next_data.businessSystemList"
-                               :key="item.businessSystemUuid"
-                               :label="item.businessSystemName"
-                               :value="item.businessSystemUuid" />
-                  </el-select>
-                </el-form-item>
-                <el-form-item label="文件名：">
-                  <el-input :disabled="isDisable_input"
-                            @input="change($event)"
-                            v-model="form.fileName"
-                            :rows="4"></el-input>
-                </el-form-item>
-              </div>
+                <div class="son">
+                  <el-form-item label="所属系统：">
+                    <el-select v-model="form.businessSystemId"
+                               @input="change($event)"
+                               :disabled="isDisable_input"
+                               :rows="4">
+                      <el-option v-for="item in next_data.businessSystemList"
+                                 :key="item.businessSystemUuid"
+                                 :label="item.businessSystemName"
+                                 :value="item.businessSystemUuid" />
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="文件名：">
+                    <el-input :disabled="isDisable_input"
+                              @input="change($event)"
+                              v-model="form.fileName"
+                              :rows="4"></el-input>
+                  </el-form-item>
+                </div>
 
-              <div class="son">
-                <el-form-item label="数据日期：">
-                  <el-date-picker format="yyyy-MM-dd"
-                                  @input="change($event)"
-                                  :disabled="isDisable_input"
-                                  type="date"
-                                  value-format="yyyy-MM-dd"
-                                  @change="changeRelationParam"
-                                  :rows="4"
-                                  v-model="form.dataDate" />
-                </el-form-item>
-                <el-form-item label="表大小：">
-                  <el-input placeholder="请输入表大小"
-                            @input="change($event)"
-                            :disabled="disabled"
-                            v-model="form.tableSize"></el-input>
-                </el-form-item>
+                <div class="son">
+                  <el-form-item label="数据日期：">
+                    <el-date-picker format="yyyy-MM-dd"
+                                    @input="change($event)"
+                                    :disabled="isDisable_input"
+                                    type="date"
+                                    value-format="yyyy-MM-dd"
+                                    @change="changeRelationParam"
+                                    :rows="4"
+                                    v-model="form.dataDate" />
+                  </el-form-item>
+                  <el-form-item label="表大小：">
+                    <el-input placeholder="请输入表大小"
+                              @input="change($event)"
+                              :disabled="disabled"
+                              v-model="form.tableSize"></el-input>
+                  </el-form-item>
+                </div>
               </div>
 
               <div class="son">
@@ -138,84 +144,89 @@
                             :rows="4">
                   </el-input>
                 </el-form-item>
-                <div class="son_people is_disabled">
-                  <el-form-item label="负责人：">
-                    <el-input :disabled="disabled"
-                              style="  background-color: rgba(0, 0, 0, 0.05) !important;"
-                              v-model="form.personLiables"></el-input>
-                  </el-form-item>
-                  <el-button type="primary"
-                             :disabled="isDisable_input"
-                             class="oper-btn"
-                             @click="check_people()">选择</el-button>
-                </div>
+              </div>
+              <div class="son_people is_disabled">
+                <el-form-item label="负责人：">
+                  <el-input :disabled="disabled"
+                            style="  background-color: rgba(0, 0, 0, 0.05) !important;"
+                            v-model="form.personLiables"></el-input>
+                </el-form-item>
+                <el-button type="primary"
+                           :disabled="isDisable_input"
+                           class="oper-btn"
+                           @click="check_people()">选择</el-button>
               </div>
 
-              <div class="son">
-                <el-form-item label="表分区:"
-                              :disabled="disabled"
-                              prop="partitions">
-                  <div class="table">
-                    <div class="head">分区名称</div>
+              <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
 
-                    <div v-if="form.partitions == null">--</div>
-                    <div v-else>
-                      <div v-for="(item, index_partitions) in form.partitions"
-                           :key="index_partitions"
-                           class="li_son">
-                        {{ item }}
-                        <div>{{ item }}</div>
+                <div class="son">
+                  <el-form-item label="表分区:"
+                                :disabled="disabled"
+                                prop="partitions">
+                    <div class="table">
+                      <div class="head">分区名称</div>
+
+                      <div v-if="form.partitions == null">--</div>
+                      <div v-else>
+                        <div v-for="(item, index_partitions) in form.partitions"
+                             :key="index_partitions"
+                             class="li_son">
+                          {{ item }}
+                          <div>{{ item }}</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </el-form-item>
+                  </el-form-item>
 
-                <el-form-item label="增全量：">
-                  <el-select v-model="form.isSpike"
-                             @input="change($event)"
-                             :disabled="isDisable_input">
-                    <el-option v-for="item in option_isSpike"
-                               :key="item.value"
-                               :label="item.label"
-                               :value="item.value" />
-                  </el-select>
-                </el-form-item>
-              </div>
-
-              <el-form-item label="数据标签：">
-                <div class="input_blue"
-                     @click="onclick_infotion_tag()">
-                  <div v-for="(item, index) in TagsAll"
-                       :key="index"
-                       class="spanbox">
-                    <span class="tagspan">{{ item }}</span>
-                    <i class="span_close"
-                       @click="removeTag_infotion_tag(index, item)"></i>
-                  </div>
-                  <input v-model="search_name_infotion"
-                         :disabled="isDisable_input"
-                         @keyup.enter="addTags_infotion_tag"
-                         @keyup.delete="deleteTags_infotion_tag"
-                         :style="inputStyle"
-                         class="inputTag"
-                         ref="inputTag"
-                         type="text" />
+                  <el-form-item label="增全量：">
+                    <el-select v-model="form.isSpike"
+                               @input="change($event)"
+                               :disabled="isDisable_input">
+                      <el-option v-for="item in option_isSpike"
+                                 :key="item.value"
+                                 :label="item.label"
+                                 :value="item.value" />
+                    </el-select>
+                  </el-form-item>
                 </div>
-              </el-form-item>
 
-              <el-form-item label="表热度：">
-                <ul class="Heat_ul _width">
-                  <li v-for="(it, i) in Heat"
-                      :key="i">
-                    <p>{{ it.name }}</p>
-                    <span>{{ it.num }}</span>
-                  </li>
-                </ul>
-              </el-form-item>
-              <div class="son">
-                <el-button type="primary"
-                           @click="previewSql()">查看SQL语句</el-button>
+                <el-form-item label="数据标签：">
+                  <div class="input_blue"
+                       @click="onclick_infotion_tag()">
+                    <div v-for="(item, index) in TagsAll"
+                         :key="index"
+                         class="spanbox">
+                      <span class="tagspan">{{ item }}</span>
+                      <i class="span_close"
+                         @click="removeTag_infotion_tag(index, item)"></i>
+                    </div>
+                    <input v-model="search_name_infotion"
+                           :disabled="isDisable_input"
+                           @keyup.enter="addTags_infotion_tag"
+                           @keyup.delete="deleteTags_infotion_tag"
+                           :style="inputStyle"
+                           class="inputTag"
+                           ref="inputTag"
+                           type="text" />
+                  </div>
+                </el-form-item>
+
+                <el-form-item label="表热度：">
+                  <ul class="Heat_ul _width">
+                    <li v-for="(it, i) in Heat"
+                        :key="i">
+                      <p>{{ it.name }}</p>
+                      <span>{{ it.num }}</span>
+                    </li>
+                  </ul>
+                </el-form-item>
+                <div class="son">
+                  <el-button type="primary"
+                             @click="previewSql()">查看SQL语句</el-button>
+                </div>
+
               </div>
+
             </el-form>
           </div>
         </div>
@@ -295,14 +306,8 @@
         <div class="rightList_child"
              id="id4">
           <h2 :class="{ isActive: navgatorIndex == 4 }">数据表字典信息</h2>
-          数据表字典信息
+          开发中...
           <div class="padding20">
-            <el-table :data="Column_tableData_dict" style="width: 100%">
-              <el-table-column prop="tableVersionNo" label="版本号"></el-table-column>
-              <el-table-column prop="tableUpdateStructure" label="数据结构"></el-table-column>
-              <el-table-column prop="createUserName" label="创建人"></el-table-column>
-              <el-table-column prop="createTime" label="创建时间"></el-table-column>
-            </el-table>
             <!-- <LineMap></LineMap> -->
             <!-- <EditMap></EditMap> -->
           </div>
@@ -456,8 +461,8 @@
                :visible.sync="dataTableTree"
                title="请选择数据表"
                width="600px">
+      <!-- @node-click="NodeTreeClick" -->
       <dataTree ref="dataTableTree"
-                @node-click="NodeTreeClick"
                 :is_progress="is_progress"
                 :data-user-id="dataUserId"
                 :scene-code="sceneCode" />
@@ -590,7 +595,6 @@ export default {
       tableData: [],
       sceneCode: "auditor",
       Column_tableData_index: [], //索引信息
-      Column_tableData_dict: [], //表历史信息
       TagsAll: ["aa"],
       inputLength: "",
       search_name_infotion: "", //标签
@@ -1081,8 +1085,8 @@ export default {
     },
     // NodeTreeClick (data, node, tree) {
     //   console.log(data);
-    // console.log(node);
-    // console.log(tree);
+    //   console.log(node);
+    //   console.log(tree);
     // },
     // 确认选择的数据表
     getDataTable () {

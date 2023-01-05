@@ -45,12 +45,6 @@
 
     </div>
 
-    <!-- <el-row width="100%" style="margin-bottom: 10px">
-      <el-col style="width: calc(100% - 64px)">
-        <el-input v-model="filterText1" placeholder="输入关键字进行过滤"/>
-      </el-col>
-    </el-row> -->
-
     <div v-if="loading== true"
          class="loading padding10 max_width"
          style="position: inherit;">
@@ -64,19 +58,14 @@
     <!-- 系统 主题 分层  目录-->
     <div class="tree-containerall padding10 max_width"
          v-if="loading== false">
-      <!-- <div class="tree-option "
-           v-loading="treeLoading"> -->
-      <!-- :default-expand-all="true" 展开全部节点 -->
-      <!--      :data="treeData1"-->
-      <!--      @node-expand="nodeExpand"-->
       <MyElTree ref="tree1"
                 :props="props"
                 class="filter-tree"
                 :highlight-current="true"
                 :filter-node-method="filterNode"
                 node-key="id"
-                @node-click="nodeClick"
                 @node-expand="nodeExpand"
+                @node-click="nodeclick"
                 :load="loadNode"
                 :lazy="true"
                 :expand-on-click-node="false"
@@ -229,7 +218,9 @@ export default {
       props: {
         label: "label",
         isLeaf: "leaf",
-        disabled: "disable"
+        disabled: "disable",
+        children: 'children',
+
       },
       tableIconPath: "../../images/ico/table_1.png",
       accessForm: {
@@ -381,7 +372,7 @@ export default {
     getTree () {
       return this.$refs.tree1;
     },
-    nodeClick (data, node, tree) {
+    nodeclick (data, node, tree) {
       this.$emit("node-click", data, node, tree);
     },
     handleCheck (data, checkIds) {
@@ -403,18 +394,22 @@ export default {
       parentNode.loaded = false;
       parentNode.expand();
     },
+    // 懒加载目录树
     loadNode (node, resolve) {
       if (node.level === 0) {
+        // 如果没有children 不显示展开
+        this.treeData1.forEach(item => {
+          if (item.children.length == 0) {
+            item.leaf = true
+          }
+        })
         return resolve(this.treeData1)
       }
       if (node.data.children && node.data.type !== "table") {
         resolve(node.data.children);
       } else if (node.data.type === "table" && node.data.children.length > 0) {
         resolve(node.data.children);
-      } else if (
-        node.data.type === "table" &&
-        node.data.children.length === 0
-      ) {
+      } else if (node.data.type === "table" && node.data.children.length === 0) {
         getTableCol(node.data.id).then((resp) => {
           var nodes = [];
           resp.data.forEach((e) => {
@@ -428,6 +423,7 @@ export default {
               title: e.chnName,
             });
           });
+          console.log(resp.data);
           resolve(nodes);
         });
       }
