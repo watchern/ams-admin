@@ -21,7 +21,7 @@
             <uploader-btn :attrs="attrs" title="上传" icon="el-icon-upload" class="oper-btn" type="primary">选择文件
             </uploader-btn>
             <!-- <uploader-btn :attrs="attrs" title="上传" icon="el-icon-upload" class="oper-btn" type="primary" /> -->
-<!--            <uploader-list/>-->
+            <uploader-list/>
         </uploader>
     </div>
 </template>
@@ -180,20 +180,6 @@
         max-height: 440px;
         overflow: auto;
         overflow-x: hidden;
-    }
-
-    .uploader-btn {
-        margin-right: 4px;
-        display: inline-block;
-        position: relative;
-        padding: 4px 8px;
-        font-size: 100%;
-        line-height: 1.4;
-        color: #666;
-        border: 1px solid #666;
-        cursor: pointer;
-        border-radius: 2px;
-        outline: none;
     }
 
     .oper-btn {
