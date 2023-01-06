@@ -287,7 +287,8 @@
     ,setPersonalSpaceSession
     ,updatePersonalSpace
     ,batchUpdateForHandle
-  } from "@/api/analysis/personalSpace";
+  } from "@/api/data/personalSpace";
+
   import FlowItem from '@/components/starflow/todowork/flowItem'
   import ExpansionUpdate from "@/views/data/expansion/ExpansionUpdate";
   import flowOpinionList from "@/components/starflow/todowork/flowOpinionList"
@@ -414,6 +415,10 @@
       },
       onReInput(){
         this.clearParams()
+        let param = {
+
+        }
+
       },
       backToUpPage(){
         this.$router.go(-1)
