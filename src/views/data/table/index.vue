@@ -1226,96 +1226,8 @@ export default {
       this.show_details = true;
       this.isDisable_input = true;
     },
-    //校验文件名是否存在
-    checkFileName_change (fileName) {
-      //
-      // checkFileName(fileName).then((res) => {
-      //   if (res.data) {
-      //     this.$message({
-      //       message: '文件名已存在',
-      //       type: 'success',
-      //       showClose: true,
-      //     })
-      //     //隐藏保存按钮
-      //     this.ifFileNameExist = false
-      //   } else {
-      //     this.$message({
-      //       message: res.message,
-      //       type: 'success',
-      //       showClose: true,
-      //     })
-      //     //显示保存按钮
-      //     this.ifFileNameExist = true
-      //     // this.$message.success("文件名可用");
-      //   }
-      // }
-      // )
-      // this.registTableFlag = false;//关闭上一步
-    },
 
-    // tab切换
-    // handleClick (tab, event) {
-    //   if (tab.index == "0") {
-    //     // this.tabclick = true
-    //     // setTimeout(() => {
-    //     //   this.tabclick = false
-    //     // }, 3000)
-    //     this.post_getBusinessSystemTree(); //系统
-    //   } else if (tab.index == "1") {
-    //     this.post_getThemeTree(); //主题
-    //   } else if (tab.index == "2") {
-    //     this.post_getLayeredTree(); //分层
-    //   }
-    //   // else {
-    //   //   this.post_getDataTreeNode(this.query.dataSource);//目录
-    //   // }
-    // },
-    // filterNode (value, data) {
-    //   if (!value) return true;
-    //   return data.label.indexOf(value) !== -1;
-    // },
 
-    // 系统
-    // post_getBusinessSystemTree () {
-    //   this.loading = true;
-    //   this.tabclick = true;
-    //   getBusinessSystemTree(true, this.query.dataSource, true).then((resp) => {
-    //     this.tree_list = resp.data;
-    //     this.loading = false;
-    //     this.tabclick = false;
-    //   });
-    // },
-    // // 主题
-    // post_getThemeTree () {
-    //   this.loading = true;
-    //   this.tabclick = true;
-    //   getThemeTree(true, this.query.dataSource, true).then((resp) => {
-    //     this.tree_list = resp.data;
-    //     this.loading = false;
-    //     this.tabclick = false;
-    //   });
-    // },
-    // // 分层
-    // post_getLayeredTree () {
-    //   this.loading = true;
-    //   this.tabclick = true;
-    //   getLayeredTree(true, this.query.dataSource, true).then((resp) => {
-    //     this.tree_list = resp.data;
-    //     this.loading = false;
-    //     this.tabclick = false;
-    //   });
-    // },
-    // 目录
-    // post_getDataTreeNode () {
-    //   this.loading = true
-    //   this.tabclick = true
-    //   getDataTreeNode(this.query.dataSource).then((resp) => {
-    //     this.tree_list = resp.data
-    //     this.loading = false
-    //     this.tabclick = false
-
-    //   });
-    // },
     // 点击注册资源的 数据库列表
     getTables () {
       this.treeLoading = true;
@@ -1337,39 +1249,7 @@ export default {
       node.expand(); // 主动调用展开节点方法，重新查询该节点下的所有子节点
     },
     // 点击切换树 切换 表单
-    // nodeClick (data, node, tree) {
-    //   this.tableMetaUuid = ''
-    //   // if (node.data.children.length == 0 && node.data.type === "table") {
-    //   // 显示列表
-    //   if (node.level == 1) {
-    //     // this.divInfo = false;
-    //     this.show_details = false; //显示列表
-    //     if (data.type == "system") {
-    //       this.query.businessSystemId = node.data.id;
-    //       this.query.tableThemeId = "";
-    //       this.query.tableLayeredId = "";
-    //       this.query.folderUuid = "";
-    //       this.query_list();
-    //     } else if (data.type == "theme") {
-    //       this.query.businessSystemId = "";
-    //       this.query.tableThemeId = node.data.id;
-    //       this.query.tableLayeredId = "";
-    //       this.query.folderUuid = "";
-    //       this.query_list();
-    //     } else if (data.type == "layered") {
-    //       this.query.businessSystemId = "";
-    //       this.query.tableThemeId = "";
-    //       this.query.tableLayeredId = node.data.id;
-    //       this.query.folderUuid = "";
-    //       this.query_list();
-    //     }
-    //   } else {
-    //     // 进入详情
-    //     this.tableMetaUuid = node.data.id;
-    //     this.show_details = true;
-    //     this.isDisable_input = true;
-    //   }
-    // },
+
     Details (tableMetaUuid, show_details, isDisable_input) {
       this.tableMetaUuid = tableMetaUuid
       this.show_details = show_details;
@@ -1402,25 +1282,7 @@ export default {
         //
       });
     },
-    // 删除
-    // delete_table (id) {
-    //   delTable(id).then((res) => {
-    //     if (res.code == 0) {
-    //       this.$message({
-    //         message: "删除成功",
-    //         type: "success",
-    //         showClose: true,
-    //       });
-    //     } else {
-    //       this.$message({
-    //         message: res.msg,
-    //         type: "error",
-    //         showClose: true,
-    //       });
-    //     }
-    //     this.query_list();
-    //   });
-    // },
+
     resetFolderForm () {
       Object.keys(this.folderForm).forEach((key) => {
         this.$set(this.folderForm, key, null);
@@ -1467,21 +1329,8 @@ export default {
     // },
     // 注册资产
     registTable () {
-      // var ckFolder = this.$refs.tree2.getCurrentNode();
-      // //  return;
-      // if (!ckFolder || ckFolder.type !== "FOLDER") {
-      //   this.$notify(
-      //     commonNotify({ type: "warning", message: "请选中文件夹" })
-      //   );
-      //   return false;
-      // }
       this.registTableFlag = true;
 
-      // this.$nextTick(() => {
-      //   if (this.$refs.tree1) {
-      //     this.$refs.tree1.clearSelection();//清空选择的责任人
-      //   }
-      // })
 
       this.getTables();
     },
@@ -1880,19 +1729,6 @@ export default {
 
     },
 
-    // 右侧表单
-    // 多选
-    // handleSelectionChange (val) {
-    //   this.Selectval = val;
-    // },
-
-    /**
-     * 当多选框改变时触发
-     */
-    // handleSelectionChange (val) {
-    //   this.selectValue = val
-    // },
-
     // 分页
     handleCurrent (val) {
       this.query.pageNo = val;
@@ -1925,25 +1761,6 @@ export default {
 .dlag_width >>> .el-dialog {
   min-width: 600px !important;
 }
-
-/* .left_conter {
-  position: relative;
-} */
-
-/* 
-.left_conter >>> .el-tabs__header {
-  margin: 0;
-}
-.left_conter >>> .el-tabs__item {
-  width: 25%;
-  text-align: center;
-}
-.left_conter >>> .el-tabs--card > .el-tabs__header .el-tabs__item.is-active {
-  border-bottom-color: transparent;
-}
-.left_conter >>> .el-tabs__nav {
-  width: 100%;
-} */
 
 .data_res >>> .el-form {
   padding: 20px 20px 0;
