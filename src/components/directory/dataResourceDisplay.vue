@@ -164,10 +164,10 @@
                   <div class="new_right">
                     <div class="table_type">
                       <div class="one tt">表关联数量：<span
-                              v-if="scope.row.relations">{{scope.row.relations.records.length}}</span>
+                              v-if="scope.row.relations">{{scope.row.relations.length}}</span>
                         <el-card class="show_tips"
-                                 v-if="scope.row.relations.records.length!==0">
-                          <p v-for="(its,index_relations) in scope.row.relations.records"
+                                 v-if="scope.row.relations.length!==0">
+                          <p v-for="(its,index_relations) in scope.row.relations"
                              :key="index_relations">{{its.relationTableName}}</p>
                         </el-card>
 
