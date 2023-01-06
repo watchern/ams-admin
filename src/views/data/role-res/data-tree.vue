@@ -423,7 +423,7 @@ export default {
               title: e.chnName,
             });
           });
-          console.log(resp.data);
+
           resolve(nodes);
         });
       }

@@ -64,12 +64,12 @@ export function getById (id) {
     params: { id: id }
   })
 }
-
-export function save_data (id) {
+// 关联关系保存
+export function save_data_query (data) {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/save`,
-    method: 'get',
-    params: { id: id }
+    method: 'post',
+    data
   })
 }
