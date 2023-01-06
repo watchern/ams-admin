@@ -412,7 +412,7 @@ export default {
     bindRes () {
       var roleUuid = this.selections[0].dataRoleUuid
       this.$router.push({
-        path: '/data/role-res/' + roleUuid
+        path: '/data/roleRes/' + roleUuid
       })
     },
     openFilterPanel (roleUuid) {
