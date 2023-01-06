@@ -824,7 +824,7 @@ export default {
       this.loadText = '正在重新加载数据表及函数...'
       this.getWebSocket();
       initFunctionTree(this.dataSource)
-      initTableTip(this.dataUserId, this.sceneCode1).then((result) => {
+      initTableTip(this.dataUserId, this.sceneCode1, this.dataSource).then((result) => {
         initTableTree(result, this.dataSource)
         var relTableMap = {}
         var expTableMap = {}
@@ -877,7 +877,7 @@ export default {
     //刷新数据表树
     refreshDataTabTree () {
       this.executeLoading = true
-      initTableTip(this.dataUserId, this.sceneCode1).then((result) => {
+      initTableTip(this.dataUserId, this.sceneCode1, this.dataSource).then((result) => {
         initTableTree(result, this.dataSource)
         var relTableMap = {}
         var expTableMap = {}
@@ -1201,7 +1201,7 @@ export default {
       initDraftTree();
       this.executeLoading = true;
       this.loadText = "正在初始化数据表...";
-      initTableTip(this.dataUserId, this.sceneCode1)
+      initTableTip(this.dataUserId, this.sceneCode1, this.dataSource)
         .then((result) => {
           initTableTree(result, this.dataSource);
           var relTableMap = {};
