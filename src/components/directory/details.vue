@@ -308,12 +308,6 @@
           <h2 :class="{ isActive: navgatorIndex == 4 }">数据表字典信息</h2>
           开发中...
           <div class="padding20">
-            <el-table :data="Column_tableData_dict" style="width: 100%">
-              <el-table-column prop="tableVersionNo" label="版本号"></el-table-column>
-              <el-table-column prop="tableUpdateStructure" label="数据结构"></el-table-column>
-              <el-table-column prop="createUserName" label="创建人"></el-table-column>
-              <el-table-column prop="createTime" label="创建时间"></el-table-column>
-            </el-table>
             <!-- <LineMap></LineMap> -->
             <!-- <EditMap></EditMap> -->
           </div>
@@ -354,7 +348,7 @@
                class="dlag_width"
                :close-on-click-modal="false"
                :visible.sync="visibleTable"
-               width="70%">
+               width="50%">
       <div>
         <div class="padding10">
           <el-button type="primary"
@@ -366,15 +360,15 @@
                            label="主表"> </el-table-column>
           <el-table-column prop="relationTableName"
                            label="关联表"> </el-table-column>
-          <el-table-column prop="selectType"
-                           label="表关联方式"> </el-table-column>
+          <!-- <el-table-column prop="selectType"
+                           label="表关联方式"> </el-table-column> -->
 
           <el-table-column prop="colName"
                            label="主表字段"> </el-table-column>
 
-          <el-table-column prop="tbName"
+          <!-- <el-table-column prop="tbName"
                            label="字段关联条件">
-          </el-table-column>
+          </el-table-column> -->
 
           <el-table-column prop="relationCol"
                            label="关联字段"> </el-table-column>
@@ -397,7 +391,7 @@
                class="dlag_width add_table_class"
                :visible.sync="add_table_visible"
                @close="handleClose_table('table_visible_form')"
-               width="60%">
+               width="50%">
       <div class="information_form padding10">
         <el-form ref="table_visible_form"
                  :rules="rules_table"
@@ -466,12 +460,14 @@
                :append-to-body="true"
                :visible.sync="dataTableTree"
                title="请选择数据表"
-               width="600px">
-      <!-- @node-click="NodeTreeClick" -->
-      <dataTree ref="dataTableTree"
-                :is_progress="is_progress"
-                :data-user-id="dataUserId"
-                :scene-code="sceneCode" />
+               width="50%">
+      <div class="tree_style">
+        <!-- @node-click="NodeTreeClick" -->
+        <dataTree ref="dataTableTree"
+                  :is_progress="is_progress"
+                  :data-user-id="dataUserId"
+                  :scene-code="sceneCode" />
+      </div>
       <div slot="footer">
         <el-button @click="dataTableTree = false">取消</el-button>
         <el-button type="primary"
@@ -501,7 +497,7 @@ import ProcessTree from "@/components/directory/processTree.vue";
 import LineMap from "@/components/directory/lineMap.vue";
 import EditMap from "@/components/directory/editMap.vue";
 import personTree from "@/components/publicpersontree/index";
-import { save_data } from '@/api/data/tablerelation'
+import { save_data_query } from '@/api/data/tablerelation'
 import {
   getBasicInfo, //列表点击详情
   getColsInfo, //列信息
@@ -602,7 +598,6 @@ export default {
       tableData: [],
       sceneCode: "auditor",
       Column_tableData_index: [], //索引信息
-      Column_tableData_dict: [], //表历史信息
       TagsAll: ["aa"],
       inputLength: "",
       search_name_infotion: "", //标签
@@ -654,20 +649,19 @@ export default {
       visibleTable: false, //新增表关系
       add_table_visible: false, //新增一行表
       visibleTableList: [
-        {
-          tbName: '11',// 表名称：
-          colName: "22", //字段名称
-          relationTableName: "33", //从表名称
-          relationCol: "44", //从表字段
-          relationship: "55", //关联关系：
-          tableMetaUuid: '',
-          colMetaUuid: '',
-          relColMetaUuid: '',
-          relTableMetaUuid: '',
-          sqlGenJoinType: '',
-          selectType: '',//关联关系
-
-        },
+        // {
+        //   tbName: '1',// 表名称：
+        //   colName: "2", //字段名称
+        //   relationTableName: "3", //从表名称
+        //   relationCol: "4", //从表字段
+        //   relationship: "4", //关联关系：
+        //   tableMetaUuid: '4',
+        //   colMetaUuid: '4',
+        //   relColMetaUuid: '4',
+        //   relTableMetaUuid: '4',
+        //   sqlGenJoinType: '4',
+        //   selectType: '4',//关联关系
+        // },
       ],
       //新增的表关系信息
       table_visible_form: {
@@ -743,8 +737,21 @@ export default {
     parentArr () {
       this.TagsAll = this.parentArr.length ? this.parentArr : [];
     },
+    tableMetaUuid (newVal, oldVal) {
+      // newVal是新值，oldVal是旧值
+      this.tableMetaUuid = newVal
+      this.details(this.tableMetaUuid);
+      this.table_list(this.tableMetaUuid);
+      this.getListTree_data(); //下拉框默认值
+      this.getIndexInfo(this.tableMetaUuid);
+    }
   },
   mounted () {
+    this.details(this.tableMetaUuid);
+    this.table_list(this.tableMetaUuid);
+    this.getListTree_data(); //下拉框默认值
+    this.getIndexInfo(this.tableMetaUuid);
+    this.getDictInfo(this.tableMetaUuid);
     // let timeId;
     window.addEventListener(
       "scroll",
@@ -759,22 +766,52 @@ export default {
       true
     );
 
-    // 查看||编辑
-    // if (this.is_Edit_list == 1) {
-    //   this.isDisable_input = false
-    // }
   },
   created () {
     // this.$nextTick(function () {
     //   let height_conter = this.$refs.element.offsetHeight;  //100
     // })
-    this.details(this.tableMetaUuid);
-    this.table_list(this.tableMetaUuid);
-    this.getListTree_data(); //下拉框默认值
-    this.getIndexInfo(this.tableMetaUuid);
-    this.getDictInfo(this.tableMetaUuid);
   },
   methods: {
+    // 点击导航菜单，页面滚动到指定位置
+    handleLeft (index) {
+      this.navgatorIndex = index;
+      this.$el.querySelector(`#id${index}`).scrollIntoView({
+        behavior: "smooth",  // 平滑过渡
+        block: "start"  // 上边框与视窗顶部平齐。默认值
+      });
+      this.listBoxState = false;
+
+      // let timeId;
+      // clearTimeout(timeId);
+      // timeId = setTimeout(() => {
+      // this.listBoxState = true;
+      // }, 200);
+    },
+    handleScroll () {
+      var dom_scrollTop = document.querySelector('#right_details').scrollTop;//获取监听指定区域滚动位置的值
+      // let offsetTop = document.querySelector("#right_details").offsetTop; //获取固定元素初始滚动位置
+      // if (this.listBoxState == true) {//作用是点击导航栏时，延迟这里执行。
+      this.tag.map((v, i) => {
+        // 获取监听元素距离视窗顶部距离
+        var offsetTop = document.getElementById(`id${i}`).offsetTop;
+        // 获取监听元素本身高度
+        var scrollHeight = document.getElementById(`id${i}`).scrollHeight;
+        // 如果 dom滚动位置 >= 元素距离视窗距离 && dom滚动位置 <= 元素距离视窗距离+元素本身高度
+        // 则表示页面已经滚动到可视区了。
+        if (dom_scrollTop >= offsetTop && dom_scrollTop <= (offsetTop + scrollHeight)) {
+          // 导航栏背景色选中
+          this.navgatorIndex = i;
+        }
+      })
+      // }
+
+    },
+    // beforeDestroy () {
+    //   window.removeEventListener("scroll", this.scrollTop);
+    // },
+
+
     // 数据日期:
     changeRelationParam (value) {
       this.form.dataDate = value;
@@ -1000,45 +1037,7 @@ export default {
       this.resultShareDialogIsSee = false;
     },
 
-    // 点击导航菜单，页面滚动到指定位置
-    handleLeft (index) {
-      this.navgatorIndex = index;
-      // debugger;
-      this.$el.querySelector(`#id${index}`).scrollIntoView({
-        behavior: "smooth", // 平滑过渡
-        block: "start", // 上边框与视窗顶部平齐。默认值
-      });
-      this.listBoxState = false;
 
-      // let timeId;
-      // clearTimeout(timeId);
-      // timeId = setTimeout(() => {
-      this.listBoxState = true;
-      // }, 200);
-    },
-    handleScroll () {
-      var dom_scrollTop = document.querySelector("#right_details").scrollTop; //获取监听指定区域滚动位置的值
-      // let offsetTop = document.querySelector("#right_details").offsetTop; //获取固定元素初始滚动位置
-      if (this.listBoxState) {
-        //作用是点击导航栏时，延迟这里执行。
-        this.tag.map((v, i) => {
-          // 获取监听元素距离视窗顶部距离
-          var offsetTop = document.getElementById(`id${i}`).offsetTop;
-          // 获取监听元素本身高度
-          var scrollHeight = document.getElementById(`id${i}`).scrollHeight;
-          // 如果 dom滚动位置 >= 元素距离视窗距离 && dom滚动位置 <= 元素距离视窗距离+元素本身高度
-          // 则表示页面已经滚动到可视区了。
-
-          if (
-            dom_scrollTop >= offsetTop &&
-            dom_scrollTop <= offsetTop + scrollHeight
-          ) {
-            // 导航栏背景色选中
-            // this.navgatorIndex = i;
-          }
-        });
-      }
-    },
     // 删除标签
     removeTag_infotion_tag (index, item) {
       this.TagsAll.splice(index, 1);
@@ -1100,9 +1099,9 @@ export default {
       this.dataTableTree = true;
     },
     // NodeTreeClick (data, node, tree) {
-    //   console.log(data);
-    //   console.log(node);
-    //   console.log(tree);
+    //   
+    //   
+    //   
     // },
     // 确认选择的数据表
     getDataTable () {
@@ -1112,7 +1111,7 @@ export default {
         this.$message({ type: "info", message: "请选择数据表列!" });
         return;
       }
-      // console.log(currentNode);
+      // 
       // this.loadTableCol(currentNode.id);
       if (this.table_visible_form.selectType === 1) {
         this.table_visible_form.colName = currentNode.label;//字段名称
@@ -1138,7 +1137,7 @@ export default {
     //       this.$message({ type: 'info', message: '加载数据表列失败!' })
     //       return
     //     }
-    //     console.log(result.data);
+    //     
     //     return false
     //     this.relTableColumn = result.data
     //     // this.$refs.relTableDiv.style.display = 'block'
@@ -1182,31 +1181,36 @@ export default {
 
     // 保存新的关联关系
     save_table () {
-      let params = {
-        arr: this.visibleTableList
-      };
-      save_data(params).then((resp) => {
+      if (this.visibleTableList.length == 0) {
+        this.$message({
+          type: "warning",
+          message: "请先新增关联关系!",
+        });
+      } else {
+        let tableRelations = this.visibleTableList
+        save_data_query(tableRelations).then((resp) => {
+          if (resp.code == 0) {
+            this.$message({
+              type: "success",
+              message: "新增表关系成功!",
+            });
+            this.visibleTable = false//关闭新增关联关系
+            this.$emit("update_details", this.table_visible_form.tableMetaUuid)
 
-        if (resp.code == 0) {
-          this.$message({
-            type: "success",
-            message: "新增表关系成功!",
-          });
-          // this.query_list();
-          this.$refs.tableLines.$emit("init") //刷新列表
-        } else {
-          this.$message({
-            type: "error",
-            message: resp.msg,
-          });
-        }
-        this.visibleTable = false;//关闭弹窗
-      });
+            // this.$refs.tableLines.init()//刷新列表
+            // this.$refs.tableLines.$emit("update_cavans") //刷新列表
+          } else {
+            this.$message({
+              type: "error",
+              message: resp.msg,
+            });
+          }
+          this.visibleTable = false;//关闭弹窗
+        });
+      }
 
     },
-    beforeDestroy () {
-      window.removeEventListener("scroll", this.scrollTop);
-    },
+
   },
 };
 </script>
@@ -1444,5 +1448,10 @@ export default {
 }
 .preview_sql >>> .el-textarea__inner {
   height: 300px;
+}
+/* 请选择数据表 */
+.tree_style {
+  height: 600px;
+  overflow-y: auto;
 }
 </style>

@@ -1538,7 +1538,7 @@ function onDrop(event, treeId, treeNodes) {
  * 初始化智能提示的数据表
  * @returns {AxiosPromise}
  */
-export function initTableTip(dataUserId, scenecode) {
+export function initTableTip(dataUserId, scenecode, dataSource) {
   var dataUserId1 = ''
   var sceneCode1 = ''
   if (dataUserId != undefined && scenecode != undefined) {
@@ -1548,7 +1548,7 @@ export function initTableTip(dataUserId, scenecode) {
     dataUserId1 = store.getters.datauserid
     sceneCode1 = store.getters.scenecode
   }
-  const params = { sceneCode: sceneCode1, dataUserId: dataUserId1 }
+  const params = { sceneCode: sceneCode1, dataUserId: dataUserId1, dataSource: dataSource }
   // 调用后台获取数据表数据
   return request({
     baseURL: dataUrl,
