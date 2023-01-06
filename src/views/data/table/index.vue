@@ -150,6 +150,7 @@
                :isDisable_input="isDisable_input"
                @update_list="UpdateList"
                :is_Edit_list="is_Edit_list"
+               @update_details=pdateDetails
                v-if="show_details == true"></Details>
 
       <!-- 注册资产 -->
@@ -757,7 +758,7 @@ export default {
       tabShow: "basicinfo",
       tableId: "",
       registTableFlag: false,
-      divInfo: false,
+      // divInfo: false,
       filterText1: null,
       filterText2: null,
       filterText3: null,
@@ -1048,6 +1049,13 @@ export default {
     this.query_list();
   },
   methods: {
+    // 跟新关系图
+    pdateDetails (id) {
+
+      this.tableMetaUuid = id
+      this.show_details = true;
+      this.isDisable_input = true;
+    },
     // 修改后 刷新列表
     UpdateList () {
       this.show_details = false;
@@ -1495,21 +1503,13 @@ export default {
     },
     // 点击切换树 切换 表单
     nodeClick (data, node, tree) {
-      // 点击数据表进入详情
-      if (node.data.children.length == 0 && node.data.type === "table") {
-        this.tableMetaUuid = node.data.id;
-        this.show_details = true;
-        this.isDisable_input = true;
-      } else {
-        this.divInfo = false;
+
+      this.tableMetaUuid = ''
+      // if (node.data.children.length == 0 && node.data.type === "table") {
+      // 显示列表
+      if (node.level == 1) {
+        // this.divInfo = false;
         this.show_details = false; //显示列表
-      }
-      if (node.data.type === "table") {
-        this.$nextTick(() => {
-          this.divInfo = true;
-          this.tableId = node.data.id;
-        });
-      } else {
         if (data.type == "system") {
           this.query.businessSystemId = node.data.id;
           this.query.tableThemeId = "";
@@ -1529,25 +1529,56 @@ export default {
           this.query.folderUuid = "";
           this.query_list();
         }
-        // else if (node.data.type === "folder") {
-        // 目录
-        // let _node = this.$refs.tree.getNode(node);
-        // //  设置未进行懒加载状态
-        // _node.loaded = false;
-        // // 重新展开节点就会间接重新触发load达到刷新效果
-        //   // _node.expand();
-        //   this.post_getDataTreeNode();//目录
-        //   // this.getTagList('ROOT', this.query.dataSource)
-        //   // this.getTagList(node.data.id, this.query.dataSource);//目录
-        //   this.query.businessSystemId = ''
-        //   this.query.tableThemeId = '';
-        //   this.query.tableLayeredId = '';
-        //   this.query.folderUuid = node.data.id;
-        //   this.query_list();
-
-        // }
-        // 分页
+      } else {
+        // 进入详情
+        this.tableMetaUuid = node.data.id;
+        this.show_details = true;
+        this.isDisable_input = true;
       }
+
+      // if (node.data.type === "table") {
+      //   this.$nextTick(() => {
+      //     this.divInfo = true;
+      //     this.tableId = node.data.id;
+      //   });
+      // } else {
+      // if (data.type == "system") {
+      //   this.query.businessSystemId = node.data.id;
+      //   this.query.tableThemeId = "";
+      //   this.query.tableLayeredId = "";
+      //   this.query.folderUuid = "";
+      //   this.query_list();
+      // } else if (data.type == "theme") {
+      //   this.query.businessSystemId = "";
+      //   this.query.tableThemeId = node.data.id;
+      //   this.query.tableLayeredId = "";
+      //   this.query.folderUuid = "";
+      //   this.query_list();
+      // } else if (data.type == "layered") {
+      //   this.query.businessSystemId = "";
+      //   this.query.tableThemeId = "";
+      //   this.query.tableLayeredId = node.data.id;
+      //   this.query.folderUuid = "";
+      //   this.query_list();
+      // }
+      // else if (node.data.type === "folder") {
+      // 目录
+      // let _node = this.$refs.tree.getNode(node);
+      // //  设置未进行懒加载状态
+      // _node.loaded = false;
+      // // 重新展开节点就会间接重新触发load达到刷新效果
+      //   // _node.expand();
+      //   this.post_getDataTreeNode();//目录
+      //   // this.getTagList('ROOT', this.query.dataSource)
+      //   // this.getTagList(node.data.id, this.query.dataSource);//目录
+      //   this.query.businessSystemId = ''
+      //   this.query.tableThemeId = '';
+      //   this.query.tableLayeredId = '';
+      //   this.query.folderUuid = node.data.id;
+      //   this.query_list();
+      // }
+      // 分页
+      // }
     },
     // 列表 接口
     query_list () {
@@ -1567,7 +1598,7 @@ export default {
 
         this.list_data = resp.data;
         this.list = resp.data.records;
-        console.log(this.list);
+
         // this.listLoading = false
         //
       });

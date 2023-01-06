@@ -55,12 +55,14 @@ router.beforeEach(async(to, from, next) =>
   } else {
     /* has no token*/
     // 获取到redis里的token
-    redisGetToken().then(async resp => {
+    await redisGetToken().then(resp => {
       // token = resp.data
       // 把获取到的token存到cookie和store里
-      await store.dispatch('user/setRedisToken', resp.data)
-    });
+      store.dispatch('user/setRedisToken', resp.data)
+    })
     next()
+    // console.log('store.state.user.token',store.state.user.token)
+    // next()
 
     // if (whiteList.indexOf(to.path) !== -1) {
     //   // in the free login whitelist, go directly
