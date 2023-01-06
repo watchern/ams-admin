@@ -1,5 +1,6 @@
 <template>
-  <div class="example">
+  <div class="example"
+       id="parentDiv">
     <div id="myDiagramDiv"></div>
     <div></div>
   </div>
@@ -23,7 +24,7 @@ export default {
   components: {},
   data () {
     return {
-      diagram: {},
+      myDiagram: {},
       nodeDataArray: [],
       linkDataArray: [],
     };
@@ -32,32 +33,38 @@ export default {
   watch: {},
   mounted () {
     this.init();//初始化表关系
-    this.$nextTick(function () {
-      this.$on('init', function () {
-        //重新渲染的问题
-        // if (typeof (myDiagram) !== "undefined") {
-        //   myDiagram.div = null;
-        // }
-      });
-    });
+    // this.$nextTick(function () {
+    //   this.$on('init', function () {
+    // 
+    //重新渲染的问题
+    // if (typeof (myDiagram) !== "undefined") {
+    //   myDiagram.div = null;
+    // }
+    //   });
+    // });
 
   },
   created () {
   },
   methods: {
-    //   update_cavans () {
-    //     // 清空当前画布
-    //     myDiagram.diagram.div = null;
-    //     // 数据清空一次
-    //     this.nodeDataArray = [];
-    //     this.linkDataArray = [];
-    //     this.init();
-    //   },
+    // update_cavans () {
+    //   // 清空当前画布
+    //   this.myDiagram.div = null;
+    //   // 数据清空一次
+    //   this.nodeDataArray = [];
+    //   this.linkDataArray = [];
+    //   this.init();
+    // },
 
-    init () {
-      // 
+    init (num) {
+      if (num) {
+        this.myDiagram.div = null;
+        this.nodeDataArray = [];
+        this.linkDataArray = [];
+        // console.log(this.myDiagram.div);
+      }
       let $ = go.GraphObject.make; // for conciseness in defining templates
-      var myDiagram = $(
+      this.myDiagram = $(
         go.Diagram,
         "myDiagramDiv", // id挂载dome节点
         {
@@ -66,9 +73,9 @@ export default {
           // isReadOnly: true, // 只读，无法编辑操作
           // allowMove: true, // 允许拖动画板
           allowDragOut: true, // 允许拖拽节点
-          // allowDelete: true, // 允许删除节点
+          allowDelete: false, // 允许删除节点
           // allowCopy: true, // 允许复制节点
-          allowClipboard: true, // 允许粘贴节点
+          // allowClipboard: true, // 允许粘贴节点
           allowLink: true,//是否可以绘制新链接。
           allowRelink: true,//是否可以重新连接现有链接
           initialContentAlignment: go.Spot.Center, // 居中显示
@@ -100,7 +107,7 @@ export default {
         );
 
       // 定义模板
-      myDiagram.nodeTemplate =
+      this.myDiagram.nodeTemplate =
         $(go.Node, "Auto",  // the whole node panel
           {
             selectionAdorned: true,
@@ -151,7 +158,7 @@ export default {
         );  // end Node
 
       // 定义连接线
-      myDiagram.linkTemplate =
+      this.myDiagram.linkTemplate =
         $(go.Link,  // the whole link panel
           {
             selectionAdorned: true,
@@ -289,7 +296,7 @@ export default {
           this.linkDataArray.push(obj_arr2)
         })
 
-        myDiagram.model = $(go.GraphLinksModel,
+        this.myDiagram.model = $(go.GraphLinksModel,
           {
             copiesArrays: true,
             copiesArrayObjects: true,
@@ -297,6 +304,13 @@ export default {
             linkDataArray: this.linkDataArray
           });
       })
+
+      // var currentDiagram = myDiagram;
+      // if (currentDiagram === myDiagram) {
+      //   var div = myDiagram.div;
+      // myDiagram.div = null;
+      //   currentDiagram = myDiagram;
+      // }
     }
   }
 };

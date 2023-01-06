@@ -1,40 +1,38 @@
 <template>
-  <div
-    class="left-menu relative flex a-center flex-cow j-between"
-    @mouseleave="menuLeave();"
-  >
+  <div class="left-menu relative flex a-center flex-cow j-between"
+       @mouseleave="menuLeave();">
     <template>
       <div class="top-open flex flex-row a-center">
-        <div class="logo-wrap flex a-center j-center flex-row" style="cursor: pointer">
+        <div class="logo-wrap flex a-center j-center flex-row"
+             style="cursor: pointer">
           <div class="logo-Words">{{projectname}}</div>
-          <img src="../style/images/color-n.png" class="logo-text">
+          <img src="../style/images/color-n.png"
+               class="logo-text">
         </div>
         <div class="menu flex a-center j-between flex-row">
           <div class="list flex a-center j-between flex-row">
-            <div
-              ref="navDom"
-              class="box flex a-center j-center flex-row"
-              @click="selectMenuIn()"
-            >
+            <div ref="navDom"
+                 class="box flex a-center j-center flex-row"
+                 @click="selectMenuIn()">
               <div class="name">首页</div>
             </div>
-            <div
-              v-for="(item,index) in applications"
-              ref="navDom"
-              :key="index"
-              class="box flex a-center j-center flex-row"
-              :class="[currentIndex===index && 'box-active']"
-              @click="selectMenu(item,index)"
-            >
+            <div v-for="(item,index) in applications"
+                 ref="navDom"
+                 :key="index"
+                 class="box flex a-center j-center flex-row"
+                 :class="[currentIndex===index && 'box-active']"
+                 @click="selectMenu(item,index)">
               <div class="name">{{ item.name }}</div>
               <transition name="slide-fade">
-                <div v-if="isShowTreeList" class="tree-list absolute">
+                <div v-if="isShowTreeList"
+                     class="tree-list absolute">
                   <div class="tree-list-content"
                        :class="[currentIndex===index && 'tree-list-back']"
                        :style="{borderLeft:index == '0'?'1px solid rgb(85,158,212)':'none',
-                       borderRight:(index + 1) == applications.length?'1px solid rgb(85,158,212)':'none'}"
-                  >
-                    <menu-tree :list="moremenugroup[index]" @closetree="isShrink=true" @click="selectMenu(item,index)"/>
+                       borderRight:(index + 1) == applications.length?'1px solid rgb(85,158,212)':'none'}">
+                    <menu-tree :list="moremenugroup[index]"
+                               @closetree="isShrink=true"
+                               @click="selectMenu(item,index)" />
                   </div>
                 </div>
               </transition>
@@ -43,66 +41,80 @@
         </div>
       </div>
       <div class="bottom-open flex a-center j-end flex-row">
-        <div class="footer-btns flex a-center j-end flex-row" @click="isShowSettingList=!isShowSettingList" style="padding-right: 15px">
+        <div class="footer-btns flex a-center j-end flex-row"
+             @click="isShowSettingList=!isShowSettingList"
+             style="padding-right: 15px">
           <!-- <i class="shrink-btn icon iconfont iconleft-1" @click="isShrink=false" /> -->
-<!--          <i class="setting-btn icon iconfont iconmenu-2 setting-btn-right" @click="widthChange" />-->
-          <div class="label-wang"><i class="label-wang-in" v-if="isThereReminder"></i></div>
+          <!--          <i class="setting-btn icon iconfont iconmenu-2 setting-btn-right" @click="widthChange" />-->
+          <div class="label-wang"><i class="label-wang-in"
+               v-if="isThereReminder"></i></div>
           <span class="label-word">{{ $store.getters.name }}</span>
         </div>
-<!--        <div-->
-<!--            class="label-open flex a-center j-end flex-row"-->
-<!--            @click="isShowToolsList=!isShowToolsList, isShowTreeList=false, currentIndex=-1"-->
-<!--        >-->
-<!--          <span class="oper-btn menu-21" style="color: #303030;background: transparent"/>-->
-<!--        </div>-->
+        <!--        <div-->
+        <!--            class="label-open flex a-center j-end flex-row"-->
+        <!--            @click="isShowToolsList=!isShowToolsList, isShowTreeList=false, currentIndex=-1"-->
+        <!--        >-->
+        <!--          <span class="oper-btn menu-21" style="color: #303030;background: transparent"/>-->
+        <!--        </div>-->
       </div>
     </template>
 
     <transition name="setting-fade">
-      <div v-if="isShowSettingList" class="setting-list absolute" @click="isShowSettingList=!isShowSettingList" @mouseleave="isShowSettingList=false">
+      <div v-if="isShowSettingList"
+           class="setting-list absolute"
+           @click="isShowSettingList=!isShowSettingList"
+           @mouseleave="isShowSettingList=false">
         <div class="setting-list-content">
-          <div
-            v-for="(item,index) in settingList"
-            :key="index"
-            class="setting-list-line flex flex-row a-center j-start"
-          >
+          <div v-for="(item,index) in settingList"
+               :key="index"
+               class="setting-list-line flex flex-row a-center j-start">
             <i class="el-icon-delete icon" />
-            <div class="name-box" @click="item.method">
+            <div class="name-box"
+                 @click="item.method">
               <span>{{ item.name }}</span>
-              <span
-                v-if="item.count"
-                class="count"
-                :class="[index===0?'count-red':index===1?'count-green':'']"
-              >{{ item.count }}</span>
+              <span v-if="item.count"
+                    class="count"
+                    :class="[index===0?'count-red':index===1?'count-green':'']">{{ item.count }}</span>
             </div>
           </div>
         </div>
       </div>
     </transition>
     <transition name="showAnimation">
-      <div v-if="isShowToolsList" class="tools-list">
-        <tools-template-update @func="showWith"/>
+      <div v-if="isShowToolsList"
+           class="tools-list">
+        <tools-template-update @func="showWith" />
       </div>
     </transition>
-    <div class="page-left" v-if="showHelpWidth">
-      <el-collapse class="tools-menu-small" v-model="activeName" accordion>
-        <el-collapse-item v-for="(item,index) in moremenugroupId" :title="item.name" :name="index">
-          <el-tree
-            :data="moremenugroup[index]"
-            node-key="id"
-            @node-click="handleNodeClick"
-            ref="tree"
-            highlight-current
-            v-if="activeName === index"
-            :props="defaultProps">
+    <div class="page-left"
+         v-if="showHelpWidth">
+      <el-collapse class="tools-menu-small"
+                   v-model="activeName"
+                   accordion>
+        <el-collapse-item v-for="(item,index) in moremenugroupId"
+                          :title="item.name"
+                          :name="index">
+          <el-tree :data="moremenugroup[index]"
+                   node-key="id"
+                   @node-click="handleNodeClick"
+                   ref="tree"
+                   highlight-current
+                   v-if="activeName === index"
+                   :props="defaultProps">
           </el-tree>
         </el-collapse-item>
       </el-collapse>
     </div>
-    <div class="page-close" v-if="showHelpWidth" @click="showHelpWidth = false, showHelpHeight = false"></div>
-    <div class="readonlyTo" v-if="showHelpWidth && showHelpHeight" v-loading="loading">
-      <div @click="showHelpHeight = false" class="readonlyToX">X</div>
-      <div class="readonlyChild" id="readonlyChild"></div>
+    <div class="page-close"
+         v-if="showHelpWidth"
+         @click="showHelpWidth = false, showHelpHeight = false"></div>
+    <div class="readonlyTo"
+         v-if="showHelpWidth && showHelpHeight"
+         v-loading="loading">
+      <div @click="showHelpHeight = false"
+           class="readonlyToX">X</div>
+      <div class="readonlyChild"
+           id="readonlyChild"></div>
     </div>
   </div>
 </template>
@@ -113,10 +125,10 @@ import MenuTree from './menu-tree/index.vue'
 import { cacheDict } from '@/api/base/sys-dict'
 import { getUnReadRemind } from '@/api/base/base'
 import { querySystemTask } from '@/api/base/systemtask'
-import {getByMenuId, saveHelpDocument} from '@/api/base/helpdocument'
+import { getByMenuId, saveHelpDocument } from '@/api/base/helpdocument'
 export default {
   components: { MenuTree },
-  data() {
+  data () {
     return {
       currentIndex: -1,
       websocket: null,
@@ -160,21 +172,21 @@ export default {
       isThereReminder: false,
       drawer: false,
       loading: false,
-      projectname:process.env.VUE_APP_BASE_NAME||''
+      projectname: process.env.VUE_APP_BASE_NAME || ''
     }
   },
   computed: {
-    leftWidth() {
+    leftWidth () {
       return this.isShrink ? 64 : 120
     },
-    currentMenuGroup() {
+    currentMenuGroup () {
       if (this.applications.length === 0) {
         return []
       }
       const appid = this.applications[this.currentIndex].id
       return this.menugroup[appid]
     },
-    getPersonUuid(){
+    getPersonUuid () {
       return this.$store.getters.personuuid;
     }
     // isShowTreeList(){
@@ -183,31 +195,31 @@ export default {
   },
   watch: {
     isShrink: {
-      handler: function(newVal, oldVal) {
+      handler: function (newVal, oldVal) {
         this.$store.commit('aceState/setLeftMenuShrink', newVal)
       },
       immediate: true
     },
-    currentIndex() {
+    currentIndex () {
       this.currentIndexChange()
     },
-    getPersonUuid(newv, oldv){
-      if(newv && newv!=''){
+    getPersonUuid (newv, oldv) {
+      if (newv && newv != '') {
         this.webSocket = this.getWebSocket(newv)
       }
 
     }
   },
-  created() {
+  created () {
     // 页面刚进入时开启长连接
     this.init();
-    if(this.getPersonUuid){
+    if (this.getPersonUuid) {
       this.webSocket = this.getWebSocket(this.getPersonUuid)
     }
   },
   watch: {
     $route: {
-      handler(val, oldval) {
+      handler (val, oldval) {
         if (oldval.path == "/login") {
           this.initmounted()
         }
@@ -216,12 +228,12 @@ export default {
       deep: true,
     },
   },
-  mounted() {
-    console.log('..mounted')
+  mounted () {
+
     this.initmounted()
   },
   methods: {
-    initmounted() {
+    initmounted () {
       getUserRes()
         .then((response) => {
           this.applications = [];
@@ -231,7 +243,7 @@ export default {
               img: require(`../style/images/icon0.png`),
               name: app.name,
               id: app.id,
-              homepage: app.homepage|| '/ams/first',
+              homepage: app.homepage || '/ams/first',
             });
           });
           this.menugroup = [];
@@ -261,7 +273,7 @@ export default {
           }
           let sSLTree = { first: this.applications, second: sSTree };
           sessionStorage.setItem("shenjiMenuTree", JSON.stringify(sSLTree));
-          this.$store.dispatch('app/setMenuData',sSLTree )
+          this.$store.dispatch('app/setMenuData', sSLTree)
           let listTree = JSON.parse(sessionStorage.getItem("shenjiMenuTree"));
           this.moremenugroup = listTree.second;
           this.moremenugroupId = listTree.first;
@@ -274,7 +286,7 @@ export default {
         })
         .catch((error) => {
           this.applications = []
-          console.error(error);
+
         });
       getUnReadRemind().then((resp) => {
         if (resp.data <= 99) {
@@ -287,31 +299,31 @@ export default {
         }
       });
     },
-    init() {
+    init () {
       querySystemTask().then(resp => {
       })
     },
-   /* initWebSocket() {
-      this.webSocket = this.getWebSocket()
-    },*/
+    /* initWebSocket() {
+       this.webSocket = this.getWebSocket()
+     },*/
     /**
      *
      * 使用说明：
      * 1、WebSocket客户端通过回调函数来接收服务端消息。例如：webSocket.onmessage
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
-    getWebSocket(personuuid) {
+    getWebSocket (personuuid) {
       const wsuri = this.AmsWebsocket.getWSBaseUrl(this.AmsModules.BASE) + personuuid + 'systemTask'// 连接地址，可加参数
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(wsuri) // 建立与服务端的连接
       // 当服务端打开连接
-      this.webSocket.onopen = function(event) {
+      this.webSocket.onopen = function (event) {
       }
       // 发送消息
-      this.webSocket.onmessage = function(event) {
+      this.webSocket.onmessage = function (event) {
         func1(event)
       }
-      const func2 = function func3(val) {
+      const func2 = function func3 (val) {
         var dataObj = JSON.parse(val.data)
         if (dataObj.taskStatus === '2' || dataObj.taskStatus === 2) {
           let html = ''
@@ -334,14 +346,14 @@ export default {
       // this.webSocket.onclose = function(event) {
       // }
       // 通信失败
-      this.webSocket.onerror = function(event) {
+      this.webSocket.onerror = function (event) {
       }
     },
-    currentIndexChange() {
+    currentIndexChange () {
       // const dis = this.isShrink ? 110 : 120
       // this.$nextTick(() => {
       //   const offset = this.$refs.navDom[this.currentIndex].offsetTop - dis
-      //   console.log(offset)
+      //   
       //   this.scrollTop = {
       //     allowScroll: true,
       //     offset: offset,
@@ -355,25 +367,25 @@ export default {
     //   //this.isShrink = false
     //   this.isShowTreeList = true
     // },
-    menuLeave() {
+    menuLeave () {
       this.currentIndex = -1
       this.isShowTreeList = false
       this.isShowSettingList = false
     },
-    getStyle(img) {
+    getStyle (img) {
       return {
         background: `url(${img}) no-repeat center center`,
         'background-size': '100% 100%'
       }
     },
-    selectMenu(app, index) {
+    selectMenu (app, index) {
       this.currentIndex = index
       this.isShowTreeList = true
       this.isShowSettingList = false
       this.nowAppName = app.name
       this.isShowToolsList = false
     },
-    action(type) {
+    action (type) {
       if (type === 'prev') {
         this.currentIndex = this.currentIndex === 0 ? 0 : this.currentIndex - 1
       } else if (type === 'next') {
@@ -383,10 +395,10 @@ export default {
             : this.currentIndex + 1
       }
     },
-    jumpHome() {
+    jumpHome () {
       this.$router.push({ path: '/ams/first' })
     },
-    getCleanSrc(src) {
+    getCleanSrc (src) {
       if (src.indexOf('&resUUID') !== -1) {
         src = src.split('&resUUID')[0]
       } else if (src.indexOf('?resUUID') !== -1) {
@@ -394,7 +406,7 @@ export default {
       }
       return src
     },
-    async logout() {
+    async logout () {
       this.$store.commit("aceState/setRightFooterTags", {
         type: "closeAll",
         val: "",
@@ -403,30 +415,30 @@ export default {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     },
-    logoutRemind(){
-      this.$router.push({ path:'/base/remind'})
+    logoutRemind () {
+      this.$router.push({ path: '/base/remind' })
     },
-    showWith(obj){
+    showWith (obj) {
       this.isShowToolsList = obj
     },
-    widthChange(){
+    widthChange () {
       this.isShrink = !this.isShrink
     },
-    selectMenuIn(){
+    selectMenuIn () {
       this.$store.commit('aceState/setRightFooterTags', {
         type: 'closeAll',
         val: ''
       })
-      this.$router.push({ path:'/ams/first'})
+      this.$router.push({ path: '/ams/first' })
     },
-    showHelp() {
+    showHelp () {
       this.showHelpWidth = !this.showHelpWidth
     },
     // 父节点不可选中
-    ifFather(data) {
+    ifFather (data) {
       if (data.children) {
         return true
-      }else{
+      } else {
         return false
       }
     },
@@ -437,14 +449,14 @@ export default {
         this.showHelpHeight = true
         let id = data.id
         getByMenuId(id).then(resp => {
-          if(resp.code === 0 && resp.data !== null){
+          if (resp.code === 0 && resp.data !== null) {
             if (resp.data.helpDocument !== '') {
               document.getElementById('readonlyChild').innerHTML = resp.data.helpDocument
             } else {
               document.getElementById('readonlyChild').innerHTML = '<p>暂无新手引导</p>'
             }
             this.loading = false
-          } else if (resp.code === 0 && resp.data === null){
+          } else if (resp.code === 0 && resp.data === null) {
             document.getElementById('readonlyChild').innerHTML = '<p>暂无新手引导</p>'
             this.loading = false
           }
@@ -458,12 +470,12 @@ export default {
 <style lang="scss" scoped>
 .left-menu {
   height: 60px;
-  -webkit-user-select:none;
-  -moz-user-select:none;
-  -ms-user-select:none;
-  user-select:none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   .top-open {
-    float:left;
+    float: left;
     .logo-text {
       width: 65px;
       height: 11px;
@@ -471,7 +483,7 @@ export default {
       top: 36px;
       left: 20px;
     }
-    .logo-Words{
+    .logo-Words {
       color: #303030;
       font-size: 24px;
       margin-left: 30px;
@@ -522,7 +534,7 @@ export default {
           }
           &-active {
             background: transparent;
-            color: #3DABDF;
+            color: #3dabdf;
           }
         }
       }
@@ -530,7 +542,7 @@ export default {
   }
   .bottom-open {
     .search-box {
-      .search-input{
+      .search-input {
         background: #3d424b;
         border: 1px solid rgba(168, 172, 178, 0.3);
         font-family: BebasNeue;
@@ -597,10 +609,10 @@ export default {
     top: 60px;
     padding: 12px;
     z-index: 20201231;
-    .setting-list-content{
-      background: rgb(85,158,212);
+    .setting-list-content {
+      background: rgb(85, 158, 212);
       padding: 20px;
-      box-shadow: -5px 5px 10px 0 rgb(90,195,235);
+      box-shadow: -5px 5px 10px 0 rgb(90, 195, 235);
       border-radius: 8px;
     }
     &-line {
@@ -622,7 +634,7 @@ export default {
       .name-box {
         margin-left: 10px;
         height: 100%;
-        cursor:pointer;
+        cursor: pointer;
         .count {
           display: inline-block;
           margin-left: 8px;
@@ -648,15 +660,15 @@ export default {
     top: 48px;
     left: -30px;
     z-index: 999;
-    border-bottom: 1px solid rgb(85,158,212);
+    border-bottom: 1px solid rgb(85, 158, 212);
     &-back {
       box-shadow: 0 4px 10px 0 rgb(3 136 238 / 38%);
       border-top: 2px solid;
-      z-index:1000;
+      z-index: 1000;
     }
     &-content {
       backdrop-filter: blur(8px);
-      background: hsla(0,0%,100%,.6);
+      background: hsla(0, 0%, 100%, 0.6);
       width: 150px;
       min-height: 640px;
     }
@@ -757,11 +769,11 @@ export default {
     }
   }
   .shrink-btn {
-    color:#ffffff;
-    cursor:pointer;
+    color: #ffffff;
+    cursor: pointer;
   }
 }
-.shrink-btn-div-open{
+.shrink-btn-div-open {
   margin-right: -40px;
   background: #353a43;
   border-radius: 100%;
@@ -770,7 +782,7 @@ export default {
   height: 38px;
   line-height: 38px;
 }
-.shrink-btn-div-close{
+.shrink-btn-div-close {
   margin-right: -40px;
   background: #353a43;
   border-radius: 100%;
@@ -779,47 +791,53 @@ export default {
   height: 38px;
   line-height: 38px;
 }
-.slide-fade-enter-active, .slide-fade-leave-active {
-  transition: all 0.6s
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.6s;
 }
-.slide-fade-enter,.slide-fade-leave-to {
+.slide-fade-enter,
+.slide-fade-leave-to {
   opacity: 0;
 }
-.setting-btn{
+.setting-btn {
   font-size: 20px;
-  color:#ffffff;
-  cursor:pointer;
+  color: #ffffff;
+  cursor: pointer;
 }
-.showAnimation-enter-active, .showAnimation-leave-active {
-  transition: all .5s;
+.showAnimation-enter-active,
+.showAnimation-leave-active {
+  transition: all 0.5s;
 }
-.showAnimation-enter, .showAnimation-leave-to {
+.showAnimation-enter,
+.showAnimation-leave-to {
   opacity: 0;
 }
 
-.setting-fade-enter-active, .setting-fade-leave-active {
-  transition: all .5s;
+.setting-fade-enter-active,
+.setting-fade-leave-active {
+  transition: all 0.5s;
 }
-.setting-fade-enter, .setting-fade-leave-to {
+.setting-fade-enter,
+.setting-fade-leave-to {
   opacity: 0;
 }
-.setting-btn-right{
-  margin-left:16px;
-  margin-right:15px;
+.setting-btn-right {
+  margin-left: 16px;
+  margin-right: 15px;
 }
-.setting-btn-Upright{
-  transform:rotate(90deg) ;
+.setting-btn-Upright {
+  transform: rotate(90deg);
 }
-.label-wang-in{
-  position:absolute;
+.label-wang-in {
+  position: absolute;
   top: -5px;
   right: -5px;
-  width:10px;
-  height:10px;
-  border-radius:100%;
-  background-color:red;
+  width: 10px;
+  height: 10px;
+  border-radius: 100%;
+  background-color: red;
 }
-.somehelp{
+.somehelp {
   position: absolute;
   top: 588px;
   right: 25px;
@@ -834,7 +852,7 @@ export default {
   cursor: pointer;
   display: none;
 }
-.page-left{
+.page-left {
   position: absolute;
   top: 200px;
   right: 30px;
@@ -842,25 +860,25 @@ export default {
   height: 620px;
   background: #fff;
   padding: 15px;
-  box-shadow: 0 0 10px 0 rgba(0,0,0,0.5);
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
   border-radius: 10px;
-  z-index:1002;
+  z-index: 1002;
 }
-.page-close{
-  position:fixed;
+.page-close {
+  position: fixed;
   top: 0;
   right: 0;
   width: 100vw;
   height: 100vh;
-  z-index:0;
-  background-color: rgba(0,0,0,0.5);
+  z-index: 0;
+  background-color: rgba(0, 0, 0, 0.5);
 }
-.tools-menu-small{
+.tools-menu-small {
   height: 590px;
   width: 100%;
   overflow: auto;
 }
-.readonlyTo{
+.readonlyTo {
   width: 50vw;
   height: 100%;
   top: 0;
@@ -869,10 +887,10 @@ export default {
   z-index: 1001;
   animation: whiteIn 0.8s forwards;
 }
-.readonlyChild{
+.readonlyChild {
   position: absolute;
   top: 0;
-  right:0;
+  right: 0;
   width: 50vw;
   height: 100vh;
   background-color: #fff;
@@ -881,10 +899,14 @@ export default {
   overflow: auto;
 }
 @keyframes whiteIn {
-  0%{width:0}
-  100%{width:50vw}
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 50vw;
+  }
 }
-.readonlyToX{
+.readonlyToX {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -898,7 +920,7 @@ export default {
   z-index: 1001;
   cursor: pointer;
 }
->>>.el-tree {
+>>> .el-tree {
   // 不可全选样式
   .el-tree-node {
     .is-leaf + .el-checkbox .el-checkbox__inner {

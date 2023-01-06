@@ -144,17 +144,18 @@
                             :rows="4">
                   </el-input>
                 </el-form-item>
-              </div>
-              <div class="son_people is_disabled">
-                <el-form-item label="负责人：">
-                  <el-input :disabled="disabled"
-                            style="  background-color: rgba(0, 0, 0, 0.05) !important;"
-                            v-model="form.personLiables"></el-input>
-                </el-form-item>
-                <el-button type="primary"
-                           :disabled="isDisable_input"
-                           class="oper-btn"
-                           @click="check_people()">选择</el-button>
+                <div class="son_people is_disabled">
+                  <el-form-item label="负责人：">
+                    <el-input :disabled="disabled"
+                              style="  background-color: rgba(0, 0, 0, 0.05) !important;"
+                              v-model="form.personLiables"></el-input>
+                  </el-form-item>
+                  <el-button type="primary"
+                             :disabled="isDisable_input"
+                             class="oper-btn"
+                             @click="check_people()">选择</el-button>
+                </div>
+
               </div>
 
               <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
@@ -752,19 +753,26 @@ export default {
     this.getIndexInfo(this.tableMetaUuid);
 
     // let timeId;
-    window.addEventListener(
-      "scroll",
-      () => {
-        // 页面滚动停止100毫秒后才会执行下面的函数。
-        // clearTimeout(timeId);
-        // timeId = setTimeout(() => {
-        // this.scrollToTop();
-        this.handleScroll();
-        //   }, 100);
-      },
-      true
-    );
+    // window.addEventListener(
+    //   "scroll",
+    //   () => {
+    //     // this.dom_scrollTop = document.querySelector('#right_details').scrollTop;//获取监听指定区域滚动位置的值
 
+    //     // 页面滚动停止100毫秒后才会执行下面的函数。
+    //     // clearTimeout(timeId);
+    //     // timeId = setTimeout(() => {
+    //     // this.scrollToTop();
+    //     this.handleScroll();
+    //     //   }, 100);
+    //   },
+    //   true
+    // );
+
+    window.addEventListener('scroll', this.handleScroll, true)
+  },
+  // 移除详情页面导航滚动跟随监听
+  beforeDestroy () {
+    window.removeEventListener("scroll", this.handleScroll, true);
   },
   created () {
     // this.$nextTick(function () {
@@ -772,6 +780,7 @@ export default {
     // })
 
   },
+
   methods: {
     // 点击导航菜单，页面滚动到指定位置
     handleLeft (index) {
@@ -789,7 +798,7 @@ export default {
       // }, 200);
     },
     handleScroll () {
-      var dom_scrollTop = document.querySelector('#right_details').scrollTop;//获取监听指定区域滚动位置的值
+      this.dom_scrollTop = document.querySelector('#right_details').scrollTop;//获取监听指定区域滚动位置的值
       // let offsetTop = document.querySelector("#right_details").offsetTop; //获取固定元素初始滚动位置
       // if (this.listBoxState == true) {//作用是点击导航栏时，延迟这里执行。
       this.tag.map((v, i) => {
@@ -799,7 +808,7 @@ export default {
         var scrollHeight = document.getElementById(`id${i}`).scrollHeight;
         // 如果 dom滚动位置 >= 元素距离视窗距离 && dom滚动位置 <= 元素距离视窗距离+元素本身高度
         // 则表示页面已经滚动到可视区了。
-        if (dom_scrollTop >= offsetTop && dom_scrollTop <= (offsetTop + scrollHeight)) {
+        if (this.dom_scrollTop >= offsetTop && this.dom_scrollTop <= (offsetTop + scrollHeight)) {
           // 导航栏背景色选中
           this.navgatorIndex = i;
         }
@@ -807,10 +816,6 @@ export default {
       // }
 
     },
-    // beforeDestroy () {
-    //   window.removeEventListener("scroll", this.scrollTop);
-    // },
-
 
     // 数据日期:
     changeRelationParam (value) {
@@ -1186,10 +1191,8 @@ export default {
               type: "success",
               message: "新增表关系成功!",
             });
-            this.visibleTable = false//关闭新增关联关系
-            this.$emit("update_details", this.table_visible_form.tableMetaUuid)
-
-            // this.$refs.tableLines.init()//刷新列表
+            // this.$emit("update_details", this.table_visible_form.tableMetaUuid)
+            this.$refs.tableLines.init(1)//刷新列表
             // this.$refs.tableLines.$emit("update_cavans") //刷新列表
           } else {
             this.$message({
@@ -1402,8 +1405,9 @@ export default {
   width: 237px;
 }
 .son_people >>> .el-button {
-  margin-top: 5px;
+  /* margin-top: 5px; */
   margin-left: 3px;
+  height: 36px !important;
 }
 .table {
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -1435,7 +1439,7 @@ export default {
 .mose {
   position: relative;
 }
-.mose_bag {
+/* .mose_bag {
   background: rgba(0, 0, 0, 0.2);
   width: 100%;
   height: 100%;
@@ -1443,7 +1447,7 @@ export default {
   left: 0;
   top: 0;
   z-index: 99;
-}
+} */
 .preview_sql >>> .el-textarea__inner {
   height: 300px;
 }
