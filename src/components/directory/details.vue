@@ -504,6 +504,7 @@ import {
   updateTableInfo, //修改保存
   createSql, //查看sql
   selectIndexInfo, //查询索引信息
+  getTableZipperList, //查询数据字典
 } from "@/api/data/table-info";
 import {
   getListTree, //注册资产下一步
@@ -750,7 +751,7 @@ export default {
     this.table_list(this.tableMetaUuid);
     this.getListTree_data(); //下拉框默认值
     this.getIndexInfo(this.tableMetaUuid);
-
+    this.getDictInfo(this.tableMetaUuid);
     // let timeId;
     window.addEventListener(
       "scroll",
@@ -770,7 +771,6 @@ export default {
     // this.$nextTick(function () {
     //   let height_conter = this.$refs.element.offsetHeight;  //100
     // })
-
   },
   methods: {
     // 点击导航菜单，页面滚动到指定位置
@@ -961,6 +961,14 @@ export default {
       selectIndexInfo(tableId).then((res) => {
         this.Column_tableData_index = res.data;
       });
+    },
+
+    // 数据字典信息
+    getDictInfo (tableId) {
+      getTableZipperList(tableId).then(res => {
+        console.log("数据字典信息", res);
+        this.Column_tableData_dict = res.data
+      })
     },
 
     //  列信息
@@ -1241,8 +1249,6 @@ export default {
   /* height: 900px; */
   overflow-y: auto;
 }
-.rightList {
-}
 .rightList .rightList_child {
   min-height: 600px;
   overflow-y: auto;
@@ -1252,8 +1258,6 @@ export default {
   font-size: 20px;
 }
 /* 基本信息 */
-.information {
-}
 .information_form {
   box-sizing: border-box;
 }
@@ -1424,8 +1428,6 @@ export default {
   line-height: 20px;
   padding: 10px;
   box-sizing: border-box;
-}
-.is_click:hover {
 }
 
 .add_table_class >>> .el-form-item__label {

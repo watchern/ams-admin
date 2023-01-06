@@ -20,7 +20,10 @@ service.interceptors.request.use(
     keepErrorMsg=config.keepErrorMsg||false;
     // token从store中获取
     let userToken = store.state.user.token
-    let url = config.url + "?result=login&LTPAToken="+ userToken +"&maxInerval=14400"
+    let url= config.url;
+    //判断请求路径中是否存在问号
+    let symbol = url.indexOf("?") == -1 ? "?" : "&"; 
+    url = url + symbol + "result=login&LTPAToken="+ userToken +"&maxInerval=14400"
     config.url = url
     if (store.getters.token) {
       // let each request carry token

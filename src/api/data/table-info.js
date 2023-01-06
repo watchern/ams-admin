@@ -378,3 +378,11 @@ export function createSql (data) {
   })
 }
 
+export function getTableZipperList (tableMetaUuid) {
+  return request({
+    baseURL: baseURL,
+    url: '/tableZipper/selectZipperList',
+    method: 'post',
+    params: { tableMetaUuid: tableMetaUuid }
+  })
+}
