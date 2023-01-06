@@ -1,22 +1,21 @@
 <template>
-  <div
-    class="left-menu relative flex a-center flex-cow j-between"
-    @mouseleave="menuLeave()"
-  >
+  <div class="left-menu relative flex a-center flex-cow j-between"
+       @mouseleave="menuLeave()">
     <template>
       <div style="display: flex">
-        <div class="change-btn-box" @click="changestyle">
+        <div class="change-btn-box"
+             @click="changestyle">
           <i class="el-icon-s-operation"></i>
         </div>
         <div class="big-logo-box">
-          <img src="../style/images/color-n.png" class="big-logo" />
+          <img src="../style/images/color-n.png"
+               class="big-logo" />
         </div>
         <div class="top-open flex flex-row a-center">
-          <div
-            class="logo-wrap flex a-center j-center flex-row"
-            style="cursor: pointer"
-          >
-            <div class="logo-Words" @click="selectMenuIn()">
+          <div class="logo-wrap flex a-center j-center flex-row"
+               style="cursor: pointer">
+            <div class="logo-Words"
+                 @click="selectMenuIn()">
               {{ projectname }}
             </div>
             <!-- <img src="../style/images/color-n.png" class="logo-text" /> -->
@@ -25,15 +24,14 @@
       </div>
 
       <div class="bottom-open flex a-center j-end flex-row">
-        <div
-          class="footer-btns flex a-center j-end flex-row"
-          @click="isShowSettingList = !isShowSettingList"
-          style="padding-right: 15px"
-        >
+        <div class="footer-btns flex a-center j-end flex-row"
+             @click="isShowSettingList = !isShowSettingList"
+             style="padding-right: 15px">
           <!-- <i class="shrink-btn icon iconfont iconleft-1" @click="isShrink=false" /> -->
           <!--          <i class="setting-btn icon iconfont iconmenu-2 setting-btn-right" @click="widthChange" />-->
           <div class="label-wang">
-            <i class="label-wang-in" v-if="isThereReminder"></i>
+            <i class="label-wang-in"
+               v-if="isThereReminder"></i>
           </div>
           <span class="label-word">{{ $store.getters.name }}</span>
         </div>
@@ -47,94 +45,95 @@
     </template>
 
     <transition name="setting-fade">
-      <div
-        v-if="isShowSettingList"
-        class="setting-list absolute"
-        @click="isShowSettingList = !isShowSettingList"
-        @mouseleave="isShowSettingList = false"
-      >
+      <div v-if="isShowSettingList"
+           class="setting-list absolute"
+           @click="isShowSettingList = !isShowSettingList"
+           @mouseleave="isShowSettingList = false">
         <div class="setting-list-content">
-          <div
-            v-for="(item, index) in settingList"
-            :key="index"
-            class="setting-list-line flex flex-row a-center j-start"
-          >
-            <i v-if="index == 0" class="el-icon-info icon" />
-            <i v-else-if="index == 1" class="el-icon-question icon" />
-            <i v-else-if="index == 2" class="el-icon-s-tools icon" />
-            <i v-else class="el-icon-error icon" />
-            <div class="name-box" @click="item.method">
+          <div v-for="(item, index) in settingList"
+               :key="index"
+               class="setting-list-line flex flex-row a-center j-start">
+            <i v-if="index == 0"
+               class="el-icon-info icon" />
+            <i v-else-if="index == 1"
+               class="el-icon-question icon" />
+            <i v-else-if="index == 2"
+               class="el-icon-s-tools icon" />
+            <i v-else
+               class="el-icon-error icon" />
+            <div class="name-box"
+                 @click="item.method">
               <span>{{ item.name }}</span>
-              <span
-                v-if="item.count"
-                class="count"
-                :class="[
+              <span v-if="item.count"
+                    class="count"
+                    :class="[
                   index === 0 ? 'count-red' : index === 1 ? 'count-green' : '',
-                ]"
-                >{{ item.count }}</span
-              >
+                ]">{{ item.count }}</span>
             </div>
           </div>
         </div>
       </div>
     </transition>
     <transition name="showAnimation">
-      <div v-if="isShowToolsList" class="tools-list">
+      <div v-if="isShowToolsList"
+           class="tools-list">
         <tools-template-update @func="showWith" />
       </div>
     </transition>
-    <div class="page-left" v-if="showHelpWidth">
-      <el-collapse class="tools-menu-small" v-model="activeName" accordion>
-        <el-collapse-item
-          v-for="(item, index) in moremenugroupId"
-          :title="item.name"
-          :name="index"
-        >
-          <el-tree
-            :data="moremenugroup[index]"
-            node-key="id"
-            @node-click="handleNodeClick"
-            ref="tree"
-            highlight-current
-            v-if="activeName === index"
-            :props="defaultProps"
-          >
+    <div class="page-left"
+         v-if="showHelpWidth">
+      <el-collapse class="tools-menu-small"
+                   v-model="activeName"
+                   accordion>
+        <el-collapse-item v-for="(item, index) in moremenugroupId"
+                          :title="item.name"
+                          :name="index">
+          <el-tree :data="moremenugroup[index]"
+                   node-key="id"
+                   @node-click="handleNodeClick"
+                   ref="tree"
+                   highlight-current
+                   v-if="activeName === index"
+                   :props="defaultProps">
           </el-tree>
         </el-collapse-item>
       </el-collapse>
     </div>
-    <div
-      class="page-close"
-      v-if="showHelpWidth"
-      @click="(showHelpWidth = false), (showHelpHeight = false)"
-    ></div>
-    <div
-      class="readonlyTo"
-      v-if="showHelpWidth && showHelpHeight"
-      v-loading="loading"
-    >
-      <div @click="showHelpHeight = false" class="readonlyToX">X</div>
-      <div class="readonlyChild" id="readonlyChild"></div>
+    <div class="page-close"
+         v-if="showHelpWidth"
+         @click="(showHelpWidth = false), (showHelpHeight = false)"></div>
+    <div class="readonlyTo"
+         v-if="showHelpWidth && showHelpHeight"
+         v-loading="loading">
+      <div @click="showHelpHeight = false"
+           class="readonlyToX">X</div>
+      <div class="readonlyChild"
+           id="readonlyChild"></div>
     </div>
-    <div class="menu-box" v-if="showMenu">
+    <div class="menu-box"
+         v-if="showMenu">
       <!-- flex a-center j-center flex-row -->
       <!-- :class="[currentIndex === index && 'box-active']" -->
-      <div
-        v-for="(item, index) in applications"
-        ref="navDom"
-        :key="index"
-        class="box frist-box"
-        @click="selectMenu(item, index)"
-      >
-        <div class="name" :class="currentIndex === index ? 'active-box' : ''">
-          <i class="el-icon-folder big-font" v-if="currentIndex === index?false:true"></i>
-          <i class="el-icon-folder-opened big-font" v-else></i>
-           {{ item.name }}
-          <i class="el-icon-caret-right big-font"  v-if="currentIndex === index?false:true"></i>
-          <i class="el-icon-caret-bottom big-font" v-else></i>
+      <div v-for="(item, index) in applications"
+           ref="navDom"
+           :key="index"
+           class="box frist-box"
+           @click="selectMenu(item, index)">
+        <div class="name"
+             :class="currentIndex === index ? 'active-box' : ''">
+          <i class="el-icon-folder big-font"
+             v-if="currentIndex === index?false:true"></i>
+          <i class="el-icon-folder-opened big-font"
+             v-else></i>
+          {{ item.name }}
+          <i class="el-icon-caret-right big-font"
+             v-if="currentIndex === index?false:true"></i>
+          <i class="el-icon-caret-bottom big-font"
+             v-else></i>
         </div>
         <!-- @mouseover="selectMenu(item, index)" -->
-        <div v-if="isShowTreeList == index ? true : false" class="tree-list">
+        <div v-if="isShowTreeList == index ? true : false"
+             class="tree-list">
           <!-- :style="{
                     borderLeft:
                       index == '0' ? '1px solid rgb(85,158,212)' : 'none',
@@ -143,15 +142,11 @@
                         ? '1px solid rgb(85,158,212)'
                         : 'none',
                   }" -->
-          <div
-            class="tree-list-content"
-            :class="[currentIndex === index && 'tree-list-back']"
-          >
-            <menu-tree
-              :list="moremenugroup[index]"
-              @closetree="isShrink = true"
-              @click.stop="selectMenu(item, index)"
-            />
+          <div class="tree-list-content"
+               :class="[currentIndex === index && 'tree-list-back']">
+            <menu-tree :list="moremenugroup[index]"
+                       @closetree="isShrink = true"
+                       @click.stop="selectMenu(item, index)" />
           </div>
         </div>
       </div>
@@ -180,7 +175,7 @@ import { getByMenuId, saveHelpDocument } from "@/api/base/helpdocument";
 import indexVue from "../../../../components/SvgIcon/index.vue";
 export default {
   components: { MenuTree },
-  data() {
+  data () {
     return {
       showMenu: true,
       currentIndex: -1,
@@ -234,18 +229,18 @@ export default {
     };
   },
   computed: {
-    leftWidth() {
+    leftWidth () {
       return this.isShrink ? 64 : 120;
     },
-    currentMenuGroup() {
+    currentMenuGroup () {
       if (this.applications.length === 0) {
         return [];
       }
       const appid = this.applications[this.currentIndex].id;
-      console.log(this.menugroup[appid]);
+
       return this.menugroup[appid];
     },
-    getPersonUuid() {
+    getPersonUuid () {
       return this.$store.getters.personuuid;
     },
     // isShowTreeList(){
@@ -259,16 +254,16 @@ export default {
       },
       immediate: true,
     },
-    currentIndex() {
+    currentIndex () {
       this.currentIndexChange();
     },
-    getPersonUuid(newv, oldv) {
+    getPersonUuid (newv, oldv) {
       if (newv && newv != "") {
         this.webSocket = this.getWebSocket(newv);
       }
     },
   },
-  created() {
+  created () {
     // 页面刚进入时开启长连接
     this.init();
     if (this.getPersonUuid) {
@@ -277,8 +272,8 @@ export default {
   },
   watch: {
     $route: {
-      handler(val, oldval) {
-        console.log(oldval.path); //老路由信息
+      handler (val, oldval) {
+        //老路由信息
         if (oldval.path == "/login") {
           this.initmounted();
         }
@@ -287,13 +282,13 @@ export default {
       deep: true,
     },
   },
-  mounted() {
-    console.log("..mounted");
+  mounted () {
+
     this.initmounted();
   },
   methods: {
     //切换样式
-    changestyle() {
+    changestyle () {
       if (this.showMenu) {
         this.$emit("changestyle", "left:0;width:100vw;");
       } else {
@@ -301,7 +296,7 @@ export default {
       }
       this.showMenu = !this.showMenu;
     },
-    initmounted() {
+    initmounted () {
       getUserRes()
         .then((response) => {
           this.applications = [];
@@ -341,7 +336,7 @@ export default {
           }
           let sSLTree = { first: this.applications, second: sSTree };
           sessionStorage.setItem("shenjiMenuTree", JSON.stringify(sSLTree));
-          this.$store.dispatch('app/setMenuData',sSLTree )
+          this.$store.dispatch('app/setMenuData', sSLTree)
           let listTree = JSON.parse(sessionStorage.getItem("shenjiMenuTree"));
           this.moremenugroup = listTree.second;
           this.moremenugroupId = listTree.first;
@@ -354,7 +349,7 @@ export default {
         })
         .catch((error) => {
           this.applications = [];
-          console.error(error);
+          // 
         });
       getUnReadRemind().then((resp) => {
         if (resp.data <= 99) {
@@ -367,8 +362,8 @@ export default {
         }
       });
     },
-    init() {
-      querySystemTask().then((resp) => {});
+    init () {
+      querySystemTask().then((resp) => { });
     },
     /* initWebSocket() {
       this.webSocket = this.getWebSocket()
@@ -379,7 +374,7 @@ export default {
      * 1、WebSocket客户端通过回调函数来接收服务端消息。例如：webSocket.onmessage
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
-    getWebSocket(personuuid) {
+    getWebSocket (personuuid) {
       const wsuri =
         this.AmsWebsocket.getWSBaseUrl(this.AmsModules.BASE) +
         personuuid +
@@ -387,12 +382,12 @@ export default {
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(wsuri); // 建立与服务端的连接
       // 当服务端打开连接
-      this.webSocket.onopen = function (event) {};
+      this.webSocket.onopen = function (event) { };
       // 发送消息
       this.webSocket.onmessage = function (event) {
         func1(event);
       };
-      const func2 = function func3(val) {
+      const func2 = function func3 (val) {
         var dataObj = JSON.parse(val.data);
         if (dataObj.taskStatus === "2" || dataObj.taskStatus === 2) {
           let html = "";
@@ -423,13 +418,13 @@ export default {
       // this.webSocket.onclose = function(event) {
       // }
       // 通信失败
-      this.webSocket.onerror = function (event) {};
+      this.webSocket.onerror = function (event) { };
     },
-    currentIndexChange() {
+    currentIndexChange () {
       // const dis = this.isShrink ? 110 : 120
       // this.$nextTick(() => {
       //   const offset = this.$refs.navDom[this.currentIndex].offsetTop - dis
-      //   console.log(offset)
+      //   
       //   this.scrollTop = {
       //     allowScroll: true,
       //     offset: offset,
@@ -443,25 +438,25 @@ export default {
     //   //this.isShrink = false
     //   this.isShowTreeList = true
     // },
-    menuLeave() {
+    menuLeave () {
       // this.currentIndex = -1;
       // this.isShowTreeList = false;
       // this.isShowSettingList = false;
     },
-    getStyle(img) {
+    getStyle (img) {
       return {
         background: `url(${img}) no-repeat center center`,
         "background-size": "100% 100%",
       };
     },
-    selectMenu(app, index) {
+    selectMenu (app, index) {
       this.currentIndex = index;
       this.isShowTreeList = index;
       this.isShowSettingList = false;
       this.nowAppName = app.name;
       this.isShowToolsList = false;
     },
-    action(type) {
+    action (type) {
       if (type === "prev") {
         this.currentIndex = this.currentIndex === 0 ? 0 : this.currentIndex - 1;
       } else if (type === "next") {
@@ -471,10 +466,10 @@ export default {
             : this.currentIndex + 1;
       }
     },
-    jumpHome() {
+    jumpHome () {
       this.$router.push({ path: "/ams/first" });
     },
-    getCleanSrc(src) {
+    getCleanSrc (src) {
       if (src.indexOf("&resUUID") !== -1) {
         src = src.split("&resUUID")[0];
       } else if (src.indexOf("?resUUID") !== -1) {
@@ -482,7 +477,7 @@ export default {
       }
       return src;
     },
-    async logout() {
+    async logout () {
       this.$store.commit("aceState/setRightFooterTags", {
         type: "closeAll",
         val: "",
@@ -492,19 +487,19 @@ export default {
       await this.$store.dispatch("user/logout");
       this.$router.push(`/login?redirect=${this.$route.fullPath}`);
     },
-    goresetpassword() {
+    goresetpassword () {
       this.$router.push({ path: "/repassword" });
     },
-    logoutRemind() {
+    logoutRemind () {
       this.$router.push({ path: "/base/remind" });
     },
-    showWith(obj) {
+    showWith (obj) {
       this.isShowToolsList = obj;
     },
-    widthChange() {
+    widthChange () {
       this.isShrink = !this.isShrink;
     },
-    selectMenuIn() {
+    selectMenuIn () {
       this.$store.commit("aceState/setRightFooterTags", {
         type: "closeAll",
         val: "",
@@ -513,18 +508,18 @@ export default {
         path: this.applications[0].homepage || "/nopermission",
       });
     },
-    showHelp() {
+    showHelp () {
       this.showHelpWidth = !this.showHelpWidth;
     },
     // 父节点不可选中
-    ifFather(data) {
+    ifFather (data) {
       if (data.children) {
         return true;
       } else {
         return false;
       }
     },
-    handleNodeClick(data) {
+    handleNodeClick (data) {
       if (data.id <= 1000) {
       } else {
         this.loading = true;
@@ -585,7 +580,7 @@ export default {
     .active-box {
       color: white;
       background-color: #0c87d6;
-      .big-font{
+      .big-font {
         color: white !important;
       }
     }
@@ -1072,9 +1067,9 @@ export default {
     }
   }
 }
-.big-font{
-    font-size: 18px;
-    margin-right: 5px;
-    color: #0c87d6;
-  }
+.big-font {
+  font-size: 18px;
+  margin-right: 5px;
+  color: #0c87d6;
+}
 </style>
