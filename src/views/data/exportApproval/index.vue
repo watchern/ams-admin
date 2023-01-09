@@ -17,12 +17,12 @@
                 :key="tableKey"
                 v-loading="listLoading"
                 :data="tableData"
-                height="400px"
                 stripe
                 border
                 fit
                 highlight-current-row
                 style="width: 100%;"
+                height="calc(100vh - 330px)"
                 @sort-change="sortChange"
         >
             <el-table-column type="selection" width="55" />
