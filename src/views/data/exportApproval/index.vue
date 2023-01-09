@@ -50,20 +50,22 @@
                     label="表安全等级"
                     align="center"
                     prop="tableSafeLevel"
+                    min-width="100px"
                     show-overflow-tooltip
             />
             <el-table-column
                     label="当前环节"
                     align="center"
                     prop="currentLink"
+                    min-width="100px"
                     show-overflow-tooltip
             />
-            <el-table-column label="状态" align="center" prop="status"/>
+            <el-table-column label="状态" align="center" prop="status" min-width="100px"/>
             <el-table-column label="数据申请人" align="center" prop="requestPersionName"/>
             <el-table-column
                     label="操作"
                     align="center"
-                    min-width="150px"
+                    width="300px"
             >
                 <template slot-scope="scope">
                         <el-button
