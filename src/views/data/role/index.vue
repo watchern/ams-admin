@@ -42,14 +42,17 @@
       <el-table-column type="selection"
                        width="55" />
       <el-table-column label="数据角色名称"
-                       width="200px"
+                       align="center"
+                       min-width="200px"
+                       show-overflow-tooltip
                        prop="dataRoleName" />
       <el-table-column label="创建时间"
-                       width="300px"
+                       min-width="300px"
                        align="center"
+                       show-overflow-tooltip
                        prop="createTime" />
       <el-table-column label="授权方式"
-                       width="100px"
+                       min-width="250px"
                        align="center"
                        prop="authenType"
                        :formatter="formatAuthenType" />
@@ -63,7 +66,7 @@
                        prop="timeDuring"
                        :formatter="formatDuring"
                        show-overflow-tooltip
-                       style="width: 400px;" />
+                       min-width="380px" />
     </el-table>
     <pagination v-show="total>0"
                 :total="total"
