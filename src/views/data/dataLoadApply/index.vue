@@ -307,7 +307,7 @@
                                          min-width="80px"
                         >
                             <template slot-scope="scope">
-                                <el-checkbox v-model="scope.row.isHeaderLines" true-label="true">
+                                <el-checkbox v-model="scope.row.isHeaderLines" true-label="true" false-label="false">
                                 </el-checkbox>
                             </template>
                         </el-table-column>
