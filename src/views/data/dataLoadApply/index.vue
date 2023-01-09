@@ -1057,11 +1057,6 @@
                                     applyPerson: this.form.applyPerson,
                                     operationType: this.form.operationType,
                                     loadType: this.form.loadType,
-                                    fileType: this.fileType,
-                                    lineSeparator: this.form.lineSeparator,
-                                    columnSeparator: this.form.columnSeparator,
-                                    isHeaderLine: this.form.isHeaderLine,
-                                    fileName: this.form.fileName,
                                 },
                                 "tableData": JSON.stringify(this.tableData),
                             }
@@ -1143,6 +1138,8 @@
             handleClose(form) {
                 this.$refs[form].resetFields() //清空添加的值
                 this.updateShow = false
+                this.fileList = []
+                this.tableData = []
             },
             //子组件fileupload传值给父组件，用showFileType事件接收值赋给变量fileType
             showFileType(fileType) {
