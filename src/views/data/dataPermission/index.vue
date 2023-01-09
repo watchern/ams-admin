@@ -116,14 +116,16 @@
         <el-table-column
           prop="ssComIndustrysData.sciName"
           label="状态"
+          width="100px"
           show-overflow-tooltip
         ></el-table-column>
         <el-table-column
           prop="datatype"
           label="申请人"
+          width="150px"
           show-overflow-tooltip
         ></el-table-column>
-        <el-table-column prop="mobile" label="操作">
+        <el-table-column prop="mobile" label="操作" width="120px">
           <template slot-scope="scope">
             <div class="editBtn" @click="processView(scope.row)">流程查看</div>
           </template>
