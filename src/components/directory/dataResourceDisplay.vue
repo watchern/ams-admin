@@ -133,7 +133,9 @@
         <el-table ref="multipleTable"
                   :data="list"
                   style="width: 100%"
+                  :show-overflow-tooltip='true'
                   :header-cell-class-name="headerCellClass"
+                  :header-cell-style="tableHeaderColor"
                   @selection-change="handleSelectionChange">
           <el-table-column type="selection"
                            v-if="isBtn == true"
@@ -163,8 +165,7 @@
 
                   <div class="new_right">
                     <div class="table_type">
-                      <div class="one tt">表关联数量：<span
-                              v-if="scope.row.relations">{{scope.row.relations.length}}</span>
+                      <div class="one tt">表关联数量：<span v-if="scope.row.relations">{{scope.row.relations.length}}</span>
                         <el-card class="show_tips"
                                  v-if="scope.row.relations.length!==0">
                           <p v-for="(its,index_relations) in scope.row.relations"
@@ -217,23 +218,6 @@
       </div>
 
     </el-skeleton>
-
-    <!-- <el-dialog :title="title"
-               :visible.sync="common_dialog"
-               width="30%">
-
-
-      <div>
-
-      </div>
-      <span slot="footer"
-            class="dialog-footer">
-        <el-button @click="common_dialog = false">取 消</el-button>
-        <el-button type="primary"
-                   @click="common_dialog = false">确 定</el-button>
-      </span>
-    </el-dialog> -->
-
   </div>
 </template>
 
@@ -431,7 +415,14 @@ export default {
         return 'DisableSelection'
       }
     },
-
+    // 如果list 没数据就隐藏全选
+    tableHeaderColor ({ row, column, rowIndex, columnIndex }) {
+      // 
+      // if (row.length === 0) {
+      // return 'display:none'
+      // return 'border:1px solid red'
+      // }
+    },
     // 查看基本信息详情
     on_deails (data) {
       this.$emit("on_deails", data);
@@ -454,7 +445,6 @@ export default {
   }
 }
 </script>
- 
 <style scoped>
 /* 操作btn */
 .common_btn {
@@ -590,7 +580,7 @@ export default {
   border-radius: 15px;
   padding: 10px;
   box-sizing: border-box;
-  border: 1px solid #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   transition: 0.3s;
   margin: 10px 0;
 }
@@ -613,7 +603,8 @@ export default {
 }
 .box_ard_header {
   display: flex;
-  padding: 10px 0;
+  /* padding: 10px 0; */
+  margin-bottom: 10px;
   box-sizing: border-box;
   align-items: center;
 }
@@ -651,8 +642,8 @@ export default {
   float: left;
 }
 .new_left .cover {
-  width: 130px;
-  height: 130px;
+  width: 110px;
+  height: 110px;
   float: left;
   border-radius: 15px;
   overflow: hidden;
@@ -727,9 +718,9 @@ export default {
 }
 .table_type {
   display: flex;
-  line-height: 30px;
-  height: 30px;
-  margin-bottom: 15px;
+  /* line-height: 30px;
+  height: 30px; */
+  margin-bottom: 10px;
 }
 .table_type .tt {
   margin-right: 60px;
@@ -815,6 +806,10 @@ export default {
   padding: 10px;
   margin-bottom: 10px;
 }
+.preview_conter >>> .el-table {
+  height: 100%;
+  background: transparent !important;
+}
 .preview_conter >>> .el-table tbody tr:hover > td,
 .preview_conter >>> table tr:nth-child(odd) {
   background-color: transparent !important;
@@ -843,10 +838,10 @@ export default {
 }
 .list_table {
   height: calc(100vh - 300px);
-  background: #fff;
+  /* background: #fff; */
 }
 
 .list_table >>> .el-table__empty-block {
-  /* height: 400px !important; */
+  min-height: 400px !important;
 }
 </style>

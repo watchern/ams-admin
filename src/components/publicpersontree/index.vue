@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="dlag_conter">
     <el-container class="app-container">
       <el-aside class="tree-side">
         <el-input v-model="filterText"
