@@ -30,17 +30,16 @@
       <el-table-column label="所属系统名称"
                        min-width="150px"
                        prop="folderName"
-                       align="center"
                        show-overflow-tooltip />
       <el-table-column label="数据表名称"
-                       min-width="150px"
                        align="center"
+                       min-width="150px"
                        prop="displayTbName"
                        show-overflow-tooltip />
       <el-table-column label="汉化表名称"
-                       min-width="150px"
                        align="center"
                        prop="chnName"
+                       min-width="150px"
                        show-overflow-tooltip />
       <el-table-column label="创建时间"
                        min-width="200px"
