@@ -925,62 +925,49 @@ export default {
     // 修改保存
     update_save () {
       var personLiables = [];
-      this.$nextTick(() => {
-        if (this.form.personName_str) {
-          // 如果默认有 没有修改
-          this.form.personName_str.forEach((item) => {
-            let objs = {
-              personUuid: item.personUuid,
-              personName: item.personName,
-            };
-            personLiables.push(objs);
-          });
-        } else {
-          // 如果修改了责任人
-          var selectedNodes = this.$refs.orgPeopleTree.getSelectValue();
-          selectedNodes.forEach((item) => {
-            let objs = {
-              personUuid: item.personuuid,
-              personName: item.cnname,
-            };
-            personLiables.push(objs);
-          });
-
-        }
-
-        let params = {
-          tableMetaUuid: this.tableMetaUuid,
-          chnName: this.form.chnName,
-          tableRelationQuery: {
-            tableRelationQueryUuid: this.form.tableRelationQueryUuid,
-            tableMetaUuid: this.tableMetaUuid,
-            tableCode: this.form.tableCode,
-            tableType: this.form.tableType,
-            businessSystemId: this.form.businessSystemId,
-            tableThemeId: this.form.tableThemeId,
-            tableLayeredId: this.form.tableLayeredId,
-            tableRemarks: this.form.tableRemarks,
-            fileName: this.form.fileName,
-            isSpike: this.form.isSpike,
-            dataDate: this.form.dataDate,
-          },
-          personLiables: personLiables,
-        };
-        updateTableInfo(params).then((resp) => {
-          if (resp.code == 0) {
-            this.$message({
-              type: "success",
-              message: "修改成功!",
-            });
-            this.$emit("update_list");
-          } else {
-            this.$message({
-              type: "error",
-              message: resp.msg,
-            });
-          }
+      if (this.form.personName_str) {
+        // 如果默认有 没有修改
+        this.form.personName_str.forEach((item) => {
+          let objs = {
+            personUuid: item.personUuid,
+            personName: item.personName,
+          };
+          personLiables.push(objs);
         });
-      })
+      }
+
+      let params = {
+        tableMetaUuid: this.tableMetaUuid,
+        chnName: this.form.chnName,
+        tableRelationQuery: {
+          tableRelationQueryUuid: this.form.tableRelationQueryUuid,
+          tableMetaUuid: this.tableMetaUuid,
+          tableCode: this.form.tableCode,
+          tableType: this.form.tableType,
+          businessSystemId: this.form.businessSystemId,
+          tableThemeId: this.form.tableThemeId,
+          tableLayeredId: this.form.tableLayeredId,
+          tableRemarks: this.form.tableRemarks,
+          fileName: this.form.fileName,
+          isSpike: this.form.isSpike,
+          dataDate: this.form.dataDate,
+        },
+        personLiables: personLiables,
+      };
+      updateTableInfo(params).then((resp) => {
+        if (resp.code == 0) {
+          this.$message({
+            type: "success",
+            message: "修改成功!",
+          });
+          this.$emit("update_list");
+        } else {
+          this.$message({
+            type: "error",
+            message: resp.msg,
+          });
+        }
+      });
 
     },
 
@@ -1051,16 +1038,21 @@ export default {
     // 确定责任人
     modelResultShare () {
       // this.listLoading = true;
-      // var runTaskRelUuids = [];
       var personUuids = [];
       var personNames = [];
       var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
       for (var i = 0; i < selectedNode.length; i++) {
         personUuids.push(selectedNode[i].personuuid);
         personNames.push(selectedNode[i].cnname);
+
+        this.form.personName_str = [];//清空
+        let objs = {
+          personUuid: selectedNode[i].personuuid,
+          personName: selectedNode[i].cnname
+        }
+        this.form.personName_str.push(objs)
         this.form.personLiables = personNames.join(",");
       }
-
       this.resultShareDialogIsSee = false;
     },
 
