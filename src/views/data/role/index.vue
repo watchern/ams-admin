@@ -62,6 +62,7 @@
                        align="center"
                        prop="timeDuring"
                        :formatter="formatDuring"
+                       show-overflow-tooltip
                        style="width: 400px;" />
     </el-table>
     <pagination v-show="total>0"

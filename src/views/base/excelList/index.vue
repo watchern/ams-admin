@@ -7,12 +7,13 @@
         style="width: 100%"
         stripe
         v-loading="loading"
-        height="calc(100vh - 250px)"
+        height="calc(100vh - 150px)"
       >
         <el-table-column
           v-for="(item, index) in tableColumn"
           :key="index"
-          :label="item.label"
+          :label="item"
+          :prop="item"
         />
       </el-table>
       <el-button size="mini" type="primary" @click="nextPage">下一页</el-button>
@@ -24,6 +25,7 @@
 </template>
 
 <script>
+import { excelReadList } from "@/api/base/base";
 export default {
   name: "excelList",
   components: {},
@@ -31,16 +33,37 @@ export default {
   data() {
     return {
       tableData: [],
-      tableColumn: [{ label: "222" }],
+      tableColumn: [],
       loading: false,
+      index: 1,
     };
   },
   computed: {},
   watch: {},
-  mounted() {},
+  mounted() {
+    this.init(this.index);
+  },
   methods: {
-    nextPage() {},
-    viewAll() {},
+    init(val) {
+      this.loading = true;
+      var num = val * 15;
+      let formData = new FormData();
+      formData.append("limitRowSize", num);
+      excelReadList(formData).then((res) => {
+        this.loading = false;
+        this.tableData = res.data;
+        let values = Object.values(res.title[0]);
+        this.tableColumn = values;
+      });
+    },
+    nextPage() {
+      this.index++;
+      let num = this.index;
+      this.init(num);
+    },
+    viewAll() {
+      this.init(0);
+    },
   },
 };
 </script>
