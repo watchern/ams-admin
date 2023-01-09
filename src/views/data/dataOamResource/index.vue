@@ -130,7 +130,7 @@
           fit
           highlight-current-row
           style="width: 100%; overflow: auto"
-          height="calc(100vh - 290px)"
+          height="calc(100vh - 320px)"
           @selection-change="handleSelectionChange"
         >
           <!-- <el-table-column type="selection"
