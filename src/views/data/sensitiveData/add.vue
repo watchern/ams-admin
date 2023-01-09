@@ -9,7 +9,7 @@
       ref="ruleForm"
     >
       <el-form-item label="规则名称" prop="ruleName" class="item-b">
-        <el-input v-model="apComDataBaseData.ruleName"></el-input>
+        <el-input v-model="apComDataBaseData.ruleName" maxlength="200"></el-input>
       </el-form-item>
       <el-form-item label="启动" prop="isAtartUp" class="item-b">
         <el-radio-group v-model="apComDataBaseData.isAtartUp">
