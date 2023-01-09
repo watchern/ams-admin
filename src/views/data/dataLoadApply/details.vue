@@ -91,8 +91,6 @@
             <el-form-item v-if="form.operationType === '0'" style="margin-left: 40vh">
                 <el-button @click="showFile(form)">点击查看文件内容</el-button>
             </el-form-item>
-
-
             <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
                 <el-col :span="24">
                     <el-table key="colMetaUuid"
@@ -101,11 +99,19 @@
                               height="200px"
                               highlight-current-row
                               style="width: 100%;">
-                        <el-table-column label="序号" width="60px" align="center"/>
-                        <el-table-column label="表路径" align="center">
-
+                        <el-table-column type="selection" width="55" />
+                        <el-table-column
+                                label="表路径"
+                                min-width="100px"
+                                show-overflow-tooltip
+                        >
                         </el-table-column>
-                        <el-table-column label="归档方式" width="150px" align="center">
+                        <el-table-column
+                                label="归档方式"
+                                align="center"
+                                min-width="150px"
+                                show-overflow-tooltip
+                        >
                             <template slot-scope="scope">
                                 <el-select
                                         v-model="form.filingMove"
@@ -115,7 +121,12 @@
                                 </el-select>
                             </template>
                         </el-table-column>
-                        <el-table-column label="归档文件/表名称" align="center">
+                        <el-table-column
+                                label="归档文件/表名称"
+                                align="center"
+                                min-width="150px"
+                                show-overflow-tooltip
+                        >
                             <template slot-scope="scope">
                                 <el-select
                                         v-model="form.filingFile"

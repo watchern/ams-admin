@@ -244,21 +244,23 @@
                               style="width: 100%">
                         <el-table-column
                                 prop="fileName"
-                                width="250%"
+                                min-width="100px"
                                 label="文件名"
-                                align="center">
-
+                                show-overflow-tooltip >
                         </el-table-column>
                         <el-table-column
                                 prop="fileType"
-                                width="80%"
+                                min-width="100px"
                                 label="文件类型"
-                                align="center">
+                                align="center"
+                                show-overflow-tooltip >
                         </el-table-column>
                         <el-table-column
                                 prop="lineSeparator"
+                                min-width="100px"
                                 label="行分隔符"
-                                align="center">
+                                align="center"
+                                show-overflow-tooltip >
                             <template slot-scope="scope">
                                 <el-select
                                         v-model="scope.row.lineSeparator"
@@ -279,7 +281,9 @@
                         <el-table-column
                                 prop="columnSeparator"
                                 label="列分隔符"
-                                align="center">
+                                min-width="100px"
+                                align="center"
+                                show-overflow-tooltip >
                             <template slot-scope="scope">
                                 <el-select
                                         v-model="scope.row.columnSeparator"
@@ -299,13 +303,15 @@
                         </el-table-column>
                         <el-table-column prop="isHeaderLines"
                                          label="首行是否为标题行"
-                                         align="center">
+                                         align="center"
+                                         min-width="80px"
+                        >
                             <template slot-scope="scope">
                                 <el-checkbox v-model="scope.row.isHeaderLines" true-label="true">
                                 </el-checkbox>
                             </template>
                         </el-table-column>
-                        <el-table-column>
+                        <el-table-column align="center" min-width="80px">
                             <template slot-scope="scope">
                                 <el-link
                                         size="mini"
@@ -417,11 +423,20 @@
                                   highlight-current-row
                                   style="width: 100%;"
                                   @selection-change="handleSelectionChange">
-                            <el-table-column width="40px" type="selection"/>
+<!--                            <el-table-column width="40px" type="selection"/>-->
+                            <el-table-column type="selection" width="55px" />
                             <el-table-column label="序号" width="60px" align="center" prop="applyId"/>
-                            <el-table-column label="表路径" align="center">
+                            <el-table-column
+                                    label="表路径"
+                                    min-width="150px"
+                                    show-overflow-tooltip >
                             </el-table-column>
-                            <el-table-column label="归档方式" width="150px" align="center" prop="createTime">
+                            <el-table-column
+                                    label="归档方式"
+                                    min-width="200px"
+                                    align="center"
+                                    prop="createTime"
+                                    show-overflow-tooltip >
                                 <template slot-scope="scope">
                                     <el-select
                                             v-model="form.filingMove"
@@ -431,7 +446,12 @@
                                     </el-select>
                                 </template>
                             </el-table-column>
-                            <el-table-column label="归档文件/表名称" align="center" prop="createTime">
+                            <el-table-column
+                                    label="归档文件/表名称"
+                                    align="center"
+                                    min-width="200px"
+                                    prop="createTime"
+                                    show-overflow-tooltip >
                                 <template slot-scope="scope">
                                     <el-select
                                             v-model="form.filingFile"
