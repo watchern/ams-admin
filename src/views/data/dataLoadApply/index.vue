@@ -92,18 +92,18 @@
                 <el-table-column label="申请名称"
                                  prop="applyName"
                                  min-width="130px"
-                                 show-overflow-tooltip />
+                                 show-overflow-tooltip/>
                 <el-table-column label="申请时间"
                                  :formatter="formatApplyTime"
                                  align="center"
                                  min-width="100px"
                                  prop="applyTime"
-                                 show-overflow-tooltip />
+                                 show-overflow-tooltip/>
                 <el-table-column label="当前环节"
                                  align="center"
                                  min-width="100px"
                                  prop="currentLink"
-                                 show-overflow-tooltip />
+                                 show-overflow-tooltip/>
                 <el-table-column label="上一办理人"
                                  align="center"
                                  min-width="100px"
@@ -124,7 +124,8 @@
                     <template slot-scope="scope">
                         <el-link type="primary"
                                  :underline="false"
-                                 @click="todoOpinionList(scope.row)">流程跟踪</el-link>
+                                 @click="todoOpinionList(scope.row)">流程跟踪
+                        </el-link>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作"
@@ -246,21 +247,21 @@
                                 prop="fileName"
                                 min-width="100px"
                                 label="文件名"
-                                show-overflow-tooltip >
+                                show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
                                 prop="fileType"
                                 min-width="100px"
                                 label="文件类型"
                                 align="center"
-                                show-overflow-tooltip >
+                                show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
                                 prop="lineSeparator"
                                 min-width="100px"
                                 label="行分隔符"
                                 align="center"
-                                show-overflow-tooltip >
+                                show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <el-select
                                         v-model="scope.row.lineSeparator"
@@ -283,7 +284,7 @@
                                 label="列分隔符"
                                 min-width="100px"
                                 align="center"
-                                show-overflow-tooltip >
+                                show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <el-select
                                         v-model="scope.row.columnSeparator"
@@ -423,20 +424,20 @@
                                   highlight-current-row
                                   style="width: 100%;"
                                   @selection-change="handleSelectionChange">
-<!--                            <el-table-column width="40px" type="selection"/>-->
-                            <el-table-column type="selection" width="55px" />
+                            <!--                            <el-table-column width="40px" type="selection"/>-->
+                            <el-table-column type="selection" width="55px"/>
                             <el-table-column label="序号" width="60px" align="center" prop="applyId"/>
                             <el-table-column
                                     label="表路径"
                                     min-width="150px"
-                                    show-overflow-tooltip >
+                                    show-overflow-tooltip>
                             </el-table-column>
                             <el-table-column
                                     label="归档方式"
                                     min-width="200px"
                                     align="center"
                                     prop="createTime"
-                                    show-overflow-tooltip >
+                                    show-overflow-tooltip>
                                 <template slot-scope="scope">
                                     <el-select
                                             v-model="form.filingMove"
@@ -451,7 +452,7 @@
                                     align="center"
                                     min-width="200px"
                                     prop="createTime"
-                                    show-overflow-tooltip >
+                                    show-overflow-tooltip>
                                 <template slot-scope="scope">
                                     <el-select
                                             v-model="form.filingFile"
@@ -917,6 +918,7 @@
             //添加
             apply_add() {
                 this.applyDialogVisible = true
+                this.dialogStatusValue = false
                 this.dialogStatus = 'create'
                 this.title = '创建申请'
                 this.fileType = ''
@@ -1110,13 +1112,8 @@
                                     applyName: this.form.applyName,
                                     operationType: this.form.operationType,
                                     loadType: this.form.loadType,
-                                    fileType: this.fileType,
-                                    lineSeparator: this.form.lineSeparator,
-                                    columnSeparator: this.form.columnSeparator,
-                                    isHeaderLine: this.form.isHeaderLine,
-                                    fileName: this.form.fileName,
-                                    fileUuid: this.form.fileUuid,
-                                }
+                                },
+                                "tableData": JSON.stringify(this.tableData),
                             }
                             //只有状态为草稿时才能实现对数据的编辑修改
                             if (this.form.status !== '草稿') {
