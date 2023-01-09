@@ -14,6 +14,7 @@
           :key="index"
           :label="item"
           :prop="item"
+          show-overflow-tooltip
         />
       </el-table>
       <el-button size="mini" type="primary" @click="nextPage">下一页</el-button>
@@ -52,7 +53,7 @@ export default {
       excelReadList(formData).then((res) => {
         this.loading = false;
         this.tableData = res.data;
-        let values = Object.values(res.title[0]);
+        let values = Object.values(res.title);
         this.tableColumn = values;
       });
     },
