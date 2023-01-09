@@ -2,125 +2,9 @@
   <div class="page-container">
     <!-- left_conter -->
     <div class="left_conter">
-      <el-tabs v-model="activeName"
-               type="card"
-               @tab-click="handleClick">
-        <el-tab-pane label="系统"
-                     :disabled="tabclick"
-                     name="0"></el-tab-pane>
-        <el-tab-pane label="主题"
-                     :disabled="tabclick"
-                     name="1"></el-tab-pane>
-        <el-tab-pane label="分层"
-                     :disabled="tabclick"
-                     name="2"></el-tab-pane>
-        <!-- <el-tab-pane label="目录"
-                     :disabled="tabclick"
-                     name="3"></el-tab-pane> -->
-      </el-tabs>
-      <div class="padding10">
-        <el-input v-model="filterText2"
-                  :disabled="tabclick"
-                  placeholder="输入关键字进行过滤" />
-      </div>
-      <!-- 数据源 -->
-      <div class="padding10 dataSource">
-        <el-form :inline="true"
-                 :model="query"
-                 label-position="bottom">
-          <el-form-item label="数据源："
-                        label-width="90px">
-            <el-select v-model="query.dataSource"
-                       :disabled="tabclick"
-                       @change="selectdata"
-                       placeholder="请选择数据源">
-              <el-option v-for="item in options"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value" />
-            </el-select>
-          </el-form-item>
-        </el-form>
-      </div>
-
-      <div v-if="loading == true"
-           class="loadings">
-        <div class="conter_loadings">
-          <span><img src="../../../assets/img/loading.gif"
-                 alt="" /></span>
-        </div>
-      </div>
-
-      <div v-else
-           class="conter_vh">
-        <!-- 系统 主题 分层  目录-->
-        <div class="tree-containerall">
-          <MyElTree ref="tree2"
-                    :props="props"
-                    :data="tree_list"
-                    :filter-node-method="filterNode"
-                    :default-expanded-keys="['ROOT']"
-                    class="filter-tree"
-                    highlight-current="true"
-                    node-key="id"
-                    @node-click="nodeClick">
-            <span slot-scope="{ node, data }"
-                  class="custom-tree-node">
-              <i v-if="data.id === 'ROOT'"
-                 :class="data.icon" />
-              <i v-if="
-                    data.type === 'folder' ||
-                    data.type === 'system' ||
-                    data.type === 'layered' ||
-                    data.type === 'theme'
-                  ">
-                <span class="agreeicon0"></span>
-              </i>
-              <i v-if="data.type === 'table'">
-                <span class="icon iconfont agreeicon1"></span>
-              </i>
-              <i v-if="data.type === 'view'">
-                <span class="icon iconfont agreeicon4"></span>
-              </i>
-
-              <i v-if="data.type === 'column'"
-                 class="el-icon-c-scale-to-original" />
-              <span>{{ node.label }}</span>
-              <span style="margin-left: 10px">
-                <el-button v-if="
-                      data.id === 'ROOT' ||
-                      (data.extMap && data.extMap.folder_type === 'maintained')
-                    "
-                           type="text"
-                           size="mini"
-                           @click.stop="() => handleCreateFolder(node, data)">
-                  <i class="el-icon-circle-plus" />
-                </el-button>
-                <el-button v-if="
-                      data.extMap && data.extMap.folder_type === 'maintained'
-                    "
-                           type="text"
-                           size="mini"
-                           @click.stop="() => handleUpdateFolder(node, data)">
-                  <i class="el-icon-edit" />
-                </el-button>
-                <el-button v-if="
-                      (data.extMap &&
-                        data.extMap.folder_type === 'maintained') ||
-                      data.type === 'table' ||
-                      data.type === 'view'
-                    "
-                           type="text"
-                           size="mini"
-                           @click.stop="() => handleRemove(node, data)">
-                  <i class="el-icon-delete" />
-                </el-button>
-              </span>
-            </span>
-          </MyElTree>
-        </div>
-        <!-- 目录 -->
-      </div>
+      <LeftTrees ref="tree_left"
+                 @details='Details'
+                 @queryList='query_list'></LeftTrees>
     </div>
     <!-- left_conter end-->
 
@@ -150,7 +34,7 @@
                :isDisable_input="isDisable_input"
                @update_list="UpdateList"
                :is_Edit_list="is_Edit_list"
-               @update_details=pdateDetails
+               @update_details="updateDetails"
                v-if="show_details == true"></Details>
 
       <!-- 注册资产 -->
@@ -165,7 +49,7 @@
                   placeholder="输入想要查询的表名称（模糊搜索）" />
         <el-button @click="getTables"> 搜索 </el-button>
 
-        <div class="tree-containerselect padding10">
+        <div class="containerselect padding10">
           <MyElTree ref="tree1"
                     v-loading="treeLoading"
                     :props="props"
@@ -312,12 +196,12 @@
             <el-form-item label="资产类型:"
                           prop="tableType">
               <el-select v-model="form.tableType"
-                          :rows="4"
-                          placeholder="请选择资产类型">
+                         :rows="4"
+                         placeholder="请选择资产类型">
                 <el-option v-for="item in data_type"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value" />
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
               </el-select>
             </el-form-item>
           </div>
@@ -695,6 +579,8 @@
 <script>
 import tabledatatabs from "@/views/data/table/tabledatatabs";
 import MyElTree from "@/components/public/tree/src/tree.vue";
+import LeftTrees from "@/components/loginTree/leftTree.vue";
+
 import {
   listUnCached,
   getDataTreeNode, //目录
@@ -743,6 +629,7 @@ import {
 export default {
   components: {
     MyElTree,
+    LeftTrees,
     tabledatatabs,
     QueryField,
     DataResourceDisplay,
@@ -801,15 +688,15 @@ export default {
       list: [], //table 列表
 
       // 资料树筛选 数据源
-      query: {
-        dataSource: "Postgre", //筛选条件
-        pageNo: 1,
-        pageSize: 5,
-        businessSystemId: "", //id主键
-        tableThemeId: "", //主题
-        tableLayeredId: "", //分层
-        folderUuid: "", //目录ID
-      },
+      // query: {
+      //   dataSource: "Postgre", //筛选条件
+      //   pageNo: 1,
+      //   pageSize: 5,
+      //   businessSystemId: "", //id主键
+      //   tableThemeId: "", //主题
+      //   tableLayeredId: "", //分层
+      //   folderUuid: "", //目录ID
+      // },
 
       options: [
         {
@@ -1040,17 +927,19 @@ export default {
     },
   },
   created () {
-    this.post_getBusinessSystemTree(); //系统
+    // this.post_getBusinessSystemTree(); //系统
     // this.post_getThemeTree();//主题
     // this.post_getLayeredTree();//分层
     // this.post_getDataTreeNode();//目录
 
-    this.query.businessSystemId = "";
-    this.query_list();
+    // this.query.businessSystemId = "";
+
+    // this.$refs.tree_left.query
+    // this.query_list();
   },
   methods: {
     // 跟新关系图
-    pdateDetails (id) {
+    updateDetails (id) {
 
       this.tableMetaUuid = id
       this.show_details = true;
@@ -1337,149 +1226,7 @@ export default {
       this.show_details = true;
       this.isDisable_input = true;
     },
-    //校验文件名是否存在
-    checkFileName_change (fileName) {
-      //
-      // checkFileName(fileName).then((res) => {
-      //   if (res.data) {
-      //     this.$message({
-      //       message: '文件名已存在',
-      //       type: 'success',
-      //       showClose: true,
-      //     })
-      //     //隐藏保存按钮
-      //     this.ifFileNameExist = false
-      //   } else {
-      //     this.$message({
-      //       message: res.message,
-      //       type: 'success',
-      //       showClose: true,
-      //     })
-      //     //显示保存按钮
-      //     this.ifFileNameExist = true
-      //     // this.$message.success("文件名可用");
-      //   }
-      // }
-      // )
-      // this.registTableFlag = false;//关闭上一步
-    },
 
-    // tab切换
-    handleClick (tab, event) {
-      if (tab.index == "0") {
-        // this.tabclick = true
-        // setTimeout(() => {
-        //   this.tabclick = false
-        // }, 3000)
-        this.post_getBusinessSystemTree(); //系统
-      } else if (tab.index == "1") {
-        this.post_getThemeTree(); //主题
-      } else if (tab.index == "2") {
-        this.post_getLayeredTree(); //分层
-      }
-      // else {
-      //   this.post_getDataTreeNode(this.query.dataSource);//目录
-      // }
-    },
-    filterNode (value, data) {
-      if (!value) return true;
-      return data.label.indexOf(value) !== -1;
-    },
-
-    // 系统
-    post_getBusinessSystemTree () {
-      this.loading = true;
-      this.tabclick = true;
-      getBusinessSystemTree(true, this.query.dataSource, true).then((resp) => {
-        this.tree_list = resp.data;
-        this.loading = false;
-        this.tabclick = false;
-      });
-    },
-    // 主题
-    post_getThemeTree () {
-      this.loading = true;
-      this.tabclick = true;
-      getThemeTree(true, this.query.dataSource, true).then((resp) => {
-        this.tree_list = resp.data;
-        this.loading = false;
-        this.tabclick = false;
-      });
-    },
-    // 分层
-    post_getLayeredTree () {
-      this.loading = true;
-      this.tabclick = true;
-      getLayeredTree(true, this.query.dataSource, true).then((resp) => {
-        this.tree_list = resp.data;
-        this.loading = false;
-        this.tabclick = false;
-      });
-    },
-    // 目录
-    // post_getDataTreeNode () {
-    //   this.loading = true
-    //   this.tabclick = true
-    //   getDataTreeNode(this.query.dataSource).then((resp) => {
-    //     this.tree_list = resp.data
-    //     this.loading = false
-    //     this.tabclick = false
-
-    //   });
-    // },
-
-    // loadNode2 (node, resolve) {
-    // if (!node.data) {
-    //   resolve([{ id: "ROOT", label: "数据集", leaf: false }]);
-    // } else {
-    //   getDataTreeNode(node.data.id = pid, dataSource).then((resp) => {
-    //     resolve(resp.data);
-    //   });
-    // }
-    // },
-    // loadNode2 (node, resolve) {
-    //   if (node.level === 0) {
-    //     //  父级
-    //     resolve(this.treeData);
-    //   }
-    //   if (node.level >= 1) {
-    //     // 子级
-    //     that.loadNodeChildren(node.data.id, resolve);
-
-    //   }
-    // },
-    // //  父级
-    // getTagList (pid) {
-    //   getDataTreeNode(pid, this.query.dataSource).then((resp) => {
-    //     this.treeData = resp.data
-    //
-    //     // let _data = resp.data;
-    //     // return resolve(this.treeData)
-    //   });
-    // },
-    // // 子节点
-    // loadNodeChildren (pid, resolve) {
-    //
-    //   getDataTreeNode(pid, this.query.dataSource).then((resp) => {
-    //     let _data = resp.data;
-    //
-    //     let resArr = [];//插入子级数据
-    //     _data.forEach(item => {
-    //       item = JSON.parse(JSON.stringify(item));
-    //       resArr.push({
-    //         label: item.label,
-    //         id: item.id,
-    //         leaf: item.leaf,
-    //         // parentCategoryId: item.parentCategoryId,
-    //         // currentLevel: item.currentLevel,
-    //         // relateCount: item.relateCount
-    //       });
-    //     })
-    //
-    //     this.$refs.tree3.updateKeyChildren(node.data.id, resArr);
-    //     return resolve(_data);
-    //   });
-    // },
 
     // 点击注册资源的 数据库列表
     getTables () {
@@ -1502,86 +1249,18 @@ export default {
       node.expand(); // 主动调用展开节点方法，重新查询该节点下的所有子节点
     },
     // 点击切换树 切换 表单
-    nodeClick (data, node, tree) {
 
-      this.tableMetaUuid = ''
-      // if (node.data.children.length == 0 && node.data.type === "table") {
-      // 显示列表
-      if (node.level == 1) {
-        // this.divInfo = false;
-        this.show_details = false; //显示列表
-        if (data.type == "system") {
-          this.query.businessSystemId = node.data.id;
-          this.query.tableThemeId = "";
-          this.query.tableLayeredId = "";
-          this.query.folderUuid = "";
-          this.query_list();
-        } else if (data.type == "theme") {
-          this.query.businessSystemId = "";
-          this.query.tableThemeId = node.data.id;
-          this.query.tableLayeredId = "";
-          this.query.folderUuid = "";
-          this.query_list();
-        } else if (data.type == "layered") {
-          this.query.businessSystemId = "";
-          this.query.tableThemeId = "";
-          this.query.tableLayeredId = node.data.id;
-          this.query.folderUuid = "";
-          this.query_list();
-        }
-      } else {
-        // 进入详情
-        this.tableMetaUuid = node.data.id;
-        this.show_details = true;
-        this.isDisable_input = true;
-      }
-
-      // if (node.data.type === "table") {
-      //   this.$nextTick(() => {
-      //     this.divInfo = true;
-      //     this.tableId = node.data.id;
-      //   });
-      // } else {
-      // if (data.type == "system") {
-      //   this.query.businessSystemId = node.data.id;
-      //   this.query.tableThemeId = "";
-      //   this.query.tableLayeredId = "";
-      //   this.query.folderUuid = "";
-      //   this.query_list();
-      // } else if (data.type == "theme") {
-      //   this.query.businessSystemId = "";
-      //   this.query.tableThemeId = node.data.id;
-      //   this.query.tableLayeredId = "";
-      //   this.query.folderUuid = "";
-      //   this.query_list();
-      // } else if (data.type == "layered") {
-      //   this.query.businessSystemId = "";
-      //   this.query.tableThemeId = "";
-      //   this.query.tableLayeredId = node.data.id;
-      //   this.query.folderUuid = "";
-      //   this.query_list();
-      // }
-      // else if (node.data.type === "folder") {
-      // 目录
-      // let _node = this.$refs.tree.getNode(node);
-      // //  设置未进行懒加载状态
-      // _node.loaded = false;
-      // // 重新展开节点就会间接重新触发load达到刷新效果
-      //   // _node.expand();
-      //   this.post_getDataTreeNode();//目录
-      //   // this.getTagList('ROOT', this.query.dataSource)
-      //   // this.getTagList(node.data.id, this.query.dataSource);//目录
-      //   this.query.businessSystemId = ''
-      //   this.query.tableThemeId = '';
-      //   this.query.tableLayeredId = '';
-      //   this.query.folderUuid = node.data.id;
-      //   this.query_list();
-      // }
-      // 分页
-      // }
+    Details (tableMetaUuid, show_details, isDisable_input) {
+      this.tableMetaUuid = tableMetaUuid
+      this.show_details = show_details;
+      this.isDisable_input = isDisable_input;
     },
     // 列表 接口
-    query_list () {
+    query_list (data, show_details) {
+      this.show_details = show_details; //显示列表
+      console.log(data);
+      this.query = data
+      console.log(this.query);
       // this.listLoading = true;
       this.list_loading = true; //子组件loading
       let params = {
@@ -1598,152 +1277,18 @@ export default {
 
         this.list_data = resp.data;
         this.list = resp.data.records;
-
+        // console.log(this.list_data);
         // this.listLoading = false
         //
       });
     },
-    // 删除
-    delete_table (id) {
-      delTable(id).then((res) => {
-        if (res.code == 0) {
-          this.$message({
-            message: "删除成功",
-            type: "success",
-            showClose: true,
-          });
-        } else {
-          this.$message({
-            message: res.msg,
-            type: "error",
-            showClose: true,
-          });
-        }
-        this.query_list();
-      });
-    },
+
     resetFolderForm () {
       Object.keys(this.folderForm).forEach((key) => {
         this.$set(this.folderForm, key, null);
       });
     },
-    handleCreateFolder (node, data) {
-      this.resetFolderForm();
-      this.parentNode = node;
-      this.dialogStatus = "create";
-      this.folderForm.parentFolderUuid = data.id;
-      var nodePath = this.$refs.tree2.getNodePath(data);
-      var fullPath = [];
-      // 将各级目录名拼接到全路径中
-      nodePath.forEach((path) => {
-        fullPath.push(path.label);
-      });
-      this.folderForm.fullPath = fullPath.join("/");
-      this.folderFormVisible = true;
-    },
-    handleUpdateFolder (node, data) {
-      this.resetFolderForm();
-      this.tempData = data;
-      this.dialogStatus = "update";
-      this.folderForm.folderUuid = data.id;
-      this.folderForm.folderName = data.label;
-      // 修改为使用后台拼接，原因path.label取得是修改之前的label
-      // let fullPath = [];
-      // 拼接全路径（从ROOT节点开始一直到自己）
-      // this.$refs.tree2.getNodePath(data).forEach((path) => {
-      //   fullPath.push(path.label);
-      // });
-      // this.folderForm.fullPath = fullPath.join("/");
-      this.folderFormVisible = true;
-    },
-    handleRemove (node, data) {
-      this.$confirm("是否删除？", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(() => {
-          if (data.type === "table" || data.type === "view") {
-            delTable(data.id).then((resp) => {
-              this.$notify(
-                commonNotify({ type: "success", message: "删除成功！" })
-              );
-              this.$refs.tree2.remove(data);
-            });
-          } else {
-            delFolder(data.id).then((resp) => {
-              this.$notify(
-                commonNotify({ type: "success", message: "删除成功！" })
-              );
-              this.$refs.tree2.remove(data);
-            });
-          }
-        })
-        .catch(() => { });
-    },
-    createFolder () {
-      if (
-        this.folderForm.folderName == null ||
-        this.folderForm.folderName.trim().length == 0
-      ) {
-        this.$message({
-          type: "info",
-          message: "文件夹名不可为空，请重新输入文件夹名！",
-        });
-        return;
-      }
-      saveFolder(this.folderForm).then((resp) => {
-        var childData = {
-          id: resp.data,
-          label: this.folderForm.folderName,
-          pid: this.folderForm.parentFolderUuid,
-          type: "FOLDER",
-          extMap: {
-            folder_type: "maintained",
-          },
-        };
-        this.$refs.tree2.append(childData, this.parentNode);
-        this.$notify(commonNotify({ type: "success", message: "创建成功！" }));
-        this.folderFormVisible = false;
-      });
-    },
-    updateFolder () {
-      if (
-        this.folderForm.folderName == null ||
-        this.folderForm.folderName.trim().length == 0
-      ) {
-        this.$message({
-          type: "info",
-          message: "文件夹名不可为空，请重新输入文件夹名！",
-        });
-        return;
-      }
-      updateFolder(this.folderForm).then((resp) => {
-        this.tempData.label = this.folderForm.folderName;
-        this.$refs.tree2.updateKeyChildren(
-          this.folderForm.folderUuid,
-          this.tempData
-        );
-        this.folderFormVisible = false;
-        // 更新树
-        this.refreshNodeBy("ROOT");
-      });
-    },
-    handleSelectChange (val) { },
-    removeTable () {
-      var ids = this.$refs.tree2.getCheckedKeys();
-      delTable(ids.join(",")).then((resp) => {
-        this.$notify(
-          commonNotify({
-            type: "success",
-            message: `成功移除${ids.length}张表`,
-          })
-        );
-        ids.forEach((id) => {
-          this.$refs.tree2.remove({ id: id });
-        });
-      });
-    },
+
 
     // ································
 
@@ -1766,39 +1311,26 @@ export default {
       return createTimeRow;
     },
     // 选择数据源
-    selectdata (val) {
-      this.query.dataSource = val;
-      if (this.activeName == "0") {
-        // 系统
-        this.post_getBusinessSystemTree(); //系统
-      } else if (this.activeName == "1") {
-        // 主题
-        this.post_getThemeTree(); //主题
-      } else if (this.activeName == "2") {
-        // 分层
-        this.post_getLayeredTree(); //分层
-      } else {
-        // 目录
-        this.post_getDataTreeNode(); //目录
-      }
-    },
+    // selectdata (val) {
+    //   this.query.dataSource = val;
+    //   if (this.activeName == "0") {
+    //     // 系统
+    //     this.post_getBusinessSystemTree(); //系统
+    //   } else if (this.activeName == "1") {
+    //     // 主题
+    //     this.post_getThemeTree(); //主题
+    //   } else if (this.activeName == "2") {
+    //     // 分层
+    //     this.post_getLayeredTree(); //分层
+    //   } else {
+    //     // 目录
+    //     this.post_getDataTreeNode(); //目录
+    //   }
+    // },
     // 注册资产
     registTable () {
-      // var ckFolder = this.$refs.tree2.getCurrentNode();
-      // //  return;
-      // if (!ckFolder || ckFolder.type !== "FOLDER") {
-      //   this.$notify(
-      //     commonNotify({ type: "warning", message: "请选中文件夹" })
-      //   );
-      //   return false;
-      // }
       this.registTableFlag = true;
 
-      // this.$nextTick(() => {
-      //   if (this.$refs.tree1) {
-      //     this.$refs.tree1.clearSelection();//清空选择的责任人
-      //   }
-      // })
 
       this.getTables();
     },
@@ -2026,7 +1558,7 @@ export default {
 
     // 下一步的关闭
     close_diag () {
-      // this.dialogVisible_information = false;
+      this.dialogVisible_information = false;
       this.chooseTables = []; //传输的数据
     },
 
@@ -2197,19 +1729,6 @@ export default {
 
     },
 
-    // 右侧表单
-    // 多选
-    // handleSelectionChange (val) {
-    //   this.Selectval = val;
-    // },
-
-    /**
-     * 当多选框改变时触发
-     */
-    // handleSelectionChange (val) {
-    //   this.selectValue = val
-    // },
-
     // 分页
     handleCurrent (val) {
       this.query.pageNo = val;
@@ -2230,69 +1749,17 @@ export default {
 .right_conter {
   min-width: 900px;
 }
-.loadings {
-  /* position: absolute;
-  left: 0;
-  bottom: 0; */
-  height: calc(100% - 160px);
-  width: 100%;
-  z-index: 9;
-  background: rgba(106, 106, 106, 0.0862745098);
-  border-radius: 15.5px;
-}
-.conter_loadings {
-  width: 100%;
-  height: 100%;
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: blur(10px);
-  background-color: rgba(255, 255, 255, 0.7);
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.left_conter {
+  height: calc(100vh - 140px);
 }
-.loadings span {
-  width: 60px;
-}
-.loadings span img {
-  width: 100%;
-}
-
 .page-container {
   display: flex;
   padding: 0 !important;
 }
-.page-container .tree-containerall {
-  height: 100%;
-  overflow-x: auto;
-}
 
 .dlag_width >>> .el-dialog {
   min-width: 600px !important;
-}
-/* .left_conter {
-  position: relative;
-} */
-.dataSource >>> .el-form-item {
-  display: flex;
-  width: 100%;
-}
-.conter_vh {
-  height: calc(100vh - 280px);
-}
-
-.left_conter >>> .el-tabs__header {
-  margin: 0;
-}
-.left_conter >>> .el-tabs__item {
-  width: 25%;
-  text-align: center;
-}
-.left_conter >>> .el-tabs--card > .el-tabs__header .el-tabs__item.is-active {
-  border-bottom-color: transparent;
-}
-.left_conter >>> .el-tabs__nav {
-  width: 100%;
 }
 
 .data_res >>> .el-form {
@@ -2332,6 +1799,7 @@ export default {
 }
 .son_check >>> .el-button {
   margin-left: 10px;
+  height: 36px !important;
 }
 
 .table {
@@ -2415,7 +1883,11 @@ export default {
 //   overflow: auto;
 //   border: 1px solid greenyellow;
 // }
-
+// 选择注册表
+.containerselect {
+  height: 400px;
+  overflow: auto;
+}
 .transfer-center-item {
   width: 40px;
   margin: 2px;

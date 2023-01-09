@@ -1,108 +1,123 @@
 <template>
-  <div
-    class="left-menu relative flex a-center flex-cow j-between"
-    @mouseleave="menuLeave()"
-  >
+  <div class="left-menu relative flex a-center flex-cow j-between"
+       @mouseleave="menuLeave()">
     <template>
       <div class="top-open flex flex-row a-center">
-        <div class="logo-icon" @click="jumpHome">
+        <div class="logo-icon"
+             @click="jumpHome">
           <!-- <img  src="../../../../assets/img/logo1.png" alt=""> -->
-          <img src="../../../../assets/img/login-logo.png" alt="">
+          <img src="../../../../assets/img/login-logo.png"
+               alt="">
         </div>
         <div class="menu flex a-center j-between flex-row">
           <div class="list flex a-center j-between flex-row">
-            <div class="box flex a-center j-center flex-row box-new" :class="[currentIndex === 0 && 'box-active']" @click="selectMenu({}, 0)"><div class="name">首页</div></div>
+            <div class="box flex a-center j-center flex-row box-new"
+                 :class="[currentIndex === 0 && 'box-active']"
+                 @click="selectMenu({}, 0)">
+              <div class="name">首页</div>
+            </div>
             <!-- <div class="box flex a-center j-center flex-row box-active" ><div class="name">审计分析</div></div> -->
-            <div
-              v-for="(item, index) in applications"
-              ref="navDom"
-              :key="index"
-              class="box flex a-center j-center flex-row relative box-new"
-              :class="[currentIndex === (index+1) && 'box-active']"
-              @click="selectMenu(item, (index+1))"
-            >
+            <div v-for="(item, index) in applications"
+                 ref="navDom"
+                 :key="index"
+                 class="box flex a-center j-center flex-row relative box-new"
+                 :class="[currentIndex === (index+1) && 'box-active']"
+                 @click="selectMenu(item, (index+1))">
               <div class="name">{{ item.name }}</div>
               <div class="tree-list-new-box">
-                <div
-                    class="tree-list-content tree-list-back tree-list-new"
-                >
-                  <menu-tree
-                      :list="moremenugroup[index]"
-                      @closetree="isShrink = true"
-                      @click="selectMenu(item, index)"
-                  />
+                <div class="tree-list-content tree-list-back tree-list-new">
+                  <menu-tree :list="moremenugroup[index]"
+                             @closetree="isShrink = true"
+                             @click="selectMenu(item, index)" />
                 </div>
               </div>
             </div>
-            <div class="box flex a-center j-center flex-row box-new" :class="[currentIndex === 'todo' && 'box-active']" @click="selectMenu({}, 'todo')">
-              <el-badge :value="getToDoNum" v-if="getToDoNum>0"  :max="99">
-               <div class="name">我的待办</div>
+            <div class="box flex a-center j-center flex-row box-new"
+                 :class="[currentIndex === 'todo' && 'box-active']"
+                 @click="selectMenu({}, 'todo')">
+              <el-badge :value="getToDoNum"
+                        v-if="getToDoNum>0"
+                        :max="99">
+                <div class="name">我的待办</div>
               </el-badge>
-              <div class="name" v-else>我的待办</div>
+              <div class="name"
+                   v-else>我的待办</div>
             </div>
           </div>
-<!--          <div class="tree-out-box absolute" v-if="isShowTreeList">-->
-<!--            <transition-->
-<!--              name="slide-fade"-->
-<!--              v-for="(item, index) in applications"-->
-<!--              :key="index"-->
-<!--            >-->
-<!--              <div-->
-<!--                -->
-<!--                class="tree-list"-->
-<!--                @mouseover="selectMenu(item, (index+1))"-->
-<!--              >-->
-<!--                <div-->
-<!--                  class="tree-list-content"-->
-<!--                  :class="[currentIndex === (index+1) && 'tree-list-back']"-->
-<!--                >-->
-<!--                  <p class="tree-list-tit"><img src="../../../../assets/img/sjfx.png"><span>{{applications[index].name}}</span></p>-->
-<!--                  <menu-tree-->
-<!--                    :list="moremenugroup[index]"-->
-<!--                    @closetree="isShrink = true"-->
-<!--                    @click="selectMenu(item, (index+1))"-->
-<!--                  />-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </transition>-->
-<!--          </div>-->
-
+          <!--          <div class="tree-out-box absolute" v-if="isShowTreeList">-->
+          <!--            <transition-->
+          <!--              name="slide-fade"-->
+          <!--              v-for="(item, index) in applications"-->
+          <!--              :key="index"-->
+          <!--            >-->
+          <!--              <div-->
+          <!--                -->
+          <!--                class="tree-list"-->
+          <!--                @mouseover="selectMenu(item, (index+1))"-->
+          <!--              >-->
+          <!--                <div-->
+          <!--                  class="tree-list-content"-->
+          <!--                  :class="[currentIndex === (index+1) && 'tree-list-back']"-->
+          <!--                >-->
+          <!--                  <p class="tree-list-tit"><img src="../../../../assets/img/sjfx.png"><span>{{applications[index].name}}</span></p>-->
+          <!--                  <menu-tree-->
+          <!--                    :list="moremenugroup[index]"-->
+          <!--                    @closetree="isShrink = true"-->
+          <!--                    @click="selectMenu(item, (index+1))"-->
+          <!--                  />-->
+          <!--                </div>-->
+          <!--              </div>-->
+          <!--            </transition>-->
+          <!--          </div>-->
 
         </div>
 
       </div>
       <div class="flex a-center">
         <!-- 搜索和功能按钮 -->
-        <div class="search-btn-box flex a-center j-end" >
-          <div class="search-box flex a-center j-between" @click="jumpToFullSearch">
-            <el-input v-model="search" placeholder="搜索"></el-input>
+        <div class="search-btn-box flex a-center j-end">
+          <div class="search-box flex a-center j-between"
+               @click="jumpToFullSearch">
+            <el-input v-model="search"
+                      placeholder="搜索"></el-input>
             <img src="../../../../assets/img/search.png">
           </div>
-          <el-badge  class="badge-icon" :value="UditNum"  v-if="UditNum>0" :max="99">
-            <img src="../../../../assets/img/activity.png" @click="jumptTo('/base/remind', '消息列表')">
+          <el-badge class="badge-icon"
+                    :value="UditNum"
+                    v-if="UditNum>0"
+                    :max="99">
+            <img src="../../../../assets/img/activity.png"
+                 @click="jumptTo('/base/remind', '消息列表')">
           </el-badge>
-          <img src="../../../../assets/img/activity.png" class="badge-icon" @click="jumptTo('/base/remind')" v-else>
+          <img src="../../../../assets/img/activity.png"
+               class="badge-icon"
+               @click="jumptTo('/base/remind')"
+               v-else>
           <!-- runStatus：1、待运行；2、运行中；3、运行成功；4、运行失败 -->
           <div class="task-box">
-            <img @click="jumptTo('/base/querytask', '任务列表')" class="search-icon" src="../../../../assets/img/task-queue.png">
-            <span class="runStatus-icon run-successfully-icon" v-if="runStatus == 3"></span>
-            <span class=" run-failed-icon" v-if="runStatus == 4">！</span>
-            <span class="runStatus-icon runing-icon" v-if="runStatus == 2"></span>
+            <img @click="jumptTo('/base/querytask', '任务列表')"
+                 class="search-icon"
+                 src="../../../../assets/img/task-queue.png">
+            <span class="runStatus-icon run-successfully-icon"
+                  v-if="runStatus == 3"></span>
+            <span class=" run-failed-icon"
+                  v-if="runStatus == 4">！</span>
+            <span class="runStatus-icon runing-icon"
+                  v-if="runStatus == 2"></span>
             <!-- <img src="">  -->
           </div>
-          
+
           <!-- runStatus -->
         </div>
         <!-- 用户名及菜单 -->
         <div class="bottom-open flex a-center j-end flex-row">
-          <div
-            class="footer-btns flex a-center j-end flex-row"
-            @click="isShowSettingList = !isShowSettingList"
-          >
+          <div class="footer-btns flex a-center j-end flex-row"
+               @click="isShowSettingList = !isShowSettingList">
             <!-- <i class="shrink-btn icon iconfont iconleft-1" @click="isShrink=false" /> -->
             <!--          <i class="setting-btn icon iconfont iconmenu-2 setting-btn-right" @click="widthChange" />-->
             <div class="label-wang">
-              <i class="label-wang-in" v-if="isThereReminder"></i>
+              <i class="label-wang-in"
+                 v-if="isThereReminder"></i>
               <!-- <img v-if="isThereReminder" src="../../../../assets/img/user.png"> -->
             </div>
             <span class="label-word">{{ $store.getters.name }}</span>
@@ -116,77 +131,69 @@
         </div>
       </div>
     </template>
-     <!-- v-if="isShowSettingList" -->
+    <!-- v-if="isShowSettingList" -->
     <!-- 点击显示菜单修改为划过显示菜单 -->
     <transition name="setting-fade">
-      <div
-        v-if="isShowSettingList"
-        class="setting-list absolute"
-        @click="isShowSettingList = !isShowSettingList"
-        @mouseleave="isShowSettingList = false"
-      >
+      <div v-if="isShowSettingList"
+           class="setting-list absolute"
+           @click="isShowSettingList = !isShowSettingList"
+           @mouseleave="isShowSettingList = false">
         <div class="setting-list-content">
-          <div
-            v-for="(item, index) in settingList"
-            :key="index"
-            class="setting-list-line flex flex-row a-center j-start"
-          >
+          <div v-for="(item, index) in settingList"
+               :key="index"
+               class="setting-list-line flex flex-row a-center j-start">
             <!-- <i v-if="index == 0" class="el-icon-info icon" />
             <i v-else-if="index == 1" class="el-icon-question icon" />
             <i v-else-if="index == 2" class="el-icon-s-tools icon" />
             <i v-else class="el-icon-error icon" />  -->
-            <div class="name-box" @click="item.method">
+            <div class="name-box"
+                 @click="item.method">
               <span>{{ item.name }}</span>
-              <span
-                v-if="item.count"
-                class="count"
-                :class="[
+              <span v-if="item.count"
+                    class="count"
+                    :class="[
                   index === 0 ? 'count-red' : index === 1 ? 'count-green' : '',
-                ]"
-                >{{ item.count }}</span
-              >
+                ]">{{ item.count }}</span>
             </div>
           </div>
         </div>
       </div>
     </transition>
     <transition name="showAnimation">
-      <div v-if="isShowToolsList" class="tools-list">
+      <div v-if="isShowToolsList"
+           class="tools-list">
         <tools-template-update @func="showWith" />
       </div>
     </transition>
-    <div class="page-left" v-if="showHelpWidth">
-      <el-collapse class="tools-menu-small" v-model="activeName" accordion>
-        <el-collapse-item
-          v-for="(item, index) in moremenugroupId"
-          :title="item.name"
-          :name="index"
-        >
-          <el-tree
-            :data="moremenugroup[index]"
-            node-key="id"
-            @node-click="handleNodeClick"
-            ref="tree"
-            highlight-current
-            v-if="activeName === index"
-            :props="defaultProps"
-          >
+    <div class="page-left"
+         v-if="showHelpWidth">
+      <el-collapse class="tools-menu-small"
+                   v-model="activeName"
+                   accordion>
+        <el-collapse-item v-for="(item, index) in moremenugroupId"
+                          :title="item.name"
+                          :name="index">
+          <el-tree :data="moremenugroup[index]"
+                   node-key="id"
+                   @node-click="handleNodeClick"
+                   ref="tree"
+                   highlight-current
+                   v-if="activeName === index"
+                   :props="defaultProps">
           </el-tree>
         </el-collapse-item>
       </el-collapse>
     </div>
-    <div
-      class="page-close"
-      v-if="showHelpWidth"
-      @click="(showHelpWidth = false), (showHelpHeight = false)"
-    ></div>
-    <div
-      class="readonlyTo"
-      v-if="showHelpWidth && showHelpHeight"
-      v-loading="loading"
-    >
-      <div @click="showHelpHeight = false" class="readonlyToX">X</div>
-      <div class="readonlyChild" id="readonlyChild"></div>
+    <div class="page-close"
+         v-if="showHelpWidth"
+         @click="(showHelpWidth = false), (showHelpHeight = false)"></div>
+    <div class="readonlyTo"
+         v-if="showHelpWidth && showHelpHeight"
+         v-loading="loading">
+      <div @click="showHelpHeight = false"
+           class="readonlyToX">X</div>
+      <div class="readonlyChild"
+           id="readonlyChild"></div>
     </div>
   </div>
 </template>
@@ -198,11 +205,11 @@ import { cacheDict } from "@/api/base/sysdata.js";
 import { getUnReadRemind, getUditDataList } from "@/api/base/base";
 import { querySystemTask } from "@/api/base/systemtask";
 import { getByMenuId, saveHelpDocument } from "@/api/base/helpdocument";
-import {getAllRunTaskRel} from "@/api/analysis/auditmodelresult"
+import { getAllRunTaskRel } from "@/api/analysis/auditmodelresult"
 import { mapGetters } from "vuex";
 export default {
   components: { MenuTree },
-  data() {
+  data () {
     return {
       currentIndex: -1,
       websocket: null,
@@ -264,17 +271,17 @@ export default {
   },
   computed: {
     ...mapGetters(["getToDoNum"]),
-    leftWidth() {
+    leftWidth () {
       return this.isShrink ? 64 : 120;
     },
-    currentMenuGroup() {
+    currentMenuGroup () {
       if (this.applications.length === 0) {
         return [];
       }
       const appid = this.applications[this.currentIndex].id;
       return this.menugroup[appid];
     },
-    getPersonUuid() {
+    getPersonUuid () {
       return this.$store.getters.personuuid;
     },
     // isShowTreeList(){
@@ -288,16 +295,16 @@ export default {
       },
       immediate: true,
     },
-    currentIndex() {
+    currentIndex () {
       this.currentIndexChange();
     },
-    getPersonUuid(newv, oldv) {
+    getPersonUuid (newv, oldv) {
       if (newv && newv != "") {
         this.webSocket = this.getWebSocket(newv);
       }
     },
     $route: {
-      handler(val, oldval) {
+      handler (val, oldval) {
         if (oldval.path == "/login") {
           this.initmounted()
         }
@@ -306,32 +313,32 @@ export default {
       deep: true,
     },
   },
-  created() {
+  created () {
     // 页面刚进入时开启长连接
     this.init();
     if (this.getPersonUuid) {
       this.webSocket = this.getWebSocket(this.getPersonUuid);
     }
   },
-  mounted() {
+  mounted () {
     this.initmounted()
     // 获取项目列表
     // this.getMyProjectPage();
 
     // 青海VUE_APP_BASE_QUERYMENU为true不请求顶部消息信息和跑批状态
     // if (!process.env.VUE_APP_BASE_QUERYMENU) {
-      // 获取未读消息个数
-      this.getUditDataNum();
-      // 获取跑批状态
-      this.getRunBatchStatus();
+    // 获取未读消息个数
+    this.getUditDataNum();
+    // 获取跑批状态
+    this.getRunBatchStatus();
     // }
   },
   methods: {
-    initmounted() {
+    initmounted () {
       // // 青海VUE_APP_BASE_QUERYMENU为true不请求菜单
-      // console.log("=========" + process.env.VUE_APP_BASE_QUERYMENU)
+      // 
       // if (!process.env.VUE_APP_BASE_QUERYMENU) {
-      console.log("menu left-menu.vue")
+
       // if (this.hasMenu && this.CommonUtil.isBlank(sessionStorage.getItem('shenjiMenuTree'))) {
       if (this.hasMenu) {
 
@@ -371,17 +378,17 @@ export default {
           for (let i = 0; i < this.applications.length; i++) {
             sSTree.push(this.menugroup[this.applications[i].id]);
           }
-          let sSLTree = {first: this.applications, second: sSTree};
+          let sSLTree = { first: this.applications, second: sSTree };
           sessionStorage.setItem("shenjiMenuTree", JSON.stringify(sSLTree));
-          this.$store.dispatch('app/setMenuData',sSLTree )
+          this.$store.dispatch('app/setMenuData', sSLTree)
           let listTree = JSON.parse(sessionStorage.getItem("shenjiMenuTree"));
           this.moremenugroup = listTree.second;
           this.moremenugroupId = listTree.first;
         })
-                .catch((error) => {
-                  this.applications = []
-                  console.error(error);
-                });
+          .catch((error) => {
+            this.applications = []
+
+          });
       }
       // }
       if (this.CommonUtil.isBlank(sessionStorage.getItem('sysDict'))) {
@@ -403,8 +410,8 @@ export default {
         }
       });
     },
-    init() {
-      querySystemTask().then((resp) => {});
+    init () {
+      querySystemTask().then((resp) => { });
     },
     /* initWebSocket() {
       this.webSocket = this.getWebSocket()
@@ -415,7 +422,7 @@ export default {
      * 1、WebSocket客户端通过回调函数来接收服务端消息。例如：webSocket.onmessage
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
-    getWebSocket(personuuid) {
+    getWebSocket (personuuid) {
       const wsuri =
         this.AmsWebsocket.getWSBaseUrl(this.AmsModules.BASE) +
         personuuid +
@@ -423,12 +430,12 @@ export default {
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(wsuri); // 建立与服务端的连接
       // 当服务端打开连接
-      this.webSocket.onopen = function (event) {};
+      this.webSocket.onopen = function (event) { };
       // 发送消息
       this.webSocket.onmessage = function (event) {
         func1(event);
       };
-      const func2 = function func3(val) {
+      const func2 = function func3 (val) {
         var dataObj = JSON.parse(val.data);
         if (dataObj.taskStatus === "2" || dataObj.taskStatus === 2) {
           let html = "";
@@ -459,13 +466,13 @@ export default {
       // this.webSocket.onclose = function(event) {
       // }
       // 通信失败
-      this.webSocket.onerror = function (event) {};
+      this.webSocket.onerror = function (event) { };
     },
-    currentIndexChange() {
+    currentIndexChange () {
       // const dis = this.isShrink ? 110 : 120
       // this.$nextTick(() => {
       //   const offset = this.$refs.navDom[this.currentIndex].offsetTop - dis
-      //   console.log(offset)
+      //   
       //   this.scrollTop = {
       //     allowScroll: true,
       //     offset: offset,
@@ -479,18 +486,18 @@ export default {
     //   //this.isShrink = false
     //   this.isShowTreeList = true
     // },
-    menuLeave() {
+    menuLeave () {
       this.currentIndex = -1;
       this.isShowTreeList = false;
       this.isShowSettingList = false;
     },
-    getStyle(img) {
+    getStyle (img) {
       return {
         background: `url(${img}) no-repeat center center`,
         "background-size": "100% 100%",
       };
     },
-    selectMenu(app, index) {
+    selectMenu (app, index) {
       this.currentIndex = index;
       if (index != 0 && index != 'todo') {
         this.isShowTreeList = true;
@@ -505,7 +512,7 @@ export default {
         //   const boxActive = document.getElementsByClassName('tree-out-box')[0];
         //   boxActive.style.paddingLeft=_offsetLeft+"px";
         // })
-      } else if(index == 0 ) { // 首页
+      } else if (index == 0) { // 首页
         this.isShowTreeList = false;
         this.$router.push({ path: '/ams/first' })
         this.$store.commit('aceState/setRightFooterTags', {
@@ -522,9 +529,9 @@ export default {
       // this.isShowTreeList = true;
       this.isShowSettingList = false;
       this.nowAppName = app.name;
-      this.isShowToolsList = false;   
+      this.isShowToolsList = false;
     },
-    action(type) {
+    action (type) {
       if (type === "prev") {
         this.currentIndex = this.currentIndex === 0 ? 0 : this.currentIndex - 1;
       } else if (type === "next") {
@@ -534,10 +541,10 @@ export default {
             : this.currentIndex + 1;
       }
     },
-    jumpHome() {
+    jumpHome () {
       this.$router.push({ path: "/ams/first" });
     },
-    getCleanSrc(src) {
+    getCleanSrc (src) {
       if (src.indexOf("&resUUID") !== -1) {
         src = src.split("&resUUID")[0];
       } else if (src.indexOf("?resUUID") !== -1) {
@@ -545,7 +552,7 @@ export default {
       }
       return src;
     },
-    async logout() {
+    async logout () {
       sessionStorage.clear();
       localStorage.clear();
       await this.$store.dispatch("user/logout");
@@ -555,22 +562,22 @@ export default {
         val: "",
       });
     },
-    goresetpassword() {
+    goresetpassword () {
       this.$router.push({ path: "/repassword" });
     },
-    logoutRemind() {
+    logoutRemind () {
       this.$router.push({ path: "/base/remind" });
     },
-    todowork() {
+    todowork () {
       this.$router.push({ path: "/base/frameto?url=%2Famis%2FworkBench%2FtoApplyMes" });
     },
-    showWith(obj) {
+    showWith (obj) {
       this.isShowToolsList = obj;
     },
-    widthChange() {
+    widthChange () {
       this.isShrink = !this.isShrink;
     },
-    selectMenuIn() {
+    selectMenuIn () {
       this.$store.commit("aceState/setRightFooterTags", {
         type: "closeAll",
         val: "",
@@ -579,18 +586,18 @@ export default {
         path: this.applications[0].homepage || "/nopermission",
       });
     },
-    showHelp() {
+    showHelp () {
       this.showHelpWidth = !this.showHelpWidth;
     },
     // 父节点不可选中
-    ifFather(data) {
+    ifFather (data) {
       if (data.children) {
         return true;
       } else {
         return false;
       }
     },
-    handleNodeClick(data) {
+    handleNodeClick (data) {
       if (data.id <= 1000) {
       } else {
         this.loading = true;
@@ -622,7 +629,7 @@ export default {
     },
     // 获取报批状态
     getRunBatchStatus () {
-      getAllRunTaskRel().then(resp=>{
+      getAllRunTaskRel().then(resp => {
         let runBatchList = resp.data;
         let runStatusList = runBatchList.map(i => {
           return i.runStatus
@@ -638,7 +645,7 @@ export default {
         let runSuccessfully = runStatusList.some(i => {
           return i == 3
         })
-        
+
         if (RunFailed) {
           this.runStatus = 4;
         } else if (operation) {
@@ -652,8 +659,8 @@ export default {
       this.$router.push({ path: path });
     },
     jumpToFullSearch () {
-      console.log('跳转')
-      this.$router.push({ path: '/base/frameto?url=%2Famis%2FsolrCall%2FtoList'});
+
+      this.$router.push({ path: '/base/frameto?url=%2Famis%2FsolrCall%2FtoList' });
     }
   },
 };
@@ -670,7 +677,7 @@ export default {
   border-bottom-right-radius: 30px;
   background: #e0eaf3;
   // box-shadow: 7px 5px 14px 0px #dde8f1;
-  box-shadow: 0px 10px 20px 0px #dfe8f1;    /*下边阴影  黄色*/
+  box-shadow: 0px 10px 20px 0px #dfe8f1; /*下边阴影  黄色*/
   border-bottom: 1.5px solid #dde6f0;
 
   .top-open {
@@ -694,7 +701,7 @@ export default {
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .logo-icon{
+    .logo-icon {
       margin-left: 30px;
       margin-left: 16px;
       img {
@@ -702,7 +709,6 @@ export default {
         height: 41px;
         cursor: pointer;
       }
-
     }
     .logo-wrap {
       // margin-right: 200px;
@@ -724,7 +730,7 @@ export default {
         margin: 10px 0;
         max-height: 415px;
         margin-left: 10px;
-        perspective:500px;
+        perspective: 500px;
         //overflow-y: auto;
         &::-webkit-scrollbar {
           width: 0;
@@ -740,7 +746,7 @@ export default {
           color: #303030;
           padding: 8px 20px;
           // transition: 0.5s;
-          color: #31456A;
+          color: #31456a;
           .img {
             width: 26px;
             height: 26px;
@@ -749,26 +755,24 @@ export default {
           .name {
             font-family: PingFangHK-Semibold;
             font-size: 14px;
-           
+
             letter-spacing: 0.3px;
             text-align: center;
             font-weight: 600;
             // line-height: 14px;
             min-width: 58px;
           }
-          
+
           &-active {
             // background: #E3EDF7;
             // background: radial-gradient(7px at top left, #bbcddb , #e3edf7);
             // box-shadow: inset -6px -3px 3px 0px rgba(255,255,255,1);
             // background: -webkit-radial-gradient(top left, circle, transparent 70%, #2d85ff 30%);
 
-
-
-
-            color: #529ED4;
+            color: #529ed4;
             border-radius: 4px;
-            background: url('../style/images/box-active.png') no-repeat top center;
+            background: url("../style/images/box-active.png") no-repeat top
+              center;
             background-size: container; // 最长边完全显示
             // background-attachment:fixed; /*背景图片不会随着页面的滚动而滚动。*/
           }
@@ -780,7 +784,7 @@ export default {
     margin-right: 47px;
     .search-box {
       cursor: pointer;
-      border: 1px solid rgba(77,148,199,1);
+      border: 1px solid rgba(77, 148, 199, 1);
       border-radius: 10px;
       width: 200px;
       height: 38px;
@@ -789,23 +793,23 @@ export default {
       // box-shadow:-10px 0px 2px -15px #fff inset,   /*左边阴影*/
       //       0px -10px 2px -15px #fff inset,  /*上边阴影*/
       //       10px 0px 2px -15px  #bed2e5 inset,  /*右边阴影*/
-      //       0px 10px 2px -15px #bed2e5 inset; /*下边阴影*/ 
+      //       0px 10px 2px -15px #bed2e5 inset; /*下边阴影*/
       ::v-deep .el-input {
         border: none;
         flex: 1;
         .el-input__inner {
           padding: 0;
-          border:none;
+          border: none;
           cursor: pointer !important;
           &::placeholder {
             font-size: 12px;
-            color: #7B8499;
+            color: #7b8499;
             letter-spacing: 0.26px;
             line-height: 14px;
             font-weight: 400;
           }
-          &:focus{
-            border:none;
+          &:focus {
+            border: none;
           }
         }
       }
@@ -813,7 +817,6 @@ export default {
         width: 18px;
         cursor: pointer;
       }
-      
     }
     .search-icon {
       color: #abc4df;
@@ -827,7 +830,6 @@ export default {
       margin-top: 4px;
     }
     .runStatus-icon {
-     
       // box-shadow: 3px 0px 3px 0px rgba(254,254,254,1), 0px 1px 5px 0px rgba(155,187,216,1);
       width: 5px;
       height: 5px;
@@ -836,11 +838,10 @@ export default {
       margin-left: 3px;
     }
     .runing-icon {
-      background-image: linear-gradient(180deg, #FFCB4A 0%, #FA6F3E 100%);
+      background-image: linear-gradient(180deg, #ffcb4a 0%, #fa6f3e 100%);
     }
     .run-successfully-icon {
-      background-image: linear-gradient(180deg, #70DA8A 0%, #1AB47F 100%);
-
+      background-image: linear-gradient(180deg, #70da8a 0%, #1ab47f 100%);
     }
     .run-failed-icon {
       // background: red;
@@ -848,10 +849,13 @@ export default {
       font-weight: 900;
       font-size: 20px;
       vertical-align: middle;
-      background-image:-webkit-linear-gradient(180deg,#fa5c88 0%,#dd292b 100%); 
-      -webkit-background-clip:text; 
-      -webkit-text-fill-color:transparent; 
-      
+      background-image: -webkit-linear-gradient(
+        180deg,
+        #fa5c88 0%,
+        #dd292b 100%
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .badge-icon {
@@ -938,10 +942,11 @@ export default {
     top: 72px;
     z-index: 20201231;
     .setting-list-content {
-      background: #E3EDF7;
+      background: #e3edf7;
       border: none;
       border-radius: 6px !important;
-      box-shadow: -7px -5px 25px 2px rgba(255,255,255,1),7px 5px 25px 2px rgba(211,224,236,1);
+      box-shadow: -7px -5px 25px 2px rgba(255, 255, 255, 1),
+        7px 5px 25px 2px rgba(211, 224, 236, 1);
     }
     &-line {
       padding-left: 45px;
@@ -949,15 +954,18 @@ export default {
       height: 32px;
       font-family: PingFangHK-Regular;
       font-size: 10px;
-      color: #31456A;
+      color: #31456a;
       letter-spacing: 0.21px;
       line-height: 30px;
-      font-weight: 400; 
+      font-weight: 400;
       &:hover {
-        box-shadow: 0px -5px 15px 0px rgba(255,255,255,1),0px 5px 15px 0px rgba(255,255,255,1),0px 0px 0px 0px rgba(255,255,255,1),0px 0px 0px 0px rgba(255,255,255,1);
-        transform:translate3d(0, 0, 0);
-        position:relative;
-        z-index:100;
+        box-shadow: 0px -5px 15px 0px rgba(255, 255, 255, 1),
+          0px 5px 15px 0px rgba(255, 255, 255, 1),
+          0px 0px 0px 0px rgba(255, 255, 255, 1),
+          0px 0px 0px 0px rgba(255, 255, 255, 1);
+        transform: translate3d(0, 0, 0);
+        position: relative;
+        z-index: 100;
       }
       // &:first-child:hover {
       //   box-shadow: 0px 0px 0px 0px rgba(255,255,255,1),0px 5px 15px 0px rgba(255,255,255,1);
@@ -980,9 +988,9 @@ export default {
           // color: #ffffff;
           // letter-spacing: 0.75px;
           // border-radius: 7px;
-  
+
           border-radius: 10px;
-          color: #FFFFFF;
+          color: #ffffff;
           display: inline-block;
           font-size: 10px;
           height: 16px;
@@ -990,7 +998,7 @@ export default {
           padding: 0 5px;
           text-align: center;
           white-space: nowrap;
-          border: 1px solid #FFFFFF;
+          border: 1px solid #ffffff;
 
           &-red {
             background: red;
@@ -1013,31 +1021,33 @@ export default {
     border-top: none !important;
     min-height: 570px;
     opacity: 0.94;
-    background-image: linear-gradient(180deg, #CFE1F3 0%, #FAFCFE 100%);
-    box-shadow: -7px -5px 15px 0px rgba(255,255,255,1);
+    background-image: linear-gradient(180deg, #cfe1f3 0%, #fafcfe 100%);
+    box-shadow: -7px -5px 15px 0px rgba(255, 255, 255, 1);
   }
   .tree-list {
     height: 530px;
     width: 230px;
     // opacity: 0.5;
-    background: #E3EDF7;
-    background: #FFFFFF;
+    background: #e3edf7;
+    background: #ffffff;
     background: #ebf2fa;
-    box-shadow: 5px 8px 14px 0px rgba(220,235,251,1),-7px -5px 15px 0px rgba(255,255,255,1);
+    box-shadow: 5px 8px 14px 0px rgba(220, 235, 251, 1),
+      -7px -5px 15px 0px rgba(255, 255, 255, 1);
     border-radius: 5px;
     margin-left: 20px;
-    margin-top:8px;
+    margin-top: 8px;
     color: #434851;
     &-back {
       // box-shadow: 0 4px 10px 0 rgb(3 136 238 / 38%);
       // border-top: 2px solid;
       // z-index: 1000;
       // opacity: 0.6;
-      background: #E3EDF7;
-      background: #FFFFFF;
+      background: #e3edf7;
+      background: #ffffff;
       background: #eff5fb;
-      border: 1px solid rgba(77,148,199,0.8);
-      box-shadow: 5px 8px 14px 0px rgba(147,194,228,1),-7px -5px 15px 0px rgba(255,255,255,1);
+      border: 1px solid rgba(77, 148, 199, 0.8);
+      box-shadow: 5px 8px 14px 0px rgba(147, 194, 228, 1),
+        -7px -5px 15px 0px rgba(255, 255, 255, 1);
       border-radius: 5px;
     }
     &-content {
@@ -1049,75 +1059,76 @@ export default {
       .tree-list-tit {
         font-family: PingFang-SC-Heavy;
         font-size: 14px;
-        color: #31456A;
+        color: #31456a;
         letter-spacing: 1.03px;
         text-align: center;
-        text-shadow: 0 1px 2px #9BBBD8;
+        text-shadow: 0 1px 2px #9bbbd8;
         font-weight: 800;
         margin: 15px 0;
         opacity: 1;
         img {
-          margin-right:5px;
+          margin-right: 5px;
         }
       }
     }
-    &-new-box{
+    &-new-box {
       display: none;
       position: absolute;
       top: 29px;
-      left:-5.5vw;
-      padding-top:20px;
+      left: -5.5vw;
+      padding-top: 20px;
     }
-    &-new{
+    &-new {
       width: 16.5vw;
-      height:auto;
+      height: auto;
       max-height: 60vh;
       //background: #FFFFFF;
       //box-shadow: 5px 8px 14px 1px #DCEBFB;
       border-radius: 5px 5px 5px 5px;
       transition: display 0.3s ease;
       backdrop-filter: blur(7px) brightness(100%);
-      background-image: linear-gradient(180deg, #CFE1F3 0%, #FAFCFE 100%);
-      box-shadow: 5px 8px 14px 1px #DCEBFB;
+      background-image: linear-gradient(180deg, #cfe1f3 0%, #fafcfe 100%);
+      box-shadow: 5px 8px 14px 1px #dcebfb;
     }
   }
-  @media screen and (min-width:960px) and (max-width:1400px) {
-    .tree-list-new-box{
-      left:-4.5vw;
+  @media screen and (min-width: 960px) and (max-width: 1400px) {
+    .tree-list-new-box {
+      left: -4.5vw;
     }
   }
-  @media screen and (min-device-width:960px) and (max-device-width:1400px) {
-    .tree-list-new-box{
-      left:-4.5vw;
+  @media screen and (min-device-width: 960px) and (max-device-width: 1400px) {
+    .tree-list-new-box {
+      left: -4.5vw;
     }
   }
-  @media screen and (min-width:2000px) and (max-width:2500px) {
-    .tree-list-new-box{
-      left:-6vw;
+  @media screen and (min-width: 2000px) and (max-width: 2500px) {
+    .tree-list-new-box {
+      left: -6vw;
     }
   }
-  @media screen and (min-device-width:2000px) and (max-device-width:2500px) {
-    .tree-list-new-box{
-      left:-6vw;
+  @media screen and (min-device-width: 2000px) and (max-device-width: 2500px) {
+    .tree-list-new-box {
+      left: -6vw;
     }
   }
-  @media screen and (min-width:2500px) {
-    .tree-list-new-box{
-      left:-6.5vw;
+  @media screen and (min-width: 2500px) {
+    .tree-list-new-box {
+      left: -6.5vw;
     }
   }
-  @media screen and (min-device-width:2500px) {
-    .tree-list-new-box{
-      left:-6.5vw;
+  @media screen and (min-device-width: 2500px) {
+    .tree-list-new-box {
+      left: -6.5vw;
     }
   }
-  .box-new:hover{
-    color: #529ED4;
+  .box-new:hover {
+    color: #529ed4;
     border-radius: 4px;
-    background: url('../style/images/box-active.png') no-repeat top center;
+    background: url("../style/images/box-active.png") no-repeat top center;
     background-size: container; // 最长边完全显示
   }
-  .box-new:hover>.tree-list-new-box,.tree-list-new-box:hover{
+  .box-new:hover > .tree-list-new-box,
+  .tree-list-new-box:hover {
     display: block;
   }
   .top {
