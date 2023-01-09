@@ -45,7 +45,6 @@
                                         type="datetime"
                                         placeholder="结束时间"
                                         value-format="yyyy-MM-dd HH:mm:ss"/>
-
                             </el-form-item>
                         </el-col>
                         <el-col :span="6" style="left: 80px">
@@ -57,13 +56,10 @@
                                 <el-button type="primary"
                                            @click="clearAll()">重置
                                 </el-button>
-
                             </el-form-item>
                         </el-col>
                     </el-row>
-
                 </el-form>
-
             </div>
             <div class="padding10">
                 <div class="right_btn">
@@ -84,7 +80,6 @@
                     </el-button>
                 </div>
             </div>
-
             <el-table v-loading="listLoading"
                       :data="page_list.records"
                       fit
@@ -95,28 +90,36 @@
                 <el-table-column type="selection"
                                  width="55"/>
                 <el-table-column label="申请名称"
-                                 prop="applyName">
-                </el-table-column>
+                                 prop="applyName"
+                                 min-width="130px"
+                                 show-overflow-tooltip />
                 <el-table-column label="申请时间"
                                  :formatter="formatApplyTime"
-                                 text-align="center"
+                                 align="center"
+                                 min-width="100px"
                                  prop="applyTime"
-                />
+                                 show-overflow-tooltip />
                 <el-table-column label="当前环节"
-                                 text-align="center"
-                                 prop="currentLink"/>
+                                 align="center"
+                                 min-width="100px"
+                                 prop="currentLink"
+                                 show-overflow-tooltip />
                 <el-table-column label="上一办理人"
-                                 text-align="center"
+                                 align="center"
+                                 min-width="100px"
                                  prop=""/>
                 <el-table-column label="状态"
-                                 text-align="center"
+                                 align="center"
+                                 min-width="100px"
                                  prop="status">
                 </el-table-column>
                 <el-table-column label="申请人"
-                                 text-align="center"
+                                 align="center"
+                                 min-width="100px"
                                  prop="applyPerson"/>
                 <el-table-column label="流程查看"
-                                 text-align="center"
+                                 align="center"
+                                 min-width="100px"
                                  prop="viewProcess">
                     <template slot-scope="scope">
                         <el-link type="primary"
@@ -125,7 +128,8 @@
                     </template>
                 </el-table-column>
                 <el-table-column label="操作"
-                                 text-align="center"
+                                 align="center"
+                                 min-width="100px"
                                  prop="applyPerson">
                     <template slot-scope="scope">
                         <el-button type="primary"
@@ -143,7 +147,6 @@
                        @current-change="handleCurrentChange"
                        @size-change="handleSizeChange"
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
-
         <!-- 添加 -->
         <el-dialog :title="title"
                    class="data_res"
@@ -155,7 +158,6 @@
                      label-width="130px"
                      :model="form"
                      :inline="false">
-
                 <el-row>
                     <el-col :span="12">
                         <el-form-item label="申请名称 "
@@ -418,7 +420,6 @@
                             <el-table-column width="40px" type="selection"/>
                             <el-table-column label="序号" width="60px" align="center" prop="applyId"/>
                             <el-table-column label="表路径" align="center">
-
                             </el-table-column>
                             <el-table-column label="归档方式" width="150px" align="center" prop="createTime">
                                 <template slot-scope="scope">
