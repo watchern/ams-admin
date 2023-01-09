@@ -28,23 +28,29 @@
       <el-table-column type="selection"
                        width="55" />
       <el-table-column label="所属系统名称"
-                       width="300px"
+                       min-width="150px"
+                       prop="folderName"
                        align="center"
-                       prop="folderName" />
+                       show-overflow-tooltip />
       <el-table-column label="数据表名称"
-                       width="300px"
-                       prop="displayTbName" />
+                       min-width="150px"
+                       align="center"
+                       prop="displayTbName"
+                       show-overflow-tooltip />
       <el-table-column label="汉化表名称"
-                       width="300px"
-                       prop="chnName" />
+                       min-width="150px"
+                       align="center"
+                       prop="chnName"
+                       show-overflow-tooltip />
       <el-table-column label="创建时间"
-                       width="300px"
+                       min-width="200px"
                        align="center"
                        :formatter="formatCreateTime"
-                       prop="createTime" />
+                       prop="createTime"
+                       show-overflow-tooltip />
       <el-table-column label="操作"
                        align="center"
-                       min-width="100">
+                       min-width="150px">
         <template slot-scope="scope">
           <el-button type="primary"
                      class="oper-btn preview"
