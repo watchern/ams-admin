@@ -239,21 +239,13 @@
           <div class="padding10_l">
             <p style="text-align: center">列信息</p>
             <el-table :data="Column_table" :show-overflow-tooltip='true' style="width: 100%">
-              <el-table-column prop="date" show-overflow-tooltip label="字段名称">
-                <template slot-scope="scope">
-                  {{ scope.row.colName }}
-                </template>
+              <el-table-column prop="colName" show-overflow-tooltip label="字段名称">
               </el-table-column>
-              <el-table-column prop="address" show-overflow-tooltip label="字段类型">
-                <template slot-scope="scope">
-                  {{ scope.row.dataType }}
-                </template>
+              <el-table-column prop="chnName" show-overflow-tooltip label="字段中文名">
               </el-table-column>
-
-              <el-table-column prop="address" show-overflow-tooltip label="字段长度">
-                <template slot-scope="scope">
-                  {{ scope.row.dataLength }}
-                </template>
+              <el-table-column prop="dataType" show-overflow-tooltip label="字段类型">
+              </el-table-column>
+              <el-table-column prop="dataLength" show-overflow-tooltip label="字段长度">
               </el-table-column>
             </el-table>
           </div>
