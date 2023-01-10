@@ -32,8 +32,7 @@
     <!-- 查询 end-->
 
     <!-- 是否显示按钮 数据注册显示 -->
-    <div class="common_btn "
-         v-if="isBtn == true">
+    <div class="common_btn " v-if="isBtn == true">
       <div class="click_btn">
         <el-button type="primary">数据资源导入导出</el-button>
         <div class="show_btn">
@@ -71,7 +70,7 @@
 
       <div class="click_btn">
         <el-button type="primary"
-                   @click="Recognition()">任权管理</el-button>
+                   @click="Recognition()">认权管理</el-button>
       </div>
 
       <div class="click_btn">
@@ -252,7 +251,6 @@ export default {
     limit: {
       // 最多生成标签数量
       type: Number,
-
     },
     list: {
       type: Array,
@@ -266,9 +264,7 @@ export default {
     },
     isBtn: Boolean,
     list_loading: Boolean,
-
   },
-
   data () {
     return {
       // list_loading: false,
@@ -292,15 +288,12 @@ export default {
     // }
     // this.setLoading();
   },
-
   watch: {
     TagsAll () {
       this.$emit('on-change', this.TagsAll)
     },
     search_name (val) {
-
       this.inputLength = this.$refs.inputTag.value.length * 12 + 50;
-
     },
     itemsArr () {
       this.TagsAll = this.itemsArr.length ? this.itemsArr : []
@@ -320,26 +313,21 @@ export default {
     this.TagsAll = this.itemsArr;
   },
   methods: {
-
     // setLoading () {
     //   this.list_loading = true
     //   setTimeout(() => (this.list_loading = false), 2000)
     // },
-
-
     // 删除标签
     removeTag (index, item) {
 
       this.TagsAll.splice(index, 1)
     },
-
     //生成标签
     addTags () {
       if (this.search_name) {
         this.TagsAll.push(this.search_name);
         this.search_name = '';
       }
-
     },
     // 重置
     clear_search () {
@@ -374,7 +362,6 @@ export default {
         this.$message({ type: "warning", message: "请选择一条数据进行下载" });
       }
     },
-
     // 表关系下载模版
     down_template_table () {
       //  if (this.check_list.length !== 0) {
@@ -383,7 +370,6 @@ export default {
       //   this.$message({ type: "warning", message: "请选择一条数据进行下载" });
       // }
     },
-
     // 导入数据字典
     Importdata_dictionary () {
       // this.common_dialog = true;
@@ -431,12 +417,10 @@ export default {
         return 'DisableSelection'
       }
     },
-
     // 查看基本信息详情
     on_deails (data) {
       this.$emit("on_deails", data);
     },
-
     // 分页
     handleCurrentChange (val) {
       this.$emit("handleCurrentChange", val);
@@ -447,10 +431,8 @@ export default {
     },
     // 全选
     handleSelectionChange (val) {
-
       this.check_list = val
     },
-
   }
 }
 </script>

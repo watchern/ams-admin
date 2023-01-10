@@ -7,7 +7,6 @@
                  @queryList='query_list'></LeftTrees>
     </div>
     <!-- left_conter end-->
-
     <!-- right_conter -->
     <div class="right_conter padding10">
       <DataResourceDisplay @down_template_cn="DownTemplateCN"
@@ -940,7 +939,6 @@ export default {
   methods: {
     // 跟新关系图
     updateDetails (id) {
-
       this.tableMetaUuid = id
       this.show_details = true;
       this.isDisable_input = true;
@@ -950,7 +948,6 @@ export default {
       this.show_details = false;
       this.query_list();
     },
-
     // 数据字典导入
     ImportdataDictionary (data) {
       this.upload_title = data;
@@ -1055,13 +1052,11 @@ export default {
           link.click();
         });
     },
-
     // 上传文件信息
     fileuploadname (data) {
       // 文件名
       this.importtemp.tableFileName = data;
     },
-
     // 字典确认导入
     importTableDictionary () {
       import_dictionary(this.importtemp).then((res) => {
@@ -1083,7 +1078,6 @@ export default {
         }
       });
     },
-
     // 汉化确认导入
     importTablCn () {
       importTable(this.importtemp).then((res) => {
@@ -1105,7 +1099,6 @@ export default {
         }
       });
     },
-
     // 表关系导入
     importTableTable () {
       importTable_table(this.importtemp).then((res) => {
@@ -1152,14 +1145,12 @@ export default {
         }
       });
     },
-
     // 认权管理
     recognitionChange (data) {
       this.Recognition_check_list = data;
       this.Recognition.personName_str = "";
       this.visible_Recognition = true;
     },
-
     // 认权确认
     save_people_change () {
       //请选择认权人
@@ -1249,7 +1240,6 @@ export default {
       node.expand(); // 主动调用展开节点方法，重新查询该节点下的所有子节点
     },
     // 点击切换树 切换 表单
-
     Details (tableMetaUuid, show_details, isDisable_input) {
       this.tableMetaUuid = tableMetaUuid
       this.show_details = show_details;
@@ -1258,9 +1248,7 @@ export default {
     // 列表 接口
     query_list (data, show_details) {
       this.show_details = show_details; //显示列表
-      console.log(data);
-      this.query = data
-      console.log(this.query);
+      this.query = data;
       // this.listLoading = true;
       this.list_loading = true; //子组件loading
       let params = {
@@ -1274,12 +1262,8 @@ export default {
       };
       listByTreePage(params).then((resp) => {
         this.list_loading = false; //子组件loading
-
         this.list_data = resp.data;
         this.list = resp.data.records;
-        // console.log(this.list_data);
-        // this.listLoading = false
-        //
       });
     },
 
@@ -1288,10 +1272,6 @@ export default {
         this.$set(this.folderForm, key, null);
       });
     },
-
-
-    // ································
-
     // 时间格式化
     formatCreateTime (row, column) {
       // 拼接日期规格为YYYY-MM-DD hh:mm:ss
@@ -1330,15 +1310,12 @@ export default {
     // 注册资产
     registTable () {
       this.registTableFlag = true;
-
-
       this.getTables();
     },
     // 上一步
     step () {
       // this.registTableFlag = true;//关闭上一步
       this.dialogVisible_information = false; //关闭基本信息
-
       this.clear();
     },
     // 清除注册资产第二步的数据
@@ -1376,7 +1353,6 @@ export default {
         check_list.push(obj);
       }
       this.form.check_list = check_list;
-
       if (this.form.check_list.length !== 0) {
         // 显示保存按钮
         this.is_next = true;
@@ -1384,9 +1360,7 @@ export default {
       } else {
         this.is_next = false;
       }
-      //
     },
-
     // 注册资产 单挑数据 下一步
     next () {
       var list = [];
@@ -1408,7 +1382,6 @@ export default {
         this.form.tbName = this.Column_table_query.tbName.toString(); //表名赋值
       }
     },
-
     // 获取列信息
     post_getColsInfoByTableName () {
       let arr = [];
@@ -1438,7 +1411,6 @@ export default {
         }
       });
     },
-
     // 选择多个的情况  下一步的确认 批量多个注册
     next_save () {
       // alert('选择多个的情况 下一步的确认')
@@ -1519,7 +1491,6 @@ export default {
         // themeList//主题
       });
     },
-
     // 点击 所属目录层级联动
     handleChange (val) {
       // const checkedNode = this.$refs["cascaderArr"].getCheckedNodes();
@@ -1531,7 +1502,6 @@ export default {
       let folderUuid = val.toString();
       this.form.folderUuid = folderUuid;
     },
-
     // 格式化数据，递归将空的children置为undefined
     formatCascaderData (data) {
       for (var i = 0; i < data.length; i++) {
@@ -1550,18 +1520,15 @@ export default {
       this.$refs[form].resetFields(); //清空添加的值
       this.clear();
     },
-
     // 数据日期:
     changeRelationParam (value) {
       this.form.dataDate = value;
     },
-
     // 下一步的关闭
     close_diag () {
       this.dialogVisible_information = false;
       this.chooseTables = []; //传输的数据
     },
-
     // 下一步的保存
     save (form) {
       this.btnLoading = true;
@@ -1648,7 +1615,6 @@ export default {
         }
       });
     },
-
     // 选择责任人
     check_people () {
       this.resultShareDialogIsSee = true;
@@ -1670,7 +1636,6 @@ export default {
     handleClose (tag) {
       this.tagsarr.splice(this.tagsarr.indexOf(tag), 1);
     },
-
     // 清除多选框
     clearcheckbox () {
       this.$nextTick(() => {
@@ -1726,9 +1691,7 @@ export default {
       }
       this.show_details = true
       this.isDisable_input = false
-
     },
-
     // 分页
     handleCurrent (val) {
       this.query.pageNo = val;

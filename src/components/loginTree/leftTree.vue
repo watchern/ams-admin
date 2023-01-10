@@ -37,17 +37,12 @@
         </el-form-item>
       </el-form>
     </div>
-
-    <div v-if="loading == true"
-         class="loadings">
+    <div v-if="loading == true" class="loadings">
       <div class="conter_loadings">
-        <span><img src="@/assets/img/loading.gif"
-               alt="" /></span>
+        <span><img src="@/assets/img/loading.gif" alt="" /></span>
       </div>
     </div>
-
-    <div v-else
-         class="conter_vh">
+    <div v-else class="conter_vh">
       <!-- 系统 主题 分层  目录-->
       <div class="tree-containerall">
         <MyElTree ref="tree2"
@@ -77,37 +72,28 @@
             <i v-if="data.type === 'view'">
               <span class="icon iconfont agreeicon4"></span>
             </i>
-
             <i v-if="data.type === 'column'"
                class="el-icon-c-scale-to-original" />
             <span>{{ node.label }}</span>
             <span style="margin-left: 10px">
-              <el-button v-if="
-                      data.id === 'ROOT' ||
-                      (data.extMap && data.extMap.folder_type === 'maintained')
-                    "
+              <el-button v-if="data.id === 'ROOT' || (data.extMap && data.extMap.folder_type === 'maintained')"
                          type="text"
                          size="mini"
                          @click.stop="() => handleCreateFolder(node, data)">
                 <i class="el-icon-circle-plus" />
               </el-button>
-              <el-button v-if="
-                      data.extMap && data.extMap.folder_type === 'maintained'
-                    "
+              <el-button v-if="data.extMap && data.extMap.folder_type === 'maintained'"
                          type="text"
                          size="mini"
                          @click.stop="() => handleUpdateFolder(node, data)">
                 <i class="el-icon-edit" />
               </el-button>
               <el-button v-if="
-                      (data.extMap &&
-                        data.extMap.folder_type === 'maintained') ||
-                      data.type === 'table' ||
-                      data.type === 'view'
-                    "
-                         type="text"
-                         size="mini"
-                         @click.stop="() => handleRemove(node, data)">
+                        (data.extMap && data.extMap.folder_type === 'maintained') ||
+                        data.type === 'table' || data.type === 'view'"
+                        type="text"
+                        size="mini"
+                        @click.stop="() => handleRemove(node, data)">
                 <i class="el-icon-delete" />
               </el-button>
             </span>
@@ -152,7 +138,6 @@ export default {
       ],
       loading: true,
       tree_list: [], //左侧资料树数据结构
-
       // 资料树筛选 数据源
       query: {
         dataSource: "Postgre", //筛选条件
@@ -163,9 +148,7 @@ export default {
         tableLayeredId: "", //分层
         folderUuid: "", //目录ID
       },
-
       // tabclick: false,
-
       treeLoading: false,
       tableData: [],
       chooseTables: [],
@@ -177,11 +160,9 @@ export default {
       this.$refs.tree2.filter(val);
     },
   },
-  mounted () { },
+  mounted () {},
   created () {
     this.post_getBusinessSystemTree(); //系统
-
-
   },
   methods: {
     // 选择数据源
@@ -201,7 +182,6 @@ export default {
         this.post_getDataTreeNode(); //目录
       }
     },
-
     // 系统
     post_getBusinessSystemTree () {
       this.loading = true;
@@ -232,7 +212,6 @@ export default {
         this.tabclick = false;
       });
     },
-
     // 点击注册资源的 数据库列表
     getTables () {
       this.treeLoading = true;
@@ -246,8 +225,7 @@ export default {
         this.tableData = resp.data;
       });
     },
-
-
+    // 切换tab
     handleClick (tab, event) {
       if (tab.index == "0") {
         // this.tabclick = true
@@ -269,49 +247,38 @@ export default {
       return data.label.indexOf(value) !== -1;
     },
     nodeClick (data, node, tree) {
-      this.tableMetaUuid = ''
-      // if (node.data.children.length == 0 && node.data.type === "table") {
+      console.log("节点", node);
+      this.tableMetaUuid = '';
       // 显示列表
-      if (node.level == 1) {
-        // this.divInfo = false;
+      if (node.level == 1 && data.type != "table") {
         this.show_details = false; //显示列表
         if (data.type == "system") {
           this.query.businessSystemId = node.data.id;
           this.query.tableThemeId = "";
           this.query.tableLayeredId = "";
           this.query.folderUuid = "";
-          // this.query_list();
-          this.$emit("queryList", this.query, this.show_details)
-
-
+          this.$emit("queryList", this.query, this.show_details);
         } else if (data.type == "theme") {
           this.query.businessSystemId = "";
           this.query.tableThemeId = node.data.id;
           this.query.tableLayeredId = "";
           this.query.folderUuid = "";
-          // this.query_list();
-          this.$emit("queryList", this.query, this.show_details)
-
+          this.$emit("queryList", this.query, this.show_details);
         } else if (data.type == "layered") {
           this.query.businessSystemId = "";
           this.query.tableThemeId = "";
           this.query.tableLayeredId = node.data.id;
           this.query.folderUuid = "";
-          // this.query_list();
-          this.$emit("queryList", this.query, this.show_details)
-
+          this.$emit("queryList", this.query, this.show_details);
         }
       } else {
         // 进入详情
-
         this.tableMetaUuid = node.data.id;
         this.show_details = true;
         this.isDisable_input = true;
-        this.$emit("details", this.tableMetaUuid, this.show_details, this.isDisable_input)
+        this.$emit("details", this.tableMetaUuid, this.show_details, this.isDisable_input);
       }
     },
-
-
     // 第一步选择的数据库
     nodeClick_table (data, node, tree) {
       //获取所有选中的节点 start
@@ -327,7 +294,6 @@ export default {
         check_list.push(obj);
       }
       this.form.check_list = check_list;
-
       if (this.form.check_list.length !== 0) {
         // 显示保存按钮
         this.is_next = true;
@@ -335,10 +301,7 @@ export default {
       } else {
         this.is_next = false;
       }
-      //
     },
-
-
     handleCreateFolder (node, data) {
       this.resetFolderForm();
       this.parentNode = node;
@@ -441,7 +404,7 @@ export default {
         this.refreshNodeBy("ROOT");
       });
     },
-    handleSelectChange (val) { },
+    handleSelectChange (val) {},
     removeTable () {
       var ids = this.$refs.tree2.getCheckedKeys();
       delTable(ids.join(",")).then((resp) => {
@@ -456,8 +419,6 @@ export default {
         });
       });
     },
-
-
   }
 };
 </script>
