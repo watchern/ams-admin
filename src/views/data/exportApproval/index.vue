@@ -92,8 +92,8 @@
                 </template>
             </el-table-column>>
         </el-table>
+<!--        v-show="total>0"-->
         <pagination
-                v-show="total>0"
                 :total="total"
                 :page.sync="pageQuery.pageNo"
                 :limit.sync="pageQuery.pageSize"
@@ -212,6 +212,7 @@
                     sortBy: 'asc',
                     sortName: 'create_time'
                 },
+                total:0,
                 //之前页面的类型
                 // authenTypeJson: [],
                 //列表按钮对应弹框
