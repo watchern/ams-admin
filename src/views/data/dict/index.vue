@@ -32,24 +32,22 @@
                        prop="folderName"
                        show-overflow-tooltip />
       <el-table-column label="数据表名称"
-                       align="center"
                        min-width="150px"
                        prop="displayTbName"
                        show-overflow-tooltip />
       <el-table-column label="汉化表名称"
-                       align="center"
                        prop="chnName"
                        min-width="150px"
                        show-overflow-tooltip />
       <el-table-column label="创建时间"
-                       min-width="200px"
+                       width="300px"
                        align="center"
                        :formatter="formatCreateTime"
                        prop="createTime"
                        show-overflow-tooltip />
       <el-table-column label="操作"
                        align="center"
-                       min-width="150px">
+                       width="200px">
         <template slot-scope="scope">
           <el-button type="primary"
                      class="oper-btn preview"

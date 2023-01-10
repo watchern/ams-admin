@@ -33,23 +33,25 @@
             <el-table-column
                     label="申请名称"
                     prop="requestName"
-                    min-width="100px"
+                    min-width="150px"
                     show-overflow-tooltip
             />
             <el-table-column
                     label="申请时间"
                     align="center"
                     prop="requestTime"
-                    min-width="90px"
+                    min-width="100px"
                     show-overflow-tooltip
             />
             <el-table-column
                     label="当前环节办理人"
                     align="center"
+                    min-width="100px"
                     prop="currentCirPerName"/>
             <el-table-column
                     label="申请表名称"
                     align="center"
+                    min-width="100px"
                     prop="requestTableName"
                     show-overflow-tooltip
             />
@@ -57,21 +59,21 @@
                     label="数据状态"
                     align="center"
                     prop="dataStatus"
-                    min-width="60px"
+                    min-width="100px"
                     :formatter="dataStatusFormat"/>
             <el-table-column
                     label="申请人"
                     align="center"
-                    min-width="60px"
+                    min-width="100px"
                     prop="requestPersionName"/>
             <el-table-column
                     label="备注"
                     align="center"
                     prop="remark"
-                    min-width="80px"
+                    min-width="100px"
                     show-overflow-tooltip
             />
-            <el-table-column label="操作" align="center">
+            <el-table-column label="操作" align="center" min-width="100px">
                     <el-button
                             type="primary"
                             class="oper-btn"

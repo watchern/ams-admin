@@ -32,12 +32,11 @@
       <el-table-column
               label="规则名称"
               prop="ruleName"
-              min-width="200px"
+              min-width="250px"
               show-overflow-tooltip
       />
       <el-table-column
               label="转码方式"
-              align="center"
               prop="ruleType"
               min-width="200px"
               show-overflow-tooltip
@@ -45,8 +44,7 @@
       <el-table-column
               label="规则描述"
               prop="ruleDesc"
-              align="center"
-              min-width="500px"
+              width="600px"
               show-overflow-tooltip />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />

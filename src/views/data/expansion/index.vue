@@ -46,7 +46,7 @@
         </el-form>
       </el-row>
     </div>
-    <div class="buttonExpan">
+    <div class="buttonExpan padding10">
       <el-row>
         <el-button type="primary" @click="joinInsertDialog">添加</el-button>
         <el-button type="primary" @click="onDelete">删除</el-button>
@@ -62,12 +62,11 @@
         :data="personalSpaceDataList"
         border
         style="width: 100%"
-        height="calc(100vh - 290px)"
+        height="calc(100vh - 310px)"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55"> </el-table-column>
         <el-table-column
-          fixed
           prop="personalSpaceName"
           label="申请名称"
           min-width="150px"
@@ -182,7 +181,6 @@
         <el-button type="primary" @click="closeInsertDialog">关闭</el-button>
       </el-row>
     </el-dialog>
-
     <!--    修改弹窗-->
     <el-dialog
       title="个人空间申请"
@@ -236,7 +234,6 @@
       <!--        </el-row>-->
       <!--      </el-form>-->
     </el-dialog>
-
     <!--    流程办理弹窗-->
     <el-dialog
       v-if="dialogFlowItemShow"
@@ -654,11 +651,10 @@ export default {
   },
 };
 </script>
-
 <style lang="scss" scoped>
 .padding10 {
   padding: 10px;
-  box-sizing: border-box;
+  box-sizing: border-box
 }
 .buttonExpan{
   display: flex;

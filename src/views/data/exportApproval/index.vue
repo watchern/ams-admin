@@ -29,35 +29,33 @@
             <el-table-column
                     label="申请模块名称"
                     prop="requestModelName"
-                    min-width="100px"
+                    min-width="200px"
                     show-overflow-tooltip
             />
             <el-table-column
                     label="申请时间"
-                    align="center"
                     prop="requestTime"
-                    min-width="100px"
+                    min-width="150px"
                     show-overflow-tooltip
             />
             <el-table-column
                     label="涉及安全表"
-                    align="center"
                     prop="refSafeTable"
-                    min-width="100px"
+                    min-width="170px"
                     show-overflow-tooltip
             />
             <el-table-column
                     label="表安全等级"
                     align="center"
                     prop="tableSafeLevel"
-                    min-width="100px"
+                    width="200px"
                     show-overflow-tooltip
             />
             <el-table-column
                     label="当前环节"
                     align="center"
                     prop="currentLink"
-                    min-width="100px"
+                    width="200px"
                     show-overflow-tooltip
             />
             <el-table-column label="状态" align="center" prop="status" min-width="100px"/>
@@ -190,7 +188,7 @@
                 }, {
                     requestModelName: 'SQL编辑器SQL编辑器SQL编辑器SQL编辑器',
                     requestTime: '2016-05-02 11:11:00',
-                    refSafeTable: '安全表2',
+                    refSafeTable: '安全表2安全表2安全表2安全表2安全表2安全表2安全表2安全表2安全表2',
                     tableSafeLevel: '三级2',
                     currentLink:'',
                     status:'已办理',
