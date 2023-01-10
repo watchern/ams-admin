@@ -225,8 +225,8 @@ export default {
           })
         }
 
+        console.log(resp.data.linkDataArray);
         if (resp.data.linkDataArray) {
-
           // 第二步
           resp.data.linkDataArray.forEach(linkData_items => {
             let color = colors.red
@@ -256,6 +256,7 @@ export default {
               }
             })
             // 1. left join   2. right join  3.full join  4.inner join")
+                          console.log(linkData_items.sqlGenJoinType);
             switch (linkData_items.sqlGenJoinType) {
               case 1:
                 text = 'left join'
@@ -292,6 +293,7 @@ export default {
             nodeDataArray: this.nodeDataArray,
             linkDataArray: this.linkDataArray
           });
+          console.log(this.linkDataArray);
       })
     }
   }

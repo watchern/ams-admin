@@ -2,39 +2,74 @@
   <div class="page-container">
     <!-- left_conter -->
     <div class="left_conter">
-      <LeftTrees ref="tree_left" @details='Details' @queryList='query_list'></LeftTrees>
+      <LeftTrees ref="tree_left"
+                 @details='Details'
+                 @queryList='query_list'></LeftTrees>
     </div>
     <!-- left_conter end-->
     <!-- right_conter -->
     <div class="right_conter padding10">
       <div class="list_style">
-        <DataResourceDisplay @down_template_cn="DownTemplateCN" @Important_cn="ImportantCn"
-          @Importdata_dictionary="ImportdataDictionary" @down_template_dictionary="DownTemplateDictionary"
-          @Important_table="ImportantTable" @down_template_table="DownTemplateTable" @on_deails="onDeailsChange"
-          @sync_data="SyncData" :isBtn="isBtn" @on_register="registTable" @Recognition="recognitionChange"
-          @handleCurrentChange="handleCurrent" @handleSizeChange="handleSize" :list="list" :list_data="list_data"
-          :list_loading="list_loading" @edit_list="Edit_list" ref="Display" v-if="show_details == false">
+        <DataResourceDisplay @down_template_cn="DownTemplateCN"
+                             @Important_cn="ImportantCn"
+                             @Importdata_dictionary="ImportdataDictionary"
+                             @down_template_dictionary="DownTemplateDictionary"
+                             @Important_table="ImportantTable"
+                             @down_template_table="DownTemplateTable"
+                             @on_deails="onDeailsChange"
+                             @sync_data="SyncData"
+                             :isBtn="isBtn"
+                             @on_register="registTable"
+                             @Recognition="recognitionChange"
+                             @handleCurrentChange="handleCurrent"
+                             @handleSizeChange="handleSize"
+                             :list="list"
+                             :list_data="list_data"
+                             :list_loading="list_loading"
+                             @edit_list="Edit_list"
+                             ref="Display"
+                             v-if="show_details == false">
         </DataResourceDisplay>
       </div>
 
       <!-- 基本信息详情 -->
-      <Details ref="Details_ref" :tableMetaUuid="tableMetaUuid" :isDisable_input="isDisable_input"
-        @update_list="UpdateList" :is_Edit_list="is_Edit_list" @update_details="updateDetails" @query_data="QueryData"
-        v-if="show_details == true"></Details>
+      <Details ref="Details_ref"
+               :tableMetaUuid="tableMetaUuid"
+               :isDisable_input="isDisable_input"
+               @update_list="UpdateList"
+               :is_Edit_list="is_Edit_list"
+               @update_details="updateDetails"
+               @query_data="QueryData"
+               v-if="show_details == true"></Details>
 
       <!-- 注册资源 -->
-      <el-dialog :close-on-click-modal="false" :default-expand-all="true" :title="'选择注册表'"
-        :visible.sync="registTableFlag" class="dlag_width" width="60%">
+      <el-dialog :close-on-click-modal="false"
+                 :default-expand-all="true"
+                 :title="'选择注册表'"
+                 :visible.sync="registTableFlag"
+                 class="dlag_width"
+                 width="60%">
 
-        <el-input style="width: 70%" v-model="filterText1" placeholder="输入想要查询的表名称（模糊搜索）" />
+        <el-input style="width: 70%"
+                  v-model="filterText1"
+                  placeholder="输入想要查询的表名称（模糊搜索）" />
         <el-button @click="getTables"> 搜索 </el-button>
 
         <div class="dlag_conter containerselect padding10">
-          <MyElTree ref="tree1" v-loading="treeLoading" :props="props" :data="tableData" class="filter-tree"
-            show-checkbox @check-change="nodeClick_table" @node-click="nodeClick_table" default-expand-all>
-            <span slot-scope="{ node, data }" class="custom-tree-node">
+          <MyElTree ref="tree1"
+                    v-loading="treeLoading"
+                    :props="props"
+                    :data="tableData"
+                    class="filter-tree"
+                    show-checkbox
+                    @check-change="nodeClick_table"
+                    @node-click="nodeClick_table"
+                    default-expand-all>
+            <span slot-scope="{ node, data }"
+                  class="custom-tree-node">
               <i v-if="data.type === 'USER'">
-                <img src="../../../assets/img/table_0.png" style="
+                <img src="../../../assets/img/table_0.png"
+                     style="
                     height: 16px;
                     width: 16px;
                     margin-right: 2px;
@@ -43,7 +78,8 @@
                   " />
               </i>
               <i v-if="data.type === 'TABLE'">
-                <img src="../../../assets/img/table_1.png" style="
+                <img src="../../../assets/img/table_1.png"
+                     style="
                     height: 16px;
                     width: 16px;
                     margin-right: 2px;
@@ -52,7 +88,8 @@
                   " />
               </i>
               <i v-if="data.type === 'COLUMN'">
-                <img src="../../../assets/img/table_2.png" style="
+                <img src="../../../assets/img/table_2.png"
+                     style="
                     height: 16px;
                     width: 16px;
                     margin-right: 2px;
@@ -67,22 +104,34 @@
         <span slot="footer">
           <el-button @click="registTableFlag = false">取消</el-button>
 
-          <el-button type="primary" v-if="is_next == true" @click="next()">下一步</el-button>
+          <el-button type="primary"
+                     v-if="is_next == true"
+                     @click="next()">下一步</el-button>
         </span>
       </el-dialog>
 
       <!-- 如果选多个表 -->
-      <el-dialog :visible.sync="dialogVisible_forms" width="60%" class="dlag_width" :before-close="handleClose">
+      <el-dialog :visible.sync="dialogVisible_forms"
+                 width="60%"
+                 class="dlag_width"
+                 :before-close="handleClose">
         <div class="dlag_conter">
-          <el-table :data="Column_table" :show-overflow-tooltip='true' style="width: 100%">
-            <el-table-column prop="date" show-overflow-tooltip label="字段名称">
+          <el-table :data="Column_table"
+                    :show-overflow-tooltip='true'
+                    style="width: 100%">
+            <el-table-column prop="date"
+                             show-overflow-tooltip
+                             label="字段名称">
               <template slot-scope="scope">
-                <span v-for="(item, index) in scope.row.colMetas" :key="index">{{ item.colName }}
+                <span v-for="(item, index) in scope.row.colMetas"
+                      :key="index">{{ item.colName }}
                   <i v-if="scope.row.colMetas.length !== 1">、</i>
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="title" show-overflow-tooltip label="表名称">
+            <el-table-column prop="title"
+                             show-overflow-tooltip
+                             label="表名称">
               <template slot-scope="scope">
                 {{ scope.row.tbName }}
               </template>
@@ -90,29 +139,47 @@
           </el-table>
         </div>
 
-        <span slot="footer" class="dialog-footer">
+        <span slot="footer"
+              class="dialog-footer">
           <el-button @click="dialogVisible_forms = false">关闭</el-button>
-          <el-button type="primary" @click="next_save()">确 定</el-button>
+          <el-button type="primary"
+                     @click="next_save()">确 定</el-button>
         </span>
       </el-dialog>
 
       <!-- 下一步 基本信息-->
-      <el-dialog title="基本信息" :close-on-click-modal="false" class="data_res dlag_width"
-        :visible.sync="dialogVisible_information" @close="handleClose('form')" width="60%">
+      <el-dialog title="基本信息"
+                 :close-on-click-modal="false"
+                 class="data_res dlag_width"
+                 :visible.sync="dialogVisible_information"
+                 @close="handleClose('form')"
+                 width="60%">
         <div class="dlag_conter">
 
-          <el-form :rules="rules" ref="form" label-width="100px" :model="form" :inline="false">
+          <el-form :rules="rules"
+                   ref="form"
+                   label-width="100px"
+                   :model="form"
+                   :inline="false">
             <!-- 表名-->
             <div class="son">
-              <el-form-item label="表名称：" prop="tbName">
-                <el-input type="text" disabled placeholder="请输入表名称" v-model="form.tbName" :rows="4">
+              <el-form-item label="表名称："
+                            prop="tbName">
+                <el-input type="text"
+                          disabled
+                          placeholder="请输入表名称"
+                          v-model="form.tbName"
+                          :rows="4">
                 </el-input>
               </el-form-item>
             </div>
             <!-- 表中文名 -->
             <div class="son">
               <el-form-item label="表中文名：">
-                <el-input type="text" placeholder="请输入表中文名" v-model="form.chnName" :rows="4">
+                <el-input type="text"
+                          placeholder="请输入表中文名"
+                          v-model="form.chnName"
+                          :rows="4">
                 </el-input>
               </el-form-item>
             </div>
@@ -120,52 +187,84 @@
             <!--  表说明-->
             <div class="son">
               <el-form-item label="表说明：">
-                <el-input type="textarea" placeholder="请输入表说明" style="resize: none" v-model="form.tableRemarks">
+                <el-input type="textarea"
+                          placeholder="请输入表说明"
+                          style="resize: none"
+                          v-model="form.tableRemarks">
                 </el-input>
               </el-form-item>
             </div>
 
             <!-- 资源编码 && 资源类型：-->
             <div class="son">
-              <el-form-item label="资源编码：" prop="tableCode">
-                <el-input type="text" placeholder="请输入资源编码" v-model="form.tableCode" disabled :rows="4">
+              <el-form-item label="资源编码："
+                            prop="tableCode">
+                <el-input type="text"
+                          placeholder="请输入资源编码"
+                          v-model="form.tableCode"
+                          disabled
+                          :rows="4">
                 </el-input>
               </el-form-item>
 
-              <el-form-item label="资源类型：" prop="tableType">
-                <el-select v-model="form.tableType" :rows="4" placeholder="请选择资源类型">
-                  <el-option v-for="item in data_type" :key="item.value" :label="item.label" :value="item.value" />
+              <el-form-item label="资源类型："
+                            prop="tableType">
+                <el-select v-model="form.tableType"
+                           :rows="4"
+                           placeholder="请选择资源类型">
+                  <el-option v-for="item in data_type"
+                             :key="item.value"
+                             :label="item.label"
+                             :value="item.value" />
                 </el-select>
               </el-form-item>
             </div>
 
             <!-- 资源主题 && 资源分层 -->
             <div class="son">
-              <el-form-item label="资源主题：" prop="tableThemeId">
-                <el-select v-model="form.tableThemeId" :rows="4" placeholder="请选择资源主题">
-                  <el-option v-for="item in next_data.themeList" :key="item.codeUuid" :label="item.codeName"
-                    :value="item.codeUuid" />
+              <el-form-item label="资源主题："
+                            prop="tableThemeId">
+                <el-select v-model="form.tableThemeId"
+                           :rows="4"
+                           placeholder="请选择资源主题">
+                  <el-option v-for="item in next_data.themeList"
+                             :key="item.codeUuid"
+                             :label="item.codeName"
+                             :value="item.codeUuid" />
                 </el-select>
               </el-form-item>
 
-              <el-form-item label="资源分层：" prop="tableLayeredId">
-                <el-select v-model="form.tableLayeredId" :rows="4" placeholder="请选择资源分层">
-                  <el-option v-for="item in next_data.layeredList" :key="item.codeUuid" :label="item.codeName"
-                    :value="item.codeUuid" />
+              <el-form-item label="资源分层："
+                            prop="tableLayeredId">
+                <el-select v-model="form.tableLayeredId"
+                           :rows="4"
+                           placeholder="请选择资源分层">
+                  <el-option v-for="item in next_data.layeredList"
+                             :key="item.codeUuid"
+                             :label="item.codeName"
+                             :value="item.codeUuid" />
                 </el-select>
               </el-form-item>
             </div>
 
             <!-- 所属系统 && 文件名-->
             <div class="son">
-              <el-form-item label="所属系统：" prop="businessSystemId">
-                <el-select v-model="form.businessSystemId" :rows="4" placeholder="请选择所属系统">
-                  <el-option v-for="item in next_data.businessSystemList" :key="item.businessSystemUuid"
-                    :label="item.businessSystemName" :value="item.businessSystemUuid" />
+              <el-form-item label="所属系统："
+                            prop="businessSystemId">
+                <el-select v-model="form.businessSystemId"
+                           :rows="4"
+                           placeholder="请选择所属系统">
+                  <el-option v-for="item in next_data.businessSystemList"
+                             :key="item.businessSystemUuid"
+                             :label="item.businessSystemName"
+                             :value="item.businessSystemUuid" />
                 </el-select>
               </el-form-item>
               <el-form-item label="文件名：">
-                <el-input type="text" placeholder="请输入文件名称" v-model="form.fileName" :rows="4">
+                <el-input type="text"
+                          placeholder="请输入文件名称"
+                          v-model="form.fileName"
+                          :rows="4">
                 </el-input>
               </el-form-item>
             </div>
@@ -173,45 +272,71 @@
             <!-- 数据日期 && 表大小-->
             <div class="son">
               <el-form-item label="数据日期：">
-                <el-date-picker format="yyyy-MM-dd" type="date" value-format="yyyy-MM-dd" @change="changeRelationParam"
-                  placeholder="请输入数据日期" :rows="4" v-model="form.dataDate">
+                <el-date-picker format="yyyy-MM-dd"
+                                type="date"
+                                value-format="yyyy-MM-dd"
+                                @change="changeRelationParam"
+                                placeholder="请输入数据日期"
+                                :rows="4"
+                                v-model="form.dataDate">
                 </el-date-picker>
               </el-form-item>
               <el-form-item label="表大小：">
-                <el-input type="text" disabled placeholder="请输入表大小" v-model="form.tableSize" :rows="4">
+                <el-input type="text"
+                          disabled
+                          placeholder="请输入表大小"
+                          v-model="form.tableSize"
+                          :rows="4">
                 </el-input>
               </el-form-item>
             </div>
             <!-- 表数据量 &&   负责人-->
             <div class="son">
               <el-form-item label="表数据量：">
-                <el-input type="text" disabled placeholder="请输入表数据量" v-model="form.rowNum" :rows="4">
+                <el-input type="text"
+                          disabled
+                          placeholder="请输入表数据量"
+                          v-model="form.rowNum"
+                          :rows="4">
                 </el-input>
               </el-form-item>
 
               <div class="son_check">
                 <el-form-item label="负责人：">
-                  <el-input type="text" disabled v-model="form.personName_str">
+                  <el-input type="text"
+                            disabled
+                            v-model="form.personName_str">
                   </el-input>
                 </el-form-item>
-                <el-button type="primary" class="oper-btn" @click="check_people()">选择</el-button>
+                <el-button type="primary"
+                           class="oper-btn"
+                           @click="check_people()">选择</el-button>
               </div>
             </div>
 
             <!--表分区 && 增全量 -->
             <div class="son">
-              <el-form-item label="表分区：" prop="partitions">
+              <el-form-item label="表分区："
+                            prop="partitions">
                 <ul class="table">
                   <li class="head">分区名称</li>
-                  <li v-for="(item, index_partitions) in form.partitions" :key="index_partitions" class="li_son">
+                  <li v-for="(item, index_partitions) in form.partitions"
+                      :key="index_partitions"
+                      class="li_son">
                     {{ item }}
                   </li>
                 </ul>
               </el-form-item>
 
-              <el-form-item label="增全量：" prop="isSpike">
-                <el-select v-model="form.isSpike" :rows="4" placeholder="请选择是否增量">
-                  <el-option v-for="item in option_isSpike" :key="item.value" :label="item.label" :value="item.value" />
+              <el-form-item label="增全量："
+                            prop="isSpike">
+                <el-select v-model="form.isSpike"
+                           :rows="4"
+                           placeholder="请选择是否增量">
+                  <el-option v-for="item in option_isSpike"
+                             :key="item.value"
+                             :label="item.label"
+                             :value="item.value" />
                 </el-select>
               </el-form-item>
             </div>
@@ -238,19 +363,27 @@
           </el-form>
           <div class="padding10_l">
             <p style="text-align: center">列信息</p>
-            <el-table :data="Column_table" :show-overflow-tooltip='true' style="width: 100%">
-              <el-table-column prop="date" show-overflow-tooltip label="字段名称">
+            <el-table :data="Column_table"
+                      :show-overflow-tooltip='true'
+                      style="width: 100%">
+              <el-table-column prop="date"
+                               show-overflow-tooltip
+                               label="字段名称">
                 <template slot-scope="scope">
                   {{ scope.row.colName }}
                 </template>
               </el-table-column>
-              <el-table-column prop="address" show-overflow-tooltip label="字段类型">
+              <el-table-column prop="address"
+                               show-overflow-tooltip
+                               label="字段类型">
                 <template slot-scope="scope">
                   {{ scope.row.dataType }}
                 </template>
               </el-table-column>
 
-              <el-table-column prop="address" show-overflow-tooltip label="字段长度">
+              <el-table-column prop="address"
+                               show-overflow-tooltip
+                               label="字段长度">
                 <template slot-scope="scope">
                   {{ scope.row.dataLength }}
                 </template>
@@ -258,31 +391,44 @@
             </el-table>
           </div>
         </div>
-        <span slot="footer" class="dialog-footer">
+        <span slot="footer"
+              class="dialog-footer">
           <el-button @click="step()">上一步</el-button>
-          <el-button type="primary" :loading="btnLoading" :disabled="isDisable"
-            @click="save('form')">{{ this.btnLoading == true ? "保存中" : "保存" }}</el-button>
+          <el-button type="primary"
+                     :loading="btnLoading"
+                     :disabled="isDisable"
+                     @click="save('form')">{{ this.btnLoading == true ? "保存中" : "保存" }}</el-button>
 
           <el-button @click="close_diag()">关闭</el-button>
         </span>
       </el-dialog>
 
       <!-- 选择责任人 -->
-      <el-dialog title="选择责任人" :close-on-click-modal="false" :visible.sync="resultShareDialogIsSee" width="80%"
-        class="dlag_width">
+      <el-dialog title="选择责任人"
+                 :close-on-click-modal="false"
+                 :visible.sync="resultShareDialogIsSee"
+                 width="80%"
+                 class="dlag_width">
         <div class="dlag_conter">
           <personTree ref="orgPeopleTree"></personTree>
         </div>
-        <span slot="footer" class="dialog-footer">
+        <span slot="footer"
+              class="dialog-footer">
           <el-button @click="close_people()">取 消</el-button>
-          <el-button type="primary" @click="modelResultShare()">确 定</el-button>
+          <el-button type="primary"
+                     @click="modelResultShare()">确 定</el-button>
         </span>
       </el-dialog>
 
-      <el-dialog :title="dialogTitle" :visible.sync="folderFormVisible" width="600px" :close-on-click-modal="false">
+      <el-dialog :title="dialogTitle"
+                 :visible.sync="folderFormVisible"
+                 width="600px"
+                 :close-on-click-modal="false">
         <div class="dlag_conter">
 
-          <el-form ref="folderForm" :model="folderForm" class="detail-form">
+          <el-form ref="folderForm"
+                   :model="folderForm"
+                   class="detail-form">
             <el-form-item label="文件夹名称">
               <el-input v-model="folderForm.folderName" />
             </el-form-item>
@@ -290,28 +436,42 @@
         </div>
         <span slot="footer">
           <el-button @click="folderFormVisible = false">取消</el-button>
-          <el-button type="primary" @click="dialogStatus === 'create' ? createFolder() : updateFolder()">保存</el-button>
+          <el-button type="primary"
+                     @click="dialogStatus === 'create' ? createFolder() : updateFolder()">保存</el-button>
         </span>
       </el-dialog>
 
       <!-- 选择标签 -->
-      <el-dialog title="选择标签" :close-on-click-modal="false" :visible.sync="dialogVisible_tag" width="60%"
-        class="dlag_width">
+      <el-dialog title="选择标签"
+                 :close-on-click-modal="false"
+                 :visible.sync="dialogVisible_tag"
+                 width="60%"
+                 class="dlag_width">
         <div class="dlag_conter">
           <div class="right_query">
-            <el-form :inline="true" :model="tag_query" label-position="bottom">
+            <el-form :inline="true"
+                     :model="tag_query"
+                     label-position="bottom">
               <el-form-item>
-                <el-input v-model="tag_query.name" placeholder="标签名" clearable />
+                <el-input v-model="tag_query.name"
+                          placeholder="标签名"
+                          clearable />
               </el-form-item>
 
               <el-form-item>
-                <el-select v-model="tag_query.status" :rows="4" placeholder="请选择是否增量">
-                  <el-option v-for="item in option_isSpike" :key="item.value" :label="item.label" :value="item.value" />
+                <el-select v-model="tag_query.status"
+                           :rows="4"
+                           placeholder="请选择是否增量">
+                  <el-option v-for="item in option_isSpike"
+                             :key="item.value"
+                             :label="item.label"
+                             :value="item.value" />
                 </el-select>
               </el-form-item>
 
               <el-form-item>
-                <el-button type="primary" @keyup.enter.native="search">查询</el-button>
+                <el-button type="primary"
+                           @keyup.enter.native="search">查询</el-button>
                 <el-button type="primary">清空</el-button>
               </el-form-item>
             </el-form>
@@ -355,43 +515,68 @@
             </el-table>
           </div> -->
         </div>
-        <span slot="footer" class="dialog-footer">
+        <span slot="footer"
+              class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="dialogVisible_tag = false">确 定</el-button>
+          <el-button type="primary"
+                     @click="dialogVisible_tag = false">确 定</el-button>
         </span>
       </el-dialog>
 
       <!-- 认权管理 -->
-      <el-dialog title="认权管理" :close-on-click-modal="false" :visible.sync="visible_Recognition" width="60%"
-        class="dlag_width">
+      <el-dialog title="认权管理"
+                 :close-on-click-modal="false"
+                 :visible.sync="visible_Recognition"
+                 width="60%"
+                 class="dlag_width">
         <div class="dlag_conter">
           <div class="data_res com">
-            <el-form ref="form" :model="Recognition">
-              <el-form-item label="认权人:" prop="people">
-                <el-input type="text" disabled placeholder="请选择认权人" v-model="Recognition.personName_str">
+            <el-form ref="form"
+                     :model="Recognition">
+              <el-form-item label="认权人:"
+                            prop="people">
+                <el-input type="text"
+                          disabled
+                          placeholder="请选择认权人"
+                          v-model="Recognition.personName_str">
                 </el-input>
-                <el-button type="primary" @click="check_people()">选择</el-button>
+                <el-button type="primary"
+                           @click="check_people()">选择</el-button>
               </el-form-item>
             </el-form>
           </div>
           <div class="padding10_l">
-            <el-table :data="Recognition_check_list" :show-overflow-tooltip='true' style="width: 100%">
-              <el-table-column prop="tbName" show-overflow-tooltip align="center" label="表名称">
+            <el-table :data="Recognition_check_list"
+                      :show-overflow-tooltip='true'
+                      style="width: 100%">
+              <el-table-column prop="tbName"
+                               show-overflow-tooltip
+                               align="center"
+                               label="表名称">
               </el-table-column>
-              <el-table-column prop="name" show-overflow-tooltip align="center" label="表类型">
+              <el-table-column prop="name"
+                               show-overflow-tooltip
+                               align="center"
+                               label="表类型">
               </el-table-column>
             </el-table>
           </div>
         </div>
-        <span slot="footer" class="dialog-footer">
+        <span slot="footer"
+              class="dialog-footer">
           <el-button @click="visible_Recognition = false">取 消</el-button>
-          <el-button type="primary" :loading="save_people_Loading" @click="save_people_change()">确 定</el-button>
+          <el-button type="primary"
+                     :loading="save_people_Loading"
+                     @click="save_people_change()">确 定</el-button>
         </span>
       </el-dialog>
 
       <!-- 弹窗2 导入数据-->
-      <el-dialog v-if="importVisible" :title="upload_title" :visible.sync="importVisible" :close-on-click-modal="false"
-        width="800px">
+      <el-dialog v-if="importVisible"
+                 :title="upload_title"
+                 :visible.sync="importVisible"
+                 :close-on-click-modal="false"
+                 width="800px">
         <el-row>
           <el-col>
             <directory-file-import @fileuploadname="fileuploadname" />
@@ -399,9 +584,12 @@
         </el-row>
         <span slot="footer">
           <el-button @click="importVisible = false">取消</el-button>
-          <el-button @click="importTableDictionary()" v-if="upload_title == '导入数据字典'">导入</el-button>
-          <el-button @click="importTablCn()" v-else-if="upload_title == '导入汉化信息'">导入</el-button>
-          <el-button @click="importTableTable()" v-else>导入</el-button>
+          <el-button @click="importTableDictionary()"
+                     v-if="upload_title == '导入数据字典'">导入</el-button>
+          <el-button @click="importTablCn()"
+                     v-else-if="upload_title == '导入汉化信息'">导入</el-button>
+          <el-button @click="importTableTable()"
+                     v-else>导入</el-button>
 
           <!-- <el-button type="primary"
                      @click="upload_title = '数据字典导入' ? importTableDictionary()
@@ -1547,7 +1735,7 @@ export default {
 @import url("./../../../assets/css/common.css");
 
 /* 隐藏列表的多选框 */
-.list_style>>>.el-table__header-wrapper {
+.list_style >>> .el-table__header-wrapper {
   /* border: 1px solid blue; */
   display: none;
 }
@@ -1566,11 +1754,11 @@ export default {
   padding: 0 !important;
 }
 
-.dlag_width>>>.el-dialog {
+.dlag_width >>> .el-dialog {
   min-width: 600px !important;
 }
 
-.data_res>>>.el-form {
+.data_res >>> .el-form {
   padding: 20px 20px 0;
   box-sizing: border-box;
 }
@@ -1580,26 +1768,26 @@ export default {
   margin-bottom: 20px;
 }
 
-.son>>>.el-form-item,
-.son>>>.el-select,
-.son>>>.el-cascader {
+.son >>> .el-form-item,
+.son >>> .el-select,
+.son >>> .el-cascader {
   width: 100%;
   display: flex;
   margin-bottom: 0 !important;
 }
 
-.data_res>>>.el-form-item__content,
-.data_res>>>.el-date-editor {
+.data_res >>> .el-form-item__content,
+.data_res >>> .el-date-editor {
   flex: 1;
   margin-left: 0 !important;
   float: left;
 }
 
-.data_res>>>.el-textarea .el-textarea__inner {
+.data_res >>> .el-textarea .el-textarea__inner {
   resize: none;
 }
 
-.data_res>>>.el-form-item--medium .el-form-item__label {
+.data_res >>> .el-form-item--medium .el-form-item__label {
   float: left !important;
   text-align: right;
 }
@@ -1610,7 +1798,7 @@ export default {
   width: 100%;
 }
 
-.son_check>>>.el-button {
+.son_check >>> .el-button {
   margin-left: 10px;
   height: 36px !important;
 }
@@ -1657,25 +1845,25 @@ export default {
 }
 
 /* 认权人 */
-.com>>>.el-form {
+.com >>> .el-form {
   width: 100%;
 }
 
-.com>>>.el-form-item__content {
+.com >>> .el-form-item__content {
   width: 100%;
   display: flex;
   align-items: center;
 }
 
-.com>>>.el-form-item {
+.com >>> .el-form-item {
   display: flex;
 }
 
-.com>>>.el-input {
+.com >>> .el-input {
   width: 300px;
 }
 
-.com>>>.el-button {
+.com >>> .el-button {
   margin: 0 10px;
 }
 </style>
