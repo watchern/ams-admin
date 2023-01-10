@@ -72,7 +72,7 @@
               </div>
               <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
                 <div class="son">
-                  <el-form-item label="资产主题：">
+                  <el-form-item label="资源主题：">
                     <el-select v-model="form.tableThemeId"
                                @input="change($event)"
                                @change="tableThemeName_change"
@@ -160,7 +160,7 @@
               <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
 
                 <div class="son">
-                  <el-form-item label="表分区:"
+                  <el-form-item label="表分区："
                                 :disabled="disabled"
                                 prop="partitions">
                     <div class="table">
@@ -324,15 +324,16 @@
             <!-- <LineMap></LineMap> -->
             <!-- <EditMap></EditMap> -->
           </div>
+
+          <div class="fixed_btn">
+            <el-button type="primary"
+                       @click="update_save()"
+                       :disabled="isDisable_input"
+                       v-if="!isDisable_input">保存</el-button>
+          </div>
+
         </div>
 
-        <div class="rightList_child"
-             style="text-align: right">
-          <el-button type="primary"
-                     @click="update_save()"
-                     :disabled="isDisable_input"
-                     v-if="!isDisable_input">保存</el-button>
-        </div>
       </div>
     </div>
 
@@ -528,7 +529,7 @@ import {
   getTableZipperList, //查询数据字典
 } from "@/api/data/table-info";
 import {
-  getListTree, //注册资产下一步
+  getListTree, //注册资源下一步
 } from "@/api/lhg/register.js";
 import { getTableByCol } from "@/api/data/table-info";
 export default {
@@ -599,11 +600,11 @@ export default {
         chnName: '',//中文名
         tableRemarks: '',//表说明
         tableCode: '',// 资源编码
-        tableType: '',// 资产类型
+        tableType: '',// 资源类型
         tableThemeName: '',//所属主题name
-        tableThemeId: '',// 资产主题 id
-        tableLayeredName: '',//资产分层
-        tableLayeredId: '',//资产分层 id
+        tableThemeId: '',// 资源主题 id
+        tableLayeredName: '',//资源分层
+        tableLayeredId: '',//资源分层 id
         businessSystemName: '',//所属系统
         businessSystemId: '',//所属系统 id
         fileName: '',//文件名
@@ -612,7 +613,7 @@ export default {
         rowNum: '',//表数据量
         personName_str: '',//责任人
         personLiables: '',//负责人
-        personUuid: '',//资产责任人
+        personUuid: '',//资源责任人
         partitions: '',//表分区
         isSpike: 1,//是否增量
       },
@@ -845,7 +846,7 @@ export default {
     change (e) {
       this.$forceUpdate();
     },
-    // 资产主题
+    // 资源主题
     tableThemeName_change (val) {
       this.form.tableThemeId = val;
       this.next_data.themeList.forEach((item) => {
@@ -960,7 +961,8 @@ export default {
             type: "success",
             message: "修改成功!",
           });
-          this.$emit("update_list");
+          this.$emit("query_data");//刷新页面
+          // this.$emit("update_list");
         } else {
           this.$message({
             type: "error",
@@ -1475,5 +1477,14 @@ export default {
 .tree_style {
   height: 600px;
   overflow-y: auto;
+}
+
+/* 保存按钮 */
+.fixed_btn {
+  text-align: right;
+  float: left;
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
 }
 </style>

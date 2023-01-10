@@ -46,6 +46,12 @@ ul {
 
 }
 
+.padding7 {
+  padding: 7px;
+  box-sizing: border-box;
+
+}
+
 .padding20 {
   padding: 20px;
   box-sizing: border-box;
