@@ -91,7 +91,7 @@
                                  width="55"/>
                 <el-table-column label="申请名称"
                                  prop="applyName"
-                                 min-width="130px"
+                                 min-width="150px"
                                  show-overflow-tooltip/>
                 <el-table-column label="申请时间"
                                  :formatter="formatApplyTime"

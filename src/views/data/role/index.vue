@@ -42,18 +42,18 @@
       <el-table-column type="selection"
                        width="55" />
       <el-table-column label="数据角色名称"
-                       min-width="250px"
+                       min-width="150px"
                        prop="dataRoleName"
                        show-overflow-tooltip />
       <el-table-column label="创建时间"
                        align="center"
-                       min-width="300px"
+                       width="300px"
                        prop="createTime"
                        show-overflow-tooltip />
       <el-table-column label="授权方式"
                        align="center"
                        prop="authenType"
-                       min-width="350px"
+                       width="350px"
                        :formatter="formatAuthenType" />
       <!-- <el-table-column label="数据筛选" style="width: 50px" align="center">
         <template slot-scope="scope">
@@ -64,7 +64,7 @@
                        align="center"
                        prop="timeDuring"
                        :formatter="formatDuring"
-                       min-width="400px"
+                       width="400px"
                        show-overflow-tooltip />
     </el-table>
     <pagination v-show="total>0"
