@@ -115,6 +115,7 @@
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
+          background
           :current-page="query.pageNo"
           :page-sizes="[5, 10, 15, 20]"
           :page-size="query.pageSize"
@@ -655,6 +656,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 .padding10 {
   padding: 10px;
   box-sizing: border-box;
