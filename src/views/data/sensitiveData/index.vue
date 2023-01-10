@@ -118,7 +118,6 @@
       </el-table>
       <div class="pager">
         <el-pagination
-          small
           background
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"
