@@ -181,8 +181,9 @@ export default {
   created () {
     this.query.businessSystemId = "";
     // this.show_details = false; //显示列表
-    // this.$emit("queryList", this.query, this.show_details = false)
     this.post_getBusinessSystemTree(); //系统
+    this.$emit("queryList", this.query, this.show_details = false)
+
   },
   methods: {
     // 选择数据源
@@ -205,7 +206,6 @@ export default {
 
     // 系统
     post_getBusinessSystemTree () {
-      console.log('111');
       this.loading = true;
       this.tabclick = true;
       getBusinessSystemTree(true, this.query.dataSource, true).then((resp) => {
@@ -236,18 +236,18 @@ export default {
     },
 
     // 点击注册资源的 数据库列表
-    getTables () {
-      this.treeLoading = true;
-      listUnCached(
-        "table",
-        "",
-        this.filterText1 == null ? "" : this.filterText1,
-        this.query.dataSource
-      ).then((resp) => {
-        this.treeLoading = false;
-        this.tableData = resp.data;
-      });
-    },
+    // getTables () {
+    //   this.treeLoading = true;
+    //   listUnCached(
+    //     "table",
+    //     "",
+    //     this.filterText1 == null ? "" : this.filterText1,
+    //     this.query.dataSource
+    //   ).then((resp) => {
+    //     this.treeLoading = false;
+    //     this.tableData = resp.data;
+    //   });
+    // },
 
 
     handleClick (tab, event) {

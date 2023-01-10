@@ -861,13 +861,7 @@ export default {
       dialogVisible_forms: false,
       formList: [], //
 
-      tableDatas: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-      ],
+      tableDatas: [],
 
       dialogVisible_tag: false, //选择标签
       // 标签
@@ -876,7 +870,7 @@ export default {
         status: "",
       },
       // 选择的标签
-      tagsarr: ["标签一", "标签二", "标签三"],
+      tagsarr: [],
       inputValue: "",
 
       // 汉化
@@ -1269,6 +1263,8 @@ export default {
     },
     // 列表 接口
     query_list (data, show_details) {
+      console.log(data);
+      console.log(show_details);
       this.show_details = show_details; //显示列表
       // this.listLoading = true;
       this.list_loading = true; //子组件loading
@@ -1286,7 +1282,7 @@ export default {
 
         this.list_data = resp.data;
         this.list = resp.data.records;
-
+        console.log(resp.data);
         // this.$nextTick(() => {
         // this.$refs.Display.$el.style.border = '1px solid red'
         // })
@@ -1768,7 +1764,8 @@ export default {
 }
 
 .left_conter {
-  height: calc(100vh - 140px);
+  /* height: calc(100vh - 140px); */
+  height: calc(100vh - 120px);
 }
 
 .page-container {
