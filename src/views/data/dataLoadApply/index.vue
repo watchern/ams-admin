@@ -7,19 +7,15 @@
                          :model="query"
                          label-position="bottom">
                     <el-row>
-                        <el-col :span="6">
+                        <el-col>
                             <el-form-item label="申请名称：" prop="applyName">
                                 <el-input v-model="query.applyName"
                                           clearable/>
                             </el-form-item>
-                        </el-col>
-                        <el-col :span="6">
                             <el-form-item label="申请人：" prop="applyPerson">
                                 <el-input v-model="query.applyPerson"
                                           clearable/>
                             </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
                             <el-form-item label="列表类型：" prop="status">
                                 <el-select v-model="query.status"
                                            clearable
@@ -30,10 +26,6 @@
                                                :value="item.value"/>
                                 </el-select>
                             </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-                        <el-col :span="18">
                             <el-form-item label="申请时间范围：" prop="applyTime" style="display: inline-block;">
                                 <el-date-picker
                                         v-model="query.startTime"
@@ -46,16 +38,9 @@
                                         placeholder="结束时间"
                                         value-format="yyyy-MM-dd HH:mm:ss"/>
                             </el-form-item>
-                        </el-col>
-                        <el-col :span="6" style="left: 80px">
                             <el-form-item>
-                                <el-button type="primary"
-                                           @keyup.enter.native="search"
-                                           @click="search()">查询
-                                </el-button>
-                                <el-button type="primary"
-                                           @click="clearAll()">重置
-                                </el-button>
+                                <el-button type="primary" @keyup.enter.native="search" @click="search()">查询</el-button>
+                                <el-button type="primary" @click="clearAll()">重置</el-button>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -63,21 +48,10 @@
             </div>
             <div class="padding10">
                 <div class="right_btn">
-                    <el-button type="primary"
-                               @click="apply_add()">添加
-                    </el-button>
-                    <el-button type="primary"
-                               :disabled="Selectval_list.length === 0"
-                               @click="apply_deletes()">删除
-                    </el-button>
-                    <el-button type="primary"
-                               :disabled="Selectval_list.length === 0"
-                               @click="apply_transact()">办理
-                    </el-button>
-                    <el-button type="primary"
-                               :disabled="Selectval_list.length !== 1"
-                               @click="apply_edit()">编辑
-                    </el-button>
+                    <el-button size="mini" type="primary" @click="apply_add()">添加</el-button>
+                    <el-button size="mini" type="primary" :disabled="Selectval_list.length === 0" @click="apply_deletes()">删除</el-button>
+                    <el-button size="mini" type="primary" :disabled="Selectval_list.length === 0" @click="apply_transact()">办理</el-button>
+                    <el-button size="mini" type="primary" :disabled="Selectval_list.length !== 1" @click="apply_edit()">编辑</el-button>
                 </div>
             </div>
             <el-table v-loading="listLoading"
@@ -1196,6 +1170,7 @@
 
 <style scoped>
     .right_btn {
+        display: flex;
         float: right;
     }
 
