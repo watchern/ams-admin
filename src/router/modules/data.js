@@ -5,9 +5,9 @@ const dataRouter = {
   component: (resolve) =>
     require([
       "@/portal/" +
-      (process.env.VUE_APP_BASE_MENU === "withmenu"
-        ? "withmenu/" + process.env.VUE_APP_BASE_SKIN
-        : "withoutmenu") +
+      (process.env.VUE_APP_BASE_MENU === "withmenu" ?
+        "withmenu/" + process.env.VUE_APP_BASE_SKIN :
+        "withoutmenu") +
       "/index",
     ], resolve),
   meta: {},
@@ -230,8 +230,11 @@ const dataRouter = {
       name: '数据接入申请',
       component: () => import('@/views/data/dataAccessRequest/index')
     },
-
-
+    {
+      path: 'databrowsing',
+      name: '数据资源浏览',
+      component: () => import('@/views/data/dataBrowsing/index')
+    },
   ],
 };
 export default dataRouter;
