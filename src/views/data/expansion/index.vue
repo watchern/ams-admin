@@ -653,7 +653,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .padding10 {
   padding: 10px;
   box-sizing: border-box
