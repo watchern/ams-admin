@@ -689,7 +689,7 @@ export default {
 }
 .new_right {
   width: calc(100% - 150px);
-  min-height: 140px;
+  min-height: 130px;
   float: left;
   padding: 0 20px;
   box-sizing: border-box;
