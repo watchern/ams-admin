@@ -46,7 +46,7 @@
         </el-form>
       </el-row>
     </div>
-    <div class="padding10">
+    <div class="buttonExpan">
       <el-row>
         <el-button type="primary" @click="joinInsertDialog">添加</el-button>
         <el-button type="primary" @click="onDelete">删除</el-button>
@@ -656,10 +656,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .padding10 {
   padding: 10px;
   box-sizing: border-box;
+}
+.buttonExpan{
+  display: flex;
+  float: right;
 }
 .header_Filter {
   width: 100%;
