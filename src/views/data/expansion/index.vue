@@ -48,11 +48,11 @@
     </div>
     <div class="buttonExpan padding10">
       <el-row>
-        <el-button type="primary" @click="joinInsertDialog">添加</el-button>
-        <el-button type="primary" @click="onDelete">删除</el-button>
-        <el-button type="primary" @click="joinUpdateDialog">修改</el-button>
-        <el-button type="primary" @click="handleEvent">提交</el-button>
-        <el-button type="primary" @click="exportAllData">导出</el-button>
+        <el-button size="mini" type="primary" @click="joinInsertDialog">添加</el-button>
+        <el-button size="mini" type="primary" @click="onDelete">删除</el-button>
+        <el-button size="mini" type="primary" @click="joinUpdateDialog">修改</el-button>
+        <el-button size="mini" type="primary" @click="handleEvent">提交</el-button>
+        <el-button size="mini" type="primary" @click="exportAllData">导出</el-button>
         <!--        <el-button type="primary"-->
         <!--                   @click="backToUpPage">关闭</el-button>-->
       </el-row>

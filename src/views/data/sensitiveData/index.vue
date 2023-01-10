@@ -39,8 +39,8 @@
         </div>
       </div>
       <div class="search-btn">
-        <el-button size="mini" type="primary" @click="goQuery">查询</el-button>
-        <el-button size="mini" type="primary" @click="reset">重置</el-button>
+        <el-button type="primary" @click="goQuery">查询</el-button>
+        <el-button type="primary" @click="reset">重置</el-button>
       </div>
     </div>
     <!-- 列表 -->
