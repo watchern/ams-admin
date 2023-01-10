@@ -406,12 +406,8 @@
                      @click="addTable()">
             新增一行
           </el-button> -->
-
-          <el-button type="primary"
-                     @click="addTable(1)">关联主表 </el-button>
-
-          <el-button type="primary"
-                     @click="addTable(2)">关联从表 </el-button>
+          <el-button type="primary" @click="addTable(true)">关联主表</el-button>
+          <el-button type="primary" @click="addTable(false)">关联从表</el-button>
         </div>
         <el-table :data="visibleTableList"
                   :show-overflow-tooltip="true"
@@ -475,58 +471,80 @@
                  :inline="false"
                  :model="table_visible_form"
                  label-width="90px">
-          <el-form-item label="表名称："
-                        prop="tbName">
-            <el-input v-model="table_visible_form.tbName"
-                      disabled></el-input>
-          </el-form-item>
-          <el-form-item prop="colName"
-                        label="字段名称：">
-            <el-row>
-              <el-col :span="22">
-                <el-input v-model="table_visible_form.colName"
-                          disabled></el-input>
-              </el-col>
-              <el-col :span="2">
-                <el-button @click="showDataTree(1)"> 选择 </el-button>
-              </el-col>
-            </el-row>
-          </el-form-item>
-
-          <el-form-item label="从表名称：">
-            <el-input v-model="table_visible_form.relationTableName"
-                      disabled></el-input>
-          </el-form-item>
-
-          <el-form-item prop="relationCol"
-                        label="从表字段：">
-            <el-row>
-              <el-col :span="22">
-                <el-input v-model="table_visible_form.relationCol"
-                          disabled></el-input>
-              </el-col>
-              <el-col :span="2">
-                <el-button @click="showDataTree(2)"> 选择 </el-button>
-              </el-col>
-            </el-row>
-          </el-form-item>
-          <el-form-item label="关联关系："
-                        prop="sqlGenJoinType">
-            <el-select v-model="table_visible_form.sqlGenJoinType"
-                       style="width: 100%">
-              <el-option v-for="item in relationship"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value" />
-            </el-select>
-          </el-form-item>
+          <div v-if="is_main_table">
+            <el-form-item label="主表名称：" prop="tbName">
+              <el-input v-model="table_visible_form.tbName" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="字段名称：" prop="colName">
+              <el-row>
+                <el-col :span="22">
+                  <el-input v-model="table_visible_form.colName" disabled></el-input>
+                </el-col>
+                <el-col :span="2">
+                  <el-button @click="showDataTree(1)">选择</el-button>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item label="从表名称：" prop="relationTableName">
+              <el-input v-model="table_visible_form.relationTableName" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="从表字段：" prop="relationCol">
+              <el-select v-model="select_data.tableType" @change="Change_table" style="width: 100%">
+                <el-option v-for="item in cong_table_list"
+                          :key="item.colMetaUuid"
+                          :label="item.colName"
+                          :value="item.colMetaUuid" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="关联关系：" prop="sqlGenJoinType">
+              <el-select v-model="table_visible_form.sqlGenJoinType" style="width: 100%">
+                <el-option v-for="item in relationship"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value" />
+              </el-select>
+            </el-form-item>
+          </div>
+          <div v-else>
+            <el-form-item label="主表名称：" prop="tbName">
+              <el-input v-model="table_visible_form.tbName" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="字段名称：" prop="colName">
+              <el-select v-model="select_data.tableType" @change="Change_table" style="width: 100%">
+                <el-option v-for="item in cong_table_list"
+                          :key="item.colMetaUuid"
+                          :label="item.colName"
+                          :value="item.colMetaUuid" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="从表名称：" prop="relationTableName">
+              <el-input v-model="table_visible_form.relationTableName" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="从表字段：" prop="relationCol">
+              <el-row>
+                <el-col :span="22">
+                  <el-input v-model="table_visible_form.relationCol" disabled></el-input>
+                </el-col>
+                <el-col :span="2">
+                  <el-button @click="showDataTree(2)">选择</el-button>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item label="关联关系：" prop="sqlGenJoinType">
+              <el-select v-model="table_visible_form.sqlGenJoinType" style="width: 100%">
+                <el-option v-for="item in relationship"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value" />
+              </el-select>
+            </el-form-item>
+          </div>
         </el-form>
       </div>
       <span slot="footer"
             class="dialog-footer">
         <el-button @click="add_table_visible = false"> 取 消 </el-button>
-        <el-button type="primary"
-                   @click="add_table_save('table_visible_form')">
+        <el-button type="primary" @click="add_table_save('table_visible_form')">
           确 定
         </el-button>
       </span>
@@ -541,31 +559,15 @@
                :visible.sync="dataTableTree"
                title="请选择数据表"
                width="50%">
-      <!-- 主表 -->
-      <div class="tree_style"
-           v-if="is_main_table == true">
+      <div class="tree_style">
         <dataTree ref="dataTableTree"
                   :is_progress="is_progress"
                   :data-user-id="dataUserId"
                   :scene-code="sceneCode" />
       </div>
-
-      <!-- 从表 -->
-      <div v-if="is_main_table ==false">
-        <el-select v-model="select_data.tableType"
-                   @change="Change_table">
-          <el-option v-for="item in cong_table_list"
-                     :key="item.colMetaUuid"
-                     :label="item.colName"
-                     :value="item.colMetaUuid" />
-        </el-select>
-
-      </div>
-
       <div slot="footer">
         <el-button @click="dataTableTree = false"> 取消 </el-button>
-        <el-button type="primary"
-                   @click="getDataTable()"> 确定 </el-button>
+        <el-button type="primary" @click="getDataTable()"> 确定 </el-button>
       </div>
     </el-dialog>
 
@@ -1180,24 +1182,34 @@ export default {
     },
 
     // 新增一行表关系
-    addTable (type) {
+    addTable (flag) {
       // 是不是主表 1:主表 2从表
-      if (type == 1) {
-        this.is_main_table = true;
+      if (flag) {
+        this.is_main_table = flag;
+        this.table_visible_form.tableMetaUuid = "";
+        this.table_visible_form.tbName = "";
+        this.table_visible_form.colName = "";
+        this.table_visible_form.colMetaUuid = "";
+        this.table_visible_form.relColMetaUuid = this.tableMetaUuid;
+        this.table_visible_form.tableRelationUuid = "";
+        this.table_visible_form.relationTableName = this.form.tbName;
+        this.table_visible_form.selectType = "";
+        this.table_visible_form.sqlGenJoinType = "";
+        this.table_visible_form.relationCol = "";
       } else {
-        this.is_main_table = false;
+        this.is_main_table = flag;
+        this.table_visible_form.tableMetaUuid = this.tableMetaUuid;
+        this.table_visible_form.tbName = this.form.tbName;
+        this.table_visible_form.colName = "";
+        this.table_visible_form.colMetaUuid = "";
+        this.table_visible_form.relColMetaUuid = "";
+        this.table_visible_form.tableRelationUuid = "";
+        this.table_visible_form.relationTableName = "";
+        this.table_visible_form.selectType = "";
+        this.table_visible_form.sqlGenJoinType = "";
+        this.table_visible_form.relationCol = "";
       }
       this.add_table_visible = true;
-      this.table_visible_form.tableMetaUuid = "";
-      this.table_visible_form.tbName = "";
-      this.table_visible_form.colName = "";
-      this.table_visible_form.colMetaUuid = "";
-      this.table_visible_form.relColMetaUuid = "";
-      this.table_visible_form.tableRelationUuid = "";
-      this.table_visible_form.relationTableName = "";
-      this.table_visible_form.selectType = "";
-      this.table_visible_form.sqlGenJoinType = "";
-      this.table_visible_form.relationCol = "";
     },
 
     // 获取从表字段
