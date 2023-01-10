@@ -155,7 +155,6 @@
                              class="oper-btn"
                              @click="check_people()">选择</el-button>
                 </div>
-
               </div>
 
               <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
@@ -208,6 +207,7 @@
                            :style="inputStyle"
                            class="inputTag"
                            ref="inputTag"
+                           disabled
                            type="text" />
                   </div>
                 </el-form-item>
@@ -237,20 +237,24 @@
           <h2 :class="{ isActive: navgatorIndex == 1 }">列信息</h2>
           <div class="padding10">
             <el-table :data="Column_tableData.colMetas"
+                      :show-overflow-tooltip='true'
                       style="width: 100%">
               <el-table-column prop="colName"
-                               align="center"
+                               show-overflow-tooltip
                                label="字段名称">
               </el-table-column>
               <el-table-column prop="chnName"
-                               align="center"
+                               show-overflow-tooltip
                                label="字段中文名">
               </el-table-column>
               <el-table-column prop="dataType"
+                               show-overflow-tooltip
                                align="center"
+                               width="140"
                                label="字段类型">
               </el-table-column>
               <el-table-column prop="dataLength"
+                               show-overflow-tooltip
                                align="center"
                                label="字段长度">
               </el-table-column>
@@ -268,14 +272,22 @@
           <h2 :class="{ isActive: navgatorIndex == 2 }">索引信息</h2>
           <div class="padding10">
             <el-table :data="Column_tableData_index"
+                      :show-overflow-tooltip='true'
                       style="width: 100%">
               <el-table-column prop="indexName"
+                               show-overflow-tooltip
                                label="名称"> </el-table-column>
               <el-table-column prop="indexType"
+                               show-overflow-tooltip
+                               width="130"
                                label="类型"> </el-table-column>
               <el-table-column prop="columnName"
+                               show-overflow-tooltip
+                               width="150"
                                label="列"> </el-table-column>
               <el-table-column prop="onlyIndex"
+                               show-overflow-tooltip
+                               width="100"
                                label="是否唯一">
                 <template slot-scope="scope">
                   {{ scope.row.onlyIndex ? "是" : "否" }}
@@ -330,9 +342,10 @@
                class="dlag_width"
                :visible.sync="visible_sql"
                width="40%">
-      <div class="preview_sql">
+      <div class="preview_sql ">
         <el-input type="textarea"
-                  style="resize: none"
+                  cols="40"
+                  rows="10"
                   v-model="sql">
         </el-input>
       </div>
@@ -356,15 +369,19 @@
                      @click="addTable()">新增一行</el-button>
         </div>
         <el-table :data="visibleTableList"
+                  :show-overflow-tooltip='true'
                   style="width: 100%">
           <el-table-column prop="tbName"
+                           show-overflow-tooltip
                            label="主表"> </el-table-column>
           <el-table-column prop="relationTableName"
+                           show-overflow-tooltip
                            label="关联表"> </el-table-column>
           <!-- <el-table-column prop="selectType"
                            label="表关联方式"> </el-table-column> -->
 
           <el-table-column prop="colName"
+                           show-overflow-tooltip
                            label="主表字段"> </el-table-column>
 
           <!-- <el-table-column prop="tbName"
@@ -372,9 +389,11 @@
           </el-table-column> -->
 
           <el-table-column prop="relationCol"
+                           show-overflow-tooltip
                            label="关联字段"> </el-table-column>
 
           <el-table-column prop="selectType"
+                           show-overflow-tooltip
                            label="连接条件"> </el-table-column>
         </el-table>
       </div>
@@ -456,6 +475,7 @@
 
     <!-- 选择数据表 -->
     <el-dialog v-if="dataTableTree"
+               :close-on-click-modal="false"
                class="abow_dialog"
                :destroy-on-close="true"
                :append-to-body="true"
@@ -590,7 +610,7 @@ export default {
         dataDate: '',//数据日期
         tableSize: '',//表大小:
         rowNum: '',//表数据量
-        // personName_str: '',//责任人
+        personName_str: '',//责任人
         personLiables: '',//负责人
         personUuid: '',//资产责任人
         partitions: '',//表分区
@@ -599,7 +619,7 @@ export default {
       tableData: [],
       sceneCode: "auditor",
       Column_tableData_index: [], //索引信息
-      TagsAll: ["aa"],
+      TagsAll: [],
       inputLength: "",
       search_name_infotion: "", //标签
 
@@ -873,7 +893,8 @@ export default {
           resp.data.tableRelationQuery.businessSystemName; //所属主题
         this.form.dataDate = resp.data.tableRelationQuery.dataDate; //数据日期
         this.form.tableSize = resp.data.tableSize; //数据数量：
-        this.form.personName_str = resp.data.personLiables;
+        this.form.personName_str = resp.data.personLiables;//负责人
+
         if (resp.data.personLiables.length !== 0) {
           let personName = [];
           resp.data.personLiables.forEach((item) => {
@@ -888,7 +909,6 @@ export default {
             //   personUuid: item.personUuid,
             //   personName: item.personName
             // }
-            // 
             // this.form.personName_str.push(objs)
           });
           // this.form.personLiables = personName.join(",");//负责人
@@ -904,19 +924,9 @@ export default {
 
     // 修改保存
     update_save () {
-      var selectedNodes = this.$refs.orgPeopleTree.getSelectValue();
       var personLiables = [];
-      // 
-      // 如果修改了责任人
-      if (selectedNodes) {
-        selectedNodes.forEach((item) => {
-          let objs = {
-            personUuid: item.personuuid,
-            personName: item.cnname,
-          };
-          personLiables.push(objs);
-        });
-      } else {
+      if (this.form.personName_str) {
+        // 如果默认有 没有修改
         this.form.personName_str.forEach((item) => {
           let objs = {
             personUuid: item.personUuid,
@@ -944,7 +954,6 @@ export default {
         },
         personLiables: personLiables,
       };
-
       updateTableInfo(params).then((resp) => {
         if (resp.code == 0) {
           this.$message({
@@ -959,6 +968,7 @@ export default {
           });
         }
       });
+
     },
 
     // 索引信息
@@ -971,7 +981,6 @@ export default {
     // 数据字典信息
     getDictInfo (tableId) {
       getTableZipperList(tableId).then(res => {
-        console.log("数据字典信息", res);
         this.Column_tableData_dict = res.data
       })
     },
@@ -1029,16 +1038,21 @@ export default {
     // 确定责任人
     modelResultShare () {
       // this.listLoading = true;
-      // var runTaskRelUuids = [];
       var personUuids = [];
       var personNames = [];
       var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
       for (var i = 0; i < selectedNode.length; i++) {
         personUuids.push(selectedNode[i].personuuid);
         personNames.push(selectedNode[i].cnname);
+
+        this.form.personName_str = [];//清空
+        let objs = {
+          personUuid: selectedNode[i].personuuid,
+          personName: selectedNode[i].cnname
+        }
+        this.form.personName_str.push(objs)
         this.form.personLiables = personNames.join(",");
       }
-
       this.resultShareDialogIsSee = false;
     },
 
@@ -1078,9 +1092,12 @@ export default {
     // 数据表关系列表
     add_table () {
       this.visibleTable = true; //数据表关系列表
+
+
     },
     // 新增一行表关系
     addTable () {
+
       this.add_table_visible = true;
       this.table_visible_form.tableMetaUuid = "";
       this.table_visible_form.tbName = "";
@@ -1452,6 +1469,7 @@ export default {
 } */
 .preview_sql >>> .el-textarea__inner {
   height: 300px;
+  resize: none;
 }
 /* 请选择数据表 */
 .tree_style {

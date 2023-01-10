@@ -162,6 +162,9 @@ export default {
   },
   mounted () {},
   created () {
+    this.query.businessSystemId = "";
+    // this.show_details = false; //显示列表
+    // this.$emit("queryList", this.query, this.show_details = false)
     this.post_getBusinessSystemTree(); //系统
   },
   methods: {
@@ -184,6 +187,7 @@ export default {
     },
     // 系统
     post_getBusinessSystemTree () {
+      console.log('111');
       this.loading = true;
       this.tabclick = true;
       getBusinessSystemTree(true, this.query.dataSource, true).then((resp) => {

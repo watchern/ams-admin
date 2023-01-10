@@ -31,30 +31,29 @@
     <el-table :key="tableKey"
               v-loading="listLoading"
               :data="list"
-              height="400px"
               stripe
               border
               fit
               highlight-current-row
               style="width: 100%;"
+              height="calc(100vh - 330px)"
               @sort-change="sortChange"
               @selection-change="handleSelectionChange">
       <el-table-column type="selection"
                        width="55" />
       <el-table-column label="数据角色名称"
-                       align="center"
-                       min-width="200px"
-                       show-overflow-tooltip
-                       prop="dataRoleName" />
-      <el-table-column label="创建时间"
-                       min-width="300px"
-                       align="center"
-                       show-overflow-tooltip
-                       prop="createTime" />
-      <el-table-column label="授权方式"
                        min-width="250px"
+                       prop="dataRoleName"
+                       show-overflow-tooltip />
+      <el-table-column label="创建时间"
+                       align="center"
+                       min-width="300px"
+                       prop="createTime"
+                       show-overflow-tooltip />
+      <el-table-column label="授权方式"
                        align="center"
                        prop="authenType"
+                       min-width="350px"
                        :formatter="formatAuthenType" />
       <!-- <el-table-column label="数据筛选" style="width: 50px" align="center">
         <template slot-scope="scope">
@@ -65,8 +64,8 @@
                        align="center"
                        prop="timeDuring"
                        :formatter="formatDuring"
-                       show-overflow-tooltip
-                       min-width="380px" />
+                       min-width="400px"
+                       show-overflow-tooltip />
     </el-table>
     <pagination v-show="total>0"
                 :total="total"

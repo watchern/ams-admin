@@ -24,6 +24,7 @@
       fit
       highlight-current-row
       style="width: 100%;"
+      height="calc(100vh - 330px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -31,19 +32,21 @@
       <el-table-column
               label="规则名称"
               prop="ruleName"
-              align="center"
+              min-width="200px"
               show-overflow-tooltip
       />
       <el-table-column
               label="转码方式"
               align="center"
               prop="ruleType"
+              min-width="200px"
               show-overflow-tooltip
               :formatter="formatTag" />
       <el-table-column
               label="规则描述"
               prop="ruleDesc"
               align="center"
+              min-width="500px"
               show-overflow-tooltip />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />

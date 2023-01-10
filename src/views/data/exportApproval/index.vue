@@ -1,6 +1,5 @@
 <template>
     <div class="page-container">
-        <!--            查询条件-->
         <div class="filter-container">
             <QueryField
                     ref="queryfield"
@@ -8,35 +7,66 @@
                     @submit="getList"
             />
         </div>
-
-        <!--办理按钮-->
+        <!--        办理按钮-->
         <el-row>
             <el-col align="right">
                 <el-button type="primary" class="oper-btn transact" @click="handleTransact()" />
             </el-col>
         </el-row>
-
-        <!--        列表-->
-       <el-table
+        <el-table
                 :key="tableKey"
                 v-loading="listLoading"
                 :data="tableData"
-                height="400px"
                 stripe
                 border
                 fit
                 highlight-current-row
                 style="width: 100%;"
+                height="calc(100vh - 330px)"
                 @sort-change="sortChange"
         >
-            <el-table-column label="申请模块名称" align="center" prop="requestModelName" />
-            <el-table-column label="申请时间" align="center" prop="requestTime"/>
-            <el-table-column label="涉及安全表" align="center" prop="refSafeTable"/>
-            <el-table-column label="表安全等级" align="center" prop="tableSafeLevel" />
-            <el-table-column label="当前环节" align="center" prop="currentLink"/>
-            <el-table-column label="状态" align="center" prop="status"/>
+            <el-table-column type="selection" width="55" />
+            <el-table-column
+                    label="申请模块名称"
+                    prop="requestModelName"
+                    min-width="100px"
+                    show-overflow-tooltip
+            />
+            <el-table-column
+                    label="申请时间"
+                    align="center"
+                    prop="requestTime"
+                    min-width="100px"
+                    show-overflow-tooltip
+            />
+            <el-table-column
+                    label="涉及安全表"
+                    align="center"
+                    prop="refSafeTable"
+                    min-width="100px"
+                    show-overflow-tooltip
+            />
+            <el-table-column
+                    label="表安全等级"
+                    align="center"
+                    prop="tableSafeLevel"
+                    min-width="100px"
+                    show-overflow-tooltip
+            />
+            <el-table-column
+                    label="当前环节"
+                    align="center"
+                    prop="currentLink"
+                    min-width="100px"
+                    show-overflow-tooltip
+            />
+            <el-table-column label="状态" align="center" prop="status" min-width="100px"/>
             <el-table-column label="数据申请人" align="center" prop="requestPersionName"/>
-            <el-table-column label="操作" align="center">
+            <el-table-column
+                    label="操作"
+                    align="center"
+                    width="300px"
+            >
                 <template slot-scope="scope">
                         <el-button
                                    v-if="scope.row.status == '待办理' || scope.row.status == '已办理'"
@@ -62,10 +92,8 @@
                 </template>
             </el-table-column>>
         </el-table>
-        <!--            <el-table-column label="授权方式" width="100px" align="center" prop="authenType" :formatter="formatAuthenType" />-->
-        <!--        查询绑定的 @submit="getList"  总条数-->
+<!--        v-show="total>0"-->
         <pagination
-                v-show="total>0"
                 :total="total"
                 :page.sync="pageQuery.pageNo"
                 :limit.sync="pageQuery.pageSize"
@@ -106,14 +134,11 @@
         </el-dialog>
     </div>
 </template>
-
 <script>
-
     ///查询条件
     import QueryField from '@/components/public/query-field/index'
     //分页组件
     import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-
     export default {
         components: { Pagination, QueryField },
         data() {
@@ -163,8 +188,8 @@
                     status:'待办理',
                     requestPersionName:''
                 }, {
-                    requestModelName: 'SQL编辑器2',
-                    requestTime: '2016-05-02',
+                    requestModelName: 'SQL编辑器SQL编辑器SQL编辑器SQL编辑器',
+                    requestTime: '2016-05-02 11:11:00',
                     refSafeTable: '安全表2',
                     tableSafeLevel: '三级2',
                     currentLink:'',
@@ -187,6 +212,7 @@
                     sortBy: 'asc',
                     sortName: 'create_time'
                 },
+                total:0,
                 //之前页面的类型
                 // authenTypeJson: [],
                 //列表按钮对应弹框
@@ -259,8 +285,6 @@
 
             //分页查询
             getList(query) {
-                // this.authenTypeJson = getDictList('004001')
-                // this.listLoading = true
                 if (query) this.pageQuery.condition = query
                 //listByPage接口换掉
                 // listByPage(this.pageQuery).then(resp => {
@@ -269,7 +293,6 @@
                 //     this.listLoading = false
                 // })
             },
-
             getSortClass: function(key) {
                 const sort = this.pageQuery.sort
                 return sort === `+${key}` ? 'asc' : 'desc'

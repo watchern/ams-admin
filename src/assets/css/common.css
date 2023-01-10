@@ -117,3 +117,9 @@ ul {
 .loading span img {
   width: 100%;
 }
+
+/* 弹窗 内部滚动 */
+.dlag_conter{
+  height: 400px;
+  overflow: auto;
+}
