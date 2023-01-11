@@ -256,7 +256,7 @@ export default {
               }
             })
             // 1. left join   2. right join  3.full join  4.inner join")
-                          console.log(linkData_items.sqlGenJoinType);
+            // console.log(linkData_items.sqlGenJoinType);
             switch (linkData_items.sqlGenJoinType) {
               case 1:
                 text = 'left join'
@@ -293,7 +293,7 @@ export default {
             nodeDataArray: this.nodeDataArray,
             linkDataArray: this.linkDataArray
           });
-          console.log(this.linkDataArray);
+        console.log(this.linkDataArray);
       })
     }
   }

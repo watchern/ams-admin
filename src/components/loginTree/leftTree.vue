@@ -1,36 +1,66 @@
 <template>
   <div class="left_tree_style">
-    <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-      <el-tab-pane label="系统" :disabled="tabclick" name="0"></el-tab-pane>
-      <el-tab-pane label="主题" :disabled="tabclick" name="1"></el-tab-pane>
-      <el-tab-pane label="分层" :disabled="tabclick" name="2"></el-tab-pane>
+    <el-tabs v-model="activeName"
+             type="card"
+             @tab-click="handleClick">
+      <el-tab-pane label="系统"
+                   :disabled="tabclick"
+                   name="0"></el-tab-pane>
+      <el-tab-pane label="主题"
+                   :disabled="tabclick"
+                   name="1"></el-tab-pane>
+      <el-tab-pane label="分层"
+                   :disabled="tabclick"
+                   name="2"></el-tab-pane>
     </el-tabs>
     <div class="padding10">
-      <el-input v-model="filterText2" :disabled="tabclick" placeholder="输入关键字进行过滤" />
+      <el-input v-model="filterText2"
+                :disabled="tabclick"
+                placeholder="输入关键字进行过滤" />
     </div>
     <!-- 数据源 -->
     <div class="padding10 dataSource">
-      <el-form :inline="true" :model="query" label-position="bottom">
-        <el-form-item label="数据源：" label-width="90px">
-          <el-select v-model="query.dataSource" :disabled="tabclick" @change="selectdata" placeholder="请选择数据源">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+      <el-form :inline="true"
+               :model="query"
+               label-position="bottom">
+        <el-form-item label="数据源："
+                      label-width="90px">
+          <el-select v-model="query.dataSource"
+                     :disabled="tabclick"
+                     @change="selectdata"
+                     placeholder="请选择数据源">
+            <el-option v-for="item in options"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value" />
           </el-select>
         </el-form-item>
       </el-form>
     </div>
-    <div v-if="loading == true" class="loadings">
+    <div v-if="loading == true"
+         class="loadings">
       <div class="conter_loadings">
-        <span><img src="@/assets/img/loading.gif" alt="" /></span>
+        <span><img src="@/assets/img/loading.gif"
+               alt="" /></span>
       </div>
     </div>
-    <div v-else class="conter_vh">
+    <div v-else
+         class="conter_vh">
       <!-- 系统 主题 分层  目录-->
       <div class="tree-containerall">
-        <MyElTree ref="tree2" :props="props" :data="tree_list" :filter-node-method="filterNode"
-          :default-expanded-keys="['ROOT']" class="filter-tree" highlight-current="true" node-key="id"
-          @node-click="nodeClick">
-          <span slot-scope="{ node, data }" class="custom-tree-node">
-            <i v-if="data.id === 'ROOT'" :class="data.icon" />
+        <MyElTree ref="tree2"
+                  :props="props"
+                  :data="tree_list"
+                  :filter-node-method="filterNode"
+                  :default-expanded-keys="['ROOT']"
+                  class="filter-tree"
+                  highlight-current="true"
+                  node-key="id"
+                  @node-click="nodeClick">
+          <span slot-scope="{ node, data }"
+                class="custom-tree-node">
+            <i v-if="data.id === 'ROOT'"
+               :class="data.icon" />
             <i v-if="
   data.type === 'folder' ||
   data.type === 'system' ||
@@ -45,21 +75,28 @@
             <i v-if="data.type === 'view'">
               <span class="icon iconfont agreeicon4"></span>
             </i>
-            <i v-if="data.type === 'column'" class="el-icon-c-scale-to-original" />
+            <i v-if="data.type === 'column'"
+               class="el-icon-c-scale-to-original" />
             <span>{{ node.label }}</span>
             <span style="margin-left: 10px">
               <el-button v-if="data.id === 'ROOT' || (data.extMap && data.extMap.folder_type === 'maintained')"
-                type="text" size="mini" @click.stop="() => handleCreateFolder(node, data)">
+                         type="text"
+                         size="mini"
+                         @click.stop="() => handleCreateFolder(node, data)">
                 <i class="el-icon-circle-plus" />
               </el-button>
-              <el-button v-if="data.extMap && data.extMap.folder_type === 'maintained'" type="text" size="mini"
-                @click.stop="() => handleUpdateFolder(node, data)">
+              <el-button v-if="data.extMap && data.extMap.folder_type === 'maintained'"
+                         type="text"
+                         size="mini"
+                         @click.stop="() => handleUpdateFolder(node, data)">
                 <i class="el-icon-edit" />
               </el-button>
               <el-button v-if="
   (data.extMap && data.extMap.folder_type === 'maintained') ||
-  data.type === 'table' || data.type === 'view'" type="text" size="mini"
-                @click.stop="() => handleRemove(node, data)">
+  data.type === 'table' || data.type === 'view'"
+                         type="text"
+                         size="mini"
+                         @click.stop="() => handleRemove(node, data)">
                 <i class="el-icon-delete" />
               </el-button>
             </span>
@@ -82,6 +119,12 @@ import {
 } from "@/api/data/table-info";
 export default {
   components: { MyElTree },
+  props: {
+    form: {
+      type: Object,
+      default: () => ({})
+    },
+  },
   data () {
     return {
       props: {
@@ -214,10 +257,37 @@ export default {
       //   this.post_getDataTreeNode(this.query.dataSource);//目录
       // }
     },
-    filterNode (value, data) {
-      if (!value) return true;
-      return data.label.indexOf(value) !== -1;
+    filterNode (value, data, node) {
+
+      // if (!value) return true;
+      // return data.label.indexOf(value) !== -1;
+
+      // 过滤后显示子级
+      if (!value) {
+        return true;
+      }
+      let level = node.level;
+      let _array = [];//这里使用数组存储 只是为了存储值。
+      this.getReturnNode(node, _array, value);
+      let result = false;
+      _array.forEach((item) => {
+        result = result || item;
+      });
+      return result;
     },
+
+    // 处理过滤后显示二级++
+    getReturnNode (node, _array, value) {
+      let isPass = node.data && node.data.label && node.data.label.indexOf(value) !== -1;
+      isPass ? _array.push(isPass) : '';
+      this.index++;
+
+      if (!isPass && node.level != 1 && node.parent) {
+        this.getReturnNode(node.parent, _array, value);
+      }
+    },
+
+
     nodeClick (data, node, tree) {
 
       this.tableMetaUuid = '';
@@ -422,7 +492,7 @@ export default {
   /* border: 1px solid blue; */
 }
 
-.tree-containerall>>>.el-tree {
+.tree-containerall >>> .el-tree {
   height: 100%;
 }
 
@@ -457,24 +527,27 @@ export default {
   width: 100%;
 }
 
-.left_tree_style>>>.el-tabs__header {
+.left_tree_style >>> .el-tabs__header {
   margin: 0;
 }
 
-.left_tree_style>>>.el-tabs__item {
+.left_tree_style >>> .el-tabs__item {
   width: 25%;
   text-align: center;
 }
 
-.left_tree_style>>>.el-tabs--card>.el-tabs__header .el-tabs__item.is-active {
+.left_tree_style
+  >>> .el-tabs--card
+  > .el-tabs__header
+  .el-tabs__item.is-active {
   border-bottom-color: transparent;
 }
 
-.left_tree_style>>>.el-tabs__nav {
+.left_tree_style >>> .el-tabs__nav {
   width: 100%;
 }
 
-.dataSource>>>.el-form-item {
+.dataSource >>> .el-form-item {
   display: flex;
   width: 100%;
 }
