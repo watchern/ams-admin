@@ -208,7 +208,7 @@
                   </el-form-item>
                 </div>
 
-                <el-form-item label="数据标签：">
+                <!-- <el-form-item label="数据标签：">
                   <div class="input_blue"
                        @click="onclick_infotion_tag()">
                     <div v-for="(item, index) in TagsAll"
@@ -229,7 +229,7 @@
                            disabled
                            type="text" />
                   </div>
-                </el-form-item>
+                </el-form-item> -->
 
                 <el-form-item label="表热度：">
                   <ul class="Heat_ul _width">
@@ -306,11 +306,9 @@
                                label="名称"></el-table-column>
               <el-table-column prop="indexType"
                                show-overflow-tooltip
-                               width="130"
                                label="类型"></el-table-column>
               <el-table-column prop="columnName"
                                show-overflow-tooltip
-                               width="150"
                                label="列"></el-table-column>
               <el-table-column prop="onlyIndex"
                                show-overflow-tooltip
