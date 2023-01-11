@@ -98,18 +98,22 @@
                     style="width: 100%;overflow: auto;">
             <el-table-column label="字段名称"
                              width="250px"
-                             prop="colName" />
+                             prop="colName"
+                             show-overflow-tooltip />
             <el-table-column label="字段汉化名称"
                              width="250px"
-                             prop="chnName" />
+                             prop="chnName"
+                             show-overflow-tooltip />
             <el-table-column label="字段类型"
                              width="150px"
                              align="center"
-                             prop="dataType" />
+                             prop="dataType"
+                             show-overflow-tooltip />
             <el-table-column label="字段长度"
                              width="150px"
                              align="center"
-                             prop="dataLength" />
+                             prop="dataLength"
+                             show-overflow-tooltip />
           </el-table>
         </div>
       </template>
