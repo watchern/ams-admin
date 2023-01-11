@@ -49,9 +49,15 @@
             <div class="padding10">
                 <div class="right_btn">
                     <el-button size="mini" type="primary" @click="apply_add()">添加</el-button>
-                    <el-button size="mini" type="primary" :disabled="Selectval_list.length === 0" @click="apply_deletes()">删除</el-button>
-                    <el-button size="mini" type="primary" :disabled="Selectval_list.length === 0" @click="apply_transact()">办理</el-button>
-                    <el-button size="mini" type="primary" :disabled="Selectval_list.length !== 1" @click="apply_edit()">编辑</el-button>
+                    <el-button size="mini" type="primary" :disabled="Selectval_list.length === 0"
+                               @click="apply_deletes()">删除
+                    </el-button>
+                    <el-button size="mini" type="primary" :disabled="Selectval_list.length === 0"
+                               @click="apply_transact()">办理
+                    </el-button>
+                    <el-button size="mini" type="primary" :disabled="Selectval_list.length !== 1" @click="apply_edit()">
+                        编辑
+                    </el-button>
                 </div>
             </div>
             <el-table v-loading="listLoading"
@@ -750,18 +756,12 @@
                 this.fileList = fileList;
                 const time = new Date().getTime();
                 for (let i = 0; i < this.fileList.length; i++) {
-                    // console.log("fileList:",this.fileList[i])
-                    // this.splitName = this.fileList[i].name.split('.');
-                    // console.log("this.splitName",this.splitName)
-                    // this.fileList[i].name = this.splitName[0] + time + "." + this.splitName[1];
-                    // console.log("fileList.fileName:",this.fileList[i].name)
                     this.splitName = this.fileList[i].name.split('.');
                     let fileName = this.splitName[0] + time + "." + this.splitName[1];
-                    let f = new File([fileList[i].raw],fileName);
+                    let f = new File([fileList[i].raw], fileName);
                     f.uid = fileList[i].uid;
                     this.fileList[i].raw = f;
                     this.fileList[i].name = this.splitName[0] + time + "." + this.splitName[1];
-                    console.log(fileList[i])
                 }
                 let extName = file.name.substring(file.name.lastIndexOf(".") + 1).toLowerCase();
                 this.tableData.push(this.file)
@@ -774,8 +774,6 @@
                 } else if (extName === 'xlsx') {
                     this.file.fileType = 'EXCEL数据表(2010)'
                 }
-                console.log("tableData:", this.tableData)
-                console.log("fileList:", fileList)
                 this.file = this.$options.data().file
             },
             submitUpload() {
@@ -783,7 +781,6 @@
                     this.$notify.warning("请选择文件后上传！")
                     return
                 }
-                console.log("测试")
                 this.$refs.upload.submit();
             },
             uploadOk(file, fileList) {
@@ -803,8 +800,6 @@
             },
             // 动态删除一行
             lineDelete(index, ipTable) {
-                console.log("ipTable:", ipTable)
-                console.log("index:", index)
                 switch (ipTable) {
                     case 'file':
                         this.tableData.splice(index, 1)
@@ -834,16 +829,28 @@
                 this.Selectval_list.forEach((r) => {
                     applyUuid = r.applyUuid;
                 });
-                this.applyDialogVisible = true
-                this.isDisable = false
-                this.updateShow = true
-                this.dialogStatusValue = true
 
                 this.title = '编辑申请'
-                this.dialogStatus = 'update'
 
                 this.form.applyUuid = applyUuid
-                this.details_details();
+                // this.details_details();
+                getById(this.form.applyUuid).then(res => {
+                    this.form = res.data
+                    this.tableData = res.data.fileList
+
+                    //只有状态为草稿时才能实现对数据的编辑修改
+                    if (this.form.status !== '草稿') {
+                        this.$notify.warning("只有草稿状态可办理")
+                        return
+                    } else {
+                        this.dialogStatusValue = true
+                        this.applyDialogVisible = true
+                        this.dialogStatus = 'update'
+                        this.isDisable = false
+                        this.updateShow = true
+                    }
+                })
+
             },
             //删除
             apply_deletes() {
@@ -871,33 +878,47 @@
             },
             //办理
             apply_transact() {
-                this.temp = Object.assign({}, this.applySelectionList[0])
-                // alert(JSON.stringify(this.temp))
-                //业务主键
-                this.flowItem.appDataUuid = this.temp.applyUuid;
-                //版本id 随机生成
-                this.flowItem.versionUuid = this.common.randomString4Len(8);
-                // this.flowItem.applyTitle="场景详情流程";
-                //申请业务的名字（待办标题）
-                this.flowItem.applyTitle = this.temp.applyName;
-                this.dialogVisible = true
+                let applyUuid = '';
+                this.Selectval_list.forEach((r) => {
+                    applyUuid = r.applyUuid;
+                });
+                this.form.applyUuid = applyUuid
+                getById(this.form.applyUuid).then(res => {
+                    this.form.status = res.data.status
+                    if (this.form.status !== '草稿') {
+                        this.$notify.warning("只有草稿状态可办理")
+                    } else {
+                        this.temp = Object.assign({}, this.applySelectionList[0])
+                        // alert(JSON.stringify(this.temp))
+                        //业务主键
+                        this.flowItem.appDataUuid = this.temp.applyUuid;
+                        //版本id 随机生成
+                        this.flowItem.versionUuid = this.common.randomString4Len(8);
+                        // this.flowItem.applyTitle="场景详情流程";
+                        //申请业务的名字（待办标题）
+                        this.flowItem.applyTitle = this.temp.applyName;
+                        this.dialogVisible = true
+                    }
+                })
             },
             //工作流相关
             closeFlowItem(val) {
                 this.dialogVisible = val;
                 this.flowParam = 0;
-                // this.initData();
-            },
+            }
+            ,
             //工作流相关
             delectData(val) {
                 this.dialogVisible = val;
-            },
+            }
+            ,
             // 时间格式化
             formatApplyTime(row) {
                 // 拼接日期规格为YYYY-MM-DD hh:mm:ss
                 let applyTime = new Date(row.applyTime)
                 return applyTime.getFullYear() + '-' + (applyTime.getMonth() + 1) + '-' + applyTime.getDate() + ' ' + applyTime.getHours() + ':' + applyTime.getMinutes() + ':' + applyTime.getSeconds()
-            },
+            }
+            ,
 
             // 清空
             clearAll() {
@@ -906,11 +927,13 @@
                 this.query.status = ''
                 this.query.startTime = ''
                 this.query.endTime = ''
-            },
+            }
+            ,
             search() {
                 this.query.pageNo = 1
                 this.getList();//刷新列表
-            },
+            }
+            ,
             // 刷新列表
             getList() {
                 this.listLoading = true
@@ -929,22 +952,24 @@
                     this.page_list = res.data;
                     this.listLoading = false
                 })
-            },
+            }
+            ,
             //详情
             show_details(applyUuid) {
                 this.form.applyUuid = applyUuid
                 this.detailsUuid = applyUuid
                 this.dialogDetailVisible = true
-            },
+            }
+            ,
 
             // 编辑 接口
             details_details() {
                 getById(this.form.applyUuid).then(res => {
-                    console.log("res.data:", res.data)
                     this.form = res.data
                     this.tableData = res.data.fileList
                 })
-            },
+            }
+            ,
             // 多选
             handleSelectionChange(val) {
                 this.applySelectionList = []
@@ -952,17 +977,20 @@
                 val.forEach((value) => {
                     this.applySelectionList.push(value)
                 })
-            },
+            }
+            ,
             // 分页
             handleCurrentChange(val) {
                 this.query.pageNo = val
                 this.getList()
-            },
+            }
+            ,
             // 每页多少条
             handleSizeChange(val) {
                 this.query.pageSize = val
                 this.getList()
-            },
+            }
+            ,
 
             // 新建保存 && 编辑保存
             save(form) {
@@ -981,12 +1009,8 @@
                                     operationType: this.form.operationType,
                                     loadType: this.form.loadType,
                                 },
-                                // tableData: {
-                                //
-                                // },
                                 "tableData": JSON.stringify(this.tableData),
                             }
-                            console.log("this.tableData.length:", this.tableData.length)
                             if (this.tableData.length === 0) {
                                 this.$notify.warning("请选择文件！")
                                 return
@@ -1019,11 +1043,6 @@
                                 },
                                 "tableData": JSON.stringify(this.tableData),
                             }
-                            //只有状态为草稿时才能实现对数据的编辑修改
-                            if (this.form.status !== '草稿') {
-                                this.$notify.warning("只有草稿状态可修改")
-                                return
-                            }
                             //update_data方法调用后台update接口实现编辑功能
                             update_data(params).then(res => {
                                 if (res.code === 0) {
@@ -1053,7 +1072,8 @@
                         return false
                     }
                 })
-            },
+            }
+            ,
 
             // 关闭弹窗
             handleClose(form) {
@@ -1061,26 +1081,32 @@
                 this.updateShow = false
                 this.fileList = []
                 this.tableData = []
-            },
+            }
+            ,
             //子组件fileupload传值给父组件，用showFileType事件接收值赋给变量fileType
             showFileType(fileType) {
                 this.fileType = fileType;
-            },
+            }
+            ,
             //子组件fileupload传值给父组件，用showFilePath事件接收值赋给变量fileType
             showFilePath(filePath) {
                 this.form.fileName = filePath;
-            },
+            }
+            ,
             //打开流程跟踪弹窗
             todoOpinionList(row) {
                 this.applyUuid = row.applyUuid;
                 this.todoFlow = true;
-            },
+            }
+            ,
             addApply() {
 
-            },
+            }
+            ,
             delApply() {
 
-            },
+            }
+            ,
             //工作流相关
             saveOpinion() {
                 //保存业务数据成功后
@@ -1092,10 +1118,12 @@
                             location.reload()
                         })
                 }, 20);
-            },
+            }
+            ,
         }
 
-    };
+    }
+    ;
 </script>
 
 <style scoped>

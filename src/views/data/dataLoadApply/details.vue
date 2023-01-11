@@ -93,46 +93,6 @@
                         </el-checkbox>
                     </template>
                 </el-table-column>
-                <!--            <el-row>-->
-                <!--                <el-col :span="9">-->
-                <!--                    <el-form-item v-if="form.operationType === '0'" label="行分隔符">-->
-                <!--                        <el-input style="width: 100%;"-->
-                <!--                                  type="text"-->
-                <!--                                  v-model="form.lineSeparator"-->
-                <!--                                  :rows="4" disabled></el-input>-->
-                <!--                    </el-form-item>-->
-                <!--                </el-col>-->
-                <!--                <el-col :span="9">-->
-                <!--                    <el-form-item v-if="form.operationType === '0'" label="列分隔符">-->
-                <!--                        <el-input style="width: 100%;"-->
-                <!--                                  type="text"-->
-                <!--                                  v-model="form.columnSeparator"-->
-                <!--                                  :rows="4" disabled></el-input>-->
-                <!--                    </el-form-item>-->
-                <!--                </el-col>-->
-                <!--                <el-col :span="4">-->
-                <!--                    <el-form-item v-if="form.operationType === '0'">-->
-                <!--                        <el-checkbox v-model="form.isHeaderLine" true-label="true" style="margin-left: 20px" disabled>-->
-                <!--                            首行为标题行-->
-                <!--                        </el-checkbox>-->
-                <!--                    </el-form-item>-->
-                <!--                </el-col>-->
-                <!--            </el-row>-->
-                <!--            <el-form-item label="文件名" v-if="form.operationType === '0'">-->
-                <!--                <el-input style="width: 100%;"-->
-                <!--                          type="text"-->
-                <!--                          v-model="form.fileName"-->
-                <!--                          :rows="8" disabled></el-input>-->
-                <!--            </el-form-item>-->
-                <!--            <el-form-item label="文件路径 " v-if="form.operationType === '0'">-->
-                <!--                <el-input style="width: 100%;"-->
-                <!--                          type="text"-->
-                <!--                          v-model="form.filePath"-->
-                <!--                          disabled/>-->
-                <!--            </el-form-item>-->
-                <!--            <el-form-item v-if="form.operationType === '0'" style="margin-left: 40vh">-->
-                <!--                <el-button @click="showFile(form)">点击查看文件内容</el-button>-->
-                <!--            </el-form-item>-->
                 <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
                     <el-col :span="24">
                         <el-table key="colMetaUuid"
@@ -256,12 +216,9 @@
         },
         methods: {
             showFile(val) {
-                console.log("form:", val);
                 showFile(val)
                     .then((res) => {
                         this.fileString = res.data
-                        console.log("res.data:", res.data)
-                        console.log("this.fileString:", this.fileString)
                     })
                 this.dialogFileVisible = true;
             },
@@ -269,7 +226,6 @@
                 getById(value)
                     .then((res) => {
                         this.form = res.data
-                        console.log("form:",this.form)
                         this.tableData = res.data.fileList
                     })
             },
