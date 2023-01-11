@@ -21,7 +21,8 @@
       <div id="leftPart"
            class="left-part">
         <div class="left-dataTree">
-          <el-input id="dataSearch"
+          <!-- 替换成新的资源树 -->
+          <!-- <el-input id="dataSearch"
                     style="margin-top: 5px"
                     v-model="tableSearchInput"
                     placeholder="输入关键字进行过滤"
@@ -29,7 +30,8 @@
                     suffix-icon="el-icon-search" />
           <ul id="dataTree"
               class="ztree"
-              style="margin-top: 5px" />
+              style="margin-top: 5px" /> -->
+          <LeftTrees ref="tree_left" ></LeftTrees>
         </div>
         <div class="left-paramTree">
           <el-input id="paramSearch"
@@ -157,7 +159,7 @@
                      @click="modelResultSavePathDialog = true">{{ path }} <i class="el-icon-edit"
                    style="font-size: 16px"></i></label>
               <!-- 切换数据源下拉框 -->
-              <div class="chooseDataSource"
+              <!-- <div class="chooseDataSource"
                    v-if="typeof callType == 'undefined'">
                 数据源：
                 <el-select v-model="dataSource"
@@ -167,7 +169,7 @@
                              :label="item.label"
                              :value="item.value" />
                 </el-select>
-              </div>
+              </div> -->
             </el-col>
           </el-row>
           <div id="sqlDraft"
@@ -489,6 +491,7 @@ import addParam from "@/views/analysis/modelparam/paramManager/addParam";
 import { getUuid } from "@/api/analysis/common";
 import { uuid2 } from "@/api/analysis/auditmodel";
 import tablerelation from "@/views/data/table/tablerelation";
+import LeftTrees from "@/components/loginTree/leftTree.vue";
 require("@/components/ams-codemirror/addon/edit/matchbrackets");
 require("@/components/ams-codemirror/addon/selection/active-line");
 require("@/components/ams-codemirror/mode/sql/sql");
@@ -619,6 +622,7 @@ export default {
     tablerelation,
     addParam,
     Details,
+    LeftTrees,
   },
   props: [
     "sqlEditorParamObj",
@@ -1201,6 +1205,9 @@ export default {
       initDraftTree();
       this.executeLoading = true;
       this.loadText = "正在初始化数据表...";
+      //新数据表树
+      this.$refs.tree_left.loadLeftTreeTypeFun("1");
+
       initTableTip(this.dataUserId, this.sceneCode1, this.dataSource)
         .then((result) => {
           initTableTree(result, this.dataSource);
@@ -1282,7 +1289,7 @@ export default {
      * sql格式化
      */
     sqlFormat () {
-      sqlFormat(this.dataSource)
+      sqlFormat(this.$refs.tree_left.query.dataSource)
     },
     /**
      * 查找和替换
@@ -1371,7 +1378,7 @@ export default {
      * 生成select语句
      */
     getSelectSql (menuId) {
-      getSelectSql(menuId, this.dataSource)
+      getSelectSql(menuId, this.$refs.tree_left.query.dataSource)
     },
     /**
      *打开sql保存草稿窗体
@@ -1523,7 +1530,7 @@ export default {
         if (!obj.isExistParam) {
           // this.executeLoading = true
           _this.loadText = "正在获取SQL信息...";
-          getExecuteTask(obj, _this.dataUserId, _this.sceneCode1, _this.dataSource).then(
+          getExecuteTask(obj, _this.dataUserId, _this.sceneCode1, _this.$refs.tree_left.query.dataSource).then(
             (result) => {
               //在这如果报错就加一个新页签，如果不报错就显示我的
               if (result.data.isError) {
@@ -1794,7 +1801,7 @@ export default {
       currentExecuteProgress = 0;
       this.currentExecuteSQL = [];
       lastResultColumn = [];
-      const data = { sql: result.sql, dataSource: this.dataSource };
+      const data = { sql: result.sql, dataSource: this.$refs.tree_left.query.dataSource };
       this.executeLoading = true;
       this.loadText = "正在获取SQL列...";
       getColumnSqlInfo(data)
