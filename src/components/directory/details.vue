@@ -1295,6 +1295,7 @@ export default {
 
     // 保存新的关联关系
     save_table () {
+
       if (this.visibleTableList.length == 0) {
         this.$message({
           type: "warning",
