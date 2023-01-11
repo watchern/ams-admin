@@ -485,7 +485,7 @@
               <el-input v-model="table_visible_form.tbName"
                         disabled></el-input>
             </el-form-item>
-            <el-form-item label="字段名称："
+            <el-form-item label="主表字段："
                           prop="colName">
               <el-row>
                 <el-col :span="22">
@@ -531,7 +531,7 @@
               <el-input v-model="table_visible_form.tbName"
                         disabled></el-input>
             </el-form-item>
-            <el-form-item label="字段名称："
+            <el-form-item label="主表字段："
                           prop="colName">
               <el-select v-model="table_visible_form.colName"
                          style="width: 100%">
