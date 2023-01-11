@@ -209,6 +209,10 @@ export default {
       type: Boolean,
       default: true // 左侧树操作按钮是否显示
     },
+    form: {
+      type: Object,
+      default: () => ({})
+    },
 
   },
   data () {
@@ -271,6 +275,8 @@ export default {
     },
   },
   created () {
+    console.log(this.form);
+
     this.post_getBusinessSystemTree();//系统
   },
   methods: {
@@ -340,21 +346,32 @@ export default {
     },
     // 选择数据源
     selectdata (val) {
-      this.query.dataSource = val
-      if (this.activeName == '0') {
-        // 系统
-        this.post_getBusinessSystemTree();//系统
-      } else if (this.activeName == '1') {
-        // 主题
-        this.post_getThemeTree();//主题
-      } else if (this.activeName == '2') {
-        // 分层
-        this.post_getLayeredTree();//分层
+      console.log(this.form.tableLayeredName);
+      if (val !== this.form.tableLayeredName) {
+        this.$message({
+          type: "info",
+          message: "请选择相同的数据源!",
+        });
+        this.query.dataSource = 'Postgre'
+        return false;
+      } else {
+        this.query.dataSource = val
+        if (this.activeName == '0') {
+          // 系统
+          this.post_getBusinessSystemTree();//系统
+        } else if (this.activeName == '1') {
+          // 主题
+          this.post_getThemeTree();//主题
+        } else if (this.activeName == '2') {
+          // 分层
+          this.post_getLayeredTree();//分层
+        }
+        // else {
+        //   // 目录
+        //   this.post_getDataTreeNode();//目录
+        // }
       }
-      // else {
-      //   // 目录
-      //   this.post_getDataTreeNode();//目录
-      // }
+
     },
 
 

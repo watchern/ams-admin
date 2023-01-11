@@ -1,84 +1,72 @@
 <template>
   <div class="left_tree_style">
-    <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-      <el-tab-pane label="系统" :disabled="tabclick" name="0"></el-tab-pane>
-      <el-tab-pane label="主题" :disabled="tabclick" name="1"></el-tab-pane>
-      <el-tab-pane label="分层" :disabled="tabclick" name="2"></el-tab-pane>
-      <el-tab-pane
-        label="个人空间"
-        :disabled="tabclick"
-        v-if="isShowPersonSpaceTab"
-        name="3"
-      ></el-tab-pane>
+    <el-tabs v-model="activeName"
+             type="card"
+             @tab-click="handleClick">
+      <el-tab-pane label="系统"
+                   :disabled="tabclick"
+                   name="0"></el-tab-pane>
+      <el-tab-pane label="主题"
+                   :disabled="tabclick"
+                   name="1"></el-tab-pane>
+      <el-tab-pane label="分层"
+                   :disabled="tabclick"
+                   name="2"></el-tab-pane>
     </el-tabs>
     <div class="padding10">
-      <el-input
-        v-model="filterText2"
-        :disabled="tabclick"
-        placeholder="输入关键字进行过滤"
-      />
+      <el-input v-model="filterText2"
+                :disabled="tabclick"
+                placeholder="输入关键字进行过滤" />
     </div>
     <!-- 数据源 -->
     <div class="padding10 dataSource">
-      <el-form :inline="true" :model="query" label-position="bottom">
-        <el-form-item label="数据源：" label-width="90px">
-          <el-select
-            v-model="query.dataSource"
-            :disabled="tabclick"
-            @change="selectdata"
-            placeholder="请选择数据源"
-          >
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
+      <el-form :inline="true"
+               :model="query"
+               label-position="bottom">
+        <el-form-item label="数据源："
+                      label-width="90px">
+          <el-select v-model="query.dataSource"
+                     :disabled="tabclick"
+                     @change="selectdata"
+                     placeholder="请选择数据源">
+            <el-option v-for="item in options"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value" />
           </el-select>
         </el-form-item>
       </el-form>
     </div>
-    <div v-if="loading == true" class="loadings">
+    <div v-if="loading == true"
+         class="loadings">
       <div class="conter_loadings">
-        <span><img src="@/assets/img/loading.gif" alt="" /></span>
+        <span><img src="@/assets/img/loading.gif"
+               alt="" /></span>
       </div>
     </div>
-
-    <div v-else class="conter_vh">
+    <div v-else
+         class="conter_vh">
       <!-- 系统 主题 分层  目录-->
       <div class="tree-containerall">
-        <MyElTree
-          ref="tree2"
-          :props="props"
-          :data="tree_list"
-          :filter-node-method="filterNode"
-          :default-expanded-keys="['ROOT']"
-          class="filter-tree"
-          highlight-current="true"
-          node-key="id"
-          :load="loadNode"
-          lazy
-          @node-click="nodeClick"
-          @node-contextmenu="nodeContextmenu"
-          @node-drag-start="handleDragStart"
-          @node-drag-enter="handleDragEnter"
-          @node-drag-leave="handleDragLeave"
-          @node-drag-over="handleDragOver"
-          @node-drag-end="handleDragEnd"
-          @node-drop="handleDrop"
-          :draggable="draggable"
-          :allow-drop="returnFalse"
-        >
-          <span slot-scope="{ node, data }" class="custom-tree-node">
-            <i v-if="data.id === 'ROOT'" :class="data.icon" />
-            <i
-              v-if="
-                data.type === 'folder' ||
-                data.type === 'system' ||
-                data.type === 'layered' ||
-                data.type === 'theme'
-              "
-            >
+        <MyElTree ref="tree2"
+                  :props="props"
+                  :data="tree_list"
+                  :filter-node-method="filterNode"
+                  :default-expanded-keys="['ROOT']"
+                  class="filter-tree"
+                  highlight-current="true"
+                  node-key="id"
+                  @node-click="nodeClick">
+          <span slot-scope="{ node, data }"
+                class="custom-tree-node">
+            <i v-if="data.id === 'ROOT'"
+               :class="data.icon" />
+            <i v-if="
+  data.type === 'folder' ||
+  data.type === 'system' ||
+  data.type === 'layered' ||
+  data.type === 'theme'
+">
               <span class="agreeicon0"></span>
             </i>
             <i v-if="data.type === 'table'">
@@ -87,46 +75,28 @@
             <i v-if="data.type === 'view'">
               <span class="icon iconfont agreeicon4"></span>
             </i>
-            
-            <i
-              v-if="data.type === 'column'"
-              class="el-icon-c-scale-to-original"
-            />
+            <i v-if="data.type === 'column'"
+               class="el-icon-c-scale-to-original" />
             <span>{{ node.label }}</span>
             <span style="margin-left: 10px">
-              <!-- 如果是SQL编辑器 不展示操作按钮 -->
-              <el-button
-                v-if="
-                  data.id === 'ROOT' ||
-                  (data.extMap && data.extMap.folder_type === 'maintained')
-                "
-                type="text"
-                size="mini"
-                v-show="isShowLoadLeftTreeBtn"
-                @click.stop="() => handleCreateFolder(node, data)"
-              >
+              <el-button v-if="data.id === 'ROOT' || (data.extMap && data.extMap.folder_type === 'maintained')"
+                         type="text"
+                         size="mini"
+                         @click.stop="() => handleCreateFolder(node, data)">
                 <i class="el-icon-circle-plus" />
               </el-button>
-              <el-button
-                v-if="data.extMap && data.extMap.folder_type === 'maintained'"
-                type="text"
-                size="mini"
-                v-show="isShowLoadLeftTreeBtn"
-                @click.stop="() => handleUpdateFolder(node, data)"
-              >
+              <el-button v-if="data.extMap && data.extMap.folder_type === 'maintained'"
+                         type="text"
+                         size="mini"
+                         @click.stop="() => handleUpdateFolder(node, data)">
                 <i class="el-icon-edit" />
               </el-button>
-              <el-button
-                v-if="
-                  (data.extMap && data.extMap.folder_type === 'maintained') ||
-                  data.type === 'table' ||
-                  data.type === 'view'
-                "
-                type="text"
-                size="mini"
-                v-show="isShowLoadLeftTreeBtn"
-                @click.stop="() => handleRemove(node, data)"
-              >
+              <el-button v-if="
+  (data.extMap && data.extMap.folder_type === 'maintained') ||
+  data.type === 'table' || data.type === 'view'"
+                         type="text"
+                         size="mini"
+                         @click.stop="() => handleRemove(node, data)">
                 <i class="el-icon-delete" />
               </el-button>
             </span>
@@ -147,16 +117,15 @@ import {
   getLayeredTree, //分层
   delTable,
 } from "@/api/data/table-info";
-import {
-  getPersonSpaceTree, //个人空间
-  showRMenu, //节点右键事件
-  getTableField, //加载表字段
-  addDragEvent,//树节点拖拽方法
-} from "@/api/analysis/sqleditor/sqleditor";
-import { init } from "leancloud-storage";
 export default {
   components: { MyElTree },
-  data() {
+  props: {
+    form: {
+      type: Object,
+      default: () => ({})
+    },
+  },
+  data () {
     return {
       props: {
         label: "label",
@@ -165,7 +134,7 @@ export default {
       },
       activeName: "0", //tab切换
       filterText2: null,
-      tableMetaUuid: "",
+      tableMetaUuid: '',
       options: [
         {
           value: "Postgre",
@@ -193,15 +162,11 @@ export default {
       treeLoading: false,
       tableData: [],
       chooseTables: [],
-      loadLeftTreeType: "", //因为很多模块需要用到这棵树，用此类型来区分不同模块; 1-SQL编辑器
-      isShowLoadLeftTreeBtn: true, //是否展示树操作按钮
-      isShowPersonSpaceTab: false, //是否展示个人空间页签
-      draggable:false,//是否开启树节点拖拽
     };
   },
   computed: {},
   watch: {
-    filterText2(val) {
+    filterText2 (val) {
       this.$refs.tree2.filter(val);
     },
   },
@@ -214,76 +179,8 @@ export default {
 
   },
   methods: {
-    // 树内不可拖拽
-    returnFalse() {
-      return false;
-    },
-    //节点开始拖拽时触发的事件
-    handleDragStart(node, ev) {
-      // console.log('drag start', node);
-    },
-    //拖拽进入其他节点时触发的事件
-    handleDragEnter(draggingNode, dropNode, ev) {
-      // console.log('tree drag enter: ', dropNode.label);
-    },
-    //拖拽离开某个节点时触发的事件
-    handleDragLeave(draggingNode, dropNode, ev) {
-      // console.log('tree drag leave: ', dropNode.label);
-    },
-    //在拖拽节点时触发的事件（类似浏览器的 mouseover 事件）
-    handleDragOver(draggingNode, dropNode, ev) {
-      // console.log('tree drag over: ', dropNode.label);
-    },
-    //拖拽结束时（可能未成功）触发的事件
-    handleDragEnd(draggingNode, dropNode, dropType, ev) {
-      console.log(draggingNode)
-      // 只有表和字段能拖拽
-      if (draggingNode.data.type === "table" || draggingNode.data.type === "table") {
-        var dragNodeName = draggingNode.data.label;
-        addDragEvent(dragNodeName);
-      }
-     
-    },
-    // 拖拽成功完成时
-    handleDrop(draggingNode, dropNode, dropType, ev) {
-      // console.log(draggingNode, dropNode, dropType, ev);
-    },
-    // 懒加载表字段
-    async loadNode(node, resolve) {
-      if (node.level === 0) {
-        return resolve(node.data);
-      }
-      if (node.level === 1) {
-        return resolve(node.data.children);
-      }
-      if (node.level == 2) {
-        if(!this.isShowPersonSpaceTab){
-          //去掉表的
-          resolve([])
-        }else{
-          var nodeList = getTableField(node.data.id, this.query.dataSource);
-          Promise.all([nodeList]).then(
-            (res) => {
-              resolve(res[0])
-            }
-          );
-        }
-      
-      }
-    },
-    // 区分不同模块
-    loadLeftTreeTypeFun(data) {
-      if (data) {
-        this.loadLeftTreeType = data;
-        if (this.loadLeftTreeType == "1") {
-          this.isShowLoadLeftTreeBtn = false;
-          this.isShowPersonSpaceTab = true;
-          this.draggable = true;
-        }
-      }
-    },
     // 选择数据源
-    selectdata(val) {
+    selectdata (val) {
       this.query.dataSource = val;
       if (this.activeName == "0") {
         // 系统
@@ -294,16 +191,13 @@ export default {
       } else if (this.activeName == "2") {
         // 分层
         this.post_getLayeredTree(); //分层
-      } else if (this.activeName == "3") {
-        // 个人空间
-        this.post_getPersonSpaceTree(); //个人空间
       } else {
         // 目录
         this.post_getDataTreeNode(); //目录
       }
     },
     // 系统
-    post_getBusinessSystemTree() {
+    post_getBusinessSystemTree () {
       this.loading = true;
       this.tabclick = true;
       getBusinessSystemTree(true, this.query.dataSource, true).then((resp) => {
@@ -313,7 +207,7 @@ export default {
       });
     },
     // 主题
-    post_getThemeTree() {
+    post_getThemeTree () {
       this.loading = true;
       this.tabclick = true;
       getThemeTree(true, this.query.dataSource, true).then((resp) => {
@@ -323,20 +217,10 @@ export default {
       });
     },
     // 分层
-    post_getLayeredTree() {
+    post_getLayeredTree () {
       this.loading = true;
       this.tabclick = true;
       getLayeredTree(true, this.query.dataSource, true).then((resp) => {
-        this.tree_list = resp.data;
-        this.loading = false;
-        this.tabclick = false;
-      });
-    },
-    //个人空间
-    post_getPersonSpaceTree() {
-      this.loading = true;
-      this.tabclick = true;
-      getPersonSpaceTree("", "", this.query.dataSource).then((resp) => {
         this.tree_list = resp.data;
         this.loading = false;
         this.tabclick = false;
@@ -356,7 +240,8 @@ export default {
     //   });
     // },
 
-    handleClick(tab, event) {
+
+    handleClick (tab, event) {
       if (tab.index == "0") {
         // this.tabclick = true
         // setTimeout(() => {
@@ -367,17 +252,42 @@ export default {
         this.post_getThemeTree(); //主题
       } else if (tab.index == "2") {
         this.post_getLayeredTree(); //分层
-      } else if (tab.index == "3") {
-        this.post_getPersonSpaceTree(); //个人空间
       }
       // else {
       //   this.post_getDataTreeNode(this.query.dataSource);//目录
       // }
     },
-    filterNode(value, data) {
-      if (!value) return true;
-      return data.label.indexOf(value) !== -1;
+    filterNode (value, data, node) {
+
+      // if (!value) return true;
+      // return data.label.indexOf(value) !== -1;
+
+      // 过滤后显示子级
+      if (!value) {
+        return true;
+      }
+      let level = node.level;
+      let _array = [];//这里使用数组存储 只是为了存储值。
+      this.getReturnNode(node, _array, value);
+      let result = false;
+      _array.forEach((item) => {
+        result = result || item;
+      });
+      return result;
     },
+
+    // 处理过滤后显示二级++
+    getReturnNode (node, _array, value) {
+      let isPass = node.data && node.data.label && node.data.label.indexOf(value) !== -1;
+      isPass ? _array.push(isPass) : '';
+      this.index++;
+
+      if (!isPass && node.level != 1 && node.parent) {
+        this.getReturnNode(node.parent, _array, value);
+      }
+    },
+
+
     nodeClick (data, node, tree) {
 
       this.tableMetaUuid = '';
@@ -418,62 +328,11 @@ export default {
         this.tableMetaUuid = node.data.id;
         this.show_details = true;
         this.isDisable_input = true;
-        this.$emit(
-          "details",
-          this.tableMetaUuid,
-          this.show_details,
-          this.isDisable_input
-        );
+        this.$emit("details", this.tableMetaUuid, this.show_details, this.isDisable_input);
       }
     },
-    //鼠标右键事件
-    nodeContextmenu(event, data, node, e) {
-      var menuId = "";
-      var numm = $(document).height() - event.clientY;
-      if (
-        data.type === "table" ||
-        data.type === "view" ||
-        data.type === "datasource"
-      ) {
-        menuId = "tableMenu";
-        // history.scrollRestoration = 'manual'  不知道干什么
-        // 判断是不是导入数据节点、和分享节点，右键可便捷表结构
-        if (data.pid === "importDataTable") {
-          menuId = "importTableMenu";
-        }
-      } else {
-        // 外部导入数据节点加导入功能
-        if (data.id === "importDataTable") {
-          menuId = "importDataMenu";
-        }
-
-        if (
-          data.id === "bussDataRoot" ||
-          data.id === "bussRootNode" ||
-          data.id === "my_space" ||
-          data.id === "bussRootNode_dev" ||
-          data.id === "my_space_dev" ||
-          data.id === "other_space_dev"
-        ) {
-          menuId = "rootMenu";
-        }
-      }
-      if (menuId !== "") {
-        showRMenu(
-          "sqlEditorLeftTree",
-          "dataTree",
-          menuId,
-          event.clientX,
-          event.clientY,
-          data
-        );
-      } else {
-        return false;
-      }
-    },
-
     // 第一步选择的数据库
-    nodeClick_table(data, node, tree) {
+    nodeClick_table (data, node, tree) {
       //获取所有选中的节点 start
       let res = this.$refs.tree1.getCheckedNodes();
       var check_list = [];
@@ -509,7 +368,7 @@ export default {
       this.folderForm.fullPath = fullPath.join("/");
       this.folderFormVisible = true;
     },
-    handleUpdateFolder(node, data) {
+    handleUpdateFolder (node, data) {
       this.resetFolderForm();
       this.tempData = data;
       this.dialogStatus = "update";
@@ -524,7 +383,7 @@ export default {
       // this.folderForm.fullPath = fullPath.join("/");
       this.folderFormVisible = true;
     },
-    handleRemove(node, data) {
+    handleRemove (node, data) {
       this.$confirm("是否删除？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -547,9 +406,9 @@ export default {
             });
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     },
-    createFolder() {
+    createFolder () {
       if (
         this.folderForm.folderName == null ||
         this.folderForm.folderName.trim().length == 0
@@ -575,7 +434,7 @@ export default {
         this.folderFormVisible = false;
       });
     },
-    updateFolder() {
+    updateFolder () {
       if (
         this.folderForm.folderName == null ||
         this.folderForm.folderName.trim().length == 0
@@ -597,8 +456,8 @@ export default {
         this.refreshNodeBy("ROOT");
       });
     },
-    handleSelectChange(val) {},
-    removeTable() {
+    handleSelectChange (val) { },
+    removeTable () {
       var ids = this.$refs.tree2.getCheckedKeys();
       delTable(ids.join(",")).then((resp) => {
         this.$notify(
@@ -633,7 +492,7 @@ export default {
   /* border: 1px solid blue; */
 }
 
-.tree-containerall>>>.el-tree {
+.tree-containerall >>> .el-tree {
   height: 100%;
 }
 
@@ -668,69 +527,28 @@ export default {
   width: 100%;
 }
 
-.left_tree_style>>>.el-tabs__header {
+.left_tree_style >>> .el-tabs__header {
   margin: 0;
 }
 
-.left_tree_style>>>.el-tabs__item {
+.left_tree_style >>> .el-tabs__item {
   width: 25%;
   text-align: center;
 }
 
-.left_tree_style>>>.el-tabs--card>.el-tabs__header .el-tabs__item.is-active {
+.left_tree_style
+  >>> .el-tabs--card
+  > .el-tabs__header
+  .el-tabs__item.is-active {
   border-bottom-color: transparent;
 }
 
-.left_tree_style>>>.el-tabs__nav {
+.left_tree_style >>> .el-tabs__nav {
   width: 100%;
 }
 
-.dataSource>>>.el-form-item {
+.dataSource >>> .el-form-item {
   display: flex;
   width: 100%;
-}
-.agreeicon0 {
-  display: inline-block;
-  height: 16px;
-  width: 16px;
-  margin-right: 2px;
-  margin-top: 0;
-  background-size: 100%;
-  background-image: url("../../assets/img/table_0.png");
-  vertical-align: top;
-  *vertical-align: middle;
-}
-.agreeicon1 {
-  display: inline-block;
-  height: 16px;
-  width: 16px;
-  margin-right: 2px;
-  margin-top: 0;
-  background-size: 100%;
-  background-image: url("../../assets/img/table_1.png");
-  vertical-align: top;
-  *vertical-align: middle;
-}
-.agreeicon2 {
-  display: inline-block;
-  height: 14px;
-  width: 14px;
-  margin-right: 2px;
-  margin-top: 0;
-  background-size: 100%;
-  background-image: url("../../assets/img/table_2.png");
-  vertical-align: top;
-  *vertical-align: middle;
-}
-.agreeicon4 {
-  display: inline-block;
-  height: 16px;
-  width: 16px;
-  margin-right: 2px;
-  margin-top: 0;
-  background-size: 100%;
-  background-image: url("../../styles/icons/view.png");
-  vertical-align: top;
-  *vertical-align: middle;
 }
 </style>
