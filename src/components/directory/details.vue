@@ -221,7 +221,6 @@
                          @click="removeTag_infotion_tag(index, item)"></i>
                     </div>
                     <input v-model="search_name_infotion"
-                           :disabled="isDisable_input"
                            @keyup.enter="addTags_infotion_tag"
                            @keyup.delete="deleteTags_infotion_tag"
                            :style="inputStyle"
@@ -1641,8 +1640,12 @@ export default {
   justify-content: center;
   align-items: center;
   line-height: 20px;
-  padding: 10px;
+  padding: 5px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+}
+.table .li_son:last-child {
+  border: none !important;
 }
 
 .add_table_class >>> .el-form-item__label {
