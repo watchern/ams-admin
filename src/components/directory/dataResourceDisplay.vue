@@ -3,109 +3,167 @@
     <!-- 查询 -->
     <div class="header_search">
       <p>查询条件：</p>
-      <div class="input_blue" @click="onclick()">
-        <div v-for="(item, index) in TagsAll" :key="index" class="spanbox22">
+      <div class="input_blue"
+           @click="onclick()">
+        <div v-for="(item, index) in TagsAll"
+             :key="index"
+             class="spanbox22">
           <span class="tagspan">{{ item }}</span>
-          <i class="span_close" @click="removeTag(index, item)"></i>
+          <i class="span_close"
+             @click="removeTag(index, item)"></i>
         </div>
         <!-- 输入框 -->
-        <input placeholder="请输入，按<回车>以分隔" v-model="search_name" @keyup.enter="addTags" @keyup.delete="deleteTags"
-          :style="inputStyle" class="inputTag" ref="inputTag" type="text" />
+        <input placeholder="请输入，按<回车>以分隔"
+               v-model="search_name"
+               @keyup.enter="addTags"
+               @keyup.delete="deleteTags"
+               :style="inputStyle"
+               class="inputTag"
+               ref="inputTag"
+               type="text" />
       </div>
-      <el-button size="mini" type="primary" @click="search()">查询</el-button>
-      <el-button size="mini" type="info" @click="clear_search()">重置</el-button>
+      <el-button size="mini"
+                 type="primary"
+                 @click="search()">查询</el-button>
+      <el-button size="mini"
+                 type="info"
+                 @click="clear_search()">重置</el-button>
     </div>
     <!-- 查询 end-->
 
     <!-- 是否显示按钮 数据注册显示 -->
-    <div class="common_btn " v-if="isBtn == true">
+    <div class="common_btn "
+         v-if="isBtn == true">
       <div class="click_btn">
-        <el-button type="primary">数据资源导入导出</el-button>
+        <el-button type="primary"
+                   size="small">数据资源导入导出</el-button>
         <div class="show_btn">
-          <el-button type="primary" @click="down_template_dictionary()">模版下载</el-button>
-          <el-button type="primary" @click="Importdata_dictionary()">导入数据资源</el-button>
+          <el-button type="primary"
+                     size="small"
+                     @click="down_template_dictionary()">模版下载</el-button>
+          <el-button type="primary"
+                     size="small"
+                     @click="Importdata_dictionary()">导入数据资源</el-button>
         </div>
       </div>
 
       <div class="click_btn">
-        <el-button type="primary">汉化信息导入导出</el-button>
+        <el-button type="primary"
+                   size="small">汉化信息导入导出</el-button>
         <div class="show_btn">
-          <el-button type="primary" @click="down_template_cn()">模版下载</el-button>
-          <el-button type="primary" @click="Important_cn()">导入汉化信息</el-button>
+          <el-button type="primary"
+                     size="small"
+                     @click="down_template_cn()">模版下载</el-button>
+          <el-button type="primary"
+                     size="small"
+                     @click="Important_cn()">导入汉化信息</el-button>
         </div>
       </div>
 
       <div class="click_btn">
-        <el-button type="primary">表关系导入导出</el-button>
+        <el-button type="primary"
+                   size="small">表关系导入导出</el-button>
         <div class="show_btn">
-          <el-button type="primary" @click="down_template_table()">模版下载</el-button>
-          <el-button type="primary" @click="Important_table()">导入表关系</el-button>
+          <el-button type="primary"
+                     size="small"
+                     @click="down_template_table()">模版下载</el-button>
+          <el-button type="primary"
+                     size="small"
+                     @click="Important_table()">导入表关系</el-button>
         </div>
       </div>
 
       <div class="click_btn">
-        <el-button type="primary" @click="sync_data()">同步数据结构</el-button>
+        <el-button type="primary"
+                   size="small"
+                   @click="sync_data()">同步数据结构</el-button>
       </div>
 
       <div class="click_btn">
-        <el-button type="primary" @click="Recognition()">认权管理</el-button>
+        <el-button type="primary"
+                   size="small"
+                   @click="Recognition()">认权管理</el-button>
       </div>
 
       <div class="click_btn">
-        <el-button type="primary" @click="on_register()">注册资源</el-button>
+        <el-button type="primary"
+                   size="small"
+                   @click="on_register()">注册资源</el-button>
       </div>
 
       <div class="click_btn">
-        <el-button type="primary" @click="edit_list()">修改</el-button>
+        <el-button type="primary"
+                   size="small"
+                   @click="edit_list()">修改</el-button>
       </div>
 
     </div>
 
-    <el-skeleton style="width:100%;float: left;height: calc(100vh - 252px)" animated :loading="list_loading" :count="4">
+    <el-skeleton style="width:100%;float: left;height: calc(100vh - 252px)"
+                 animated
+                 :loading="list_loading"
+                 :count="4">
       <template slot="template">
         <div class="box_ard">
           <div class="conter_list">
 
             <div class="box_ard_header">
-              <el-skeleton-item variant="h3" style="width: 30%;" />
+              <el-skeleton-item variant="h3"
+                                style="width: 30%;" />
             </div>
             <div class="new_left">
-              <el-skeleton-item variant="image" style="width: 130px; height: 130px;" />
+              <el-skeleton-item variant="image"
+                                style="width: 130px; height: 130px;" />
             </div>
             <div class="new_right">
               <div class="table_type">
-                <el-skeleton-item variant="h3" style="width: 10%;margin-right: 60px;" />
-                <el-skeleton-item variant="h3" style="width: 10%;" />
+                <el-skeleton-item variant="h3"
+                                  style="width: 10%;margin-right: 60px;" />
+                <el-skeleton-item variant="h3"
+                                  style="width: 10%;" />
               </div>
               <div class="text">
-                <el-skeleton-item variant="h3" style="width: 30%;" />
-                <el-skeleton-item variant="text" style="margin-right: 16px;" />
-                <el-skeleton-item variant="text" style="width: 30%;" />
+                <el-skeleton-item variant="h3"
+                                  style="width: 30%;" />
+                <el-skeleton-item variant="text"
+                                  style="margin-right: 16px;" />
+                <el-skeleton-item variant="text"
+                                  style="width: 30%;" />
               </div>
               <div class="data_list">
-                <el-skeleton-item variant="text" style="width: 10%;margin-right:20px" />
-                <el-skeleton-item variant="text" style="width: 10%;" />
+                <el-skeleton-item variant="text"
+                                  style="width: 10%;margin-right:20px" />
+                <el-skeleton-item variant="text"
+                                  style="width: 10%;" />
               </div>
 
             </div>
           </div>
         </div>
       </template>
-      <div class="list_table" style="height: calc(100vh - 252px);overflow: auto;">
-        <el-table ref="multipleTable" :data="list" style="width: 100%" :show-overflow-tooltip='true'
-          :header-cell-class-name="headerCellClass" :header-cell-style="tableHeaderColor"
-          @selection-change="handleSelectionChange">
-          <el-table-column type="selection" v-if="isBtn == true" width="30">
+      <div class="list_table"
+           style="height: calc(100vh - 252px);overflow: auto;">
+        <el-table ref="multipleTable"
+                  :data="list"
+                  style="width: 100%"
+                  :show-overflow-tooltip='true'
+                  :header-cell-class-name="headerCellClass"
+                  :header-cell-style="tableHeaderColor"
+                  @selection-change="handleSelectionChange">
+          <el-table-column type="selection"
+                           v-if="isBtn == true"
+                           width="30">
           </el-table-column>
           <el-table-column>
             <template slot-scope="scope">
               <div class="box_ard">
                 <div class="conter_list">
-                  <div class="box_ard_header _width" @click="on_deails(scope.row)">
+                  <div class="box_ard_header _width"
+                       @click="on_deails(scope.row)">
                     <p class="new_num">{{ scope.row.tbName }}</p>
                     <p class="new_title">{{ scope.row.chnName }}</p>
                     <span class="new_type"
-                      v-if="scope.row.tableRelationQuery">{{ scope.row.tableRelationQuery.tableThemeName }}</span>
+                          v-if="scope.row.tableRelationQuery">{{ scope.row.tableRelationQuery.tableThemeName }}</span>
                   </div>
 
                   <div class="new_left padding7">
@@ -121,29 +179,38 @@
                   <div class="new_right">
                     <div class="table_type">
                       <div class="one tt">表关联数量：<span v-if="scope.row.relations">{{ scope.row.relations.length }}</span>
-                        <el-card class="show_tips" v-if="scope.row.relations.length !== 0">
-                          <p v-for="(its, index_relations) in scope.row.relations" :key="index_relations">
+                        <el-card class="show_tips"
+                                 v-if="scope.row.relations.length !== 0">
+                          <p v-for="(its, index_relations) in scope.row.relations"
+                             :key="index_relations">
                             {{ its.relationTableName }}</p>
                         </el-card>
 
                       </div>
                       <div class="two tt">使用此表模型数：<span>{{ scope.row.models.length }}</span>
-                        <el-card class="show_tips" v-if="scope.row.models.length !== 0">
-                          <p v-for="(it, index_model) in scope.row.models" :key="index_model">{{ it.MODEL_NAME }}</p>
+                        <el-card class="show_tips"
+                                 v-if="scope.row.models.length !== 0">
+                          <p v-for="(it, index_model) in scope.row.models"
+                             :key="index_model">{{ it.MODEL_NAME }}</p>
                         </el-card>
                       </div>
                     </div>
-                    <p class="text" v-if="scope.row.tableRelationQuery">描述：{{ scope.row.tableRelationQuery.tableRemarks }}
+                    <p class="text"
+                       v-if="scope.row.tableRelationQuery">描述：{{ scope.row.tableRelationQuery.tableRemarks }}
                     </p>
-                    <p class="text" v-else>描述：暂无</p>
-                    <p class="text" v-if="scope.row.colMeta">字段：{{ scope.row.colMeta }}</p>
-                    <p class="text" v-else>字段：暂无</p>
+                    <p class="text"
+                       v-else>描述：暂无</p>
+                    <p class="text"
+                       v-if="scope.row.colMeta">字段：{{ scope.row.colMeta }}</p>
+                    <p class="text"
+                       v-else>字段：暂无</p>
 
                     <div class="data_list">
                       <!-- {{scope.row.tableRelationQuery}} -->
                       <span class="data_time"
-                        v-if="scope.row.tableRelationQuery.dataDate != null">数据日期：{{ scope.row.tableRelationQuery.dataDate }}</span>
-                      <span class="data_time" v-else>数据日期：暂无</span>
+                            v-if="scope.row.tableRelationQuery.dataDate != null">数据日期：{{ scope.row.tableRelationQuery.dataDate }}</span>
+                      <span class="data_time"
+                            v-else>数据日期：暂无</span>
                       <span class="data_number">数据量 {{ scope.row.rowNum }} 条</span>
                     </div>
                   </div>
@@ -156,9 +223,13 @@
       </div>
 
       <div class="padding10_l">
-        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-          :page-size="this.list_data.size" background :current-page-sync="this.list_data.current"
-          layout="total, sizes, prev, pager, next, jumper" :total="this.list_data.total"></el-pagination>
+        <el-pagination @size-change="handleSizeChange"
+                       @current-change="handleCurrentChange"
+                       :page-size="this.list_data.size"
+                       background
+                       :current-page-sync="this.list_data.current"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="this.list_data.total"></el-pagination>
       </div>
 
     </el-skeleton>
@@ -378,11 +449,13 @@ export default {
 .common_btn {
   box-sizing: border-box;
   float: left;
-  display: block;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
   width: 100%;
 }
 
-.common_btn>>>.el-button--medium {
+.common_btn >>> .el-button--medium {
   padding: 10px !important;
 }
 
@@ -713,11 +786,11 @@ export default {
   left: 120px;
 }
 
-.show_tips>>>.el-card__body {
+.show_tips >>> .el-card__body {
   padding: 0 !important;
 }
 
-.show_tips>>>.el-card__body p {
+.show_tips >>> .el-card__body p {
   margin-bottom: 5px;
   color: #7f7f7f;
   font-size: 16px;
@@ -746,7 +819,8 @@ export default {
   text-decoration: underline;
 }
 
-.data_list {}
+.data_list {
+}
 
 .data_list span {
   height: 30px;
@@ -773,27 +847,31 @@ export default {
   margin-bottom: 10px;
 }
 
-.preview_conter>>>.el-table {
+.preview_conter >>> .el-table {
   height: 100%;
   background: transparent !important;
 }
 
-.preview_conter>>>.el-table tbody tr:hover>td,
-.preview_conter>>>table tr:nth-child(odd) {
+.preview_conter >>> .el-table tbody tr:hover > td,
+.preview_conter >>> table tr:nth-child(odd) {
   background-color: transparent !important;
 }
 
-.preview_conter>>>.el-table .el-table__cell {
+.preview_conter >>> .el-table .el-table__cell {
   padding: 0 !important;
 }
 
-.preview_conter>>>.el-table__header {
+.preview_conter >>> .el-table__header {
   border-top: none !important;
   margin-top: 0 !important;
   background-color: #fff;
 }
 
-.preview_conter>>>.el-table__header .el-table-column--selection .cell .el-checkbox:after {
+.preview_conter
+  >>> .el-table__header
+  .el-table-column--selection
+  .cell
+  .el-checkbox:after {
   color: #333;
   content: "全选";
   font-size: 14px;
@@ -805,14 +883,14 @@ export default {
   display: none !important;
 }
 
-.list_table>>>.el-table {
+.list_table >>> .el-table {
   height: calc(100vh - 255px);
   /* background: #fff; */
   /* border: 1px solid; */
   overflow: auto;
 }
 
-.list_table>>>.el-table__empty-block {
+.list_table >>> .el-table__empty-block {
   min-height: 400px !important;
 }
 </style>
