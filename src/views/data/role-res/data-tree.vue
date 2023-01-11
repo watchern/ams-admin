@@ -275,7 +275,7 @@ export default {
     },
   },
   created () {
-    console.log(this.form);
+
 
     this.post_getBusinessSystemTree();//系统
   },
@@ -346,7 +346,7 @@ export default {
     },
     // 选择数据源
     selectdata (val) {
-      console.log(this.form.tableLayeredName);
+
       if (val !== this.form.tableLayeredName) {
         this.$message({
           type: "info",
