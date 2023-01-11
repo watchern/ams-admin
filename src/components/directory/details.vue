@@ -30,14 +30,15 @@
             <el-form ref="form"
                      :model="form"
                      label-width="80px">
+
+              <el-form-item label="表名称："
+                            prop="tbName">
+                <el-input v-model="form.tbName"
+                          disabled></el-input>
+              </el-form-item>
               <div :class="
                   isDisable_input == true ? 'is_disabled' : 'yes_disabled'
                 ">
-                <el-form-item label="表名称："
-                              prop="tbName">
-                  <el-input v-model="form.tbName"
-                            :disabled="disabled"></el-input>
-                </el-form-item>
                 <el-form-item label="表中文名："
                               prop="chnName">
                   <el-input v-model="form.chnName"
@@ -154,13 +155,15 @@
                             v-model="form.rowNum"
                             :rows="4"></el-input>
                 </el-form-item>
-                <div class="son_people is_disabled">
+                <div class="son_people is_disabled"
+                     :class="isDisable_input == true ? 'is_width':''">
                   <el-form-item label="负责人：">
                     <el-input :disabled="disabled"
                               style="background-color: rgba(0, 0, 0, 0.05) !important"
                               v-model="form.personLiables"></el-input>
                   </el-form-item>
                   <el-button type="primary"
+                             v-if="isDisable_input == false"
                              :disabled="isDisable_input"
                              class="oper-btn"
                              @click="check_people()">
@@ -332,6 +335,7 @@
           <div class="padding20"
                style="text-align: right">
             <el-button type="primary"
+                       v-if="isDisable_input == false"
                        :disabled="isDisable_input"
                        @click="add_table()">
               新增
@@ -382,15 +386,16 @@
         <el-input type="textarea"
                   cols="40"
                   rows="10"
+                  disabled
                   v-model="sql"></el-input>
       </div>
       <span slot="footer"
             class="dialog-footer">
         <el-button @click="visible_sql = false"> 取 消 </el-button>
-        <el-button type="primary"
+        <!-- <el-button type="primary"
                    @click="visible_sql = false">
           确 定
-        </el-button>
+        </el-button> -->
       </span>
     </el-dialog>
 
@@ -1302,6 +1307,7 @@ export default {
 
     // 保存新的关联关系
     save_table () {
+
       if (this.visibleTableList.length == 0) {
         this.$message({
           type: "warning",
@@ -1373,7 +1379,7 @@ export default {
 }
 
 .rightList .rightList_child {
-  min-height: 600px;
+  min-height: 400px;
   overflow-y: auto;
   margin-bottom: 30px;
 }
@@ -1549,6 +1555,15 @@ export default {
 
 .son_people >>> .el-form-item__content {
   width: 237px;
+}
+
+.is_width >>> .el-form-item__content {
+  width: 300px;
+}
+
+.son .el-form-item__content,
+.son .el-date-editor {
+  width: 300px;
 }
 
 .son_people >>> .el-button {

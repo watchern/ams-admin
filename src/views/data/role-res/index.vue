@@ -305,16 +305,18 @@
                 min-width="200px"
                 align="center"
                 prop="colName"
+                show-overflow-tooltip
               />
               <el-table-column
                 label="别名"
-                width="200px"
+                min-width="200px"
                 align="center"
                 prop="chnName"
+                show-overflow-tooltip
               />
               <el-table-column
                 label="是否脱敏"
-                width="100px"
+                min-width="100px"
                 align="center"
                 prop="chnName"
               />
