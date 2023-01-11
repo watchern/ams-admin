@@ -218,7 +218,6 @@
                          @click="removeTag_infotion_tag(index, item)"></i>
                     </div>
                     <input v-model="search_name_infotion"
-                           :disabled="isDisable_input"
                            @keyup.enter="addTags_infotion_tag"
                            @keyup.delete="deleteTags_infotion_tag"
                            :style="inputStyle"
