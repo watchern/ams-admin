@@ -410,8 +410,10 @@
                      @click="addTable()">
             新增一行
           </el-button> -->
-          <el-button type="primary" @click="addTable(true)">关联主表</el-button>
-          <el-button type="primary" @click="addTable(false)">关联从表</el-button>
+          <el-button type="primary"
+                     @click="addTable(true)">关联主表</el-button>
+          <el-button type="primary"
+                     @click="addTable(false)">关联从表</el-button>
         </div>
         <el-table :data="visibleTableList"
                   :show-overflow-tooltip="true"
@@ -475,71 +477,95 @@
                  :inline="false"
                  :model="table_visible_form"
                  label-width="90px">
+
+          <!-- 主表的情况 -->
           <div v-if="is_main_table">
-            <el-form-item label="主表名称：" prop="tbName">
-              <el-input v-model="table_visible_form.tbName" disabled></el-input>
+            <el-form-item label="主表名称："
+                          prop="tbName">
+              <el-input v-model="table_visible_form.tbName"
+                        disabled></el-input>
             </el-form-item>
-            <el-form-item label="字段名称：" prop="colName">
+            <el-form-item label="字段名称："
+                          prop="colName">
               <el-row>
                 <el-col :span="22">
-                  <el-input v-model="table_visible_form.colName" disabled></el-input>
+                  <el-input v-model="table_visible_form.colName"
+                            disabled></el-input>
                 </el-col>
                 <el-col :span="2">
                   <el-button @click="showDataTree(1)">选择</el-button>
                 </el-col>
               </el-row>
             </el-form-item>
-            <el-form-item label="从表名称：" prop="relationTableName">
-              <el-input v-model="table_visible_form.relationTableName" disabled></el-input>
+            <el-form-item label="从表名称："
+                          prop="relationTableName">
+              <el-input v-model="table_visible_form.relationTableName"
+                        disabled></el-input>
             </el-form-item>
-            <el-form-item label="从表字段：" prop="relationCol">
-              <el-select v-model="select_data.tableType" @change="Change_table" style="width: 100%">
+            <el-form-item label="从表字段："
+                          prop="relationCol">
+              <el-select v-model="table_visible_form.relationCol"
+                         style="width: 100%">
                 <el-option v-for="item in cong_table_list"
-                          :key="item.colMetaUuid"
-                          :label="item.colName"
-                          :value="item.colMetaUuid" />
+                           :key="item.colMetaUuid"
+                           :label="item.colName"
+                           :value="item.colMetaUuid" />
               </el-select>
             </el-form-item>
-            <el-form-item label="关联关系：" prop="sqlGenJoinType">
-              <el-select v-model="table_visible_form.sqlGenJoinType" style="width: 100%">
+            <el-form-item label="关联关系："
+                          prop="sqlGenJoinType">
+              <el-select v-model="table_visible_form.sqlGenJoinType"
+                         style="width: 100%">
                 <el-option v-for="item in relationship"
-                          :key="item.value"
-                          :label="item.label"
-                          :value="item.value" />
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
               </el-select>
             </el-form-item>
           </div>
+
+          <!-- 从表的情况下 -->
           <div v-else>
-            <el-form-item label="主表名称：" prop="tbName">
-              <el-input v-model="table_visible_form.tbName" disabled></el-input>
+            <el-form-item label="主表名称："
+                          prop="tbName">
+              <el-input v-model="table_visible_form.tbName"
+                        disabled></el-input>
             </el-form-item>
-            <el-form-item label="字段名称：" prop="colName">
-              <el-select v-model="select_data.tableType" @change="Change_table" style="width: 100%">
+            <el-form-item label="字段名称："
+                          prop="colName">
+              <el-select v-model="table_visible_form.colName"
+                         style="width: 100%">
                 <el-option v-for="item in cong_table_list"
-                          :key="item.colMetaUuid"
-                          :label="item.colName"
-                          :value="item.colMetaUuid" />
+                           :key="item.colMetaUuid"
+                           :label="item.colName"
+                           :value="item.colMetaUuid" />
               </el-select>
             </el-form-item>
-            <el-form-item label="从表名称：" prop="relationTableName">
-              <el-input v-model="table_visible_form.relationTableName" disabled></el-input>
+            <el-form-item label="从表名称："
+                          prop="relationTableName">
+              <el-input v-model="table_visible_form.relationTableName"
+                        disabled></el-input>
             </el-form-item>
-            <el-form-item label="从表字段：" prop="relationCol">
+            <el-form-item label="从表字段："
+                          prop="relationCol">
               <el-row>
                 <el-col :span="22">
-                  <el-input v-model="table_visible_form.relationCol" disabled></el-input>
+                  <el-input v-model="table_visible_form.relationCol"
+                            disabled></el-input>
                 </el-col>
                 <el-col :span="2">
                   <el-button @click="showDataTree(2)">选择</el-button>
                 </el-col>
               </el-row>
             </el-form-item>
-            <el-form-item label="关联关系：" prop="sqlGenJoinType">
-              <el-select v-model="table_visible_form.sqlGenJoinType" style="width: 100%">
+            <el-form-item label="关联关系："
+                          prop="sqlGenJoinType">
+              <el-select v-model="table_visible_form.sqlGenJoinType"
+                         style="width: 100%">
                 <el-option v-for="item in relationship"
-                          :key="item.value"
-                          :label="item.label"
-                          :value="item.value" />
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
               </el-select>
             </el-form-item>
           </div>
@@ -548,7 +574,8 @@
       <span slot="footer"
             class="dialog-footer">
         <el-button @click="add_table_visible = false"> 取 消 </el-button>
-        <el-button type="primary" @click="add_table_save('table_visible_form')">
+        <el-button type="primary"
+                   @click="add_table_save('table_visible_form')">
           确 定
         </el-button>
       </span>
@@ -566,12 +593,14 @@
       <div class="tree_style">
         <dataTree ref="dataTableTree"
                   :is_progress="is_progress"
+                  :form="form"
                   :data-user-id="dataUserId"
                   :scene-code="sceneCode" />
       </div>
       <div slot="footer">
         <el-button @click="dataTableTree = false"> 取消 </el-button>
-        <el-button type="primary" @click="getDataTable()"> 确定 </el-button>
+        <el-button type="primary"
+                   @click="getDataTable()"> 确定 </el-button>
       </div>
     </el-dialog>
 
@@ -697,6 +726,7 @@ export default {
         personUuid: "", //资源责任人
         partitions: "", //表分区
         isSpike: 1, //是否增量
+        tableLayeredName: '',//数据源
       },
       tableData: [],
       sceneCode: "auditor",
@@ -732,6 +762,10 @@ export default {
         {
           value: 1,
           label: "表",
+        },
+        {
+          value: 2,
+          label: "视图",
         },
       ],
 
@@ -984,7 +1018,8 @@ export default {
         this.form.dataDate = resp.data.tableRelationQuery.dataDate; //数据日期
         this.form.tableSize = resp.data.tableSize; //数据数量：
         this.form.personName_str = resp.data.personLiables; //负责人
-
+        this.form.tableLayeredName = resp.data.tableRelationQuery.tableLayeredName;//数据源
+        console.log(this.form);
         if (resp.data.personLiables.length !== 0) {
           let personName = [];
           resp.data.personLiables.forEach((item) => {
@@ -1223,8 +1258,6 @@ export default {
       });
     },
 
-    // 选择的从表
-    Change_table (val) { },
 
     // 关闭弹窗
     handleClose_table (table_visible_form) {
@@ -1235,41 +1268,58 @@ export default {
     showDataTree (val) {
       this.table_visible_form.selectType = val;
       this.dataTableTree = true;
+
+
     },
     // 确认选择的数据表
     getDataTable () {
       // 是不是主表 1:主表 2从表
-      if (this.is_main_table = true) {
-        const dataTree = this.$refs.dataTableTree.getTree();
-        const currentNode = dataTree.getCurrentNode();
-        if (currentNode.type !== "col") {
-          this.$message({
-            type: "info",
-            message: "请选择数据表列!",
-          });
-          return;
-        }
-        if (this.table_visible_form.selectType === 1) {
-          this.table_visible_form.colName = currentNode.label; //字段名称
-          const str = currentNode.id;
-          this.table_visible_form.colMetaUuid = str;
-          const arr = str.split(">");
-          this.table_visible_form.tbName = arr[1]; //表名称
-          this.table_visible_form.tableMetaUuid = arr[0] + ">" + arr[1];
-        } else {
-          this.table_visible_form.relationCol = currentNode.label; //从表字段：
-          this.table_visible_form.relColMetaUuid = currentNode.id;
-          const str = currentNode.id;
-          const arr = str.split(">");
-          this.table_visible_form.relationTableName = arr[1]; //从表名称：
-          this.table_visible_form.relTableMetaUuid = arr[0] + ">" + arr[1];
-        }
-        return
-      } else {
-        console.log(this.select_data.tableType);
-        //下拉框选择的值
+      const dataTree = this.$refs.dataTableTree.getTree();
+      const currentNode = dataTree.getCurrentNode();
+
+      if (currentNode.type !== "col") {
+        this.$message({
+          type: "info",
+          message: "请选择数据表列!",
+        });
+        return;
       }
 
+      // 主表
+      if (this.table_visible_form.selectType === 1) {
+        this.table_visible_form.colName = currentNode.label; //字段名称
+        const str = currentNode.id;
+        this.table_visible_form.colMetaUuid = str;
+        const arr = str.split(">");
+        this.table_visible_form.tbName = arr[1]; //表名称
+        this.table_visible_form.tableMetaUuid = arr[0] + ">" + arr[1];
+
+        if (this.table_visible_form.tbName == this.table_visible_form.relationTableName) {
+          this.$message({
+            message: "请不要选择已关联的主表",
+            type: "info",
+            showClose: true,
+          });
+          return false;
+        }
+      } else {
+        // 从表
+        this.table_visible_form.relationCol = currentNode.label; //从表字段：
+        this.table_visible_form.relColMetaUuid = currentNode.id;
+        const str = currentNode.id;
+        const arr = str.split(">");
+        this.table_visible_form.relationTableName = arr[1]; //从表名称：
+        this.table_visible_form.relTableMetaUuid = arr[0] + ">" + arr[1];
+        if (this.table_visible_form.tbName == arr[1]) {
+          this.$message({
+            message: "请不要选择已关联的从表",
+            type: "info",
+            showClose: true,
+          });
+          return false;
+        }
+      }
+      //下拉框选择的值
       this.dataTableTree = false;
     },
     // 保存新增的数据表
@@ -1290,7 +1340,7 @@ export default {
             relTableMetaUuid: this.table_visible_form.relTableMetaUuid,
           };
           this.visibleTableList.push(objs);
-          console.log(this.visibleTableList);
+
           this.add_table_visible = false;
         } else {
           this.btnLoading = false; //保存loadnin
@@ -1306,6 +1356,7 @@ export default {
 
     // 保存新的关联关系
     save_table () {
+
       if (this.visibleTableList.length == 0) {
         this.$message({
           type: "warning",
