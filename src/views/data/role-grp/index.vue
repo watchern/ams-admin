@@ -160,7 +160,6 @@ import MyElTree from "@/components/public/tree/src/tree.vue";
 import { getAllScene, initSceneTree, queryOrgTree } from "@/api/data/scene";
 import { saveRoleGrp, getRoleGrp, getById } from "@/api/data/role";
 import { commonNotify } from "@/utils";
-
 export default {
   components: { MyElTree },
   data() {
