@@ -109,6 +109,7 @@
 </template>
 
 <script>
+import { commonNotify } from '@/utils'
 import MyElTree from "@/components/public/tree/src/tree.vue";
 import {
   listUnCached,
@@ -191,10 +192,11 @@ export default {
       } else if (this.activeName == "2") {
         // 分层
         this.post_getLayeredTree(); //分层
-      } else {
-        // 目录
-        this.post_getDataTreeNode(); //目录
       }
+      // else {
+      //   // 目录
+      //   this.post_getDataTreeNode(); //目录
+      // }
     },
     // 系统
     post_getBusinessSystemTree () {
@@ -396,6 +398,16 @@ export default {
                 commonNotify({ type: "success", message: "删除成功！" })
               );
               this.$refs.tree2.remove(data);
+              if (this.activeName == "0") {
+                // 系统
+                this.post_getBusinessSystemTree(); //系统
+              } else if (this.activeName == "1") {
+                // 主题
+                this.post_getThemeTree(); //主题
+              } else if (this.activeName == "2") {
+                // 分层
+                this.post_getLayeredTree(); //分层
+              }
             });
           } else {
             delFolder(data.id).then((resp) => {
@@ -403,6 +415,17 @@ export default {
                 commonNotify({ type: "success", message: "删除成功！" })
               );
               this.$refs.tree2.remove(data);
+              if (this.activeName == "0") {
+                // 系统
+                this.post_getBusinessSystemTree(); //系统
+              } else if (this.activeName == "1") {
+                // 主题
+                this.post_getThemeTree(); //主题
+              } else if (this.activeName == "2") {
+                // 分层
+                this.post_getLayeredTree(); //分层
+              }
+
             });
           }
         })

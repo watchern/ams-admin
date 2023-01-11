@@ -80,7 +80,7 @@
         >
          <div v-if="temp.ruleType === 1" :data="sqlRule">
          <el-table>
-          <el-table-column prop="codeValue" label="真实值">
+          <el-table-column prop="codeValue" label="真实值" show-overflow-tooltip>
             <template slot-scope="scope">
               <el-select ref="codeValue" v-model="scope.row.codeValue" placeholder="请选择真实值">
                 <el-option
@@ -92,7 +92,7 @@
               </el-select>
             </template>
           </el-table-column>
-          <el-table-column prop="transValue" label="显示值">
+          <el-table-column prop="transValue" label="显示值" show-overflow-tooltip>
             <template slot-scope="scope">
               <el-select ref="transValue" v-model="scope.row.transValue" placeholder="请选择显示值">
                 <el-option

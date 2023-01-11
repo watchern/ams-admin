@@ -185,7 +185,7 @@ export default {
       loadTree: [], //左边树懒加载的数据
       orgTreeData: [],
       orglistLoading: false,
-    };
+      };
   },
   computed: {
     currentTreeData() {
@@ -279,17 +279,18 @@ export default {
       return data.label.indexOf(value) !== -1;
     },
     addGrp() {
-      console.log(this.grpUuid);
       var nodes = this.$refs["A" + this.grpUuid][0].getCheckedNodes();
       if (nodes.length === 0) {
         nodes.push(this.$refs["A" + this.grpUuid][0].getCurrentNode());
       }
       nodes.forEach((node) => {
-        console.log(node);
         if (
           this.tableData.filter((data) => {
             return data.unitUuid === node.id;
-          }).length === 0
+          }).length === 0 &&
+                this.tableData.filter((data) => {
+                  return data.grpInstUuid === node.id;
+                }).length === 0
         ) {
           this.tableData.push({
             dataRoleUuid: this.roleUuid,
@@ -304,7 +305,6 @@ export default {
           });
         }
       });
-      console.log(this.tableData);
     },
 
     saveRoleGrp() {

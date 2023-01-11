@@ -74,12 +74,20 @@
                     show-overflow-tooltip
             />
             <el-table-column label="操作" align="center" min-width="100px">
-                    <el-button
+<!--                    <el-button-->
+<!--                            type="primary"-->
+<!--                            class="oper-btn"-->
+<!--                            style="width: auto"-->
+<!--                            @click="showFlow()">流程查看-->
+<!--                    </el-button>-->
+                <template slot-scope="scope">
+                    <el-link
+                            @click="showFlow(scope.row)"
                             type="primary"
-                            class="oper-btn"
-                            style="width: auto"
-                            @click="showFlow()">流程查看
-                    </el-button>
+                            :underline="false"
+                            class="linkClass"
+                    >流程跟踪</el-link>
+                </template>
             </el-table-column>
         </el-table>
         <pagination
@@ -130,6 +138,29 @@
         </el-dialog>
         <el-dialog title="办理" :visible.sync="dialogTransactVisible" :close-on-click-modal="false">
         </el-dialog>
+<!--        流程跟踪弹框-->
+<!--        <el-dialog-->
+<!--                title="流程跟踪"-->
+<!--                :visible.sync="todoFlow"-->
+<!--                v-if="todoFlow"-->
+<!--                width="80%"-->
+<!--        >-->
+<!--            <div>-->
+<!--                <flowOpinionList-->
+<!--                        :applyUuid="applyUuid"-->
+<!--                        :pageFrom="applyPage"-->
+<!--                ></flowOpinionList>-->
+<!--            </div>-->
+<!--            <span slot="footer">-->
+<!--        <el-button-->
+<!--                size="mini"-->
+<!--                type="info"-->
+<!--                class="table_header_btn"-->
+<!--                @click="todoFlow = false"-->
+<!--        >关闭</el-button-->
+<!--        >-->
+<!--        </span>-->
+<!--        </el-dialog>-->
     </div>
 </template>
 
@@ -137,10 +168,12 @@
     import QueryField from '@/components/public/query-field/index'
     import Pagination from '@/components/Pagination'
     import { listByPage,save,update,del,exportData } from '@/api/data/accessRequest'
+    // import flowOpinionList from "@/components/starflow/todowork/flowOpinionList";
     import axios from "axios";
     import qs from "qs";
 
     export default {
+        // flowOpinionList
         components: { Pagination, QueryField },
         data() {
             return {
@@ -359,7 +392,6 @@
                 this.$refs['dataForm'].validate((valid) => {
                     if (valid) {
                         const tempData = Object.assign({}, this.temp)
-                        console.log(tempData)
                         update(tempData).then(() => {
                             const index = this.tableData.findIndex(v => v.dataAccessReqUuid === this.temp.dataAccessReqUuid)
                             this.tableData.splice(index, 1, this.temp)
