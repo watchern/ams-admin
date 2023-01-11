@@ -1876,8 +1876,12 @@ export default {
   justify-content: center;
   align-items: center;
   line-height: 20px;
-  padding: 10px;
+  padding: 5px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+}
+.table .li_son:last-child {
+  border: none !important;
 }
 
 /* 标签回显框 */
