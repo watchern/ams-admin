@@ -399,4 +399,8 @@ export default {
 .icons {
   background-position: -110px -20px;
 }
+.add{
+  height: calc(100vh - 250px);
+  overflow: auto;
+}
 </style>

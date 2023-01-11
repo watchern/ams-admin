@@ -18,7 +18,7 @@
     <el-table :key="tableKey"
               v-loading="listLoading"
               :data="list"
-              height="calc(100% - 160px)"
+              height="calc(100vh - 330px)"
               border
               fit
               highlight-current-row
@@ -28,23 +28,26 @@
       <el-table-column type="selection"
                        width="55" />
       <el-table-column label="所属系统名称"
-                       width="300px"
-                       align="center"
-                       prop="folderName" />
+                       min-width="150px"
+                       prop="folderName"
+                       show-overflow-tooltip />
       <el-table-column label="数据表名称"
-                       width="300px"
-                       prop="displayTbName" />
+                       min-width="150px"
+                       prop="displayTbName"
+                       show-overflow-tooltip />
       <el-table-column label="汉化表名称"
-                       width="300px"
-                       prop="chnName" />
+                       prop="chnName"
+                       min-width="150px"
+                       show-overflow-tooltip />
       <el-table-column label="创建时间"
                        width="300px"
                        align="center"
                        :formatter="formatCreateTime"
-                       prop="createTime" />
+                       prop="createTime"
+                       show-overflow-tooltip />
       <el-table-column label="操作"
                        align="center"
-                       min-width="100">
+                       width="200px">
         <template slot-scope="scope">
           <el-button type="primary"
                      class="oper-btn preview"

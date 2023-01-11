@@ -39,8 +39,8 @@
         </div>
       </div>
       <div class="search-btn">
-        <el-button size="mini" type="primary" @click="goQuery">查询</el-button>
-        <el-button size="mini" type="primary" @click="reset">重置</el-button>
+        <el-button type="primary" @click="goQuery">查询</el-button>
+        <el-button type="primary" @click="reset">重置</el-button>
       </div>
     </div>
     <!-- 列表 -->
@@ -64,7 +64,7 @@
         stripe
         v-loading="loading"
         row-key="id"
-        height="calc(100vh - 250px)"
+        height="calc(100vh - 290px)"
         @selection-change="handleSelectionChange"
       >
         <!-- :reserve-selection="true" -->
@@ -79,7 +79,7 @@
           prop="isAtartUp"
           label="是否启动"
           show-overflow-tooltip
-          min-width="150px"
+          width="150px"
         >
           <template slot-scope="scope">
             <span v-if="scope.row.isAtartUp === 0">否</span>
@@ -89,18 +89,20 @@
         <el-table-column
           prop="secretLevelName"
           label="数据密级"
-          min-width="150px"
+          width="150px"
           show-overflow-tooltip
         ></el-table-column>
         <el-table-column
           prop="recognitionRulesName"
           label="试别规则"
+          width="150px"
           show-overflow-tooltip
         ></el-table-column>
         <el-table-column
           prop="createTime"
           label="创建时间"
           show-overflow-tooltip
+          width="200px"
         >
           <template slot-scope="scope">
             {{ dateFormatter(scope.row.createTime) }}
@@ -111,11 +113,11 @@
           prop="createUserName"
           label="创建人"
           show-overflow-tooltip
+          width="200px"
         ></el-table-column>
       </el-table>
       <div class="pager">
         <el-pagination
-          small
           background
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"

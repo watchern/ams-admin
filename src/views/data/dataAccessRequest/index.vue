@@ -11,7 +11,7 @@
             <el-col align="right">
                 <el-button type="primary" class="oper-btn add" @click="handleAdd()" />
                 <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
-                <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDel()" />
+                <el-button type="primary" class="oper-btn delete" @click="handleDel()" />
                 <el-button type="primary" class="oper-btn transact" @click="handleTransact()" />
                 <el-button type="primary" class="oper-btn export" @click="handleExport()" />
             </el-col>
@@ -20,24 +20,60 @@
                 :key="tableKey"
                 v-loading="listLoading"
                 :data="tableData"
-                height="400px"
                 stripe
                 border
                 fit
                 highlight-current-row
                 @selection-change="handleSelectionChange"
                 style="width: 100%;"
+                height="calc(100vh - 330px)"
                 @sort-change="sortChange"
         >
             <el-table-column type="selection" width="55" />
-            <el-table-column label="申请名称" align="center" prop="requestName" />
-            <el-table-column label="申请时间" align="center" prop="requestTime" />
-            <el-table-column label="当前环节办理人" align="center" prop="currentCirPerName"/>
-            <el-table-column label="申请表名称" align="center" prop="requestTableName" />
-            <el-table-column label="数据状态" align="center" prop="dataStatus" :formatter="dataStatusFormat"/>
-            <el-table-column label="申请人" align="center" prop="requestPersionName"/>
-            <el-table-column label="备注" align="center" prop="remark"/>
-            <el-table-column label="操作" align="center">
+            <el-table-column
+                    label="申请名称"
+                    prop="requestName"
+                    min-width="150px"
+                    show-overflow-tooltip
+            />
+            <el-table-column
+                    label="申请时间"
+                    align="center"
+                    prop="requestTime"
+                    min-width="100px"
+                    show-overflow-tooltip
+            />
+            <el-table-column
+                    label="当前环节办理人"
+                    align="center"
+                    min-width="100px"
+                    prop="currentCirPerName"/>
+            <el-table-column
+                    label="申请表名称"
+                    align="center"
+                    min-width="100px"
+                    prop="requestTableName"
+                    show-overflow-tooltip
+            />
+            <el-table-column
+                    label="数据状态"
+                    align="center"
+                    prop="dataStatus"
+                    min-width="100px"
+                    :formatter="dataStatusFormat"/>
+            <el-table-column
+                    label="申请人"
+                    align="center"
+                    min-width="100px"
+                    prop="requestPersionName"/>
+            <el-table-column
+                    label="备注"
+                    align="center"
+                    prop="remark"
+                    min-width="100px"
+                    show-overflow-tooltip
+            />
+            <el-table-column label="操作" align="center" min-width="100px">
                     <el-button
                             type="primary"
                             class="oper-btn"
@@ -100,7 +136,10 @@
 <script>
     import QueryField from '@/components/public/query-field/index'
     import Pagination from '@/components/Pagination'
-    import { listByPage,save,update,del } from '@/api/data/accessRequest'
+    import { listByPage,save,update,del,exportData } from '@/api/data/accessRequest'
+    import axios from "axios";
+    import qs from "qs";
+
     export default {
         components: { Pagination, QueryField },
         data() {
@@ -338,52 +377,105 @@
             },
             //删除
             handleDel(){
-            var ids = []
-            this.selections.forEach((r, i) => { ids.push(r.dataAccessReqUuid)})
-            this.$confirm('此操作将永久删除这些数据，是否继续?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning',
-                center: true
-            }).then(() => {
-                del(ids.join(',')).then(() => {
-                    this.getList()
-                    this.$notify({
-                        title: '成功',
-                        message: '删除成功',
-                        type: 'success',
-                        duration: 2000,
-                        position: 'bottom-right'
+                var ids = []
+                this.selections.forEach((r, i) => { ids.push(r.dataAccessReqUuid)})
+                this.$confirm('此操作将永久删除这些数据，是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    del(ids.join(',')).then(() => {
+                        this.getList()
+                        this.$notify({
+                            title: '成功',
+                            message: '删除成功',
+                            type: 'success',
+                            duration: 2000,
+                            position: 'bottom-right'
+                        })
                     })
                 })
-            })
             },
+
             //办理
             handleTransact(){
                 this.dialogTransactVisible = true
             },
             //导出按钮
-            handleExport() {
-                if (this.selections.length == 0 || this.selections.length == undefined) {
-                    this.$confirm('未选择指定数据将导出全部?', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
-                        type: 'warning',
+            handleExport(){
+                axios
+                    .post(`/data/accessRequest/dataAccReqExcelInfo`, qs.stringify({}), {
+                        // qs.stringify 定义传参格式
+                        responseType: "blob",//返回的文件流转成blob对象
+                        // 如果是通过页面表单方式提交，用"application/x-www-form-urlencoded"；
+                        // 如果是json（要反序列化成字符串），就用"application/json"。
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式
+                        },
                     })
-                    //         .then(()=>{
-                    //         exportAllData()
-                    //         })
-                    // }
-                    // else{
-                    //     setPersonalSpaceSession(this.personalSpaceUuidList)
-                    //         .then((res)=>{
-                    //             if(res.msg == "成功"){
-                    //                 exportAllPersonalSpace()
-                    //             }
-                    //         })
-                    //  }
-                }
+                .then((res) => {
+                    //decodeURI函数用于解码 URI 参数是url 返回值是解码后的字符串
+                    const filename = decodeURI(
+                        res.headers["content-disposition"].split(";")[1].split("=")[1]
+                    );
+                    const blob = new Blob([res.data], {
+                        type: "application/octet-stream",
+                    });
+                    debugger
+                    //创建下载链接
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.style.display = "none";
+                    link.href = url;  //链接到创建的下载地址
+                    link.setAttribute("download", filename); //下载后文件名
+                    document.body.appendChild(link); //下载完成移除元素
+                    link.click(); //点击下载
+                });
             },
+
+            // handleExport(){
+            //     var obj={
+            //         requestName:"111"
+            //     }
+            //     // exportData(obj).then(res=>{
+            //     //     console.log("exportData")
+            //     // })
+            //     //用post请求的话 拿到token就可以导出文件 但是没有token目前是写死的 需要改成post的请求 然后给返回值
+            //     window.open(
+            //         "data/accessRequest/dataAccReqExcelInfo?requestName=" + "this.belongYear"+"&result=login&LTPAToken=Y3MqOTQ4NTJjNjU1NzAzN2JhNjAxNTcwM2JiYzk4YTAwMDYqMTI4KlN0cmluZyo5NDg1MmM2OTU3NDE3ZTg5MDE1NzQxOGEwNTgxMDAwMg==&maxInerval=14400"
+            //     );
+            //     // window.open()
+            // },
+
+            // handleExport(query) {
+            //     // debugger
+            //     // // if (query) this.pageQuery.condition = query
+            //     // // console.log(query)
+            //     // // listByPage(this.pageQuery).then(resp => {
+            //     // //     this.total = resp.data.total
+            //     // //     this.tableData = resp.data.records
+            //     // //     this.listLoading = false
+            //     // // })
+            //     // if (this.selections.length == 0 || this.selections.length == undefined) {
+            //     //     this.$confirm('未选择指定数据将导出全部?', '提示', {
+            //     //         confirmButtonText: '确定',
+            //     //         cancelButtonText: '取消',
+            //     //         type: 'warning',
+            //     //     }).then(()=>{
+            //     //         exportData()
+            //     //             })
+            //     //     }
+            //     //     // else{
+            //     //     //     setPersonalSpaceSession(this.personalSpaceUuidList)
+            //     //     //         .then((res)=>{
+            //     //     //             if(res.msg == "成功"){
+            //     //     //                 exportAllPersonalSpace()
+            //     //     //             }
+            //     //     //         })
+            //     //     //  }
+            //     // },
+            // // },
             //分页
             sortChange(data) {
                 const { prop, order } = data
@@ -398,7 +490,6 @@
             //复选框操作
             handleSelectionChange(val) {
                 this.selections = val
-                console.log(val)
             },
             //查看流程
             showFlow(){

@@ -31,27 +31,29 @@
     <el-table :key="tableKey"
               v-loading="listLoading"
               :data="list"
-              height="400px"
               stripe
               border
               fit
               highlight-current-row
               style="width: 100%;"
+              height="calc(100vh - 330px)"
               @sort-change="sortChange"
               @selection-change="handleSelectionChange">
       <el-table-column type="selection"
                        width="55" />
       <el-table-column label="数据角色名称"
-                       width="200px"
-                       prop="dataRoleName" />
+                       min-width="150px"
+                       prop="dataRoleName"
+                       show-overflow-tooltip />
       <el-table-column label="创建时间"
-                       width="300px"
                        align="center"
-                       prop="createTime" />
+                       width="300px"
+                       prop="createTime"
+                       show-overflow-tooltip />
       <el-table-column label="授权方式"
-                       width="100px"
                        align="center"
                        prop="authenType"
+                       width="350px"
                        :formatter="formatAuthenType" />
       <!-- <el-table-column label="数据筛选" style="width: 50px" align="center">
         <template slot-scope="scope">
@@ -62,7 +64,8 @@
                        align="center"
                        prop="timeDuring"
                        :formatter="formatDuring"
-                       style="width: 400px;" />
+                       width="400px"
+                       show-overflow-tooltip />
     </el-table>
     <pagination v-show="total>0"
                 :total="total"
