@@ -188,27 +188,26 @@
                     </el-col>
                 </el-row>
                 <el-row>
-                    <!--                    <FileImport @handleChange="showFileType" @filePath="showFilePath"-->
-                    <!--                                style="color: #6D8A88;">-->
-                    <!--                    </FileImport>-->
-                    <el-col :span="6">
+                    <el-col>
                         <el-form>
-                            <el-form-item>
-                                <el-upload
-                                        class="upload-demo"
-                                        ref="upload"
-                                        :on-change="select"
-                                        action=""
-                                        :file-list="fileList"
-                                        :http-request="uploadOk"
-                                        :show-file-list="false"
-                                        :auto-upload="false"
-                                        accept=".xls,.xlsx,.txt">
-                                    <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-                                    <el-button style="margin-left: 10px;" size="small" type="success"
-                                               @click="submitUpload">上传
-                                    </el-button>
-                                </el-upload>
+                            <el-form-item v-if="form.operationType === '0'">
+                                <div style="float:right">
+                                    <el-upload
+                                            class="upload-demo"
+                                            ref="upload"
+                                            :on-change="select"
+                                            action=""
+                                            :file-list="fileList"
+                                            :http-request="uploadOk"
+                                            :show-file-list="false"
+                                            :auto-upload="false"
+                                            accept=".xls,.xlsx,.txt">
+                                        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                                        <el-button style="margin-left: 10px;" size="small" type="success"
+                                                   @click="submitUpload">上传
+                                        </el-button>
+                                    </el-upload>
+                                </div>
                             </el-form-item>
                         </el-form>
                     </el-col>
@@ -276,89 +275,29 @@
                                 </el-select>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="isHeaderLines"
+                        <el-table-column prop="isHeaderLine"
                                          label="首行是否为标题行"
                                          align="center"
                                          min-width="80px"
                         >
                             <template slot-scope="scope">
-                                <el-checkbox v-model="scope.row.isHeaderLines" true-label="true" false-label="false">
+                                <el-checkbox v-model="scope.row.isHeaderLine" true-label="true" false-label="false">
                                 </el-checkbox>
                             </template>
                         </el-table-column>
-                        <el-table-column align="center" min-width="80px">
+                        <el-table-column align="center" min-width="80px" label="操作">
                             <template slot-scope="scope">
                                 <el-link
                                         size="mini"
                                         type="danger"
                                         style="margin-right:10px"
                                         @click="lineDelete(scope.$index,'file')"
-                                >
-                                    删除
+                                >删除
                                 </el-link>
                             </template>
                         </el-table-column>
                     </el-table>
                 </el-row>
-                <!--                <el-row>-->
-                <!--                    <el-col :span="5">-->
-                <!--                        <el-form-item v-if="form.operationType === '0'" label="行分隔符" prop="lineSeparator">-->
-                <!--                            <el-select-->
-                <!--                                    v-model="form.lineSeparator"-->
-                <!--                                    id="lineSeparator"-->
-                <!--                                    name="lineSeparator"-->
-                <!--                                    style="width: 150%"-->
-                <!--                            >-->
-                <!--                                <el-option-->
-                <!--                                        v-for="lineSeparator in this.lineSeparators"-->
-                <!--                                        :value="lineSeparator.value"-->
-                <!--                                        :key="lineSeparator.value"-->
-                <!--                                        :label="lineSeparator.label"-->
-                <!--                                ></el-option>-->
-                <!--                            </el-select>-->
-                <!--                        </el-form-item>-->
-                <!--                    </el-col>-->
-                <!--                    <el-col :span="6">-->
-                <!--                        <el-form-item v-if="form.operationType === '0'" label="列分隔符" prop="columnSeparator">-->
-                <!--                            <el-select-->
-                <!--                                    v-model="form.columnSeparator"-->
-                <!--                                    id="columnSeparator"-->
-                <!--                                    name="columnSeparator"-->
-                <!--                                    style="width: 80%"-->
-                <!--                            >-->
-                <!--                                <el-option-->
-                <!--                                        v-for="columnSeparator in this.columnSeparators"-->
-                <!--                                        :value="columnSeparator.value"-->
-                <!--                                        :key="columnSeparator.value"-->
-                <!--                                        :label="columnSeparator.label"-->
-                <!--                                ></el-option>-->
-                <!--                            </el-select>-->
-                <!--                        </el-form-item>-->
-                <!--                    </el-col>-->
-                <!--                    <el-col :span="2">-->
-                <!--                        <el-form-item v-if="form.operationType === '0'">-->
-                <!--                            <el-checkbox v-model="form.isHeaderLine" true-label="true" false-label="">-->
-                <!--                                首行为标题行-->
-                <!--                            </el-checkbox>-->
-                <!--                        </el-form-item>-->
-                <!--                    </el-col>-->
-                <!--                </el-row>-->
-                <!--                <el-form-item label="文件选择" v-if="form.operationType === '0'">-->
-                <!--                    <FileImport @handleChange="showFileType" @filePath="showFilePath" style="color: #6D8A88;">-->
-                <!--                    </FileImport>-->
-                <!--                </el-form-item>-->
-                <!--                <el-form-item label="文件类型 " v-if="form.operationType === '0'">-->
-                <!--                    <el-input style="width: 20%;"-->
-                <!--                              type="text"-->
-                <!--                              v-model="this.fileType"-->
-                <!--                              disabled/>-->
-                <!--                </el-form-item>-->
-                <!--                <el-form-item label="文件名 " v-if="this.updateShow">-->
-                <!--                    <el-input style="width: 40%;"-->
-                <!--                              type="text"-->
-                <!--                              v-model="this.form.fileName"-->
-                <!--                              disabled/>-->
-                <!--                </el-form-item>-->
 
 
                 <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
@@ -394,7 +333,7 @@
                                   v-loading="listLoading"
                                   border
                                   fit
-                                  height="250px"
+                                  height="316px"
                                   highlight-current-row
                                   style="width: 100%;"
                                   @selection-change="handleSelectionChange">
@@ -558,12 +497,13 @@
             return {
                 fileList: [],
                 tableData: [],
+                splitName: [],
                 file: {
                     fileName: '',
                     fileType: '',
                     lineSeparator: '回车换行符',
                     columnSeparator: '制表符',
-                    isHeaderLines: 'true',
+                    isHeaderLine: 'true',
                     disabled: false,
                 },
 
@@ -609,7 +549,6 @@
                     endTime: '',//结束时间
                     lineSeparator: '',//行分隔符
                     columnSeparator: '',//列分隔符
-                    isHeaderLine: '',//首行为标题行
                     fileName: '',//文件名称
                     filePath: '',//文件路径
                     fileUuid: '',//文件编码
@@ -716,7 +655,6 @@
                     endTime: '',//结束时间
                     lineSeparator: '',//行分隔符
                     columnSeparator: '',//列分隔符
-                    isHeaderLine: '',//首行为标题行
                     fileName: '',//文件名称
                     filePath: '',//文件路径
                     fileUuid: '',//文件编码
@@ -810,22 +748,42 @@
             select(file, fileList) {
                 this.file.disabled = true
                 this.fileList = fileList;
+                const time = new Date().getTime();
+                for (let i = 0; i < this.fileList.length; i++) {
+                    // console.log("fileList:",this.fileList[i])
+                    // this.splitName = this.fileList[i].name.split('.');
+                    // console.log("this.splitName",this.splitName)
+                    // this.fileList[i].name = this.splitName[0] + time + "." + this.splitName[1];
+                    // console.log("fileList.fileName:",this.fileList[i].name)
+                    this.splitName = this.fileList[i].name.split('.');
+                    let fileName = this.splitName[0] + time + "." + this.splitName[1];
+                    let f = new File([fileList[i].raw],fileName);
+                    f.uid = fileList[i].uid;
+                    this.fileList[i].raw = f;
+                    this.fileList[i].name = this.splitName[0] + time + "." + this.splitName[1];
+                    console.log(fileList[i])
+                }
                 let extName = file.name.substring(file.name.lastIndexOf(".") + 1).toLowerCase();
                 this.tableData.push(this.file)
                 this.file.fileName = file.name;
                 if (extName === 'txt') {
-                    this.file.fileType = '文本文档'
+                    this.file.fileType = '文本文件'
                     this.file.disabled = false
                 } else if (extName === 'xls') {
-                    this.file.fileType = 'xls表格'
+                    this.file.fileType = 'EXCEL数据表(97-2003)'
                 } else if (extName === 'xlsx') {
-                    this.file.fileType = 'xlsx表格'
+                    this.file.fileType = 'EXCEL数据表(2010)'
                 }
                 console.log("tableData:", this.tableData)
                 console.log("fileList:", fileList)
                 this.file = this.$options.data().file
             },
             submitUpload() {
+                if (this.fileList.length === 0) {
+                    this.$notify.warning("请选择文件后上传！")
+                    return
+                }
+                console.log("测试")
                 this.$refs.upload.submit();
             },
             uploadOk(file, fileList) {
@@ -833,49 +791,16 @@
                 for (let i = 0; i < this.fileList.length; i++) {
                     fd.append("files", this.fileList[i].raw);
                 }
-                // fd.append("applyName", "asdasd");
-                // let aaa = [
-                //     {
-                //         applyName: "qdasdads",
-                //         applyUuid: "123123"
-                //     },
-                //     {
-                //         applyName: "qdasdads",
-                //         applyUuid: "123123"
-                //     }
-                // ]
-                // let b = JSON.stringify(aaa);
-                // for(var i=0,len=aaa.length;i<len;i++){
-                //     fd.append('aaa['+i+'].applyName',aaa[i].applyName)
-                //     fd.append('aaa['+i+'].applyUuid',aaa[i].applyUuid)
-                // }
-                // fd.append("aaa", b)
-                // for(let i=0;i<this.fileList.length;i++){
-                //     fd.append('type',this.fileList[i],this.fileList[i].type);
-                // }
-                // for(let i=0;i<this.fileList.length;i++){
-                //     fd.append('messages',this.messages[i],this.);
-                // }
-                upload(fd).then(res => {
-                    console.log(res)
+                upload(fd).then(() => {
+                    this.$notify({
+                        title: "成功",
+                        message: "上传成功",
+                        type: "success",
+                        duration: 2000,
+                        position: "bottom-right",
+                    });
                 })
             },
-            //对文件类型进行限制
-            // filesAdded(file){
-            //     console.log("file:",file);
-            //     console.log("file.type:",file.type);
-            //     let AllImgExt = ".txt|.xls|.xlsx|";
-            //     let extName = file.name.substring(file.name.lastIndexOf(".")).toLowerCase(); //（把路径中的所有字母全部转换为小写）
-            //     if (AllImgExt.indexOf(extName + "|") === -1) {
-            //         let ErrMsg =
-            //             "该文件类型不允许上传。请上传 " +
-            //             AllImgExt +
-            //             " 类型的文件，当前文件类型为" +
-            //             extName;
-            //         this.$message.error(ErrMsg);
-            //         return false;
-            //     }
-            // },
             // 动态删除一行
             lineDelete(index, ipTable) {
                 console.log("ipTable:", ipTable)
@@ -1015,7 +940,9 @@
             // 编辑 接口
             details_details() {
                 getById(this.form.applyUuid).then(res => {
+                    console.log("res.data:", res.data)
                     this.form = res.data
+                    this.tableData = res.data.fileList
                 })
             },
             // 多选
@@ -1054,6 +981,9 @@
                                     operationType: this.form.operationType,
                                     loadType: this.form.loadType,
                                 },
+                                // tableData: {
+                                //
+                                // },
                                 "tableData": JSON.stringify(this.tableData),
                             }
                             console.log("this.tableData.length:", this.tableData.length)
