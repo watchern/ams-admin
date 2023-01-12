@@ -95,9 +95,10 @@
           <el-table-column width="55" type="selection" />
           <el-table-column
             label="类型"
-            width="150px"
+            min-width="150px"
             align="center"
             prop="userType"
+            show-overflow-tooltip
           >
             <template slot-scope="scope">
               {{ scope.row.userType == 1 ? "用户组" : "用户" }}
@@ -105,11 +106,12 @@
           </el-table-column>
           <el-table-column
             label="名称"
-            width="200px"
+            min-width="150px"
             align="center"
             prop="userName"
+            show-overflow-tooltip
           />
-          <el-table-column label="编码" width="200px" align="center">
+          <el-table-column label="编码" width="300px" align="center" show-overflow-tooltip>
             <template slot-scope="scope">
               <span v-if="scope.row.userType == 1">{{
                 scope.row.grpInstUuid
@@ -119,7 +121,7 @@
               }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="使用期限" width="200px" align="center">
+          <el-table-column label="使用期限" width="300px" align="center" show-overflow-tooltip>
             <template slot-scope="scope">
               <span v-if="role.startTime == null && role.endTime == null"
                 >无限制</span
@@ -133,9 +135,10 @@
           </el-table-column>
           <el-table-column
             label="授权时间"
-            width="150px"
+            width="200px"
             align="center"
             prop="createTime"
+            show-overflow-tooltip
           />
           <!--<el-table-column label="操作" width="150px" align="center">
             <template slot-scope="scope">
@@ -157,7 +160,6 @@ import MyElTree from "@/components/public/tree/src/tree.vue";
 import { getAllScene, initSceneTree, queryOrgTree } from "@/api/data/scene";
 import { saveRoleGrp, getRoleGrp, getById } from "@/api/data/role";
 import { commonNotify } from "@/utils";
-
 export default {
   components: { MyElTree },
   data() {
@@ -183,7 +185,7 @@ export default {
       loadTree: [], //左边树懒加载的数据
       orgTreeData: [],
       orglistLoading: false,
-    };
+      };
   },
   computed: {
     currentTreeData() {
@@ -277,17 +279,18 @@ export default {
       return data.label.indexOf(value) !== -1;
     },
     addGrp() {
-      console.log(this.grpUuid);
       var nodes = this.$refs["A" + this.grpUuid][0].getCheckedNodes();
       if (nodes.length === 0) {
         nodes.push(this.$refs["A" + this.grpUuid][0].getCurrentNode());
       }
       nodes.forEach((node) => {
-        console.log(node);
         if (
           this.tableData.filter((data) => {
             return data.unitUuid === node.id;
-          }).length === 0
+          }).length === 0 &&
+                this.tableData.filter((data) => {
+                  return data.grpInstUuid === node.id;
+                }).length === 0
         ) {
           this.tableData.push({
             dataRoleUuid: this.roleUuid,
@@ -302,7 +305,6 @@ export default {
           });
         }
       });
-      console.log(this.tableData);
     },
 
     saveRoleGrp() {

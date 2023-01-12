@@ -51,83 +51,97 @@
                     </el-form-item>
                 </el-col>
             </el-row>
-            <el-row>
-                <el-col :span="9">
-                    <el-form-item v-if="form.operationType === '0'" label="行分隔符">
-                        <el-input style="width: 100%;"
-                                  type="text"
-                                  v-model="form.lineSeparator"
-                                  :rows="4" disabled></el-input>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="9">
-                    <el-form-item v-if="form.operationType === '0'" label="列分隔符">
-                        <el-input style="width: 100%;"
-                                  type="text"
-                                  v-model="form.columnSeparator"
-                                  :rows="4" disabled></el-input>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="4">
-                    <el-form-item v-if="form.operationType === '0'">
-                        <el-checkbox v-model="form.isHeaderLine" true-label="true" style="margin-left: 20px" disabled>
-                            首行为标题行
+            <el-table v-if="form.operationType === '0'"
+                      :data="tableData"
+                      height="250"
+                      border
+                      style="width: 100%">
+                <el-table-column
+                        prop="fileName"
+                        min-width="100px"
+                        label="文件名"
+                        show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                        prop="fileType"
+                        min-width="100px"
+                        label="文件类型"
+                        align="center"
+                        show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                        prop="lineSeparator"
+                        min-width="100px"
+                        label="行分隔符"
+                        align="center"
+                        show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                        prop="columnSeparator"
+                        label="列分隔符"
+                        min-width="100px"
+                        align="center"
+                        show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column prop="isHeaderLine"
+                                 label="首行是否为标题行"
+                                 align="center"
+                                 min-width="80px"
+                >
+                    <template slot-scope="scope">
+                        <el-checkbox v-model="scope.row.isHeaderLine" :disabled="true" true-label="true" false-label="false">
                         </el-checkbox>
-                    </el-form-item>
-                </el-col>
-            </el-row>
-            <el-form-item label="文件名" v-if="form.operationType === '0'">
-                <el-input style="width: 100%;"
-                          type="text"
-                          v-model="form.fileName"
-                          :rows="8" disabled></el-input>
-            </el-form-item>
-            <el-form-item label="文件路径 " v-if="form.operationType === '0'">
-                <el-input style="width: 100%;"
-                          type="text"
-                          v-model="form.filePath"
-                          disabled/>
-            </el-form-item>
-            <el-form-item v-if="form.operationType === '0'" style="margin-left: 40vh">
-                <el-button @click="showFile(form)">点击查看文件内容</el-button>
-            </el-form-item>
-
-
-            <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
-                <el-col :span="24">
-                    <el-table key="colMetaUuid"
-                              v-loading="listLoading"
-                              fit
-                              height="200px"
-                              highlight-current-row
-                              style="width: 100%;">
-                        <el-table-column label="序号" width="60px" align="center"/>
-                        <el-table-column label="表路径" align="center">
-
-                        </el-table-column>
-                        <el-table-column label="归档方式" width="150px" align="center">
-                            <template slot-scope="scope">
-                                <el-select
-                                        v-model="form.filingMove"
-                                        id="fileMove"
-                                        name="fileMove"
-                                >
-                                </el-select>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="归档文件/表名称" align="center">
-                            <template slot-scope="scope">
-                                <el-select
-                                        v-model="form.filingFile"
-                                        id="filingFile"
-                                        name="filingFile"
-                                >
-                                </el-select>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                </el-col>
-            </el-row>
+                    </template>
+                </el-table-column>
+                <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
+                    <el-col :span="24">
+                        <el-table key="colMetaUuid"
+                                  v-loading="listLoading"
+                                  fit
+                                  height="200px"
+                                  highlight-current-row
+                                  style="width: 100%;">
+                            <el-table-column type="selection" width="55"/>
+                            <el-table-column
+                                    label="表路径"
+                                    min-width="100px"
+                                    show-overflow-tooltip
+                            >
+                            </el-table-column>
+                            <el-table-column
+                                    label="归档方式"
+                                    align="center"
+                                    min-width="150px"
+                                    show-overflow-tooltip
+                            >
+                                <template slot-scope="scope">
+                                    <el-select
+                                            v-model="form.filingMove"
+                                            id="fileMove"
+                                            name="fileMove"
+                                    >
+                                    </el-select>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="归档文件/表名称"
+                                    align="center"
+                                    min-width="150px"
+                                    show-overflow-tooltip
+                            >
+                                <template slot-scope="scope">
+                                    <el-select
+                                            v-model="form.filingFile"
+                                            id="filingFile"
+                                            name="filingFile"
+                                    >
+                                    </el-select>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-col>
+                </el-row>
+            </el-table>
         </el-form>
         <el-dialog v-if="dialogFileVisible"
                    :close-on-click-modal="false"
@@ -157,6 +171,7 @@
         },
         data() {
             return {
+                tableData: [],
                 fileString: '',
                 form: {
                     applyName: '',// 申请名称
@@ -201,12 +216,9 @@
         },
         methods: {
             showFile(val) {
-                console.log("form:", val);
                 showFile(val)
                     .then((res) => {
                         this.fileString = res.data
-                        console.log("res.data:", res.data)
-                        console.log("this.fileString:", this.fileString)
                     })
                 this.dialogFileVisible = true;
             },
@@ -214,7 +226,7 @@
                 getById(value)
                     .then((res) => {
                         this.form = res.data
-                        console.log("oldForm:", this.form)
+                        this.tableData = res.data.fileList
                     })
             },
             updateApplyStatus(value) {

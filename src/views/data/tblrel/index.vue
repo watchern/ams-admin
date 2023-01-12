@@ -27,30 +27,28 @@
               fit
               highlight-current-row
               style="width: 100%"
+              height="calc(100vh - 330px)"
               @sort-change="sortChange"
               @selection-change="handleSelectionChange">
       <el-table-column type="selection"
                        width="55" />
       <el-table-column label="表名称"
                        prop="tbName"
-                       min-width="100px"
-                       align="center"
+                       min-width="150px"
                        show-overflow-tooltip />
       <el-table-column label="字段名称"
                        prop="colName"
-                       align="center"
+                       min-width="150px"
                        show-overflow-tooltip />
       <el-table-column label="从表名称"
                        prop="relationTableName"
-                       align="center"
-                       min-width="100px"
+                       min-width="150px"
                        show-overflow-tooltip />
       <el-table-column label="从表字段"
                        prop="relationCol"
-                       align="center"
+                       min-width="150px"
                        show-overflow-tooltip />
       <el-table-column label="关联关系"
-                       align="center"
                        prop="sqlGenJoinType"
                        min-width="100px"
                        show-overflow-tooltip

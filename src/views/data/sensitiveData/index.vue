@@ -39,8 +39,8 @@
         </div>
       </div>
       <div class="search-btn">
-        <el-button size="mini" type="primary" @click="goQuery">查询</el-button>
-        <el-button size="mini" type="primary" @click="reset">重置</el-button>
+        <el-button type="primary" @click="goQuery">查询</el-button>
+        <el-button type="primary" @click="reset">重置</el-button>
       </div>
     </div>
     <!-- 列表 -->
@@ -64,7 +64,7 @@
         stripe
         v-loading="loading"
         row-key="id"
-        height="calc(100vh - 250px)"
+        height="calc(100vh - 309px)"
         @selection-change="handleSelectionChange"
       >
         <!-- :reserve-selection="true" -->
@@ -116,16 +116,15 @@
           width="200px"
         ></el-table-column>
       </el-table>
-      <div class="pager">
+<!--      <div class="pager">-->
         <el-pagination
-          small
           background
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :total="dataBaseData.total"
         ></el-pagination>
-      </div>
+<!--      </div>-->
     </div>
     <!-- 新增弹窗 -->
     <el-dialog
