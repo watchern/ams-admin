@@ -12,11 +12,15 @@
     <div class="under-container">
       <div class="left-container">
         <div class="categorical-index" >
-          <span style="font-weight: bold; font-size: 16px;padding: 15px 15px 0 20px">业务主题</span>
-          <div style="display: inline-block" v-for="(topic,index) in topics" :key="index">{{topic.title}}</div>
+          <div>
+            <span style="font-weight: bold; font-size: 16px;padding: 15px 15px 0 20px">业务主题</span>
+            <div style="display: inline-block" v-for="(topic,index) in topics" :key="index">{{topic.title}}</div>
+          </div>
           <span style="font-weight: bold; font-size: 16px;padding: 0 15px 0 20px">业务系统</span><hr/>
           <span style="font-weight: bold; font-size: 16px;padding: 0 15px 0 20px">分    层</span><hr/>
           <span style="font-weight: bold; font-size: 16px;padding: 0 15px 0 20px">接入时间</span><hr/>
+        </div>
+        <div class="data-list">
         </div>
       </div>
       <div class="right-container">
@@ -117,6 +121,7 @@ export default {
 .top-container {
   width: 100%;
 }
+/*下部页面*/
 .under-container {
   display: flex;
   justify-content:space-evenly;
@@ -128,10 +133,19 @@ export default {
   width: 85%;
   height: 100%;
 }
+/**/
 .categorical-index{
   width: 100%;
-  height:auto;
+  height:40%;
   background: white;
+}
+/*数据*/
+.data-list{
+  padding-top: 15px;
+  flex-direction:column;
+  background: white;
+  width: 100%;
+  height:60%;
 }
 
 /*右侧*/
