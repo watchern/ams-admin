@@ -303,7 +303,7 @@ export default {
   created () {
     this.query.businessSystemId = "";
     this.post_getBusinessSystemTree();//系统
-    console.log(this.query);
+
     this.$emit("queryListData", this.query, this.show_details = false)
 
   },
