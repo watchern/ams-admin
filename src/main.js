@@ -13,6 +13,7 @@ import '../node_modules/bootstrap/dist/js/bootstrap.min.js';
 // import "bootstrap/dist/css/bootstrap.min.css"
 // import "bootstrap/dist/js/bootstrap.min.js"
 import Element from 'element-ui'
+import Skeleton from 'element-ui'
 import './styles/element-variables.scss'
 import "./styles/common.scss"
 import 'font-awesome/css/font-awesome.min.css'
@@ -35,6 +36,7 @@ import 'ams-indicator-vue/src/styles/index.scss' // global css
 // import '@ag-grid-community/all-modules/dist/styles/ag-grid.css';
 // import '@ag-grid-community/all-modules/dist/styles/ag-theme-alpine.css';// global css
 Vue.use(components)
+Vue.use(Skeleton)
 // Ace end
 
 
