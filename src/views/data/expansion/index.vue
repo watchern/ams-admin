@@ -252,6 +252,7 @@
           :submitData="submitData"
           @closeModal="closeFlowItem"
           @delectData="delectData"
+          @UpdateBecauseSubmit="batchUpdateForSubmit"
         ></FlowItem>
       </div>
       <span class="sess-flowitem" slot="footer">
@@ -633,10 +634,6 @@ export default {
       setTimeout(() => {
         this.$refs["flowItem"].submitFlow();
         //将状态修改为办理中
-        batchUpdateForHandle(this.personalSpaceSelectionList).then((res) => {
-          // location.reload()
-          this.initPersonalSpaceData();
-        });
       }, 20);
     },
     //打开流程跟踪弹窗
@@ -648,6 +645,11 @@ export default {
       this.applyUuid = row.personalSpaceUuid;
       this.todoFlow = true;
     },
+    batchUpdateForSubmit(){
+      batchUpdateForHandle(this.personalSpaceSelectionList).then((res) => {
+        this.initPersonalSpaceData();
+      });
+    }
   },
 };
 </script>

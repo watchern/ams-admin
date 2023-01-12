@@ -589,6 +589,7 @@
         <dataTree ref="dataTableTree"
                   :is_progress="is_progress"
                   :form="form"
+                  :is_main_table="is_main_table"
                   :data-user-id="dataUserId"
                   :scene-code="sceneCode" />
       </div>
@@ -880,6 +881,8 @@ export default {
       this.table_list(this.tableMetaUuid);
       this.getListTree_data(); //下拉框默认值
       this.getIndexInfo(this.tableMetaUuid);
+      this.handleScrollTop();//滚动到顶部
+
     },
   },
   mounted () {
@@ -890,22 +893,6 @@ export default {
     this.getDictInfo(this.tableMetaUuid);
 
     this.qost_cong_table_list_data(this.tableMetaUuid); //获取从表字段
-    // let timeId;
-    // window.addEventListener(
-    //   "scroll",
-    //   () => {
-    //     // this.dom_scrollTop = document.querySelector('#right_details').scrollTop;//获取监听指定区域滚动位置的值
-
-    //     // 页面滚动停止100毫秒后才会执行下面的函数。
-    //     // clearTimeout(timeId);
-    //     // timeId = setTimeout(() => {
-    //     // this.scrollToTop();
-    //     this.handleScroll();
-    //     //   }, 100);
-    //   },
-    //   true
-    // );
-
     window.addEventListener("scroll", this.handleScroll, true);
   },
   // 移除详情页面导航滚动跟随监听
@@ -919,14 +906,25 @@ export default {
   },
 
   methods: {
+    handleScrollTop () {
+      this.$nextTick(() => {
+        this.navgatorIndex = 0
+        let scrollElem = this.$refs.element;
+        scrollElem.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    },
+
     // 点击导航菜单，页面滚动到指定位置
     handleLeft (index) {
+      console.log(index);
       this.navgatorIndex = index;
       this.$el.querySelector(`#id${index}`).scrollIntoView({
         behavior: "smooth", // 平滑过渡
         block: "start", // 上边框与视窗顶部平齐。默认值
       });
       this.listBoxState = false;
+
+
 
       // let timeId;
       // clearTimeout(timeId);
@@ -976,6 +974,7 @@ export default {
 
     // 基本信息
     details (tableId) {
+
       this.form = JSON.parse(JSON.stringify(this.form));
       this.$forceUpdate();
       getBasicInfo(tableId).then((resp) => {
@@ -1014,7 +1013,7 @@ export default {
         this.form.tableSize = resp.data.tableSize; //数据数量：
         this.form.personName_str = resp.data.personLiables; //负责人
         this.form.tableLayeredName = resp.data.tableRelationQuery.tableLayeredName;//数据源
-        console.log(this.form);
+
         if (resp.data.personLiables.length !== 0) {
           let personName = [];
           resp.data.personLiables.forEach((item) => {
@@ -1463,6 +1462,7 @@ export default {
 
 .is_disabled >>> .el-textarea__inner {
   background-color: rgba(0, 0, 0, 0.05) !important;
+  color: #606266 !important;
 }
 
 .yes_disabled >>> .el-select,

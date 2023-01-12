@@ -255,6 +255,7 @@
                     if (resp.code == 0) {
                         this.common.alertMsg(1, "保存成功");
                         //启动流程提交，关闭模态框。
+                        this.$emit("UpdateBecauseSubmit")
                         this.$emit("closeModal", false);
                     } else {
                         //执行失败

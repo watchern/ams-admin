@@ -313,7 +313,7 @@
 
               <div class="son_check">
                 <el-form-item label="负责人：">
-                  <el-input type="text"
+                  <el-input type="textarea"
                             disabled
                             v-model="form.personName_str">
                   </el-input>
@@ -1269,6 +1269,7 @@ export default {
     // 查看详情
     Details (tableMetaUuid, show_details, isDisable_input) {
 
+
       this.tableMetaUuid = tableMetaUuid
       this.show_details = show_details;
       this.isDisable_input = isDisable_input;
@@ -1281,7 +1282,7 @@ export default {
 
 
       this.show_details = show_details; //显示列表
-      this.query = data;
+      // this.query = data;
       // this.listLoading = true;
       this.list_loading = true; //子组件loading
       let params = {
@@ -1429,6 +1430,9 @@ export default {
       } else {
         // this.registTableFlag = false;//关闭上一步
         this.dialogVisible_information = true; //显示下一步 基本信息
+        this.$nextTick(() => {
+          this.$refs["form"].clearValidate();
+        })
         this.post_getColsInfoByTableName(); //获取列信息
         this.getListTree_data();
         this.form.tbName = this.Column_table_query.tbName.toString(); //表名赋值
@@ -1869,7 +1873,10 @@ export default {
   float: left !important;
   text-align: right;
 }
-
+.son_check >>> .el-textarea.is-disabled .el-textarea__inner {
+  color: #606266 !important;
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
 .son_check {
   display: flex;
   align-items: center;

@@ -248,6 +248,7 @@
                                         name="lineSeparator"
                                         style="width: 80%"
                                         :disabled="scope.row.disabled"
+                                        placeholder="不可选择"
                                 >
                                     <el-option
                                             v-for="lineSeparator in lineSeparators"
@@ -271,6 +272,7 @@
                                         name="columnSeparator"
                                         style="width: 80%"
                                         :disabled="scope.row.disabled"
+                                        placeholder="不可选择"
                                 >
                                     <el-option
                                             v-for="columnSeparator in columnSeparators"
@@ -287,7 +289,8 @@
                                          min-width="80px"
                         >
                             <template slot-scope="scope">
-                                <el-checkbox v-model="scope.row.isHeaderLine" true-label="true" false-label="false">
+                                <el-checkbox v-model="scope.row.isHeaderLine"
+                                             true-label="true" false-label="false">
                                 </el-checkbox>
                             </template>
                         </el-table-column>
@@ -413,6 +416,7 @@
                         :submitData="submitData"
                         @closeModal="closeFlowItem"
                         @delectData="delectData"
+                        @UpdateBecauseSubmit="batchUpdateForHandleClose"
                 ></FlowItem>
             </div>
             <span class="sess-flowitem" slot="footer">
@@ -438,7 +442,7 @@
                    :close-on-click-modal="false"
                    :visible.sync="dialogDetailVisible"
                    title="详情"
-                   width="50%"
+                   width="60%"
         >
             <div>
                 <Details ref="detailsUuid"
@@ -503,12 +507,13 @@
             return {
                 fileList: [],
                 tableData: [],
+                tableNullData: [],
                 splitName: [],
                 file: {
                     fileName: '',
                     fileType: '',
-                    lineSeparator: '回车换行符',
-                    columnSeparator: '制表符',
+                    lineSeparator: '',
+                    columnSeparator: '',
                     isHeaderLine: 'true',
                     disabled: false,
                 },
@@ -768,6 +773,8 @@
                 this.file.fileName = file.name;
                 if (extName === 'txt') {
                     this.file.fileType = '文本文件'
+                    this.file.lineSeparator = '回车换行符'
+                    this.file.columnSeparator = '制表符'
                     this.file.disabled = false
                 } else if (extName === 'xls') {
                     this.file.fileType = 'EXCEL数据表(97-2003)'
@@ -837,11 +844,15 @@
                 getById(this.form.applyUuid).then(res => {
                     this.form = res.data
                     this.tableData = res.data.fileList
-
+                    this.tableData.forEach((r) => {
+                        r.disabled = r.fileType !== "文本文件";
+                    })
                     //只有状态为草稿时才能实现对数据的编辑修改
                     if (this.form.status !== '草稿') {
-                        this.$notify.warning("只有草稿状态可办理")
-                        return
+                        this.$notify.warning("只有草稿状态可编辑")
+                        this.form.applyName = ''
+                        this.form.loadType = ''
+                        this.tableData = this.tableNullData
                     } else {
                         this.dialogStatusValue = true
                         this.applyDialogVisible = true
@@ -1113,13 +1124,14 @@
                 setTimeout(() => {
                     this.$refs["flowItem"].submitFlow();
                     //将状态修改为办理中
-                    batchUpdateForHandle(this.applySelectionList)
-                        .then(() => {
-                            location.reload()
-                        })
                 }, 20);
-            }
-            ,
+            },
+            batchUpdateForHandleClose() {
+                batchUpdateForHandle(this.applySelectionList)
+                    .then(() => {
+                        this.getList()
+                    })
+            },
         }
 
     }
