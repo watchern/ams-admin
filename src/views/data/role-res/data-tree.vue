@@ -31,15 +31,32 @@
                label-position="bottom">
         <el-form-item label="数据源："
                       label-width="65px">
-          <el-select v-model="query.dataSource"
-                     @change="selectdata"
-                     :disabled="tabclick"
-                     placeholder="请选择数据源">
-            <el-option v-for="item in options"
-                       :key="item.value"
-                       :label="item.label"
-                       :value="item.value" />
-          </el-select>
+
+          <div v-if="is_main_table">
+            <!-- 注册新增关系树用 -->
+            <el-select v-model="query.dataSource"
+                       @change="selectdat_2"
+                       :disabled="tabclick"
+                       placeholder="请选择数据源">
+              <el-option v-for="item in options"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </div>
+          <div v-else>
+            <!-- directory用 -->
+            <el-select v-model="query.dataSource"
+                       @change="selectdata"
+                       :disabled="tabclick"
+                       placeholder="请选择数据源">
+              <el-option v-for="item in options"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </div>
+
         </el-form-item>
       </el-form>
 
@@ -213,10 +230,12 @@ export default {
       type: Object,
       default: () => ({})
     },
+    is_main_table: Boolean,
 
   },
   data () {
     return {
+      tableMetaUuid: '',
       ifExpandAll: false, // 是否展开所有树节点
       filterText1: null,
       props: {
@@ -246,7 +265,14 @@ export default {
 
       // 资料树筛选 数据源
       query: {
-        dataSource: 'Postgre',//筛选条件
+        dataSource: "Postgre", //筛选条件
+        pageNo: 1,
+        pageSize: 10,
+        businessSystemId: "", //id主键
+        tableThemeId: "", //主题
+        tableLayeredId: "", //分层
+        folderUuid: "", //目录ID
+        tbName: '',// 批量注册后 点击左侧树 一个会显示全部的问题
       },
       loading: false,
       // options: [{
@@ -275,9 +301,11 @@ export default {
     },
   },
   created () {
-
-
+    this.query.businessSystemId = "";
     this.post_getBusinessSystemTree();//系统
+    console.log(this.query);
+    this.$emit("queryListData", this.query, this.show_details = false)
+
   },
   methods: {
     // 系统
@@ -346,7 +374,34 @@ export default {
     },
     // 选择数据源
     selectdata (val) {
+      // if (val !== this.form.tableLayeredName) {
+      //   this.$message({
+      //     type: "info",
+      //     message: "请选择相同的数据源!",
+      //   });
+      //   this.query.dataSource = 'Postgre'
+      //   return false;
+      // } else {
+      this.query.dataSource = val
+      if (this.activeName == '0') {
+        // 系统
+        this.post_getBusinessSystemTree();//系统
+      } else if (this.activeName == '1') {
+        // 主题
+        this.post_getThemeTree();//主题
+      } else if (this.activeName == '2') {
+        // 分层
+        this.post_getLayeredTree();//分层
+      }
+      // else {
+      //   // 目录
+      //   this.post_getDataTreeNode();//目录
+      // }
+      // }
 
+    },
+
+    selectdat_2 (val) {
       if (val !== this.form.tableLayeredName) {
         this.$message({
           type: "info",
@@ -375,22 +430,47 @@ export default {
     },
 
 
-    filterNode (value, data) {
-      if (!value) return true;
-      return data.label.indexOf(value) !== -1;
+    // filterNode (value, data) {
+    //   if (!value) return true;
+    //   return data.label.indexOf(value) !== -1;
+    // },
+    filterNode (value, data, node) {
+      // if (!value) return true;
+      // return data.label.indexOf(value) !== -1;
+
+      // 过滤后显示子级
+      if (!value) {
+        return true;
+      }
+      let level = node.level;
+      let _array = [];//这里使用数组存储 只是为了存储值。
+      this.getReturnNode(node, _array, value);
+      let result = false;
+      _array.forEach((item) => {
+        result = result || item;
+      });
+      return result;
     },
+
+    // 处理过滤后显示二级++
+    getReturnNode (node, _array, value) {
+      let isPass = node.data && node.data.label && node.data.label.indexOf(value) !== -1;
+      isPass ? _array.push(isPass) : '';
+      this.index++;
+
+      if (!isPass && node.level != 1 && node.parent) {
+        this.getReturnNode(node.parent, _array, value);
+      }
+    },
+
     getTree () {
       return this.$refs.tree1;
-    },
-    filterNode (value, data) {
-      if (!value) return true;
-      return data.label.indexOf(value) !== -1;
     },
     getTree () {
       return this.$refs.tree1;
     },
     nodeclick (data, node, tree) {
-      this.$emit("node-click", data, node, tree);
+      this.$emit("node-click", data, node, tree, this.query);
     },
     handleCheck (data, checkIds) {
       if (checkIds.checkedKeys.length > 0) {
