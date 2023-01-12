@@ -50,10 +50,17 @@
                  class="dlag_width"
                  width="60%">
 
-        <el-input style="width: 70%"
-                  v-model="filterText1"
-                  placeholder="输入想要查询的表名称（模糊搜索）" />
-        <el-button @click="getTables"> 搜索 </el-button>
+        <!-- 选择模式 -->
+        <div class="_width ">
+
+        </div>
+
+        <div class="_width ">
+          <el-input style="width: 70%"
+                    v-model="filterText1"
+                    placeholder="输入想要查询的表名称（模糊搜索）" />
+          <el-button @click="getTables"> 搜索 </el-button>
+        </div>
 
         <div class="dlag_conter containerselect padding10">
           <MyElTree ref="tree1"
