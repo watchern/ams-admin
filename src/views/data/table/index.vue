@@ -50,10 +50,17 @@
                  class="dlag_width"
                  width="60%">
 
-        <el-input style="width: 70%"
-                  v-model="filterText1"
-                  placeholder="输入想要查询的表名称（模糊搜索）" />
-        <el-button @click="getTables"> 搜索 </el-button>
+        <!-- 选择模式 -->
+        <div class="_width ">
+
+        </div>
+
+        <div class="_width ">
+          <el-input style="width: 70%"
+                    v-model="filterText1"
+                    placeholder="输入想要查询的表名称（模糊搜索）" />
+          <el-button @click="getTables"> 搜索 </el-button>
+        </div>
 
         <div class="dlag_conter containerselect padding10">
           <MyElTree ref="tree1"
@@ -62,6 +69,7 @@
                     :data="tableData"
                     class="filter-tree"
                     show-checkbox
+                    :filter-node-method="filterNode"
                     @check-change="nodeClick_table"
                     @node-click="nodeClick_table"
                     default-expand-all>
@@ -363,27 +371,37 @@
           </el-form>
           <div class="padding10_l">
             <p style="text-align: center">列信息</p>
-            <el-table :data="Column_table" :show-overflow-tooltip='true' style="width: 100%">
-              <el-table-column prop="colName" show-overflow-tooltip label="字段名称">
+            <el-table :data="Column_table"
+                      :show-overflow-tooltip='true'
+                      style="width: 100%">
+              <el-table-column prop="colName"
+                               show-overflow-tooltip
+                               label="字段名称">
               </el-table-column>
-              <el-table-column prop="chnName" show-overflow-tooltip label="字段中文名">
+              <el-table-column prop="chnName"
+                               show-overflow-tooltip
+                               label="字段中文名">
               </el-table-column>
-              <el-table-column prop="dataType" show-overflow-tooltip label="字段类型">
+              <el-table-column prop="dataType"
+                               show-overflow-tooltip
+                               label="字段类型">
               </el-table-column>
-              <el-table-column prop="dataLength" show-overflow-tooltip label="字段长度">
+              <el-table-column prop="dataLength"
+                               show-overflow-tooltip
+                               label="字段长度">
               </el-table-column>
             </el-table>
           </div>
         </div>
         <span slot="footer"
               class="dialog-footer">
-          <el-button @click="step()">上一步</el-button>
+          <el-button @click="step('form')">上一步</el-button>
           <el-button type="primary"
                      :loading="btnLoading"
                      :disabled="isDisable"
                      @click="save('form')">{{ this.btnLoading == true ? "保存中" : "保存" }}</el-button>
 
-          <el-button @click="close_diag()">关闭</el-button>
+          <el-button @click="close_diag('form')">关闭</el-button>
         </span>
       </el-dialog>
 
@@ -824,6 +842,10 @@ export default {
           value: 1,
           label: "表",
         },
+        {
+          value: 2,
+          label: "视图",
+        },
       ],
       // 点击懒加载tree
 
@@ -925,6 +947,8 @@ export default {
     // this.query_list(data);
   },
   methods: {
+
+
     // 获取资料书的参数
     QueryData () {
       this.query_list(this.$refs.tree_left.query, false);
@@ -1317,8 +1341,20 @@ export default {
       this.registTableFlag = true;
       this.getTables();
     },
+    // 选择注册表 筛选
+    filterNode (value, data) {
+      if (!value) return true;
+      return data.label.indexOf(value) !== -1;
+    },
     // 上一步
-    step () {
+    step (form) {
+      this.$nextTick(() => {
+        this.$refs[form].resetFields(); //清空添加的值
+        this.$refs["form"].clearValidate();
+        this.clear_details_form();
+
+      });
+
       // this.registTableFlag = true;//关闭上一步
       this.dialogVisible_information = false; //关闭基本信息
       this.clear();
@@ -1523,17 +1559,58 @@ export default {
     },
     // 关闭弹窗
     handleClose (form) {
-      this.$refs[form].resetFields(); //清空添加的值
+
+      this.$nextTick(() => {
+        this.$refs[form].resetFields(); //清空添加的值
+        this.$refs["form"].clearValidate();
+        this.clear_details_form();
+
+      });
+
+
       this.clear();
     },
     // 数据日期:
     changeRelationParam (value) {
       this.form.dataDate = value;
     },
+    // 清空基本信息
+    clear_details_form () {
+      // this.form.tbName = ''
+      this.form.chnName = ''
+      this.form.tableRemarks = ''
+      this.form.tableCode = ''
+      this.form.tableType = ''
+      this.form.tableThemeName = ''
+      this.form.tableThemeId = ''
+      this.form.tableLayeredName = ''
+      this.form.tableLayeredId = ''
+      this.form.businessSystemName = ''
+      this.form.businessSystemId = ''
+      this.form.fileName = ''
+      this.form.dataDate = ''
+      this.form.tableSize = ''
+      this.form.rowNum = ''
+      this.form.personLiables = ''
+      this.form.personName_str = ''
+      this.form.personUuid = ''
+      this.form.partitions = ''
+      this.form.isSpike = ''
+      this.form.isSentFile = ''
+      this.form.personName = ''
+      this.form.file_name = ''
+    },
     // 下一步的关闭
-    close_diag () {
+    close_diag (form) {
       this.dialogVisible_information = false;
       this.chooseTables = []; //传输的数据
+
+      this.$nextTick(() => {
+        this.$refs[form].resetFields(); //清空添加的值
+        this.$refs["form"].clearValidate();
+        this.clear_details_form();
+      });
+
     },
     // 下一步的保存
     save (form) {
@@ -1806,8 +1883,12 @@ export default {
   justify-content: center;
   align-items: center;
   line-height: 20px;
-  padding: 10px;
+  padding: 5px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+}
+.table .li_son:last-child {
+  border: none !important;
 }
 
 /* 标签回显框 */

@@ -64,7 +64,7 @@
         stripe
         v-loading="loading"
         row-key="id"
-        height="calc(100vh - 290px)"
+        height="calc(100vh - 309px)"
         @selection-change="handleSelectionChange"
       >
         <!-- :reserve-selection="true" -->
@@ -116,7 +116,7 @@
           width="200px"
         ></el-table-column>
       </el-table>
-      <div class="pager">
+<!--      <div class="pager">-->
         <el-pagination
           background
           layout="total, sizes, prev, pager, next, jumper"
@@ -124,7 +124,7 @@
           @current-change="handleCurrentChange"
           :total="dataBaseData.total"
         ></el-pagination>
-      </div>
+<!--      </div>-->
     </div>
     <!-- 新增弹窗 -->
     <el-dialog
