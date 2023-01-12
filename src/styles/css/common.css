@@ -317,7 +317,7 @@ form::-webkit-scrollbar-corner,
 .flow-tree{
     overflow: auto;
     width: 100%;
-    height: calc(100% - 40px);
+    height: calc(100%);
 }
 .el-tree-node__children{
     overflow: visible !important;
