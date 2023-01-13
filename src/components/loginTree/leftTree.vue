@@ -185,12 +185,18 @@ export default {
       if (this.activeName == "0") {
         // 系统
         this.post_getBusinessSystemTree(); //系统
+        this.$emit("queryList", this.query, this.show_details = false)
+
       } else if (this.activeName == "1") {
         // 主题
         this.post_getThemeTree(); //主题
+        this.$emit("queryList", this.query, this.show_details = false)
+
       } else if (this.activeName == "2") {
         // 分层
         this.post_getLayeredTree(); //分层
+        this.$emit("queryList", this.query, this.show_details = false)
+
       }
       // else {
       //   // 目录
