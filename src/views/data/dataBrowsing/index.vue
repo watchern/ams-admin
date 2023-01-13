@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container">
+  <div class="page-container-first">
     <div class="top-container">
       <!--      查询-->
       <div class="query-top-img">
@@ -15,43 +15,70 @@
     <div class="under-container">
       <div class="left-container">
         <div class="categorical-index">
-          <div>
-            <span
-              style="
-                font-weight: bold;
-                font-size: 16px;
-                padding: 15px 15px 0 20px;
-              "
-              >业务主题</span
-            >
-            <div
-              style="display: inline-block"
-              v-for="(topic, index) in topics"
-              :key="index"
-            >
-              {{ topic.title }}
+          <div class="theme-index">
+            <div class="classify-them-left">业务主题</div>
+            <div class="classify-right-out">
+              <div
+                class="classify-right"
+                v-for="(topic, index) in BusinessTopics"
+                :key="index"
+                :class="isActiveTopic === index ? 'active' : ''"
+                @click="setActiveTab(index, 'isActiveTopic')"
+              >
+                {{ topic.title }}
+              </div>
             </div>
           </div>
-          <span
-            style="font-weight: bold; font-size: 16px; padding: 0 15px 0 20px"
-            >业务系统</span
-          >
-          <hr />
-          <span
-            style="font-weight: bold; font-size: 16px; padding: 0 15px 0 20px"
-            >分 层</span
-          >
-          <hr />
-          <span
-            style="font-weight: bold; font-size: 16px; padding: 0 15px 0 20px"
-            >接入时间</span
-          >
-          <hr />
+
+          <div class="theme-index">
+            <div class="classify-them-left">业务系统</div>
+            <div class="classify-right-out">
+              <div
+                class="classify-right"
+                v-for="(system, index) in BusSystems"
+                :key="index"
+                :class="isActiveSystem === index ? 'active' : ''"
+                @click="setActiveTab(index, 'isActiveSystem')"
+              >
+                {{ system.title }}
+              </div>
+            </div>
+          </div>
+          <div class="theme-index">
+            <div class="classify-them-left">分层</div>
+            <div class="classify-right-out">
+              <div
+                class="classify-right"
+                v-for="(layered, index) in layereds"
+                :class="isActiveLayered === index ? 'active' : ''"
+                @click="setActiveTab(index, 'isActiveLayered')"
+                :key="index"
+              >
+                {{ layered.title }}
+              </div>
+            </div>
+          </div>
+          <div class="theme-index">
+            <div class="classify-them-left">接入时间</div>
+            <div class="classify-right-out">
+              <div
+                class="classify-right"
+                v-for="(time, index) in accessTime"
+                :class="isActiveTime === index ? 'active' : ''"
+                @click="setActiveTab(index, 'isActiveTime')"
+                :key="index"
+              >
+                {{ time.title }}
+              </div>
+            </div>
+          </div>
         </div>
+
         <div class="data-list">
           <dataBrowsingDetails></dataBrowsingDetails>
         </div>
       </div>
+      <!--      右侧-->
       <div class="right-container">
         <el-card class="query-card">
           <div slot="header" class="card-clearfix">
@@ -75,11 +102,6 @@
               <i icon="icon-hot-fire"></i>
             </li>
           </div>
-          <!--        <div class="query-card-text">-->
-          <!--          <ul v-for="(item,index) in ">{{index+1}}.{{items.message}}-->
-          <!--            <i icon="el-icon-hot-fire"></i>-->
-          <!--          </ul>-->
-          <!--        </div>-->
         </el-card>
       </div>
     </div>
@@ -101,7 +123,7 @@ export default {
       dataSearchImg: require("@/assets/img/search_logo.png"),
       dropDownData: ["测试", "测试11111"],
       //业务主题
-      topics: [
+      BusinessTopics: [
         {
           title: "基金主题",
         },
@@ -119,30 +141,93 @@ export default {
         },
       ],
       //业务系统
+      BusSystems: [
+        {
+          title: "信贷系统",
+        },
+        {
+          title: "信贷",
+        },
+        {
+          title: "企业客户",
+        },
+        {
+          title: "总账系统",
+        },
+        {
+          title: "理财系统",
+        },
+        {
+          title: "卡系统",
+        },
+        {
+          title: "基金",
+        },
+        {
+          title: "网银",
+        },
+        {
+          title: "商户管理",
+        },
+        {
+          title: "票据系统",
+        },
+        {
+          title: "资金系统",
+        },
+        {
+          title: "国结",
+        },
+        {
+          title: "信用卡",
+        },
+        {
+          title: "抵质押系",
+        },
+        {
+          title: "托管系统",
+        },
+        {
+          title: "资产托管",
+        },
+        {
+          title: "外部数据",
+        },
+        {
+          title: "金融基础数据",
+        },
+      ],
       //分层
+      layereds: [
+        {
+          title: "审计标准数据",
+        },
+        {
+          title: "业务原始数据",
+        },
+        {
+          title: "审计中间数据",
+        },
+      ],
       //接入时间
-
-      // items:[{
-      //   message:"标题1"
-      // },{
-      //   message:"标题2"
-      // },{
-      //   message:"标题3"
-      // },{
-      //   message:"标题4"
-      // },{
-      //   message:"标题5"
-      // },{
-      //   message:"标题6"
-      // },{
-      //   message:"标题7"
-      // },{
-      //   message:"标题8"
-      // },{
-      //   message:"标题9"
-      // },{
-      //   message:"标题10"
-      // }]
+      accessTime: [
+        {
+          title: "近一月",
+        },
+        {
+          title: "近三月",
+        },
+        {
+          title: "近半年",
+        },
+        {
+          title: "近一年",
+        },
+      ],
+      isActiveTopic: "",
+      isActiveSystem: "",
+      isActiveLayered: "",
+      isActiveTime: "",
     };
   },
   computed: {},
@@ -154,19 +239,37 @@ export default {
     onChange(data) {
       console.log(data, "data");
     },
+    setActiveTab(value, type) {
+      if (type === "isActiveTopic") {
+        this.isActiveTopic = value;
+      }
+      if (type === "isActiveSystem") {
+        this.isActiveSystem = value;
+      }
+      if (type === "isActiveLayered") {
+        this.isActiveLayered = value;
+      }
+      if (type === "isActiveTime") {
+        this.isActiveTime = value;
+      }
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.page-container {
+.page-container-first {
+  min-width: 1300px;
   display: flex;
   padding: 0px !important;
   flex-direction: column;
 }
+
+/*搜索部分*/
 .top-container {
   width: 100%;
 }
+
 /*下部页面*/
 .under-container {
   display: flex;
@@ -175,19 +278,53 @@ export default {
 
 /*左侧容器*/
 .left-container {
-  width: 85%;
+  width: 80%;
   height: 100%;
+  flex-direction: column;
 }
-/**/
+
+/*分类*/
 .categorical-index {
   width: 100%;
   background: white;
+  margin-bottom: 10px;
 }
+
+/*分类主题部分*/
+.theme-index {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  padding: 10px;
+  border-bottom: 1px solid #ededed;
+}
+/*分类主题*/
+.classify-them-left {
+  display: inline-block;
+  font-weight: bold;
+  width: 6%;
+  margin-right: 8px;
+  text-align: right;
+  justify-content: flex-start;
+  padding-left: 10px;
+}
+.classify-right-out {
+  width: 90%;
+}
+
+/*右侧分类部分*/
+.classify-right {
+  display: inline-block;
+  margin-right: 20px;
+}
+/*分层之后 左侧展示数据的div*/
+
 /*数据*/
 .data-list {
-  padding-top: 15px;
   flex-direction: column;
   background: white;
+  height: calc(100vh - 400px);
+  overflow: auto;
 }
 
 /*右侧*/
@@ -201,6 +338,7 @@ export default {
 .query-top-img {
   background: white;
   text-align: center;
+  width: 100%;
 }
 
 /*右侧查询卡片*/
@@ -216,6 +354,7 @@ export default {
   height: 30px;
   cursor: pointer;
 }
+
 /*鼠标滑过加下划线*/
 .query-card-text li:hover {
   text-decoration: underline;
@@ -230,5 +369,8 @@ export default {
 .card-clearfix:after {
   clear: both;
 }
-/*查询卡片结束*/
+.active {
+  color: #677ccd;
+  background: #e7ecff;
+}
 </style>
