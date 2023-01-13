@@ -19,17 +19,33 @@
       :key="tableKey"
       v-loading="listLoading"
       :data="list"
+      stripe
       border
       fit
       highlight-current-row
       style="width: 100%;"
+      height="calc(100vh - 330px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="规则名称" prop="ruleName" />
-      <el-table-column label="转码方式" align="center" prop="ruleType" :formatter="formatTag" />
-      <el-table-column label="规则描述" prop="ruleDesc" />
+      <el-table-column
+              label="规则名称"
+              prop="ruleName"
+              min-width="250px"
+              show-overflow-tooltip
+      />
+      <el-table-column
+              label="转码方式"
+              prop="ruleType"
+              min-width="200px"
+              show-overflow-tooltip
+              :formatter="formatTag" />
+      <el-table-column
+              label="规则描述"
+              prop="ruleDesc"
+              width="600px"
+              show-overflow-tooltip />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
     <el-dialog v-if="dialogFormVisible" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
@@ -64,7 +80,7 @@
         >
          <div v-if="temp.ruleType === 1" :data="sqlRule">
          <el-table>
-          <el-table-column prop="codeValue" label="真实值">
+          <el-table-column prop="codeValue" label="真实值" show-overflow-tooltip>
             <template slot-scope="scope">
               <el-select ref="codeValue" v-model="scope.row.codeValue" placeholder="请选择真实值">
                 <el-option
@@ -76,7 +92,7 @@
               </el-select>
             </template>
           </el-table-column>
-          <el-table-column prop="transValue" label="显示值">
+          <el-table-column prop="transValue" label="显示值" show-overflow-tooltip>
             <template slot-scope="scope">
               <el-select ref="transValue" v-model="scope.row.transValue" placeholder="请选择显示值">
                 <el-option

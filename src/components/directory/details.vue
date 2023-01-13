@@ -6,7 +6,9 @@
         <li class="navgatorLi"
             v-for="(item, index) in tag"
             :key="item"
-            :class="{ isActive: index === navgatorIndex }"
+            :class="{
+            isActive: index === navgatorIndex,
+          }"
             @click="handleLeft(index)">
           {{ item }}
         </li>
@@ -19,17 +21,24 @@
         <!-- 基本信息 -->
         <div class="information rightList_child"
              id="id0">
-          <h2 :class="{ isActive: navgatorIndex == 0 }">基本信息</h2>
+          <h2 :class="{
+              isActive: navgatorIndex == 0,
+            }">
+            基本信息
+          </h2>
           <div class="information_form padding10">
             <el-form ref="form"
                      :model="form"
                      label-width="80px">
-              <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
-                <el-form-item label="表名称："
-                              prop="tbName">
-                  <el-input v-model="form.tbName"
-                            :disabled="disabled"></el-input>
-                </el-form-item>
+
+              <el-form-item label="表名称："
+                            prop="tbName">
+                <el-input v-model="form.tbName"
+                          disabled></el-input>
+              </el-form-item>
+              <div :class="
+                  isDisable_input == true ? 'is_disabled' : 'yes_disabled'
+                ">
                 <el-form-item label="表中文名："
                               prop="chnName">
                   <el-input v-model="form.chnName"
@@ -53,11 +62,12 @@
                               disabled
                               @input="change($event)"
                               v-model="form.tableCode"
-                              :rows="4">
-                    </el-input>
+                              :rows="4"></el-input>
                   </el-form-item>
                 </div>
-                <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
+                <div :class="
+                    isDisable_input == true ? 'is_disabled' : 'yes_disabled'
+                  ">
                   <el-form-item label="资源类型：">
                     <el-select v-model="form.tableType"
                                @input="change($event)"
@@ -70,9 +80,11 @@
                   </el-form-item>
                 </div>
               </div>
-              <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
+              <div :class="
+                  isDisable_input == true ? 'is_disabled' : 'yes_disabled'
+                ">
                 <div class="son">
-                  <el-form-item label="资产主题：">
+                  <el-form-item label="资源主题：">
                     <el-select v-model="form.tableThemeId"
                                @input="change($event)"
                                @change="tableThemeName_change"
@@ -141,26 +153,30 @@
                             :disabled="disabled"
                             @input="change($event)"
                             v-model="form.rowNum"
-                            :rows="4">
-                  </el-input>
+                            :rows="4"></el-input>
                 </el-form-item>
-              </div>
-              <div class="son_people is_disabled">
-                <el-form-item label="负责人：">
-                  <el-input :disabled="disabled"
-                            style="  background-color: rgba(0, 0, 0, 0.05) !important;"
-                            v-model="form.personLiables"></el-input>
-                </el-form-item>
-                <el-button type="primary"
-                           :disabled="isDisable_input"
-                           class="oper-btn"
-                           @click="check_people()">选择</el-button>
+                <div class="son_people is_disabled"
+                     :class="isDisable_input == true ? 'is_width':''">
+                  <el-form-item label="负责人：">
+                    <el-input :disabled="disabled"
+                              style="background-color: rgba(0, 0, 0, 0.05) !important"
+                              v-model="form.personLiables"></el-input>
+                  </el-form-item>
+                  <el-button type="primary"
+                             v-if="isDisable_input == false"
+                             :disabled="isDisable_input"
+                             class="oper-btn"
+                             @click="check_people()">
+                    选择
+                  </el-button>
+                </div>
               </div>
 
-              <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
-
+              <div :class="
+                  isDisable_input == true ? 'is_disabled' : 'yes_disabled'
+                ">
                 <div class="son">
-                  <el-form-item label="表分区:"
+                  <el-form-item label="表分区："
                                 :disabled="disabled"
                                 prop="partitions">
                     <div class="table">
@@ -172,7 +188,9 @@
                              :key="index_partitions"
                              class="li_son">
                           {{ item }}
-                          <div>{{ item }}</div>
+                          <div>
+                            {{ item }}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -190,69 +208,79 @@
                   </el-form-item>
                 </div>
 
-                <el-form-item label="数据标签：">
+                <!-- <el-form-item label="数据标签：">
                   <div class="input_blue"
                        @click="onclick_infotion_tag()">
                     <div v-for="(item, index) in TagsAll"
                          :key="index"
                          class="spanbox">
-                      <span class="tagspan">{{ item }}</span>
+                      <span class="tagspan">
+                        {{ item }}
+                      </span>
                       <i class="span_close"
                          @click="removeTag_infotion_tag(index, item)"></i>
                     </div>
                     <input v-model="search_name_infotion"
-                           :disabled="isDisable_input"
                            @keyup.enter="addTags_infotion_tag"
                            @keyup.delete="deleteTags_infotion_tag"
                            :style="inputStyle"
                            class="inputTag"
                            ref="inputTag"
+                           disabled
                            type="text" />
                   </div>
-                </el-form-item>
+                </el-form-item> -->
 
                 <el-form-item label="表热度：">
                   <ul class="Heat_ul _width">
                     <li v-for="(it, i) in Heat"
                         :key="i">
-                      <p>{{ it.name }}</p>
-                      <span>{{ it.num }}</span>
+                      <p>
+                        {{ it.name }}
+                      </p>
+                      <span>
+                        {{ it.num }}
+                      </span>
                     </li>
                   </ul>
                 </el-form-item>
                 <div class="son">
                   <el-button type="primary"
-                             @click="previewSql()">查看SQL语句</el-button>
+                             @click="previewSql()">
+                    查看SQL语句
+                  </el-button>
                 </div>
-
               </div>
-
             </el-form>
           </div>
         </div>
         <!-- 列信息 -->
         <div class="rightList_child"
              id="id1">
-          <h2 :class="{ isActive: navgatorIndex == 1 }">列信息</h2>
+          <h2 :class="{
+              isActive: navgatorIndex == 1,
+            }">
+            列信息
+          </h2>
           <div class="padding10">
             <el-table :data="Column_tableData.colMetas"
+                      :show-overflow-tooltip="true"
                       style="width: 100%">
               <el-table-column prop="colName"
-                               align="center"
-                               label="字段名称">
-              </el-table-column>
+                               show-overflow-tooltip
+                               label="字段名称"></el-table-column>
               <el-table-column prop="chnName"
-                               align="center"
-                               label="字段中文名">
-              </el-table-column>
+                               show-overflow-tooltip
+                               label="字段中文名"></el-table-column>
               <el-table-column prop="dataType"
+                               show-overflow-tooltip
                                align="center"
-                               label="字段类型">
-              </el-table-column>
+                               width="140"
+                               label="字段类型"></el-table-column>
               <el-table-column prop="dataLength"
+                               show-overflow-tooltip
                                align="center"
-                               label="字段长度">
-              </el-table-column>
+                               label="字段长度"></el-table-column>
 
               <!-- <el-table-column prop="address"
                                align="center"
@@ -264,17 +292,27 @@
         <!-- 索引信息 -->
         <div class="rightList_child"
              id="id2">
-          <h2 :class="{ isActive: navgatorIndex == 2 }">索引信息</h2>
+          <h2 :class="{
+              isActive: navgatorIndex == 2,
+            }">
+            索引信息
+          </h2>
           <div class="padding10">
             <el-table :data="Column_tableData_index"
+                      :show-overflow-tooltip="true"
                       style="width: 100%">
               <el-table-column prop="indexName"
-                               label="名称"> </el-table-column>
+                               show-overflow-tooltip
+                               label="名称"></el-table-column>
               <el-table-column prop="indexType"
-                               label="类型"> </el-table-column>
+                               show-overflow-tooltip
+                               label="类型"></el-table-column>
               <el-table-column prop="columnName"
-                               label="列"> </el-table-column>
+                               show-overflow-tooltip
+                               label="列"></el-table-column>
               <el-table-column prop="onlyIndex"
+                               show-overflow-tooltip
+                               width="100"
                                label="是否唯一">
                 <template slot-scope="scope">
                   {{ scope.row.onlyIndex ? "是" : "否" }}
@@ -286,12 +324,19 @@
         <!-- 数据表关联关系 -->
         <div class="rightList_child"
              id="id3">
-          <h2 :class="{ isActive: navgatorIndex == 3 }">数据表关联关系</h2>
+          <h2 :class="{
+              isActive: navgatorIndex == 3,
+            }">
+            数据表关联关系
+          </h2>
           <div class="padding20"
                style="text-align: right">
             <el-button type="primary"
+                       v-if="isDisable_input == false"
                        :disabled="isDisable_input"
-                       @click="add_table()">新增</el-button>
+                       @click="add_table()">
+              新增
+            </el-button>
           </div>
           <div style="padding: 0 20px"
                class="mose">
@@ -305,20 +350,25 @@
         <!-- 数据表关联关系 -->
         <div class="rightList_child"
              id="id4">
-          <h2 :class="{ isActive: navgatorIndex == 4 }">数据表字典信息</h2>
+          <h2 :class="{
+              isActive: navgatorIndex == 4,
+            }">
+            数据表字典信息
+          </h2>
           开发中...
           <div class="padding20">
             <!-- <LineMap></LineMap> -->
             <!-- <EditMap></EditMap> -->
           </div>
-        </div>
 
-        <div class="rightList_child"
-             style="text-align: right">
-          <el-button type="primary"
-                     @click="update_save()"
-                     :disabled="isDisable_input"
-                     v-if="!isDisable_input">保存</el-button>
+          <div class="fixed_btn">
+            <el-button type="primary"
+                       @click="update_save()"
+                       :disabled="isDisable_input"
+                       v-if="!isDisable_input">
+              保存
+            </el-button>
+          </div>
         </div>
       </div>
     </div>
@@ -331,15 +381,18 @@
                width="40%">
       <div class="preview_sql">
         <el-input type="textarea"
-                  style="resize: none"
-                  v-model="sql">
-        </el-input>
+                  cols="40"
+                  rows="10"
+                  disabled
+                  v-model="sql"></el-input>
       </div>
       <span slot="footer"
             class="dialog-footer">
-        <el-button @click="visible_sql = false">取 消</el-button>
-        <el-button type="primary"
-                   @click="visible_sql = false">确 定</el-button>
+        <el-button @click="visible_sql = false"> 取 消 </el-button>
+        <!-- <el-button type="primary"
+                   @click="visible_sql = false">
+          确 定
+        </el-button> -->
       </span>
     </el-dialog>
 
@@ -351,37 +404,61 @@
                width="50%">
       <div>
         <div class="padding10">
+          <!-- <el-button type="primary"
+                     @click="addTable()">
+            新增一行
+          </el-button> -->
           <el-button type="primary"
-                     @click="addTable()">新增一行</el-button>
+                     @click="addTable(true)">关联主表</el-button>
+          <el-button type="primary"
+                     @click="addTable(false)">关联从表</el-button>
         </div>
         <el-table :data="visibleTableList"
+                  :show-overflow-tooltip="true"
                   style="width: 100%">
           <el-table-column prop="tbName"
-                           label="主表"> </el-table-column>
+                           show-overflow-tooltip
+                           label="主表"></el-table-column>
           <el-table-column prop="relationTableName"
-                           label="关联表"> </el-table-column>
+                           show-overflow-tooltip
+                           label="关联表"></el-table-column>
           <!-- <el-table-column prop="selectType"
                            label="表关联方式"> </el-table-column> -->
 
           <el-table-column prop="colName"
-                           label="主表字段"> </el-table-column>
+                           show-overflow-tooltip
+                           label="主表字段"></el-table-column>
 
           <!-- <el-table-column prop="tbName"
                            label="字段关联条件">
           </el-table-column> -->
 
           <el-table-column prop="relationCol"
-                           label="关联字段"> </el-table-column>
+                           show-overflow-tooltip
+                           label="关联字段"></el-table-column>
 
-          <el-table-column prop="selectType"
-                           label="连接条件"> </el-table-column>
+          <el-table-column prop="sqlGenJoinType"
+                           show-overflow-tooltip
+                           label="连接条件">
+            <template slot-scope="scope">
+              {{
+                scope.row.sqlGenJoinType == 1
+                  ? "left joi"
+                  : scope.row.sqlGenJoinType == 2
+                  ? "right join"
+                  : scope.row.sqlGenJoinType == 3
+                  ? "full join"
+                  : "inner join"
+              }}
+            </template>
+          </el-table-column>
         </el-table>
       </div>
       <span slot="footer"
             class="dialog-footer">
-        <el-button @click="visibleTable = false">取 消</el-button>
+        <el-button @click="visibleTable = false"> 取 消 </el-button>
         <el-button type="primary"
-                   @click="save_table()">保存</el-button>
+                   @click="save_table()"> 保存 </el-button>
       </span>
     </el-dialog>
 
@@ -398,63 +475,113 @@
                  :inline="false"
                  :model="table_visible_form"
                  label-width="90px">
-          <el-form-item label="表名称："
-                        prop="tbName">
-            <el-input v-model="table_visible_form.tbName"
-                      disabled></el-input>
-          </el-form-item>
-          <el-form-item prop="colName"
-                        label="字段名称：">
-            <el-row>
-              <el-col :span="22">
-                <el-input v-model="table_visible_form.colName"
-                          disabled></el-input>
-              </el-col>
-              <el-col :span="2">
-                <el-button @click="showDataTree(1)">选择</el-button>
-              </el-col>
-            </el-row>
-          </el-form-item>
 
-          <el-form-item label="从表名称：">
-            <el-input v-model="table_visible_form.relationTableName"
-                      disabled></el-input>
-          </el-form-item>
+          <!-- 主表的情况 -->
+          <div v-if="is_main_table">
+            <el-form-item label="主表名称："
+                          prop="tbName">
+              <el-input v-model="table_visible_form.tbName"
+                        disabled></el-input>
+            </el-form-item>
+            <el-form-item label="主表字段："
+                          prop="colName">
+              <el-row>
+                <el-col :span="22">
+                  <el-input v-model="table_visible_form.colName"
+                            disabled></el-input>
+                </el-col>
+                <el-col :span="2">
+                  <el-button @click="showDataTree(1)">选择</el-button>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item label="从表名称："
+                          prop="relationTableName">
+              <el-input v-model="table_visible_form.relationTableName"
+                        disabled></el-input>
+            </el-form-item>
+            <el-form-item label="从表字段："
+                          prop="relationCol">
+              <el-select v-model="table_visible_form.relationCol"
+                         style="width: 100%">
+                <el-option v-for="item in cong_table_list"
+                           :key="item.colMetaUuid"
+                           :label="item.colName"
+                           :value="item.colMetaUuid" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="关联关系："
+                          prop="sqlGenJoinType">
+              <el-select v-model="table_visible_form.sqlGenJoinType"
+                         style="width: 100%">
+                <el-option v-for="item in relationship"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
+              </el-select>
+            </el-form-item>
+          </div>
 
-          <el-form-item prop="relationCol"
-                        label="从表字段：">
-            <el-row>
-              <el-col :span="22">
-                <el-input v-model="table_visible_form.relationCol"
-                          disabled></el-input>
-              </el-col>
-              <el-col :span="2">
-                <el-button @click="showDataTree(2)">选择</el-button>
-              </el-col>
-            </el-row>
-          </el-form-item>
-          <el-form-item label="关联关系："
-                        prop="relationship">
-            <el-select v-model="table_visible_form.relationship"
-                       style="width: 100%">
-              <el-option v-for="item in relationship"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value" />
-            </el-select>
-          </el-form-item>
+          <!-- 从表的情况下 -->
+          <div v-else>
+            <el-form-item label="主表名称："
+                          prop="tbName">
+              <el-input v-model="table_visible_form.tbName"
+                        disabled></el-input>
+            </el-form-item>
+            <el-form-item label="主表字段："
+                          prop="colName">
+              <el-select v-model="table_visible_form.colName"
+                         style="width: 100%">
+                <el-option v-for="item in cong_table_list"
+                           :key="item.colMetaUuid"
+                           :label="item.colName"
+                           :value="item.colMetaUuid" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="从表名称："
+                          prop="relationTableName">
+              <el-input v-model="table_visible_form.relationTableName"
+                        disabled></el-input>
+            </el-form-item>
+            <el-form-item label="从表字段："
+                          prop="relationCol">
+              <el-row>
+                <el-col :span="22">
+                  <el-input v-model="table_visible_form.relationCol"
+                            disabled></el-input>
+                </el-col>
+                <el-col :span="2">
+                  <el-button @click="showDataTree(2)">选择</el-button>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item label="关联关系："
+                          prop="sqlGenJoinType">
+              <el-select v-model="table_visible_form.sqlGenJoinType"
+                         style="width: 100%">
+                <el-option v-for="item in relationship"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
+              </el-select>
+            </el-form-item>
+          </div>
         </el-form>
       </div>
       <span slot="footer"
             class="dialog-footer">
-        <el-button @click="add_table_visible = false">取 消</el-button>
+        <el-button @click="add_table_visible = false"> 取 消 </el-button>
         <el-button type="primary"
-                   @click="add_table_save('table_visible_form')">确 定</el-button>
+                   @click="add_table_save('table_visible_form')">
+          确 定
+        </el-button>
       </span>
     </el-dialog>
 
     <!-- 选择数据表 -->
     <el-dialog v-if="dataTableTree"
+               :close-on-click-modal="false"
                class="abow_dialog"
                :destroy-on-close="true"
                :append-to-body="true"
@@ -462,16 +589,17 @@
                title="请选择数据表"
                width="50%">
       <div class="tree_style">
-        <!-- @node-click="NodeTreeClick" -->
         <dataTree ref="dataTableTree"
                   :is_progress="is_progress"
+                  :form="form"
+                  :is_main_table="is_main_table"
                   :data-user-id="dataUserId"
                   :scene-code="sceneCode" />
       </div>
       <div slot="footer">
-        <el-button @click="dataTableTree = false">取消</el-button>
+        <el-button @click="dataTableTree = false"> 取消 </el-button>
         <el-button type="primary"
-                   @click="getDataTable()">确定</el-button>
+                   @click="getDataTable()"> 确定 </el-button>
       </div>
     </el-dialog>
 
@@ -483,9 +611,11 @@
       <personTree ref="orgPeopleTree"></personTree>
       <span slot="footer"
             class="dialog-footer">
-        <el-button @click="close_people()">取 消</el-button>
+        <el-button @click="close_people()"> 取 消 </el-button>
         <el-button type="primary"
-                   @click="modelResultShare()">确 定</el-button>
+                   @click="modelResultShare()">
+          确 定
+        </el-button>
       </span>
     </el-dialog>
   </div>
@@ -497,7 +627,7 @@ import ProcessTree from "@/components/directory/processTree.vue";
 import LineMap from "@/components/directory/lineMap.vue";
 import EditMap from "@/components/directory/editMap.vue";
 import personTree from "@/components/publicpersontree/index";
-import { save_data_query } from '@/api/data/tablerelation'
+import { save_data_query } from "@/api/data/tablerelation";
 import {
   getBasicInfo, //列表点击详情
   getColsInfo, //列信息
@@ -505,9 +635,10 @@ import {
   createSql, //查看sql
   selectIndexInfo, //查询索引信息
   getTableZipperList, //查询数据字典
+  cong_table_list_data, //从表字段
 } from "@/api/data/table-info";
 import {
-  getListTree, //注册资产下一步
+  getListTree, //注册资源下一步
 } from "@/api/lhg/register.js";
 import { getTableByCol } from "@/api/data/table-info";
 export default {
@@ -572,33 +703,34 @@ export default {
       list_details: {}, //基本信息
       // 基本信息
       form: {
-        tableRelationQueryUuid: '',//id
-        name: '',
-        tbName: '',//表名称
-        chnName: '',//中文名
-        tableRemarks: '',//表说明
-        tableCode: '',// 资源编码
-        tableType: '',// 资产类型
-        tableThemeName: '',//所属主题name
-        tableThemeId: '',// 资产主题 id
-        tableLayeredName: '',//资产分层
-        tableLayeredId: '',//资产分层 id
-        businessSystemName: '',//所属系统
-        businessSystemId: '',//所属系统 id
-        fileName: '',//文件名
-        dataDate: '',//数据日期
-        tableSize: '',//表大小:
-        rowNum: '',//表数据量
-        // personName_str: '',//责任人
-        personLiables: '',//负责人
-        personUuid: '',//资产责任人
-        partitions: '',//表分区
-        isSpike: 1,//是否增量
+        tableRelationQueryUuid: "", //id
+        name: "",
+        tbName: "", //表名称
+        chnName: "", //中文名
+        tableRemarks: "", //表说明
+        tableCode: "", // 资源编码
+        tableType: "", // 资源类型
+        tableThemeName: "", //所属主题name
+        tableThemeId: "", // 资源主题 id
+        tableLayeredName: "", //资源分层
+        tableLayeredId: "", //资源分层 id
+        businessSystemName: "", //所属系统
+        businessSystemId: "", //所属系统 id
+        fileName: "", //文件名
+        dataDate: "", //数据日期
+        tableSize: "", //表大小:
+        rowNum: "", //表数据量
+        personName_str: "", //责任人
+        personLiables: "", //负责人
+        personUuid: "", //资源责任人
+        partitions: "", //表分区
+        isSpike: 1, //是否增量
+        tableLayeredName: '',//数据源
       },
       tableData: [],
       sceneCode: "auditor",
       Column_tableData_index: [], //索引信息
-      TagsAll: ["aa"],
+      TagsAll: [],
       inputLength: "",
       search_name_infotion: "", //标签
 
@@ -630,15 +762,21 @@ export default {
           value: 1,
           label: "表",
         },
+        {
+          value: 2,
+          label: "视图",
+        },
       ],
 
       Heat: [
-        { name: "python工具引用次数", num: "99" },
-        { name: "python工具引用次数", num: "99" },
-        { name: "python工具引用次数", num: "22" },
-        { name: "python工具引用次数", num: "99" },
-        { name: "python工具引用次数", num: "99" },
-        { name: "python工具引用次数", num: "99" },
+        {
+          name: "python工具引用次数",
+          num: "99",
+        },
+        {
+          name: "python工具引用次数",
+          num: "99",
+        },
       ], //表热度
 
       // 列信息
@@ -648,47 +786,52 @@ export default {
       visible_sql: false, //查看sql
       visibleTable: false, //新增表关系
       add_table_visible: false, //新增一行表
-      visibleTableList: [
-        // {
-        //   tbName: '1',// 表名称：
-        //   colName: "2", //字段名称
-        //   relationTableName: "3", //从表名称
-        //   relationCol: "4", //从表字段
-        //   relationship: "4", //关联关系：
-        //   tableMetaUuid: '4',
-        //   colMetaUuid: '4',
-        //   relColMetaUuid: '4',
-        //   relTableMetaUuid: '4',
-        //   sqlGenJoinType: '4',
-        //   selectType: '4',//关联关系
-        // },
-      ],
+      visibleTableList: [],
+
+      is_main_table: true, //是否是主表
+      cong_table_list: [], // 从表列表
+      select_data: {
+        tableType: '',//
+      }, //选择的字段
+
       //新增的表关系信息
       table_visible_form: {
-        tbName: '',// 表名称：
+        tbName: "", // 表名称：
         colName: "", //字段名称
         relationTableName: "", //从表名称
         relationCol: "", //从表字段
         relationship: "", //关联关系：
-        tableMetaUuid: '',
-        colMetaUuid: '',
-        relColMetaUuid: '',
-        relTableMetaUuid: '',
-        sqlGenJoinType: '',
-        selectType: '',//关联关系
+        tableMetaUuid: "",
+        colMetaUuid: "",
+        relColMetaUuid: "",
+        relTableMetaUuid: "",
+        sqlGenJoinType: "",
+        selectType: "", //关联关系
       },
-      dataTableTree: false,//显示 选择数据表
+      dataTableTree: false, //显示 选择数据表
       dataUserId: this.$store.getters.personcode,
 
       rules_table: {
         colName: [
-          { required: true, message: "请输入字段名称", trigger: "blur" },
+          {
+            required: true,
+            message: "请输入字段名称",
+            trigger: "blur",
+          },
         ],
         relationCol: [
-          { required: true, message: "请输入从表字段", trigger: "blur" },
+          {
+            required: true,
+            message: "请输入从表字段",
+            trigger: "blur",
+          },
         ],
         relationship: [
-          { required: true, message: "请选择关联关系", trigger: "change" },
+          {
+            required: true,
+            message: "请选择关联关系",
+            trigger: "change",
+          },
         ],
       },
       // 关联关系下拉框
@@ -709,12 +852,9 @@ export default {
           value: 4,
           label: "inner join",
         },
-
       ],
       resultShareDialogIsSee: false, //选择责任人
       is_progress: false,
-
-
     };
   },
   computed: {
@@ -739,12 +879,14 @@ export default {
     },
     tableMetaUuid (newVal, oldVal) {
       // newVal是新值，oldVal是旧值
-      this.tableMetaUuid = newVal
+      this.tableMetaUuid = newVal;
       this.details(this.tableMetaUuid);
       this.table_list(this.tableMetaUuid);
       this.getListTree_data(); //下拉框默认值
       this.getIndexInfo(this.tableMetaUuid);
-    }
+      this.handleScrollTop();//滚动到顶部
+
+    },
   },
   mounted () {
     this.details(this.tableMetaUuid);
@@ -752,35 +894,40 @@ export default {
     this.getListTree_data(); //下拉框默认值
     this.getIndexInfo(this.tableMetaUuid);
     this.getDictInfo(this.tableMetaUuid);
-    // let timeId;
-    window.addEventListener(
-      "scroll",
-      () => {
-        // 页面滚动停止100毫秒后才会执行下面的函数。
-        // clearTimeout(timeId);
-        // timeId = setTimeout(() => {
-        // this.scrollToTop();
-        this.handleScroll();
-        //   }, 100);
-      },
-      true
-    );
 
+    this.qost_cong_table_list_data(this.tableMetaUuid); //获取从表字段
+    window.addEventListener("scroll", this.handleScroll, true);
+  },
+  // 移除详情页面导航滚动跟随监听
+  beforeDestroy () {
+    window.removeEventListener("scroll", this.handleScroll, true);
   },
   created () {
     // this.$nextTick(function () {
     //   let height_conter = this.$refs.element.offsetHeight;  //100
     // })
   },
+
   methods: {
+    handleScrollTop () {
+      this.$nextTick(() => {
+        this.navgatorIndex = 0
+        let scrollElem = this.$refs.element;
+        scrollElem.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    },
+
     // 点击导航菜单，页面滚动到指定位置
     handleLeft (index) {
+      console.log(index);
       this.navgatorIndex = index;
       this.$el.querySelector(`#id${index}`).scrollIntoView({
-        behavior: "smooth",  // 平滑过渡
-        block: "start"  // 上边框与视窗顶部平齐。默认值
+        behavior: "smooth", // 平滑过渡
+        block: "start", // 上边框与视窗顶部平齐。默认值
       });
       this.listBoxState = false;
+
+
 
       // let timeId;
       // clearTimeout(timeId);
@@ -789,7 +936,7 @@ export default {
       // }, 200);
     },
     handleScroll () {
-      var dom_scrollTop = document.querySelector('#right_details').scrollTop;//获取监听指定区域滚动位置的值
+      this.dom_scrollTop = document.querySelector("#right_details").scrollTop; //获取监听指定区域滚动位置的值
       // let offsetTop = document.querySelector("#right_details").offsetTop; //获取固定元素初始滚动位置
       // if (this.listBoxState == true) {//作用是点击导航栏时，延迟这里执行。
       this.tag.map((v, i) => {
@@ -799,18 +946,16 @@ export default {
         var scrollHeight = document.getElementById(`id${i}`).scrollHeight;
         // 如果 dom滚动位置 >= 元素距离视窗距离 && dom滚动位置 <= 元素距离视窗距离+元素本身高度
         // 则表示页面已经滚动到可视区了。
-        if (dom_scrollTop >= offsetTop && dom_scrollTop <= (offsetTop + scrollHeight)) {
+        if (
+          this.dom_scrollTop >= offsetTop &&
+          this.dom_scrollTop <= offsetTop + scrollHeight
+        ) {
           // 导航栏背景色选中
           this.navgatorIndex = i;
         }
-      })
+      });
       // }
-
     },
-    // beforeDestroy () {
-    //   window.removeEventListener("scroll", this.scrollTop);
-    // },
-
 
     // 数据日期:
     changeRelationParam (value) {
@@ -820,7 +965,7 @@ export default {
     change (e) {
       this.$forceUpdate();
     },
-    // 资产主题
+    // 资源主题
     tableThemeName_change (val) {
       this.form.tableThemeId = val;
       this.next_data.themeList.forEach((item) => {
@@ -832,11 +977,12 @@ export default {
 
     // 基本信息
     details (tableId) {
+
       this.form = JSON.parse(JSON.stringify(this.form));
       this.$forceUpdate();
       getBasicInfo(tableId).then((resp) => {
         this.form = resp.data;
-        var _data = resp.data;
+        // var _data = resp.data;
         this.form.tbName = resp.data.tbName; //表名称
         this.form.chnName = resp.data.chnName; //中文名
         this.form.tableRemarks = resp.data.tableRelationQuery.tableRemarks; //表说明
@@ -868,7 +1014,9 @@ export default {
           resp.data.tableRelationQuery.businessSystemName; //所属主题
         this.form.dataDate = resp.data.tableRelationQuery.dataDate; //数据日期
         this.form.tableSize = resp.data.tableSize; //数据数量：
-        this.form.personName_str = resp.data.personLiables;
+        this.form.personName_str = resp.data.personLiables; //负责人
+        this.form.tableLayeredName = resp.data.tableRelationQuery.tableLayeredName;//数据源
+
         if (resp.data.personLiables.length !== 0) {
           let personName = [];
           resp.data.personLiables.forEach((item) => {
@@ -877,13 +1025,12 @@ export default {
 
             this.form.personLiables = personName.join(","); //负责人
             // this.form.personUuid = personUuid.join(",")
-            // 
+            //
 
             // let objs = {
             //   personUuid: item.personUuid,
             //   personName: item.personName
             // }
-            // 
             // this.form.personName_str.push(objs)
           });
           // this.form.personLiables = personName.join(",");//负责人
@@ -894,24 +1041,16 @@ export default {
         }
         this.form.partitions = resp.data.partitions; //表分区
         this.form.isSpike = resp.data.tableRelationQuery.isSpike; //增量全量
+
+        this.table_visible_form.tableMetaUuid = resp.data.tableMetaUuid//主表从表新增用
       });
     },
 
     // 修改保存
     update_save () {
-      var selectedNodes = this.$refs.orgPeopleTree.getSelectValue();
       var personLiables = [];
-      // 
-      // 如果修改了责任人
-      if (selectedNodes) {
-        selectedNodes.forEach((item) => {
-          let objs = {
-            personUuid: item.personuuid,
-            personName: item.cnname,
-          };
-          personLiables.push(objs);
-        });
-      } else {
+      if (this.form.personName_str) {
+        // 如果默认有 没有修改
         this.form.personName_str.forEach((item) => {
           let objs = {
             personUuid: item.personUuid,
@@ -939,14 +1078,14 @@ export default {
         },
         personLiables: personLiables,
       };
-
       updateTableInfo(params).then((resp) => {
         if (resp.code == 0) {
           this.$message({
             type: "success",
             message: "修改成功!",
           });
-          this.$emit("update_list");
+          this.$emit("query_data"); //刷新页面
+          // this.$emit("update_list");
         } else {
           this.$message({
             type: "error",
@@ -965,10 +1104,9 @@ export default {
 
     // 数据字典信息
     getDictInfo (tableId) {
-      getTableZipperList(tableId).then(res => {
-        console.log("数据字典信息", res);
-        this.Column_tableData_dict = res.data
-      })
+      getTableZipperList(tableId).then((res) => {
+        this.Column_tableData_dict = res.data;
+      });
     },
 
     //  列信息
@@ -1024,19 +1162,23 @@ export default {
     // 确定责任人
     modelResultShare () {
       // this.listLoading = true;
-      // var runTaskRelUuids = [];
       var personUuids = [];
       var personNames = [];
       var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
       for (var i = 0; i < selectedNode.length; i++) {
         personUuids.push(selectedNode[i].personuuid);
         personNames.push(selectedNode[i].cnname);
+
+        this.form.personName_str = []; //清空
+        let objs = {
+          personUuid: selectedNode[i].personuuid,
+          personName: selectedNode[i].cnname,
+        };
+        this.form.personName_str.push(objs);
         this.form.personLiables = personNames.join(",");
       }
-
       this.resultShareDialogIsSee = false;
     },
-
 
     // 删除标签
     removeTag_infotion_tag (index, item) {
@@ -1066,28 +1208,54 @@ export default {
         tableMetaUuid: this.tableMetaUuid,
       };
       createSql(params).then((resp) => {
-
         this.sql = resp.data;
       });
     },
     // 数据表关系列表
     add_table () {
       this.visibleTable = true; //数据表关系列表
+      this.visibleTableList = []; //清空上次新增的关系
     },
+
     // 新增一行表关系
-    addTable () {
+    addTable (flag) {
+      // 是不是主表 1:主表 2从表
+      if (flag) {
+        this.is_main_table = flag;
+        this.table_visible_form.tableMetaUuid = "";
+        this.table_visible_form.tbName = "";
+        this.table_visible_form.colName = "";
+        this.table_visible_form.colMetaUuid = "";
+        this.table_visible_form.relColMetaUuid = this.tableMetaUuid;
+        this.table_visible_form.tableRelationUuid = "";
+        this.table_visible_form.relationTableName = this.form.tbName;
+        this.table_visible_form.selectType = "";
+        this.table_visible_form.sqlGenJoinType = "";
+        this.table_visible_form.relationCol = "";
+      } else {
+        this.is_main_table = flag;
+        this.table_visible_form.tableMetaUuid = this.tableMetaUuid;
+        this.table_visible_form.tbName = this.form.tbName;
+        this.table_visible_form.colName = "";
+        this.table_visible_form.colMetaUuid = "";
+        this.table_visible_form.relColMetaUuid = "";
+        this.table_visible_form.tableRelationUuid = "";
+        this.table_visible_form.relationTableName = "";
+        this.table_visible_form.selectType = "";
+        this.table_visible_form.sqlGenJoinType = "";
+        this.table_visible_form.relationCol = "";
+      }
       this.add_table_visible = true;
-      this.table_visible_form.tableMetaUuid = "";
-      this.table_visible_form.tbName = "";
-      this.table_visible_form.colName = "";
-      this.table_visible_form.colMetaUuid = "";
-      this.table_visible_form.relColMetaUuid = "";
-      this.table_visible_form.tableRelationUuid = "";
-      this.table_visible_form.relationTableName = "";
-      this.table_visible_form.selectType = "";
-      this.table_visible_form.sqlGenJoinType = "";
-      this.table_visible_form.relationCol = "";
     },
+
+    // 获取从表字段
+    qost_cong_table_list_data (tableMetaUuid) {
+      cong_table_list_data(tableMetaUuid).then((resp) => {
+        this.cong_table_list = resp.data.colMetas;
+      });
+    },
+
+
     // 关闭弹窗
     handleClose_table (table_visible_form) {
       this.$refs[table_visible_form].resetFields(); //清空添加的值
@@ -1097,56 +1265,60 @@ export default {
     showDataTree (val) {
       this.table_visible_form.selectType = val;
       this.dataTableTree = true;
+
+
     },
-    // NodeTreeClick (data, node, tree) {
-    //   
-    //   
-    //   
-    // },
     // 确认选择的数据表
     getDataTable () {
+      // 是不是主表 1:主表 2从表
       const dataTree = this.$refs.dataTableTree.getTree();
       const currentNode = dataTree.getCurrentNode();
+
       if (currentNode.type !== "col") {
-        this.$message({ type: "info", message: "请选择数据表列!" });
+        this.$message({
+          type: "info",
+          message: "请选择数据表列!",
+        });
         return;
       }
-      // 
-      // this.loadTableCol(currentNode.id);
+
+      // 主表
       if (this.table_visible_form.selectType === 1) {
-        this.table_visible_form.colName = currentNode.label;//字段名称
+        this.table_visible_form.colName = currentNode.label; //字段名称
         const str = currentNode.id;
         this.table_visible_form.colMetaUuid = str;
         const arr = str.split(">");
-        this.table_visible_form.tbName = arr[1];//表名称
+        this.table_visible_form.tbName = arr[1]; //表名称
         this.table_visible_form.tableMetaUuid = arr[0] + ">" + arr[1];
+
+        if (this.table_visible_form.tbName == this.table_visible_form.relationTableName) {
+          this.$message({
+            message: "请不要选择已关联的主表",
+            type: "info",
+            showClose: true,
+          });
+          return false;
+        }
       } else {
-        this.table_visible_form.relationCol = currentNode.label;//从表字段：
+        // 从表
+        this.table_visible_form.relationCol = currentNode.label; //从表字段：
         this.table_visible_form.relColMetaUuid = currentNode.id;
         const str = currentNode.id;
         const arr = str.split(">");
-        this.table_visible_form.relationTableName = arr[1];//从表名称：
+        this.table_visible_form.relationTableName = arr[1]; //从表名称：
         this.table_visible_form.relTableMetaUuid = arr[0] + ">" + arr[1];
+        if (this.table_visible_form.tbName == arr[1]) {
+          this.$message({
+            message: "请不要选择已关联的从表",
+            type: "info",
+            showClose: true,
+          });
+          return false;
+        }
       }
+      //下拉框选择的值
       this.dataTableTree = false;
     },
-    // 获取选中表的列id，列名称等信息
-    // loadTableCol (id) {
-    //   getTableByCol(id).then(result => {
-    //     if (result.data == null) {
-    //       this.$message({ type: 'info', message: '加载数据表列失败!' })
-    //       return
-    //     }
-    //     
-    //     return false
-    //     this.relTableColumn = result.data
-    //     // this.$refs.relTableDiv.style.display = 'block'
-    //     // this.setQueryBuilderColumn()
-    //   })
-    // },
-
-
-
     // 保存新增的数据表
     add_table_save (table_visible_form) {
       this.$refs[table_visible_form].validate((valid) => {
@@ -1159,14 +1331,14 @@ export default {
             relColMetaUuid: this.table_visible_form.relColMetaUuid,
             tableRelationUuid: this.table_visible_form.tableRelationUuid,
             relationTableName: this.table_visible_form.relationTableName, //从表名称
-            selectType: this.table_visible_form.selectType,//关联关系
+            selectType: this.table_visible_form.selectType, //关联关系
             sqlGenJoinType: this.table_visible_form.sqlGenJoinType,
-            relationCol: this.table_visible_form.relationCol,// 从表字段
-            relTableMetaUuid: this.table_visible_form.relTableMetaUuid
+            relationCol: this.table_visible_form.relationCol, // 从表字段
+            relTableMetaUuid: this.table_visible_form.relTableMetaUuid,
+          };
+          this.visibleTableList.push(objs);
 
-          }
-          this.visibleTableList.push(objs)
-          this.add_table_visible = false
+          this.add_table_visible = false;
         } else {
           this.btnLoading = false; //保存loadnin
           this.$message({
@@ -1181,23 +1353,23 @@ export default {
 
     // 保存新的关联关系
     save_table () {
+
       if (this.visibleTableList.length == 0) {
         this.$message({
           type: "warning",
           message: "请先新增关联关系!",
         });
       } else {
-        let tableRelations = this.visibleTableList
+        let tableRelations = this.visibleTableList;
+
         save_data_query(tableRelations).then((resp) => {
           if (resp.code == 0) {
             this.$message({
               type: "success",
               message: "新增表关系成功!",
             });
-            this.visibleTable = false//关闭新增关联关系
-            this.$emit("update_details", this.table_visible_form.tableMetaUuid)
-
-            // this.$refs.tableLines.init()//刷新列表
+            // this.$emit("update_details", this.table_visible_form.tableMetaUuid)
+            this.$refs.tableLines.init(1); //刷新列表
             // this.$refs.tableLines.$emit("update_cavans") //刷新列表
           } else {
             this.$message({
@@ -1205,12 +1377,10 @@ export default {
               message: resp.msg,
             });
           }
-          this.visibleTable = false;//关闭弹窗
+          this.visibleTable = false; //关闭弹窗
         });
       }
-
     },
-
   },
 };
 </script>
@@ -1219,14 +1389,17 @@ export default {
 .dlag_width >>> .el-dialog {
   min-width: 600px !important;
 }
+
 .resources {
   display: flex;
   position: relative;
   height: calc(100vh - 180px);
 }
+
 .top_tag {
   width: 160px;
 }
+
 .navgatorLi {
   width: 100%;
   display: flex;
@@ -1238,6 +1411,7 @@ export default {
   margin-bottom: 20px;
   transition: 0.3s;
 }
+
 .isActive {
   color: #0271be;
   font-weight: 600;
@@ -1249,47 +1423,60 @@ export default {
   /* height: 900px; */
   overflow-y: auto;
 }
+
 .rightList .rightList_child {
-  min-height: 600px;
+  min-height: 400px;
   overflow-y: auto;
   margin-bottom: 30px;
 }
+
 .rightList .rightList_child h2 {
   font-size: 20px;
 }
+
 /* 基本信息 */
 .information_form {
   box-sizing: border-box;
 }
+
 .information_form >>> .el-form-item {
   display: flex;
   margin-bottom: 20px !important;
 }
+
 .information_form >>> .el-form-item__content {
   flex: 1;
   margin-left: 0 !important;
 }
+
 .son {
   display: flex;
   justify-content: space-between;
 }
+
 .son >>> .el-form-item__content,
 .son >>> .el-date-editor {
   width: 300px;
 }
+
 .is_disabled >>> .el-textarea__inner {
   cursor: not-allowed !important;
 }
+
 .is_disabled >>> .el-textarea__inner {
   background-color: rgba(0, 0, 0, 0.05) !important;
+  color: #606266 !important;
 }
+
 .yes_disabled >>> .el-select,
 .yes_disabled >>> .el-input__inner {
   background-color: #fff !important;
 }
+
 .son >>> .el-select {
   width: 100%;
 }
+
 /* 表热度 */
 .Heat_ul {
   float: left;
@@ -1308,6 +1495,7 @@ export default {
   line-height: 40px;
   width: 20%;
 }
+
 .Heat_ul li p {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -1316,9 +1504,11 @@ export default {
   color: #5f9fcb;
   transition: color 0.3s;
 }
+
 .Heat_ul li:nth-child(4n) {
   padding-right: 0 !important;
 }
+
 .Heat_ul li span {
   padding: 0 5px;
   color: #fff;
@@ -1329,6 +1519,7 @@ export default {
   height: 25px;
   line-height: 25px;
 }
+
 /* 基本信息标签 */
 
 .input_blue {
@@ -1344,6 +1535,7 @@ export default {
   word-wrap: break-word;
   overflow: hidden;
 }
+
 .spanbox {
   display: inline-block;
   font-size: 14px;
@@ -1352,6 +1544,7 @@ export default {
   border: 1px solid #e8eaec;
   border-radius: 3px;
 }
+
 .tagspan {
   height: 24px;
   line-height: 22px;
@@ -1368,6 +1561,7 @@ export default {
   transition: 0.25s linear;
   color: rgb(26, 26, 26, 0.5);
 }
+
 .span_close {
   padding: 0 4px 0 4px;
   opacity: 1;
@@ -1376,6 +1570,7 @@ export default {
   color: rgb(26, 26, 26, 0.5);
   font-weight: 200;
 }
+
 .span_close:after {
   content: "\00D7";
   -webkit-font-smoothing: antialiased;
@@ -1383,6 +1578,7 @@ export default {
   /* line-height: 27px; */
   transition: 0.3s, color 0s;
 }
+
 .inputTag {
   font-size: 16px;
   border: none;
@@ -1397,22 +1593,37 @@ export default {
   color: #495060;
   line-height: 32px;
 }
+
 /* 基本信息 标签 :end */
 
 .son_people {
   display: flex;
 }
+
 .son_people >>> .el-form-item__content {
   width: 237px;
 }
-.son_people >>> .el-button {
-  margin-top: 5px;
-  margin-left: 3px;
+
+.is_width >>> .el-form-item__content {
+  width: 300px;
 }
+
+.son .el-form-item__content,
+.son .el-date-editor {
+  width: 300px;
+}
+
+.son_people >>> .el-button {
+  /* margin-top: 5px; */
+  margin-left: 3px;
+  height: 36px !important;
+}
+
 .table {
   border: 1px solid rgba(0, 0, 0, 0.1);
   text-align: center;
 }
+
 .table .head {
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   height: 30px;
@@ -1420,14 +1631,19 @@ export default {
   color: rgba(0, 0, 0, 0.5);
   font-weight: 400;
 }
+
 .table .li_son {
   height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
   line-height: 20px;
-  padding: 10px;
+  padding: 5px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+}
+.table .li_son:last-child {
+  border: none !important;
 }
 
 .add_table_class >>> .el-form-item__label {
@@ -1437,7 +1653,8 @@ export default {
 .mose {
   position: relative;
 }
-.mose_bag {
+
+/* .mose_bag {
   background: rgba(0, 0, 0, 0.2);
   width: 100%;
   height: 100%;
@@ -1445,13 +1662,24 @@ export default {
   left: 0;
   top: 0;
   z-index: 99;
-}
+} */
 .preview_sql >>> .el-textarea__inner {
   height: 300px;
+  resize: none;
 }
+
 /* 请选择数据表 */
 .tree_style {
   height: 600px;
   overflow-y: auto;
+}
+
+/* 保存按钮 */
+.fixed_btn {
+  text-align: right;
+  float: left;
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
 }
 </style>

@@ -46,6 +46,12 @@ ul {
 
 }
 
+.padding7 {
+  padding: 7px;
+  box-sizing: border-box;
+
+}
+
 .padding20 {
   padding: 20px;
   box-sizing: border-box;
@@ -116,4 +122,10 @@ ul {
 }
 .loading span img {
   width: 100%;
+}
+
+/* 弹窗 内部滚动 */
+.dlag_conter{
+  height: 400px;
+  overflow: auto;
 }

@@ -1,5 +1,6 @@
 <template>
-  <div class="example">
+  <div class="example"
+       id="parentDiv">
     <div id="myDiagramDiv"></div>
     <div></div>
   </div>
@@ -23,7 +24,7 @@ export default {
   components: {},
   data () {
     return {
-      diagram: {},
+      myDiagram: {},
       nodeDataArray: [],
       linkDataArray: [],
     };
@@ -32,32 +33,18 @@ export default {
   watch: {},
   mounted () {
     this.init();//初始化表关系
-    this.$nextTick(function () {
-      this.$on('init', function () {
-        //重新渲染的问题
-        // if (typeof (myDiagram) !== "undefined") {
-        //   myDiagram.div = null;
-        // }
-      });
-    });
-
   },
   created () {
   },
   methods: {
-    //   update_cavans () {
-    //     // 清空当前画布
-    //     myDiagram.diagram.div = null;
-    //     // 数据清空一次
-    //     this.nodeDataArray = [];
-    //     this.linkDataArray = [];
-    //     this.init();
-    //   },
-
-    init () {
-      // 
+    init (num) {
+      if (num) {
+        this.myDiagram.div = null;
+        this.nodeDataArray = [];
+        this.linkDataArray = [];
+      }
       let $ = go.GraphObject.make; // for conciseness in defining templates
-      var myDiagram = $(
+      this.myDiagram = $(
         go.Diagram,
         "myDiagramDiv", // id挂载dome节点
         {
@@ -66,9 +53,9 @@ export default {
           // isReadOnly: true, // 只读，无法编辑操作
           // allowMove: true, // 允许拖动画板
           allowDragOut: true, // 允许拖拽节点
-          // allowDelete: true, // 允许删除节点
+          allowDelete: false, // 允许删除节点
           // allowCopy: true, // 允许复制节点
-          allowClipboard: true, // 允许粘贴节点
+          // allowClipboard: true, // 允许粘贴节点
           allowLink: true,//是否可以绘制新链接。
           allowRelink: true,//是否可以重新连接现有链接
           initialContentAlignment: go.Spot.Center, // 居中显示
@@ -100,7 +87,7 @@ export default {
         );
 
       // 定义模板
-      myDiagram.nodeTemplate =
+      this.myDiagram.nodeTemplate =
         $(go.Node, "Auto",  // the whole node panel
           {
             selectionAdorned: true,
@@ -151,7 +138,7 @@ export default {
         );  // end Node
 
       // 定义连接线
-      myDiagram.linkTemplate =
+      this.myDiagram.linkTemplate =
         $(go.Link,  // the whole link panel
           {
             selectionAdorned: true,
@@ -212,90 +199,101 @@ export default {
         tableMetaUuid: this.tableMetaUuid
       }
       selectTableRelationInfo(params).then(resp => {
+
         // 第一步
-        resp.data.nodeDataArray.forEach(item => {
-          let items = []
-          let obj_arr1 = {
-            key: item.tableMeta.tbName,
-            tableMetaUuid: item.tableMeta.tableMetaUuid,
-            items: items
-          }
-          item.colMetas.forEach(item_son => {
-            let obj = {
-              name: item_son.colName,
-              colMetaUuid: item_son.colMetaUuid,
-              iskey: false,
-              figure: "Hexagon",
-              color: colors.blue,
+        if (resp.data.nodeDataArray) {
+
+          resp.data.nodeDataArray.forEach(item => {
+            let items = []
+            let obj_arr1 = {
+              key: item.tableMeta.tbName,
+              tableMetaUuid: item.tableMeta.tableMetaUuid,
+              items: items
             }
-            items.push(obj)
+            item.colMetas.forEach(item_son => {
+              let obj = {
+                name: item_son.colName,
+                colMetaUuid: item_son.colMetaUuid,
+                iskey: false,
+                figure: "Hexagon",
+                color: colors.blue,
+              }
+              items.push(obj)
+            })
+
+            this.nodeDataArray.push(obj_arr1)
           })
+        }
 
-          this.nodeDataArray.push(obj_arr1)
-        })
 
-        // 第二步
-        resp.data.linkDataArray.forEach(linkData_items => {
-          let color = colors.red
-          let from = ''
-          let to = ''
-          let text = ''
-          this.nodeDataArray.forEach(items_child => {
+        if (resp.data.linkDataArray) {
+          // 第二步
+          resp.data.linkDataArray.forEach(linkData_items => {
+            let color = colors.red
+            let from = ''
+            let to = ''
+            let text = ''
+            this.nodeDataArray.forEach(items_child => {
 
-            if (items_child.tableMetaUuid == linkData_items.tableMetaUuid) {
-              from = items_child.key
-              items_child.items.forEach(col_child => {
-                //  主表字段
-                if (col_child.colMetaUuid == linkData_items.colMetaUuid) {
-                  col_child.color = color
-                  // col_child.figure = 'Decision'
-                }
-              })
+              if (items_child.tableMetaUuid == linkData_items.tableMetaUuid) {
+                from = items_child.key
+                items_child.items.forEach(col_child => {
+                  //  主表字段
+                  if (col_child.colMetaUuid == linkData_items.colMetaUuid) {
+                    col_child.color = color
+                    // col_child.figure = 'Decision'
+                  }
+                })
+              }
+              if (items_child.tableMetaUuid == linkData_items.relTableMetaUuid) {
+                to = items_child.key
+                items_child.items.forEach(col_child => {
+                  //  从表字段
+                  if (col_child.colMetaUuid == linkData_items.relColMetaUuid) {
+                    col_child.color = color
+                  }
+                })
+              }
+            })
+            // 1. left join   2. right join  3.full join  4.inner join")
+            // 
+            switch (linkData_items.sqlGenJoinType) {
+              case 1:
+                text = 'left join'
+                break
+              case 2:
+                text = 'right join'
+                break
+              case 3:
+                text = 'full join'
+                break
+              case 4:
+                text = 'inner join'
+                break
+              default:
+                //没有对应的值处理
+                text = ''
+                break
             }
-            if (items_child.tableMetaUuid == linkData_items.relTableMetaUuid) {
-              to = items_child.key
-              items_child.items.forEach(col_child => {
-                //  从表字段
-                if (col_child.colMetaUuid == linkData_items.relColMetaUuid) {
-                  col_child.color = color
-                }
-              })
+            let obj_arr2 = {
+              from: from,
+              to: to,
+              text: text,
             }
+            this.linkDataArray.push(obj_arr2)
           })
-          // 1. left join   2. right join  3.full join  4.inner join")
-          switch (linkData_items.sqlGenJoinType) {
-            case 1:
-              text = 'left join'
-              break
-            case 2:
-              text = 'right join'
-              break
-            case 3:
-              text = 'full join'
-              break
-            case 4:
-              text = 'inner join'
-              break
-            default:
-              //没有对应的值处理
-              text = ''
-              break
-          }
-          let obj_arr2 = {
-            from: from,
-            to: to,
-            text: text,
-          }
-          this.linkDataArray.push(obj_arr2)
-        })
+        }
 
-        myDiagram.model = $(go.GraphLinksModel,
+
+
+        this.myDiagram.model = $(go.GraphLinksModel,
           {
             copiesArrays: true,
             copiesArrayObjects: true,
             nodeDataArray: this.nodeDataArray,
             linkDataArray: this.linkDataArray
           });
+
       })
     }
   }

@@ -386,3 +386,23 @@ export function getTableZipperList (tableMetaUuid) {
     params: { tableMetaUuid: tableMetaUuid }
   })
 }
+
+// 选择从表字段数据
+export function cong_table_list_data (tableMetaUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/getColsInfo`,
+    method: 'post',
+    params: { tableMetaUuid: tableMetaUuid }
+  })
+}
+
+// 查询模式名
+export function listSchemas (dataSource) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/listSchemas`,
+    method: 'get',
+    params: { dataSource: dataSource }
+  })
+}

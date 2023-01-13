@@ -279,7 +279,7 @@ export default {
         return [];
       }
       const appid = this.applications[this.currentIndex].id;
-      console.log(this.menugroup[appid]);
+
       return this.menugroup[appid];
     },
     getPersonUuid () {
@@ -381,13 +381,13 @@ export default {
           response.data.application.forEach((grp) => {
             let menuList = [];
             response.data.menugroup.forEach((menu) => {
-              if(menu.appuuid==grp.id){
+              if (menu.appuuid == grp.id) {
                 menuList.push({
                   appuuid: menu.appuuid,
                   name: menu.name,
                   url: this.getCleanSrc(menu.routepath || ""),
                   children: menu.menuList,
-                  type: menu.type||'',
+                  type: menu.type || '',
                 });
               }
             });
@@ -402,16 +402,16 @@ export default {
             //   children: menuList,
             // });
           });
-          console.log(this.applications)
-          console.log(this.menugroup)
+
+
           let second = []
-          for(let i =0;i<this.menugroup.length;i++){
+          for (let i = 0; i < this.menugroup.length; i++) {
             second.push(this.menugroup[i])
           }
-          let sSLTree = { first: this.applications, second:second  };
-          console.log(sSLTree)
+          let sSLTree = { first: this.applications, second: second };
+
           sessionStorage.setItem("shenjiMenuTree", JSON.stringify(sSLTree));
-          this.$store.dispatch('app/setMenuData',sSLTree )
+          this.$store.dispatch('app/setMenuData', sSLTree)
           let listTree = JSON.parse(sessionStorage.getItem("shenjiMenuTree"));
           this.moremenugroup = listTree.second;
           this.moremenugroupId = listTree.first;
@@ -425,7 +425,7 @@ export default {
         })
         .catch((error) => {
           this.applications = [];
-          console.error(error);
+          // 
         });
       //暂时注掉
       getUnReadRemind().then((resp) => {
@@ -502,7 +502,7 @@ export default {
       // const dis = this.isShrink ? 110 : 120
       // this.$nextTick(() => {
       //   const offset = this.$refs.navDom[this.currentIndex].offsetTop - dis
-      //   console.log(offset)
+      //   
       //   this.scrollTop = {
       //     allowScroll: true,
       //     offset: offset,
@@ -528,7 +528,7 @@ export default {
       };
     },
     selectMenu (app, index, ifhome) {
-      console.log(this.moremenugroup,index)
+
       this.secchoose = -1;
       this.thichoose = -1;
       // window.open('http://10.19.206.196:8088/WebReport/decision/view/form?viewlet=vendor/zhuowang/test.cpt&ref_t=design&ref_c=d6740dbd-0279-40d0-b361-3cc1adb80d35');
@@ -554,9 +554,9 @@ export default {
               data: { third_token: reptoken },
               success: function (res2) {
                 if (res2.errorCode) {
-                  console.log("帆软认证接口调用失败", res2);
+
                 } else {
-                  console.log("帆软认证接口调用成功", res2);
+
                   window.open(app.url);
                   return;
                 }
@@ -594,7 +594,7 @@ export default {
             this.moremenugroup[index] &&
             this.moremenugroup[index][0].children.length > 0
           ) {
-            console.log(this.moremenugroup[index][0]);
+
             this.openMenu2(this.moremenugroup[index][0], 0);
             this.openMenu3(this.moremenugroup[index][0].children[0], 0);
           } else {
@@ -768,12 +768,12 @@ export default {
   height: 40px;
   padding: 10px 0 3px 30px;
   .name2 {
-    cursor:pointer;
+    cursor: pointer;
     padding: 6px 15px;
     font-size: 14px;
   }
   .name3 {
-    cursor:pointer;
+    cursor: pointer;
     padding: 6px 15px;
     font-size: 14px;
   }

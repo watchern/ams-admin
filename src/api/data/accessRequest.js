@@ -36,3 +36,13 @@ export function update(data) {
         data
     })
 }
+
+export function exportData(data) {
+    return request({
+        baseURL: baseURL,
+        url: `/${controllerName}/dataAccReqExcelInfo`,
+        method: 'get' ,
+        contentType: "application/json",
+        data
+    })
+}

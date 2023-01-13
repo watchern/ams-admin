@@ -10,13 +10,13 @@
       v-loading="loading"
       ref="ruleForm"
     >
-      <el-form-item label="申请名称" prop="name" class="item-a">
+      <el-form-item label="申请名称" prop="name" class="item-a" show-overflow-tooltip>
         <el-input v-model="apComDataBaseData.name"></el-input>
       </el-form-item>
-      <el-form-item label="申请人" prop="dbtype" class="item-a">
+      <el-form-item label="申请人" prop="dbtype" class="item-a" show-overflow-tooltip>
         <el-input v-model="apComDataBaseData.dbtype"></el-input>
       </el-form-item>
-      <el-form-item label="访问时间" prop="instance" class="item-a">
+      <el-form-item label="访问时间" prop="instance" class="item-a" show-overflow-tooltip>
         <el-date-picker
           v-model="apComDataBaseData.instance"
           type="daterange"
@@ -27,7 +27,7 @@
         >
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="数据使用人" prop="loginname" class="item-a">
+      <el-form-item label="数据使用人" prop="loginname" class="item-a" show-overflow-tooltip>
         <div
           style="width: 100%; height: 200px; position: absolute; overflow: auto"
         >
@@ -49,7 +49,7 @@
           >
         </div>
       </el-form-item>
-      <el-form-item label="备注" prop="remark" class="item-a">
+      <el-form-item label="备注" prop="remark" class="item-a" show-overflow-tooltip>
         <el-input
           type="textarea"
           v-model="apComDataBaseData.remark"
@@ -398,5 +398,9 @@ export default {
 }
 .icons {
   background-position: -110px -20px;
+}
+.add{
+  height: calc(100vh - 250px);
+  overflow: auto;
 }
 </style>

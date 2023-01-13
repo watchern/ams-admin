@@ -7,19 +7,15 @@
                          :model="query"
                          label-position="bottom">
                     <el-row>
-                        <el-col :span="6">
+                        <el-col>
                             <el-form-item label="申请名称：" prop="applyName">
                                 <el-input v-model="query.applyName"
                                           clearable/>
                             </el-form-item>
-                        </el-col>
-                        <el-col :span="6">
                             <el-form-item label="申请人：" prop="applyPerson">
                                 <el-input v-model="query.applyPerson"
                                           clearable/>
                             </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
                             <el-form-item label="列表类型：" prop="status">
                                 <el-select v-model="query.status"
                                            clearable
@@ -30,10 +26,6 @@
                                                :value="item.value"/>
                                 </el-select>
                             </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-                        <el-col :span="18">
                             <el-form-item label="申请时间范围：" prop="applyTime" style="display: inline-block;">
                                 <el-date-picker
                                         v-model="query.startTime"
@@ -45,87 +37,80 @@
                                         type="datetime"
                                         placeholder="结束时间"
                                         value-format="yyyy-MM-dd HH:mm:ss"/>
-
                             </el-form-item>
-                        </el-col>
-                        <el-col :span="6" style="left: 80px">
                             <el-form-item>
-                                <el-button type="primary"
-                                           @keyup.enter.native="search"
-                                           @click="search()">查询
-                                </el-button>
-                                <el-button type="primary"
-                                           @click="clearAll()">重置
-                                </el-button>
-
+                                <el-button type="primary" @keyup.enter.native="search" @click="search()">查询</el-button>
+                                <el-button type="primary" @click="clearAll()">重置</el-button>
                             </el-form-item>
                         </el-col>
                     </el-row>
-
                 </el-form>
-
             </div>
             <div class="padding10">
                 <div class="right_btn">
-                    <el-button type="primary"
-                               @click="apply_add()">添加
-                    </el-button>
-                    <el-button type="primary"
-                               :disabled="Selectval_list.length === 0"
+                    <el-button size="mini" type="primary" @click="apply_add()">添加</el-button>
+                    <el-button size="mini" type="primary" :disabled="Selectval_list.length === 0"
                                @click="apply_deletes()">删除
                     </el-button>
-                    <el-button type="primary"
-                               :disabled="Selectval_list.length === 0"
+                    <el-button size="mini" type="primary" :disabled="Selectval_list.length === 0"
                                @click="apply_transact()">办理
                     </el-button>
-                    <el-button type="primary"
-                               :disabled="Selectval_list.length !== 1"
-                               @click="apply_edit()">编辑
+                    <el-button size="mini" type="primary" :disabled="Selectval_list.length !== 1" @click="apply_edit()">
+                        编辑
                     </el-button>
                 </div>
             </div>
-
             <el-table v-loading="listLoading"
                       :data="page_list.records"
                       fit
                       highlight-current-row
                       style="width: 100%"
-                      height="calc(100vh - 360px)"
+                      height="calc(100vh - 320px)"
                       @selection-change="handleSelectionChange">
                 <el-table-column type="selection"
                                  width="55"/>
                 <el-table-column label="申请名称"
-                                 prop="applyName">
-                </el-table-column>
+                                 prop="applyName"
+                                 min-width="150px"
+                                 show-overflow-tooltip/>
                 <el-table-column label="申请时间"
                                  :formatter="formatApplyTime"
-                                 text-align="center"
+                                 align="center"
+                                 min-width="100px"
                                  prop="applyTime"
-                />
+                                 show-overflow-tooltip/>
                 <el-table-column label="当前环节"
-                                 text-align="center"
-                                 prop="currentLink"/>
+                                 align="center"
+                                 min-width="100px"
+                                 prop="currentLink"
+                                 show-overflow-tooltip/>
                 <el-table-column label="上一办理人"
-                                 text-align="center"
+                                 align="center"
+                                 min-width="100px"
                                  prop=""/>
                 <el-table-column label="状态"
-                                 text-align="center"
+                                 align="center"
+                                 min-width="100px"
                                  prop="status">
                 </el-table-column>
                 <el-table-column label="申请人"
-                                 text-align="center"
+                                 align="center"
+                                 min-width="100px"
                                  prop="applyPerson"/>
                 <el-table-column label="流程查看"
-                                 text-align="center"
+                                 align="center"
+                                 min-width="100px"
                                  prop="viewProcess">
                     <template slot-scope="scope">
                         <el-link type="primary"
                                  :underline="false"
-                                 @click="todoOpinionList(scope.row)">流程跟踪</el-link>
+                                 @click="todoOpinionList(scope.row)">流程跟踪
+                        </el-link>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作"
-                                 text-align="center"
+                                 align="center"
+                                 min-width="100px"
                                  prop="applyPerson">
                     <template slot-scope="scope">
                         <el-button type="primary"
@@ -143,7 +128,6 @@
                        @current-change="handleCurrentChange"
                        @size-change="handleSizeChange"
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
-
         <!-- 添加 -->
         <el-dialog :title="title"
                    class="data_res"
@@ -155,7 +139,6 @@
                      label-width="130px"
                      :model="form"
                      :inline="false">
-
                 <el-row>
                     <el-col :span="12">
                         <el-form-item label="申请名称 "
@@ -211,64 +194,119 @@
                     </el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span="5">
-                        <el-form-item v-if="form.operationType === '0'" label="行分隔符" prop="lineSeparator">
-                            <el-select
-                                    v-model="form.lineSeparator"
-                                    id="lineSeparator"
-                                    name="lineSeparator"
-                                    style="width: 150%"
-                            >
-                                <el-option
-                                        v-for="lineSeparator in this.lineSeparators"
-                                        :value="lineSeparator.value"
-                                        :key="lineSeparator.value"
-                                        :label="lineSeparator.label"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
+                    <el-col>
+                        <el-form>
+                            <el-form-item v-if="form.operationType === '0'">
+                                <div style="float:right">
+                                    <el-upload
+                                            class="upload-demo"
+                                            ref="upload"
+                                            :on-change="select"
+                                            action=""
+                                            :file-list="fileList"
+                                            :http-request="uploadOk"
+                                            :show-file-list="false"
+                                            :auto-upload="false"
+                                            accept=".xls,.xlsx,.txt">
+                                        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                                        <el-button style="margin-left: 10px;" size="small" type="success"
+                                                   @click="submitUpload">上传
+                                        </el-button>
+                                    </el-upload>
+                                </div>
+                            </el-form-item>
+                        </el-form>
                     </el-col>
-                    <el-col :span="6">
-                        <el-form-item v-if="form.operationType === '0'" label="列分隔符" prop="columnSeparator">
-                            <el-select
-                                    v-model="form.columnSeparator"
-                                    id="columnSeparator"
-                                    name="columnSeparator"
-                                    style="width: 80%"
-                            >
-                                <el-option
-                                        v-for="columnSeparator in this.columnSeparators"
-                                        :value="columnSeparator.value"
-                                        :key="columnSeparator.value"
-                                        :label="columnSeparator.label"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="2">
-                        <el-form-item v-if="form.operationType === '0'">
-                            <el-checkbox v-model="form.isHeaderLine" true-label="true" false-label="">
-                                首行为标题行
-                            </el-checkbox>
-                        </el-form-item>
-                    </el-col>
+                    <el-table v-if="form.operationType === '0'"
+                              :data="tableData"
+                              height="250"
+                              border
+                              style="width: 100%">
+                        <el-table-column
+                                prop="fileName"
+                                min-width="100px"
+                                label="文件名"
+                                show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column
+                                prop="fileType"
+                                min-width="100px"
+                                label="文件类型"
+                                align="center"
+                                show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column
+                                prop="lineSeparator"
+                                min-width="100px"
+                                label="行分隔符"
+                                align="center"
+                                show-overflow-tooltip>
+                            <template slot-scope="scope">
+                                <el-select
+                                        v-model="scope.row.lineSeparator"
+                                        id="lineSeparator"
+                                        name="lineSeparator"
+                                        style="width: 80%"
+                                        :disabled="scope.row.disabled"
+                                        placeholder="不可选择"
+                                >
+                                    <el-option
+                                            v-for="lineSeparator in lineSeparators"
+                                            :value="lineSeparator.value"
+                                            :key="lineSeparator.value"
+                                            :label="lineSeparator.label"
+                                    ></el-option>
+                                </el-select>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                prop="columnSeparator"
+                                label="列分隔符"
+                                min-width="100px"
+                                align="center"
+                                show-overflow-tooltip>
+                            <template slot-scope="scope">
+                                <el-select
+                                        v-model="scope.row.columnSeparator"
+                                        id="columnSeparator"
+                                        name="columnSeparator"
+                                        style="width: 80%"
+                                        :disabled="scope.row.disabled"
+                                        placeholder="不可选择"
+                                >
+                                    <el-option
+                                            v-for="columnSeparator in columnSeparators"
+                                            :value="columnSeparator.value"
+                                            :key="columnSeparator.value"
+                                            :label="columnSeparator.label"
+                                    ></el-option>
+                                </el-select>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="isHeaderLine"
+                                         label="首行是否为标题行"
+                                         align="center"
+                                         min-width="80px"
+                        >
+                            <template slot-scope="scope">
+                                <el-checkbox v-model="scope.row.isHeaderLine"
+                                             true-label="true" false-label="false">
+                                </el-checkbox>
+                            </template>
+                        </el-table-column>
+                        <el-table-column align="center" min-width="80px" label="操作">
+                            <template slot-scope="scope">
+                                <el-link
+                                        size="mini"
+                                        type="danger"
+                                        style="margin-right:10px"
+                                        @click="lineDelete(scope.$index,'file')"
+                                >删除
+                                </el-link>
+                            </template>
+                        </el-table-column>
+                    </el-table>
                 </el-row>
-                <el-form-item label="文件选择" v-if="form.operationType === '0'">
-                    <FileImport @handleChange="showFileType" @filePath="showFilePath" style="color: #6D8A88;">
-                    </FileImport>
-                </el-form-item>
-                <el-form-item label="文件类型 " v-if="form.operationType === '0'">
-                    <el-input style="width: 20%;"
-                              type="text"
-                              v-model="this.fileType"
-                              disabled/>
-                </el-form-item>
-                <el-form-item label="文件名 " v-if="this.updateShow">
-                    <el-input style="width: 40%;"
-                              type="text"
-                              v-model="this.form.fileName"
-                              disabled/>
-                </el-form-item>
 
 
                 <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
@@ -304,16 +342,24 @@
                                   v-loading="listLoading"
                                   border
                                   fit
-                                  height="200px"
+                                  height="316px"
                                   highlight-current-row
                                   style="width: 100%;"
                                   @selection-change="handleSelectionChange">
-                            <el-table-column width="40px" type="selection"/>
+                            <!--                            <el-table-column width="40px" type="selection"/>-->
+                            <el-table-column type="selection" width="55px"/>
                             <el-table-column label="序号" width="60px" align="center" prop="applyId"/>
-                            <el-table-column label="表路径" align="center">
-
+                            <el-table-column
+                                    label="表路径"
+                                    min-width="150px"
+                                    show-overflow-tooltip>
                             </el-table-column>
-                            <el-table-column label="归档方式" width="150px" align="center" prop="createTime">
+                            <el-table-column
+                                    label="归档方式"
+                                    min-width="200px"
+                                    align="center"
+                                    prop="createTime"
+                                    show-overflow-tooltip>
                                 <template slot-scope="scope">
                                     <el-select
                                             v-model="form.filingMove"
@@ -323,7 +369,12 @@
                                     </el-select>
                                 </template>
                             </el-table-column>
-                            <el-table-column label="归档文件/表名称" align="center" prop="createTime">
+                            <el-table-column
+                                    label="归档文件/表名称"
+                                    align="center"
+                                    min-width="200px"
+                                    prop="createTime"
+                                    show-overflow-tooltip>
                                 <template slot-scope="scope">
                                     <el-select
                                             v-model="form.filingFile"
@@ -365,6 +416,7 @@
                         :submitData="submitData"
                         @closeModal="closeFlowItem"
                         @delectData="delectData"
+                        @UpdateBecauseSubmit="batchUpdateForHandleClose"
                 ></FlowItem>
             </div>
             <span class="sess-flowitem" slot="footer">
@@ -390,7 +442,7 @@
                    :close-on-click-modal="false"
                    :visible.sync="dialogDetailVisible"
                    title="详情"
-                   width="50%"
+                   width="60%"
         >
             <div>
                 <Details ref="detailsUuid"
@@ -439,7 +491,8 @@
         save_data,//新增保存
         update_data,//编辑保存
         delete_data,//删除
-        batchUpdateForHandle
+        batchUpdateForHandle,
+        upload
     } from "@/api/data/loadApply";
     import FileImport from '@/views/data/dataLoadApply/fileupload';
     import DataTree from '@/components/public/tree/src/tree';
@@ -452,6 +505,20 @@
         components: {FileImport, DataTree, FlowItem, Details, flowOpinionList},
         data() {
             return {
+                fileList: [],
+                tableData: [],
+                tableNullData: [],
+                splitName: [],
+                file: {
+                    fileName: '',
+                    fileType: '',
+                    lineSeparator: '',
+                    columnSeparator: '',
+                    isHeaderLine: 'true',
+                    disabled: false,
+                },
+
+
                 // 查询列表
                 query: {
                     applyName: '',// 申请名称
@@ -493,7 +560,6 @@
                     endTime: '',//结束时间
                     lineSeparator: '',//行分隔符
                     columnSeparator: '',//列分隔符
-                    isHeaderLine: '',//首行为标题行
                     fileName: '',//文件名称
                     filePath: '',//文件路径
                     fileUuid: '',//文件编码
@@ -600,7 +666,6 @@
                     endTime: '',//结束时间
                     lineSeparator: '',//行分隔符
                     columnSeparator: '',//列分隔符
-                    isHeaderLine: '',//首行为标题行
                     fileName: '',//文件名称
                     filePath: '',//文件路径
                     fileUuid: '',//文件编码
@@ -691,9 +756,70 @@
             this.getList();//刷新列表
         },
         methods: {
+            select(file, fileList) {
+                this.file.disabled = true
+                this.fileList = fileList;
+                const time = new Date().getTime();
+                for (let i = 0; i < this.fileList.length; i++) {
+                    this.splitName = this.fileList[i].name.split('.');
+                    let fileName = this.splitName[0] + time + "." + this.splitName[1];
+                    let f = new File([fileList[i].raw], fileName);
+                    f.uid = fileList[i].uid;
+                    this.fileList[i].raw = f;
+                    this.fileList[i].name = this.splitName[0] + time + "." + this.splitName[1];
+                }
+                let extName = file.name.substring(file.name.lastIndexOf(".") + 1).toLowerCase();
+                this.tableData.push(this.file)
+                this.file.fileName = file.name;
+                if (extName === 'txt') {
+                    this.file.fileType = '文本文件'
+                    this.file.lineSeparator = '回车换行符'
+                    this.file.columnSeparator = '制表符'
+                    this.file.disabled = false
+                } else if (extName === 'xls') {
+                    this.file.fileType = 'EXCEL数据表(97-2003)'
+                } else if (extName === 'xlsx') {
+                    this.file.fileType = 'EXCEL数据表(2010)'
+                }
+                this.file = this.$options.data().file
+            },
+            submitUpload() {
+                if (this.fileList.length === 0) {
+                    this.$notify.warning("请选择文件后上传！")
+                    return
+                }
+                this.$refs.upload.submit();
+            },
+            uploadOk(file, fileList) {
+                let fd = new FormData();
+                for (let i = 0; i < this.fileList.length; i++) {
+                    fd.append("files", this.fileList[i].raw);
+                }
+                upload(fd).then(() => {
+                    this.$notify({
+                        title: "成功",
+                        message: "上传成功",
+                        type: "success",
+                        duration: 2000,
+                        position: "bottom-right",
+                    });
+                })
+            },
+            // 动态删除一行
+            lineDelete(index, ipTable) {
+                switch (ipTable) {
+                    case 'file':
+                        this.tableData.splice(index, 1)
+                        break
+                }
+                this.fileList.splice(index, 1)
+            },
+
+
             //添加
             apply_add() {
                 this.applyDialogVisible = true
+                this.dialogStatusValue = false
                 this.dialogStatus = 'create'
                 this.title = '创建申请'
                 this.fileType = ''
@@ -710,16 +836,32 @@
                 this.Selectval_list.forEach((r) => {
                     applyUuid = r.applyUuid;
                 });
-                this.applyDialogVisible = true
-                this.isDisable = false
-                this.updateShow = true
-                this.dialogStatusValue = true
 
                 this.title = '编辑申请'
-                this.dialogStatus = 'update'
 
                 this.form.applyUuid = applyUuid
-                this.details_details();
+                // this.details_details();
+                getById(this.form.applyUuid).then(res => {
+                    this.form = res.data
+                    this.tableData = res.data.fileList
+                    this.tableData.forEach((r) => {
+                        r.disabled = r.fileType !== "文本文件";
+                    })
+                    //只有状态为草稿时才能实现对数据的编辑修改
+                    if (this.form.status !== '草稿') {
+                        this.$notify.warning("只有草稿状态可编辑")
+                        this.form.applyName = ''
+                        this.form.loadType = ''
+                        this.tableData = this.tableNullData
+                    } else {
+                        this.dialogStatusValue = true
+                        this.applyDialogVisible = true
+                        this.dialogStatus = 'update'
+                        this.isDisable = false
+                        this.updateShow = true
+                    }
+                })
+
             },
             //删除
             apply_deletes() {
@@ -747,33 +889,47 @@
             },
             //办理
             apply_transact() {
-                this.temp = Object.assign({}, this.applySelectionList[0])
-                // alert(JSON.stringify(this.temp))
-                //业务主键
-                this.flowItem.appDataUuid = this.temp.applyUuid;
-                //版本id 随机生成
-                this.flowItem.versionUuid = this.common.randomString4Len(8);
-                // this.flowItem.applyTitle="场景详情流程";
-                //申请业务的名字（待办标题）
-                this.flowItem.applyTitle = this.temp.applyName;
-                this.dialogVisible = true
+                let applyUuid = '';
+                this.Selectval_list.forEach((r) => {
+                    applyUuid = r.applyUuid;
+                });
+                this.form.applyUuid = applyUuid
+                getById(this.form.applyUuid).then(res => {
+                    this.form.status = res.data.status
+                    if (this.form.status !== '草稿') {
+                        this.$notify.warning("只有草稿状态可办理")
+                    } else {
+                        this.temp = Object.assign({}, this.applySelectionList[0])
+                        // alert(JSON.stringify(this.temp))
+                        //业务主键
+                        this.flowItem.appDataUuid = this.temp.applyUuid;
+                        //版本id 随机生成
+                        this.flowItem.versionUuid = this.common.randomString4Len(8);
+                        // this.flowItem.applyTitle="场景详情流程";
+                        //申请业务的名字（待办标题）
+                        this.flowItem.applyTitle = this.temp.applyName;
+                        this.dialogVisible = true
+                    }
+                })
             },
             //工作流相关
             closeFlowItem(val) {
                 this.dialogVisible = val;
                 this.flowParam = 0;
-                // this.initData();
-            },
+            }
+            ,
             //工作流相关
             delectData(val) {
                 this.dialogVisible = val;
-            },
+            }
+            ,
             // 时间格式化
             formatApplyTime(row) {
                 // 拼接日期规格为YYYY-MM-DD hh:mm:ss
                 let applyTime = new Date(row.applyTime)
                 return applyTime.getFullYear() + '-' + (applyTime.getMonth() + 1) + '-' + applyTime.getDate() + ' ' + applyTime.getHours() + ':' + applyTime.getMinutes() + ':' + applyTime.getSeconds()
-            },
+            }
+            ,
 
             // 清空
             clearAll() {
@@ -782,11 +938,13 @@
                 this.query.status = ''
                 this.query.startTime = ''
                 this.query.endTime = ''
-            },
+            }
+            ,
             search() {
                 this.query.pageNo = 1
                 this.getList();//刷新列表
-            },
+            }
+            ,
             // 刷新列表
             getList() {
                 this.listLoading = true
@@ -805,20 +963,24 @@
                     this.page_list = res.data;
                     this.listLoading = false
                 })
-            },
+            }
+            ,
             //详情
             show_details(applyUuid) {
                 this.form.applyUuid = applyUuid
                 this.detailsUuid = applyUuid
                 this.dialogDetailVisible = true
-            },
+            }
+            ,
 
             // 编辑 接口
             details_details() {
                 getById(this.form.applyUuid).then(res => {
                     this.form = res.data
+                    this.tableData = res.data.fileList
                 })
-            },
+            }
+            ,
             // 多选
             handleSelectionChange(val) {
                 this.applySelectionList = []
@@ -826,17 +988,20 @@
                 val.forEach((value) => {
                     this.applySelectionList.push(value)
                 })
-            },
+            }
+            ,
             // 分页
             handleCurrentChange(val) {
                 this.query.pageNo = val
                 this.getList()
-            },
+            }
+            ,
             // 每页多少条
             handleSizeChange(val) {
                 this.query.pageSize = val
                 this.getList()
-            },
+            }
+            ,
 
             // 新建保存 && 编辑保存
             save(form) {
@@ -854,14 +1019,10 @@
                                     applyPerson: this.form.applyPerson,
                                     operationType: this.form.operationType,
                                     loadType: this.form.loadType,
-                                    fileType: this.fileType,
-                                    lineSeparator: this.form.lineSeparator,
-                                    columnSeparator: this.form.columnSeparator,
-                                    isHeaderLine: this.form.isHeaderLine,
-                                    fileName: this.form.fileName,
                                 },
+                                "tableData": JSON.stringify(this.tableData),
                             }
-                            if (this.fileType === '') {
+                            if (this.tableData.length === 0) {
                                 this.$notify.warning("请选择文件！")
                                 return
                             }
@@ -890,18 +1051,8 @@
                                     applyName: this.form.applyName,
                                     operationType: this.form.operationType,
                                     loadType: this.form.loadType,
-                                    fileType: this.fileType,
-                                    lineSeparator: this.form.lineSeparator,
-                                    columnSeparator: this.form.columnSeparator,
-                                    isHeaderLine: this.form.isHeaderLine,
-                                    fileName: this.form.fileName,
-                                    fileUuid: this.form.fileUuid,
-                                }
-                            }
-                            //只有状态为草稿时才能实现对数据的编辑修改
-                            if (this.form.status !== '草稿') {
-                                this.$notify.warning("只有草稿状态可修改")
-                                return
+                                },
+                                "tableData": JSON.stringify(this.tableData),
                             }
                             //update_data方法调用后台update接口实现编辑功能
                             update_data(params).then(res => {
@@ -932,51 +1083,64 @@
                         return false
                     }
                 })
-            },
+            }
+            ,
 
             // 关闭弹窗
             handleClose(form) {
                 this.$refs[form].resetFields() //清空添加的值
                 this.updateShow = false
-            },
+                this.fileList = []
+                this.tableData = []
+            }
+            ,
             //子组件fileupload传值给父组件，用showFileType事件接收值赋给变量fileType
             showFileType(fileType) {
                 this.fileType = fileType;
-            },
+            }
+            ,
             //子组件fileupload传值给父组件，用showFilePath事件接收值赋给变量fileType
             showFilePath(filePath) {
                 this.form.fileName = filePath;
-            },
+            }
+            ,
             //打开流程跟踪弹窗
-            todoOpinionList(row){
+            todoOpinionList(row) {
                 this.applyUuid = row.applyUuid;
                 this.todoFlow = true;
-            },
+            }
+            ,
             addApply() {
 
-            },
+            }
+            ,
             delApply() {
 
-            },
+            }
+            ,
             //工作流相关
             saveOpinion() {
                 //保存业务数据成功后
                 setTimeout(() => {
                     this.$refs["flowItem"].submitFlow();
                     //将状态修改为办理中
-                    batchUpdateForHandle(this.applySelectionList)
-                        .then(() => {
-                            location.reload()
-                        })
                 }, 20);
+            },
+            batchUpdateForHandleClose() {
+                batchUpdateForHandle(this.applySelectionList)
+                    .then(() => {
+                        this.getList()
+                    })
             },
         }
 
-    };
+    }
+    ;
 </script>
 
 <style scoped>
     .right_btn {
+        display: flex;
         float: right;
     }
 

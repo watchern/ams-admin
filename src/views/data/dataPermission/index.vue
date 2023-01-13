@@ -59,8 +59,8 @@
         </div>
       </div>
       <div class="search-btn">
-        <el-button size="mini" type="primary" @click="goQuery">查询</el-button>
-        <el-button size="mini" type="primary" @click="reset">重置</el-button>
+        <el-button type="primary" @click="goQuery">查询</el-button>
+        <el-button type="primary" @click="reset">重置</el-button>
       </div>
     </div>
     <!-- 列表 -->
@@ -89,7 +89,7 @@
         stripe
         v-loading="loading"
         row-key="id"
-        height="calc(100vh - 310px)"
+        height="calc(100vh - 330px)"
       >
         <el-table-column type="selection" width="55" :reserve-selection="true">
         </el-table-column>
@@ -102,6 +102,7 @@
         <el-table-column
           prop="type"
           label="申请时间"
+          align="center"
           show-overflow-tooltip
           min-width="150px"
         >
@@ -110,20 +111,25 @@
           prop="apComServerData.displayname"
           label="当前名称"
           min-width="150px"
+          align="center"
           show-overflow-tooltip
         >
         </el-table-column>
         <el-table-column
           prop="ssComIndustrysData.sciName"
           label="状态"
+          min-width="150px"
+          align="center"
           show-overflow-tooltip
         ></el-table-column>
         <el-table-column
           prop="datatype"
           label="申请人"
+          min-width="150px"
+          align="center"
           show-overflow-tooltip
         ></el-table-column>
-        <el-table-column prop="mobile" label="操作">
+        <el-table-column prop="mobile" label="操作" min-width="150px" align="center">
           <template slot-scope="scope">
             <div class="editBtn" @click="processView(scope.row)">流程查看</div>
           </template>
@@ -168,7 +174,14 @@ export default {
       //新增弹窗是否显示
       showAddDialog: false,
       loading: false,
-      dataBaseData: {},
+      // pageQuery: {
+      //   condition: null,
+      //   pageNo: 1,
+      //   pageSize: 20,
+      // },
+      dataBaseData: {
+        // total:0
+      },
       tableData: [],
     };
   },
@@ -200,7 +213,18 @@ export default {
     addSucceed() {
       this.showAddDialog = false
     },
+    //分页
+    // handleSizeChange(){
+    //   this.dataBaseData.pageSize = val;
+    //   this.init();
+    // },
+    // // 分页
+    // handleCurrentChange(val) {
+    //   this.dataBaseData.pageNo = val;
+    //   this.init();
+    // },
   },
+
 };
 </script>
 

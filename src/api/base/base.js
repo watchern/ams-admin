@@ -103,3 +103,12 @@ export function getListByPagepyP(data) {
     data: data
   })
 }
+
+export function excelReadList(data) {
+  return request({
+    baseURL: baseURL,
+    url: '/excelcontroller/excelReadList',
+    method: 'post',
+    data: data
+  })
+}
