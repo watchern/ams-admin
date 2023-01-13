@@ -58,7 +58,7 @@
             <el-option v-for="item in schemaData" :key="item" :label="item" :value="item"></el-option>
           </el-select>
         </div>
-        
+
         <el-input style="width: 70%"
                   v-model="filterText1"
                   placeholder="输入想要查询的表名称（模糊搜索）" />
@@ -333,8 +333,8 @@
                   <div v-if="form.partitions == null">--</div>
                   <div v-else>
                     <div v-for="(item, index_partitions) in form.partitions"
-                          :key="index_partitions"
-                          class="li_son">
+                         :key="index_partitions"
+                         class="li_son">
                       {{ item }}
                     </div>
                   </div>
@@ -1173,6 +1173,15 @@ export default {
       this.Recognition_check_list = data;
       this.Recognition.personName_str = "";
       this.visible_Recognition = true;
+
+      if (this.$refs.orgPeopleTree) {
+        if (this.$refs.multipleTable) {
+          this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection(); //清空选择的认权人
+          this.$refs.orgPeopleTree.findOrgTree_data();
+          this.$refs.orgPeopleTree.list = [];
+          this.$refs.orgPeopleTree.total = 0;
+        }
+      }
     },
     // 认权确认
     save_people_change () {
@@ -1255,7 +1264,7 @@ export default {
     },
     // 获取模式名
     getSchemas () {
-      listSchemas (this.$refs.tree_left.query.dataSource).then((res) => {
+      listSchemas(this.$refs.tree_left.query.dataSource).then((res) => {
         this.schemaData = res.data;
       });
     },
@@ -1313,6 +1322,7 @@ export default {
       listByTreePage(params).then((resp) => {
         this.list_loading = false; //子组件loading
         this.list_data = resp.data;
+        console.log(this.list_data);
         this.list = resp.data.records;
 
         // this.$nextTick(() => {
@@ -1376,9 +1386,9 @@ export default {
     // 上一步
     step (form) {
       this.$nextTick(() => {
-        this.$refs[form].resetFields(); //清空添加的值
+        this.$refs['form'].resetFields(); //清空添加的值
         this.$refs["form"].clearValidate();
-        this.clear_details_form();
+        // this.clear_details_form();
 
       });
 
@@ -1390,8 +1400,13 @@ export default {
     clear () {
       // 清空
       this.form.tableCode = "";
+      this.form.chnName = ''
       this.form.tableType = "";
       this.form.tableThemeId = "";
+      this.form.rowNum = '';
+      this.form.tableSize = '';
+      this.form.partitions = '';
+      this.form.tableRemarks = '';
       this.form.businessSystemId = "";
       this.form.tableLayeredId = "";
       this.form.folderUuid = "";
@@ -1399,12 +1414,13 @@ export default {
       this.form.tableRemarks = "";
       this.form.isSpike = 1;
       this.form.isSentFile = 0;
-      (this.form.check_list.fileName = ""),
-        (this.form.check_list.pid = ""),
-        (this.form.check_list.id = ""),
-        (this.form.check_list.label = ""),
-        (this.personUuid = []);
-      this.personName = [];
+      this.form.fileName = '';
+      this.form.check_list.fileName = "";
+      this.form.check_list.pid = "";
+      this.form.check_list.id = "";
+      this.form.check_list.label = "";
+      // this.personUuid = [];
+      // this.personName = [];
     },
     // 第一步选择的数据库
     nodeClick_table (data, node, tree) {
@@ -1445,8 +1461,10 @@ export default {
       } else {
         // this.registTableFlag = false;//关闭上一步
         this.dialogVisible_information = true; //显示下一步 基本信息
+        this.btnLoading = false;
         this.$nextTick(() => {
-          this.$refs["form"].clearValidate();
+          this.$refs.form.resetFields(); //清空添加的值
+          this.$refs.form.clearValidate();
         })
         this.post_getColsInfoByTableName(); //获取列信息
         this.getListTree_data();
@@ -1531,6 +1549,10 @@ export default {
           // this.post_getLayeredTree(); //分层
           // this.post_getDataTreeNode();//目录
           this.query_list(this.$refs.tree_left.query, false);
+          this.$nextTick(() => {
+            this.$refs.form.resetFields(); //清空添加的值
+            this.$refs.form.clearValidate();
+          })
         } else {
           this.btnLoading = false;
           this.$message({
@@ -1593,11 +1615,8 @@ export default {
       this.$nextTick(() => {
         this.$refs[form].resetFields(); //清空添加的值
         this.$refs["form"].clearValidate();
-        this.clear_details_form();
-
+        // this.clear_details_form();
       });
-
-
       this.clear();
     },
     // 数据日期:
@@ -1605,31 +1624,31 @@ export default {
       this.form.dataDate = value;
     },
     // 清空基本信息
-    clear_details_form () {
-      // this.form.tbName = ''
-      this.form.chnName = ''
-      this.form.tableRemarks = ''
-      this.form.tableCode = ''
-      this.form.tableType = ''
-      this.form.tableThemeName = ''
-      this.form.tableThemeId = ''
-      this.form.tableLayeredName = ''
-      this.form.tableLayeredId = ''
-      this.form.businessSystemName = ''
-      this.form.businessSystemId = ''
-      this.form.fileName = ''
-      this.form.dataDate = ''
-      this.form.tableSize = ''
-      this.form.rowNum = ''
-      this.form.personLiables = ''
-      this.form.personName_str = ''
-      this.form.personUuid = ''
-      this.form.partitions = ''
-      this.form.isSpike = ''
-      this.form.isSentFile = ''
-      this.form.personName = ''
-      this.form.file_name = ''
-    },
+    // clear_details_form () {
+    // this.form.tbName = ''
+    // this.form.chnName = ''
+    // this.form.tableRemarks = ''
+    // this.form.tableCode = ''
+    // this.form.tableType = ''
+    // this.form.tableThemeName = ''
+    // this.form.tableThemeId = ''
+    // this.form.tableLayeredName = ''
+    // this.form.tableLayeredId = ''
+    // this.form.businessSystemName = ''
+    // this.form.businessSystemId = ''
+    // this.form.fileName = ''
+    // this.form.dataDate = ''
+    // this.form.tableSize = ''
+    // this.form.rowNum = ''
+    // this.form.personLiables = ''
+    // this.form.personName_str = ''
+    // this.form.personUuid = ''
+    // this.form.partitions = ''
+    // this.form.isSpike = ''
+    // this.form.isSentFile = ''
+    // this.form.personName = ''
+    // this.form.file_name = ''
+    // },
     // 下一步的关闭
     close_diag (form) {
       this.dialogVisible_information = false;
@@ -1638,7 +1657,7 @@ export default {
       this.$nextTick(() => {
         this.$refs[form].resetFields(); //清空添加的值
         this.$refs["form"].clearValidate();
-        this.clear_details_form();
+        // this.clear_details_form();
       });
 
     },
@@ -1690,13 +1709,15 @@ export default {
               };
               this.chooseTables.push(tableForm);
             }
-
+            // 
+            // return false
             batchSaveTable_save(this.chooseTables).then((resp) => {
               if (resp.code == 0) {
                 this.$message({
                   type: "success",
                   message: "新增成功!",
                 });
+                // this.$message.success("新增成功");
                 this.btnLoading = false; //保存loadnin
                 this.chooseTables = []; //传输的数据
                 this.$refs.tree_left.post_getBusinessSystemTree()
@@ -1706,13 +1727,15 @@ export default {
                 // this.post_getDataTreeNode();//目录
 
                 this.query_list(this.$refs.tree_left.query, false);//刷新列表
+                this.$nextTick(() => {
+                  this.$refs.form.resetFields(); //清空添加的值
+                  this.$refs.form.clearValidate();
+                })
 
               } else {
                 this.btnLoading = false;
-                this.$message({
-                  type: "error",
-                  message: res.msg,
-                });
+                this.$message.error(res.msg);
+
               }
               this.dialogVisible_information = false;//关闭注册资源
               this.registTableFlag = false; //关闭上一步
@@ -1729,6 +1752,7 @@ export default {
           });
           return false;
         }
+        this.btnLoading = false;
       });
     },
     // 选择责任人
@@ -1810,6 +1834,7 @@ export default {
     },
     // 分页
     handleCurrent (val) {
+      console.log(val);
       this.$refs.tree_left.query.pageNo = val;
       this.query_list(this.$refs.tree_left.query, false);
     },

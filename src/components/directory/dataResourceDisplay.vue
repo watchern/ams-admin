@@ -221,15 +221,15 @@
           </el-table-column>
         </el-table>
       </div>
-
       <div class="padding10_l">
         <el-pagination @size-change="handleSizeChange"
                        @current-change="handleCurrentChange"
-                       :page-size="this.list_data.size"
+                       :page-size="list_data.size"
                        background
-                       :current-page-sync="this.list_data.current"
+                       :current-page-sync="list_data.current"
                        layout="total, sizes, prev, pager, next, jumper"
-                       :total="this.list_data.total"></el-pagination>
+                       :total="list_data.total"
+                       v-if="list_data.total"></el-pagination>
       </div>
 
     </el-skeleton>
@@ -260,7 +260,9 @@ export default {
     },
     list_data: {
       type: Object,
-      default: () => ({})
+      default () {
+        return {}
+      }
     },
     isBtn: Boolean,
     list_loading: Boolean,
@@ -280,6 +282,8 @@ export default {
     };
   },
   created () {
+    console.log(this.query.pageNo);
+
     // if (this.list && this.list.length == 0) {
     //   this.list_loading = true;
     // } else {

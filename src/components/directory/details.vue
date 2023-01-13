@@ -188,6 +188,9 @@
                              :key="index_partitions"
                              class="li_son">
                           {{ item }}
+                          <div>
+                            {{ item }}
+                          </div>
                         </div>
                       </div>
                     </div>
