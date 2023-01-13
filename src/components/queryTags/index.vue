@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="width:100%;position:relative">
     <!-- 父盒子 -->
     <div class="father_box" @click="onclick">
       <!-- 生成的标签 -->
@@ -204,6 +204,7 @@ export default {
   max-height: 200px;
   background-color: white;
   overflow: auto;
+  position: absolute;
 }
 .dropDownItem {
   height: 25px;
