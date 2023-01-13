@@ -151,7 +151,7 @@ export default {
       query: {
         dataSource: "Postgre", //筛选条件
         pageNo: 1,
-        pageSize: 10,
+        pageSize: 1,
         businessSystemId: "", //id主键
         tableThemeId: "", //主题
         tableLayeredId: "", //分层
@@ -182,6 +182,7 @@ export default {
     // 选择数据源
     selectdata (val) {
       this.query.dataSource = val;
+      this.query.businessSystemId = ''
       if (this.activeName == "0") {
         // 系统
         this.post_getBusinessSystemTree(); //系统
