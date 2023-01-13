@@ -204,7 +204,6 @@
                                             :on-change="select"
                                             action=""
                                             :file-list="fileList"
-                                            :http-request="uploadOk"
                                             :show-file-list="false"
                                             :auto-upload="false"
                                             accept=".xls,.xlsx,.txt">
@@ -505,10 +504,15 @@
         components: {FileImport, DataTree, FlowItem, Details, flowOpinionList},
         data() {
             return {
+                //文件列表存储的数组
                 fileList: [],
+                //存储文件附带属性的数组
                 tableData: [],
+                //给tableData赋空的空数组
                 tableNullData: [],
+                //存储分割文件名的数组
                 splitName: [],
+                isUpload: false,
                 file: {
                     fileName: '',
                     fileType: '',
@@ -517,8 +521,6 @@
                     isHeaderLine: 'true',
                     disabled: false,
                 },
-
-
                 // 查询列表
                 query: {
                     applyName: '',// 申请名称
@@ -757,43 +759,70 @@
         },
         methods: {
             select(file, fileList) {
+                //默认给disabled属性赋true，当判断文件类型为txt时，改变disabled属性值为false
                 this.file.disabled = true
-                this.fileList = fileList;
+                console.log("21324356", fileList)
+                console.log("file23456", file)
+                //往定义的空数组中push列表file
+                this.fileList.push(file)
+                //往fileList列表数组中添加isUpload属性(判断文件是否上传标识)
+                this.fileList[this.fileList.length - 1].isUpload = false
+                console.log("fileList", this.fileList)
+                //获取当前时间
                 const time = new Date().getTime();
-                for (let i = 0; i < this.fileList.length; i++) {
-                    this.splitName = this.fileList[i].name.split('.');
-                    let fileName = this.splitName[0] + time + "." + this.splitName[1];
-                    let f = new File([fileList[i].raw], fileName);
-                    f.uid = fileList[i].uid;
-                    this.fileList[i].raw = f;
-                    this.fileList[i].name = this.splitName[0] + time + "." + this.splitName[1];
-                }
+                //分割文件名，往文件名中加入时间戳，防止文件重复，具体格式：文件名+时间戳+"."+文件类型
+                this.splitName = this.fileList[this.fileList.length - 1].name.split('.');
+                let fileName = this.splitName[0] + time + "." + this.splitName[1];
+                //因为文件file是只读类型，无法更改文件名，所以新建File对象，把file值赋给新对象，然后改变文件名赋给fileList
+                let f = new File([fileList[this.fileList.length - 1].raw], fileName);
+                f.uid = fileList[this.fileList.length - 1].uid;
+                this.fileList[this.fileList.length - 1].raw = f;
+                this.fileList[this.fileList.length - 1].name = this.splitName[0] + time + "." + this.splitName[1];
+                // for (let i = 0; i < this.fileList.length; i++) {
+                //     this.splitName = this.fileList[i].name.split('.');
+                //     let fileName = this.splitName[0] + time + "." + this.splitName[1];
+                //     let f = new File([fileList[i].raw], fileName);
+                //     f.uid = fileList[i].uid;
+                //     this.fileList[i].raw = f;
+                //     this.fileList[i].name = this.splitName[0] + time + "." + this.splitName[1];
+                // }
                 let extName = file.name.substring(file.name.lastIndexOf(".") + 1).toLowerCase();
                 this.tableData.push(this.file)
+                console.log("this.tableData:", this.tableData)
                 this.file.fileName = file.name;
+                //判断是否为txt文件，是的话给file中的特定属性赋值，因为业务需求：'xls'和'xlsx'文件的lineSeparator和columnSeparator为空
                 if (extName === 'txt') {
                     this.file.fileType = '文本文件'
                     this.file.lineSeparator = '回车换行符'
                     this.file.columnSeparator = '制表符'
+                    //设置了是否可操作的标识，txt文件是可以操作lineSeparator和columnSeparator属性的，所以给disabled属性赋false
                     this.file.disabled = false
                 } else if (extName === 'xls') {
                     this.file.fileType = 'EXCEL数据表(97-2003)'
                 } else if (extName === 'xlsx') {
                     this.file.fileType = 'EXCEL数据表(2010)'
                 }
+                //重置this.file文件，防止编辑失败时点击新增，页面出现编辑中查到的数据
                 this.file = this.$options.data().file
             },
             submitUpload() {
-                if (this.fileList.length === 0) {
+                //判断文件上传时是否选择了文件
+                if (this.tableData.length === 0) {
                     this.$notify.warning("请选择文件后上传！")
                     return
                 }
-                this.$refs.upload.submit();
+                this.uploadOk();
             },
-            uploadOk(file, fileList) {
+            uploadOk() {
                 let fd = new FormData();
+                console.log(this.fileList)
+                //循环遍历this.fileList列表数组,将文件一一赋给FormData传到后台
                 for (let i = 0; i < this.fileList.length; i++) {
-                    fd.append("files", this.fileList[i].raw);
+                    //判断是否已经上传过了
+                    if (this.fileList[i].isUpload === false) {
+                        fd.append("files", this.fileList[i].raw)
+                        this.fileList[i].isUpload = true
+                    }
                 }
                 upload(fd).then(() => {
                     this.$notify({
@@ -845,6 +874,7 @@
                     this.form = res.data
                     this.tableData = res.data.fileList
                     this.tableData.forEach((r) => {
+                        r.isUpload = true
                         r.disabled = r.fileType !== "文本文件";
                     })
                     //只有状态为草稿时才能实现对数据的编辑修改
@@ -1012,6 +1042,14 @@
 
                 this.$refs[form].validate((valid) => {
                     if (valid) {
+                        let isUpload = true
+                        //校验文件是否上传
+                        this.fileList.forEach((r) => {
+                            if (r.isUpload === false) {
+                                this.$notify.warning("所选文件" + r.name + "未上传")
+                                isUpload = false
+                            }
+                        })
                         if (this.title === '创建申请') {
                             let params = {
                                 loadDownApply: {
@@ -1022,28 +1060,31 @@
                                 },
                                 "tableData": JSON.stringify(this.tableData),
                             }
+                            //校验是否选择了文件
                             if (this.tableData.length === 0) {
                                 this.$notify.warning("请选择文件！")
                                 return
                             }
                             //save_data方法调用后台save接口实现新增功能
-                            save_data(params).then(res => {
-                                if (res.code === 0) {
-                                    this.$message({
-                                        message: '新增成功',
-                                        type: 'success',
-                                        showClose: true,
-                                    })
-                                    this.applyDialogVisible = false
-                                    this.getList()
-                                } else {
-                                    this.$message({
-                                        message: res.msg,
-                                        type: 'error',
-                                        showClose: true,
-                                    })
-                                }
-                            })
+                            if (isUpload) {
+                                save_data(params).then(res => {
+                                    if (res.code === 0) {
+                                        this.$message({
+                                            message: '新增成功',
+                                            type: 'success',
+                                            showClose: true,
+                                        })
+                                        this.applyDialogVisible = false
+                                        this.getList()
+                                    } else {
+                                        this.$message({
+                                            message: res.msg,
+                                            type: 'error',
+                                            showClose: true,
+                                        })
+                                    }
+                                })
+                            }
                         } else {
                             let params = {
                                 loadDownApply: {
@@ -1055,24 +1096,26 @@
                                 "tableData": JSON.stringify(this.tableData),
                             }
                             //update_data方法调用后台update接口实现编辑功能
-                            update_data(params).then(res => {
-                                if (res.code === 0) {
-                                    this.$message({
-                                        message: '编辑成功',
-                                        type: 'success',
-                                        showClose: true,
-                                    })
-                                    this.applyDialogVisible = false
-                                    this.dialogStatusValue = false
-                                    this.getList()
-                                } else {
-                                    this.$message({
-                                        message: res.msg,
-                                        type: 'error',
-                                        showClose: true,
-                                    })
-                                }
-                            })
+                            if (isUpload) {
+                                update_data(params).then(res => {
+                                    if (res.code === 0) {
+                                        this.$message({
+                                            message: '编辑成功',
+                                            type: 'success',
+                                            showClose: true,
+                                        })
+                                        this.applyDialogVisible = false
+                                        this.dialogStatusValue = false
+                                        this.getList()
+                                    } else {
+                                        this.$message({
+                                            message: res.msg,
+                                            type: 'error',
+                                            showClose: true,
+                                        })
+                                    }
+                                })
+                            }
                         }
                     } else {
                         this.$message({
