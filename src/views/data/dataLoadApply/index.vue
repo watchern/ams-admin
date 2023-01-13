@@ -778,14 +778,6 @@
                 f.uid = fileList[this.fileList.length - 1].uid;
                 this.fileList[this.fileList.length - 1].raw = f;
                 this.fileList[this.fileList.length - 1].name = this.splitName[0] + time + "." + this.splitName[1];
-                // for (let i = 0; i < this.fileList.length; i++) {
-                //     this.splitName = this.fileList[i].name.split('.');
-                //     let fileName = this.splitName[0] + time + "." + this.splitName[1];
-                //     let f = new File([fileList[i].raw], fileName);
-                //     f.uid = fileList[i].uid;
-                //     this.fileList[i].raw = f;
-                //     this.fileList[i].name = this.splitName[0] + time + "." + this.splitName[1];
-                // }
                 let extName = file.name.substring(file.name.lastIndexOf(".") + 1).toLowerCase();
                 this.tableData.push(this.file)
                 console.log("this.tableData:", this.tableData)
