@@ -62,11 +62,11 @@
             <i v-if="data.id === 'ROOT'"
                :class="data.icon" />
             <i v-if="
-  data.type === 'folder' ||
-  data.type === 'system' ||
-  data.type === 'layered' ||
-  data.type === 'theme'
-">
+              data.type === 'folder' ||
+              data.type === 'system' ||
+              data.type === 'layered' ||
+              data.type === 'theme'
+            ">
               <span class="agreeicon0"></span>
             </i>
             <i v-if="data.type === 'table'">
@@ -91,9 +91,8 @@
                          @click.stop="() => handleUpdateFolder(node, data)">
                 <i class="el-icon-edit" />
               </el-button>
-              <el-button v-if="
-  (data.extMap && data.extMap.folder_type === 'maintained') ||
-  data.type === 'table' || data.type === 'view'"
+              <el-button v-if="(data.extMap && data.extMap.folder_type === 'maintained') ||
+                         data.type === 'table' || data.type === 'view'"
                          type="text"
                          size="mini"
                          @click.stop="() => handleRemove(node, data)">

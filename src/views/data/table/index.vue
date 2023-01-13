@@ -48,19 +48,21 @@
                  :title="'选择注册表'"
                  :visible.sync="registTableFlag"
                  class="dlag_width"
-                 width="60%">
+                 width="60%"
+                 top="10vh">
 
         <!-- 选择模式 -->
-        <div class="_width ">
-
+        <div class="model_search">
+          模式名称：
+          <el-select v-model="schemaName" style="width: 70%">
+            <el-option v-for="item in schemaData" :key="item" :label="item" :value="item"></el-option>
+          </el-select>
         </div>
-
-        <div class="_width ">
-          <el-input style="width: 70%"
-                    v-model="filterText1"
-                    placeholder="输入想要查询的表名称（模糊搜索）" />
-          <el-button @click="getTables"> 搜索 </el-button>
-        </div>
+        
+        <el-input style="width: 70%"
+                  v-model="filterText1"
+                  placeholder="输入想要查询的表名称（模糊搜索）" />
+        <el-button @click="getTables">搜索</el-button>
 
         <div class="dlag_conter containerselect padding10">
           <MyElTree ref="tree1"
@@ -326,14 +328,17 @@
             <div class="son">
               <el-form-item label="表分区："
                             prop="partitions">
-                <ul class="table">
-                  <li class="head">分区名称</li>
-                  <li v-for="(item, index_partitions) in form.partitions"
-                      :key="index_partitions"
-                      class="li_son">
-                    {{ item }}
-                  </li>
-                </ul>
+                <div class="table">
+                  <div class="head">分区名称</div>
+                  <div v-if="form.partitions == null">--</div>
+                  <div v-else>
+                    <div v-for="(item, index_partitions) in form.partitions"
+                          :key="index_partitions"
+                          class="li_son">
+                      {{ item }}
+                    </div>
+                  </div>
+                </div>
               </el-form-item>
 
               <el-form-item label="增全量："
@@ -608,12 +613,12 @@
 import tabledatatabs from "@/views/data/table/tabledatatabs";
 import MyElTree from "@/components/public/tree/src/tree.vue";
 import LeftTrees from "@/components/loginTree/leftTree.vue";
-
 import {
   listUnCached,
   listByTreePage, //列表
   getColsInfoByTableName, //获取列信息
   synDataStructure, //同步数据
+  listSchemas, //获取模式名
 } from "@/api/data/table-info";
 import QueryField from "@/components/public/query-field/index";
 import personTree from "@/components/publicpersontree/index";
@@ -657,6 +662,7 @@ export default {
       tableId: "",
       registTableFlag: false,
       // divInfo: false,
+      schemaName: "",
       filterText1: null,
       filterText2: null,
       filterText3: null,
@@ -693,7 +699,7 @@ export default {
       treeLoading: false,
       tableData: [],
       chooseTables: [],
-
+      schemaData: [],
       // 列表
       listLoading: false,
       list: [], //table 列表
@@ -1233,8 +1239,12 @@ export default {
       this.show_details = true;
       this.isDisable_input = true;
     },
-
-
+    // 获取模式名
+    getSchemas () {
+      listSchemas (this.$refs.tree_left.query.dataSource).then((res) => {
+        this.schemaData = res.data;
+      });
+    },
     // 点击注册资源的 数据库列表
     getTables () {
       this.treeLoading = true;
@@ -1340,6 +1350,7 @@ export default {
     // 注册资源
     registTable () {
       this.registTableFlag = true;
+      this.getSchemas();
       this.getTables();
     },
     // 选择注册表 筛选
@@ -1798,6 +1809,12 @@ export default {
 
 <style scoped>
 @import url("./../../../assets/css/common.css");
+
+.model_search {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
 
 /* 隐藏列表的多选框 */
 .list_style >>> .el-table__header-wrapper {

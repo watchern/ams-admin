@@ -686,7 +686,7 @@ export default {
   align-items: flex-start;
   text-align: center;
   justify-content: center;
-  padding: 30px 5px 0;
+  padding: 10px 5px 0;
   font-weight: bold;
   font-size: 40px;
 }
