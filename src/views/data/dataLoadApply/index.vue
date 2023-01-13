@@ -761,13 +761,10 @@
             select(file, fileList) {
                 //默认给disabled属性赋true，当判断文件类型为txt时，改变disabled属性值为false
                 this.file.disabled = true
-                console.log("21324356", fileList)
-                console.log("file23456", file)
                 //往定义的空数组中push列表file
                 this.fileList.push(file)
                 //往fileList列表数组中添加isUpload属性(判断文件是否上传标识)
                 this.fileList[this.fileList.length - 1].isUpload = false
-                console.log("fileList", this.fileList)
                 //获取当前时间
                 const time = new Date().getTime();
                 //分割文件名，往文件名中加入时间戳，防止文件重复，具体格式：文件名+时间戳+"."+文件类型
@@ -780,19 +777,18 @@
                 this.fileList[this.fileList.length - 1].name = this.splitName[0] + time + "." + this.splitName[1];
                 let extName = file.name.substring(file.name.lastIndexOf(".") + 1).toLowerCase();
                 this.tableData.push(this.file)
-                console.log("this.tableData:", this.tableData)
                 this.file.fileName = file.name;
                 //判断是否为txt文件，是的话给file中的特定属性赋值，因为业务需求：'xls'和'xlsx'文件的lineSeparator和columnSeparator为空
                 if (extName === 'txt') {
-                    this.file.fileType = '文本文件'
+                    this.file.fileType = 'txt'
                     this.file.lineSeparator = '回车换行符'
                     this.file.columnSeparator = '制表符'
                     //设置了是否可操作的标识，txt文件是可以操作lineSeparator和columnSeparator属性的，所以给disabled属性赋false
                     this.file.disabled = false
                 } else if (extName === 'xls') {
-                    this.file.fileType = 'EXCEL数据表(97-2003)'
+                    this.file.fileType = 'xls'
                 } else if (extName === 'xlsx') {
-                    this.file.fileType = 'EXCEL数据表(2010)'
+                    this.file.fileType = 'xlsx'
                 }
                 //重置this.file文件，防止编辑失败时点击新增，页面出现编辑中查到的数据
                 this.file = this.$options.data().file
@@ -807,7 +803,6 @@
             },
             uploadOk() {
                 let fd = new FormData();
-                console.log(this.fileList)
                 //循环遍历this.fileList列表数组,将文件一一赋给FormData传到后台
                 for (let i = 0; i < this.fileList.length; i++) {
                     //判断是否已经上传过了
@@ -867,7 +862,7 @@
                     this.tableData = res.data.fileList
                     this.tableData.forEach((r) => {
                         r.isUpload = true
-                        r.disabled = r.fileType !== "文本文件";
+                        r.disabled = r.fileType !== "txt";
                     })
                     //只有状态为草稿时才能实现对数据的编辑修改
                     if (this.form.status !== '草稿') {
