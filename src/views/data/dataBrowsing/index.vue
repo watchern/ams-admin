@@ -18,9 +18,12 @@
           <div class="theme-index">
             <div class="classify-them-left">业务主题</div>
             <div class="classify-right-out">
-              <div class="classify-right"
-                   v-for="(topic, index) in BusinessTopics"
-                   :key="index"
+              <div
+                class="classify-right"
+                v-for="(topic, index) in BusinessTopics"
+                :key="index"
+                :class="isActiveTopic === index ? 'active' : ''"
+                @click="setActiveTab(index, 'isActiveTopic')"
               >
                 {{ topic.title }}
               </div>
@@ -30,24 +33,42 @@
           <div class="theme-index">
             <div class="classify-them-left">业务系统</div>
             <div class="classify-right-out">
-              <div class="classify-right" v-for="(system, index) in BusSystems" :key="index">
-                {{system.title}}
+              <div
+                class="classify-right"
+                v-for="(system, index) in BusSystems"
+                :key="index"
+                :class="isActiveSystem === index ? 'active' : ''"
+                @click="setActiveTab(index, 'isActiveSystem')"
+              >
+                {{ system.title }}
               </div>
             </div>
           </div>
           <div class="theme-index">
             <div class="classify-them-left">分层</div>
             <div class="classify-right-out">
-              <div class="classify-right" v-for="(layered, index) in layereds" :key="index">
-                {{layered.title}}
+              <div
+                class="classify-right"
+                v-for="(layered, index) in layereds"
+                :class="isActiveLayered === index ? 'active' : ''"
+                @click="setActiveTab(index, 'isActiveLayered')"
+                :key="index"
+              >
+                {{ layered.title }}
               </div>
             </div>
           </div>
           <div class="theme-index">
             <div class="classify-them-left">接入时间</div>
             <div class="classify-right-out">
-              <div class="classify-right" v-for="(time,index) in accessTime" :key="index">
-                {{time.title}}
+              <div
+                class="classify-right"
+                v-for="(time, index) in accessTime"
+                :class="isActiveTime === index ? 'active' : ''"
+                @click="setActiveTab(index, 'isActiveTime')"
+                :key="index"
+              >
+                {{ time.title }}
               </div>
             </div>
           </div>
@@ -57,7 +78,7 @@
           <dataBrowsingDetails></dataBrowsingDetails>
         </div>
       </div>
-<!--      右侧-->
+      <!--      右侧-->
       <div class="right-container">
         <el-card class="query-card">
           <div slot="header" class="card-clearfix">
@@ -120,7 +141,7 @@ export default {
         },
       ],
       //业务系统
-      BusSystems:[
+      BusSystems: [
         {
           title: "信贷系统",
         },
@@ -144,56 +165,69 @@ export default {
         },
         {
           title: "网银",
-        },{
+        },
+        {
           title: "商户管理",
-        },{
+        },
+        {
           title: "票据系统",
-        },{
+        },
+        {
           title: "资金系统",
-        },{
+        },
+        {
           title: "国结",
-        },{
+        },
+        {
           title: "信用卡",
-        },{
+        },
+        {
           title: "抵质押系",
-        },{
+        },
+        {
           title: "托管系统",
-        },{
+        },
+        {
           title: "资产托管",
-        },{
+        },
+        {
           title: "外部数据",
-        },{
+        },
+        {
           title: "金融基础数据",
         },
       ],
       //分层
-      layereds:[
+      layereds: [
         {
-          title:"审计标准数据",
+          title: "审计标准数据",
         },
         {
-          title:"业务原始数据",
+          title: "业务原始数据",
         },
         {
-          title:"审计中间数据",
+          title: "审计中间数据",
         },
       ],
       //接入时间
-      accessTime:[
+      accessTime: [
         {
-          title:"近一月"
+          title: "近一月",
         },
         {
-          title:"近三月"
+          title: "近三月",
         },
         {
-          title:"近半年"
+          title: "近半年",
         },
         {
-          title:"近一年"
+          title: "近一年",
         },
-      ]
-
+      ],
+      isActiveTopic: "",
+      isActiveSystem: "",
+      isActiveLayered: "",
+      isActiveTime: "",
     };
   },
   computed: {},
@@ -204,6 +238,20 @@ export default {
   methods: {
     onChange(data) {
       console.log(data, "data");
+    },
+    setActiveTab(value, type) {
+      if (type === "isActiveTopic") {
+        this.isActiveTopic = value;
+      }
+      if (type === "isActiveSystem") {
+        this.isActiveSystem = value;
+      }
+      if (type === "isActiveLayered") {
+        this.isActiveLayered = value;
+      }
+      if (type === "isActiveTime") {
+        this.isActiveTime = value;
+      }
     },
   },
 };
@@ -243,16 +291,16 @@ export default {
 }
 
 /*分类主题部分*/
-.theme-index{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    padding: 10px;
-    border-bottom: 1px solid #ededed;
+.theme-index {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  padding: 10px;
+  border-bottom: 1px solid #ededed;
 }
 /*分类主题*/
-.classify-them-left{
-  display:inline-block;
+.classify-them-left {
+  display: inline-block;
   font-weight: bold;
   width: 6%;
   margin-right: 8px;
@@ -260,12 +308,12 @@ export default {
   justify-content: flex-start;
   padding-left: 10px;
 }
-.classify-right-out{
+.classify-right-out {
   width: 90%;
 }
 
 /*右侧分类部分*/
-.classify-right{
+.classify-right {
   display: inline-block;
   margin-right: 20px;
 }
@@ -275,6 +323,8 @@ export default {
 .data-list {
   flex-direction: column;
   background: white;
+  height: calc(100vh - 400px);
+  overflow: auto;
 }
 
 /*右侧*/
@@ -319,5 +369,8 @@ export default {
 .card-clearfix:after {
   clear: both;
 }
-
+.active {
+  color: #677ccd;
+  background: #e7ecff;
+}
 </style>
