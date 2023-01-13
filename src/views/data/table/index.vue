@@ -54,8 +54,14 @@
         <!-- 选择模式 -->
         <div class="model_search">
           模式名称：
-          <el-select v-model="schemaName" @change="filterTables" style="width: 70%" clearable>
-            <el-option v-for="item in schemaData" :key="item" :label="item" :value="item"></el-option>
+          <el-select v-model="schemaName"
+                     @change="filterTables"
+                     style="width: 70%"
+                     clearable>
+            <el-option v-for="item in schemaData"
+                       :key="item"
+                       :label="item"
+                       :value="item"></el-option>
           </el-select>
         </div>
 
@@ -1250,7 +1256,7 @@ export default {
       this.isDisable_input = true;
     },
     // 通过模式名过滤表名
-    filterTables(val) {
+    filterTables (val) {
       if (val) {
         this.tableData = [];
         this.tableDataAll.forEach(item => {
@@ -1322,7 +1328,7 @@ export default {
       listByTreePage(params).then((resp) => {
         this.list_loading = false; //子组件loading
         this.list_data = resp.data;
-        console.log(this.list_data);
+
         this.list = resp.data.records;
 
         // this.$nextTick(() => {
@@ -1834,7 +1840,7 @@ export default {
     },
     // 分页
     handleCurrent (val) {
-      console.log(val);
+
       this.$refs.tree_left.query.pageNo = val;
       this.query_list(this.$refs.tree_left.query, false);
     },
