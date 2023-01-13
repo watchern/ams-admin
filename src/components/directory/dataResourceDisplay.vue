@@ -282,15 +282,6 @@ export default {
     };
   },
   created () {
-    console.log(this.query.pageNo);
-
-    // if (this.list && this.list.length == 0) {
-    //   this.list_loading = true;
-    // } else {
-    //   this.list_loading = false;
-
-    // }
-    // this.setLoading();
   },
   watch: {
     TagsAll () {
@@ -317,10 +308,6 @@ export default {
     this.TagsAll = this.itemsArr;
   },
   methods: {
-    // setLoading () {
-    //   this.list_loading = true
-    //   setTimeout(() => (this.list_loading = false), 2000)
-    // },
     // 删除标签
     removeTag (index, item) {
 
@@ -354,9 +341,6 @@ export default {
     down_template_dictionary () {
       // if (this.check_list.length !== 0) {
       this.$emit("down_template_dictionary", this.check_list)
-      // } else {
-      //   this.$message({ type: "warning", message: "请选择一条数据进行下载" });
-      // }
     },
     // 汉化模版下载
     down_template_cn () {
@@ -370,9 +354,6 @@ export default {
     down_template_table () {
       //  if(this.check_list.length !== 0) {
       this.$emit("down_template_table", this.check_list)
-      // } else {
-      //   this.$message({ type: "warning", message: "请选择一条数据进行下载" });
-      // }
     },
     // 导入数据字典
     Importdata_dictionary () {
