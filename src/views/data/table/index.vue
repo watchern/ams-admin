@@ -54,7 +54,7 @@
         <!-- 选择模式 -->
         <div class="model_search">
           模式名称：
-          <el-select v-model="schemaName" style="width: 70%">
+          <el-select v-model="schemaName" @change="filterTables" style="width: 70%" clearable>
             <el-option v-for="item in schemaData" :key="item" :label="item" :value="item"></el-option>
           </el-select>
         </div>
@@ -697,9 +697,10 @@ export default {
       },
       // selectValue: 1,
       treeLoading: false,
-      tableData: [],
+      tableData: [], // 注册资源展示表
+      tableDataAll: [], // 注册资源全量表
+      schemaData: [], // 注册资源模式
       chooseTables: [],
-      schemaData: [],
       // 列表
       listLoading: false,
       list: [], //table 列表
@@ -1239,6 +1240,19 @@ export default {
       this.show_details = true;
       this.isDisable_input = true;
     },
+    // 通过模式名过滤表名
+    filterTables(val) {
+      if (val) {
+        this.tableData = [];
+        this.tableDataAll.forEach(item => {
+          if (item.id == val) {
+            this.tableData.push(item);
+          }
+        })
+      } else {
+        this.tableData = this.tableDataAll;
+      }
+    },
     // 获取模式名
     getSchemas () {
       listSchemas (this.$refs.tree_left.query.dataSource).then((res) => {
@@ -1255,6 +1269,7 @@ export default {
         this.$refs.tree_left.query.dataSource
       ).then((resp) => {
         this.treeLoading = false;
+        this.tableDataAll = resp.data;
         this.tableData = resp.data;
       });
     },
