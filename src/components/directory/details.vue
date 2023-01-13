@@ -919,21 +919,13 @@ export default {
 
     // 点击导航菜单，页面滚动到指定位置
     handleLeft (index) {
-      console.log(index);
+
       this.navgatorIndex = index;
       this.$el.querySelector(`#id${index}`).scrollIntoView({
         behavior: "smooth", // 平滑过渡
         block: "start", // 上边框与视窗顶部平齐。默认值
       });
       this.listBoxState = false;
-
-
-
-      // let timeId;
-      // clearTimeout(timeId);
-      // timeId = setTimeout(() => {
-      // this.listBoxState = true;
-      // }, 200);
     },
     handleScroll () {
       this.dom_scrollTop = document.querySelector("#right_details").scrollTop; //获取监听指定区域滚动位置的值

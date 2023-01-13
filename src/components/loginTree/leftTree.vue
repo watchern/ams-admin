@@ -182,6 +182,7 @@ export default {
     // 选择数据源
     selectdata (val) {
       this.query.dataSource = val;
+      this.query.businessSystemId = ''
       if (this.activeName == "0") {
         // 系统
         this.post_getBusinessSystemTree(); //系统
