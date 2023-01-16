@@ -204,7 +204,6 @@
                                             :on-change="select"
                                             action=""
                                             :file-list="fileList"
-                                            :http-request="uploadOk"
                                             :show-file-list="false"
                                             :auto-upload="false"
                                             accept=".xls,.xlsx,.txt">
@@ -312,9 +311,22 @@
                 <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
                     <el-col :span="6">
                         <el-form-item>
-                            <DataTree>
-
-                            </DataTree>
+                            <!--                            <DataTree ref="dataTree"-->
+                            <!--                                      v-loading="treeLoading"-->
+                            <!--                                      :props="props"-->
+                            <!--                                      :highlight-current="true"-->
+                            <!--                                      :data="orgTreeData"-->
+                            <!--                                      node-key="id"-->
+                            <!--                                      :filter-node-method="filterNode"-->
+                            <!--                                      show-checkbox-->
+                            <!--                                      :lazy="true"-->
+                            <!--                                      :load="loadNode"-->
+                            <!--                                      @node-expand="handleNodeClick"-->
+                            <!--                            >-->
+                            <!--                                <span slot-scope="{ node, data }" class="custom-tree-node">-->
+                            <!--                                    <span>{{ node.label }}</span>-->
+                            <!--                                </span>-->
+                            <!--                            </DataTree>-->
                         </el-form-item>
                     </el-col>
                     <el-col :span="2" style="width: 45px; padding-top: 60px">
@@ -324,20 +336,22 @@
                                         type="primary"
                                         icon="el-icon-arrow-right"
                                         circle
-                                        @click="addApply"
-                                />
-                            </p>
-                            <p class="transfer-center-item">
-                                <el-button
-                                        type="primary"
-                                        icon="el-icon-arrow-left"
-                                        circle
-                                        @click="delApply"
+                                        @click="addGrop"
+                                        title="选中（或勾选）左侧组织树节点并点击此按钮可以向表格中添加下线文件"
                                 />
                             </p>
                         </div>
                     </el-col>
                     <el-col :span="16">
+                        <el-col align="right" style="padding-top: 4px; padding-right: 50px">
+                            <!--          <el-button type="primary" class="oper-btn edit-period btn-width-max" :disabled="selections.length !== 1" @click="setExpireDate" />-->
+                            <el-button
+                                    type="primary"
+                                    class="oper-btn delete"
+                                    :disabled="selections.length === 0"
+                                    @click="removeGrp"
+                            />
+                        </el-col>
                         <el-table key="colMetaUuid"
                                   v-loading="listLoading"
                                   border
@@ -345,7 +359,7 @@
                                   height="316px"
                                   highlight-current-row
                                   style="width: 100%;"
-                                  @selection-change="handleSelectionChange">
+                                  @selection-change="handleSelectionTreeChange">
                             <!--                            <el-table-column width="40px" type="selection"/>-->
                             <el-table-column type="selection" width="55px"/>
                             <el-table-column label="序号" width="60px" align="center" prop="applyId"/>
@@ -505,10 +519,24 @@
         components: {FileImport, DataTree, FlowItem, Details, flowOpinionList},
         data() {
             return {
+                //文件列表存储的数组
                 fileList: [],
+                //存储文件附带属性的数组
                 tableData: [],
+                //给tableData赋空的空数组
                 tableNullData: [],
+                //存储分割文件名的数组
                 splitName: [],
+                isUpload: false,
+                //数据下线左侧树的选择
+                selections: [],
+                treeLoading: false,
+                orgTreeData: [],
+                props: {
+                    label: "name",
+                    isLeaf: "leaf",
+                },
+
                 file: {
                     fileName: '',
                     fileType: '',
@@ -517,8 +545,6 @@
                     isHeaderLine: 'true',
                     disabled: false,
                 },
-
-
                 // 查询列表
                 query: {
                     applyName: '',// 申请名称
@@ -756,44 +782,144 @@
             this.getList();//刷新列表
         },
         methods: {
+            //下线方法
+            // addGrp() {
+            //     var nodes = this.$refs["dataTree"][0].getCheckedNodes();
+            //     if (nodes.length === 0) {
+            //         nodes.push(this.$refs["dataTree"][0].getCurrentNode());
+            //     }
+            //     nodes.forEach((node) => {
+            //         if (
+            //             this.tableData.filter((data) => {
+            //                 return data.unitUuid === node.id;
+            //             }).length === 0 &&
+            //             this.tableData.filter((data) => {
+            //                 return data.grpInstUuid === node.id;
+            //             }).length === 0
+            //         ) {
+            //             this.tableData.push({
+            //                 // dataRoleUuid: this.roleUuid,
+            //                 // sceneGrpUuid: this.grpUuid,
+            //                 // userName: node.name,
+            //                 // userType: node.type,
+            //                 // grpInstUuid: node.type == 1 ? node.id : "null",
+            //                 // unitUuid: node.type == 2 ? node.id : "null",
+            //                 // valid: 1,
+            //                 // startTime: null,
+            //                 // endTime: null,
+            //             });
+            //         }
+            //     });
+            // },
+            // removeGrp() {
+            //     var map = {};
+            //     this.selections.forEach((sel) => {
+            //         map[sel.userType + sel.grpInstUuid + sel.unitUuid] = sel;
+            //     });
+            //     for (var index = 0; index < this.tableData.length;) {
+            //         var value = this.tableData[index];
+            //         if (map[value.userType + value.grpInstUuid + value.unitUuid]) {
+            //             this.tableData.splice(index, 1);
+            //         } else {
+            //             index++;
+            //         }
+            //     }
+            // },
+            // handleSelectionTreeChange(val) {
+            //     console.log(val);
+            //     this.selections = val;
+            // },
+            // // 获取个人数据与全行数据列表
+            // getOrgTree() {
+            // //     this.treeLoading = true;
+            // //     方法("").then((res) => {
+            // //         this.orgTreeData = res.data;
+            // //         this.treeLoading = false;
+            // //     });
+            // },
+            // filterNode(value, data) {
+            //     if (!value) return true;
+            //     return data.label.indexOf(value) !== -1;
+            // },
+            // handleNodeClick(data, obj, node) {
+            //     this.getLoadTree(data, obj, node);
+            // },
+            // //展开树形结构进行懒加载的方法 data该节点所对应的对象、obj节点对应的 Node、node节点组件本身
+            // getLoadTree(datas, obj, node) {
+            //     this.orglistLoading = true;
+            //     queryOrgTree(datas.id).then((res) => {
+            //         this.loadTree = res.data;
+            //         this.orglistLoading = false;
+            //     });
+            // },
+            // loadNode(node, resolve) {
+            //     if (node.level === 0) {
+            //         return resolve(this.orgTreeData);
+            //     }
+            //     if (node.data.children && node.data.children != "") {
+            //         return resolve(node.data.children);
+            //     } else {
+            //         setTimeout(() => {
+            //             resolve(this.loadTree);
+            //         }, 500);
+            //     }
+            // },
+
+
+            //装载方法
             select(file, fileList) {
+                //默认给disabled属性赋true，当判断文件类型为txt时，改变disabled属性值为false
                 this.file.disabled = true
-                this.fileList = fileList;
+                //往定义的空数组中push列表file
+                this.fileList.push(file)
+                //往fileList列表数组中添加isUpload属性(判断文件是否上传标识)
+                this.fileList[this.fileList.length - 1].isUpload = false
+                //获取当前时间
                 const time = new Date().getTime();
-                for (let i = 0; i < this.fileList.length; i++) {
-                    this.splitName = this.fileList[i].name.split('.');
-                    let fileName = this.splitName[0] + time + "." + this.splitName[1];
-                    let f = new File([fileList[i].raw], fileName);
-                    f.uid = fileList[i].uid;
-                    this.fileList[i].raw = f;
-                    this.fileList[i].name = this.splitName[0] + time + "." + this.splitName[1];
-                }
+                //分割文件名，往文件名中加入时间戳，防止文件重复，具体格式：文件名+时间戳+"."+文件类型
+                this.splitName = this.fileList[this.fileList.length - 1].name.split('.');
+                let fileName = this.splitName[0] + time + "." + this.splitName[1];
+                //因为文件file是只读类型，无法更改文件名，所以新建File对象，把file值赋给新对象，然后改变文件名赋给fileList
+                let f = new File([fileList[this.fileList.length - 1].raw], fileName);
+                f.uid = fileList[this.fileList.length - 1].uid;
+                this.fileList[this.fileList.length - 1].raw = f;
+                this.fileList[this.fileList.length - 1].name = this.splitName[0] + time + "." + this.splitName[1];
                 let extName = file.name.substring(file.name.lastIndexOf(".") + 1).toLowerCase();
                 this.tableData.push(this.file)
                 this.file.fileName = file.name;
+                //判断是否为txt文件，是的话给file中的特定属性赋值，因为业务需求：'xls'和'xlsx'文件的lineSeparator和columnSeparator为空
                 if (extName === 'txt') {
-                    this.file.fileType = '文本文件'
+                    this.file.fileType = 'txt'
                     this.file.lineSeparator = '回车换行符'
                     this.file.columnSeparator = '制表符'
+                    //设置了是否可操作的标识，txt文件是可以操作lineSeparator和columnSeparator属性的，所以给disabled属性赋false
                     this.file.disabled = false
                 } else if (extName === 'xls') {
-                    this.file.fileType = 'EXCEL数据表(97-2003)'
+                    this.file.fileType = 'xls'
                 } else if (extName === 'xlsx') {
-                    this.file.fileType = 'EXCEL数据表(2010)'
+                    this.file.fileType = 'xlsx'
                 }
+                console.log("this.fileList:", this.fileList)
+                //重置this.file文件，防止编辑失败时点击新增，页面出现编辑中查到的数据
                 this.file = this.$options.data().file
             },
             submitUpload() {
-                if (this.fileList.length === 0) {
+                //判断文件上传时是否选择了文件
+                if (this.tableData.length === 0) {
                     this.$notify.warning("请选择文件后上传！")
                     return
                 }
-                this.$refs.upload.submit();
+                this.uploadOk();
             },
-            uploadOk(file, fileList) {
+            uploadOk() {
                 let fd = new FormData();
+                //循环遍历this.fileList列表数组,将文件一一赋给FormData传到后台
                 for (let i = 0; i < this.fileList.length; i++) {
-                    fd.append("files", this.fileList[i].raw);
+                    //判断是否已经上传过了
+                    if (this.fileList[i].isUpload === false) {
+                        fd.append("files", this.fileList[i].raw)
+                        this.fileList[i].isUpload = true
+                    }
                 }
                 upload(fd).then(() => {
                     this.$notify({
@@ -809,10 +935,14 @@
             lineDelete(index, ipTable) {
                 switch (ipTable) {
                     case 'file':
+                        for (let i = 0; i < this.fileList.length; i++) {
+                            if (this.tableData[index].fileName === this.fileList[i].name) {
+                                this.fileList.splice(i, 1)
+
+                            }
+                        }
                         this.tableData.splice(index, 1)
-                        break
                 }
-                this.fileList.splice(index, 1)
             },
 
 
@@ -823,6 +953,7 @@
                 this.dialogStatus = 'create'
                 this.title = '创建申请'
                 this.fileType = ''
+                // this.getOrgTree();
                 // 清除校验
                 if (this.$refs.form) {
                     this.$nextTick(() => {
@@ -839,13 +970,16 @@
 
                 this.title = '编辑申请'
 
+                // this.getOrgTree();
+
                 this.form.applyUuid = applyUuid
                 // this.details_details();
                 getById(this.form.applyUuid).then(res => {
                     this.form = res.data
                     this.tableData = res.data.fileList
                     this.tableData.forEach((r) => {
-                        r.disabled = r.fileType !== "文本文件";
+                        r.isUpload = true
+                        r.disabled = r.fileType !== "txt";
                     })
                     //只有状态为草稿时才能实现对数据的编辑修改
                     if (this.form.status !== '草稿') {
@@ -1012,6 +1146,14 @@
 
                 this.$refs[form].validate((valid) => {
                     if (valid) {
+                        let isUpload = true
+                        //校验文件是否上传
+                        this.fileList.forEach((r) => {
+                            if (r.isUpload === false) {
+                                this.$notify.warning("所选文件" + r.name + "未上传")
+                                isUpload = false
+                            }
+                        })
                         if (this.title === '创建申请') {
                             let params = {
                                 loadDownApply: {
@@ -1022,28 +1164,31 @@
                                 },
                                 "tableData": JSON.stringify(this.tableData),
                             }
+                            //校验是否选择了文件
                             if (this.tableData.length === 0) {
                                 this.$notify.warning("请选择文件！")
                                 return
                             }
                             //save_data方法调用后台save接口实现新增功能
-                            save_data(params).then(res => {
-                                if (res.code === 0) {
-                                    this.$message({
-                                        message: '新增成功',
-                                        type: 'success',
-                                        showClose: true,
-                                    })
-                                    this.applyDialogVisible = false
-                                    this.getList()
-                                } else {
-                                    this.$message({
-                                        message: res.msg,
-                                        type: 'error',
-                                        showClose: true,
-                                    })
-                                }
-                            })
+                            if (isUpload) {
+                                save_data(params).then(res => {
+                                    if (res.code === 0) {
+                                        this.$message({
+                                            message: '新增成功',
+                                            type: 'success',
+                                            showClose: true,
+                                        })
+                                        this.applyDialogVisible = false
+                                        this.getList()
+                                    } else {
+                                        this.$message({
+                                            message: res.msg,
+                                            type: 'error',
+                                            showClose: true,
+                                        })
+                                    }
+                                })
+                            }
                         } else {
                             let params = {
                                 loadDownApply: {
@@ -1055,24 +1200,26 @@
                                 "tableData": JSON.stringify(this.tableData),
                             }
                             //update_data方法调用后台update接口实现编辑功能
-                            update_data(params).then(res => {
-                                if (res.code === 0) {
-                                    this.$message({
-                                        message: '编辑成功',
-                                        type: 'success',
-                                        showClose: true,
-                                    })
-                                    this.applyDialogVisible = false
-                                    this.dialogStatusValue = false
-                                    this.getList()
-                                } else {
-                                    this.$message({
-                                        message: res.msg,
-                                        type: 'error',
-                                        showClose: true,
-                                    })
-                                }
-                            })
+                            if (isUpload) {
+                                update_data(params).then(res => {
+                                    if (res.code === 0) {
+                                        this.$message({
+                                            message: '编辑成功',
+                                            type: 'success',
+                                            showClose: true,
+                                        })
+                                        this.applyDialogVisible = false
+                                        this.dialogStatusValue = false
+                                        this.getList()
+                                    } else {
+                                        this.$message({
+                                            message: res.msg,
+                                            type: 'error',
+                                            showClose: true,
+                                        })
+                                    }
+                                })
+                            }
                         }
                     } else {
                         this.$message({

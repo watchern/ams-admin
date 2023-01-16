@@ -99,7 +99,7 @@
 
     </div>
 
-    <el-skeleton style="width:100%;float: left;height: calc(100vh - 252px)"
+    <el-skeleton style="width:100%;float: left;height: calc(100vh - 270px);overflow: auto;"
                  animated
                  :loading="list_loading"
                  :count="4">
@@ -141,8 +141,7 @@
           </div>
         </div>
       </template>
-      <div class="list_table"
-           style="height: calc(100vh - 252px);overflow: auto;">
+      <div class="list_table">
         <el-table ref="multipleTable"
                   :data="list"
                   style="width: 100%"
@@ -221,18 +220,19 @@
           </el-table-column>
         </el-table>
       </div>
-      <div class="padding10_l">
-        <el-pagination @size-change="handleSizeChange"
-                       @current-change="handleCurrentChange"
-                       :page-size="list_data.size"
-                       background
-                       :current-page-sync="list_data.current"
-                       layout="total, sizes, prev, pager, next, jumper"
-                       :total="list_data.total"
-                       v-if="list_data.total"></el-pagination>
-      </div>
 
     </el-skeleton>
+    <div class="padding10_l fl _width">
+      <el-pagination @size-change="handleSizeChange"
+                     @current-change="handleCurrentChange"
+                     :page-size="list_data.size"
+                     background
+                     :current-page-sync="list_data.current"
+                     layout="total, sizes, prev, pager, next, jumper"
+                     :total="list_data.total"
+                     v-if="list_data.total"></el-pagination>
+    </div>
+
   </div>
 </template>
 
@@ -282,15 +282,6 @@ export default {
     };
   },
   created () {
-    console.log(this.query.pageNo);
-
-    // if (this.list && this.list.length == 0) {
-    //   this.list_loading = true;
-    // } else {
-    //   this.list_loading = false;
-
-    // }
-    // this.setLoading();
   },
   watch: {
     TagsAll () {
@@ -317,10 +308,6 @@ export default {
     this.TagsAll = this.itemsArr;
   },
   methods: {
-    // setLoading () {
-    //   this.list_loading = true
-    //   setTimeout(() => (this.list_loading = false), 2000)
-    // },
     // 删除标签
     removeTag (index, item) {
 
@@ -354,9 +341,6 @@ export default {
     down_template_dictionary () {
       // if (this.check_list.length !== 0) {
       this.$emit("down_template_dictionary", this.check_list)
-      // } else {
-      //   this.$message({ type: "warning", message: "请选择一条数据进行下载" });
-      // }
     },
     // 汉化模版下载
     down_template_cn () {
@@ -370,9 +354,6 @@ export default {
     down_template_table () {
       //  if(this.check_list.length !== 0) {
       this.$emit("down_template_table", this.check_list)
-      // } else {
-      //   this.$message({ type: "warning", message: "请选择一条数据进行下载" });
-      // }
     },
     // 导入数据字典
     Importdata_dictionary () {
@@ -888,10 +869,10 @@ export default {
 }
 
 .list_table >>> .el-table {
-  height: calc(100vh - 255px);
+  /* height: calc(100vh - 255px); */
   /* background: #fff; */
   /* border: 1px solid; */
-  overflow: auto;
+  /* overflow: auto; */
 }
 
 .list_table >>> .el-table__empty-block {

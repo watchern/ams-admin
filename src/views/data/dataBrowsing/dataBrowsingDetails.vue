@@ -1,7 +1,7 @@
 <template>
   <div class="preview_conter padding10_l">
     <el-skeleton
-      style="width: 100%; height: calc(100vh - 550px)"
+      style="width: 100%; height: calc(100vh - 480px)"
       animated
       :loading="list_loading"
       :count="4"
@@ -45,7 +45,7 @@
       为您找到相关结果约{{ list_data.total }}个
       <div
         class="list_table"
-        style="height: calc(100vh - 550px); overflow: auto"
+        style="height: calc(100vh - 480px); overflow: auto"
       >
         <el-table
           ref="multipleTable"

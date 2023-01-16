@@ -48,25 +48,40 @@
          class="conter_vh">
       <!-- 系统 主题 分层  目录-->
       <div class="tree-containerall">
-        <MyElTree ref="tree2"
-                  :props="props"
-                  :data="tree_list"
-                  :filter-node-method="filterNode"
-                  :default-expanded-keys="['ROOT']"
-                  class="filter-tree"
-                  highlight-current="true"
-                  node-key="id"
-                  @node-click="nodeClick">
-          <span slot-scope="{ node, data }"
-                class="custom-tree-node">
-            <i v-if="data.id === 'ROOT'"
-               :class="data.icon" />
-            <i v-if="
-              data.type === 'folder' ||
-              data.type === 'system' ||
-              data.type === 'layered' ||
-              data.type === 'theme'
-            ">
+        <MyElTree
+          ref="tree2"
+          :props="props"
+          :data="tree_list"
+          :filter-node-method="filterNode"
+          :default-expanded-keys="defaultExpandedKeys"
+          class="filter-tree"
+          highlight-current="true"
+          node-key="id"
+          :load="loadNode"
+          lazy
+          @node-click="nodeClick"
+          @node-contextmenu="nodeContextmenu"
+          @node-drag-start="handleDragStart"
+          @node-drag-enter="handleDragEnter"
+          @node-drag-leave="handleDragLeave"
+          @node-drag-over="handleDragOver"
+          @node-drag-end="handleDragEnd"
+          @node-drop="handleDrop"
+          :draggable="draggable"
+          :show-checkbox="showCheckbox"
+          :allow-drop="returnFalse"
+          @check="setCheckedNodes"
+        >
+          <span slot-scope="{ node, data }" class="custom-tree-node">
+            <i v-if="data.id === 'ROOT'" :class="data.icon" />
+            <i
+              v-if="
+                data.type === 'folder' ||
+                data.type === 'system' ||
+                data.type === 'layered' ||
+                data.type === 'theme'
+              "
+            >
               <span class="agreeicon0"></span>
             </i>
             <i v-if="data.type === 'table'">
@@ -117,6 +132,13 @@ import {
   getLayeredTree, //分层
   delTable,
 } from "@/api/data/table-info";
+import {
+  getPersonSpaceTree, //个人空间
+  showRMenu, //节点右键事件
+  getTableField, //加载表字段
+  addDragEvent, //树节点拖拽方法
+} from "@/api/analysis/sqleditor/sqleditor";
+import { init } from "leancloud-storage";
 export default {
   components: { MyElTree },
   props: {
@@ -156,12 +178,20 @@ export default {
         tableThemeId: "", //主题
         tableLayeredId: "", //分层
         folderUuid: "", //目录ID
-        tbName: '',// 批量注册后 点击左侧树 一个会显示全部的问题
+        tbName: "", // 批量注册后 点击左侧树 一个会显示全部的问题
       },
       // tabclick: false,
       treeLoading: false,
       tableData: [],
       chooseTables: [],
+      loadLeftTreeType: "", //因为很多模块需要用到这棵树，用此类型来区分不同模块; 1-SQL编辑器 2-数据授权管理-资源绑定 左侧树
+      isShowLoadLeftTreeBtn: true, //是否展示树节点操作按钮
+      isShowPersonSpaceTab: false, //是否展示个人空间页签
+      draggable: false, //是否开启树节点拖拽
+      showCheckbox: false, //是否开启树多选框
+      elTabsName: "", //选中的页签名称
+      treeNodeSelectedObj: [], //树节点勾选对象
+      defaultExpandedKeys: ["ROOT"], //默认展开节点的数组
     };
   },
   computed: {},
@@ -170,18 +200,136 @@ export default {
       this.$refs.tree2.filter(val);
     },
   },
-  mounted () { },
-  created () {
+  mounted() {},
+  created() {
     this.query.businessSystemId = "";
     // this.show_details = false; //显示列表
     this.post_getBusinessSystemTree(); //系统
-    this.$emit("queryList", this.query, this.show_details = false)
-
+    this.$emit("queryList", this.query, (this.show_details = false));
   },
   methods: {
+    //树节点选择
+    setCheckedNodes(node, isChecked) {
+      var _this = this;
+      var strLevel = this.activeName + this.query.dataSource;
+      var isRepeat = true;
+      var obj = {};
+      obj.strLevel = strLevel;
+      // 目前半选中的节点的 key 所组成的数组
+      const allcheckedNodes = this.$refs.tree2.getHalfCheckedKeys();
+      if (allcheckedNodes.length > 0) {
+        allcheckedNodes.forEach(function (item, k) {
+          var fileObj = {};
+          fileObj.type = "noNeedCheck";
+          fileObj.pid = 0;
+          fileObj.children = [];
+          for (var i = 0; i < _this.tree_list.length; i++) {
+            if (item === _this.tree_list[i].id) {
+              fileObj.label = _this.tree_list[i].label;
+              fileObj.id = _this.tree_list[i].id;
+              break;
+            }
+          }
+          isChecked.checkedNodes.push(fileObj);
+        });
+      }
+      obj.data = isChecked.checkedNodes;
+
+      if (this.treeNodeSelectedObj.length > 0) {
+        for (var i = 0; i < this.treeNodeSelectedObj.length; i++) {
+          if (this.treeNodeSelectedObj[i].strLevel === strLevel) {
+            this.treeNodeSelectedObj[i].data = isChecked.checkedNodes;
+            isRepeat = false;
+            break;
+          }
+        }
+        if (isRepeat) {
+          this.treeNodeSelectedObj.push(obj);
+        }
+      } else {
+        this.treeNodeSelectedObj.push(obj);
+      }
+      console.log(this.treeNodeSelectedObj)
+    },
+
+    // 树内不可拖拽
+    returnFalse() {
+      return false;
+    },
+    //节点开始拖拽时触发的事件
+    handleDragStart(node, ev) {
+      // console.log('drag start', node);
+    },
+    //拖拽进入其他节点时触发的事件
+    handleDragEnter(draggingNode, dropNode, ev) {
+      // console.log('tree drag enter: ', dropNode.label);
+    },
+    //拖拽离开某个节点时触发的事件
+    handleDragLeave(draggingNode, dropNode, ev) {
+      // console.log('tree drag leave: ', dropNode.label);
+    },
+    //在拖拽节点时触发的事件（类似浏览器的 mouseover 事件）
+    handleDragOver(draggingNode, dropNode, ev) {
+      // console.log('tree drag over: ', dropNode.label);
+    },
+    //拖拽结束时（可能未成功）触发的事件
+    handleDragEnd(draggingNode, dropNode, dropType, ev) {
+      console.log(draggingNode);
+      // 只有表和字段能拖拽
+      if (
+        draggingNode.data.type === "table" ||
+        draggingNode.data.type === "table"
+      ) {
+        var dragNodeName = draggingNode.data.label;
+        addDragEvent(dragNodeName);
+      }
+    },
+    // 拖拽成功完成时
+    handleDrop(draggingNode, dropNode, dropType, ev) {
+      // console.log(draggingNode, dropNode, dropType, ev);
+    },
+    // 懒加载表字段
+    async loadNode(node, resolve) {
+      if (node.level === 0) {
+        return resolve(node.data);
+      }
+      if (node.level === 1) {
+        return resolve(node.data.children);
+      }
+      if (node.level == 2) {
+        if (!this.isShowPersonSpaceTab) {
+          //去掉表加载字段
+          resolve([]);
+        } else {
+          var nodeList = getTableField(node.data.id, this.query.dataSource);
+          Promise.all([nodeList]).then((res) => {
+            resolve(res[0]);
+          });
+        }
+      }
+    },
+    // 区分不同模块
+    loadLeftTreeTypeFun(data) {
+      if (data) {
+        this.loadLeftTreeType = data;
+        //SQL编辑器
+        if (this.loadLeftTreeType == "1") {
+          this.isShowLoadLeftTreeBtn = false;
+          this.isShowPersonSpaceTab = true;
+          this.draggable = true;
+        }
+        //数据授权管理-资源绑定 左侧树
+        if (this.loadLeftTreeType == "2") {
+          this.isShowLoadLeftTreeBtn = false;
+          this.draggable = false;
+          this.showCheckbox = true;
+        }
+      }
+    },
     // 选择数据源
     selectdata (val) {
       this.query.dataSource = val;
+      this.query.businessSystemId = ''
       if (this.activeName == "0") {
         // 系统
         this.post_getBusinessSystemTree(); //系统
@@ -207,10 +355,15 @@ export default {
     post_getBusinessSystemTree () {
       this.loading = true;
       this.tabclick = true;
+      this.elTabsName = "系统";
       getBusinessSystemTree(true, this.query.dataSource, true).then((resp) => {
         this.tree_list = resp.data;
         this.loading = false;
         this.tabclick = false;
+        //加载勾选数据
+        this.$nextTick(() => {
+          this.inverse();
+        });
       });
     },
     // 主题
@@ -221,6 +374,10 @@ export default {
         this.tree_list = resp.data;
         this.loading = false;
         this.tabclick = false;
+        //加载勾选数据
+        this.$nextTick(() => {
+          this.inverse();
+        });
       });
     },
     // 分层
@@ -231,6 +388,10 @@ export default {
         this.tree_list = resp.data;
         this.loading = false;
         this.tabclick = false;
+        //加载勾选数据
+        this.$nextTick(() => {
+          this.inverse();
+        });
       });
     },
     // 点击注册资源的 数据库列表
@@ -247,8 +408,42 @@ export default {
     //   });
     // },
 
-
-    handleClick (tab, event) {
+    // 反选
+    inverse() {
+      var strLevel = this.activeName + this.query.dataSource;
+      if (this.treeNodeSelectedObj.length > 0) {
+        for (var i = 0; i < this.treeNodeSelectedObj.length; i++) {
+          if (this.treeNodeSelectedObj[i].strLevel === strLevel) {
+            this.batchSelect(this.treeNodeSelectedObj[i].data);
+            break;
+          }
+        }
+      }
+    },
+    // 反选时处理方法
+    batchSelect(seletedDatas) {
+      if (typeof seletedDatas != "undefined") {
+        var checkedKeys = []
+        seletedDatas.forEach((node) => {
+          if (node.type === "table") {
+            //设置默认展开的节点 如果不展开节点 默认选中不生效
+            for (var i = 0; i < this.defaultExpandedKeys.length; i++) {
+              if (this.defaultExpandedKeys[i] != node.pid) {
+                this.defaultExpandedKeys.push(node.pid);
+                break;
+              }
+            }
+          }
+          if (node.id != null && node.type != "noNeedCheck") {
+            // this.$refs.tree2.setChecked(node.id, true);
+            checkedKeys.push(node.id);
+          }
+        });
+        this.$refs.tree2.setCheckedKeys(checkedKeys);
+      }
+    },
+    handleClick(tab, event) {
+      this.elTabsName = tab.label;
       if (tab.index == "0") {
         // this.tabclick = true
         // setTimeout(() => {
@@ -293,11 +488,8 @@ export default {
         this.getReturnNode(node.parent, _array, value);
       }
     },
-
-
-    nodeClick (data, node, tree) {
-
-      this.tableMetaUuid = '';
+    nodeClick(data, node, tree) {
+      this.tableMetaUuid = "";
       // 显示列表
       if (node.level == 1) {
         this.show_details = false; //显示列表
@@ -306,28 +498,28 @@ export default {
           this.query.tableThemeId = "";
           this.query.tableLayeredId = "";
           this.query.folderUuid = "";
-          this.query.tbName = ''
+          this.query.tbName = "";
           this.$emit("queryList", this.query, this.show_details);
         } else if (data.type == "theme") {
           this.query.businessSystemId = "";
           this.query.tableThemeId = node.data.id;
           this.query.tableLayeredId = "";
           this.query.folderUuid = "";
-          this.query.tbName = ''
+          this.query.tbName = "";
           this.$emit("queryList", this.query, this.show_details);
         } else if (data.type == "layered") {
           this.query.businessSystemId = "";
           this.query.tableThemeId = "";
           this.query.tableLayeredId = node.data.id;
           this.query.folderUuid = "";
-          this.query.tbName = ''
+          this.query.tbName = "";
           this.$emit("queryList", this.query, this.show_details);
         } else if (data.type == "table") {
-          this.query.businessSystemId = '0';
-          this.query.tableThemeId = '0';
-          this.query.tableLayeredId = '0';
-          this.query.folderUuid = "";//目录id
-          this.query.tbName = node.data.label
+          this.query.businessSystemId = "0";
+          this.query.tableThemeId = "0";
+          this.query.tableLayeredId = "0";
+          this.query.folderUuid = ""; //目录id
+          this.query.tbName = node.data.label;
           this.$emit("queryList", this.query, this.show_details);
         }
       } else {
@@ -361,7 +553,7 @@ export default {
         this.is_next = false;
       }
     },
-    handleCreateFolder (node, data) {
+    handleCreateFolder(node, data) {
       this.resetFolderForm();
       this.parentNode = node;
       this.dialogStatus = "create";
@@ -499,7 +691,7 @@ export default {
         });
       });
     },
-  }
+  },
 };
 </script>
 
