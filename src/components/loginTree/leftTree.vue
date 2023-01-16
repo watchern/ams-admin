@@ -151,7 +151,7 @@ export default {
       query: {
         dataSource: "Postgre", //筛选条件
         pageNo: 1,
-        pageSize: 1,
+        pageSize: 10,
         businessSystemId: "", //id主键
         tableThemeId: "", //主题
         tableLayeredId: "", //分层
