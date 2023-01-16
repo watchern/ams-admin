@@ -567,10 +567,14 @@
                                align="center"
                                label="表名称">
               </el-table-column>
-              <el-table-column prop="name"
+              <el-table-column prop="tableRelationQuery"
                                show-overflow-tooltip
                                align="center"
                                label="表类型">
+                <template slot-scope="scope">
+                  <div v-if="scope.row.tableRelationQuery">{{ scope.row.tableRelationQuery.tableThemeName }}</div>
+                </template>
+
               </el-table-column>
             </el-table>
           </div>
@@ -1177,6 +1181,7 @@ export default {
     // 认权管理
     recognitionChange (data) {
       this.Recognition_check_list = data;
+
       this.Recognition.personName_str = "";
       this.visible_Recognition = true;
 
@@ -1716,7 +1721,6 @@ export default {
               this.chooseTables.push(tableForm);
             }
             // 
-            // return false
             batchSaveTable_save(this.chooseTables).then((resp) => {
               if (resp.code == 0) {
                 this.$message({
@@ -1726,12 +1730,14 @@ export default {
                 // this.$message.success("新增成功");
                 this.btnLoading = false; //保存loadnin
                 this.chooseTables = []; //传输的数据
-                this.$refs.tree_left.post_getBusinessSystemTree()
-                // this.post_getBusinessSystemTree(); //系统
-                // this.post_getThemeTree(); //主题
-                // this.post_getLayeredTree(); //分层
-                // this.post_getDataTreeNode();//目录
 
+                if (this.$refs.tree_left.activeName == '0') {
+                  this.$refs.tree_left.post_getBusinessSystemTree() //系统
+                } else if (this.$refs.tree_left.activeName == '1') {
+                  this.$refs.tree_left.post_getThemeTree(); //分层
+                } else {
+                  this.$refs.tree_left.post_getDataTreeNode(); //目录
+                }
                 this.query_list(this.$refs.tree_left.query, false);//刷新列表
                 this.$nextTick(() => {
                   this.$refs.form.resetFields(); //清空添加的值

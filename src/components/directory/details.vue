@@ -759,11 +759,11 @@ export default {
       // ],
       data_type: [
         {
-          value: 1,
+          value: "1",
           label: "表",
         },
         {
-          value: 2,
+          value: "2",
           label: "视图",
         },
       ],
@@ -988,11 +988,13 @@ export default {
         this.form.fileName = resp.data.tableRelationQuery.fileName; //文件名
         this.form.tableCode = tableCode; //资源编码
         //资源类型
-        if (resp.data.tableRelationQuery.tableType == "1") {
-          this.form.tableType = "表";
-        } else {
-          this.form.tableType = "视图";
-        }
+
+        this.form.tableType = resp.data.tableRelationQuery.tableType
+        // if (resp.data.tableRelationQuery.tableType == "1") {
+        //   this.form.tableType = "表";
+        // } else {
+        //   this.form.tableType = "视图";
+        // }
         this.form.tableRelationQueryUuid =
           resp.data.tableRelationQuery.tableRelationQueryUuid;
         this.form.tableThemeId = resp.data.tableRelationQuery.tableThemeId; //资源主题

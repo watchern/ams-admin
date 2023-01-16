@@ -11,8 +11,7 @@
                  :filter-node-method="filterNode"
                  ref="tree"></el-tree>
       </el-aside>
-      <div style="flex: 1;"
-           class="padding10 child_table">
+      <div class="padding10 child_table">
         <el-table v-loading="listLoading"
                   ref="multipleTable"
                   style="width: 100%;"
@@ -158,4 +157,18 @@ export default {
 </script>
 <style scoped>
 @import url("../../assets/css/common.css");
+.dlag_conter >>> .tree-side {
+  height: 100%;
+}
+.dlag_conter >>> .el-tree {
+  height: 330px;
+}
+.child_table {
+  width: calc(100% - 300px);
+  box-sizing: border-box;
+}
+.child_table >>> .el-table {
+  height: 350px;
+  overflow: auto;
+}
 </style>
