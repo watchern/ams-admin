@@ -47,25 +47,25 @@
                        show-overflow-tooltip />
       <el-table-column label="创建时间"
                        align="center"
-                       width="300px"
+                       min-width="150px"
                        prop="createTime"
                        show-overflow-tooltip />
       <el-table-column label="授权方式"
                        align="center"
                        prop="authenType"
-                       width="350px"
+                       min-width="150px"
                        :formatter="formatAuthenType" />
       <!-- <el-table-column label="数据筛选" style="width: 50px" align="center">
         <template slot-scope="scope">
           <el-button type="primary" class="oper-btn preview" size="mini" @click="openFilterPanel(scope.row.dataRoleUuid)" />
         </template>
       </el-table-column> -->
-      <el-table-column label="数据有效期"
+      <!-- <el-table-column label="数据有效期"
                        align="center"
                        prop="timeDuring"
                        :formatter="formatDuring"
                        width="400px"
-                       show-overflow-tooltip />
+                       show-overflow-tooltip /> -->
     </el-table>
     <pagination v-show="total>0"
                 :total="total"
@@ -98,7 +98,7 @@
                            :value="item.codeValue" />
               </el-select>
             </el-form-item>
-            <el-form-item label="开始时间"
+            <!-- <el-form-item label="开始时间"
                           prop="startTime">
               <el-date-picker v-model="temp.startTime"
                               format="yyyy-MM-dd HH:mm:ss"
@@ -121,7 +121,7 @@
                               :disabled="dialogStatus=='view'"
                               type="datetime"
                               :placeholder="dialogStatus=='view'?'':'请输入生效结束时间'" />
-            </el-form-item>
+            </el-form-item> -->
           </el-form>
         </template>
 
