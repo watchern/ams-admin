@@ -1154,11 +1154,11 @@ export default {
       var personUuids = [];
       var personNames = [];
       var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
+        this.form.personName_str = []; //清空
       for (var i = 0; i < selectedNode.length; i++) {
         personUuids.push(selectedNode[i].personuuid);
         personNames.push(selectedNode[i].cnname);
 
-        this.form.personName_str = []; //清空
         let objs = {
           personUuid: selectedNode[i].personuuid,
           personName: selectedNode[i].cnname,
