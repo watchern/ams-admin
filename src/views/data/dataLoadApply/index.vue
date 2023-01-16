@@ -311,9 +311,22 @@
                 <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
                     <el-col :span="6">
                         <el-form-item>
-                            <DataTree>
-
-                            </DataTree>
+                            <!--                            <DataTree ref="dataTree"-->
+                            <!--                                      v-loading="treeLoading"-->
+                            <!--                                      :props="props"-->
+                            <!--                                      :highlight-current="true"-->
+                            <!--                                      :data="orgTreeData"-->
+                            <!--                                      node-key="id"-->
+                            <!--                                      :filter-node-method="filterNode"-->
+                            <!--                                      show-checkbox-->
+                            <!--                                      :lazy="true"-->
+                            <!--                                      :load="loadNode"-->
+                            <!--                                      @node-expand="handleNodeClick"-->
+                            <!--                            >-->
+                            <!--                                <span slot-scope="{ node, data }" class="custom-tree-node">-->
+                            <!--                                    <span>{{ node.label }}</span>-->
+                            <!--                                </span>-->
+                            <!--                            </DataTree>-->
                         </el-form-item>
                     </el-col>
                     <el-col :span="2" style="width: 45px; padding-top: 60px">
@@ -323,20 +336,22 @@
                                         type="primary"
                                         icon="el-icon-arrow-right"
                                         circle
-                                        @click="addApply"
-                                />
-                            </p>
-                            <p class="transfer-center-item">
-                                <el-button
-                                        type="primary"
-                                        icon="el-icon-arrow-left"
-                                        circle
-                                        @click="delApply"
+                                        @click="addGrop"
+                                        title="选中（或勾选）左侧组织树节点并点击此按钮可以向表格中添加下线文件"
                                 />
                             </p>
                         </div>
                     </el-col>
                     <el-col :span="16">
+                        <el-col align="right" style="padding-top: 4px; padding-right: 50px">
+                            <!--          <el-button type="primary" class="oper-btn edit-period btn-width-max" :disabled="selections.length !== 1" @click="setExpireDate" />-->
+                            <el-button
+                                    type="primary"
+                                    class="oper-btn delete"
+                                    :disabled="selections.length === 0"
+                                    @click="removeGrp"
+                            />
+                        </el-col>
                         <el-table key="colMetaUuid"
                                   v-loading="listLoading"
                                   border
@@ -344,7 +359,7 @@
                                   height="316px"
                                   highlight-current-row
                                   style="width: 100%;"
-                                  @selection-change="handleSelectionChange">
+                                  @selection-change="handleSelectionTreeChange">
                             <!--                            <el-table-column width="40px" type="selection"/>-->
                             <el-table-column type="selection" width="55px"/>
                             <el-table-column label="序号" width="60px" align="center" prop="applyId"/>
@@ -513,6 +528,15 @@
                 //存储分割文件名的数组
                 splitName: [],
                 isUpload: false,
+                //数据下线左侧树的选择
+                selections: [],
+                treeLoading: false,
+                orgTreeData: [],
+                props: {
+                    label: "name",
+                    isLeaf: "leaf",
+                },
+
                 file: {
                     fileName: '',
                     fileType: '',
@@ -758,6 +782,91 @@
             this.getList();//刷新列表
         },
         methods: {
+            //下线方法
+            // addGrp() {
+            //     var nodes = this.$refs["dataTree"][0].getCheckedNodes();
+            //     if (nodes.length === 0) {
+            //         nodes.push(this.$refs["dataTree"][0].getCurrentNode());
+            //     }
+            //     nodes.forEach((node) => {
+            //         if (
+            //             this.tableData.filter((data) => {
+            //                 return data.unitUuid === node.id;
+            //             }).length === 0 &&
+            //             this.tableData.filter((data) => {
+            //                 return data.grpInstUuid === node.id;
+            //             }).length === 0
+            //         ) {
+            //             this.tableData.push({
+            //                 // dataRoleUuid: this.roleUuid,
+            //                 // sceneGrpUuid: this.grpUuid,
+            //                 // userName: node.name,
+            //                 // userType: node.type,
+            //                 // grpInstUuid: node.type == 1 ? node.id : "null",
+            //                 // unitUuid: node.type == 2 ? node.id : "null",
+            //                 // valid: 1,
+            //                 // startTime: null,
+            //                 // endTime: null,
+            //             });
+            //         }
+            //     });
+            // },
+            // removeGrp() {
+            //     var map = {};
+            //     this.selections.forEach((sel) => {
+            //         map[sel.userType + sel.grpInstUuid + sel.unitUuid] = sel;
+            //     });
+            //     for (var index = 0; index < this.tableData.length;) {
+            //         var value = this.tableData[index];
+            //         if (map[value.userType + value.grpInstUuid + value.unitUuid]) {
+            //             this.tableData.splice(index, 1);
+            //         } else {
+            //             index++;
+            //         }
+            //     }
+            // },
+            // handleSelectionTreeChange(val) {
+            //     console.log(val);
+            //     this.selections = val;
+            // },
+            // // 获取个人数据与全行数据列表
+            // getOrgTree() {
+            // //     this.treeLoading = true;
+            // //     方法("").then((res) => {
+            // //         this.orgTreeData = res.data;
+            // //         this.treeLoading = false;
+            // //     });
+            // },
+            // filterNode(value, data) {
+            //     if (!value) return true;
+            //     return data.label.indexOf(value) !== -1;
+            // },
+            // handleNodeClick(data, obj, node) {
+            //     this.getLoadTree(data, obj, node);
+            // },
+            // //展开树形结构进行懒加载的方法 data该节点所对应的对象、obj节点对应的 Node、node节点组件本身
+            // getLoadTree(datas, obj, node) {
+            //     this.orglistLoading = true;
+            //     queryOrgTree(datas.id).then((res) => {
+            //         this.loadTree = res.data;
+            //         this.orglistLoading = false;
+            //     });
+            // },
+            // loadNode(node, resolve) {
+            //     if (node.level === 0) {
+            //         return resolve(this.orgTreeData);
+            //     }
+            //     if (node.data.children && node.data.children != "") {
+            //         return resolve(node.data.children);
+            //     } else {
+            //         setTimeout(() => {
+            //             resolve(this.loadTree);
+            //         }, 500);
+            //     }
+            // },
+
+
+            //装载方法
             select(file, fileList) {
                 //默认给disabled属性赋true，当判断文件类型为txt时，改变disabled属性值为false
                 this.file.disabled = true
@@ -790,6 +899,7 @@
                 } else if (extName === 'xlsx') {
                     this.file.fileType = 'xlsx'
                 }
+                console.log("this.fileList:", this.fileList)
                 //重置this.file文件，防止编辑失败时点击新增，页面出现编辑中查到的数据
                 this.file = this.$options.data().file
             },
@@ -825,10 +935,14 @@
             lineDelete(index, ipTable) {
                 switch (ipTable) {
                     case 'file':
+                        for (let i = 0; i < this.fileList.length; i++) {
+                            if (this.tableData[index].fileName === this.fileList[i].name) {
+                                this.fileList.splice(i, 1)
+
+                            }
+                        }
                         this.tableData.splice(index, 1)
-                        break
                 }
-                this.fileList.splice(index, 1)
             },
 
 
@@ -839,6 +953,7 @@
                 this.dialogStatus = 'create'
                 this.title = '创建申请'
                 this.fileType = ''
+                // this.getOrgTree();
                 // 清除校验
                 if (this.$refs.form) {
                     this.$nextTick(() => {
@@ -854,6 +969,8 @@
                 });
 
                 this.title = '编辑申请'
+
+                // this.getOrgTree();
 
                 this.form.applyUuid = applyUuid
                 // this.details_details();
