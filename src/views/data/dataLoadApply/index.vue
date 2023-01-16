@@ -938,10 +938,10 @@
                         for (let i = 0; i < this.fileList.length; i++) {
                             if (this.tableData[index].fileName === this.fileList[i].name) {
                                 this.fileList.splice(i, 1)
+
                             }
                         }
                         this.tableData.splice(index, 1)
-                        break
                 }
             },
 
