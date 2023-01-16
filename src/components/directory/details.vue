@@ -440,7 +440,7 @@
             <template slot-scope="scope">
               {{
                 scope.row.sqlGenJoinType == 1
-                  ? "left joi"
+                  ? "left join"
                   : scope.row.sqlGenJoinType == 2
                   ? "right join"
                   : scope.row.sqlGenJoinType == 3
