@@ -1665,6 +1665,7 @@ export default {
     // 下一步的关闭
     close_diag (form) {
       this.dialogVisible_information = false;
+      this.registTableFlag = false; //关闭上一步
       this.chooseTables = []; //传输的数据
 
       this.$nextTick(() => {
@@ -1672,7 +1673,7 @@ export default {
         this.$refs["form"].clearValidate();
         // this.clear_details_form();
       });
-
+      this.clear();
     },
     // 下一步的保存
     save (form) {
