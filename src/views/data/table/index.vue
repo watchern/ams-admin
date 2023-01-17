@@ -958,7 +958,7 @@ export default {
     // this.post_getLayeredTree();//分层
     // this.post_getDataTreeNode();//目录
 
-    // 
+    //
     // this.$refs.tree_left.post_getBusinessSystemTree()
     // this.query.businessSystemId = "";
     // this.query_list(data);
@@ -1430,6 +1430,8 @@ export default {
       this.form.check_list.pid = "";
       this.form.check_list.id = "";
       this.form.check_list.label = "";
+      this.form.dataDate = "";
+      this.form.personName_str = "";
       // this.personUuid = [];
       // this.personName = [];
     },
@@ -1720,7 +1722,7 @@ export default {
               };
               this.chooseTables.push(tableForm);
             }
-            // 
+            //
             batchSaveTable_save(this.chooseTables).then((resp) => {
               if (resp.code == 0) {
                 this.$message({
