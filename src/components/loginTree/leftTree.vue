@@ -97,12 +97,14 @@
               <el-button v-if="data.id === 'ROOT' || (data.extMap && data.extMap.folder_type === 'maintained')"
                          type="text"
                          size="mini"
+                         v-show="isShowLoadLeftTreeBtn"
                          @click.stop="() => handleCreateFolder(node, data)">
                 <i class="el-icon-circle-plus" />
               </el-button>
               <el-button v-if="data.extMap && data.extMap.folder_type === 'maintained'"
                          type="text"
                          size="mini"
+                         v-show="isShowLoadLeftTreeBtn"
                          @click.stop="() => handleUpdateFolder(node, data)">
                 <i class="el-icon-edit" />
               </el-button>
@@ -110,6 +112,7 @@
                          data.type === 'table' || data.type === 'view'"
                          type="text"
                          size="mini"
+                         v-show="isShowLoadLeftTreeBtn"
                          @click.stop="() => handleRemove(node, data)">
                 <i class="el-icon-delete" />
               </el-button>
@@ -249,7 +252,6 @@ export default {
       } else {
         this.treeNodeSelectedObj.push(obj);
       }
-      console.log(this.treeNodeSelectedObj)
     },
 
     // 树内不可拖拽
@@ -530,6 +532,51 @@ export default {
         this.$emit("details", this.tableMetaUuid, this.show_details, this.isDisable_input);
       }
     },
+    //鼠标右键事件
+    nodeContextmenu(event, data, node, e) {
+      var menuId = "";
+      var numm = $(document).height() - event.clientY;
+      if (
+        data.type === "table" ||
+        data.type === "view" ||
+        data.type === "datasource"
+      ) {
+        menuId = "tableMenu";
+        // history.scrollRestoration = 'manual'  不知道干什么
+        // 判断是不是导入数据节点、和分享节点，右键可便捷表结构
+        if (data.pid === "importDataTable") {
+          menuId = "importTableMenu";
+        }
+      } else {
+        // 外部导入数据节点加导入功能
+        if (data.id === "importDataTable") {
+          menuId = "importDataMenu";
+        }
+
+        if (
+          data.id === "bussDataRoot" ||
+          data.id === "bussRootNode" ||
+          data.id === "my_space" ||
+          data.id === "bussRootNode_dev" ||
+          data.id === "my_space_dev" ||
+          data.id === "other_space_dev"
+        ) {
+          menuId = "rootMenu";
+        }
+      }
+      if (menuId !== "") {
+        showRMenu(
+          "sqlEditorLeftTree",
+          "dataTree",
+          menuId,
+          event.clientX,
+          event.clientY,
+          data
+        );
+      } else {
+        return false;
+      }
+    },
     // 第一步选择的数据库
     nodeClick_table (data, node, tree) {
       //获取所有选中的节点 start
@@ -770,5 +817,49 @@ export default {
 .dataSource >>> .el-form-item {
   display: flex;
   width: 100%;
+}
+.agreeicon0 {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  margin-right: 2px;
+  margin-top: 0;
+  background-size: 100%;
+  background-image: url("../../assets/img/table_0.png");
+  vertical-align: top;
+  *vertical-align: middle;
+}
+.agreeicon1 {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  margin-right: 2px;
+  margin-top: 0;
+  background-size: 100%;
+  background-image: url("../../assets/img/table_1.png");
+  vertical-align: top;
+  *vertical-align: middle;
+}
+.agreeicon2 {
+  display: inline-block;
+  height: 14px;
+  width: 14px;
+  margin-right: 2px;
+  margin-top: 0;
+  background-size: 100%;
+  background-image: url("../../assets/img/table_2.png");
+  vertical-align: top;
+  *vertical-align: middle;
+}
+.agreeicon4 {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  margin-right: 2px;
+  margin-top: 0;
+  background-size: 100%;
+  background-image: url("../../styles/icons/view.png");
+  vertical-align: top;
+  *vertical-align: middle;
 }
 </style>

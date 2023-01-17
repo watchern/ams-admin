@@ -316,6 +316,18 @@ export function saveRoleTable (roleUuid, rfolders, rtables, rcols) {
   })
 }
 
+export function saveRoleTable2 (roleUuid, treeNodeSelectedObj) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller3}/save2`,
+    method: 'post',
+    data: {
+      roleUuid: roleUuid,
+      treeNodeSelectedObj: treeNodeSelectedObj
+    }
+  })
+}
+
 export function getAccessType () {
   return request({
     baseURL: baseURL,

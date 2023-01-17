@@ -104,6 +104,7 @@ import {
   getResByRole,
   getRoleCols,
   saveRoleTable,
+  saveRoleTable2,
   getAccessType,
 } from "@/api/data/table-info";
 import { commonNotify } from "@/utils";
@@ -146,7 +147,9 @@ export default {
       writeNode: [], // 拥有写权限的数据
       //-----ym修改  需要用到的参数
       roleUuid: this.$route.params.roleUuid,//数据授权主键 
-      tableCellUUID:""//选中单元格的主键
+      tableCellUUID:"",//选中单元格的主键
+      treeNodeSelectedObj:"",//选中的树节点-需要保存的数据
+      tableColCheckedMap:{},//临时勾选的表字段，用于反选
     };
   },
   computed: {},
@@ -159,6 +162,7 @@ export default {
     },
   },
   created() {
+     this.tableColCheckedMap = new Map()
     //初始左侧数据表树 添加复选框
     // this.$refs.tree_left.loadLeftTreeTypeFun("2");
 
@@ -391,6 +395,8 @@ export default {
     },
     // 获取数据并赋权
     addRoleCheck() {
+      this.treeNodeSelectedObj = []
+      this.treeNodeSelectedObj = this.$refs.tree_left.treeNodeSelectedObj
       this.$refs.tree_centre.loadLeftTreeTypeFun(this.$refs.tree_left.treeNodeSelectedObj)
     },
     clearWriteNode() {
@@ -555,29 +561,45 @@ export default {
     },
     /* 展示表字段 */
     onclick2(node) {
-      console.log(node)
+      var _this = this
       if (node.type === "table") {
         this.listLoading = true;
+        if(this.currentData!=null){
+          var tableType = this.currentData.strLevelType +'-'+ this.currentData.id
+          var cols = this.currentData.cols
+          var selectedCols = []
+          cols.forEach(function(item,k){
+            if(item.selected){
+              selectedCols.push(item.colMetaUuid)
+            }
+          })
+          this.tableColCheckedMap.set(tableType,selectedCols)
+        }
         getRoleCols(this.roleUuid, node.id).then((resp) => {
           this.listLoading = false;
           node.cols = resp.data;
           this.currentData = node;
           this.currentData.cols.forEach((d) => {
-            if (d.roleCol === null) {
-              d.roleCol = { encryptType: "NONE" };
-            } else {
-              this.$set(d, "selected", d.roleCol !== null);
+            //先清空勾选信息
+            this.$set(d, "selected", false);
+            var checkedCols = _this.tableColCheckedMap.get(node.strLevelType +'-'+ node.id)
+            if(d.roleCol != null){
+              this.$set(d, "selected", d.roleCol != null);
+            }else{
+              if(checkedCols!=undefined && checkedCols.length>0){
+                for(var k=0;k<checkedCols.length;k++){
+                  if(d.colMetaUuid === checkedCols[k]){
+                    this.$set(d, "selected", d.colMetaUuid === checkedCols[k]);
+                    break
+                  }
+                }
+              }
             }
           });
-      
         });
+        
       }
     },
-
-    /* changeAccess(a, b){
-      var i = parseInt(b.target.name.substr(1));
-      this.currentData.extMap.accessType[i] = a;
-    },*/
 
     save() {
       const loading = this.$loading({
@@ -586,52 +608,9 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-      var allNodes = this.$refs.treeRole.getAllNodes();
-      var folders = [];
-      var tables = [];
-      var cols = [];
-      allNodes.forEach((node) => {
-        var data = node.data;
-        if (data.id !== "ROOT") {
-          if (!data.accessType) data.accessType = [];
-          var accType1 = data.accessType.join(",");
-          if (
-            data.type === "folder" &&
-            (data.checkedType !== "children" ||
-              data.accessType.includes("WRITE"))
-          ) {
-            folders.push({
-              dataRoleUuid: this.roleUuid,
-              folderUuid: data.id,
-              accessType: accType1,
-            });
-          } else if (
-            (data.type === "table" &&
-              (data.checkedType == "checked" ||
-                data.accessType.includes("WRITE"))) ||
-            (data.type === "view" && data.checkedType == "checked")
-          ) {
-            tables.push({
-              dataRoleUuid: this.roleUuid,
-              tableMetaUuid: data.id,
-              accessType: accType1,
-              whereStr: data.whereStr,
-            });
-            if (data.cols) {
-              data.cols.forEach((col) => {
-                if (col.selected) {
-                  cols.push({
-                    colMetaUuid: col.colMetaUuid,
-                    dataRoleUuid: this.roleUuid,
-                    encryptType: col.roleCol.encryptType,
-                  });
-                }
-              });
-            }
-          }
-        }
-      });
-      saveRoleTable(this.roleUuid, folders, tables, cols).then(() => {
+      //encryptType: 'NONE',
+      console.log(this.treeNodeSelectedObj)         
+      saveRoleTable2(this.roleUuid, this.treeNodeSelectedObj).then(() => {
         loading.close();
         this.$notify(commonNotify({ type: "success", message: "保存成功！" }));
       });
