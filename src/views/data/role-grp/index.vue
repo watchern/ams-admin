@@ -90,9 +90,15 @@
           highlight-current-row
           style="width: 100%"
           @selection-change="handleSelectionChange"
+          :row-class-name="tableRowClassName"
           max-height="500"
         >
           <el-table-column width="55" type="selection" />
+          <el-table-column
+            prop="tableId"
+            label="序号"
+            width="50">
+          </el-table-column>
           <el-table-column
             label="类型"
             min-width="150px"
@@ -121,16 +127,16 @@
               }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="使用期限" width="300px" align="center" show-overflow-tooltip>
+          <el-table-column label="使用期限" width="300px" align="center">
             <template slot-scope="scope">
-              <span v-if="role.startTime == null && role.endTime == null"
-                >无限制</span
-              >
-              <span v-else>
-                {{ role.startTime == null ? " - " : role.startTime }}
-                至
-                {{ role.endTime == null ? " - " : role.endTime }}
-              </span>
+              <div @click="clickSelectTime(scope.row)">
+                <span class="serviceLife" v-if="scope.row.startTime == null && scope.row.endTime == null">无限制</span>
+                <span class="serviceLife" v-else>
+                  {{ scope.row.startTime == null ? " - " : scope.row.startTime }}
+                  至
+                  {{ scope.row.endTime == null ? " - " : scope.row.endTime }}
+                </span>
+              </div>
             </template>
           </el-table-column>
           <el-table-column
@@ -152,6 +158,42 @@
       <el-button @click="goBack">返回</el-button>
       <el-button type="primary" @click="saveRoleGrp">保存</el-button>
     </div>
+    <!-- 选择授权时间 -->
+    <el-dialog :append-to-body="false"
+               :close-on-click-modal="false"
+               title="使用期限"
+               :visible.sync="serviceLifeDialog">
+      <div>
+        <el-form ref="parammodelform" :model="temp">
+          <el-form-item label="开始时间" prop="startTime">
+              <el-date-picker v-model="temp.startTime"
+                              format="yyyy-MM-dd HH:mm:ss"
+                              value-format="yyyy-MM-dd HH:mm:ss"
+                              clearable
+                              style="width: 100%"
+                              :picker-options="startDatePicker"
+                              :disabled="false"
+                              type="datetime"
+                              :placeholder="'请输入生效开始时间'" />
+            </el-form-item>
+            <el-form-item label="结束时间" prop="endTime">
+              <el-date-picker v-model="temp.endTime"
+                              format="yyyy-MM-dd HH:mm:ss"
+                              value-format="yyyy-MM-dd HH:mm:ss"
+                              clearable
+                              style="width: 100%"
+                              :picker-options="endDatePicker"
+                              :disabled="false"
+                              type="datetime"
+                              :placeholder="'请输入生效结束时间'" />
+            </el-form-item>
+        </el-form>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="serviceLifeDialog = false">关 闭</el-button>
+        <el-button @click="sureServiceLife()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -185,7 +227,15 @@ export default {
       loadTree: [], //左边树懒加载的数据
       orgTreeData: [],
       orglistLoading: false,
-      };
+      serviceLifeDialog:false,//选择使用期限
+      startDatePicker: this.beginDate(),
+      endDatePicker: this.processDate(),
+      temp: {
+        startTime: '',
+        endTime: ''
+      },
+      row:{},//点击的单元格数据
+    };
   },
   computed: {
     currentTreeData() {
@@ -243,6 +293,47 @@ export default {
     }, 1000);
   },
   methods: {
+    tableRowClassName({row, rowIndex}){
+      row.tableId = rowIndex+1;
+    },
+    sureServiceLife(){
+      var tableId = this.row.tableId
+      this.tableData[tableId-1].startTime = this.temp.startTime
+      this.tableData[tableId-1].endTime = this.temp.endTime
+      this.serviceLifeDialog = false
+    },
+    beginDate () {
+      const self = this
+      return {
+        disabledDate (time) {
+          if (self.temp.endTime) { // 如果结束时间不为空，则小于结束时间
+            return new Date(self.temp.endTime).getTime() < time.getTime()
+          } else {
+            // return time.getTime() > Date.now()//开始时间不选时，结束时间最大值小于等于当天
+          }
+        }
+      }
+    },
+    processDate () {
+      const self = this
+      return {
+        disabledDate (time) {
+          if (self.temp.startTime) { // 如果开始时间不为空，则结束时间大于开始时间
+            return new Date(self.temp.startTime).getTime() > time.getTime()
+          } else {
+            // return time.getTime() > Date.now()//开始时间不选时，结束时间最大值小于等于当天
+          }
+        }
+      }
+    },
+    //选择使用期限
+    clickSelectTime(row){
+      this.row = {}//每次置空重新赋值
+      this.row = row
+      this.serviceLifeDialog = true
+      this.temp.startTime = row.startTime
+      this.temp.endTime = row.endTime
+    },
     // 获取机构或人员列表
     getOrgTree() {
       this.treeLoading = true;
@@ -358,7 +449,6 @@ export default {
     },
 
     handleSelectionChange(val) {
-      console.log(val);
       this.selections = val;
     },
 
@@ -402,5 +492,9 @@ export default {
 .bottom-btn {
   float: right;
   padding-right: 100px;
+}
+.serviceLife{
+  color: blue;
+  cursor:pointer;
 }
 </style>

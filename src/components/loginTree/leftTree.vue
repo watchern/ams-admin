@@ -12,6 +12,10 @@
       <el-tab-pane label="分层"
                    :disabled="tabclick"
                    name="2"></el-tab-pane>
+      <el-tab-pane label="个人空间"
+                   :disabled="tabclick"
+                   v-if="isShowPersonSpaceTab"
+                   name="3"></el-tab-pane>
     </el-tabs>
     <div class="padding10">
       <el-input v-model="filterText2"
@@ -347,6 +351,9 @@ export default {
         this.post_getLayeredTree(); //分层
         this.$emit("queryList", this.query, this.show_details = false)
 
+      }else if (this.activeName == "3") {
+        // 个人空间
+        this.post_getPersonSpaceTree(); //个人空间
       }
       // else {
       //   // 目录
@@ -394,6 +401,16 @@ export default {
         this.$nextTick(() => {
           this.inverse();
         });
+      });
+    },
+     //个人空间
+    post_getPersonSpaceTree() {
+      this.loading = true;
+      this.tabclick = true;
+      getPersonSpaceTree("", "", this.query.dataSource).then((resp) => {
+        this.tree_list = resp.data;
+        this.loading = false;
+        this.tabclick = false;
       });
     },
     // 点击注册资源的 数据库列表
@@ -444,6 +461,10 @@ export default {
         this.$refs.tree2.setCheckedKeys(checkedKeys);
       }
     },
+    //反勾选树节点
+    uncheckTreeNode(data){
+      this.treeNodeSelectedObj = data
+    },
     handleClick(tab, event) {
       this.elTabsName = tab.label;
       if (tab.index == "0") {
@@ -456,6 +477,8 @@ export default {
         this.post_getThemeTree(); //主题
       } else if (tab.index == "2") {
         this.post_getLayeredTree(); //分层
+      } else if (tab.index == "3") {
+        this.post_getPersonSpaceTree(); //个人空间
       }
       // else {
       //   this.post_getDataTreeNode(this.query.dataSource);//目录

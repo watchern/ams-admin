@@ -291,14 +291,24 @@ export function getResByRole (roleUuid) {
     method: 'get'
   })
 }
-export function getRoleCols (roleUuid, tableUuid) {
+
+export function getResByRole2 (roleUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller3}/getResByRole2/${roleUuid}`,
+    method: 'get'
+  })
+}
+
+export function getRoleCols (roleUuid, tableUuid, businessType) {
   return request({
     baseURL: baseURL,
     url: `/${controller3}/getRoleCols`,
     method: 'post',
     data: {
       roleUuid: roleUuid,
-      tableMetaUuid: tableUuid
+      tableMetaUuid: tableUuid,
+      businessType: businessType
     }
   })
 }
