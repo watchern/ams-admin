@@ -158,7 +158,8 @@
                 <div class="son_people is_disabled"
                      :class="isDisable_input == true ? 'is_width':''">
                   <el-form-item label="负责人：">
-                    <el-input :disabled="disabled"
+                    <el-input type="textarea"
+                              :disabled="disabled"
                               style="background-color: rgba(0, 0, 0, 0.05) !important"
                               v-model="form.personLiables"></el-input>
                   </el-form-item>
