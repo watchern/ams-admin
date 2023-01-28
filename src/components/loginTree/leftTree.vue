@@ -340,6 +340,7 @@ export default {
           this.isShowLoadLeftTreeBtn = false;
           this.isShowPersonSpaceTab = true;
           this.isShowXTZTFC = false
+          this.activeName = "3"
           this.post_getPersonSpaceTree(); //个人空间
         }
         //数据装载与下线
@@ -348,6 +349,7 @@ export default {
           this.isShowPersonSpaceTab = true;
           this.isShowXTZTFC = false
           this.showCheckbox = true;
+          this.activeName = "3"
           this.post_getPersonSpaceTree(); //个人空间
         }
 
@@ -488,17 +490,17 @@ export default {
     },
     handleClick(tab, event) {
       this.elTabsName = tab.label;
-      if (tab.index == "0") {
+      if (tab.name == "0") {
         // this.tabclick = true
         // setTimeout(() => {
         //   this.tabclick = false
         // }, 3000)
         this.post_getBusinessSystemTree(); //系统
-      } else if (tab.index == "1") {
+      } else if (tab.name == "1") {
         this.post_getThemeTree(); //主题
-      } else if (tab.index == "2") {
+      } else if (tab.name == "2") {
         this.post_getLayeredTree(); //分层
-      } else if (tab.index == "3") {
+      } else if (tab.name == "3") {
         this.post_getPersonSpaceTree(); //个人空间
       }
       // else {
