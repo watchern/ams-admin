@@ -347,6 +347,7 @@ export default {
           this.isShowLoadLeftTreeBtn = false;
           this.isShowPersonSpaceTab = true;
           this.isShowXTZTFC = false
+          this.showCheckbox = true;
           this.post_getPersonSpaceTree(); //个人空间
         }
 
