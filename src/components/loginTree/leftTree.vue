@@ -5,12 +5,15 @@
              @tab-click="handleClick">
       <el-tab-pane label="系统"
                    :disabled="tabclick"
+                   v-if="isShowXTZTFC"
                    name="0"></el-tab-pane>
       <el-tab-pane label="主题"
                    :disabled="tabclick"
+                   v-if="isShowXTZTFC"
                    name="1"></el-tab-pane>
       <el-tab-pane label="分层"
                    :disabled="tabclick"
+                   v-if="isShowXTZTFC"
                    name="2"></el-tab-pane>
       <el-tab-pane label="个人空间"
                    :disabled="tabclick"
@@ -191,9 +194,11 @@ export default {
       treeLoading: false,
       tableData: [],
       chooseTables: [],
-      loadLeftTreeType: "", //因为很多模块需要用到这棵树，用此类型来区分不同模块; 1-SQL编辑器 2-数据授权管理-资源绑定 左侧树
+      //1-SQL编辑器 2-数据授权管理-资源绑定-左侧树 3-个人空间
+      loadLeftTreeType: "", //因为很多模块需要用到这棵树，用此类型来区分不同模块; 
       isShowLoadLeftTreeBtn: true, //是否展示树节点操作按钮
       isShowPersonSpaceTab: false, //是否展示个人空间页签
+      isShowXTZTFC:true,//是否展示系统、主题、分层页签
       draggable: false, //是否开启树节点拖拽
       showCheckbox: false, //是否开启树多选框
       elTabsName: "", //选中的页签名称
@@ -211,7 +216,11 @@ export default {
   created() {
     this.query.businessSystemId = "";
     // this.show_details = false; //显示列表
-    this.post_getBusinessSystemTree(); //系统
+    if(this.isShowXTZTFC){//个人空间模块只需要个人空间页签
+      this.post_getBusinessSystemTree(); //系统
+    }else{
+      this.post_getPersonSpaceTree(); //个人空间
+    }
     this.$emit("queryList", this.query, (this.show_details = false));
   },
   methods: {
@@ -329,6 +338,12 @@ export default {
           this.isShowLoadLeftTreeBtn = false;
           this.draggable = false;
           this.showCheckbox = true;
+        }
+        //个人空间
+        if (this.loadLeftTreeType == "3") {
+          this.isShowLoadLeftTreeBtn = false;
+          this.isShowPersonSpaceTab = true;
+          this.isShowXTZTFC = false
         }
       }
     },
