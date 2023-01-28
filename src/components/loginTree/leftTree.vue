@@ -194,7 +194,7 @@ export default {
       treeLoading: false,
       tableData: [],
       chooseTables: [],
-      //1-SQL编辑器 2-数据授权管理-资源绑定-左侧树 3-个人空间
+      //1-SQL编辑器 2-数据授权管理-资源绑定-左侧树 3-个人空间 4-数据装载与下线
       loadLeftTreeType: "", //因为很多模块需要用到这棵树，用此类型来区分不同模块; 
       isShowLoadLeftTreeBtn: true, //是否展示树节点操作按钮
       isShowPersonSpaceTab: false, //是否展示个人空间页签
@@ -216,7 +216,7 @@ export default {
   created() {
     this.query.businessSystemId = "";
     // this.show_details = false; //显示列表
-    if(this.isShowXTZTFC){//个人空间模块只需要个人空间页签
+    if(this.isShowXTZTFC){//只需要个人空间页签的
       this.post_getBusinessSystemTree(); //系统
     }else{
       this.post_getPersonSpaceTree(); //个人空间
@@ -345,6 +345,13 @@ export default {
           this.isShowPersonSpaceTab = true;
           this.isShowXTZTFC = false
         }
+        //数据装载与下线
+        if (this.loadLeftTreeType == "4") {
+          this.isShowLoadLeftTreeBtn = false;
+          this.isShowPersonSpaceTab = true;
+          this.isShowXTZTFC = false
+        }
+
       }
     },
     // 选择数据源
