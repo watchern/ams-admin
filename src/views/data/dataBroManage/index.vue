@@ -58,14 +58,10 @@ export default {
     }
 
     .left_conter {
-        height: calc(100vh - 123px);
+        height: calc(100vh - 96px);
         width: 20%;
         position: relative;
         padding-right: 20px;
-    }
-
-    .left_conter >>> .conter_vh {
-        height: calc(100% - 143px) !important;
     }
 
     .right_conter {
