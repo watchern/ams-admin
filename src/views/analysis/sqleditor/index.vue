@@ -1206,7 +1206,7 @@ export default {
       this.executeLoading = true;
       this.loadText = "正在初始化数据表...";
       //新数据表树
-      this.$refs.tree_left.loadLeftTreeTypeFun("1");
+      this.$refs.tree_left.loadLeftTreeTypeFun("4");
 
       initTableTip(this.dataUserId, this.sceneCode1, this.dataSource)
         .then((result) => {
