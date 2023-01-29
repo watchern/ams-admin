@@ -501,11 +501,12 @@
             <el-form-item label="从表字段："
                           prop="relationCol">
               <el-select v-model="table_visible_form.relationCol"
-                         style="width: 100%">
+                         style="width: 100%"
+                         @change="colMetaChange($event, 'relColMetaUuid', 'relationTableName')">
                 <el-option v-for="item in cong_table_list"
                            :key="item.colMetaUuid"
                            :label="item.colName"
-                           :value="item.colMetaUuid" />
+                           :value="item" />
               </el-select>
             </el-form-item>
             <el-form-item label="关联关系："
@@ -530,11 +531,12 @@
             <el-form-item label="主表字段："
                           prop="colName">
               <el-select v-model="table_visible_form.colName"
-                         style="width: 100%">
+                         style="width: 100%"
+                         @change="colMetaChange($event, 'colMetaUuid', 'colName')">
                 <el-option v-for="item in cong_table_list"
                            :key="item.colMetaUuid"
                            :label="item.colName"
-                           :value="item.colMetaUuid" />
+                           :value="item" />
               </el-select>
             </el-form-item>
             <el-form-item label="从表名称："
@@ -883,7 +885,6 @@ export default {
       this.getListTree_data(); //下拉框默认值
       this.getIndexInfo(this.tableMetaUuid);
       this.handleScrollTop();//滚动到顶部
-
     },
   },
   mounted () {
@@ -905,7 +906,6 @@ export default {
     //   let height_conter = this.$refs.element.offsetHeight;  //100
     // })
   },
-
   methods: {
     handleScrollTop () {
       this.$nextTick(() => {
@@ -914,10 +914,8 @@ export default {
         scrollElem.scrollTo({ top: 0, behavior: 'smooth' });
       });
     },
-
     // 点击导航菜单，页面滚动到指定位置
     handleLeft (index) {
-
       this.navgatorIndex = index;
       this.$el.querySelector(`#id${index}`).scrollIntoView({
         behavior: "smooth", // 平滑过渡
@@ -946,7 +944,6 @@ export default {
       });
       // }
     },
-
     // 数据日期:
     changeRelationParam (value) {
       this.form.dataDate = value;
@@ -964,10 +961,8 @@ export default {
         }
       });
     },
-
     // 基本信息
     details (tableId) {
-
       this.form = JSON.parse(JSON.stringify(this.form));
       this.$forceUpdate();
       getBasicInfo(tableId).then((resp) => {
@@ -1037,7 +1032,6 @@ export default {
         this.table_visible_form.tableMetaUuid = resp.data.tableMetaUuid//主表从表新增用
       });
     },
-
     // 修改保存
     update_save () {
       var personLiables = [];
@@ -1086,25 +1080,21 @@ export default {
         }
       });
     },
-
     // 索引信息
     getIndexInfo (tableId) {
       selectIndexInfo(tableId).then((res) => {
         this.Column_tableData_index = res.data;
       });
     },
-
     // 数据字典信息
     getDictInfo (tableId) {
       getTableZipperList(tableId).then((res) => {
         this.Column_tableData_dict = res.data;
       });
     },
-
     //  列信息
     table_list (tableId) {
       getColsInfo(tableId).then((resp) => {
-        //
         this.Column_tableData = resp.data;
         // 返回两个新的数组
         // this.oldName = resp.data.displayTbName;
@@ -1116,7 +1106,6 @@ export default {
         // })
       });
     },
-
     // 下拉框默认值
     getListTree_data () {
       getListTree().then((res) => {
@@ -1150,7 +1139,6 @@ export default {
       this.resultShareDialogIsSee = false;
       this.$refs.orgPeopleTree.$emit("clear"); //清空组件 值
     },
-
     // 确定责任人
     modelResultShare () {
       // this.listLoading = true;
@@ -1171,12 +1159,10 @@ export default {
       }
       this.resultShareDialogIsSee = false;
     },
-
     // 删除标签
     removeTag_infotion_tag (index, item) {
       this.TagsAll.splice(index, 1);
     },
-
     //生成标签
     addTags_infotion_tag () {
       if (this.search_name_infotion) {
@@ -1208,7 +1194,10 @@ export default {
       this.visibleTable = true; //数据表关系列表
       this.visibleTableList = []; //清空上次新增的关系
     },
-
+    colMetaChange(obj, col, name) {
+      this.table_visible_form[col] = obj.colMetaUuid;
+      this.table_visible_form[name] = obj.colName;
+    },
     // 新增一行表关系
     addTable (flag) {
       // 是不是主表 1:主表 2从表
@@ -1239,26 +1228,20 @@ export default {
       }
       this.add_table_visible = true;
     },
-
     // 获取从表字段
     qost_cong_table_list_data (tableMetaUuid) {
       cong_table_list_data(tableMetaUuid).then((resp) => {
         this.cong_table_list = resp.data.colMetas;
       });
     },
-
-
     // 关闭弹窗
     handleClose_table (table_visible_form) {
       this.$refs[table_visible_form].resetFields(); //清空添加的值
     },
-
     // 显示选择数据表
     showDataTree (val) {
       this.table_visible_form.selectType = val;
       this.dataTableTree = true;
-
-
     },
     // 确认选择的数据表
     getDataTable () {
@@ -1329,7 +1312,6 @@ export default {
             relTableMetaUuid: this.table_visible_form.relTableMetaUuid,
           };
           this.visibleTableList.push(objs);
-
           this.add_table_visible = false;
         } else {
           this.btnLoading = false; //保存loadnin
@@ -1342,10 +1324,8 @@ export default {
         }
       });
     },
-
     // 保存新的关联关系
     save_table () {
-
       if (this.visibleTableList.length == 0) {
         this.$message({
           type: "warning",
