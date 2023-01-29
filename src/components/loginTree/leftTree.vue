@@ -389,7 +389,9 @@ export default {
       this.tabclick = true;
       this.elTabsName = "系统";
       getBusinessSystemTree(true, this.query.dataSource, true).then((resp) => {
-        this.tree_list = resp.data;
+        if(this.activeName === '0'){
+          this.tree_list = resp.data;
+        }
         this.loading = false;
         this.tabclick = false;
         //加载勾选数据
@@ -431,6 +433,9 @@ export default {
       this.loading = true;
       this.tabclick = true;
       getPersonSpaceTree("", "", this.query.dataSource).then((resp) => {
+        if(this.activeName === '3'){
+          this.tree_list = resp.data;
+        }
         this.tree_list = resp.data;
         this.loading = false;
         this.tabclick = false;
