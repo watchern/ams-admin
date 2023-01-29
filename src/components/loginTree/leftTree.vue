@@ -5,13 +5,20 @@
              @tab-click="handleClick">
       <el-tab-pane label="系统"
                    :disabled="tabclick"
+                   v-if="isShowXTZTFC"
                    name="0"></el-tab-pane>
       <el-tab-pane label="主题"
                    :disabled="tabclick"
+                   v-if="isShowXTZTFC"
                    name="1"></el-tab-pane>
       <el-tab-pane label="分层"
                    :disabled="tabclick"
+                   v-if="isShowXTZTFC"
                    name="2"></el-tab-pane>
+      <el-tab-pane label="个人空间"
+                   :disabled="tabclick"
+                   v-if="isShowPersonSpaceTab"
+                   name="3"></el-tab-pane>
     </el-tabs>
     <div class="padding10">
       <el-input v-model="filterText2"
@@ -97,12 +104,14 @@
               <el-button v-if="data.id === 'ROOT' || (data.extMap && data.extMap.folder_type === 'maintained')"
                          type="text"
                          size="mini"
+                         v-show="isShowLoadLeftTreeBtn"
                          @click.stop="() => handleCreateFolder(node, data)">
                 <i class="el-icon-circle-plus" />
               </el-button>
               <el-button v-if="data.extMap && data.extMap.folder_type === 'maintained'"
                          type="text"
                          size="mini"
+                         v-show="isShowLoadLeftTreeBtn"
                          @click.stop="() => handleUpdateFolder(node, data)">
                 <i class="el-icon-edit" />
               </el-button>
@@ -110,6 +119,7 @@
                          data.type === 'table' || data.type === 'view'"
                          type="text"
                          size="mini"
+                         v-show="isShowLoadLeftTreeBtn"
                          @click.stop="() => handleRemove(node, data)">
                 <i class="el-icon-delete" />
               </el-button>
@@ -184,9 +194,11 @@ export default {
       treeLoading: false,
       tableData: [],
       chooseTables: [],
-      loadLeftTreeType: "", //因为很多模块需要用到这棵树，用此类型来区分不同模块; 1-SQL编辑器 2-数据授权管理-资源绑定 左侧树
+      //1-SQL编辑器 2-数据授权管理-资源绑定-左侧树 3-个人空间 4-数据装载与下线
+      loadLeftTreeType: "", //因为很多模块需要用到这棵树，用此类型来区分不同模块; 
       isShowLoadLeftTreeBtn: true, //是否展示树节点操作按钮
       isShowPersonSpaceTab: false, //是否展示个人空间页签
+      isShowXTZTFC:true,//是否展示系统、主题、分层页签
       draggable: false, //是否开启树节点拖拽
       showCheckbox: false, //是否开启树多选框
       elTabsName: "", //选中的页签名称
@@ -249,7 +261,6 @@ export default {
       } else {
         this.treeNodeSelectedObj.push(obj);
       }
-      console.log(this.treeNodeSelectedObj)
     },
 
     // 树内不可拖拽
@@ -324,6 +335,24 @@ export default {
           this.draggable = false;
           this.showCheckbox = true;
         }
+        //个人空间
+        if (this.loadLeftTreeType == "3") {
+          this.isShowLoadLeftTreeBtn = false;
+          this.isShowPersonSpaceTab = true;
+          this.isShowXTZTFC = false
+          this.activeName = "3"
+          this.post_getPersonSpaceTree(); //个人空间
+        }
+        //数据装载与下线
+        if (this.loadLeftTreeType == "4") {
+          this.isShowLoadLeftTreeBtn = false;
+          this.isShowPersonSpaceTab = true;
+          this.isShowXTZTFC = false
+          this.showCheckbox = true;
+          this.activeName = "3"
+          this.post_getPersonSpaceTree(); //个人空间
+        }
+
       }
     },
     // 选择数据源
@@ -345,6 +374,9 @@ export default {
         this.post_getLayeredTree(); //分层
         this.$emit("queryList", this.query, this.show_details = false)
 
+      }else if (this.activeName == "3") {
+        // 个人空间
+        this.post_getPersonSpaceTree(); //个人空间
       }
       // else {
       //   // 目录
@@ -392,6 +424,16 @@ export default {
         this.$nextTick(() => {
           this.inverse();
         });
+      });
+    },
+     //个人空间
+    post_getPersonSpaceTree() {
+      this.loading = true;
+      this.tabclick = true;
+      getPersonSpaceTree("", "", this.query.dataSource).then((resp) => {
+        this.tree_list = resp.data;
+        this.loading = false;
+        this.tabclick = false;
       });
     },
     // 点击注册资源的 数据库列表
@@ -442,18 +484,24 @@ export default {
         this.$refs.tree2.setCheckedKeys(checkedKeys);
       }
     },
+    //反勾选树节点
+    uncheckTreeNode(data){
+      this.treeNodeSelectedObj = data
+    },
     handleClick(tab, event) {
       this.elTabsName = tab.label;
-      if (tab.index == "0") {
+      if (tab.name == "0") {
         // this.tabclick = true
         // setTimeout(() => {
         //   this.tabclick = false
         // }, 3000)
         this.post_getBusinessSystemTree(); //系统
-      } else if (tab.index == "1") {
+      } else if (tab.name == "1") {
         this.post_getThemeTree(); //主题
-      } else if (tab.index == "2") {
+      } else if (tab.name == "2") {
         this.post_getLayeredTree(); //分层
+      } else if (tab.name == "3") {
+        this.post_getPersonSpaceTree(); //个人空间
       }
       // else {
       //   this.post_getDataTreeNode(this.query.dataSource);//目录
@@ -528,6 +576,51 @@ export default {
         this.show_details = true;
         this.isDisable_input = true;
         this.$emit("details", this.tableMetaUuid, this.show_details, this.isDisable_input);
+      }
+    },
+    //鼠标右键事件
+    nodeContextmenu(event, data, node, e) {
+      var menuId = "";
+      var numm = $(document).height() - event.clientY;
+      if (
+        data.type === "table" ||
+        data.type === "view" ||
+        data.type === "datasource"
+      ) {
+        menuId = "tableMenu";
+        // history.scrollRestoration = 'manual'  不知道干什么
+        // 判断是不是导入数据节点、和分享节点，右键可便捷表结构
+        if (data.pid === "importDataTable") {
+          menuId = "importTableMenu";
+        }
+      } else {
+        // 外部导入数据节点加导入功能
+        if (data.id === "importDataTable") {
+          menuId = "importDataMenu";
+        }
+
+        if (
+          data.id === "bussDataRoot" ||
+          data.id === "bussRootNode" ||
+          data.id === "my_space" ||
+          data.id === "bussRootNode_dev" ||
+          data.id === "my_space_dev" ||
+          data.id === "other_space_dev"
+        ) {
+          menuId = "rootMenu";
+        }
+      }
+      if (menuId !== "") {
+        showRMenu(
+          "sqlEditorLeftTree",
+          "dataTree",
+          menuId,
+          event.clientX,
+          event.clientY,
+          data
+        );
+      } else {
+        return false;
       }
     },
     // 第一步选择的数据库
@@ -770,5 +863,49 @@ export default {
 .dataSource >>> .el-form-item {
   display: flex;
   width: 100%;
+}
+.agreeicon0 {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  margin-right: 2px;
+  margin-top: 0;
+  background-size: 100%;
+  background-image: url("../../assets/img/table_0.png");
+  vertical-align: top;
+  *vertical-align: middle;
+}
+.agreeicon1 {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  margin-right: 2px;
+  margin-top: 0;
+  background-size: 100%;
+  background-image: url("../../assets/img/table_1.png");
+  vertical-align: top;
+  *vertical-align: middle;
+}
+.agreeicon2 {
+  display: inline-block;
+  height: 14px;
+  width: 14px;
+  margin-right: 2px;
+  margin-top: 0;
+  background-size: 100%;
+  background-image: url("../../assets/img/table_2.png");
+  vertical-align: top;
+  *vertical-align: middle;
+}
+.agreeicon4 {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  margin-right: 2px;
+  margin-top: 0;
+  background-size: 100%;
+  background-image: url("../../styles/icons/view.png");
+  vertical-align: top;
+  *vertical-align: middle;
 }
 </style>

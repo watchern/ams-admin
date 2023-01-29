@@ -158,7 +158,8 @@
                 <div class="son_people is_disabled"
                      :class="isDisable_input == true ? 'is_width':''">
                   <el-form-item label="负责人：">
-                    <el-input :disabled="disabled"
+                    <el-input type="textarea"
+                              :disabled="disabled"
                               style="background-color: rgba(0, 0, 0, 0.05) !important"
                               v-model="form.personLiables"></el-input>
                   </el-form-item>
@@ -188,9 +189,6 @@
                              :key="index_partitions"
                              class="li_son">
                           {{ item }}
-                          <div>
-                            {{ item }}
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -443,7 +441,7 @@
             <template slot-scope="scope">
               {{
                 scope.row.sqlGenJoinType == 1
-                  ? "left joi"
+                  ? "left join"
                   : scope.row.sqlGenJoinType == 2
                   ? "right join"
                   : scope.row.sqlGenJoinType == 3
@@ -759,11 +757,11 @@ export default {
       // ],
       data_type: [
         {
-          value: 1,
+          value: "1",
           label: "表",
         },
         {
-          value: 2,
+          value: "2",
           label: "视图",
         },
       ],
@@ -988,11 +986,13 @@ export default {
         this.form.fileName = resp.data.tableRelationQuery.fileName; //文件名
         this.form.tableCode = tableCode; //资源编码
         //资源类型
-        if (resp.data.tableRelationQuery.tableType == "1") {
-          this.form.tableType = "表";
-        } else {
-          this.form.tableType = "视图";
-        }
+
+        this.form.tableType = resp.data.tableRelationQuery.tableType
+        // if (resp.data.tableRelationQuery.tableType == "1") {
+        //   this.form.tableType = "表";
+        // } else {
+        //   this.form.tableType = "视图";
+        // }
         this.form.tableRelationQueryUuid =
           resp.data.tableRelationQuery.tableRelationQueryUuid;
         this.form.tableThemeId = resp.data.tableRelationQuery.tableThemeId; //资源主题
@@ -1157,11 +1157,11 @@ export default {
       var personUuids = [];
       var personNames = [];
       var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
+        this.form.personName_str = []; //清空
       for (var i = 0; i < selectedNode.length; i++) {
         personUuids.push(selectedNode[i].personuuid);
         personNames.push(selectedNode[i].cnname);
 
-        this.form.personName_str = []; //清空
         let objs = {
           personUuid: selectedNode[i].personuuid,
           personName: selectedNode[i].cnname,

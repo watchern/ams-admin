@@ -166,7 +166,6 @@ export default {
       }
     },
     toTree(data) {
-      console.log(11111)
       // 1.定义最外层的数组
       const tree = []
       // 2.定义一个空对象
@@ -277,6 +276,8 @@ export default {
       return data.label.indexOf(value) !== -1;
     },
     nodeClick (data, node, tree) {
+      var strLevel = this.activeName + this.query.dataSource
+      data.strLevelType = strLevel
       this.$emit("nodeClick",data)
     },
     
