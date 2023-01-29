@@ -355,10 +355,10 @@ export default {
       //  if(this.check_list.length !== 0) {
       this.$emit("down_template_table", this.check_list)
     },
-    // 导入数据字典
+    // 导入数据资源
     Importdata_dictionary () {
       // this.common_dialog = true;
-      this.$emit("Importdata_dictionary", '导入数据字典')
+      this.$emit("Importdata_dictionary", '导入数据资源')
     },
     // 导入汉化信息
     Important_cn () {
