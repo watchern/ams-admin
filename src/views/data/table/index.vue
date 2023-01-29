@@ -40,6 +40,7 @@
                :is_Edit_list="is_Edit_list"
                @update_details="updateDetails"
                @query_data="QueryData"
+               @step="Step"
                v-if="show_details == true"></Details>
 
       <!-- 注册资源 -->
@@ -976,6 +977,11 @@ export default {
     // this.query_list(data);
   },
   methods: {
+    // 返回上一步
+    Step () {
+      this.show_details = false
+      this.query_list(this.$refs.tree_left.query, false);
+    },
     // 获取资料书的参数
     QueryData () {
       this.query_list(this.$refs.tree_left.query, false);

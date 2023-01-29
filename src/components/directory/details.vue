@@ -17,6 +17,14 @@
     <div class="right_details"
          id="right_details"
          ref="element">
+      <div class="_width"
+           style="padding: 10px 0 ;box-sizing: border-box;">
+
+        <el-button size="small"
+                   type="primary"
+                   @click="step()">返回>></el-button>
+      </div>
+
       <div class="rightList">
         <!-- 基本信息 -->
         <div class="information rightList_child"
@@ -916,6 +924,11 @@ export default {
   },
 
   methods: {
+    // 返回上一步
+    step () {
+      this.$emit("step",)
+
+    },
     handleScrollTop () {
       this.$nextTick(() => {
         this.navgatorIndex = 0
