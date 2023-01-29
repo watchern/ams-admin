@@ -17,13 +17,6 @@
     <div class="right_details"
          id="right_details"
          ref="element">
-      <div class="_width"
-           style="padding: 10px 0 ;box-sizing: border-box;">
-
-        <el-button size="small"
-                   type="primary"
-                   @click="step()">返回>></el-button>
-      </div>
 
       <div class="rightList">
         <!-- 基本信息 -->
@@ -368,6 +361,9 @@
           </div>
 
           <div class="fixed_btn">
+            <el-button size="small"
+                       type="primary"
+                       @click="step()">返回>></el-button>
             <el-button type="primary"
                        @click="update_save()"
                        :disabled="isDisable_input"
