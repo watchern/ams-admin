@@ -395,6 +395,8 @@ export default {
         var obj = {
           applyTitle: this.queryTodoForm.applyTitle,
           applyTypeName: this.queryTodoForm.applyTypeName,
+            // 流程为未完成状态
+          applyState: 1,
           pageNo: this.todoCurPage,
           pageSize: this.todoPageSize,
         };
