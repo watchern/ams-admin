@@ -115,7 +115,7 @@ export default {
             $(go.TextBlock,
               {
                 row: 0, alignment: go.Spot.Center,
-                // margin: new go.Margin(0, 24, 0, 20),  // leave room for Button
+                margin: new go.Margin(0, 24, 0, 20),  // leave room for Button箭头
                 font: "bold 16px sans-serif",
               },
               new go.Binding("text", "key")),

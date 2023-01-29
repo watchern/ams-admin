@@ -17,6 +17,14 @@
     <div class="right_details"
          id="right_details"
          ref="element">
+      <div class="_width"
+           style="padding: 10px 0 ;box-sizing: border-box;">
+
+        <el-button size="small"
+                   type="primary"
+                   @click="step()">返回>></el-button>
+      </div>
+
       <div class="rightList">
         <!-- 基本信息 -->
         <div class="information rightList_child"
@@ -590,6 +598,8 @@
                width="50%">
       <div class="tree_style">
         <dataTree ref="dataTableTree"
+                  :isdisable="isdisable"
+                  :dataSource="dataSource"
                   :is_progress="is_progress"
                   :form="form"
                   :is_main_table="is_main_table"
@@ -676,6 +686,12 @@ export default {
     },
     is_Edit_list: {
       type: Number,
+      default () {
+        return "";
+      },
+    },
+    dataSource: {
+      type: String,
       default () {
         return "";
       },
@@ -855,6 +871,7 @@ export default {
       ],
       resultShareDialogIsSee: false, //选择责任人
       is_progress: false,
+      isdisable: true,//不可更改数据源
     };
   },
   computed: {
@@ -907,6 +924,11 @@ export default {
     // })
   },
   methods: {
+    // 返回上一步
+    step () {
+      this.$emit("step",)
+
+    },
     handleScrollTop () {
       this.$nextTick(() => {
         this.navgatorIndex = 0
@@ -1145,7 +1167,7 @@ export default {
       var personUuids = [];
       var personNames = [];
       var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
-        this.form.personName_str = []; //清空
+      this.form.personName_str = []; //清空
       for (var i = 0; i < selectedNode.length; i++) {
         personUuids.push(selectedNode[i].personuuid);
         personNames.push(selectedNode[i].cnname);
@@ -1182,6 +1204,10 @@ export default {
     // 查看sql
     previewSql () {
       this.visible_sql = true;
+      this.post_sql_data();
+    },
+    // 数据
+    post_sql_data () {
       let params = {
         tableMetaUuid: this.tableMetaUuid,
       };
