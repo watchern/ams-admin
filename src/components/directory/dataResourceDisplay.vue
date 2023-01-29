@@ -162,7 +162,7 @@
                     <p class="new_num">{{ scope.row.tbName }}</p>
                     <p class="new_title">{{ scope.row.chnName }}</p>
                     <span class="new_type"
-                          v-if="scope.row.tableRelationQuery">{{ scope.row.tableRelationQuery.tableThemeName }}</span>
+                          v-if="scope.row.tableRelationQuery.tableThemeName">{{ scope.row.tableRelationQuery.tableThemeName }}</span>
                   </div>
 
                   <div class="new_left padding7">

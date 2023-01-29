@@ -958,7 +958,7 @@ export default {
     // this.post_getLayeredTree();//分层
     // this.post_getDataTreeNode();//目录
 
-    // 
+    //
     // this.$refs.tree_left.post_getBusinessSystemTree()
     // this.query.businessSystemId = "";
     // this.query_list(data);
@@ -1430,6 +1430,8 @@ export default {
       this.form.check_list.pid = "";
       this.form.check_list.id = "";
       this.form.check_list.label = "";
+      this.form.dataDate = "";
+      this.form.personName_str = "";
       // this.personUuid = [];
       // this.personName = [];
     },
@@ -1663,6 +1665,7 @@ export default {
     // 下一步的关闭
     close_diag (form) {
       this.dialogVisible_information = false;
+      this.registTableFlag = false; //关闭上一步
       this.chooseTables = []; //传输的数据
 
       this.$nextTick(() => {
@@ -1670,7 +1673,7 @@ export default {
         this.$refs["form"].clearValidate();
         // this.clear_details_form();
       });
-
+      this.clear();
     },
     // 下一步的保存
     save (form) {
@@ -1720,7 +1723,7 @@ export default {
               };
               this.chooseTables.push(tableForm);
             }
-            // 
+            //
             batchSaveTable_save(this.chooseTables).then((resp) => {
               if (resp.code == 0) {
                 this.$message({

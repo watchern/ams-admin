@@ -10,3 +10,78 @@ export function findOrgUserList(data) {
         data
     })
 }
+
+const controllerName2 = 'operatePermissionApply'
+
+export function queryAllOperatePermissionApply(data){
+    return request({
+        baseURL: baseURL,
+        url: `/${controllerName2}/queryAllOperatePermissionApply`,
+        method: 'post',
+        data
+    })
+}
+
+
+export function insertOperatePermissionApply(data){
+    return request({
+        baseURL: baseURL,
+        url: `/${controllerName2}/insertOperatePermissionApply`,
+        method: 'post',
+        data
+    })
+}
+
+export function deleteOperatePermissionApply(data){
+    return request({
+        baseURL: baseURL,
+        url: `/${controllerName2}/deleteOperatePermissionApply`,
+        method: 'post',
+        data
+    })
+}
+
+export function getDefaultPersonId(data){
+    return request({
+        baseURL: baseURL,
+        url: `/${controllerName2}/getDefaultPersonId`,
+        method: 'get',
+        params:{operatePermissionApplyUuid: data}
+    })
+}
+
+export function updateForHandle(data){
+    return request ({
+        baseURL: baseURL,
+        url: `/${controllerName2}/updateForHandle`,
+        method: 'post',
+        data
+    })
+}
+
+export function updateForFinishHandle(data){
+    return request ({
+        baseURL: baseURL,
+        url: `/${controllerName2}/updateForFinishHandle`,
+        method: 'post',
+        data
+    })
+}
+
+export function updateForBackApplicationHandle(data){
+    return request ({
+        baseURL: baseURL,
+        url: `/${controllerName2}/updateForBackApplicationHandle`,
+        method: 'post',
+        data
+    })
+}
+
+export function queryByOperatePermissionApplyUuid(data){
+    return request({
+        baseURL: baseURL,
+        url: `/${controllerName2}/queryByOperatePermissionApplyUuid`,
+        method: 'get',
+        params:{operatePermissionApplyUuid: data}
+    })
+}
