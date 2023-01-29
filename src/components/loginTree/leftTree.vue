@@ -100,7 +100,7 @@
             <i v-if="data.type === 'column'"
                class="el-icon-c-scale-to-original" />
             <span>{{ node.label }}</span>
-            <span style="margin-left: 10px" v-show="deleteButtons">
+            <span style="margin-left: 10px">
               <el-button v-if="data.id === 'ROOT' || (data.extMap && data.extMap.folder_type === 'maintained')"
                          type="text"
                          size="mini"
@@ -155,11 +155,6 @@ export default {
     form: {
       type: Object,
       default: () => ({})
-    },
-    //按钮
-    deleteButtons: {
-      type: Boolean,
-      default: true
     },
   },
   data () {

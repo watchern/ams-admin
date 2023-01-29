@@ -2,7 +2,7 @@
   <div class="page-container">
     <div class="left_conter">
       <!-- 左侧树 -->
-      <LeftTrees ref="tree_left" @details="Details" :deleteButtons="deleteButton"></LeftTrees>
+      <LeftTrees ref="tree_left" @details="Details"></LeftTrees>
     </div>
     <div class="right_conter padding10">
       <div class="mose">
@@ -32,8 +32,8 @@ export default {
     },
     data() {
         return {
-          //控制左侧树按钮不显示
-          deleteButton: false,
+          // //控制左侧树按钮不显示
+          // deleteButton: false,
         }
     },
     computed: {},
