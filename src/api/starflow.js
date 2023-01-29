@@ -25,6 +25,14 @@ export function submitToPerson(data) {
   })
 }
 
+export function submitToPersonDistribute(data) {
+  return request({
+    url: '/applyMes/sf/apply/submitToPersonDistribute',
+    method: 'post',
+    data
+  })
+}
+
 export function selectPerson4Data(data) {
   return request({
     url: '/applyMes/sf/apply/selectPerson4Data',
