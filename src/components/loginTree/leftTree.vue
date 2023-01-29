@@ -543,6 +543,10 @@ export default {
     },
     nodeClick(data, node, tree) {
       this.tableMetaUuid = "";
+      // 个人空间模块
+      if (this.loadLeftTreeType == "3") {
+        this.$emit("personalSpacePageQueryByTreeNode",data,node);
+      }
       // 显示列表
       if (node.level == 1) {
         this.show_details = false; //显示列表
