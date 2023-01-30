@@ -21,6 +21,15 @@ export function getCurrentUserPersonSpace() {
     })
 }
 
+export function incrementPersonalSpaceManage(data) {
+    return request({
+        baseURL: baseUrl,
+        url: '/personalSpaceManage/incrementPersonalSpaceManage',
+        method: 'post',
+        data
+    })
+}
+
 export function tableListPage (data) {
     return request({
         baseURL: baseUrl,

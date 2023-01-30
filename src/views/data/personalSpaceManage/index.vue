@@ -222,7 +222,7 @@
     import {
         tableListPage
         , deleteTableMeta
-        , getListTree
+        , incrementPersonalSpaceManage
         , saveTableMetaInfo
         , getCurrentUserPersonSpace
         , dataShare
@@ -276,6 +276,7 @@
                 selectPersonList:[],//数据共享弹窗中被选择的人员数据
                 selectPersonUuidList:[],//数据共享选择人员的id集合
                 selectPersonNameList:[],//数据共享选择人员的名字集合
+                selectPersonUserIdList:[],//数据共享选择人员的账号集合
                 data: [{ //临时使用后期引入树组件
                     id: 1,
                     label: '一级 2',
@@ -307,6 +308,10 @@
             }
         },
         mounted() {
+          // var param = {
+          //   appliedPersonalSpace:'2GB'
+          // }
+          // incrementPersonalSpaceManage(param)
             this.$refs.leftTreePage.loadLeftTreeTypeFun("3")
             var cloMeta1={
                 cloName:'123',//字段名
@@ -329,16 +334,13 @@
                 colComment: '测试111'
             }
             this.colMetaList.push(cloMeta1,cloMeta2)
-            console.log(this.colMetaList,"this.colMetaList")
             this.initPersonalSpaceManageData()
         },
         methods:{
             initPersonalSpaceManageData(){
                 this.query.condition = this.tableMetaDetail
-                console.log(this.query,"query")
                 tableListPage(this.query)
                 .then((res)=>{
-                  console.log(res.data.records,"res.data.records111111");
                   this.query.pageNo = res.data.current;
                   this.query.pageSize = res.data.size
                   this.dataTotal = res.data.total
@@ -373,8 +375,6 @@
                 value.forEach((val,index)=>{
                     this.tableMetaIdList.push(val.tableMetaUuid)
                 })
-                console.log(this.tableMetaIdList,"this.tableMetaIdList")
-                console.log(this.tableMetaSelectionList,"this.tableMetaSelectionList")
             },
             onReInput(){
                 this.clearParams()
@@ -439,8 +439,6 @@
 
                     })
                     .then((res) => {
-                        console.log(res,"res")
-                        console.log(res.data,"res.data")
                         const filename = decodeURI(
                             res.headers["content-disposition"].split(";")[1].split("=")[1]
                         );
@@ -467,7 +465,6 @@
             //新增弹窗保存按钮
             onSubmit(){
                 this.tableMetaDetail.colMetas = this.colMetaList
-                console.log(this.tableMetaDetail,"tableMetaDetail")
                 saveTableMetaInfo(this.tableMetaDetail)
             },
             closeInsertDialog(){
@@ -483,6 +480,10 @@
             },
             //打开人员选择的弹窗
             joinDataShareDialog(){
+              if(this.tableMetaSelectionList.length == 0){
+                this.$notify.warning("请先选择要共享的数据")
+                return
+              }
                 this.openDataShareDialog = true
             },
             //人员选择弹窗的确定按钮
@@ -490,32 +491,32 @@
                 this.selectPersonUuidList = []
                 this.selectPersonNameList = []
                 var temporaryList = this.$refs.personTreePage.selectValue
-                // console.log(this.$refs.personTreePage.selectValue,"this.$refs.personTreePage.selectValue")
                 temporaryList.forEach((value,index)=>{
                     this.selectPersonUuidList.push(value.personuuid)
                     this.selectPersonNameList.push(value.cnname)
+                    this.selectPersonUserIdList.push(value.userid)
                 })
-                console.log(this.selectPersonUuidList,"this.selectPersonUuidList")
-                console.log(this.selectPersonNameList,"this.selectPersonNameList")
                 var personUuidStr = this.selectPersonUuidList.join(',')
                 var personNameStr = this.selectPersonNameList.join(',')
-                console.log(personUuidStr,"personUuidStr")
-                console.log(personNameStr,"personNameStr")
+                var userIdStr = this.selectPersonUserIdList.join(',')
                 //还需要一个被选中的表的集合
                 var param = {
                     personUuidStr:personUuidStr,
                     personNameStr:personNameStr,
+                    userIdStr:userIdStr,
                     tableMetaIdList:this.tableMetaIdList
                 }
-                console.log(param,"param")
                 dataShare(param)
+                .then((res)=>{
+                  this.selectPersonUuidList = []
+                  this.selectPersonNameList = []
+                  this.selectPersonUserIdList = []
+                })
             },
           personalSpaceQueryByTreeNode(data,node){
               if(node.level == 2){
                 //然后直接把展示的dataList 赋值 data.children
               }
-              console.log(data,"赋组件中的方法数据val1")
-              console.log(node,"赋组件中的方法数据val2")
           }
         }
     }
