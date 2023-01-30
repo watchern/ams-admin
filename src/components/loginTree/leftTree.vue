@@ -26,7 +26,7 @@
                 placeholder="输入关键字进行过滤" />
     </div>
     <!-- 数据源 -->
-    <div class="padding10 dataSource">
+    <div class="padding10 dataSource" v-if="this.loadLeftTreeType != '4' && this.loadLeftTreeType != '3'">
       <el-form :inline="true"
                :model="query"
                label-position="bottom">
@@ -55,40 +55,38 @@
          class="conter_vh">
       <!-- 系统 主题 分层  目录-->
       <div class="tree-containerall">
-        <MyElTree
-          ref="tree2"
-          :props="props"
-          :data="tree_list"
-          :filter-node-method="filterNode"
-          :default-expanded-keys="defaultExpandedKeys"
-          class="filter-tree"
-          highlight-current="true"
-          node-key="id"
-          :load="loadNode"
-          lazy
-          @node-click="nodeClick"
-          @node-contextmenu="nodeContextmenu"
-          @node-drag-start="handleDragStart"
-          @node-drag-enter="handleDragEnter"
-          @node-drag-leave="handleDragLeave"
-          @node-drag-over="handleDragOver"
-          @node-drag-end="handleDragEnd"
-          @node-drop="handleDrop"
-          :draggable="draggable"
-          :show-checkbox="showCheckbox"
-          :allow-drop="returnFalse"
-          @check="setCheckedNodes"
-        >
-          <span slot-scope="{ node, data }" class="custom-tree-node">
-            <i v-if="data.id === 'ROOT'" :class="data.icon" />
-            <i
-              v-if="
+        <MyElTree ref="tree2"
+                  :props="props"
+                  :data="tree_list"
+                  :filter-node-method="filterNode"
+                  :default-expanded-keys="defaultExpandedKeys"
+                  class="filter-tree"
+                  highlight-current="true"
+                  node-key="id"
+                  :load="loadNode"
+                  lazy
+                  @node-click="nodeClick"
+                  @node-contextmenu="nodeContextmenu"
+                  @node-drag-start="handleDragStart"
+                  @node-drag-enter="handleDragEnter"
+                  @node-drag-leave="handleDragLeave"
+                  @node-drag-over="handleDragOver"
+                  @node-drag-end="handleDragEnd"
+                  @node-drop="handleDrop"
+                  :draggable="draggable"
+                  :show-checkbox="showCheckbox"
+                  :allow-drop="returnFalse"
+                  @check="setCheckedNodes">
+          <span slot-scope="{ node, data }"
+                class="custom-tree-node">
+            <i v-if="data.id === 'ROOT'"
+               :class="data.icon" />
+            <i v-if="
                 data.type === 'folder' ||
                 data.type === 'system' ||
                 data.type === 'layered' ||
                 data.type === 'theme'
-              "
-            >
+              ">
               <span class="agreeicon0"></span>
             </i>
             <i v-if="data.type === 'table'">
@@ -136,7 +134,6 @@
 import { commonNotify } from '@/utils'
 import MyElTree from "@/components/public/tree/src/tree.vue";
 import {
-  listUnCached,
   getBusinessSystemTree, //系统
   getThemeTree, //主题
   getLayeredTree, //分层
@@ -181,7 +178,7 @@ export default {
       tree_list: [], //左侧资料树数据结构
       // 资料树筛选 数据源
       query: {
-        dataSource: "Postgre", //筛选条件
+        dataSource: "Postgre", //筛选条件//数据源
         pageNo: 1,
         pageSize: 10,
         businessSystemId: "", //id主键
@@ -198,7 +195,7 @@ export default {
       loadLeftTreeType: "", //因为很多模块需要用到这棵树，用此类型来区分不同模块; 
       isShowLoadLeftTreeBtn: true, //是否展示树节点操作按钮
       isShowPersonSpaceTab: false, //是否展示个人空间页签
-      isShowXTZTFC:true,//是否展示系统、主题、分层页签
+      isShowXTZTFC: true,//是否展示系统、主题、分层页签
       draggable: false, //是否开启树节点拖拽
       showCheckbox: false, //是否开启树多选框
       elTabsName: "", //选中的页签名称
@@ -212,8 +209,8 @@ export default {
       this.$refs.tree2.filter(val);
     },
   },
-  mounted() {},
-  created() {
+  mounted () { },
+  created () {
     this.query.businessSystemId = "";
     // this.show_details = false; //显示列表
     this.post_getBusinessSystemTree(); //系统
@@ -221,7 +218,7 @@ export default {
   },
   methods: {
     //树节点选择
-    setCheckedNodes(node, isChecked) {
+    setCheckedNodes (node, isChecked) {
       var _this = this;
       var strLevel = this.activeName + this.query.dataSource;
       var isRepeat = true;
@@ -264,28 +261,27 @@ export default {
     },
 
     // 树内不可拖拽
-    returnFalse() {
+    returnFalse () {
       return false;
     },
     //节点开始拖拽时触发的事件
-    handleDragStart(node, ev) {
+    handleDragStart (node, ev) {
       // console.log('drag start', node);
     },
     //拖拽进入其他节点时触发的事件
-    handleDragEnter(draggingNode, dropNode, ev) {
+    handleDragEnter (draggingNode, dropNode, ev) {
       // console.log('tree drag enter: ', dropNode.label);
     },
     //拖拽离开某个节点时触发的事件
-    handleDragLeave(draggingNode, dropNode, ev) {
+    handleDragLeave (draggingNode, dropNode, ev) {
       // console.log('tree drag leave: ', dropNode.label);
     },
     //在拖拽节点时触发的事件（类似浏览器的 mouseover 事件）
-    handleDragOver(draggingNode, dropNode, ev) {
+    handleDragOver (draggingNode, dropNode, ev) {
       // console.log('tree drag over: ', dropNode.label);
     },
     //拖拽结束时（可能未成功）触发的事件
     handleDragEnd(draggingNode, dropNode, dropType, ev) {
-      console.log(draggingNode);
       // 只有表和字段能拖拽
       if (
         draggingNode.data.type === "table" ||
@@ -296,19 +292,25 @@ export default {
       }
     },
     // 拖拽成功完成时
-    handleDrop(draggingNode, dropNode, dropType, ev) {
+    handleDrop (draggingNode, dropNode, dropType, ev) {
       // console.log(draggingNode, dropNode, dropType, ev);
     },
     // 懒加载表字段
-    async loadNode(node, resolve) {
+    async loadNode (node, resolve) {
       if (node.level === 0) {
         return resolve(node.data);
-      }
-      if (node.level === 1) {
-        return resolve(node.data.children);
-      }
-      if (node.level == 2) {
-        if (!this.isShowPersonSpaceTab) {
+      }else if (node.level === 1) {
+        //只有SQL编辑器的表才需要展示字段
+        if(node.data.type === "table" && this.loadLeftTreeType === "1"){
+          var nodeList = getTableField(node.data.id, this.query.dataSource);
+          Promise.all([nodeList]).then((res) => {
+            resolve(res[0]);
+          });
+        }else{
+          return resolve(node.data.children);
+        }
+      }else if (node.level == 2) {
+        if (this.loadLeftTreeType != "1") {
           //去掉表加载字段
           resolve([]);
         } else {
@@ -320,7 +322,7 @@ export default {
       }
     },
     // 区分不同模块
-    loadLeftTreeTypeFun(data) {
+    loadLeftTreeTypeFun (data) {
       if (data) {
         this.loadLeftTreeType = data;
         //SQL编辑器
@@ -374,7 +376,7 @@ export default {
         this.post_getLayeredTree(); //分层
         this.$emit("queryList", this.query, this.show_details = false)
 
-      }else if (this.activeName == "3") {
+      } else if (this.activeName == "3") {
         // 个人空间
         this.post_getPersonSpaceTree(); //个人空间
       }
@@ -391,6 +393,12 @@ export default {
       getBusinessSystemTree(true, this.query.dataSource, true).then((resp) => {
         if(this.activeName === '0'){
           this.tree_list = resp.data;
+          this.tree_list.forEach(item => {
+            //SQL编辑器中，如果是表 需要展示字段不能去掉
+            if (item.type != 'table' && item.children.length == 0) {
+              item.leaf = true
+            }
+          })
         }
         this.loading = false;
         this.tabclick = false;
@@ -406,6 +414,12 @@ export default {
       this.tabclick = true;
       getThemeTree(true, this.query.dataSource, true).then((resp) => {
         this.tree_list = resp.data;
+        this.tree_list.forEach(item => {
+          //SQL编辑器中，如果是表 需要展示字段不能去掉
+          if (item.type != 'table' && item.children.length == 0) {
+            item.leaf = true
+          }
+        })
         this.loading = false;
         this.tabclick = false;
         //加载勾选数据
@@ -420,6 +434,12 @@ export default {
       this.tabclick = true;
       getLayeredTree(true, this.query.dataSource, true).then((resp) => {
         this.tree_list = resp.data;
+        this.tree_list.forEach(item => {
+          //SQL编辑器中，如果是表 需要展示字段不能去掉
+          if (item.type != 'table' && item.children.length == 0) {
+            item.leaf = true
+          }
+        })
         this.loading = false;
         this.tabclick = false;
         //加载勾选数据
@@ -428,15 +448,21 @@ export default {
         });
       });
     },
-     //个人空间
-    post_getPersonSpaceTree() {
+    //个人空间
+    post_getPersonSpaceTree () {
       this.loading = true;
       this.tabclick = true;
-      getPersonSpaceTree("", "", this.query.dataSource).then((resp) => {
+      getPersonSpaceTree("", "", this.query.dataSource, this.loadLeftTreeType).then((resp) => {
         if(this.activeName === '3'){
           this.tree_list = resp.data;
         }
         this.tree_list = resp.data;
+        this.tree_list.forEach(item => {
+          //SQL编辑器中，如果是表 需要展示字段不能去掉
+          if (item.type != 'table' && item.children.length == 0) {
+            item.leaf = true
+          }
+        })
         this.loading = false;
         this.tabclick = false;
       });
@@ -456,7 +482,7 @@ export default {
     // },
 
     // 反选
-    inverse() {
+    inverse () {
       var strLevel = this.activeName + this.query.dataSource;
       if (this.treeNodeSelectedObj.length > 0) {
         for (var i = 0; i < this.treeNodeSelectedObj.length; i++) {
@@ -468,7 +494,7 @@ export default {
       }
     },
     // 反选时处理方法
-    batchSelect(seletedDatas) {
+    batchSelect (seletedDatas) {
       if (typeof seletedDatas != "undefined") {
         var checkedKeys = []
         seletedDatas.forEach((node) => {
@@ -490,10 +516,10 @@ export default {
       }
     },
     //反勾选树节点
-    uncheckTreeNode(data){
+    uncheckTreeNode (data) {
       this.treeNodeSelectedObj = data
     },
-    handleClick(tab, event) {
+    handleClick (tab, event) {
       this.elTabsName = tab.label;
       if (tab.name == "0") {
         // this.tabclick = true
@@ -511,6 +537,9 @@ export default {
       // else {
       //   this.post_getDataTreeNode(this.query.dataSource);//目录
       // }
+      this.query.businessSystemId = ''
+      this.$emit("queryList", this.query, this.show_details = false)//查询全部注册表
+
     },
     filterNode (value, data, node) {
 
@@ -541,7 +570,7 @@ export default {
         this.getReturnNode(node.parent, _array, value);
       }
     },
-    nodeClick(data, node, tree) {
+    nodeClick (data, node, tree) {
       this.tableMetaUuid = "";
       // 个人空间模块
       if (this.loadLeftTreeType == "3") {
@@ -588,7 +617,7 @@ export default {
       }
     },
     //鼠标右键事件
-    nodeContextmenu(event, data, node, e) {
+    nodeContextmenu (event, data, node, e) {
       var menuId = "";
       var numm = $(document).height() - event.clientY;
       if (
@@ -655,7 +684,7 @@ export default {
         this.is_next = false;
       }
     },
-    handleCreateFolder(node, data) {
+    handleCreateFolder (node, data) {
       this.resetFolderForm();
       this.parentNode = node;
       this.dialogStatus = "create";

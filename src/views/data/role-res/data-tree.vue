@@ -31,12 +31,11 @@
                label-position="bottom">
         <el-form-item label="数据源："
                       label-width="65px">
-
           <div v-if="is_main_table">
             <!-- 注册新增关系树用 -->
             <el-select v-model="query.dataSource"
                        @change="selectdat_2"
-                       :disabled="tabclick"
+                       :disabled="isdisable"
                        placeholder="请选择数据源">
               <el-option v-for="item in options"
                          :key="item.value"
@@ -231,6 +230,13 @@ export default {
       default: () => ({})
     },
     is_main_table: Boolean,
+    isdisable: Boolean,
+    dataSource: {
+      type: String,
+      default () {
+        return "";
+      },
+    },
 
   },
   data () {
@@ -304,6 +310,9 @@ export default {
     this.query.businessSystemId = "";
     this.post_getBusinessSystemTree();//系统
 
+    if (this.dataSource) {
+      this.query.dataSource = this.dataSource;
+    }
     this.$emit("queryListData", this.query, this.show_details = false)
 
   },
