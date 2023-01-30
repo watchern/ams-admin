@@ -311,25 +311,7 @@
 
                 <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
                     <el-col :span="6">
-                        <el-form-item>
-                            <!--                            <DataTree ref="dataTree"-->
-                            <!--                                      v-loading="treeLoading"-->
-                            <!--                                      :props="props"-->
-                            <!--                                      :highlight-current="true"-->
-                            <!--                                      :data="orgTreeData"-->
-                            <!--                                      node-key="id"-->
-                            <!--                                      :filter-node-method="filterNode"-->
-                            <!--                                      show-checkbox-->
-                            <!--                                      :lazy="true"-->
-                            <!--                                      :load="loadNode"-->
-                            <!--                                      @node-expand="handleNodeClick"-->
-                            <!--                            >-->
-                            <!--                                <span slot-scope="{ node, data }" class="custom-tree-node">-->
-                            <!--                                    <span>{{ node.label }}</span>-->
-                            <!--                                </span>-->
-                            <!--                            </DataTree>-->
                             <LeftTrees ref="tree_left" ></LeftTrees>
-                        </el-form-item>
                     </el-col>
                     <el-col :span="2" style="width: 45px; padding-top: 60px">
                         <div class="transfer-center">
@@ -812,7 +794,7 @@
                     ) {
                         this.tableDataOffline.push({
                             tableMetaId : node.id,
-                            tablePath: node.path,
+                            tablePath: "数据装载/" + node.label,
                         });
                     }
                 });
@@ -1152,7 +1134,6 @@
 
                 this.$refs[form].validate((valid) => {
                     if (valid) {
-                        debugger
                         let isUpload = true
                         //校验文件是否上传
                         this.fileList.forEach((r) => {
@@ -1162,7 +1143,6 @@
                             }
                         })
                         if (this.title === '创建申请') {
-                            debugger
                             let params = {
                                 loadDownApply: {
                                     applyName: this.form.applyName,
@@ -1199,7 +1179,6 @@
                                 })
                             }
                         } else {
-                            debugger
                             let params = {
                                 loadDownApply: {
                                     applyUuid: this.form.applyUuid,
@@ -1211,7 +1190,6 @@
                             }
                             //update_data方法调用后台update接口实现编辑功能
                             if (isUpload) {
-                                debugger
                                 update_data(params).then(res => {
                                     if (res.code === 0) {
                                         this.$message({

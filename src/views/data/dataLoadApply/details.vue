@@ -93,55 +93,56 @@
                         </el-checkbox>
                     </template>
                 </el-table-column>
-                <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
-                    <el-col :span="24">
-                        <el-table key="colMetaUuid"
-                                  v-loading="listLoading"
-                                  fit
-                                  height="200px"
-                                  highlight-current-row
-                                  style="width: 100%;">
-                            <el-table-column type="selection" width="55"/>
-                            <el-table-column
-                                    label="表路径"
-                                    min-width="100px"
-                                    show-overflow-tooltip
-                            >
-                            </el-table-column>
-                            <el-table-column
-                                    label="归档方式"
-                                    align="center"
-                                    min-width="150px"
-                                    show-overflow-tooltip
-                            >
-                                <template slot-scope="scope">
-                                    <el-select
-                                            v-model="form.filingMove"
-                                            id="fileMove"
-                                            name="fileMove"
-                                    >
-                                    </el-select>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    label="归档文件/表名称"
-                                    align="center"
-                                    min-width="150px"
-                                    show-overflow-tooltip
-                            >
-                                <template slot-scope="scope">
-                                    <el-select
-                                            v-model="form.filingFile"
-                                            id="filingFile"
-                                            name="filingFile"
-                                    >
-                                    </el-select>
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                    </el-col>
-                </el-row>
+
             </el-table>
+            <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
+                <el-col :span="24">
+                    <el-table key="colMetaUuid"
+                              v-loading="listLoading"
+                              border
+                              fit
+                              :data="tableDataOffline"
+                              height="316px"
+                              highlight-current-row
+                              style="width: 100%;">
+                        <el-table-column label="序号" width="60px" align="center" type="index"/>
+                        <el-table-column
+                                label="表路径"
+                                prop="tablePath"
+                                min-width="150px"
+                                show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column
+                                label="归档方式"
+                                min-width="200px"
+                                align="center"
+                                prop="archiveType"
+                                show-overflow-tooltip>
+                            <template slot-scope="scope">
+                                <el-select v-model="scope.row.archiveType" placeholder="请选择" disabled>
+                                    <el-option
+                                            v-for="item in options"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="归档文件/表名称"
+                                align="center"
+                                min-width="200px"
+                                prop="archiveFileTableName"
+                                show-overflow-tooltip>
+                            <template slot-scope="scope">
+                                <el-input v-model="scope.row.archiveFileTableName" id="filingFile" disabled
+                                ></el-input>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </el-col>
+            </el-row>
         </el-form>
         <el-dialog v-if="dialogFileVisible"
                    :close-on-click-modal="false"
@@ -172,6 +173,7 @@
         data() {
             return {
                 tableData: [],
+                tableDataOffline:[],
                 fileString: '',
                 form: {
                     applyName: '',// 申请名称
@@ -227,6 +229,7 @@
                     .then((res) => {
                         this.form = res.data
                         this.tableData = res.data.fileList
+                        this.tableDataOffline = res.data.fileList
                     })
             },
             updateApplyStatus(value) {
