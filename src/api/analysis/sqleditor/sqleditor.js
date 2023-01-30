@@ -899,12 +899,11 @@ export async function getTableField(tableMetaUuid,dataSource){
       });
       // alert('错误' + e.message + 'error')
     } else {
-      
       for (let i = 0; i < result.data.length; i++) {
         if (result.data[i].chnName === '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
           columns.push(result.data[i].colName)
           var node = {
-            'id': tableName + '_' + this,
+            'id': result.data[i].colMetaUuid,
             'name': result.data[i].colName,
             'label': result.data[i].colName,
             'displayName': result.data[i].colName,
@@ -922,7 +921,7 @@ export async function getTableField(tableMetaUuid,dataSource){
           let columnName = result.data[i].colName + "(" + result.data[i].chnName + ")"
           columns.push(result.data[i].colName)
           var node = {
-            'id': tableName + '_' + this,
+            'id': result.data[i].colMetaUuid,
             'name': columnName,
             'label': columnName,
             'displayName': columnName,

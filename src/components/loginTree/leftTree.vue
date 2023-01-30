@@ -2,6 +2,7 @@
   <div class="left_tree_style">
     <el-tabs v-model="activeName"
              type="card"
+             v-if="this.loadLeftTreeType != '4'"
              @tab-click="handleClick">
       <el-tab-pane label="系统"
                    :disabled="tabclick"
@@ -455,14 +456,13 @@ export default {
       getPersonSpaceTree("", "", this.query.dataSource, this.loadLeftTreeType).then((resp) => {
         if(this.activeName === '3'){
           this.tree_list = resp.data;
+          this.tree_list.forEach(item => {
+            //SQL编辑器中，如果是表 需要展示字段不能去掉
+            if (item.type != 'table' && item.children.length == 0) {
+              item.leaf = true
+            }
+          })
         }
-        this.tree_list = resp.data;
-        this.tree_list.forEach(item => {
-          //SQL编辑器中，如果是表 需要展示字段不能去掉
-          if (item.type != 'table' && item.children.length == 0) {
-            item.leaf = true
-          }
-        })
         this.loading = false;
         this.tabclick = false;
       });
