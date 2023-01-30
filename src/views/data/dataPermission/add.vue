@@ -117,23 +117,21 @@
                       @sort-change="sortChange"
                       @selection-change="selectionChange">
                 <el-table-column type="selection"
-                                 width="55"/>
+                                 width="55" />
                 <el-table-column label="数据角色名称"
-                                 align="center"
-                                 min-width="100px"
-                                 show-overflow-tooltip
-                                 prop="dataRoleName"/>
+                                 min-width="150px"
+                                 prop="dataRoleName"
+                                 show-overflow-tooltip />
                 <el-table-column label="创建时间"
-                                 min-width="200px"
                                  align="center"
-                                 show-overflow-tooltip
-                                 prop="createTime"/>
-                <el-table-column label="数据有效期"
+                                 min-width="150px"
+                                 prop="createTime"
+                                 show-overflow-tooltip />
+                <el-table-column label="授权方式"
                                  align="center"
-                                 prop="timeDuring"
-                                 :formatter="formatDuring"
-                                 show-overflow-tooltip
-                                 min-width="380px"/>
+                                 prop="authenType"
+                                 min-width="150px"
+                                 :formatter="formatAuthenType" />
             </el-table>
             <pagination v-show="total>0"
                         :total="total"
@@ -367,7 +365,7 @@ export default {
             dataSetSelect: [],
             tableKey: 'dataRoleUuid',
             listLoading: false,
-            list: null,
+            list: [],
             total: 0,
             authenTypeJson: [],
             pageQuery: {
@@ -392,10 +390,18 @@ export default {
                 dataRoleName: this.dataRoleName
             })
         },
-        //
-        formatDuring(row, column) {
-            return row.startTime + '至' + row.endTime
+        //数据授权方式
+        formatAuthenType (row, column) {
+            var data = getDictList('004001')
+            var authenObj = data.filter(obj => { return obj.codeValue === row.authenType })
+            if (authenObj !== null) {
+                return authenObj[0].codeName
+            }
         },
+        //
+        // formatDuring(row, column) {
+        //     return row.startTime + '至' + row.endTime
+        // },
         handleFilter() {
             this.pageQuery.pageNo = 1
             this.getList()
@@ -413,7 +419,12 @@ export default {
             if (query) this.pageQuery.condition = query
             listByPage(this.pageQuery).then(resp => {
                 this.total = resp.data.total
-                this.list = resp.data.records
+                resp.data.records.forEach(item => {
+                    if (item.authenType === '004001002'){
+                        this.list.push(item);
+                    }
+                })
+                // this.list = resp.data.records
                 this.listLoading = false
             })
         },
@@ -457,7 +468,7 @@ export default {
         },
         //   保存
         submitForm(formName) {
-            this.$emit("oka", this.operatePermissionApply);
+            // this.$emit("oka", this.operatePermissionApply);
             this.$refs[formName].validate(valid => {
                 if (valid) {
                     let startTime = formatDate(new Date(this.operatePermissionApply.times[0]));
@@ -469,7 +480,7 @@ export default {
                     for (let i = 0; i < selectVal.length; i++) {
                         let selectUser = {
                             makeUserName: selectVal[i].cnname,
-                            makeUserUuid: selectVal[i].personuuid,
+                            makeUserUuid: selectVal[i].userid,
                         }
                         permissionApplyUserList.push(selectUser);
                     }
@@ -505,13 +516,7 @@ export default {
                     }
                     insertOperatePermissionApply(obj).then(res => {
                         this.$message.success('操作成功')
-                        new Promise(resolve => {
-                            if (res){
-                                resolve();
-                            }
-                        }).then(res => {
                             this.$emit('oka', obj);
-                        })
 
                     })
                 } else {

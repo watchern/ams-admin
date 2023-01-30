@@ -899,12 +899,11 @@ export async function getTableField(tableMetaUuid,dataSource){
       });
       // alert('错误' + e.message + 'error')
     } else {
-      
       for (let i = 0; i < result.data.length; i++) {
         if (result.data[i].chnName === '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
           columns.push(result.data[i].colName)
           var node = {
-            'id': tableName + '_' + this,
+            'id': result.data[i].colMetaUuid,
             'name': result.data[i].colName,
             'label': result.data[i].colName,
             'displayName': result.data[i].colName,
@@ -922,7 +921,7 @@ export async function getTableField(tableMetaUuid,dataSource){
           let columnName = result.data[i].colName + "(" + result.data[i].chnName + ")"
           columns.push(result.data[i].colName)
           var node = {
-            'id': tableName + '_' + this,
+            'id': result.data[i].colMetaUuid,
             'name': columnName,
             'label': columnName,
             'displayName': columnName,
@@ -1652,7 +1651,7 @@ export function initTableTip(dataUserId, scenecode, dataSource) {
  * 初始化智能提示的数据表-获取个人空间页签树 返回结果集字段变化
  * @returns 
  */
-export function getPersonSpaceTree(dataUserId, scenecode, dataSource) {
+export function getPersonSpaceTree(dataUserId, scenecode, dataSource, treeType) {
   var dataUserId1 = ''
   var sceneCode1 = ''
   if (dataUserId != undefined && dataUserId !="" && scenecode != undefined && scenecode !="") {
@@ -1662,7 +1661,7 @@ export function getPersonSpaceTree(dataUserId, scenecode, dataSource) {
     dataUserId1 = store.getters.datauserid
     sceneCode1 = store.getters.scenecode
   }
-  const params = { sceneCode: sceneCode1, dataUserId: dataUserId1, dataSource: dataSource }
+  const params = { sceneCode: sceneCode1, dataUserId: dataUserId1, dataSource: dataSource, treeType: treeType }
   // 调用后台获取数据表数据
   return request({
     baseURL: dataUrl,

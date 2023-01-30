@@ -509,7 +509,7 @@
                           prop="relationCol">
               <el-select v-model="table_visible_form.relationCol"
                          style="width: 100%"
-                         @change="colMetaChange($event, 'relColMetaUuid', 'relationTableName')">
+                         @change="colMetaChange($event, 'relColMetaUuid', 'relationCol')">
                 <el-option v-for="item in cong_table_list"
                            :key="item.colMetaUuid"
                            :label="item.colName"
@@ -1233,8 +1233,9 @@ export default {
         this.table_visible_form.tbName = "";
         this.table_visible_form.colName = "";
         this.table_visible_form.colMetaUuid = "";
-        this.table_visible_form.relColMetaUuid = this.tableMetaUuid;
+        this.table_visible_form.relColMetaUuid = "";
         this.table_visible_form.tableRelationUuid = "";
+        this.table_visible_form.relTableMetaUuid = this.tableMetaUuid;
         this.table_visible_form.relationTableName = this.form.tbName;
         this.table_visible_form.selectType = "";
         this.table_visible_form.sqlGenJoinType = "";
@@ -1247,6 +1248,7 @@ export default {
         this.table_visible_form.colMetaUuid = "";
         this.table_visible_form.relColMetaUuid = "";
         this.table_visible_form.tableRelationUuid = "";
+        this.table_visible_form.relTableMetaUuid = "";
         this.table_visible_form.relationTableName = "";
         this.table_visible_form.selectType = "";
         this.table_visible_form.sqlGenJoinType = "";
@@ -1291,7 +1293,6 @@ export default {
         const arr = str.split(">");
         this.table_visible_form.tbName = arr[1]; //表名称
         this.table_visible_form.tableMetaUuid = arr[0] + ">" + arr[1];
-
         if (this.table_visible_form.tbName == this.table_visible_form.relationTableName) {
           this.$message({
             message: "请不要选择已关联的主表",

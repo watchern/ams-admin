@@ -2,6 +2,7 @@
   <div class="left_tree_style">
     <el-tabs v-model="activeName"
              type="card"
+             v-if="this.loadLeftTreeType != '4'"
              @tab-click="handleClick">
       <el-tab-pane label="系统"
                    :disabled="tabclick"
@@ -26,7 +27,8 @@
                 placeholder="输入关键字进行过滤" />
     </div>
     <!-- 数据源 -->
-    <div class="padding10 dataSource">
+    <div class="padding10 dataSource"
+         v-if="this.loadLeftTreeType != '4' && this.loadLeftTreeType != '3'">
       <el-form :inline="true"
                :model="query"
                label-position="bottom">
@@ -282,7 +284,6 @@ export default {
     },
     //拖拽结束时（可能未成功）触发的事件
     handleDragEnd (draggingNode, dropNode, dropType, ev) {
-      console.log(draggingNode);
       // 只有表和字段能拖拽
       if (
         draggingNode.data.type === "table" ||
@@ -300,12 +301,18 @@ export default {
     async loadNode (node, resolve) {
       if (node.level === 0) {
         return resolve(node.data);
-      }
-      if (node.level === 1) {
-        return resolve(node.data.children);
-      }
-      if (node.level == 2) {
-        if (!this.isShowPersonSpaceTab) {
+      } else if (node.level === 1) {
+        //只有SQL编辑器的表才需要展示字段
+        if (node.data.type === "table" && this.loadLeftTreeType === "1") {
+          var nodeList = getTableField(node.data.id, this.query.dataSource);
+          Promise.all([nodeList]).then((res) => {
+            resolve(res[0]);
+          });
+        } else {
+          return resolve(node.data.children);
+        }
+      } else if (node.level == 2) {
+        if (this.loadLeftTreeType != "1") {
           //去掉表加载字段
           resolve([]);
         } else {
@@ -388,12 +395,15 @@ export default {
       this.tabclick = true;
       this.elTabsName = "系统";
       getBusinessSystemTree(true, this.query.dataSource, true).then((resp) => {
-        this.tree_list = resp.data;
-        this.tree_list.forEach(item => {
-          if (item.children.length == 0) {
-            item.leaf = true
-          }
-        })
+        if (this.activeName === '0') {
+          this.tree_list = resp.data;
+          this.tree_list.forEach(item => {
+            //SQL编辑器中，如果是表 需要展示字段不能去掉
+            if (item.type != 'table' && item.children.length == 0) {
+              item.leaf = true
+            }
+          })
+        }
         this.loading = false;
         this.tabclick = false;
         //加载勾选数据
@@ -409,7 +419,8 @@ export default {
       getThemeTree(true, this.query.dataSource, true).then((resp) => {
         this.tree_list = resp.data;
         this.tree_list.forEach(item => {
-          if (item.children.length == 0) {
+          //SQL编辑器中，如果是表 需要展示字段不能去掉
+          if (item.type != 'table' && item.children.length == 0) {
             item.leaf = true
           }
         })
@@ -428,7 +439,8 @@ export default {
       getLayeredTree(true, this.query.dataSource, true).then((resp) => {
         this.tree_list = resp.data;
         this.tree_list.forEach(item => {
-          if (item.children.length == 0) {
+          //SQL编辑器中，如果是表 需要展示字段不能去掉
+          if (item.type != 'table' && item.children.length == 0) {
             item.leaf = true
           }
         })
@@ -444,16 +456,16 @@ export default {
     post_getPersonSpaceTree () {
       this.loading = true;
       this.tabclick = true;
-      getPersonSpaceTree("", "", this.query.dataSource).then((resp) => {
+      getPersonSpaceTree("", "", this.query.dataSource, this.loadLeftTreeType).then((resp) => {
         if (this.activeName === '3') {
           this.tree_list = resp.data;
+          this.tree_list.forEach(item => {
+            //SQL编辑器中，如果是表 需要展示字段不能去掉
+            if (item.type != 'table' && item.children.length == 0) {
+              item.leaf = true
+            }
+          })
         }
-        this.tree_list = resp.data;
-        this.tree_list.forEach(item => {
-          if (item.children.length == 0) {
-            item.leaf = true
-          }
-        })
         this.loading = false;
         this.tabclick = false;
       });
@@ -748,7 +760,6 @@ export default {
                 // 分层
                 this.post_getLayeredTree(); //分层
               }
-
             });
           }
 
