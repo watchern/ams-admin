@@ -50,6 +50,7 @@
         ,queryByPersonalSpaceUuid
         ,batchUpdateForBackApplicationHandle
     } from "@/api/data/personalSpace";
+    import {incrementPersonalSpaceManage} from "@/api/data/personalSpaceManage"
     export default {
         name: "expansionDetail",
         data(){
@@ -81,6 +82,12 @@
             },
             //更新对应业务状态方法 可以加入自己的style
             updateApplyStatus(value){
+              queryByPersonalSpaceUuid(value)
+              .then((res)=>{
+                var param = res.data.personalSpaceCapacity
+                //调用个人空间管理的扩容方法 对 已经办理完成的空间进行扩容
+                incrementPersonalSpaceManage(param)
+              })
                 var personalSpace = {
                     personalSpaceUuid: value
                 }

@@ -480,7 +480,7 @@ export default {
                     for (let i = 0; i < selectVal.length; i++) {
                         let selectUser = {
                             makeUserName: selectVal[i].cnname,
-                            makeUserUuid: selectVal[i].personuuid,
+                            makeUserUuid: selectVal[i].userid,
                         }
                         permissionApplyUserList.push(selectUser);
                     }

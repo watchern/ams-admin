@@ -79,10 +79,10 @@
                     >办理
                     </el-button
                     >
-                    <el-button size="mini" type="primary" @click="goExport"
-                    >导出
-                    </el-button
-                    >
+<!--                    <el-button size="mini" type="primary" @click="goExport"-->
+<!--                    >导出-->
+<!--                    </el-button-->
+<!--                    >-->
                 </div>
             </div>
             <el-table
@@ -330,7 +330,7 @@ export default {
                 if (resp.data) {
                     this.tableData = resp.data.records;
                     this.tableData.sort();
-                    console.log(this.tableData)
+                    // console.log(this.tableData)
                     this.selected = [];
                     this.total = resp.data.total;
                 } else {
@@ -445,7 +445,6 @@ export default {
         ,
         // 添加保存
         addSucceed(obj) {
-            console.log(1)
             this.goQuery();
             this.showAddDialog = false
             // if (this.tableData.length < this.dataBaseData.pageSize){
