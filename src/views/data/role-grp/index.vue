@@ -298,6 +298,13 @@ export default {
     },
     sureServiceLife(){
       var tableId = this.row.tableId
+      //起止时间必填
+      if(this.temp.startTime === null || this.temp.startTime === undefined || this.temp.startTime === ""){
+        return this.$message({ type: "error", message: "请填写开始时间" });
+      }
+      if(this.temp.endTime === null || this.temp.endTime === undefined || this.temp.endTime === ""){
+        return this.$message({ type: "error", message: "请填写结束时间" });
+      }
       this.tableData[tableId-1].startTime = this.temp.startTime
       this.tableData[tableId-1].endTime = this.temp.endTime
       this.serviceLifeDialog = false
