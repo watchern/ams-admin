@@ -169,6 +169,7 @@
                                     id="operationType"
                                     name="operationType"
                                     :disabled="dialogStatusValue"
+                                    @change="typeChange"
                             >
                                 <el-option
                                         v-for="operationType in this.operationTypes"
@@ -327,6 +328,7 @@
                             <!--                                    <span>{{ node.label }}</span>-->
                             <!--                                </span>-->
                             <!--                            </DataTree>-->
+                            <LeftTrees ref="tree_left" ></LeftTrees>
                         </el-form-item>
                     </el-col>
                     <el-col :span="2" style="width: 45px; padding-top: 60px">
@@ -349,22 +351,25 @@
                                     type="primary"
                                     class="oper-btn delete"
                                     :disabled="selections.length === 0"
-                                    @click="removeGrp"
+                                    @click="removeGrp()"
                             />
                         </el-col>
                         <el-table key="colMetaUuid"
                                   v-loading="listLoading"
                                   border
                                   fit
+                                  :data="tableDataOffline"
                                   height="316px"
                                   highlight-current-row
                                   style="width: 100%;"
                                   @selection-change="handleSelectionTreeChange">
                             <!--                            <el-table-column width="40px" type="selection"/>-->
                             <el-table-column type="selection" width="55px"/>
-                            <el-table-column label="序号" width="60px" align="center" prop="applyId"/>
+                            <el-table-column label="序号" width="60px" align="center" type="index"/>
+                            <el-table-column prop="tableMetaId" v-if="false"/>
                             <el-table-column
                                     label="表路径"
+                                    prop="tablePath"
                                     min-width="150px"
                                     show-overflow-tooltip>
                             </el-table-column>
@@ -372,14 +377,16 @@
                                     label="归档方式"
                                     min-width="200px"
                                     align="center"
-                                    prop="createTime"
+                                    prop="archiveType"
                                     show-overflow-tooltip>
                                 <template slot-scope="scope">
-                                    <el-select
-                                            v-model="form.filingMove"
-                                            id="fileMove"
-                                            name="fileMove"
-                                    >
+                                    <el-select v-model="scope.row.archiveType" placeholder="请选择">
+                                        <el-option
+                                                v-for="item in options"
+                                                :key="item.value"
+                                                :label="item.label"
+                                                :value="item.value">
+                                        </el-option>
                                     </el-select>
                                 </template>
                             </el-table-column>
@@ -387,15 +394,11 @@
                                     label="归档文件/表名称"
                                     align="center"
                                     min-width="200px"
-                                    prop="createTime"
+                                    prop="archiveFileTableName"
                                     show-overflow-tooltip>
                                 <template slot-scope="scope">
-                                    <el-select
-                                            v-model="form.filingFile"
-                                            id="filingFile"
-                                            name="filingFile"
-                                    >
-                                    </el-select>
+                                    <el-input v-model="scope.row.archiveFileTableName" id="filingFile"
+                                              ></el-input>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -509,20 +512,21 @@
         upload
     } from "@/api/data/loadApply";
     import FileImport from '@/views/data/dataLoadApply/fileupload';
-    import DataTree from '@/components/public/tree/src/tree';
+    import LeftTrees from '@/components/loginTree/leftTree.vue';
     import FlowItem from '@/components/starflow/todowork/flowItem';
     import Details from '@/views/data/dataLoadApply/details';
     import flowOpinionList from "@/components/starflow/todowork/flowOpinionList"
 
 
     export default {
-        components: {FileImport, DataTree, FlowItem, Details, flowOpinionList},
+        components: {FileImport, LeftTrees, FlowItem, Details, flowOpinionList},
         data() {
             return {
                 //文件列表存储的数组
                 fileList: [],
                 //存储文件附带属性的数组
                 tableData: [],
+                tableDataOffline:[],
                 //给tableData赋空的空数组
                 tableNullData: [],
                 //存储分割文件名的数组
@@ -774,6 +778,10 @@
                 detailsUuid: '',
                 //判断是新增还是修改，状态标识符
                 dialogStatusValue: false,
+                options: [{
+                    value: '0',
+                    label: '归档到文件'
+                }],
             };
         },
         computed: {},
@@ -782,53 +790,50 @@
             this.getList();//刷新列表
         },
         methods: {
+            typeChange(val){
+                if(val === "1"){
+                    this.$nextTick(()=>{
+                        this.$refs.tree_left.loadLeftTreeTypeFun("4");
+                    })
+                }
+            },
             //下线方法
-            // addGrp() {
-            //     var nodes = this.$refs["dataTree"][0].getCheckedNodes();
-            //     if (nodes.length === 0) {
-            //         nodes.push(this.$refs["dataTree"][0].getCurrentNode());
-            //     }
-            //     nodes.forEach((node) => {
-            //         if (
-            //             this.tableData.filter((data) => {
-            //                 return data.unitUuid === node.id;
-            //             }).length === 0 &&
-            //             this.tableData.filter((data) => {
-            //                 return data.grpInstUuid === node.id;
-            //             }).length === 0
-            //         ) {
-            //             this.tableData.push({
-            //                 // dataRoleUuid: this.roleUuid,
-            //                 // sceneGrpUuid: this.grpUuid,
-            //                 // userName: node.name,
-            //                 // userType: node.type,
-            //                 // grpInstUuid: node.type == 1 ? node.id : "null",
-            //                 // unitUuid: node.type == 2 ? node.id : "null",
-            //                 // valid: 1,
-            //                 // startTime: null,
-            //                 // endTime: null,
-            //             });
-            //         }
-            //     });
-            // },
-            // removeGrp() {
-            //     var map = {};
-            //     this.selections.forEach((sel) => {
-            //         map[sel.userType + sel.grpInstUuid + sel.unitUuid] = sel;
-            //     });
-            //     for (var index = 0; index < this.tableData.length;) {
-            //         var value = this.tableData[index];
-            //         if (map[value.userType + value.grpInstUuid + value.unitUuid]) {
-            //             this.tableData.splice(index, 1);
-            //         } else {
-            //             index++;
-            //         }
-            //     }
-            // },
-            // handleSelectionTreeChange(val) {
-            //     console.log(val);
-            //     this.selections = val;
-            // },
+            addGrop() {
+                console.log(this.$refs.tree_left.treeNodeSelectedObj);
+                var nodes = [];
+                nodes = this.$refs.tree_left.treeNodeSelectedObj[0].data;
+                this.tableDataOffline = []
+                // if (nodes.length === 0) {
+                //     //nodes.push(this.$refs["dataTree"][0].getCurrentNode());
+                // }
+                nodes.forEach((node) => {
+                    if (
+                        node.type === "table"
+                    ) {
+                        this.tableDataOffline.push({
+                            tableMetaId : node.id,
+                            tablePath: node.path,
+                        });
+                    }
+                });
+                console.log(this.tableDataOffline,"this.tableDataOffline")
+            },
+            removeGrp() {
+                if(this.selections.length > 0){
+                    for (let index = 0; index < this.selections.length;index++) {
+                        for (let y = 0; y < this.tableDataOffline.length; y++) {
+                            if (this.tableDataOffline[y] == this.selections[index]) {
+                                this.tableDataOffline.splice(y, 1);
+                            }
+                        }
+                    }
+                }
+
+            },
+            handleSelectionTreeChange(val) {
+                console.log(val);
+                this.selections = val;
+            },
             // // 获取个人数据与全行数据列表
             // getOrgTree() {
             // //     this.treeLoading = true;
@@ -1139,6 +1144,7 @@
 
             // 新建保存 && 编辑保存
             save(form) {
+
                 this.isDisable = true
                 setTimeout(() => {
                     this.isDisable = false
@@ -1146,6 +1152,7 @@
 
                 this.$refs[form].validate((valid) => {
                     if (valid) {
+                        debugger
                         let isUpload = true
                         //校验文件是否上传
                         this.fileList.forEach((r) => {
@@ -1155,6 +1162,7 @@
                             }
                         })
                         if (this.title === '创建申请') {
+                            debugger
                             let params = {
                                 loadDownApply: {
                                     applyName: this.form.applyName,
@@ -1162,10 +1170,11 @@
                                     operationType: this.form.operationType,
                                     loadType: this.form.loadType,
                                 },
-                                "tableData": JSON.stringify(this.tableData),
+
+                                "tableData": this.form.operationType == 0 ? JSON.stringify(this.tableData) : JSON.stringify(this.tableDataOffline),
                             }
                             //校验是否选择了文件
-                            if (this.tableData.length === 0) {
+                            if (this.tableData.length === 0 && this.form.operationType === 0) {
                                 this.$notify.warning("请选择文件！")
                                 return
                             }
@@ -1190,6 +1199,7 @@
                                 })
                             }
                         } else {
+                            debugger
                             let params = {
                                 loadDownApply: {
                                     applyUuid: this.form.applyUuid,
@@ -1197,10 +1207,11 @@
                                     operationType: this.form.operationType,
                                     loadType: this.form.loadType,
                                 },
-                                "tableData": JSON.stringify(this.tableData),
+                                "tableData": this.form.operationType == 0 ? JSON.stringify(this.tableData) : JSON.stringify(this.tableDataOffline),
                             }
                             //update_data方法调用后台update接口实现编辑功能
                             if (isUpload) {
+                                debugger
                                 update_data(params).then(res => {
                                     if (res.code === 0) {
                                         this.$message({
