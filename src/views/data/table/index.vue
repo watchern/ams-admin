@@ -57,7 +57,7 @@
           模式名称：
           <el-select v-model="schemaName"
                      @change="filterTables"
-                     style="width: 70%"
+                     style="width: 400px"
                      clearable>
             <el-option v-for="item in schemaData"
                        :key="item"
@@ -66,7 +66,7 @@
           </el-select>
         </div>
 
-        <el-input style="width: 70%"
+        <el-input style="width: 330px;margin-left:70px"
                   v-model="filterText1"
                   placeholder="输入想要查询的表名称（模糊搜索）" />
         <el-button @click="getTables">搜索</el-button>
@@ -1313,6 +1313,7 @@ export default {
       this.tableMetaUuid = data.tableMetaUuid;
       this.show_details = true;
       this.isDisable_input = true;
+
     },
     // 通过模式名过滤表名
     filterTables (val) {
@@ -1363,6 +1364,7 @@ export default {
       this.$nextTick(() => {
         this.$refs.Details_ref.$refs.tableLines.init(1)//刷新列表 更新关系树
         this.$refs.Details_ref.post_sql_data()//更新查看sql
+        this.$refs.Details_ref.table_list(this.tableMetaUuid)//更新列信息
       })
     },
     // 列表 接口
@@ -1524,6 +1526,7 @@ export default {
       } else {
         // this.registTableFlag = false;//关闭上一步
         this.dialogVisible_information = true; //显示下一步 基本信息
+        this.form.chnName = ''
         this.btnLoading = false;
         this.$nextTick(() => {
           this.$refs.form.resetFields(); //清空添加的值

@@ -356,6 +356,8 @@ export default {
     selectdata (val) {
       this.query.dataSource = val;
       this.query.businessSystemId = ''
+      this.query.tableThemeId = ''
+      this.query.tableLayeredId = ''
       if (this.activeName == "0") {
         // 系统
         this.post_getBusinessSystemTree(); //系统
@@ -443,7 +445,7 @@ export default {
       this.loading = true;
       this.tabclick = true;
       getPersonSpaceTree("", "", this.query.dataSource).then((resp) => {
-        if(this.activeName === '3'){
+        if (this.activeName === '3') {
           this.tree_list = resp.data;
         }
         this.tree_list = resp.data;
@@ -527,6 +529,8 @@ export default {
       //   this.post_getDataTreeNode(this.query.dataSource);//目录
       // }
       this.query.businessSystemId = ''
+      this.query.tableThemeId = ''
+      this.query.tableLayeredId = ''
       this.$emit("queryList", this.query, this.show_details = false)//查询全部注册表
 
     },
@@ -563,7 +567,7 @@ export default {
       this.tableMetaUuid = "";
       // 个人空间模块
       if (this.loadLeftTreeType == "3") {
-        this.$emit("personalSpacePageQueryByTreeNode",data,node);
+        this.$emit("personalSpacePageQueryByTreeNode", data, node);
       }
       // 显示列表
       if (node.level == 1) {
@@ -715,6 +719,7 @@ export default {
                 commonNotify({ type: "success", message: "删除成功！" })
               );
               this.$refs.tree2.remove(data);
+              this.$emit("queryList", this.query, this.show_details);//刷新右侧列表
               if (this.activeName == "0") {
                 // 系统
                 this.post_getBusinessSystemTree(); //系统
@@ -732,6 +737,7 @@ export default {
                 commonNotify({ type: "success", message: "删除成功！" })
               );
               this.$refs.tree2.remove(data);
+              this.$emit("queryList", this.query, this.show_details);//刷新右侧列表
               if (this.activeName == "0") {
                 // 系统
                 this.post_getBusinessSystemTree(); //系统
@@ -745,6 +751,7 @@ export default {
 
             });
           }
+
         })
         .catch(() => { });
     },
