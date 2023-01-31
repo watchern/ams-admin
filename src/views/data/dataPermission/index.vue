@@ -79,10 +79,10 @@
                     >办理
                     </el-button
                     >
-                    <el-button size="mini" type="primary" @click="goExport"
-                    >导出
-                    </el-button
-                    >
+<!--                    <el-button size="mini" type="primary" @click="goExport"-->
+<!--                    >导出-->
+<!--                    </el-button-->
+<!--                    >-->
                 </div>
             </div>
             <el-table
@@ -108,13 +108,6 @@
                     label="申请时间"
                     show-overflow-tooltip
                     min-width="150px"
-                >
-                </el-table-column>
-                <el-table-column
-                    prop="workFlowHandlink"
-                    label="当前环节"
-                    min-width="150px"
-                    show-overflow-tooltip
                 >
                 </el-table-column>
                 <el-table-column
@@ -337,6 +330,7 @@ export default {
                 if (resp.data) {
                     this.tableData = resp.data.records;
                     this.tableData.sort();
+                    // console.log(this.tableData)
                     this.selected = [];
                     this.total = resp.data.total;
                 } else {
@@ -382,7 +376,7 @@ export default {
             }).then(() => {
                 deleteOperatePermissionApply(operatePermissionApplyUuidList).then(resp => {
                     this.$notify.success("删除成功");
-                    if (this.dataBaseData.pageNo > (this.total / this.dataBaseData.pageSize) && this.dataBaseData.pageNo > 1) {
+                    if (this.dataBaseData.pageNo > Math.ceil(this.total / this.dataBaseData.pageSize) && this.dataBaseData.pageNo > 1) {
                         this.dataBaseData.pageNo--;
                     }
                     this.goQuery();
@@ -451,6 +445,7 @@ export default {
         ,
         // 添加保存
         addSucceed(obj) {
+            this.goQuery();
             this.showAddDialog = false
             // if (this.tableData.length < this.dataBaseData.pageSize){
             //     this.tableData.push({
@@ -461,7 +456,6 @@ export default {
             //     });
             //     this.tableData.sort();
             // }
-            this.goQuery();
         },
         updateForSubmit() {
             updateForHandle(this.selected[0])

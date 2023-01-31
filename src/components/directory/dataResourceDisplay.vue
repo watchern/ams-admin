@@ -167,10 +167,10 @@
 
                   <div class="new_left padding7">
                     <div class="cover">
-                      <!-- <img src="../../assets/img/msq.png"
-                           alt=""> -->
-                      <h2>{{ scope.row.tableRelationQuery.tableLayeredName }}</h2>
-                      <span class="_title">{{ scope.row.tableRelationQuery.businessSystemName }}</span>
+                      <h2 :class="scope.row.tableRelationQuery.businessSystemName ? 'is_title':''">
+                        {{ scope.row.tableRelationQuery.tableLayeredName }}</h2>
+                      <span class="_title"
+                            v-if="scope.row.tableRelationQuery.businessSystemName">{{ scope.row.tableRelationQuery.businessSystemName }}</span>
                     </div>
 
                   </div>
@@ -355,10 +355,10 @@ export default {
       //  if(this.check_list.length !== 0) {
       this.$emit("down_template_table", this.check_list)
     },
-    // 导入数据字典
+    // 导入数据资源
     Importdata_dictionary () {
       // this.common_dialog = true;
-      this.$emit("Importdata_dictionary", '导入数据字典')
+      this.$emit("Importdata_dictionary", '导入数据资源')
     },
     // 导入汉化信息
     Important_cn () {
@@ -668,14 +668,17 @@ export default {
   width: 100%;
   height: 100%;
   display: flex;
-  align-items: flex-start;
   text-align: center;
+  align-items: center;
+  padding: 0 5px 0;
   justify-content: center;
-  padding: 10px 5px 0;
   font-weight: bold;
   font-size: 40px;
 }
-
+.is_title {
+  padding: 10px 5px 0 !important;
+  align-items: flex-start !important;
+}
 .new_left ._title {
   font-size: 16px;
   position: absolute;
@@ -759,7 +762,7 @@ export default {
   -webkit-transform: scale(0);
   transform-origin: left top;
   overflow: auto;
-  height: 140px;
+  height: 115px;
   padding: 10px !important;
 }
 

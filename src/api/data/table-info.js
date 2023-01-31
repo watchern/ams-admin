@@ -2,6 +2,7 @@
 import request from '@/utils/request'
 
 const baseURL = '/data'
+const baseURL2 = '/nlp'
 
 const controller2 = 'tableMeta'
 const BusinessSystem = 'businessSystem'
@@ -50,7 +51,7 @@ export function getDataTreeNode (dataSource) {
 
 
 // 系统
-export function getBusinessSystemTree (isShowTable, dataSource, onlyShowPublic) {
+export function getBusinessSystemTree (isShowTable, dataSource, onlyShowPublic,loadLeftTreeType) {
   return request({
     baseURL: baseURL,
     url: `/${BusinessSystem}/getBusinessSystemTree`,
@@ -59,11 +60,12 @@ export function getBusinessSystemTree (isShowTable, dataSource, onlyShowPublic) 
       isShowTable: isShowTable,//是否显示表
       dataSource: dataSource,//数据源
       onlyShowPublic: onlyShowPublic,//数据表注册左侧树传参true,数据资源目录左侧树传参false
+      loadLeftTreeType: loadLeftTreeType,// 区分不同模块，sql编辑器需要获取用户权限范围内表
     }
   })
 }
 // 主题
-export function getThemeTree (isShowTable, dataSource, onlyShowPublic) {
+export function getThemeTree (isShowTable, dataSource, onlyShowPublic,loadLeftTreeType) {
   return request({
     baseURL: baseURL,
     url: `/${BusinessSystem}/getThemeTree`,
@@ -72,11 +74,12 @@ export function getThemeTree (isShowTable, dataSource, onlyShowPublic) {
       isShowTable: isShowTable,//是否显示表
       dataSource: dataSource,//数据源
       onlyShowPublic: onlyShowPublic,//数据表注册左侧树传参true,数据资源目录左侧树传参false
+      loadLeftTreeType: loadLeftTreeType,// 区分不同模块，sql编辑器需要获取用户权限范围内表
     }
   })
 }
 // 数据分层
-export function getLayeredTree (isShowTable, dataSource, onlyShowPublic) {
+export function getLayeredTree (isShowTable, dataSource, onlyShowPublic,loadLeftTreeType) {
   return request({
     baseURL: baseURL,
     url: `/${BusinessSystem}/getLayeredTree`,
@@ -85,6 +88,7 @@ export function getLayeredTree (isShowTable, dataSource, onlyShowPublic) {
       isShowTable: isShowTable,//是否显示表
       dataSource: dataSource,//数据源
       onlyShowPublic: onlyShowPublic,//数据表注册左侧树传参true,数据资源目录左侧树传参false
+      loadLeftTreeType: loadLeftTreeType,// 区分不同模块，sql编辑器需要获取用户权限范围内表
     }
   })
 }
@@ -426,5 +430,14 @@ export function listSchemas (dataSource) {
     url: `/${controller2}/listSchemas`,
     method: 'get',
     params: { dataSource: dataSource }
+  })
+}
+
+// 获取标签分类树
+export function getLabelTree () {
+  return request({
+    baseURL: baseURL2,
+    url: `/nlpLabelLibrary/findLabelTree`,
+    method: 'get',
   })
 }
