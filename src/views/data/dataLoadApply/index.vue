@@ -493,7 +493,6 @@
         batchUpdateForHandle,
         upload
     } from "@/api/data/loadApply";
-    import FileImport from '@/views/data/dataLoadApply/fileupload';
     import LeftTrees from '@/components/loginTree/leftTree.vue';
     import FlowItem from '@/components/starflow/todowork/flowItem';
     import Details from '@/views/data/dataLoadApply/details';
@@ -501,7 +500,7 @@
 
 
     export default {
-        components: {FileImport, LeftTrees, FlowItem, Details, flowOpinionList},
+        components: {LeftTrees, FlowItem, Details, flowOpinionList},
         data() {
             return {
                 //文件列表存储的数组
