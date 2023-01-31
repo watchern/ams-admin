@@ -365,9 +365,8 @@
         </div>
         <!-- 保存按钮 返回上一步 -->
         <div class="fixed_btn">
-          <el-button size="small"
-                     type="primary"
-                     @click="step()">返回>></el-button>
+          <el-button type="primary"
+                     @click="step()">返回</el-button>
           <el-button type="primary"
                      @click="update_save()"
                      :disabled="isDisable_input"
@@ -1093,6 +1092,10 @@ export default {
           });
           this.$emit("query_data"); //刷新页面
           this.table_list(this.tableMetaUuid);
+
+
+
+
           // this.$emit("update_list");
         } else {
           this.$message({

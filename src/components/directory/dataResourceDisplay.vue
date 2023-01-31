@@ -762,7 +762,7 @@ export default {
   -webkit-transform: scale(0);
   transform-origin: left top;
   overflow: auto;
-  height: 140px;
+  height: 115px;
   padding: 10px !important;
 }
 

@@ -985,6 +985,18 @@ export default {
     // 获取资料书的参数
     QueryData () {
       this.query_list(this.$refs.tree_left.query, false);
+      this.update_tree();//更新左侧树
+    },
+
+    // 更新左侧树
+    update_tree () {
+      if (this.$refs.tree_left.activeName == '0') {
+        this.$refs.tree_left.post_getBusinessSystemTree() //系统
+      } else if (this.$refs.tree_left.activeName == '1') {
+        this.$refs.tree_left.post_getThemeTree(); //分层
+      } else {
+        this.$refs.tree_left.post_getDataTreeNode(); //目录
+      }
     },
     // 跟新关系图
     updateDetails (id) {
@@ -1134,6 +1146,9 @@ export default {
               duration: 2000,
               position: "bottom-right",
             });
+
+            this.update_tree();//更新左侧树
+
             this.query_list(this.$refs.tree_left.query, false);
           } else {
             this.$message({
@@ -1615,6 +1630,7 @@ export default {
           // this.post_getLayeredTree(); //分层
           // this.post_getDataTreeNode();//目录
           this.query_list(this.$refs.tree_left.query, false);
+          this.update_tree();//更新左侧树
           let activeName = this.$refs.tree_left.activeName
           this.$refs.tree_left.handleClick(activeName)//更新查看sql
           // this.$nextTick(() => {
@@ -1788,14 +1804,7 @@ export default {
                 // this.$message.success("新增成功");
                 this.btnLoading = false; //保存loadnin
                 this.chooseTables = []; //传输的数据
-
-                if (this.$refs.tree_left.activeName == '0') {
-                  this.$refs.tree_left.post_getBusinessSystemTree() //系统
-                } else if (this.$refs.tree_left.activeName == '1') {
-                  this.$refs.tree_left.post_getThemeTree(); //分层
-                } else {
-                  this.$refs.tree_left.post_getDataTreeNode(); //目录
-                }
+                this.update_tree();//更新左侧树
                 this.query_list(this.$refs.tree_left.query, false);//刷新列表
                 this.$nextTick(() => {
                   this.$refs.form.resetFields(); //清空添加的值
