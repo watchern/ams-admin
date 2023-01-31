@@ -155,7 +155,6 @@
                                       prop="applyPerson">
                             <el-input style="width: 100%;"
                                       type="text"
-                                      placeholder="默认为当前登录人"
                                       v-model="form.applyPerson"
                                       :rows="4" disabled></el-input>
                         </el-form-item>
@@ -229,6 +228,12 @@
                                 show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
+                                prop="displayTableName"
+                                min-width="100px"
+                                label="表名称"
+                                show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column
                                 prop="fileType"
                                 min-width="100px"
                                 label="文件类型"
@@ -248,7 +253,7 @@
                                         name="lineSeparator"
                                         style="width: 80%"
                                         :disabled="scope.row.disabled"
-                                        placeholder="不可选择"
+                                        placeholder="无"
                                 >
                                     <el-option
                                             v-for="lineSeparator in lineSeparators"
@@ -272,7 +277,7 @@
                                         name="columnSeparator"
                                         style="width: 80%"
                                         :disabled="scope.row.disabled"
-                                        placeholder="不可选择"
+                                        placeholder="无"
                                 >
                                     <el-option
                                             v-for="columnSeparator in columnSeparators"
@@ -311,7 +316,7 @@
 
                 <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
                     <el-col :span="6">
-                            <LeftTrees ref="tree_left" ></LeftTrees>
+                        <LeftTrees ref="tree_left"></LeftTrees>
                     </el-col>
                     <el-col :span="2" style="width: 45px; padding-top: 60px">
                         <div class="transfer-center">
@@ -360,6 +365,7 @@
                                     min-width="200px"
                                     align="center"
                                     prop="archiveType"
+                                    props
                                     show-overflow-tooltip>
                                 <template slot-scope="scope">
                                     <el-select v-model="scope.row.archiveType" placeholder="请选择">
@@ -380,7 +386,7 @@
                                     show-overflow-tooltip>
                                 <template slot-scope="scope">
                                     <el-input v-model="scope.row.archiveFileTableName" id="filingFile"
-                                              ></el-input>
+                                    ></el-input>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -441,7 +447,7 @@
                    :close-on-click-modal="false"
                    :visible.sync="dialogDetailVisible"
                    title="详情"
-                   width="60%"
+                   width="80%"
         >
             <div>
                 <Details ref="detailsUuid"
@@ -493,7 +499,6 @@
         batchUpdateForHandle,
         upload
     } from "@/api/data/loadApply";
-    import FileImport from '@/views/data/dataLoadApply/fileupload';
     import LeftTrees from '@/components/loginTree/leftTree.vue';
     import FlowItem from '@/components/starflow/todowork/flowItem';
     import Details from '@/views/data/dataLoadApply/details';
@@ -501,14 +506,15 @@
 
 
     export default {
-        components: {FileImport, LeftTrees, FlowItem, Details, flowOpinionList},
+        components: {LeftTrees, FlowItem, Details, flowOpinionList},
         data() {
             return {
                 //文件列表存储的数组
                 fileList: [],
                 //存储文件附带属性的数组
                 tableData: [],
-                tableDataOffline:[],
+                //数据下线存储的数组
+                tableDataOffline: [],
                 //给tableData赋空的空数组
                 tableNullData: [],
                 //存储分割文件名的数组
@@ -525,6 +531,7 @@
 
                 file: {
                     fileName: '',
+                    displayTableName: '',
                     fileType: '',
                     lineSeparator: '',
                     columnSeparator: '',
@@ -684,6 +691,7 @@
                     filingMove: '',//归档方式
                     filingFile: '',//归档文件
                     fileType: '',
+                    displayTableName: '',//表名称
                 },
                 isDisable: false, //防止重复提交
                 applyDialogVisible: false,//申请弹窗
@@ -717,6 +725,9 @@
                     columnSeparator: [
                         {required: true, message: '请选择列操作符', trigger: 'change'},
                     ],
+                    archiveType: [
+                        {required: true, message: '请选择列操作符', trigger: 'change'},
+                    ]
                 },
                 //工作流相关
                 flowSet: {
@@ -728,7 +739,7 @@
                 //工作流相关
                 flowItem: {
                     //动态赋值
-                    wftype: "auditNotice",
+                    wftype: "auditNotice2",
                     applyUuid: "",
                     detailUuids: "",
                     applyTitle: "",
@@ -772,9 +783,9 @@
             this.getList();//刷新列表
         },
         methods: {
-            typeChange(val){
-                if(val === "1"){
-                    this.$nextTick(()=>{
+            typeChange(val) {
+                if (val === "1") {
+                    this.$nextTick(() => {
                         this.$refs.tree_left.loadLeftTreeTypeFun("4");
                     })
                 }
@@ -793,16 +804,16 @@
                         node.type === "table"
                     ) {
                         this.tableDataOffline.push({
-                            tableMetaId : node.id,
+                            tableMetaId: node.id,
                             tablePath: "数据装载/" + node.label,
                         });
                     }
                 });
-                console.log(this.tableDataOffline,"this.tableDataOffline")
+                console.log(this.tableDataOffline, "this.tableDataOffline")
             },
             removeGrp() {
-                if(this.selections.length > 0){
-                    for (let index = 0; index < this.selections.length;index++) {
+                if (this.selections.length > 0) {
+                    for (let index = 0; index < this.selections.length; index++) {
                         for (let y = 0; y < this.tableDataOffline.length; y++) {
                             if (this.tableDataOffline[y] == this.selections[index]) {
                                 this.tableDataOffline.splice(y, 1);
@@ -935,6 +946,8 @@
 
             //添加
             apply_add() {
+                let userName = this.$store.state.user.name;
+                this.form.applyPerson = userName
                 this.applyDialogVisible = true
                 this.dialogStatusValue = false
                 this.dialogStatus = 'create'
@@ -1228,6 +1241,7 @@
                 this.updateShow = false
                 this.fileList = []
                 this.tableData = []
+                this.tableDataOffline = []
             }
             ,
             //子组件fileupload传值给父组件，用showFileType事件接收值赋给变量fileType

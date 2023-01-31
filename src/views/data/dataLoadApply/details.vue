@@ -63,6 +63,12 @@
                         show-overflow-tooltip>
                 </el-table-column>
                 <el-table-column
+                        prop="displayTableName"
+                        min-width="100px"
+                        label="表名称"
+                        show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
                         prop="fileType"
                         min-width="100px"
                         label="文件类型"
@@ -98,7 +104,6 @@
             <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
                 <el-col :span="24">
                     <el-table key="colMetaUuid"
-                              v-loading="listLoading"
                               border
                               fit
                               :data="tableDataOffline"
@@ -119,12 +124,12 @@
                                 prop="archiveType"
                                 show-overflow-tooltip>
                             <template slot-scope="scope">
-                                <el-select v-model="scope.row.archiveType" placeholder="请选择" disabled>
+                                <el-select v-model="scope.row.archiveType" disabled>
                                     <el-option
                                             v-for="item in options"
                                             :key="item.value"
-                                            :label="item.label"
-                                            :value="item.value">
+                                            :value="item.value"
+                                            :label="item.lable">
                                     </el-option>
                                 </el-select>
                             </template>
@@ -138,6 +143,19 @@
                             <template slot-scope="scope">
                                 <el-input v-model="scope.row.archiveFileTableName" id="filingFile" disabled
                                 ></el-input>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="下载文件"
+                                align="center"
+                                min-width="200px"
+                                v-if="form.status === '办理完成'"
+                                show-overflow-tooltip>
+                            <template slot-scope="scope">
+                                <el-button type="primary"
+                                           size="mini"
+                                           title="下载"
+                                           @click="downLoadFile(scope.row.applyUuid)">下载</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -173,7 +191,7 @@
         data() {
             return {
                 tableData: [],
-                tableDataOffline:[],
+                tableDataOffline: [],
                 fileString: '',
                 form: {
                     applyName: '',// 申请名称
@@ -196,6 +214,7 @@
                     filingMove: '',//归档方式
                     filingFile: '',//归档文件
                     fileType: '',
+                    displayTableName: '',//表名称
                 },
                 operationTypes: [
                     {
@@ -205,6 +224,12 @@
                     {
                         value: '1',
                         label: '数据下线'
+                    }
+                ],
+                options: [
+                    {
+                        value: '0',
+                        label: '归档到文件'
                     }
                 ],
                 dialogFileVisible: false,
@@ -239,6 +264,10 @@
                 let relParam = []
                 relParam.push(loadDownApply)
                 batchUpdateForFinishHandle(relParam)
+            },
+            //下载文件
+            downLoadFile(applyUuid){
+
             },
         }
     }
