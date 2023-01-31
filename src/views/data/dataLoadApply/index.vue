@@ -830,7 +830,6 @@
 
             },
             handleSelectionTreeChange(val) {
-                console.log(val);
                 this.selections = val;
             },
             // // 获取个人数据与全行数据列表
