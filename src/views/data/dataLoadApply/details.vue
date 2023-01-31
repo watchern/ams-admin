@@ -283,10 +283,11 @@
                 //         position: "bottom-right",
                 //     })
                 // })
+                console.log(qs.stringify({filePath: value}))
                 axios
                     .post(
                         `/data/loadDownApply/download`,
-                        qs.stringify({filePath: JSON.stringify(value)}),
+                        qs.stringify({filePath: value}),
                         {
                             responseType: "blob",
                             headers: {
@@ -294,14 +295,20 @@
                             },
                         }
                     )
-                    .then(() => {
-                        this.$notify({
-                            title: "成功",
-                            message: "下载成功",
-                            type: "success",
-                            duration: 2000,
-                            position: "bottom-right",
-                        })
+                    .then((res) => {
+                        const filename = decodeURI(
+                            res.headers["content-disposition"].split(";")[1].split("=")[1]
+                        );
+                        const blob = new Blob([res.data], {
+                            type: "application/octet-stream",
+                        });
+                        const url = window.URL.createObjectURL(blob);
+                        const link = document.createElement("a");
+                        link.style.display = "none";
+                        link.href = url;
+                        link.setAttribute("download", filename);
+                        document.body.appendChild(link);
+                        link.click();
                     });
             },
         }
