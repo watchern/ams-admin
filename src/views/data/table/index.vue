@@ -363,7 +363,7 @@
             </div>
 
             <!-- 数据标签：-->
-            <!-- <div class="son">
+            <div class="son">
               <div class="son_check">
                 <el-form-item label="数据标签：">
                   <div class="_width tag_conter">
@@ -380,7 +380,7 @@
                            class="oper-btn"
                            @click="check_tag()">选择</el-button>
               </div>
-            </div> -->
+            </div>
           </el-form>
           <div class="padding10_l">
             <p style="text-align: center">列信息</p>
@@ -640,6 +640,7 @@ import {
   getColsInfoByTableName, //获取列信息
   synDataStructure, //同步数据
   listSchemas, //获取模式名
+  getLabelTree, // 获取标签树
 } from "@/api/data/table-info";
 import QueryField from "@/components/public/query-field/index";
 import personTree from "@/components/publicpersontree/index";
@@ -896,9 +897,9 @@ export default {
       dialogVisible_forms: false,
       formList: [], //
 
-      tableDatas: [],
-
       dialogVisible_tag: false, //选择标签
+      // 标签树
+      labelTreeData: [],
       // 标签
       tag_query: {
         name: "",
@@ -907,7 +908,6 @@ export default {
       // 选择的标签
       tagsarr: [],
       inputValue: "",
-
 
       // 导入按钮
       // updata_ing: false,
@@ -1573,7 +1573,6 @@ export default {
           this.form.partitions = resp.data[0].partitions//表分区
           this.form.tableCode = resp.data[0].tableRelationQuery.tableCode//资源编码
           this.form.tableRemarks = resp.data[0].tableRelationQuery.tableRemarks//表说明
-
         }
       });
     },
@@ -1845,11 +1844,18 @@ export default {
     },
     // 选择标签
     check_tag () {
+      this.getLabelTree();
       this.dialogVisible_tag = true;
     },
     // 删除标签
     handleClose (tag) {
       this.tagsarr.splice(this.tagsarr.indexOf(tag), 1);
+    },
+    // 查询标签树
+    getLabelTree () {
+      getLabelTree().then((res) => {
+        console.log(res);
+      }) 
     },
     // 清除多选框
     clearcheckbox () {
