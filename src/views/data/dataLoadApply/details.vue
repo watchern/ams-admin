@@ -63,6 +63,12 @@
                         show-overflow-tooltip>
                 </el-table-column>
                 <el-table-column
+                        prop="displayTableName"
+                        min-width="100px"
+                        label="表名称"
+                        show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
                         prop="fileType"
                         min-width="100px"
                         label="文件类型"
@@ -139,6 +145,19 @@
                                 ></el-input>
                             </template>
                         </el-table-column>
+                        <el-table-column
+                                label="下载文件"
+                                align="center"
+                                min-width="200px"
+                                v-if="form.status === '办理完成'"
+                                show-overflow-tooltip>
+                            <template slot-scope="scope">
+                                <el-button type="primary"
+                                           size="mini"
+                                           title="下载"
+                                           @click="downLoadFile(scope.row.applyUuid)">下载</el-button>
+                            </template>
+                        </el-table-column>
                     </el-table>
                 </el-col>
             </el-row>
@@ -195,6 +214,7 @@
                     filingMove: '',//归档方式
                     filingFile: '',//归档文件
                     fileType: '',
+                    displayTableName: '',//表名称
                 },
                 operationTypes: [
                     {
@@ -244,6 +264,10 @@
                 let relParam = []
                 relParam.push(loadDownApply)
                 batchUpdateForFinishHandle(relParam)
+            },
+            //下载文件
+            downLoadFile(applyUuid){
+
             },
         }
     }
