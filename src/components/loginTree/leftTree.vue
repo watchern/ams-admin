@@ -189,7 +189,7 @@ export default {
         folderUuid: "", //目录ID
         tbName: "", // 批量注册后 点击左侧树 一个会显示全部的问题
       },
-      // tabclick: false,
+      tabclick: false,
       treeLoading: false,
       tableData: [],
       chooseTables: [],
@@ -215,7 +215,9 @@ export default {
   created () {
     this.query.businessSystemId = "";
     // this.show_details = false; //显示列表
-    this.post_getBusinessSystemTree(); //系统
+      this.$nextTick(() => {
+          this.post_getBusinessSystemTree(); //系统
+      });
     this.$emit("queryList", this.query, (this.show_details = false));
   },
   methods: {
@@ -394,7 +396,7 @@ export default {
       this.loading = true;
       this.tabclick = true;
       this.elTabsName = "系统";
-      getBusinessSystemTree(true, this.query.dataSource, true).then((resp) => {
+      getBusinessSystemTree(true, this.query.dataSource, true,this.loadLeftTreeType).then((resp) => {
         if (this.activeName === '0') {
           this.tree_list = resp.data;
           this.tree_list.forEach(item => {
@@ -416,7 +418,7 @@ export default {
     post_getThemeTree () {
       this.loading = true;
       this.tabclick = true;
-      getThemeTree(true, this.query.dataSource, true).then((resp) => {
+      getThemeTree(true, this.query.dataSource, true,this.loadLeftTreeType).then((resp) => {
         this.tree_list = resp.data;
         this.tree_list.forEach(item => {
           //SQL编辑器中，如果是表 需要展示字段不能去掉
@@ -436,7 +438,7 @@ export default {
     post_getLayeredTree () {
       this.loading = true;
       this.tabclick = true;
-      getLayeredTree(true, this.query.dataSource, true).then((resp) => {
+      getLayeredTree(true, this.query.dataSource, true,this.loadLeftTreeType).then((resp) => {
         this.tree_list = resp.data;
         this.tree_list.forEach(item => {
           //SQL编辑器中，如果是表 需要展示字段不能去掉
