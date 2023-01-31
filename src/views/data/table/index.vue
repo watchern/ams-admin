@@ -1001,24 +1001,20 @@ export default {
     ImportdataDictionary (data) {
       this.upload_title = data;
       this.importVisible = true;
-      this.importtemp.tableFileName = ''
+      this.importtemp.tableFileName = '';
     },
     // 汉化信息导入
     ImportantCn (data) {
       this.upload_title = data;
       this.importVisible = true;
-      this.importtemp.tableFileName = ''
-
+      this.importtemp.tableFileName = '';
     },
-
     // 表关系导入
     ImportantTable (data) {
       this.upload_title = data;
       this.importVisible = true;
-      this.importtemp.tableFileName = ''
-
+      this.importtemp.tableFileName = '';
     },
-
     // 数据字典下载
     DownTemplateDictionary () {
       // 导出表信息作为模板
