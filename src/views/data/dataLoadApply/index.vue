@@ -232,6 +232,9 @@
                                 min-width="100px"
                                 label="表名称"
                                 show-overflow-tooltip>
+                            <template slot-scope="scope">
+                                    <el-input v-model="scope.row.displayTableName"></el-input>
+                            </template>
                         </el-table-column>
                         <el-table-column
                                 prop="fileType"
@@ -727,6 +730,9 @@
                     ],
                     archiveType: [
                         {required: true, message: '请选择列操作符', trigger: 'change'},
+                    ],
+                    displayTableName: [
+                        {required: true, message: '请输入表名称', trigger: 'blur'}
                     ]
                 },
                 //工作流相关
