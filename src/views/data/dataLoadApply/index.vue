@@ -248,7 +248,7 @@
                                         name="lineSeparator"
                                         style="width: 80%"
                                         :disabled="scope.row.disabled"
-                                        placeholder="不可选择"
+                                        placeholder="无"
                                 >
                                     <el-option
                                             v-for="lineSeparator in lineSeparators"
@@ -272,7 +272,7 @@
                                         name="columnSeparator"
                                         style="width: 80%"
                                         :disabled="scope.row.disabled"
-                                        placeholder="不可选择"
+                                        placeholder="无"
                                 >
                                     <el-option
                                             v-for="columnSeparator in columnSeparators"
@@ -728,7 +728,7 @@
                 //工作流相关
                 flowItem: {
                     //动态赋值
-                    wftype: "auditNotice",
+                    wftype: "auditNotice2",
                     applyUuid: "",
                     detailUuids: "",
                     applyTitle: "",

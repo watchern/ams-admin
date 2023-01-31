@@ -98,7 +98,6 @@
             <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
                 <el-col :span="24">
                     <el-table key="colMetaUuid"
-                              v-loading="listLoading"
                               border
                               fit
                               :data="tableDataOffline"
@@ -119,12 +118,12 @@
                                 prop="archiveType"
                                 show-overflow-tooltip>
                             <template slot-scope="scope">
-                                <el-select v-model="scope.row.archiveType" placeholder="请选择" disabled>
+                                <el-select v-model="scope.row.archiveType" disabled>
                                     <el-option
                                             v-for="item in options"
                                             :key="item.value"
-                                            :label="item.label"
-                                            :value="item.value">
+                                            :value="item.value"
+                                            :label="item.lable">
                                     </el-option>
                                 </el-select>
                             </template>
@@ -173,7 +172,7 @@
         data() {
             return {
                 tableData: [],
-                tableDataOffline:[],
+                tableDataOffline: [],
                 fileString: '',
                 form: {
                     applyName: '',// 申请名称
@@ -205,6 +204,12 @@
                     {
                         value: '1',
                         label: '数据下线'
+                    }
+                ],
+                options: [
+                    {
+                        value: '0',
+                        label: '归档到文件'
                     }
                 ],
                 dialogFileVisible: false,
