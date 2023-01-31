@@ -1378,7 +1378,8 @@ export default {
      * 生成select语句
      */
     getSelectSql (menuId) {
-      getSelectSql(menuId, this.$refs.tree_left.query.dataSource)
+      var strLevel = this.$refs.tree_left.activeName + this.$refs.tree_left.query.dataSource;
+      getSelectSql(menuId, this.$refs.tree_left.query.dataSource,strLevel)
     },
     /**
      *打开sql保存草稿窗体
