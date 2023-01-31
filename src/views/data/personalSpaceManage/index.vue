@@ -242,6 +242,8 @@
                   tbComment:'',//表描述
                   tblType:'',//表的类型 T是表 V是视图
                   displayTbName:'',//展示的表名称
+                  seneInstUuid:'',//场景id
+                  folderUuid:''//文件夹的id
                 },
                 tableMetaDataList: [],//数据表集合
                 //数据库中每一行的字段数据
@@ -345,10 +347,11 @@
                   this.query.pageSize = res.data.size
                   this.dataTotal = res.data.total
                   res.data.records.forEach((value,index)=>{
-                    if(value.tblType == "T") {
+                    var tempParam = value.tblType.substr(0,1).toUpperCase()
+                    if(tempParam == "T") {
                       value.tblType = '表'
                     }
-                    if(value.tblType == "V"){
+                    if(tempParam == "V"){
                       value.tblType = '视图'
                     }
                   })
@@ -396,11 +399,15 @@
             },
             clearParams(){
                 this.tableMetaDetail={
-                    tableMetaUuid:'',
-                        tbName:'',//表名称
-                        chnName:'',//表汉化名称
-                        colMetas:[],//字段信息
-                        tbComment:'',//表描述
+                  tableMetaUuid:'',
+                  tbName:'',//表名称
+                  chnName:'',//表汉化名称
+                  colMetas:[],//字段信息
+                  tbComment:'',//表描述
+                  tblType:'',//表的类型 T是表 V是视图
+                  displayTbName:'',//展示的表名称
+                  seneInstUuid:'',//场景id
+                  folderUuid:''//文件夹的id
                 }
                 // this.colMetaList = []
             },
@@ -514,8 +521,15 @@
                 })
             },
           personalSpaceQueryByTreeNode(data,node){
-              if(node.level == 2){
+              if(node.level == 1){
                 //然后直接把展示的dataList 赋值 data.children
+                var folderUuid = data.id
+                var seneInstUuid = data.pid
+                this.tableMetaDetail.folderUuid = folderUuid
+                this.tableMetaDetail.seneInstUuid = seneInstUuid
+                this.initPersonalSpaceManageData()
+                console.log(data,"data")
+                console.log(node,"node")
               }
           }
         }
