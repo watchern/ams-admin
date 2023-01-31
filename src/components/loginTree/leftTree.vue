@@ -2,6 +2,7 @@
   <div class="left_tree_style">
     <el-tabs v-model="activeName"
              type="card"
+             v-if="this.loadLeftTreeType != '4'"
              @tab-click="handleClick">
       <el-tab-pane label="系统"
                    :disabled="tabclick"
@@ -26,7 +27,8 @@
                 placeholder="输入关键字进行过滤" />
     </div>
     <!-- 数据源 -->
-    <div class="padding10 dataSource" v-if="this.loadLeftTreeType != '4' && this.loadLeftTreeType != '3'">
+    <div class="padding10 dataSource"
+         v-if="this.loadLeftTreeType != '4' && this.loadLeftTreeType != '3'">
       <el-form :inline="true"
                :model="query"
                label-position="bottom">
@@ -281,7 +283,7 @@ export default {
       // console.log('tree drag over: ', dropNode.label);
     },
     //拖拽结束时（可能未成功）触发的事件
-    handleDragEnd(draggingNode, dropNode, dropType, ev) {
+    handleDragEnd (draggingNode, dropNode, dropType, ev) {
       // 只有表和字段能拖拽
       if (
         draggingNode.data.type === "table" ||
@@ -299,17 +301,17 @@ export default {
     async loadNode (node, resolve) {
       if (node.level === 0) {
         return resolve(node.data);
-      }else if (node.level === 1) {
+      } else if (node.level === 1) {
         //只有SQL编辑器的表才需要展示字段
-        if(node.data.type === "table" && this.loadLeftTreeType === "1"){
+        if (node.data.type === "table" && this.loadLeftTreeType === "1") {
           var nodeList = getTableField(node.data.id, this.query.dataSource);
           Promise.all([nodeList]).then((res) => {
             resolve(res[0]);
           });
-        }else{
+        } else {
           return resolve(node.data.children);
         }
-      }else if (node.level == 2) {
+      } else if (node.level == 2) {
         if (this.loadLeftTreeType != "1") {
           //去掉表加载字段
           resolve([]);
@@ -361,6 +363,8 @@ export default {
     selectdata (val) {
       this.query.dataSource = val;
       this.query.businessSystemId = ''
+      this.query.tableThemeId = ''
+      this.query.tableLayeredId = ''
       if (this.activeName == "0") {
         // 系统
         this.post_getBusinessSystemTree(); //系统
@@ -391,7 +395,7 @@ export default {
       this.tabclick = true;
       this.elTabsName = "系统";
       getBusinessSystemTree(true, this.query.dataSource, true).then((resp) => {
-        if(this.activeName === '0'){
+        if (this.activeName === '0') {
           this.tree_list = resp.data;
           this.tree_list.forEach(item => {
             //SQL编辑器中，如果是表 需要展示字段不能去掉
@@ -453,16 +457,15 @@ export default {
       this.loading = true;
       this.tabclick = true;
       getPersonSpaceTree("", "", this.query.dataSource, this.loadLeftTreeType).then((resp) => {
-        if(this.activeName === '3'){
+        if (this.activeName === '3') {
           this.tree_list = resp.data;
+          this.tree_list.forEach(item => {
+            //SQL编辑器中，如果是表 需要展示字段不能去掉
+            if (item.type != 'table' && item.children.length == 0) {
+              item.leaf = true
+            }
+          })
         }
-        this.tree_list = resp.data;
-        this.tree_list.forEach(item => {
-          //SQL编辑器中，如果是表 需要展示字段不能去掉
-          if (item.type != 'table' && item.children.length == 0) {
-            item.leaf = true
-          }
-        })
         this.loading = false;
         this.tabclick = false;
       });
@@ -538,6 +541,8 @@ export default {
       //   this.post_getDataTreeNode(this.query.dataSource);//目录
       // }
       this.query.businessSystemId = ''
+      this.query.tableThemeId = ''
+      this.query.tableLayeredId = ''
       this.$emit("queryList", this.query, this.show_details = false)//查询全部注册表
 
     },
@@ -574,7 +579,7 @@ export default {
       this.tableMetaUuid = "";
       // 个人空间模块
       if (this.loadLeftTreeType == "3") {
-        this.$emit("personalSpacePageQueryByTreeNode",data,node);
+        this.$emit("personalSpacePageQueryByTreeNode", data, node);
       }
       // 显示列表
       if (node.level == 1) {
@@ -726,6 +731,7 @@ export default {
                 commonNotify({ type: "success", message: "删除成功！" })
               );
               this.$refs.tree2.remove(data);
+              this.$emit("queryList", this.query, this.show_details);//刷新右侧列表
               if (this.activeName == "0") {
                 // 系统
                 this.post_getBusinessSystemTree(); //系统
@@ -743,6 +749,7 @@ export default {
                 commonNotify({ type: "success", message: "删除成功！" })
               );
               this.$refs.tree2.remove(data);
+              this.$emit("queryList", this.query, this.show_details);//刷新右侧列表
               if (this.activeName == "0") {
                 // 系统
                 this.post_getBusinessSystemTree(); //系统
@@ -755,6 +762,7 @@ export default {
               }
             });
           }
+
         })
         .catch(() => { });
     },

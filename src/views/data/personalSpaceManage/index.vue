@@ -1,0 +1,560 @@
+<template>
+    <div>
+        <div style="display: flex;">
+              <div style="overflow: auto;height: calc( 100vh - 150px);width: 280px  ">
+<!--                <el-col :span="6">-->
+                <!--                <el-tree-->
+                <!--                        :data="data"-->
+                <!--                        show-checkbox-->
+                <!--                        node-key="id"-->
+                <!--                        :default-expanded-keys="[2, 3]"-->
+                <!--                        :default-checked-keys="[5]"-->
+                <!--                >-->
+                <!--                </el-tree>-->
+                <LeftTrees ref="leftTreePage" @personalSpacePageQueryByTreeNode="personalSpaceQueryByTreeNode"></LeftTrees>
+<!--              </el-col>-->
+              </div>
+                <div style="width: calc( 100% - 280px);">
+                    <el-row>
+                        <el-form :inline="true"
+                                 :model="tableMetaDetail"
+                                 class="demo-form-inline"
+                        >
+                            <el-form-item label="表名称:">
+                                <el-input v-model="tableMetaDetail.displayTbName"
+                                          placeholder="表名称"></el-input>
+                            </el-form-item>
+                          <el-form-item label="表类型:">
+                            <el-select
+                                v-model="tableMetaDetail.tblType"
+                                placeholder="表类型"
+                            >
+                              <el-option label="表" value="T"></el-option>
+                              <el-option label="视图" value="V"></el-option>
+                            </el-select>
+                          </el-form-item>
+                            <el-form-item>
+                                <el-button type="primary" @click="initPersonalSpaceManageData">查询</el-button>
+                                <el-button type="primary"
+                                           @click="onReInput">重置</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </el-row>
+                    <div class="padding10">
+                        <el-row>
+<!--                            <span>您的个人空间一共{{personHoldedSpace}},已使用{{personUsedSpace}},未使用20G,使用率5%</span>-->
+                            <span>您的个人空间一共{{personHoldedSpace}},已使用{{personUsedSpace}},使用率{{spaceUsedPercent}}</span>
+                            <el-button type="primary"
+                                       @click="joinInsertDialog">新增表</el-button>
+                            <el-button type="primary"
+                                       @click="onDelete">删除表</el-button>
+<!--                            <el-button type="primary"-->
+<!--                            >数据导入</el-button>-->
+                            <el-button type="primary"
+                                       @click="onExportData">导出数据</el-button>
+                            <el-button type="primary"
+                                        @click="joinDataShareDialog">数据共享</el-button>
+                            <!--        <el-button type="primary"-->
+                            <!--                   @click="backToUpPage">关闭</el-button>-->
+                        </el-row>
+                        <el-table :data="tableMetaDataList"
+                                  border
+                                  style="width: 100%"
+                                  height="calc(100vh - 290px)"
+                                  @selection-change="handleSelectionChange"
+                        >
+                            <el-table-column type="selection"
+                                             width="55">
+                            </el-table-column>
+                            <el-table-column fixed
+                                             prop="displayTbName"
+                                             label="表名称"
+                                             show-overflow-tooltip>
+                            </el-table-column>
+                            <el-table-column prop="tblType"
+                                             label="类型">
+                            </el-table-column>
+                            <el-table-column prop="fieldsNum"
+                                             label="字段数量">
+                            </el-table-column>
+                            <el-table-column prop="rowNum"
+                                             label="数据行数">
+                            </el-table-column>
+                            <el-table-column prop="tableSize"
+                                             label="占有空间">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="viewProcess"
+                                    label="操作"
+                                    show-overflow-tooltip
+                                    width
+                            >
+                                <template slot-scope="scope">
+                                    <el-link
+                                            @click="toSeeDataOfTable(scope.row)"
+                                            type="primary"
+                                            :underline="false"
+                                            class="linkClass"
+                                    >查看数据</el-link
+                                    >
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                        <el-row>
+                            <el-pagination @size-change="handleSizeChange"
+                                           @current-change="handleCurrentChange"
+                                           :current-page="query.pageNo"
+                                           :page-sizes="[10, 20, 30, 40]"
+                                           :page-size="query.pageSize"
+                                           layout="total, sizes, prev, pager, next, jumper"
+                                           :total="dataTotal">
+                            </el-pagination>
+                        </el-row>
+                    </div>
+                </div>
+        </div>
+<!--        新增界面弹窗-->
+        <div>
+            <el-dialog title="个人空间管理"
+                       :visible.sync="openInsertDialog"
+                       width="60%">
+<!--                下面是表信息-->
+                <el-form :model="tableMetaDetail"
+                         class="demo-ruleForm"
+                         label-width="80px"
+                >
+                    <el-form-item label="表名称" class="item-b">
+                        <el-input v-model="tableMetaDetail.displayTbName"
+                                  placeholder="请输入表名称"></el-input>
+                    </el-form-item>
+                    <el-form-item label="表描述" class="item-b">
+                        <div style="display: flex">
+                            <el-input v-model="tableMetaDetail.colComment"
+                                      placeholder="表描述"
+                                      style="width: 100%"></el-input>
+                        </div>
+                    </el-form-item>
+                </el-form>
+                <!--下面是字段信息集合展示-->
+                <el-button type="primary">新增</el-button>
+                <el-button type="primary">删除</el-button>
+                <el-table
+                        ref="multipleTable"
+                        :data="colMetaList"
+                        tooltip-effect="dark"
+                        style="width: 100%"
+                >
+                    <el-table-column
+                            type="selection"
+                            width="55">
+                    </el-table-column>
+                    <el-table-column
+                            prop="colName"
+                            label="字段名"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                            prop="dataType"
+                            label="字段类型"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                            prop="dataLength"
+                            label="长度"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                            prop="isNullable"
+                            label="允许为空"
+                    >
+                    </el-table-column>
+<!--                    <el-table-column-->
+<!--                            prop="isPrimaryKey"-->
+<!--                            label="是否主键"-->
+<!--                    >-->
+<!--                    </el-table-column>-->
+<!--                    <el-table-column-->
+<!--                            prop="isUnique"-->
+<!--                            label="唯一约束"-->
+<!--                    >-->
+<!--                    </el-table-column>-->
+<!--                    <el-table-column-->
+<!--                            prop="defaultValue"-->
+<!--                            label="默认值"-->
+<!--                    >-->
+<!--                    </el-table-column>-->
+                    <el-table-column
+                            prop="colComment"
+                            label="备注"
+                    >
+                    </el-table-column>
+                </el-table>
+                <el-row type="flex"
+                        justify="end">
+                    <el-button type="primary"
+                               @click="onSubmit">保存</el-button>
+                    <el-button type="primary"
+                               @click="closeInsertDialog">关闭</el-button>
+                </el-row>
+            </el-dialog>
+        </div>
+<!--        数据共享人员选择弹窗-->
+        <div>
+            <el-dialog title="人员选择"
+                       :visible.sync="openDataShareDialog"
+                       width="60%">
+                <!--                下面是表信息-->
+                <personTree ref="personTreePage"></personTree>
+                <el-row type="flex"
+                        justify="end">
+                    <el-button type="primary"
+                               @click="onBesure">确定</el-button>
+                    <el-button type="primary"
+                               @click="closeInsertDialog">关闭</el-button>
+                </el-row>
+            </el-dialog>
+        </div>
+
+    </div>
+</template>
+
+<script>
+    import {
+        tableListPage
+        , deleteTableMeta
+        , incrementPersonalSpaceManage
+        , saveTableMetaInfo
+        , getCurrentUserPersonSpace
+        , dataShare
+    }
+    from '@/api/data/personalSpaceManage'
+    import LeftTrees from "@/components/loginTree/leftTree.vue";
+    import personTree from "@/components/publicpersontree/index"
+    export default {
+        components:{personTree,LeftTrees},
+        data() {
+            return {
+                tableMetaDetail:{
+                  tableMetaUuid:'',
+                  tbName:'',//表名称
+                  chnName:'',//表汉化名称
+                  colMetas:[],//字段信息
+                  tbComment:'',//表描述
+                  tblType:'',//表的类型 T是表 V是视图
+                  displayTbName:'',//展示的表名称
+                  seneInstUuid:'',//场景id
+                  folderUuid:''//文件夹的id
+                },
+                tableMetaDataList: [],//数据表集合
+                //数据库中每一行的字段数据
+                colMetaList:[],//字段信息的集合
+                colMeta:{
+                    colMetaUuid:'',//主键id to find it easily
+                    tableMetaUuid:'',//表ID
+                    colName:'',//字段名
+                    dataType:'',//字段类型
+                    dataLength:'',//字段长度
+                    isNullable:'',//是否允许空值
+                    // isPrimaryKey:'',//是否主键
+                    // isUnique:'',//是否唯一约束
+                    colComment:'',//字段注释
+                    // defaultValue:'',//默认值
+                    // columnRemark:'',//字段备注
+                },
+                query:{
+                    condition:{}, //查询实体类放在里面
+                    pageNo:1,
+                    pageSize: 10
+                },
+                dataTotal: 100,//数据的总数
+                tableMetaIdList:[],//数据id的集合
+                tableMetaSelectionList:[],//被选中的数据的集合
+                openInsertDialog: false,//新增表弹窗
+                openDataShareDialog:false,//数据共享弹窗
+                folderDataTree:[],//左侧目录树
+                personHoldedSpace:'',//当前人持有的空间
+                personUsedSpace:'',//当前人使用的空间
+                spaceUsedPercent:'',//空间使用率
+                selectPersonList:[],//数据共享弹窗中被选择的人员数据
+                selectPersonUuidList:[],//数据共享选择人员的id集合
+                selectPersonNameList:[],//数据共享选择人员的名字集合
+                selectPersonUserIdList:[],//数据共享选择人员的账号集合
+                data: [{ //临时使用后期引入树组件
+                    id: 1,
+                    label: '一级 2',
+                    children: [{
+                        id: 3,
+                        label: '二级 2-1',
+                        children: [{
+                            id: 4,
+                            label: '三级 3-1-1'
+                        }, {
+                            id: 5,
+                            label: '三级 3-1-2',
+                            disabled: true
+                        }]
+                    }, {
+                        id: 2,
+                        label: '二级 2-2',
+                        disabled: true,
+                        children: [{
+                            id: 6,
+                            label: '三级 3-2-1'
+                        }, {
+                            id: 7,
+                            label: '三级 3-2-2',
+                            disabled: true
+                        }]
+                    }]
+                }],
+            }
+        },
+        mounted() {
+          // var param = {
+          //   appliedPersonalSpace:'2GB'
+          // }
+          // incrementPersonalSpaceManage(param)
+            this.$refs.leftTreePage.loadLeftTreeTypeFun("3")
+            var cloMeta1={
+                cloName:'123',//字段名
+                colMetaUuid:'1234',
+                // tableMetaUuid:'233',//字段类型
+                colName:'测试1',//字段长度
+                dataType:'T',
+                dataLength:'10',
+                isNullable: '0',
+                colComment: '测试111'
+            }
+            var cloMeta2={
+                cloName:'121233',//字段名
+                colMetaUuid:'1212334',
+                // tableMetaUuid:'2233',//字段类型
+                colName:'测试111',//字段长度
+                dataType:'T',
+                dataLength:'10',
+                isNullable: '0',
+                colComment: '测试111'
+            }
+            this.colMetaList.push(cloMeta1,cloMeta2)
+            this.initPersonalSpaceManageData()
+        },
+        methods:{
+            initPersonalSpaceManageData(){
+                this.query.condition = this.tableMetaDetail
+                tableListPage(this.query)
+                .then((res)=>{
+                  this.query.pageNo = res.data.current;
+                  this.query.pageSize = res.data.size
+                  this.dataTotal = res.data.total
+                  res.data.records.forEach((value,index)=>{
+                    var tempParam = value.tblType.substr(0,1).toUpperCase()
+                    if(tempParam == "T") {
+                      value.tblType = '表'
+                    }
+                    if(tempParam == "V"){
+                      value.tblType = '视图'
+                    }
+                  })
+                  this.tableMetaDataList = res.data.records
+                  this.clearParams()
+                })
+                getCurrentUserPersonSpace()
+                .then((res)=>{
+                    this.personUsedSpace = res.data.personUsedSpace
+                    this.personHoldedSpace = res.data.personHoldedSpace
+                    var length1 = this.personUsedSpace.length
+                    var length2 = this.personHoldedSpace.length
+                    var value1 = this.personUsedSpace.substr(0,length1-2)
+                    var value2 = this.personHoldedSpace.substr(0,length2-2)
+                    var usedPercent = Math.ceil(((value1/value2)*100))
+                    this.spaceUsedPercent = usedPercent+'%'
+                })
+
+            },
+            handleSelectionChange(value){
+                this.tableMetaIdList = []
+                this.tableMetaSelectionList = []
+                this.tableMetaSelectionList = value
+                value.forEach((val,index)=>{
+                    this.tableMetaIdList.push(val.tableMetaUuid)
+                })
+            },
+            onReInput(){
+                this.clearParams()
+            },
+            //分页组件的页大小change事件
+            handleSizeChange(val){
+                this.query.pageSize = val
+                this.initPersonalSpaceManageData()
+            },
+            //分页组件当前页change事件
+            handleCurrentChange(val){
+                this.query.pageNo = val
+                this.initPersonalSpaceManageData()
+            },
+            //查看表中的数据
+            toSeeDataOfTable(){
+                //查看数据需要有一个弹窗
+                //然后进去查询 将数值赋值给table
+            },
+            clearParams(){
+                this.tableMetaDetail={
+                  tableMetaUuid:'',
+                  tbName:'',//表名称
+                  chnName:'',//表汉化名称
+                  colMetas:[],//字段信息
+                  tbComment:'',//表描述
+                  tblType:'',//表的类型 T是表 V是视图
+                  displayTbName:'',//展示的表名称
+                  seneInstUuid:'',//场景id
+                  folderUuid:''//文件夹的id
+                }
+                // this.colMetaList = []
+            },
+            //删除按钮
+            onDelete(){
+                // deletePersonalSpaceManage(this.personalSpaceManageIdList)
+                // .then((res)=>{
+                //     this.initPersonalSpaceManageData()
+                // })
+                if(this.tableMetaIdList.length == 0){
+                    this.$notify.warning("请选择要删除的数据")
+                    return;
+                }
+                if(this.tableMetaIdList.length >1){
+                    this.$notify.warning("每次只能删除一条数据")
+                    return;
+                }
+                // var param1 = 'abc';
+                var param1 = this.tableMetaSelectionList[0].dbName
+                var param2 = this.tableMetaSelectionList[0].tbName
+                // var param2 = 'ams_chg'
+                deleteTableMeta(param1,param2)
+                .then((res)=>{
+                    this.initPersonalSpaceManageData()
+                })
+            },
+            //导出数据
+            onExportData(){
+                // exportTableData()
+                this.$axios
+                    .post("/data/personalSpaceManage/exportTableData",null,{
+                        responseType:"blob",
+                        headers:{
+                            "ContentType": 'application/x-www-form-urlencoded'
+                        }
+
+                    })
+                    .then((res) => {
+                        const filename = decodeURI(
+                            res.headers["content-disposition"].split(";")[1].split("=")[1]
+                        );
+                        const blob = new Blob([res.data], {
+                            type: "application/octet-stream",
+                        });
+                        const url = window.URL.createObjectURL(blob);
+                        const link = document.createElement("a");
+                        link.style.display = "none";
+                        link.href = url;
+                        link.setAttribute("download", filename);
+                        document.body.appendChild(link);
+                        link.click();
+                    });
+
+            },
+            //打开新增弹窗
+            joinInsertDialog(){
+                this.$nextTick(()=>{
+                    this.clearParams()
+                })
+                this.openInsertDialog = true
+            },
+            //新增弹窗保存按钮
+            onSubmit(){
+                this.tableMetaDetail.colMetas = this.colMetaList
+                saveTableMetaInfo(this.tableMetaDetail)
+            },
+            closeInsertDialog(){
+                this.openInsertDialog = false
+                this.clearParams()
+            },
+            //在字段集合中新增一个字段
+            addOneColMeta(){
+
+            },
+            removeOneColMeta(){
+
+            },
+            //打开人员选择的弹窗
+            joinDataShareDialog(){
+              if(this.tableMetaSelectionList.length == 0){
+                this.$notify.warning("请先选择要共享的数据")
+                return
+              }
+                this.openDataShareDialog = true
+            },
+            //人员选择弹窗的确定按钮
+            onBesure(){
+                this.selectPersonUuidList = []
+                this.selectPersonNameList = []
+                var temporaryList = this.$refs.personTreePage.selectValue
+                temporaryList.forEach((value,index)=>{
+                    this.selectPersonUuidList.push(value.personuuid)
+                    this.selectPersonNameList.push(value.cnname)
+                    this.selectPersonUserIdList.push(value.userid)
+                })
+                var personUuidStr = this.selectPersonUuidList.join(',')
+                var personNameStr = this.selectPersonNameList.join(',')
+                var userIdStr = this.selectPersonUserIdList.join(',')
+                //还需要一个被选中的表的集合
+                var param = {
+                    personUuidStr:personUuidStr,
+                    personNameStr:personNameStr,
+                    userIdStr:userIdStr,
+                    tableMetaIdList:this.tableMetaIdList
+                }
+                dataShare(param)
+                .then((res)=>{
+                  this.selectPersonUuidList = []
+                  this.selectPersonNameList = []
+                  this.selectPersonUserIdList = []
+                })
+            },
+          personalSpaceQueryByTreeNode(data,node){
+              if(node.level == 1){
+                //然后直接把展示的dataList 赋值 data.children
+                var folderUuid = data.id
+                var seneInstUuid = data.pid
+                this.tableMetaDetail.folderUuid = folderUuid
+                this.tableMetaDetail.seneInstUuid = seneInstUuid
+                this.initPersonalSpaceManageData()
+                console.log(data,"data")
+                console.log(node,"node")
+              }
+          }
+        }
+    }
+</script>
+
+<style lang="scss" scoped>
+    .padding10 {
+        padding: 10px;
+        box-sizing: border-box;
+    }
+    .header_Filter {
+        width: 100%;
+    }
+    .demo-ruleForm {
+        margin-top:20px;
+        display: flex;
+        flex-wrap: wrap;
+        ::v-deep .el-form-item {
+            margin-bottom: 22px !important;
+        }
+        ::v-deep .el-form-item__label {
+            text-align: right;
+            vertical-align: middle;
+            float: left !important;
+        }
+    }
+</style>

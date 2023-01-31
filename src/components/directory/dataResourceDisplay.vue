@@ -167,10 +167,10 @@
 
                   <div class="new_left padding7">
                     <div class="cover">
-                      <!-- <img src="../../assets/img/msq.png"
-                           alt=""> -->
-                      <h2>{{ scope.row.tableRelationQuery.tableLayeredName }}</h2>
-                      <span class="_title">{{ scope.row.tableRelationQuery.businessSystemName }}</span>
+                      <h2 :class="scope.row.tableRelationQuery.businessSystemName ? 'is_title':''">
+                        {{ scope.row.tableRelationQuery.tableLayeredName }}</h2>
+                      <span class="_title"
+                            v-if="scope.row.tableRelationQuery.businessSystemName">{{ scope.row.tableRelationQuery.businessSystemName }}</span>
                     </div>
 
                   </div>
@@ -668,14 +668,17 @@ export default {
   width: 100%;
   height: 100%;
   display: flex;
-  align-items: flex-start;
   text-align: center;
+  align-items: center;
+  padding: 0 5px 0;
   justify-content: center;
-  padding: 10px 5px 0;
   font-weight: bold;
   font-size: 40px;
 }
-
+.is_title {
+  padding: 10px 5px 0 !important;
+  align-items: flex-start !important;
+}
 .new_left ._title {
   font-size: 16px;
   position: absolute;

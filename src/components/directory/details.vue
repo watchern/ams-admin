@@ -81,9 +81,7 @@
                   </el-form-item>
                 </div>
               </div>
-              <div :class="
-                  isDisable_input == true ? 'is_disabled' : 'yes_disabled'
-                ">
+              <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
                 <div class="son">
                   <el-form-item label="资源主题：">
                     <el-select v-model="form.tableThemeId"
@@ -127,18 +125,21 @@
                               :rows="4"></el-input>
                   </el-form-item>
                 </div>
+              </div>
 
-                <div class="son">
-                  <el-form-item label="数据日期：">
-                    <el-date-picker format="yyyy-MM-dd"
-                                    @input="change($event)"
-                                    :disabled="isDisable_input"
-                                    type="date"
-                                    value-format="yyyy-MM-dd"
-                                    @change="changeRelationParam"
-                                    :rows="4"
-                                    v-model="form.dataDate" />
-                  </el-form-item>
+              <div class="son">
+
+                <el-form-item label="数据日期：">
+                  <el-date-picker format="yyyy-MM-dd"
+                                  @input="change($event)"
+                                  :disabled="isDisable_input"
+                                  type="date"
+                                  value-format="yyyy-MM-dd"
+                                  @change="changeRelationParam"
+                                  :rows="4"
+                                  v-model="form.dataDate" />
+                </el-form-item>
+                <div class="is_disabled">
                   <el-form-item label="表大小：">
                     <el-input placeholder="请输入表大小"
                               @input="change($event)"
@@ -146,6 +147,7 @@
                               v-model="form.tableSize"></el-input>
                   </el-form-item>
                 </div>
+
               </div>
 
               <div class="son">
@@ -360,16 +362,18 @@
             <!-- <EditMap></EditMap> -->
           </div>
 
-          <div class="fixed_btn">
-            <el-button type="primary"
-                       @click="step()">返回</el-button>
-            <el-button type="primary"
-                       @click="update_save()"
-                       :disabled="isDisable_input"
-                       v-if="!isDisable_input">
-              保存
-            </el-button>
-          </div>
+        </div>
+        <!-- 保存按钮 返回上一步 -->
+        <div class="fixed_btn">
+          <el-button size="small"
+                     type="primary"
+                     @click="step()">返回>></el-button>
+          <el-button type="primary"
+                     @click="update_save()"
+                     :disabled="isDisable_input"
+                     v-if="!isDisable_input">
+            保存
+          </el-button>
         </div>
       </div>
     </div>
@@ -1088,6 +1092,7 @@ export default {
             message: "修改成功!",
           });
           this.$emit("query_data"); //刷新页面
+          this.table_list(this.tableMetaUuid);
           // this.$emit("update_list");
         } else {
           this.$message({
@@ -1215,7 +1220,7 @@ export default {
       this.visibleTable = true; //数据表关系列表
       this.visibleTableList = []; //清空上次新增的关系
     },
-    colMetaChange(obj, col, name) {
+    colMetaChange (obj, col, name) {
       this.table_visible_form[col] = obj.colMetaUuid;
       this.table_visible_form[name] = obj.colName;
     },
