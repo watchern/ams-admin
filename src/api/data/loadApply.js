@@ -91,3 +91,13 @@ export function upload(data) {
         data
     })
 }
+
+export function download(data) {
+    return request({
+        baseURL: dataUrl,
+        url: `/${controllerName}/download`,
+        method: 'post',
+        data
+    })
+}
+
