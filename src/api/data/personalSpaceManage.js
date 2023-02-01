@@ -78,6 +78,16 @@ export function dataShare (data) {
     })
 }
 
+export function isCanDataShare (data) {
+    var paramURL = '/personalSpaceManage/isCanDataShare'
+    return request({
+        baseURL: baseUrl,
+        url: paramURL,
+        method: 'post',
+        data
+    })
+}
+
 
 
 

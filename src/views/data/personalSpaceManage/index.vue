@@ -214,7 +214,28 @@
                 </el-row>
             </el-dialog>
         </div>
-
+        <div>
+          <el-dialog
+              title="当前表数据展示"
+              :visible.sync="openToSeeTableData"
+              width="80%">
+            <el-table :data="inTableDataList"
+                      border
+                      style="width: 100%"
+                      height="calc(100vh - 290px)"
+                      @selection-change="handleSelectionChange"
+            >
+              <el-table-column
+                               v-for="key in inTableDataColumnNameList"
+                               :key="key"
+                               :prop="key"
+                               :label="key"
+                               style="display: flex"
+                               show-overflow-tooltip>
+              </el-table-column>
+            </el-table>
+          </el-dialog>
+        </div>
     </div>
 </template>
 
@@ -226,8 +247,10 @@
         , saveTableMetaInfo
         , getCurrentUserPersonSpace
         , dataShare
+        , isCanDataShare
     }
     from '@/api/data/personalSpaceManage'
+    import {preview} from '@/api/data/directory'
     import LeftTrees from "@/components/loginTree/leftTree.vue";
     import personTree from "@/components/publicpersontree/index"
     export default {
@@ -246,6 +269,8 @@
                   folderUuid:''//文件夹的id
                 },
                 tableMetaDataList: [],//数据表集合
+                inTableDataList:[],//表中的数据集合
+                inTableDataColumnNameList:[],//表中的数据字段集合
                 //数据库中每一行的字段数据
                 colMetaList:[],//字段信息的集合
                 colMeta:{
@@ -271,6 +296,7 @@
                 tableMetaSelectionList:[],//被选中的数据的集合
                 openInsertDialog: false,//新增表弹窗
                 openDataShareDialog:false,//数据共享弹窗
+                openToSeeTableData:false,//显示表数据弹窗
                 folderDataTree:[],//左侧目录树
                 personHoldedSpace:'',//当前人持有的空间
                 personUsedSpace:'',//当前人使用的空间
@@ -279,34 +305,6 @@
                 selectPersonUuidList:[],//数据共享选择人员的id集合
                 selectPersonNameList:[],//数据共享选择人员的名字集合
                 selectPersonUserIdList:[],//数据共享选择人员的账号集合
-                data: [{ //临时使用后期引入树组件
-                    id: 1,
-                    label: '一级 2',
-                    children: [{
-                        id: 3,
-                        label: '二级 2-1',
-                        children: [{
-                            id: 4,
-                            label: '三级 3-1-1'
-                        }, {
-                            id: 5,
-                            label: '三级 3-1-2',
-                            disabled: true
-                        }]
-                    }, {
-                        id: 2,
-                        label: '二级 2-2',
-                        disabled: true,
-                        children: [{
-                            id: 6,
-                            label: '三级 3-2-1'
-                        }, {
-                            id: 7,
-                            label: '三级 3-2-2',
-                            disabled: true
-                        }]
-                    }]
-                }],
             }
         },
         mounted() {
@@ -369,7 +367,6 @@
                     var usedPercent = Math.ceil(((value1/value2)*100))
                     this.spaceUsedPercent = usedPercent+'%'
                 })
-
             },
             handleSelectionChange(value){
                 this.tableMetaIdList = []
@@ -393,7 +390,25 @@
                 this.initPersonalSpaceManageData()
             },
             //查看表中的数据
-            toSeeDataOfTable(){
+            toSeeDataOfTable(val){
+              var param = {
+                extMap:{
+                  sceneCode:'auditor',
+                  dataUserId:this.$store.getters.datauserid
+                },
+                id:val.tableMetaUuid,
+                type:val.type == '表' ? 'table' : 'view'
+              }
+              preview(param)
+              .then((res)=>{
+                if(res.data.code == 200){
+                  this.openToSeeTableData = true
+                  this.inTableDataList = res.data.result
+                  this.inTableDataColumnNameList = res.data.columnNames
+                }else{
+                  this.$notify.error("查看数据失败")
+                }
+              })
                 //查看数据需要有一个弹窗
                 //然后进去查询 将数值赋值给table
             },
@@ -409,7 +424,6 @@
                   seneInstUuid:'',//场景id
                   folderUuid:''//文件夹的id
                 }
-                // this.colMetaList = []
             },
             //删除按钮
             onDelete(){
@@ -425,10 +439,8 @@
                     this.$notify.warning("每次只能删除一条数据")
                     return;
                 }
-                // var param1 = 'abc';
                 var param1 = this.tableMetaSelectionList[0].dbName
                 var param2 = this.tableMetaSelectionList[0].tbName
-                // var param2 = 'ams_chg'
                 deleteTableMeta(param1,param2)
                 .then((res)=>{
                     this.initPersonalSpaceManageData()
@@ -436,14 +448,12 @@
             },
             //导出数据
             onExportData(){
-                // exportTableData()
                 this.$axios
                     .post("/data/personalSpaceManage/exportTableData",null,{
                         responseType:"blob",
                         headers:{
                             "ContentType": 'application/x-www-form-urlencoded'
                         }
-
                     })
                     .then((res) => {
                         const filename = decodeURI(
@@ -460,7 +470,6 @@
                         document.body.appendChild(link);
                         link.click();
                     });
-
             },
             //打开新增弹窗
             joinInsertDialog(){
@@ -497,6 +506,7 @@
             onBesure(){
                 this.selectPersonUuidList = []
                 this.selectPersonNameList = []
+                this.selectPersonUserIdList = []
                 var temporaryList = this.$refs.personTreePage.selectValue
                 temporaryList.forEach((value,index)=>{
                     this.selectPersonUuidList.push(value.personuuid)
@@ -506,19 +516,48 @@
                 var personUuidStr = this.selectPersonUuidList.join(',')
                 var personNameStr = this.selectPersonNameList.join(',')
                 var userIdStr = this.selectPersonUserIdList.join(',')
-                //还需要一个被选中的表的集合
-                var param = {
-                    personUuidStr:personUuidStr,
-                    personNameStr:personNameStr,
-                    userIdStr:userIdStr,
-                    tableMetaIdList:this.tableMetaIdList
-                }
-                dataShare(param)
-                .then((res)=>{
-                  this.selectPersonUuidList = []
-                  this.selectPersonNameList = []
-                  this.selectPersonUserIdList = []
+                //需要到后台做一个判断 判断选中的表是否已经被共享过了 一个失败都失败
+                var tempDbNameList = []
+                var tempTbNameList = []
+                this.tableMetaSelectionList.forEach((value,index)=>{
+                  tempDbNameList.push(value.dbName)
+                  tempTbNameList.push(value.tbName)
                 })
+                var tempParam = {
+                  tempDbNameList:tempDbNameList,
+                  tempTbNameList:tempTbNameList,
+                  userIdStr:userIdStr,
+                  tableMetaIdList:this.tableMetaIdList
+                }
+                isCanDataShare(tempParam)
+                .then((res)=>{
+                  if(res.data == 200){
+                    //还需要一个被选中的表的集合
+                      var param = {
+                          personUuidStr:personUuidStr,
+                          personNameStr:personNameStr,
+                          userIdStr:userIdStr,
+                          tableMetaIdList:this.tableMetaIdList
+                      }
+                      dataShare(param)
+                      .then((res)=>{
+                        this.openDataShareDialog = false
+                        this.selectPersonUuidList = []
+                        this.selectPersonNameList = []
+                        this.selectPersonUserIdList = []
+                        this.tableMetaSelectionList = []
+                        this.tableMetaIdList = []
+                        this.$notify.success("数据共享成功")
+                        this.initPersonalSpaceManageData()
+                      })
+                    .catch((err)=>{
+                      this.$notify.error("数据共享失败")
+                    })
+                  }else{
+                    this.$notify.error("存在已经被分享过的数据表")
+                  }
+                })
+
             },
           personalSpaceQueryByTreeNode(data,node){
               if(node.level == 1){
@@ -528,8 +567,6 @@
                 this.tableMetaDetail.folderUuid = folderUuid
                 this.tableMetaDetail.seneInstUuid = seneInstUuid
                 this.initPersonalSpaceManageData()
-                console.log(data,"data")
-                console.log(node,"node")
               }
           }
         }
