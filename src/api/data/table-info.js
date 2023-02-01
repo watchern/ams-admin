@@ -2,6 +2,7 @@
 import request from '@/utils/request'
 
 const baseURL = '/data'
+const baseURL2 = '/nlp'
 
 const controller2 = 'tableMeta'
 const BusinessSystem = 'businessSystem'
@@ -429,5 +430,14 @@ export function listSchemas (dataSource) {
     url: `/${controller2}/listSchemas`,
     method: 'get',
     params: { dataSource: dataSource }
+  })
+}
+
+// 获取标签分类树
+export function getLabelTree () {
+  return request({
+    baseURL: baseURL2,
+    url: `/nlpLabelLibrary/findLabelTree`,
+    method: 'get',
   })
 }

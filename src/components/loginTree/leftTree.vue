@@ -306,7 +306,8 @@ export default {
       } else if (node.level === 1) {
         //只有SQL编辑器的表才需要展示字段
         if (node.data.type === "table" && this.loadLeftTreeType === "1") {
-          var nodeList = getTableField(node.data.id, this.query.dataSource);
+          var strLevel = this.activeName + this.query.dataSource;
+          var nodeList = getTableField(node.data.id, this.query.dataSource,this.loadLeftTreeType,strLevel);
           Promise.all([nodeList]).then((res) => {
             resolve(res[0]);
           });
@@ -318,7 +319,8 @@ export default {
           //去掉表加载字段
           resolve([]);
         } else {
-          var nodeList = getTableField(node.data.id, this.query.dataSource);
+          var strLevel = this.activeName + this.query.dataSource;
+          var nodeList = getTableField(node.data.id, this.query.dataSource,this.loadLeftTreeType,strLevel);
           Promise.all([nodeList]).then((res) => {
             resolve(res[0]);
           });
