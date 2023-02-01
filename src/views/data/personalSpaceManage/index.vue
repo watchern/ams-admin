@@ -40,20 +40,27 @@
                             </el-form-item>
                         </el-form>
                     </el-row>
-                    <div class="padding10">
+                    <div class="padding10" style="display: inline">
                         <el-row>
 <!--                            <span>您的个人空间一共{{personHoldedSpace}},已使用{{personUsedSpace}},未使用20G,使用率5%</span>-->
                             <span>您的个人空间一共{{personHoldedSpace}},已使用{{personUsedSpace}},使用率{{spaceUsedPercent}}</span>
-                            <el-button type="primary"
-                                       @click="joinInsertDialog">新增表</el-button>
-                            <el-button type="primary"
-                                       @click="onDelete">删除表</el-button>
+                            <span @click="toPersonSpacePage" class="my_span_style" style="font-size: 16px;color: #00c4ff">跳转空间申请</span>
+<!--                            <el-button type="primary"-->
+<!--                                       @click="joinInsertDialog">新增表</el-button>-->
+<!--                            <el-button type="primary"-->
+<!--                                       @click="onDelete">删除表</el-button>-->
 <!--                            <el-button type="primary"-->
 <!--                            >数据导入</el-button>-->
+                          <div style="float: right">
                             <el-button type="primary"
-                                       @click="onExportData">导出数据</el-button>
+                                       @click="onExportData"
+                                       size="mini"
+                            >导出数据</el-button>
                             <el-button type="primary"
-                                        @click="joinDataShareDialog">数据共享</el-button>
+                                       @click="joinDataShareDialog"
+                                       size="mini"
+                            >数据共享</el-button>
+                          </div>
                             <!--        <el-button type="primary"-->
                             <!--                   @click="backToUpPage">关闭</el-button>-->
                         </el-row>
@@ -568,6 +575,9 @@
                 this.tableMetaDetail.seneInstUuid = seneInstUuid
                 this.initPersonalSpaceManageData()
               }
+          },
+          toPersonSpacePage(){
+              this.$router.push("expansion")
           }
         }
     }
@@ -593,5 +603,11 @@
             vertical-align: middle;
             float: left !important;
         }
+    }
+    .my_span_style:hover{
+      text-decoration: underline;
+      text-decoration-color: #00FFFF;
+      color: #0c87d6;
+      cursor:pointer
     }
 </style>
