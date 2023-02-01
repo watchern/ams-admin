@@ -406,10 +406,6 @@ export default {
       return sort === `+${key}` ? 'asc' : 'desc'
     },
     authentic () {
-      //授权 只能授权方式为数据管理员的角色
-      if(this.selections[0].authenType != "004001001" ){
-        return this.$notify(commonNotify({ type: 'error', message: '只能对‘数据管理员’方式的角色授权' }))
-      }
       var roleUuid = this.selections[0].dataRoleUuid
       var sceneCode = this.sceneCode;
       this.$router.push({
