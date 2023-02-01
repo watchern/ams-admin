@@ -1,6 +1,6 @@
 <template>
     <!--数据资源管理 数据装载与下线申请 -->
-    <div class="page-container">
+    <div >
         <div class="filter-container">
             <div class="query-field">
                 <el-form :inline="true"
@@ -9,7 +9,7 @@
                     <el-row>
                         <el-col>
                             <el-form-item label="申请名称：" prop="applyName">
-                                <el-input v-model="query.applyName"
+                                <el-input v-model="query.applyName" style="width: 200px"
                                           clearable/>
                             </el-form-item>
                             <el-form-item label="申请人：" prop="applyPerson">
