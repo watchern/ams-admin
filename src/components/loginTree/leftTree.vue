@@ -54,7 +54,8 @@
       </div>
     </div>
     <div v-else
-         class="conter_vh">
+         class="conter_vh"
+         :class="isSize == true ? 'conter_vh_size':'' ">
       <!-- 系统 主题 分层  目录-->
       <div class="tree-containerall">
         <MyElTree ref="tree2"
@@ -155,6 +156,8 @@ export default {
       type: Object,
       default: () => ({})
     },
+    isSize: Boolean,
+
   },
   data () {
     return {
@@ -215,9 +218,9 @@ export default {
   created () {
     this.query.businessSystemId = "";
     // this.show_details = false; //显示列表
-      this.$nextTick(() => {
-          this.post_getBusinessSystemTree(); //系统
-      });
+    this.$nextTick(() => {
+      this.post_getBusinessSystemTree(); //系统
+    });
     this.$emit("queryList", this.query, (this.show_details = false));
   },
   methods: {
@@ -307,7 +310,7 @@ export default {
         //只有SQL编辑器的表才需要展示字段
         if (node.data.type === "table" && this.loadLeftTreeType === "1") {
           var strLevel = this.activeName + this.query.dataSource;
-          var nodeList = getTableField(node.data.id, this.query.dataSource,this.loadLeftTreeType,strLevel);
+          var nodeList = getTableField(node.data.id, this.query.dataSource, this.loadLeftTreeType, strLevel);
           Promise.all([nodeList]).then((res) => {
             resolve(res[0]);
           });
@@ -320,7 +323,7 @@ export default {
           resolve([]);
         } else {
           var strLevel = this.activeName + this.query.dataSource;
-          var nodeList = getTableField(node.data.id, this.query.dataSource,this.loadLeftTreeType,strLevel);
+          var nodeList = getTableField(node.data.id, this.query.dataSource, this.loadLeftTreeType, strLevel);
           Promise.all([nodeList]).then((res) => {
             resolve(res[0]);
           });
@@ -398,7 +401,7 @@ export default {
       this.loading = true;
       this.tabclick = true;
       this.elTabsName = "系统";
-      getBusinessSystemTree(true, this.query.dataSource, true,this.loadLeftTreeType).then((resp) => {
+      getBusinessSystemTree(true, this.query.dataSource, true, this.loadLeftTreeType).then((resp) => {
         if (this.activeName === '0') {
           this.tree_list = resp.data;
           this.tree_list.forEach(item => {
@@ -420,7 +423,7 @@ export default {
     post_getThemeTree () {
       this.loading = true;
       this.tabclick = true;
-      getThemeTree(true, this.query.dataSource, true,this.loadLeftTreeType).then((resp) => {
+      getThemeTree(true, this.query.dataSource, true, this.loadLeftTreeType).then((resp) => {
         this.tree_list = resp.data;
         this.tree_list.forEach(item => {
           //SQL编辑器中，如果是表 需要展示字段不能去掉
@@ -440,7 +443,7 @@ export default {
     post_getLayeredTree () {
       this.loading = true;
       this.tabclick = true;
-      getLayeredTree(true, this.query.dataSource, true,this.loadLeftTreeType).then((resp) => {
+      getLayeredTree(true, this.query.dataSource, true, this.loadLeftTreeType).then((resp) => {
         this.tree_list = resp.data;
         this.tree_list.forEach(item => {
           //SQL编辑器中，如果是表 需要展示字段不能去掉
@@ -847,6 +850,10 @@ export default {
 .conter_vh {
   height: calc(100% - 170px);
 }
+.conter_vh_size {
+  height: calc(100% - 120px);
+}
+/* 个人空间管理页面 需要二次更改高度 */
 
 .tree-containerall {
   height: 100%;

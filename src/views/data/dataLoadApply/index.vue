@@ -564,8 +564,8 @@
                         label: '办理中'
                     },
                     {
-                        value: '已办',
-                        label: '已办'
+                        value: '办理完成',
+                        label: '办理完成'
                     },
                 ],
                 listLoading: false,
