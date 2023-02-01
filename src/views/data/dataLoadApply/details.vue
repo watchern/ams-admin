@@ -272,18 +272,6 @@
             },
             //下载文件
             downLoadFile(value) {
-                // window.open('/data/loadDownApply/download' );
-                // console.log(value)
-                // download(value).then(()=>{
-                //     this.$notify({
-                //         title: "成功",
-                //         message: "下载成功",
-                //         type: "success",
-                //         duration: 2000,
-                //         position: "bottom-right",
-                //     })
-                // })
-                console.log(qs.stringify({filePath: value}))
                 axios
                     .post(
                         `/data/loadDownApply/download`,

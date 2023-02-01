@@ -65,7 +65,7 @@
                       fit
                       highlight-current-row
                       style="width: 100%"
-                      height="calc(100vh - 320px)"
+                      height="calc(100vh - 350px)"
                       @selection-change="handleSelectionChange">
                 <el-table-column type="selection"
                                  width="55"/>
@@ -79,15 +79,15 @@
                                  min-width="100px"
                                  prop="applyTime"
                                  show-overflow-tooltip/>
-                <el-table-column label="当前环节"
-                                 align="center"
-                                 min-width="100px"
-                                 prop="currentLink"
-                                 show-overflow-tooltip/>
-                <el-table-column label="上一办理人"
-                                 align="center"
-                                 min-width="100px"
-                                 prop=""/>
+<!--                <el-table-column label="当前环节"-->
+<!--                                 align="center"-->
+<!--                                 min-width="100px"-->
+<!--                                 prop="currentLink"-->
+<!--                                 show-overflow-tooltip/>-->
+<!--                <el-table-column label="上一办理人"-->
+<!--                                 align="center"-->
+<!--                                 min-width="100px"-->
+<!--                                 prop=""/>-->
                 <el-table-column label="状态"
                                  align="center"
                                  min-width="100px"
@@ -231,9 +231,11 @@
                                 prop="displayTableName"
                                 min-width="100px"
                                 label="表名称"
+                                align="center"
                                 show-overflow-tooltip>
                             <template slot-scope="scope">
-                                    <el-input v-model="scope.row.displayTableName"></el-input>
+                                <el-input v-model="scope.row.displayTableName" id="displayTableName" type="text"
+                                ></el-input>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -335,7 +337,7 @@
                         </div>
                     </el-col>
                     <el-col :span="16">
-                        <el-col align="right" style="padding-top: 4px; padding-right: 50px">
+                        <el-col text-align="right" style="padding-top: 4px; padding-right: 50px">
                             <!--          <el-button type="primary" class="oper-btn edit-period btn-width-max" :disabled="selections.length !== 1" @click="setExpireDate" />-->
                             <el-button
                                     type="primary"
@@ -713,9 +715,6 @@
                     applyName: [
                         {required: true, message: '请输入名称', trigger: 'blur'},
                     ],
-                    // applyPerson: [
-                    //     // { required: true, message: '请输入申请人', trigger: 'blur' },
-                    // ],
                     operationType: [
                         {required: true, message: '请选择操作类型', trigger: 'change'},
                     ],
@@ -732,7 +731,7 @@
                         {required: true, message: '请选择列操作符', trigger: 'change'},
                     ],
                     displayTableName: [
-                        {required: true, message: '请输入表名称', trigger: 'blur'}
+                        {required: true, message: '请输入表名称', trigger: 'blur'},
                     ]
                 },
                 //工作流相关
@@ -798,13 +797,9 @@
             },
             //下线方法
             addGrop() {
-                console.log(this.$refs.tree_left.treeNodeSelectedObj);
                 var nodes = [];
                 nodes = this.$refs.tree_left.treeNodeSelectedObj[0].data;
                 this.tableDataOffline = []
-                // if (nodes.length === 0) {
-                //     //nodes.push(this.$refs["dataTree"][0].getCurrentNode());
-                // }
                 nodes.forEach((node) => {
                     if (
                         node.type === "table"
@@ -812,10 +807,12 @@
                         this.tableDataOffline.push({
                             tableMetaId: node.id,
                             tablePath: "数据装载/" + node.label,
+                            //归档方式默认为归档到文件
+                            archiveType: this.options[0].value,
+                            archiveFileTableName: "",
                         });
                     }
                 });
-                console.log(this.tableDataOffline, "this.tableDataOffline")
             },
             removeGrp() {
                 if (this.selections.length > 0) {
@@ -832,42 +829,6 @@
             handleSelectionTreeChange(val) {
                 this.selections = val;
             },
-            // // 获取个人数据与全行数据列表
-            // getOrgTree() {
-            // //     this.treeLoading = true;
-            // //     方法("").then((res) => {
-            // //         this.orgTreeData = res.data;
-            // //         this.treeLoading = false;
-            // //     });
-            // },
-            // filterNode(value, data) {
-            //     if (!value) return true;
-            //     return data.label.indexOf(value) !== -1;
-            // },
-            // handleNodeClick(data, obj, node) {
-            //     this.getLoadTree(data, obj, node);
-            // },
-            // //展开树形结构进行懒加载的方法 data该节点所对应的对象、obj节点对应的 Node、node节点组件本身
-            // getLoadTree(datas, obj, node) {
-            //     this.orglistLoading = true;
-            //     queryOrgTree(datas.id).then((res) => {
-            //         this.loadTree = res.data;
-            //         this.orglistLoading = false;
-            //     });
-            // },
-            // loadNode(node, resolve) {
-            //     if (node.level === 0) {
-            //         return resolve(this.orgTreeData);
-            //     }
-            //     if (node.data.children && node.data.children != "") {
-            //         return resolve(node.data.children);
-            //     } else {
-            //         setTimeout(() => {
-            //             resolve(this.loadTree);
-            //         }, 500);
-            //     }
-            // },
-
 
             //装载方法
             select(file, fileList) {
@@ -902,7 +863,6 @@
                 } else if (extName === 'xlsx') {
                     this.file.fileType = 'xlsx'
                 }
-                console.log("this.fileList:", this.fileList)
                 //重置this.file文件，防止编辑失败时点击新增，页面出现编辑中查到的数据
                 this.file = this.$options.data().file
             },
@@ -941,7 +901,6 @@
                         for (let i = 0; i < this.fileList.length; i++) {
                             if (this.tableData[index].fileName === this.fileList[i].name) {
                                 this.fileList.splice(i, 1)
-
                             }
                         }
                         this.tableData.splice(index, 1)
@@ -951,8 +910,7 @@
 
             //添加
             apply_add() {
-                let userName = this.$store.state.user.name;
-                this.form.applyPerson = userName
+                this.form.applyPerson = this.$store.state.user.name;
                 this.applyDialogVisible = true
                 this.dialogStatusValue = false
                 this.dialogStatus = 'create'
@@ -1172,10 +1130,42 @@
                                 "tableData": this.form.operationType == 0 ? JSON.stringify(this.tableData) : JSON.stringify(this.tableDataOffline),
                             }
                             //校验是否选择了文件
-                            if (this.tableData.length === 0 && this.form.operationType === 0) {
+                            if (this.tableData.length == 0 && this.form.operationType == 0) {
                                 this.$notify.warning("请选择文件！")
                                 return
                             }
+                            //定义数组接收未填写文件名的行数
+                            let number = []
+                            //判断装载与下线文件列表中是否填写了文件名，并将未填写文件名的行数填入number数组中
+                            if (this.form.operationType == 0) {
+                                this.tableData.forEach((item, index, array) => {
+                                    if (array[index].displayTableName === "") {
+                                        number.push(index + 1)
+                                    }
+                                })
+                            } else {
+                                this.tableDataOffline.forEach((item, index, array) => {
+                                    if (array[index].archiveFileTableName === "") {
+                                        number.push(index + 1)
+                                    }
+                                })
+                            }
+                            //判断数组不为空
+                            if (number !== undefined && number != null && number.length > 0) {
+                                let lineNumber = "";
+                                number.forEach((item, index) => {
+                                    lineNumber += number[index] + ","
+                                })
+
+                                lineNumber = lineNumber.substring(0, lineNumber.lastIndexOf(','));
+                                if (this.form.operationType == 0) {
+                                    this.$notify.warning("第" + lineNumber + "行数据未填写表名称！")
+                                } else {
+                                    this.$notify.warning("第" + lineNumber + "行数据未填写归档文件/表名称！")
+                                }
+                                return
+                            }
+
                             //save_data方法调用后台save接口实现新增功能
                             if (isUpload) {
                                 save_data(params).then(res => {
@@ -1237,8 +1227,7 @@
                         return false
                     }
                 })
-            }
-            ,
+            },
 
             // 关闭弹窗
             handleClose(form) {
@@ -1247,32 +1236,24 @@
                 this.fileList = []
                 this.tableData = []
                 this.tableDataOffline = []
-            }
-            ,
+            },
+
             //子组件fileupload传值给父组件，用showFileType事件接收值赋给变量fileType
             showFileType(fileType) {
                 this.fileType = fileType;
-            }
-            ,
+            },
+
             //子组件fileupload传值给父组件，用showFilePath事件接收值赋给变量fileType
             showFilePath(filePath) {
                 this.form.fileName = filePath;
-            }
-            ,
+            },
+
             //打开流程跟踪弹窗
             todoOpinionList(row) {
                 this.applyUuid = row.applyUuid;
                 this.todoFlow = true;
-            }
-            ,
-            addApply() {
+            },
 
-            }
-            ,
-            delApply() {
-
-            }
-            ,
             //工作流相关
             saveOpinion() {
                 //保存业务数据成功后
@@ -1281,6 +1262,7 @@
                     //将状态修改为办理中
                 }, 20);
             },
+
             batchUpdateForHandleClose() {
                 batchUpdateForHandle(this.applySelectionList)
                     .then(() => {
