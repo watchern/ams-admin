@@ -320,27 +320,28 @@
           // }
           // incrementPersonalSpaceManage(param)
             this.$refs.leftTreePage.loadLeftTreeTypeFun("3")
-            var cloMeta1={
-                cloName:'123',//字段名
-                colMetaUuid:'1234',
-                // tableMetaUuid:'233',//字段类型
-                colName:'测试1',//字段长度
-                dataType:'T',
-                dataLength:'10',
-                isNullable: '0',
-                colComment: '测试111'
-            }
-            var cloMeta2={
-                cloName:'121233',//字段名
-                colMetaUuid:'1212334',
-                // tableMetaUuid:'2233',//字段类型
-                colName:'测试111',//字段长度
-                dataType:'T',
-                dataLength:'10',
-                isNullable: '0',
-                colComment: '测试111'
-            }
-            this.colMetaList.push(cloMeta1,cloMeta2)
+          //下面并非无用代码 是一个新增表数据的模板
+            // var cloMeta1={
+            //     cloName:'123',//字段名
+            //     colMetaUuid:'1234',
+            //     // tableMetaUuid:'233',//字段类型
+            //     colName:'测试1',//字段长度
+            //     dataType:'T',
+            //     dataLength:'10',
+            //     isNullable: '0',
+            //     colComment: '测试111'
+            // }
+            // var cloMeta2={
+            //     cloName:'121233',//字段名
+            //     colMetaUuid:'1212334',
+            //     // tableMetaUuid:'2233',//字段类型
+            //     colName:'测试111',//字段长度
+            //     dataType:'T',
+            //     dataLength:'10',
+            //     isNullable: '0',
+            //     colComment: '测试111'
+            // }
+            // this.colMetaList.push(cloMeta1,cloMeta2)
             this.initPersonalSpaceManageData()
         },
         methods:{
