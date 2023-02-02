@@ -1,6 +1,6 @@
 <template>
     <!--数据资源管理 数据装载与下线申请 -->
-    <div class="page-container">
+    <div >
         <div class="filter-container">
             <div class="query-field">
                 <el-form :inline="true"
@@ -9,7 +9,7 @@
                     <el-row>
                         <el-col>
                             <el-form-item label="申请名称：" prop="applyName">
-                                <el-input v-model="query.applyName"
+                                <el-input v-model="query.applyName" style="width: 200px"
                                           clearable/>
                             </el-form-item>
                             <el-form-item label="申请人：" prop="applyPerson">
@@ -65,7 +65,7 @@
                       fit
                       highlight-current-row
                       style="width: 100%"
-                      height="calc(100vh - 320px)"
+                      height="calc(100vh - 350px)"
                       @selection-change="handleSelectionChange">
                 <el-table-column type="selection"
                                  width="55"/>
@@ -79,15 +79,15 @@
                                  min-width="100px"
                                  prop="applyTime"
                                  show-overflow-tooltip/>
-                <el-table-column label="当前环节"
-                                 align="center"
-                                 min-width="100px"
-                                 prop="currentLink"
-                                 show-overflow-tooltip/>
-                <el-table-column label="上一办理人"
-                                 align="center"
-                                 min-width="100px"
-                                 prop=""/>
+<!--                <el-table-column label="当前环节"-->
+<!--                                 align="center"-->
+<!--                                 min-width="100px"-->
+<!--                                 prop="currentLink"-->
+<!--                                 show-overflow-tooltip/>-->
+<!--                <el-table-column label="上一办理人"-->
+<!--                                 align="center"-->
+<!--                                 min-width="100px"-->
+<!--                                 prop=""/>-->
                 <el-table-column label="状态"
                                  align="center"
                                  min-width="100px"
@@ -337,7 +337,7 @@
                         </div>
                     </el-col>
                     <el-col :span="16">
-                        <el-col align="right" style="padding-top: 4px; padding-right: 50px">
+                        <el-col text-align="right" style="padding-top: 4px; padding-right: 50px">
                             <!--          <el-button type="primary" class="oper-btn edit-period btn-width-max" :disabled="selections.length !== 1" @click="setExpireDate" />-->
                             <el-button
                                     type="primary"
@@ -564,8 +564,8 @@
                         label: '办理中'
                     },
                     {
-                        value: '已办',
-                        label: '已办'
+                        value: '办理完成',
+                        label: '办理完成'
                     },
                 ],
                 listLoading: false,
@@ -910,8 +910,7 @@
 
             //添加
             apply_add() {
-                let userName = this.$store.state.user.name;
-                this.form.applyPerson = userName
+                this.form.applyPerson = this.$store.state.user.name;
                 this.applyDialogVisible = true
                 this.dialogStatusValue = false
                 this.dialogStatus = 'create'
@@ -1146,7 +1145,7 @@
                                 })
                             } else {
                                 this.tableDataOffline.forEach((item, index, array) => {
-                                    if (array[index].archiveFileTableName === ""){
+                                    if (array[index].archiveFileTableName === "") {
                                         number.push(index + 1)
                                     }
                                 })
@@ -1159,9 +1158,9 @@
                                 })
 
                                 lineNumber = lineNumber.substring(0, lineNumber.lastIndexOf(','));
-                                if (this.form.operationType == 0){
+                                if (this.form.operationType == 0) {
                                     this.$notify.warning("第" + lineNumber + "行数据未填写表名称！")
-                                }else {
+                                } else {
                                     this.$notify.warning("第" + lineNumber + "行数据未填写归档文件/表名称！")
                                 }
                                 return
@@ -1228,8 +1227,7 @@
                         return false
                     }
                 })
-            }
-            ,
+            },
 
             // 关闭弹窗
             handleClose(form) {
@@ -1238,32 +1236,24 @@
                 this.fileList = []
                 this.tableData = []
                 this.tableDataOffline = []
-            }
-            ,
+            },
+
             //子组件fileupload传值给父组件，用showFileType事件接收值赋给变量fileType
             showFileType(fileType) {
                 this.fileType = fileType;
-            }
-            ,
+            },
+
             //子组件fileupload传值给父组件，用showFilePath事件接收值赋给变量fileType
             showFilePath(filePath) {
                 this.form.fileName = filePath;
-            }
-            ,
+            },
+
             //打开流程跟踪弹窗
             todoOpinionList(row) {
                 this.applyUuid = row.applyUuid;
                 this.todoFlow = true;
-            }
-            ,
-            addApply() {
+            },
 
-            }
-            ,
-            delApply() {
-
-            }
-            ,
             //工作流相关
             saveOpinion() {
                 //保存业务数据成功后
@@ -1272,6 +1262,7 @@
                     //将状态修改为办理中
                 }, 20);
             },
+
             batchUpdateForHandleClose() {
                 batchUpdateForHandle(this.applySelectionList)
                     .then(() => {

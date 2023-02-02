@@ -2845,7 +2845,7 @@ export function startExecuteSql(data) {
  * 获取执行任务
  * @param {*} data 要执行的数据
  */
-export function getExecuteTask(data,dataUserId,sceneCode, dataSource) {
+export function getExecuteTask(data,dataUserId,sceneCode, dataSource,treeType) {
   var dataUserId1 = ''
   var sceneCode1 = ''
   if (dataUserId != undefined && sceneCode != undefined) {
@@ -2858,6 +2858,7 @@ export function getExecuteTask(data,dataUserId,sceneCode, dataSource) {
   data.userId = dataUserId1;
   data.sceneCode = sceneCode1;
   data.dataSource = dataSource;
+  data.treeType = treeType;
   return request({
     baseURL: analysisUrl,
     url: '/SQLEditorController/getExecuteTask',

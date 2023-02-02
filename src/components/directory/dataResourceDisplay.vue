@@ -2,8 +2,8 @@
   <div class="preview_conter padding10_l">
     <!-- 查询 -->
     <div class="header_search">
-      <p>查询条件：</p>
-      <div class="input_blue"
+      <!-- <p>查询条件：</p>
+         <div class="input_blue"
            @click="onclick()">
         <div v-for="(item, index) in TagsAll"
              :key="index"
@@ -12,7 +12,6 @@
           <i class="span_close"
              @click="removeTag(index, item)"></i>
         </div>
-        <!-- 输入框 -->
         <input placeholder="请输入，按<回车>以分隔"
                v-model="search_name"
                @keyup.enter="addTags"
@@ -27,7 +26,21 @@
                  @click="search()">查询</el-button>
       <el-button size="mini"
                  type="info"
-                 @click="clear_search()">重置</el-button>
+                 @click="clear_search()">重置</el-button> -->
+
+      <query-tags :dropDownData="dropDownData"
+                  ref="tags"
+                  @change="onChange"></query-tags>
+      <div class="padding10 flex">
+
+        <el-button size="mini"
+                   type="primary"
+                   @click="search()">查询</el-button>
+        <!-- <el-button size="mini"
+                   type="info"
+                   @click="clear_search()">重置</el-button> -->
+      </div>
+
     </div>
     <!-- 查询 end-->
 
@@ -238,9 +251,10 @@
 
 <script>
 // import { title } from 'process';
+import queryTags from "@/components/queryTags";
 
 export default {
-  components: {},
+  components: { queryTags },
   props: {
     itemsArr: {
       type: Array,
@@ -273,12 +287,14 @@ export default {
       form: {
         title: '',
       },
-      search_name: '',
+      // search_name: '',
       TagsAll: [],
       inputLength: '',
       // common_dialog: false,//导入数据源
       title: '',//弹窗共用标题
       check_list: [],//多选批量的数量
+      dropDownData: ["测试", "测试11111"],
+
     };
   },
   created () {
@@ -287,9 +303,9 @@ export default {
     TagsAll () {
       this.$emit('on-change', this.TagsAll)
     },
-    search_name (val) {
-      this.inputLength = this.$refs.inputTag.value.length * 12 + 50;
-    },
+    // search_name (val) {
+    //   this.inputLength = this.$refs.inputTag.value.length * 12 + 50;
+    // },
     itemsArr () {
       this.TagsAll = this.itemsArr.length ? this.itemsArr : []
     }
@@ -308,26 +324,30 @@ export default {
     this.TagsAll = this.itemsArr;
   },
   methods: {
+
+    onChange (data) {
+      this.TagsAll = data
+    },
+
+    // 查询
+    search () {
+      console.log(this.TagsAll);
+      // this.$emit("search", this.search_name);
+
+    },
     // 删除标签
     removeTag (index, item) {
 
       this.TagsAll.splice(index, 1)
     },
     //生成标签
-    addTags () {
-      if (this.search_name) {
-        this.TagsAll.push(this.search_name);
-        this.search_name = '';
-      }
-    },
-    // 重置
-    clear_search () {
-      this.TagsAll = []
-    },
-    // 查询
-    search () {
+    // addTags () {
+    //   if (this.search_name) {
+    //     this.TagsAll.push(this.search_name);
+    //     this.search_name = '';
+    //   }
+    // },
 
-    },
     //键盘删除键删除tag
     deleteTags () {
       this.TagsAll.pop()
