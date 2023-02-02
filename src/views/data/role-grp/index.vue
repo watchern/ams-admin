@@ -282,7 +282,6 @@ export default {
       this.role = resp.data;
       if(this.role.authenType === '004001002'){
         this.isNoClick = true
-        console.log(this.isNoClick)
       }
     });
     getRoleGrp(this.roleUuid).then((resp) => {
