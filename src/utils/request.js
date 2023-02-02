@@ -85,7 +85,7 @@ service.interceptors.response.use(
           location.reload()
         })
       }
-    //code==1993为biz
+      //code==1993为biz
       if(res.code == 1993){
         Message({
           dangerouslyUseHTMLString: true,
@@ -97,6 +97,8 @@ service.interceptors.response.use(
         })
         return Promise.reject()
       } else if (res.head && res.head.status == 20) {
+        return res
+      } else if (res.code == 200) {
         return res
       } else {
         Message({

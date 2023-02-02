@@ -129,14 +129,14 @@ module.exports = {
           '^/ams-clue/': '/'
         },
       },
-      // '/nlp': {
-      //   timeout: 1800000,
-      //   target: process.env.AMS_NLP,
-      //   changeOrigin: true,
-      //   pathRewrite: {
-      //     '^/nlp/': '/'
-      //   },
-      // },
+      '/nlp/': {
+        timeout: 1800000,
+        target: process.env.AMS_NLP,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/nlp/': '/'
+        },
+      },
       // ,
       // '/sess': {
       //   timeout: 1800000,

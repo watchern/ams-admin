@@ -631,7 +631,7 @@ export default {
     },
     saveOpinion() {
       //保存业务数据成功后
-      setTimeout(() => {
+      (() => {
         this.$refs["flowItem"].submitFlow();
         //将状态修改为办理中
       }, 20);

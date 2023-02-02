@@ -437,7 +437,17 @@ export function listSchemas (dataSource) {
 export function getLabelTree () {
   return request({
     baseURL: baseURL2,
-    url: `/nlpLabelLibrary/findLabelTree`,
+    url: `/nlp/nlpLabelLibrary/findLabelTree`,
+    method: 'get',
+  })
+}
+
+// 获取标签列表（分页）
+export function getLabelList(labelLibraryId, pageNo, pageSize, labelName) {
+  return request({
+    baseURL: baseURL2,
+    url: `/nlp/nlpLabelLibrary/findLabelList`,
+    params: { labelLibraryId: labelLibraryId, pageNo: pageNo, pageSize: pageSize,labelLibraryName: labelName},
     method: 'get',
   })
 }
