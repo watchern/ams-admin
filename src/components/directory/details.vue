@@ -906,7 +906,6 @@ export default {
     // 返回上一步
     step () {
       this.$emit("step",)
-
     },
     handleScrollTop () {
       this.$nextTick(() => {

@@ -896,10 +896,9 @@ export default {
     // this.query_list(data);
   },
   methods: {
-
     // 返回上一步
     Step () {
-      this.show_details = false
+      this.show_details = false;
       this.query_list(this.$refs.tree_left.query, false);
     },
     // 获取资料书的参数
@@ -907,7 +906,6 @@ export default {
       this.query_list(this.$refs.tree_left.query, false);
       this.update_tree();//更新左侧树
     },
-
     // 更新左侧树
     update_tree () {
       if (this.$refs.tree_left.activeName == '0') {

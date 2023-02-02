@@ -363,7 +363,10 @@ export default {
           this.activeName = "3"
           this.post_getPersonSpaceTree(); //个人空间
         }
-
+        if (this.loadLeftTreeType == "5") {
+          this.isShowLoadLeftTreeBtn = false;
+          this.isShowPersonSpaceTab = true;
+        }
       }
     },
     // 选择数据源
