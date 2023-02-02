@@ -1361,6 +1361,9 @@ export default {
 </script>
 
 <style scoped>
+.information_form >>> .el-textarea__inner {
+  resize: none;
+}
 .dlag_width >>> .el-dialog {
   min-width: 600px !important;
 }

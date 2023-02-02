@@ -883,7 +883,7 @@ export function initTableTree(result,dataSource) {
 /**
  * 获取表字段
  */
-export async function getTableField(tableMetaUuid,dataSource){
+export async function getTableField(tableMetaUuid,dataSource,treeType,strLevel){
   // 处理拿回来的数据 处理成列表
   const columns = []
   var nodeList = []
@@ -891,7 +891,10 @@ export async function getTableField(tableMetaUuid,dataSource){
     baseURL: dataUrl,
     url: '/tableMeta/getCols',
     method: 'post',
-    params: { tableMetaUuid: tableMetaUuid, isEnclose:"1" ,dataSource: dataSource }
+    params: { 
+      tableMetaUuid: tableMetaUuid, isEnclose:"1" ,dataSource: dataSource,
+      businessType: strLevel, treeType:treeType
+    }
   }).then(result => {
     if (result.data == null) {
       this.$message({
@@ -2579,7 +2582,7 @@ export function getSaveInfo() {
  * 生成select语句
  * @param menuId 菜单编号
  */
-export function getSelectSql(menuId,dataSource) {
+export function getSelectSql(menuId,dataSource,strLevel) {
   hideRMenu(menuId)
   var nodes = zTreeObj.getSelectedNodes()
   if(nodes.length==0){
@@ -2598,7 +2601,10 @@ export function getSelectSql(menuId,dataSource) {
         baseURL: dataUrl,
         url: '/tableMeta/getCols',
         method: 'post',
-        params: { tableMetaUuid: tableMetaUuid, isEnclose:"1", dataSource: dataSource }
+        params: { 
+          tableMetaUuid: tableMetaUuid, isEnclose:"1", dataSource: dataSource, 
+          businessType: strLevel, treeType:"1"
+        }
       }).then(result => {
         if (result.data == undefined || result.data == null) {
           return
@@ -2839,7 +2845,7 @@ export function startExecuteSql(data) {
  * 获取执行任务
  * @param {*} data 要执行的数据
  */
-export function getExecuteTask(data,dataUserId,sceneCode, dataSource) {
+export function getExecuteTask(data,dataUserId,sceneCode, dataSource,treeType) {
   var dataUserId1 = ''
   var sceneCode1 = ''
   if (dataUserId != undefined && sceneCode != undefined) {
@@ -2852,6 +2858,7 @@ export function getExecuteTask(data,dataUserId,sceneCode, dataSource) {
   data.userId = dataUserId1;
   data.sceneCode = sceneCode1;
   data.dataSource = dataSource;
+  data.treeType = treeType;
   return request({
     baseURL: analysisUrl,
     url: '/SQLEditorController/getExecuteTask',

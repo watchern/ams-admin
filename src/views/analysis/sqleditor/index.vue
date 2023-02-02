@@ -1378,7 +1378,8 @@ export default {
      * 生成select语句
      */
     getSelectSql (menuId) {
-      getSelectSql(menuId, this.$refs.tree_left.query.dataSource)
+      var strLevel = this.$refs.tree_left.activeName + this.$refs.tree_left.query.dataSource;
+      getSelectSql(menuId, this.$refs.tree_left.query.dataSource,strLevel)
     },
     /**
      *打开sql保存草稿窗体
@@ -1530,7 +1531,7 @@ export default {
         if (!obj.isExistParam) {
           // this.executeLoading = true
           _this.loadText = "正在获取SQL信息...";
-          getExecuteTask(obj, _this.dataUserId, _this.sceneCode1, _this.$refs.tree_left.query.dataSource).then(
+          getExecuteTask(obj, _this.dataUserId, _this.sceneCode1, _this.$refs.tree_left.query.dataSource, _this.$refs.tree_left.activeName).then(
             (result) => {
               //在这如果报错就加一个新页签，如果不报错就显示我的
               if (result.data.isError) {
@@ -1801,7 +1802,7 @@ export default {
       currentExecuteProgress = 0;
       this.currentExecuteSQL = [];
       lastResultColumn = [];
-      const data = { sql: result.sql, dataSource: this.$refs.tree_left.query.dataSource };
+      const data = { sql: result.sql, dataSource: this.$refs.tree_left.query.dataSource, treeType:this.$refs.tree_left.activeName };
       this.executeLoading = true;
       this.loadText = "正在获取SQL列...";
       getColumnSqlInfo(data)

@@ -95,7 +95,8 @@
                                  min-width="80px"
                 >
                     <template slot-scope="scope">
-                        <el-checkbox v-model="scope.row.isHeaderLine" :disabled="true" true-label="true" false-label="false">
+                        <el-checkbox v-model="scope.row.isHeaderLine" :disabled="true" true-label="true"
+                                     false-label="false">
                         </el-checkbox>
                     </template>
                 </el-table-column>
@@ -155,7 +156,8 @@
                                 <el-button type="primary"
                                            size="mini"
                                            title="下载"
-                                           @click="downLoadFile(scope.row.applyUuid)">下载</el-button>
+                                           @click="downLoadFile(scope.row.filePath)">下载
+                                </el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -182,7 +184,10 @@
         getById,//详情
         batchUpdateForFinishHandle,
         showFile, //文件查看
+        download,//文件下载
     } from "@/api/data/loadApply";
+    import axios from "axios";
+    import qs from "qs";
 
     export default {
         props: {
@@ -266,8 +271,33 @@
                 batchUpdateForFinishHandle(relParam)
             },
             //下载文件
-            downLoadFile(applyUuid){
-
+            downLoadFile(value) {
+                axios
+                    .post(
+                        `/data/loadDownApply/download`,
+                        qs.stringify({filePath: value}),
+                        {
+                            responseType: "blob",
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式
+                            },
+                        }
+                    )
+                    .then((res) => {
+                        const filename = decodeURI(
+                            res.headers["content-disposition"].split(";")[1].split("=")[1]
+                        );
+                        const blob = new Blob([res.data], {
+                            type: "application/octet-stream",
+                        });
+                        const url = window.URL.createObjectURL(blob);
+                        const link = document.createElement("a");
+                        link.style.display = "none";
+                        link.href = url;
+                        link.setAttribute("download", filename);
+                        document.body.appendChild(link);
+                        link.click();
+                    });
             },
         }
     }
@@ -289,6 +319,14 @@
         margin-left: 0 !important;
         float: left;
     }
+
+    /*this.$notify({*/
+    /*    title: "成功",*/
+    /*    message: "下载成功",*/
+    /*    type: "success",*/
+    /*    duration: 2000,*/
+    /*    position: "bottom-right",*/
+    /*});*/
 
     .admin_right_main >>> .el-textarea .el-textarea__inner {
         resize: none;

@@ -410,7 +410,7 @@
         </div>
         <span slot="footer"
               class="dialog-footer">
-          <el-button @click="step('form')">上一步</el-button>
+          <el-button @click="step_data('form')">上一步</el-button>
           <el-button type="primary"
                      :loading="btnLoading"
                      :disabled="isDisable"
@@ -896,6 +896,7 @@ export default {
     // this.query_list(data);
   },
   methods: {
+
     // 返回上一步
     Step () {
       this.show_details = false
@@ -1377,7 +1378,7 @@ export default {
       return data.label.indexOf(value) !== -1;
     },
     // 上一步
-    step (form) {
+    step_data (form) {
       this.$nextTick(() => {
         this.$refs['form'].resetFields(); //清空添加的值
         this.$refs["form"].clearValidate();
@@ -1388,10 +1389,12 @@ export default {
       // this.registTableFlag = true;//关闭上一步
       this.dialogVisible_information = false; //关闭基本信息
       this.clear();
+      console.log(this.form.tbName);
     },
     // 清除注册资源第二步的数据
     clear () {
       // 清空
+      this.form.tbName = "";
       this.form.tableCode = "";
       this.form.chnName = ''
       this.form.tableType = "";
@@ -1456,16 +1459,17 @@ export default {
       } else {
         // this.registTableFlag = false;//关闭上一步
         this.dialogVisible_information = true; //显示下一步 基本信息
-        this.form.chnName = ''
-        this.btnLoading = false;
-        this.$nextTick(() => {
-          this.$refs.form.resetFields(); //清空添加的值
-          this.$refs.form.clearValidate();
-        })
-        this.post_getColsInfoByTableName(); //获取列信息
-        this.getListTree_data();
-        this.form.tbName = this.Column_table_query.tbName.toString(); //表名赋值
+
       }
+      // this.form.chnName = ''
+      this.btnLoading = false;
+      this.$nextTick(() => {
+        this.$refs.form.resetFields(); //清空添加的值
+        this.$refs.form.clearValidate();
+      })
+      this.post_getColsInfoByTableName(); //获取列信息
+      this.getListTree_data();
+
     },
     // 获取列信息
     post_getColsInfoByTableName () {
@@ -1486,10 +1490,17 @@ export default {
         if (resp.data.length !== 1) {
           this.Column_table = resp.data;
         } else {
+
+          // console.log(this.Column_table_query.tbName.toString());
+          this.form.tbName = this.Column_table_query.tbName.toString(); //表名赋值
+          console.log(this.form.tbName);
+
           this.Column_table = resp.data[0].colMetas
           this.form.rowNum = resp.data[0].rowNum//表数据量
           this.form.tableSize = resp.data[0].tableSize//表大小
           this.form.partitions = resp.data[0].partitions//表分区
+          this.form.partitions = resp.data[0].partitions//表分区
+
           this.form.tableCode = resp.data[0].tableRelationQuery.tableCode//资源编码
           this.form.tableRemarks = resp.data[0].tableRelationQuery.tableRemarks//表说明
         }
