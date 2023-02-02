@@ -129,7 +129,7 @@ module.exports = {
           '^/ams-clue/': '/'
         },
       },
-      '/nlp': {
+      '/nlp/': {
         timeout: 1800000,
         target: process.env.AMS_NLP,
         changeOrigin: true,
