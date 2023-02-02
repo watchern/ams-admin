@@ -1,32 +1,33 @@
 <template>
   <div style="width:100%;position:relative">
     <!-- 父盒子 -->
-    <div class="father_box" @click="onclick">
+    <div class="father_box"
+         @click="onclick">
       <!-- 生成的标签 -->
-      <div v-for="(item, index) in TagsAll" :key="index" class="spanbox">
+      <div v-for="(item, index) in TagsAll"
+           :key="index"
+           class="spanbox">
         <span class="tagspan">{{ item.label }}{{ item.value }}</span>
-        <i class="span_close" @click="removeTag(index, item)"></i>
+        <i class="span_close"
+           @click="removeTag(index, item)"></i>
       </div>
 
       <!-- 输入框 -->
-      <input
-        placeholder="请输入，按<回车>以分隔"
-        v-model="currentval"
-        @keyup.enter="addTags"
-        @keyup.delete="deleteTags"
-        :style="inputStyle"
-        class="inputTag"
-        ref="inputTag"
-        type="text"
-      />
+      <input placeholder="请输入，按<回车>以分隔"
+             v-model="currentval"
+             @keyup.enter="addTags"
+             @keyup.delete="deleteTags"
+             :style="inputStyle"
+             class="inputTag"
+             ref="inputTag"
+             type="text" />
     </div>
-    <div v-if="currentval && dropDown.length > 0" class="dropDownBox">
-      <div
-        v-for="(item, index) in dropDown"
-        :key="index"
-        class="dropDownItem"
-        @click="addTags(item)"
-      >
+    <div v-if="currentval && dropDown.length > 0"
+         class="dropDownBox">
+      <div v-for="(item, index) in dropDown"
+           :key="index"
+           class="dropDownItem"
+           @click="addTags(item)">
         <div class="dropDownTitel">{{ item }}</div>
         {{ currentval }}
       </div>
@@ -40,7 +41,7 @@ export default {
   props: {
     parentArr: {
       type: Array,
-      default() {
+      default () {
         return [];
       },
     },
@@ -50,12 +51,12 @@ export default {
     },
     dropDownData: {
       type: Array,
-      default() {
+      default () {
         return [];
       },
     },
   },
-  data() {
+  data () {
     return {
       currentval: "",
       TagsAll: [],
@@ -64,41 +65,41 @@ export default {
     };
   },
   watch: {
-    TagsAll() {
+    TagsAll () {
       this.$emit("change", this.TagsAll);
     },
-    currentval(val) {
-      console.log(val);
+    currentval (val) {
+      // console.log(val);
       // 实时改变input输入框宽度，防止输入内容超出input默认宽度显示不全
       this.inputLength = this.$refs.inputTag.value.length * 12 + 50;
     },
-    parentArr() {
+    parentArr () {
       this.TagsAll = this.parentArr.length ? this.parentArr : [];
     },
   },
   computed: {
-    inputStyle() {
+    inputStyle () {
       let style = {};
       style.width = `${this.inputLength}px`;
       return style;
     },
     //将生成的数据拼接成字符串，因为我们公司后台需要这种格式的数据。
-    finall() {
+    finall () {
       return this.TagsAll.join(",");
     },
   },
-  mounted() {
+  mounted () {
     this.TagsAll = this.parentArr;
     this.dropDown = this.dropDownData;
   },
   methods: {
-    removeTag(index, item) {
+    removeTag (index, item) {
       console.log(item);
       this.TagsAll.splice(index, 1);
     },
 
     //回车-- 增加tag
-    addTags(val) {
+    addTags (val) {
       //新增函数中可以加一些你所需要的校验规则。比如只能是数子，或者不能输入‘，’等
       if (this.currentval) {
         var obj = {};
@@ -114,12 +115,12 @@ export default {
       }
     },
     //键盘删除键删除tag
-    deleteTags() {
+    deleteTags () {
       if (this.currentval === "") {
         this.TagsAll.pop();
       }
     },
-    onclick() {
+    onclick () {
       this.$nextTick(() => {
         this.$refs.inputTag.focus();
       });
@@ -202,9 +203,15 @@ export default {
   /* min-height: 50px; */
   width: 100%;
   max-height: 200px;
-  background-color: white;
+  /* background-color: white; */
+  border: 1px solid rgba(255, 255, 255, 1);
+  backdrop-filter: saturate(200%) blur(60px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 10px 10px 0 rgb(0 0 0 / 10%);
   overflow: auto;
   position: absolute;
+  z-index: 99;
+  border-radius: 10px;
 }
 .dropDownItem {
   height: 25px;

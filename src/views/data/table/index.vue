@@ -31,15 +31,16 @@
                              v-if="show_details == false">
         </DataResourceDisplay>
       </div>
-
       <!-- 基本信息详情 -->
       <Details ref="Details_ref"
+               :dataSource="dataSource"
                :tableMetaUuid="tableMetaUuid"
                :isDisable_input="isDisable_input"
                @update_list="UpdateList"
                :is_Edit_list="is_Edit_list"
                @update_details="updateDetails"
                @query_data="QueryData"
+               @step="Step"
                v-if="show_details == true"></Details>
 
       <!-- 注册资源 -->
@@ -56,7 +57,7 @@
           模式名称：
           <el-select v-model="schemaName"
                      @change="filterTables"
-                     style="width: 70%"
+                     style="width: 400px"
                      clearable>
             <el-option v-for="item in schemaData"
                        :key="item"
@@ -65,7 +66,7 @@
           </el-select>
         </div>
 
-        <el-input style="width: 70%"
+        <el-input style="width: 330px;margin-left:70px"
                   v-model="filterText1"
                   placeholder="输入想要查询的表名称（模糊搜索）" />
         <el-button @click="getTables">搜索</el-button>
@@ -129,6 +130,7 @@
       <!-- 如果选多个表 -->
       <el-dialog :visible.sync="dialogVisible_forms"
                  width="60%"
+                 title="批量注册"
                  class="dlag_width"
                  :before-close="handleClose">
         <div class="dlag_conter">
@@ -361,7 +363,7 @@
             </div>
 
             <!-- 数据标签：-->
-            <!-- <div class="son">
+            <div class="son">
               <div class="son_check">
                 <el-form-item label="数据标签：">
                   <div class="_width tag_conter">
@@ -378,7 +380,7 @@
                            class="oper-btn"
                            @click="check_tag()">选择</el-button>
               </div>
-            </div> -->
+            </div>
           </el-form>
           <div class="padding10_l">
             <p style="text-align: center">列信息</p>
@@ -600,13 +602,22 @@
           </el-col>
         </el-row>
         <span slot="footer">
-          <el-button @click="importVisible = false">取消</el-button>
+          <el-button size="mini"
+                     type="primary"
+                     @click="importVisible = false">取消</el-button>
+
           <el-button @click="importTableDictionary()"
-                     v-if="upload_title == '导入数据字典'">导入</el-button>
+                     size="mini"
+                     type="primary"
+                     v-if="upload_title == '导入数据资源'">导入</el-button>
           <el-button @click="importTablCn()"
+                     size="mini"
+                     type="primary"
                      v-else-if="upload_title == '导入汉化信息'">导入</el-button>
           <el-button @click="importTableTable()"
-                     v-else>导入</el-button>
+                     v-else
+                     size="mini"
+                     type="primary">导入</el-button>
 
           <!-- <el-button type="primary"
                      @click="upload_title = '数据字典导入' ? importTableDictionary()
@@ -629,6 +640,7 @@ import {
   getColsInfoByTableName, //获取列信息
   synDataStructure, //同步数据
   listSchemas, //获取模式名
+  getLabelTree, // 获取标签树
 } from "@/api/data/table-info";
 import QueryField from "@/components/public/query-field/index";
 import personTree from "@/components/publicpersontree/index";
@@ -885,9 +897,9 @@ export default {
       dialogVisible_forms: false,
       formList: [], //
 
-      tableDatas: [],
-
       dialogVisible_tag: false, //选择标签
+      // 标签树
+      labelTreeData: [],
       // 标签
       tag_query: {
         name: "",
@@ -897,6 +909,8 @@ export default {
       tagsarr: [],
       inputValue: "",
 
+      // 导入按钮
+      // updata_ing: false,
       // 汉化
       importVisible: false,
       // dialogStatus: '',
@@ -923,6 +937,7 @@ export default {
       tableMetaUuid: "", //详情id
       // tableRelationQueryUuid: '',//id
       is_Edit_list: 0, //是否编辑
+      dataSource: '',//数据源
     };
   },
   computed: {
@@ -957,18 +972,32 @@ export default {
     // this.post_getThemeTree();//主题
     // this.post_getLayeredTree();//分层
     // this.post_getDataTreeNode();//目录
-
-    //
     // this.$refs.tree_left.post_getBusinessSystemTree()
     // this.query.businessSystemId = "";
     // this.query_list(data);
   },
   methods: {
 
-
+    // 返回上一步
+    Step () {
+      this.show_details = false
+      this.query_list(this.$refs.tree_left.query, false);
+    },
     // 获取资料书的参数
     QueryData () {
       this.query_list(this.$refs.tree_left.query, false);
+      this.update_tree();//更新左侧树
+    },
+
+    // 更新左侧树
+    update_tree () {
+      if (this.$refs.tree_left.activeName == '0') {
+        this.$refs.tree_left.post_getBusinessSystemTree() //系统
+      } else if (this.$refs.tree_left.activeName == '1') {
+        this.$refs.tree_left.post_getThemeTree(); //分层
+      } else {
+        this.$refs.tree_left.post_getDataTreeNode(); //目录
+      }
     },
     // 跟新关系图
     updateDetails (id) {
@@ -985,19 +1014,20 @@ export default {
     ImportdataDictionary (data) {
       this.upload_title = data;
       this.importVisible = true;
+      this.importtemp.tableFileName = '';
     },
     // 汉化信息导入
     ImportantCn (data) {
       this.upload_title = data;
       this.importVisible = true;
+      this.importtemp.tableFileName = '';
     },
-
     // 表关系导入
     ImportantTable (data) {
       this.upload_title = data;
       this.importVisible = true;
+      this.importtemp.tableFileName = '';
     },
-
     // 数据字典下载
     DownTemplateDictionary () {
       // 导出表信息作为模板
@@ -1013,6 +1043,8 @@ export default {
           const filename = decodeURI(
             res.headers["content-disposition"].split(";")[1].split("=")[1]
           );
+          console.log(res.headers);
+          console.log(res.headers["content-disposition"]);
           const blob = new Blob([res.data], {
             type: "application/octet-stream",
           });
@@ -1087,71 +1119,105 @@ export default {
     },
     // 上传文件信息
     fileuploadname (data) {
+      console.log(data);
       // 文件名
       this.importtemp.tableFileName = data;
     },
     // 字典确认导入
     importTableDictionary () {
-      import_dictionary(this.importtemp).then((res) => {
-        if (res.data.code === "200") {
-          this.importVisible = false;
-          this.$notify({
-            title: "成功",
-            message: res.data.msg,
-            type: "success",
-            duration: 2000,
-            position: "bottom-right",
-          });
-          this.query_list(this.$refs.tree_left.query, false);
-        } else {
-          this.$message({
-            type: "error",
-            message: res.data.msg,
-          });
-        }
-      });
+      this.updata_ing = true
+      let importtemp = JSON.parse(JSON.stringify(this.importtemp))
+      if (importtemp.tableFileName == '') {
+        this.$message({
+          type: "warning",
+          message: '请先上传文件',
+        });
+      } else {
+        import_dictionary(this.importtemp).then((res) => {
+          if (res.data.code === "200") {
+            this.importVisible = false;
+            this.$notify({
+              title: "成功",
+              message: res.data.msg,
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+
+            this.update_tree();//更新左侧树
+
+            this.query_list(this.$refs.tree_left.query, false);
+          } else {
+            this.$message({
+              type: "error",
+              message: res.data.msg,
+            });
+          }
+        });
+      }
+      this.updata_ing = false;
     },
     // 汉化确认导入
     importTablCn () {
-      importTable(this.importtemp).then((res) => {
-        if (res.data.code === "200") {
-          this.importVisible = false;
-          this.$notify({
-            title: "成功",
-            message: res.data.msg,
-            type: "success",
-            duration: 2000,
-            position: "bottom-right",
-          });
-          this.query_list(this.$refs.tree_left.query, false);
-        } else {
-          this.$message({
-            type: "error",
-            message: res.data.msg,
-          });
-        }
-      });
+      this.updata_ing = true
+      let importtemp = JSON.parse(JSON.stringify(this.importtemp))
+      if (importtemp.tableFileName == '') {
+        this.$message({
+          type: "warning",
+          message: '请先上传文件',
+        });
+      } else {
+        importTable(this.importtemp).then((res) => {
+          if (res.data.code === "200") {
+            this.importVisible = false;
+            this.$notify({
+              title: "成功",
+              message: res.data.msg,
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+            this.query_list(this.$refs.tree_left.query, false);
+          } else {
+            this.$message({
+              type: "error",
+              message: res.data.msg,
+            });
+          }
+        });
+      }
+      this.updata_ing = false;
     },
     // 表关系导入
     importTableTable () {
-      importTable_table(this.importtemp).then((res) => {
-        if (res.data.code === "200") {
-          this.importVisible = false;
-          this.$notify({
-            title: "成功",
-            message: res.data.msg,
-            type: "success",
-            duration: 2000,
-            position: "bottom-right",
-          });
-          this.query_list(this.$refs.tree_left.query, false);
-        } else {
-          this.$message({
-            type: "error",
-            message: res.data.msg,
-          });
-        }
-      });
+      this.updata_ing = true
+      let importtemp = JSON.parse(JSON.stringify(this.importtemp))
+      if (importtemp.tableFileName == '') {
+        this.$message({
+          type: "warning",
+          message: '请先上传文件',
+        });
+      } else {
+        importTable_table(this.importtemp).then((res) => {
+          if (res.data.code === "200") {
+            this.importVisible = false;
+            this.$notify({
+              title: "成功",
+              message: res.data.msg,
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+            this.query_list(this.$refs.tree_left.query, false);
+          } else {
+            this.$message({
+              type: "error",
+              message: res.data.msg,
+            });
+          }
+        });
+      }
+      this.updata_ing = false;
     },
     // 同步数据
     SyncData (data) {
@@ -1259,6 +1325,7 @@ export default {
       this.tableMetaUuid = data.tableMetaUuid;
       this.show_details = true;
       this.isDisable_input = true;
+
     },
     // 通过模式名过滤表名
     filterTables (val) {
@@ -1303,19 +1370,18 @@ export default {
     // 点击切换树 切换 表单
     // 查看详情
     Details (tableMetaUuid, show_details, isDisable_input) {
-
-
       this.tableMetaUuid = tableMetaUuid
       this.show_details = show_details;
       this.isDisable_input = isDisable_input;
       this.$nextTick(() => {
         this.$refs.Details_ref.$refs.tableLines.init(1)//刷新列表 更新关系树
+        this.$refs.Details_ref.post_sql_data()//更新查看sql
+        this.$refs.Details_ref.table_list(this.tableMetaUuid)//更新列信息
       })
     },
     // 列表 接口
     query_list (data, show_details) {
-
-
+      this.dataSource = data.dataSource//新增关系树 和注册首页数据源绑定且不可修改
       this.show_details = show_details; //显示列表
       // this.query = data;
       // this.listLoading = true;
@@ -1333,9 +1399,7 @@ export default {
       listByTreePage(params).then((resp) => {
         this.list_loading = false; //子组件loading
         this.list_data = resp.data;
-
         this.list = resp.data.records;
-
         // this.$nextTick(() => {
         // this.$refs.Display.$el.style.border = '1px solid red'
         // })
@@ -1474,6 +1538,7 @@ export default {
       } else {
         // this.registTableFlag = false;//关闭上一步
         this.dialogVisible_information = true; //显示下一步 基本信息
+        this.form.chnName = ''
         this.btnLoading = false;
         this.$nextTick(() => {
           this.$refs.form.resetFields(); //清空添加的值
@@ -1509,7 +1574,6 @@ export default {
           this.form.partitions = resp.data[0].partitions//表分区
           this.form.tableCode = resp.data[0].tableRelationQuery.tableCode//资源编码
           this.form.tableRemarks = resp.data[0].tableRelationQuery.tableRemarks//表说明
-
         }
       });
     },
@@ -1562,10 +1626,13 @@ export default {
           // this.post_getLayeredTree(); //分层
           // this.post_getDataTreeNode();//目录
           this.query_list(this.$refs.tree_left.query, false);
-          this.$nextTick(() => {
-            this.$refs.form.resetFields(); //清空添加的值
-            this.$refs.form.clearValidate();
-          })
+          this.update_tree();//更新左侧树
+          let activeName = this.$refs.tree_left.activeName
+          this.$refs.tree_left.handleClick(activeName)//更新查看sql
+          // this.$nextTick(() => {
+          //   this.$refs.form.resetFields(); //清空添加的值
+          //   this.$refs.form.clearValidate();
+          // })
         } else {
           this.btnLoading = false;
           this.$message({
@@ -1733,14 +1800,7 @@ export default {
                 // this.$message.success("新增成功");
                 this.btnLoading = false; //保存loadnin
                 this.chooseTables = []; //传输的数据
-
-                if (this.$refs.tree_left.activeName == '0') {
-                  this.$refs.tree_left.post_getBusinessSystemTree() //系统
-                } else if (this.$refs.tree_left.activeName == '1') {
-                  this.$refs.tree_left.post_getThemeTree(); //分层
-                } else {
-                  this.$refs.tree_left.post_getDataTreeNode(); //目录
-                }
+                this.update_tree();//更新左侧树
                 this.query_list(this.$refs.tree_left.query, false);//刷新列表
                 this.$nextTick(() => {
                   this.$refs.form.resetFields(); //清空添加的值
@@ -1785,11 +1845,18 @@ export default {
     },
     // 选择标签
     check_tag () {
+      this.getLabelTree();
       this.dialogVisible_tag = true;
     },
     // 删除标签
     handleClose (tag) {
       this.tagsarr.splice(this.tagsarr.indexOf(tag), 1);
+    },
+    // 查询标签树
+    getLabelTree () {
+      getLabelTree().then((res) => {
+        console.log(res);
+      }) 
     },
     // 清除多选框
     clearcheckbox () {

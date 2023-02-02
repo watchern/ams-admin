@@ -196,6 +196,14 @@ const dataRouter = {
       },
     },
     {
+      path: "personalSpaceManage",
+      name: "扩容",
+      component: () => import("@/views/data/personalSpaceManage/index"),
+      meta: {
+        title: "数据管理-管理",
+      },
+    },
+    {
       path: 'dataOamResource',
       name: '数据质量规则管理维护',
       component: () => import('@/views/data/dataOamResource/index'),

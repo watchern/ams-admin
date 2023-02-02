@@ -64,6 +64,7 @@
               type="primary"
               icon="el-icon-arrow-right"
               circle
+              :disabled="isNoClick"
               @click="addGrp"
               title="选中（或勾选）左侧组织树节点并点击此按钮可以向角色添加用户/用户组"
             />
@@ -77,7 +78,7 @@
           <el-button
             type="primary"
             class="oper-btn delete"
-            :disabled="selections.length === 0"
+            :disabled="selections.length === 0 || isNoClick"
             @click="removeGrp"
           />
         </el-col>
@@ -156,7 +157,7 @@
     </el-row>
     <div class="bottom-btn">
       <el-button @click="goBack">返回</el-button>
-      <el-button type="primary" @click="saveRoleGrp">保存</el-button>
+      <el-button type="primary" :disabled="isNoClick" @click="saveRoleGrp">保存</el-button>
     </div>
     <!-- 选择授权时间 -->
     <el-dialog :append-to-body="false"
@@ -235,6 +236,7 @@ export default {
         endTime: ''
       },
       row:{},//点击的单元格数据
+      isNoClick:false,//非数据管理员方式不能操作
     };
   },
   computed: {
@@ -278,6 +280,9 @@ export default {
     });
     getById(this.roleUuid).then((resp) => {
       this.role = resp.data;
+      if(this.role.authenType === '004001002'){
+        this.isNoClick = true
+      }
     });
     getRoleGrp(this.roleUuid).then((resp) => {
       this.tableData = resp.data;
@@ -298,6 +303,13 @@ export default {
     },
     sureServiceLife(){
       var tableId = this.row.tableId
+      //起止时间必填
+      if(this.temp.startTime === null || this.temp.startTime === undefined || this.temp.startTime === ""){
+        return this.$message({ type: "error", message: "请填写开始时间" });
+      }
+      if(this.temp.endTime === null || this.temp.endTime === undefined || this.temp.endTime === ""){
+        return this.$message({ type: "error", message: "请填写结束时间" });
+      }
       this.tableData[tableId-1].startTime = this.temp.startTime
       this.tableData[tableId-1].endTime = this.temp.endTime
       this.serviceLifeDialog = false

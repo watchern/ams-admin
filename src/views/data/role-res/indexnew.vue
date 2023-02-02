@@ -45,6 +45,8 @@
             label="表行列筛选设置"
             label-width="100px"
           >
+            <el-button @click="selectedAllTable">全选</el-button>
+            <el-button @click="selectedNoAllTable">取消全选</el-button>
             <el-table
               key="colMetaUuid"
               v-loading="listLoading"
@@ -580,7 +582,18 @@ export default {
         
       }
     },
-
+    //全选
+    selectedAllTable(){
+      this.currentData.cols.forEach((d) => {
+        this.$set(d, "selected", true);
+      });
+    },
+    //取消全选
+    selectedNoAllTable(){
+      this.currentData.cols.forEach((d) => {
+        this.$set(d, "selected", false);
+      });
+    },
     save() {
       const loading = this.$loading({
         lock: true,

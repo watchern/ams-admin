@@ -17,6 +17,7 @@
     <div class="right_details"
          id="right_details"
          ref="element">
+
       <div class="rightList">
         <!-- 基本信息 -->
         <div class="information rightList_child"
@@ -80,9 +81,7 @@
                   </el-form-item>
                 </div>
               </div>
-              <div :class="
-                  isDisable_input == true ? 'is_disabled' : 'yes_disabled'
-                ">
+              <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
                 <div class="son">
                   <el-form-item label="资源主题：">
                     <el-select v-model="form.tableThemeId"
@@ -126,18 +125,21 @@
                               :rows="4"></el-input>
                   </el-form-item>
                 </div>
+              </div>
 
-                <div class="son">
-                  <el-form-item label="数据日期：">
-                    <el-date-picker format="yyyy-MM-dd"
-                                    @input="change($event)"
-                                    :disabled="isDisable_input"
-                                    type="date"
-                                    value-format="yyyy-MM-dd"
-                                    @change="changeRelationParam"
-                                    :rows="4"
-                                    v-model="form.dataDate" />
-                  </el-form-item>
+              <div class="son">
+
+                <el-form-item label="数据日期：">
+                  <el-date-picker format="yyyy-MM-dd"
+                                  @input="change($event)"
+                                  :disabled="isDisable_input"
+                                  type="date"
+                                  value-format="yyyy-MM-dd"
+                                  @change="changeRelationParam"
+                                  :rows="4"
+                                  v-model="form.dataDate" />
+                </el-form-item>
+                <div class="is_disabled">
                   <el-form-item label="表大小：">
                     <el-input placeholder="请输入表大小"
                               @input="change($event)"
@@ -145,6 +147,7 @@
                               v-model="form.tableSize"></el-input>
                   </el-form-item>
                 </div>
+
               </div>
 
               <div class="son">
@@ -359,14 +362,17 @@
             <!-- <EditMap></EditMap> -->
           </div>
 
-          <div class="fixed_btn">
-            <el-button type="primary"
-                       @click="update_save()"
-                       :disabled="isDisable_input"
-                       v-if="!isDisable_input">
-              保存
-            </el-button>
-          </div>
+        </div>
+        <!-- 保存按钮 返回上一步 -->
+        <div class="fixed_btn">
+          <el-button type="primary"
+                     @click="step()">返回</el-button>
+          <el-button type="primary"
+                     @click="update_save()"
+                     :disabled="isDisable_input"
+                     v-if="!isDisable_input">
+            保存
+          </el-button>
         </div>
       </div>
     </div>
@@ -501,11 +507,12 @@
             <el-form-item label="从表字段："
                           prop="relationCol">
               <el-select v-model="table_visible_form.relationCol"
-                         style="width: 100%">
+                         style="width: 100%"
+                         @change="colMetaChange($event, 'relColMetaUuid', 'relationCol')">
                 <el-option v-for="item in cong_table_list"
                            :key="item.colMetaUuid"
                            :label="item.colName"
-                           :value="item.colMetaUuid" />
+                           :value="item" />
               </el-select>
             </el-form-item>
             <el-form-item label="关联关系："
@@ -530,11 +537,12 @@
             <el-form-item label="主表字段："
                           prop="colName">
               <el-select v-model="table_visible_form.colName"
-                         style="width: 100%">
+                         style="width: 100%"
+                         @change="colMetaChange($event, 'colMetaUuid', 'colName')">
                 <el-option v-for="item in cong_table_list"
                            :key="item.colMetaUuid"
                            :label="item.colName"
-                           :value="item.colMetaUuid" />
+                           :value="item" />
               </el-select>
             </el-form-item>
             <el-form-item label="从表名称："
@@ -588,6 +596,8 @@
                width="50%">
       <div class="tree_style">
         <dataTree ref="dataTableTree"
+                  :isdisable="isdisable"
+                  :dataSource="dataSource"
                   :is_progress="is_progress"
                   :form="form"
                   :is_main_table="is_main_table"
@@ -674,6 +684,12 @@ export default {
     },
     is_Edit_list: {
       type: Number,
+      default () {
+        return "";
+      },
+    },
+    dataSource: {
+      type: String,
       default () {
         return "";
       },
@@ -853,6 +869,7 @@ export default {
       ],
       resultShareDialogIsSee: false, //选择责任人
       is_progress: false,
+      isdisable: true,//不可更改数据源
     };
   },
   computed: {
@@ -883,7 +900,6 @@ export default {
       this.getListTree_data(); //下拉框默认值
       this.getIndexInfo(this.tableMetaUuid);
       this.handleScrollTop();//滚动到顶部
-
     },
   },
   mounted () {
@@ -905,8 +921,12 @@ export default {
     //   let height_conter = this.$refs.element.offsetHeight;  //100
     // })
   },
-
   methods: {
+    // 返回上一步
+    step () {
+      this.$emit("step",)
+
+    },
     handleScrollTop () {
       this.$nextTick(() => {
         this.navgatorIndex = 0
@@ -914,10 +934,8 @@ export default {
         scrollElem.scrollTo({ top: 0, behavior: 'smooth' });
       });
     },
-
     // 点击导航菜单，页面滚动到指定位置
     handleLeft (index) {
-
       this.navgatorIndex = index;
       this.$el.querySelector(`#id${index}`).scrollIntoView({
         behavior: "smooth", // 平滑过渡
@@ -946,7 +964,6 @@ export default {
       });
       // }
     },
-
     // 数据日期:
     changeRelationParam (value) {
       this.form.dataDate = value;
@@ -964,10 +981,8 @@ export default {
         }
       });
     },
-
     // 基本信息
     details (tableId) {
-
       this.form = JSON.parse(JSON.stringify(this.form));
       this.$forceUpdate();
       getBasicInfo(tableId).then((resp) => {
@@ -1037,7 +1052,6 @@ export default {
         this.table_visible_form.tableMetaUuid = resp.data.tableMetaUuid//主表从表新增用
       });
     },
-
     // 修改保存
     update_save () {
       var personLiables = [];
@@ -1077,6 +1091,11 @@ export default {
             message: "修改成功!",
           });
           this.$emit("query_data"); //刷新页面
+          this.table_list(this.tableMetaUuid);
+
+
+
+
           // this.$emit("update_list");
         } else {
           this.$message({
@@ -1086,25 +1105,21 @@ export default {
         }
       });
     },
-
     // 索引信息
     getIndexInfo (tableId) {
       selectIndexInfo(tableId).then((res) => {
         this.Column_tableData_index = res.data;
       });
     },
-
     // 数据字典信息
     getDictInfo (tableId) {
       getTableZipperList(tableId).then((res) => {
         this.Column_tableData_dict = res.data;
       });
     },
-
     //  列信息
     table_list (tableId) {
       getColsInfo(tableId).then((resp) => {
-        //
         this.Column_tableData = resp.data;
         // 返回两个新的数组
         // this.oldName = resp.data.displayTbName;
@@ -1116,7 +1131,6 @@ export default {
         // })
       });
     },
-
     // 下拉框默认值
     getListTree_data () {
       getListTree().then((res) => {
@@ -1150,14 +1164,13 @@ export default {
       this.resultShareDialogIsSee = false;
       this.$refs.orgPeopleTree.$emit("clear"); //清空组件 值
     },
-
     // 确定责任人
     modelResultShare () {
       // this.listLoading = true;
       var personUuids = [];
       var personNames = [];
       var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
-        this.form.personName_str = []; //清空
+      this.form.personName_str = []; //清空
       for (var i = 0; i < selectedNode.length; i++) {
         personUuids.push(selectedNode[i].personuuid);
         personNames.push(selectedNode[i].cnname);
@@ -1171,12 +1184,10 @@ export default {
       }
       this.resultShareDialogIsSee = false;
     },
-
     // 删除标签
     removeTag_infotion_tag (index, item) {
       this.TagsAll.splice(index, 1);
     },
-
     //生成标签
     addTags_infotion_tag () {
       if (this.search_name_infotion) {
@@ -1196,6 +1207,10 @@ export default {
     // 查看sql
     previewSql () {
       this.visible_sql = true;
+      this.post_sql_data();
+    },
+    // 数据
+    post_sql_data () {
       let params = {
         tableMetaUuid: this.tableMetaUuid,
       };
@@ -1208,7 +1223,10 @@ export default {
       this.visibleTable = true; //数据表关系列表
       this.visibleTableList = []; //清空上次新增的关系
     },
-
+    colMetaChange (obj, col, name) {
+      this.table_visible_form[col] = obj.colMetaUuid;
+      this.table_visible_form[name] = obj.colName;
+    },
     // 新增一行表关系
     addTable (flag) {
       // 是不是主表 1:主表 2从表
@@ -1218,8 +1236,9 @@ export default {
         this.table_visible_form.tbName = "";
         this.table_visible_form.colName = "";
         this.table_visible_form.colMetaUuid = "";
-        this.table_visible_form.relColMetaUuid = this.tableMetaUuid;
+        this.table_visible_form.relColMetaUuid = "";
         this.table_visible_form.tableRelationUuid = "";
+        this.table_visible_form.relTableMetaUuid = this.tableMetaUuid;
         this.table_visible_form.relationTableName = this.form.tbName;
         this.table_visible_form.selectType = "";
         this.table_visible_form.sqlGenJoinType = "";
@@ -1232,6 +1251,7 @@ export default {
         this.table_visible_form.colMetaUuid = "";
         this.table_visible_form.relColMetaUuid = "";
         this.table_visible_form.tableRelationUuid = "";
+        this.table_visible_form.relTableMetaUuid = "";
         this.table_visible_form.relationTableName = "";
         this.table_visible_form.selectType = "";
         this.table_visible_form.sqlGenJoinType = "";
@@ -1239,26 +1259,20 @@ export default {
       }
       this.add_table_visible = true;
     },
-
     // 获取从表字段
     qost_cong_table_list_data (tableMetaUuid) {
       cong_table_list_data(tableMetaUuid).then((resp) => {
         this.cong_table_list = resp.data.colMetas;
       });
     },
-
-
     // 关闭弹窗
     handleClose_table (table_visible_form) {
       this.$refs[table_visible_form].resetFields(); //清空添加的值
     },
-
     // 显示选择数据表
     showDataTree (val) {
       this.table_visible_form.selectType = val;
       this.dataTableTree = true;
-
-
     },
     // 确认选择的数据表
     getDataTable () {
@@ -1282,7 +1296,6 @@ export default {
         const arr = str.split(">");
         this.table_visible_form.tbName = arr[1]; //表名称
         this.table_visible_form.tableMetaUuid = arr[0] + ">" + arr[1];
-
         if (this.table_visible_form.tbName == this.table_visible_form.relationTableName) {
           this.$message({
             message: "请不要选择已关联的主表",
@@ -1329,7 +1342,6 @@ export default {
             relTableMetaUuid: this.table_visible_form.relTableMetaUuid,
           };
           this.visibleTableList.push(objs);
-
           this.add_table_visible = false;
         } else {
           this.btnLoading = false; //保存loadnin
@@ -1342,10 +1354,8 @@ export default {
         }
       });
     },
-
     // 保存新的关联关系
     save_table () {
-
       if (this.visibleTableList.length == 0) {
         this.$message({
           type: "warning",
@@ -1378,6 +1388,9 @@ export default {
 </script>
 
 <style scoped>
+.information_form >>> .el-textarea__inner {
+  resize: none;
+}
 .dlag_width >>> .el-dialog {
   min-width: 600px !important;
 }

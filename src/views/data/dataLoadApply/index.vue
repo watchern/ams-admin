@@ -1,6 +1,6 @@
 <template>
     <!--数据资源管理 数据装载与下线申请 -->
-    <div class="page-container">
+    <div >
         <div class="filter-container">
             <div class="query-field">
                 <el-form :inline="true"
@@ -9,7 +9,7 @@
                     <el-row>
                         <el-col>
                             <el-form-item label="申请名称：" prop="applyName">
-                                <el-input v-model="query.applyName"
+                                <el-input v-model="query.applyName" style="width: 200px"
                                           clearable/>
                             </el-form-item>
                             <el-form-item label="申请人：" prop="applyPerson">
@@ -65,7 +65,7 @@
                       fit
                       highlight-current-row
                       style="width: 100%"
-                      height="calc(100vh - 320px)"
+                      height="calc(100vh - 350px)"
                       @selection-change="handleSelectionChange">
                 <el-table-column type="selection"
                                  width="55"/>
@@ -79,15 +79,15 @@
                                  min-width="100px"
                                  prop="applyTime"
                                  show-overflow-tooltip/>
-                <el-table-column label="当前环节"
-                                 align="center"
-                                 min-width="100px"
-                                 prop="currentLink"
-                                 show-overflow-tooltip/>
-                <el-table-column label="上一办理人"
-                                 align="center"
-                                 min-width="100px"
-                                 prop=""/>
+<!--                <el-table-column label="当前环节"-->
+<!--                                 align="center"-->
+<!--                                 min-width="100px"-->
+<!--                                 prop="currentLink"-->
+<!--                                 show-overflow-tooltip/>-->
+<!--                <el-table-column label="上一办理人"-->
+<!--                                 align="center"-->
+<!--                                 min-width="100px"-->
+<!--                                 prop=""/>-->
                 <el-table-column label="状态"
                                  align="center"
                                  min-width="100px"
@@ -155,7 +155,6 @@
                                       prop="applyPerson">
                             <el-input style="width: 100%;"
                                       type="text"
-                                      placeholder="默认为当前登录人"
                                       v-model="form.applyPerson"
                                       :rows="4" disabled></el-input>
                         </el-form-item>
@@ -169,6 +168,7 @@
                                     id="operationType"
                                     name="operationType"
                                     :disabled="dialogStatusValue"
+                                    @change="typeChange"
                             >
                                 <el-option
                                         v-for="operationType in this.operationTypes"
@@ -228,6 +228,17 @@
                                 show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
+                                prop="displayTableName"
+                                min-width="100px"
+                                label="表名称"
+                                align="center"
+                                show-overflow-tooltip>
+                            <template slot-scope="scope">
+                                <el-input v-model="scope.row.displayTableName" id="displayTableName" type="text"
+                                ></el-input>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
                                 prop="fileType"
                                 min-width="100px"
                                 label="文件类型"
@@ -247,7 +258,7 @@
                                         name="lineSeparator"
                                         style="width: 80%"
                                         :disabled="scope.row.disabled"
-                                        placeholder="不可选择"
+                                        placeholder="无"
                                 >
                                     <el-option
                                             v-for="lineSeparator in lineSeparators"
@@ -271,7 +282,7 @@
                                         name="columnSeparator"
                                         style="width: 80%"
                                         :disabled="scope.row.disabled"
-                                        placeholder="不可选择"
+                                        placeholder="无"
                                 >
                                     <el-option
                                             v-for="columnSeparator in columnSeparators"
@@ -310,24 +321,7 @@
 
                 <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
                     <el-col :span="6">
-                        <el-form-item>
-                            <!--                            <DataTree ref="dataTree"-->
-                            <!--                                      v-loading="treeLoading"-->
-                            <!--                                      :props="props"-->
-                            <!--                                      :highlight-current="true"-->
-                            <!--                                      :data="orgTreeData"-->
-                            <!--                                      node-key="id"-->
-                            <!--                                      :filter-node-method="filterNode"-->
-                            <!--                                      show-checkbox-->
-                            <!--                                      :lazy="true"-->
-                            <!--                                      :load="loadNode"-->
-                            <!--                                      @node-expand="handleNodeClick"-->
-                            <!--                            >-->
-                            <!--                                <span slot-scope="{ node, data }" class="custom-tree-node">-->
-                            <!--                                    <span>{{ node.label }}</span>-->
-                            <!--                                </span>-->
-                            <!--                            </DataTree>-->
-                        </el-form-item>
+                        <LeftTrees ref="tree_left"></LeftTrees>
                     </el-col>
                     <el-col :span="2" style="width: 45px; padding-top: 60px">
                         <div class="transfer-center">
@@ -343,28 +337,31 @@
                         </div>
                     </el-col>
                     <el-col :span="16">
-                        <el-col align="right" style="padding-top: 4px; padding-right: 50px">
+                        <el-col text-align="right" style="padding-top: 4px; padding-right: 50px">
                             <!--          <el-button type="primary" class="oper-btn edit-period btn-width-max" :disabled="selections.length !== 1" @click="setExpireDate" />-->
                             <el-button
                                     type="primary"
                                     class="oper-btn delete"
                                     :disabled="selections.length === 0"
-                                    @click="removeGrp"
+                                    @click="removeGrp()"
                             />
                         </el-col>
                         <el-table key="colMetaUuid"
                                   v-loading="listLoading"
                                   border
                                   fit
+                                  :data="tableDataOffline"
                                   height="316px"
                                   highlight-current-row
                                   style="width: 100%;"
                                   @selection-change="handleSelectionTreeChange">
                             <!--                            <el-table-column width="40px" type="selection"/>-->
                             <el-table-column type="selection" width="55px"/>
-                            <el-table-column label="序号" width="60px" align="center" prop="applyId"/>
+                            <el-table-column label="序号" width="60px" align="center" type="index"/>
+                            <el-table-column prop="tableMetaId" v-if="false"/>
                             <el-table-column
                                     label="表路径"
+                                    prop="tablePath"
                                     min-width="150px"
                                     show-overflow-tooltip>
                             </el-table-column>
@@ -372,14 +369,17 @@
                                     label="归档方式"
                                     min-width="200px"
                                     align="center"
-                                    prop="createTime"
+                                    prop="archiveType"
+                                    props
                                     show-overflow-tooltip>
                                 <template slot-scope="scope">
-                                    <el-select
-                                            v-model="form.filingMove"
-                                            id="fileMove"
-                                            name="fileMove"
-                                    >
+                                    <el-select v-model="scope.row.archiveType" placeholder="请选择">
+                                        <el-option
+                                                v-for="item in options"
+                                                :key="item.value"
+                                                :label="item.label"
+                                                :value="item.value">
+                                        </el-option>
                                     </el-select>
                                 </template>
                             </el-table-column>
@@ -387,15 +387,11 @@
                                     label="归档文件/表名称"
                                     align="center"
                                     min-width="200px"
-                                    prop="createTime"
+                                    prop="archiveFileTableName"
                                     show-overflow-tooltip>
                                 <template slot-scope="scope">
-                                    <el-select
-                                            v-model="form.filingFile"
-                                            id="filingFile"
-                                            name="filingFile"
-                                    >
-                                    </el-select>
+                                    <el-input v-model="scope.row.archiveFileTableName" id="filingFile"
+                                    ></el-input>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -456,7 +452,7 @@
                    :close-on-click-modal="false"
                    :visible.sync="dialogDetailVisible"
                    title="详情"
-                   width="60%"
+                   width="80%"
         >
             <div>
                 <Details ref="detailsUuid"
@@ -508,21 +504,22 @@
         batchUpdateForHandle,
         upload
     } from "@/api/data/loadApply";
-    import FileImport from '@/views/data/dataLoadApply/fileupload';
-    import DataTree from '@/components/public/tree/src/tree';
+    import LeftTrees from '@/components/loginTree/leftTree.vue';
     import FlowItem from '@/components/starflow/todowork/flowItem';
     import Details from '@/views/data/dataLoadApply/details';
     import flowOpinionList from "@/components/starflow/todowork/flowOpinionList"
 
 
     export default {
-        components: {FileImport, DataTree, FlowItem, Details, flowOpinionList},
+        components: {LeftTrees, FlowItem, Details, flowOpinionList},
         data() {
             return {
                 //文件列表存储的数组
                 fileList: [],
                 //存储文件附带属性的数组
                 tableData: [],
+                //数据下线存储的数组
+                tableDataOffline: [],
                 //给tableData赋空的空数组
                 tableNullData: [],
                 //存储分割文件名的数组
@@ -539,6 +536,7 @@
 
                 file: {
                     fileName: '',
+                    displayTableName: '',
                     fileType: '',
                     lineSeparator: '',
                     columnSeparator: '',
@@ -566,8 +564,8 @@
                         label: '办理中'
                     },
                     {
-                        value: '已办',
-                        label: '已办'
+                        value: '办理完成',
+                        label: '办理完成'
                     },
                 ],
                 listLoading: false,
@@ -698,6 +696,7 @@
                     filingMove: '',//归档方式
                     filingFile: '',//归档文件
                     fileType: '',
+                    displayTableName: '',//表名称
                 },
                 isDisable: false, //防止重复提交
                 applyDialogVisible: false,//申请弹窗
@@ -716,9 +715,6 @@
                     applyName: [
                         {required: true, message: '请输入名称', trigger: 'blur'},
                     ],
-                    // applyPerson: [
-                    //     // { required: true, message: '请输入申请人', trigger: 'blur' },
-                    // ],
                     operationType: [
                         {required: true, message: '请选择操作类型', trigger: 'change'},
                     ],
@@ -731,6 +727,12 @@
                     columnSeparator: [
                         {required: true, message: '请选择列操作符', trigger: 'change'},
                     ],
+                    archiveType: [
+                        {required: true, message: '请选择列操作符', trigger: 'change'},
+                    ],
+                    displayTableName: [
+                        {required: true, message: '请输入表名称', trigger: 'blur'},
+                    ]
                 },
                 //工作流相关
                 flowSet: {
@@ -742,7 +744,7 @@
                 //工作流相关
                 flowItem: {
                     //动态赋值
-                    wftype: "auditNotice",
+                    wftype: "auditNotice2",
                     applyUuid: "",
                     detailUuids: "",
                     applyTitle: "",
@@ -774,6 +776,10 @@
                 detailsUuid: '',
                 //判断是新增还是修改，状态标识符
                 dialogStatusValue: false,
+                options: [{
+                    value: '0',
+                    label: '归档到文件'
+                }],
             };
         },
         computed: {},
@@ -782,89 +788,47 @@
             this.getList();//刷新列表
         },
         methods: {
+            typeChange(val) {
+                if (val === "1") {
+                    this.$nextTick(() => {
+                        this.$refs.tree_left.loadLeftTreeTypeFun("4");
+                    })
+                }
+            },
             //下线方法
-            // addGrp() {
-            //     var nodes = this.$refs["dataTree"][0].getCheckedNodes();
-            //     if (nodes.length === 0) {
-            //         nodes.push(this.$refs["dataTree"][0].getCurrentNode());
-            //     }
-            //     nodes.forEach((node) => {
-            //         if (
-            //             this.tableData.filter((data) => {
-            //                 return data.unitUuid === node.id;
-            //             }).length === 0 &&
-            //             this.tableData.filter((data) => {
-            //                 return data.grpInstUuid === node.id;
-            //             }).length === 0
-            //         ) {
-            //             this.tableData.push({
-            //                 // dataRoleUuid: this.roleUuid,
-            //                 // sceneGrpUuid: this.grpUuid,
-            //                 // userName: node.name,
-            //                 // userType: node.type,
-            //                 // grpInstUuid: node.type == 1 ? node.id : "null",
-            //                 // unitUuid: node.type == 2 ? node.id : "null",
-            //                 // valid: 1,
-            //                 // startTime: null,
-            //                 // endTime: null,
-            //             });
-            //         }
-            //     });
-            // },
-            // removeGrp() {
-            //     var map = {};
-            //     this.selections.forEach((sel) => {
-            //         map[sel.userType + sel.grpInstUuid + sel.unitUuid] = sel;
-            //     });
-            //     for (var index = 0; index < this.tableData.length;) {
-            //         var value = this.tableData[index];
-            //         if (map[value.userType + value.grpInstUuid + value.unitUuid]) {
-            //             this.tableData.splice(index, 1);
-            //         } else {
-            //             index++;
-            //         }
-            //     }
-            // },
-            // handleSelectionTreeChange(val) {
-            //     console.log(val);
-            //     this.selections = val;
-            // },
-            // // 获取个人数据与全行数据列表
-            // getOrgTree() {
-            // //     this.treeLoading = true;
-            // //     方法("").then((res) => {
-            // //         this.orgTreeData = res.data;
-            // //         this.treeLoading = false;
-            // //     });
-            // },
-            // filterNode(value, data) {
-            //     if (!value) return true;
-            //     return data.label.indexOf(value) !== -1;
-            // },
-            // handleNodeClick(data, obj, node) {
-            //     this.getLoadTree(data, obj, node);
-            // },
-            // //展开树形结构进行懒加载的方法 data该节点所对应的对象、obj节点对应的 Node、node节点组件本身
-            // getLoadTree(datas, obj, node) {
-            //     this.orglistLoading = true;
-            //     queryOrgTree(datas.id).then((res) => {
-            //         this.loadTree = res.data;
-            //         this.orglistLoading = false;
-            //     });
-            // },
-            // loadNode(node, resolve) {
-            //     if (node.level === 0) {
-            //         return resolve(this.orgTreeData);
-            //     }
-            //     if (node.data.children && node.data.children != "") {
-            //         return resolve(node.data.children);
-            //     } else {
-            //         setTimeout(() => {
-            //             resolve(this.loadTree);
-            //         }, 500);
-            //     }
-            // },
+            addGrop() {
+                var nodes = [];
+                nodes = this.$refs.tree_left.treeNodeSelectedObj[0].data;
+                this.tableDataOffline = []
+                nodes.forEach((node) => {
+                    if (
+                        node.type === "table"
+                    ) {
+                        this.tableDataOffline.push({
+                            tableMetaId: node.id,
+                            tablePath: "数据装载/" + node.label,
+                            //归档方式默认为归档到文件
+                            archiveType: this.options[0].value,
+                            archiveFileTableName: "",
+                        });
+                    }
+                });
+            },
+            removeGrp() {
+                if (this.selections.length > 0) {
+                    for (let index = 0; index < this.selections.length; index++) {
+                        for (let y = 0; y < this.tableDataOffline.length; y++) {
+                            if (this.tableDataOffline[y] == this.selections[index]) {
+                                this.tableDataOffline.splice(y, 1);
+                            }
+                        }
+                    }
+                }
 
+            },
+            handleSelectionTreeChange(val) {
+                this.selections = val;
+            },
 
             //装载方法
             select(file, fileList) {
@@ -899,7 +863,6 @@
                 } else if (extName === 'xlsx') {
                     this.file.fileType = 'xlsx'
                 }
-                console.log("this.fileList:", this.fileList)
                 //重置this.file文件，防止编辑失败时点击新增，页面出现编辑中查到的数据
                 this.file = this.$options.data().file
             },
@@ -938,7 +901,6 @@
                         for (let i = 0; i < this.fileList.length; i++) {
                             if (this.tableData[index].fileName === this.fileList[i].name) {
                                 this.fileList.splice(i, 1)
-
                             }
                         }
                         this.tableData.splice(index, 1)
@@ -948,6 +910,7 @@
 
             //添加
             apply_add() {
+                this.form.applyPerson = this.$store.state.user.name;
                 this.applyDialogVisible = true
                 this.dialogStatusValue = false
                 this.dialogStatus = 'create'
@@ -1139,6 +1102,7 @@
 
             // 新建保存 && 编辑保存
             save(form) {
+
                 this.isDisable = true
                 setTimeout(() => {
                     this.isDisable = false
@@ -1162,13 +1126,46 @@
                                     operationType: this.form.operationType,
                                     loadType: this.form.loadType,
                                 },
-                                "tableData": JSON.stringify(this.tableData),
+
+                                "tableData": this.form.operationType == 0 ? JSON.stringify(this.tableData) : JSON.stringify(this.tableDataOffline),
                             }
                             //校验是否选择了文件
-                            if (this.tableData.length === 0) {
+                            if (this.tableData.length == 0 && this.form.operationType == 0) {
                                 this.$notify.warning("请选择文件！")
                                 return
                             }
+                            //定义数组接收未填写文件名的行数
+                            let number = []
+                            //判断装载与下线文件列表中是否填写了文件名，并将未填写文件名的行数填入number数组中
+                            if (this.form.operationType == 0) {
+                                this.tableData.forEach((item, index, array) => {
+                                    if (array[index].displayTableName === "") {
+                                        number.push(index + 1)
+                                    }
+                                })
+                            } else {
+                                this.tableDataOffline.forEach((item, index, array) => {
+                                    if (array[index].archiveFileTableName === "") {
+                                        number.push(index + 1)
+                                    }
+                                })
+                            }
+                            //判断数组不为空
+                            if (number !== undefined && number != null && number.length > 0) {
+                                let lineNumber = "";
+                                number.forEach((item, index) => {
+                                    lineNumber += number[index] + ","
+                                })
+
+                                lineNumber = lineNumber.substring(0, lineNumber.lastIndexOf(','));
+                                if (this.form.operationType == 0) {
+                                    this.$notify.warning("第" + lineNumber + "行数据未填写表名称！")
+                                } else {
+                                    this.$notify.warning("第" + lineNumber + "行数据未填写归档文件/表名称！")
+                                }
+                                return
+                            }
+
                             //save_data方法调用后台save接口实现新增功能
                             if (isUpload) {
                                 save_data(params).then(res => {
@@ -1197,7 +1194,7 @@
                                     operationType: this.form.operationType,
                                     loadType: this.form.loadType,
                                 },
-                                "tableData": JSON.stringify(this.tableData),
+                                "tableData": this.form.operationType == 0 ? JSON.stringify(this.tableData) : JSON.stringify(this.tableDataOffline),
                             }
                             //update_data方法调用后台update接口实现编辑功能
                             if (isUpload) {
@@ -1230,8 +1227,7 @@
                         return false
                     }
                 })
-            }
-            ,
+            },
 
             // 关闭弹窗
             handleClose(form) {
@@ -1239,32 +1235,25 @@
                 this.updateShow = false
                 this.fileList = []
                 this.tableData = []
-            }
-            ,
+                this.tableDataOffline = []
+            },
+
             //子组件fileupload传值给父组件，用showFileType事件接收值赋给变量fileType
             showFileType(fileType) {
                 this.fileType = fileType;
-            }
-            ,
+            },
+
             //子组件fileupload传值给父组件，用showFilePath事件接收值赋给变量fileType
             showFilePath(filePath) {
                 this.form.fileName = filePath;
-            }
-            ,
+            },
+
             //打开流程跟踪弹窗
             todoOpinionList(row) {
                 this.applyUuid = row.applyUuid;
                 this.todoFlow = true;
-            }
-            ,
-            addApply() {
+            },
 
-            }
-            ,
-            delApply() {
-
-            }
-            ,
             //工作流相关
             saveOpinion() {
                 //保存业务数据成功后
@@ -1273,6 +1262,7 @@
                     //将状态修改为办理中
                 }, 20);
             },
+
             batchUpdateForHandleClose() {
                 batchUpdateForHandle(this.applySelectionList)
                     .then(() => {
