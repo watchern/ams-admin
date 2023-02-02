@@ -11,7 +11,7 @@
             ref="ruleForm"
         >
             <el-form-item label="申请名称" prop="permissionApplyName" class="item-a">
-                <el-input v-model="operatePermissionApply.permissionApplyName"></el-input>
+                <el-input v-model="operatePermissionApply.permissionApplyName" :disabled="addOrUpdate == 2"></el-input>
             </el-form-item>
             <el-form-item label="访问时间" prop="times" class="item-a">
                 <el-date-picker
@@ -21,6 +21,7 @@
                     start-placeholder="开始日期"
                     end-placeholder="结束日期"
                     style="width: 100%"
+                    :disabled="addOrUpdate == 2"
                 >
                 </el-date-picker>
             </el-form-item>
@@ -55,6 +56,7 @@
                     v-model="operatePermissionApply.applyRemark"
                     placeholder="请输入内容"
                     :rows="6"
+                    :disabled="addOrUpdate == 2"
                 ></el-input>
             </el-form-item>
             <el-form-item label="申请人" prop="createUserName" class="item-a">
@@ -63,13 +65,13 @@
             <el-form-item label="数据使用人" prop="permissionApplyUserName" class="item-a">
                 <div class="select">
                     <el-input v-model="operatePermissionApply.permissionApplyUserName" disabled></el-input>
-                    <el-button type="primary" @click="dialogVisible = true">选择</el-button>
+                    <el-button type="primary" @click="dialogVisible = true" :disabled="addOrUpdate == 2">选择</el-button>
                 </div>
             </el-form-item>
             <el-form-item label="数据集" prop="dataSet" class="item-a">
                 <div class="select">
                     <el-input v-model="operatePermissionApply.dataSet" disabled></el-input>
-                    <el-button type="primary" @click="dialogVisible2 = true">选择</el-button>
+                    <el-button type="primary" @click="dialogVisible2 = true" :disabled="addOrUpdate == 2">选择</el-button>
                 </div>
             </el-form-item>
         </el-form>
@@ -83,7 +85,7 @@
             <person-tree ref="personTree"></person-tree>
             <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="changeLoginname">确 定</el-button>
+        <el-button type="primary" @click="changeLoginname(true)">确 定</el-button>
         </span>
         </el-dialog>
 
@@ -117,21 +119,21 @@
                       @sort-change="sortChange"
                       @selection-change="selectionChange">
                 <el-table-column type="selection"
-                                 width="55" />
+                                 width="55"/>
                 <el-table-column label="数据角色名称"
                                  min-width="150px"
                                  prop="dataRoleName"
-                                 show-overflow-tooltip />
+                                 show-overflow-tooltip/>
                 <el-table-column label="创建时间"
                                  align="center"
                                  min-width="150px"
                                  prop="createTime"
-                                 show-overflow-tooltip />
+                                 show-overflow-tooltip/>
                 <el-table-column label="授权方式"
                                  align="center"
                                  prop="authenType"
                                  min-width="150px"
-                                 :formatter="formatAuthenType" />
+                                 :formatter="formatAuthenType"/>
             </el-table>
             <pagination v-show="total>0"
                         :total="total"
@@ -221,7 +223,7 @@
         <!--                </el-table>-->
         <!--            </div>-->
         <!--        </div>-->
-        <div class="itemBtn">
+        <div class="itemBtn" v-if="addOrUpdate != 2">
             <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
             <el-button type="primary" @click="close('ruleForm')">取消</el-button>
         </div>
@@ -229,7 +231,11 @@
 </template>
 
 <script>
-import {findOrgUserList, insertOperatePermissionApply} from "@/api/data/dataPermission.js";
+import {
+    findOrgUserList,
+    getDataSetAndUsersByApplyUuid,
+    insertOperatePermissionApply, updateOperatePermissionApply
+} from "@/api/data/dataPermission.js";
 import personTree from "@/components/publicpersontree/index";
 import Cookies from 'js-cookie';
 import {getDictList} from "@/utils";
@@ -239,9 +245,10 @@ import {formatDate} from "ams-etlscheduler-hx/src/components/etl/filter/filter";
 
 export default {
     name: "dataPermissionAdd",
-    props: {
-        info: Object,
-    },
+    // props: {
+    //     info: Object,
+    // },
+    props: ['addOrUpdate', 'temp'],//addOrUpdate : 0为新增，1为修改，2为查看详情
     components: {
         personTree,
         Pagination
@@ -276,6 +283,7 @@ export default {
             //     dataSet: "",
             // },
             operatePermissionApply: {
+                operatePermissionApplyUuid: "",
                 permissionApplyName: "",
                 createUserName: "",
                 times: "",
@@ -363,6 +371,7 @@ export default {
             dialogVisible: false,
             dialogVisible2: false,
             dataSetSelect: [],
+            usersSelect: [],
             tableKey: 'dataRoleUuid',
             listLoading: false,
             list: [],
@@ -391,9 +400,11 @@ export default {
             })
         },
         //数据授权方式
-        formatAuthenType (row, column) {
+        formatAuthenType(row, column) {
             var data = getDictList('004001')
-            var authenObj = data.filter(obj => { return obj.codeValue === row.authenType })
+            var authenObj = data.filter(obj => {
+                return obj.codeValue === row.authenType
+            })
             if (authenObj !== null) {
                 return authenObj[0].codeName
             }
@@ -420,7 +431,7 @@ export default {
             listByPage(this.pageQuery).then(resp => {
                 this.total = resp.data.total
                 resp.data.records.forEach(item => {
-                    if (item.authenType === '004001002'){
+                    if (item.authenType === '004001002') {
                         this.list.push(item);
                     }
                 })
@@ -443,8 +454,11 @@ export default {
             this.dialogVisible2 = false;
         },
         //从dialog取出选中的数据使用人
-        changeLoginname() {
-            let selectVal = this.$refs.personTree.selectValue
+        changeLoginname(flag) {
+            if (flag) {
+                this.usersSelect = this.$refs.personTree.selectValue
+            }
+            let selectVal = this.usersSelect;
             if (selectVal && selectVal.length > 0) {
                 this.operatePermissionApply.permissionApplyUserName = selectVal[0].cnname;
                 for (let i = 1; i < selectVal.length; i++) {
@@ -463,8 +477,34 @@ export default {
         // handleChange(value, direction, movedKeys) {
         //     console.log(value, direction, movedKeys);
         // },
+        //初始化数据
         init() {
-            // this.loading = true;
+            this.getList();
+            if (this.addOrUpdate == 0) {
+                this.operatePermissionApply.createUserName = JSON.parse(Cookies.get("user")).userName;
+            } else if (this.addOrUpdate == 1 || this.addOrUpdate == 2) {
+                this.getDataSetAndUsers();
+            }
+        },
+        //获取已选数据集和申请人
+        getDataSetAndUsers() {
+            getDataSetAndUsersByApplyUuid(this.temp.operatePermissionApplyUuid).then(resp => {
+                if (resp.data) {
+                    this.usersSelect = resp.data.users;
+                    this.dataSetSelect = resp.data.dataSet;
+                    this.operatePermissionApply = {
+                        operatePermissionApplyUuid: this.temp.operatePermissionApplyUuid,
+                        permissionApplyName: this.temp.permissionApplyName,
+                        createUserName: this.temp.createUserName,
+                        times: [this.temp.permissionApplyStartTime,this.temp.permissionApplyEndTime],
+                        permissionApplyUserName: "",
+                        applyRemark: this.temp.applyRemark,
+                        dataSet: "",
+                    }
+                    this.changeLoginname(false);
+                    this.changeDataSet();
+                }
+            })
         },
         //   保存
         submitForm(formName) {
@@ -473,7 +513,7 @@ export default {
                 if (valid) {
                     let startTime = formatDate(new Date(this.operatePermissionApply.times[0]));
                     let endTime = formatDate(new Date(this.operatePermissionApply.times[1]));
-                    let selectVal = this.$refs.personTree.selectValue;
+                    let selectVal = this.usersSelect;
                     let permissionApplyUserList = [];
                     let permissionApplyDatasetList = [];
                     //提取使用人的名称和ID
@@ -495,6 +535,7 @@ export default {
                     //提交数据对象
                     var obj = {
                         // id: this.operatePermissionApply.id,
+                        operatePermissionApplyUuid: this.operatePermissionApply.operatePermissionApplyUuid,
                         permissionApplyName: this.operatePermissionApply.permissionApplyName,
                         createUserUuid: JSON.parse(Cookies.get("user")).userId,
                         createUserName: this.operatePermissionApply.createUserName,
@@ -514,11 +555,19 @@ export default {
                         applyRemark: this.operatePermissionApply.applyRemark,
                         permissionApplyDatasetList: permissionApplyDatasetList,
                     }
-                    insertOperatePermissionApply(obj).then(res => {
-                        this.$message.success('操作成功')
+                    if (this.addOrUpdate == 0) {
+                        insertOperatePermissionApply(obj).then(res => {
+                            this.$message.success('操作成功')
                             this.$emit('oka', obj);
 
-                    })
+                        })
+                    }else {
+                        updateOperatePermissionApply(obj).then(res => {
+                            this.$message.success('操作成功')
+                            this.$emit('oka', obj);
+
+                        })
+                    }
                 } else {
                     return false
                 }
@@ -592,8 +641,7 @@ export default {
     created() {
         // this.init()
         // this.apComDataBaseData = this.info
-        this.getList();
-        this.operatePermissionApply.createUserName = JSON.parse(Cookies.get("user")).userName;
+        this.init();
     },
 };
 </script>

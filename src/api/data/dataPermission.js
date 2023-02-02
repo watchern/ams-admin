@@ -2,6 +2,7 @@ import request from '@/utils/request'
 
 const baseURL = '/data'
 const controllerName = 'sceneFilter'
+
 export function findOrgUserList(data) {
     return request({
         baseURL: baseURL,
@@ -13,7 +14,7 @@ export function findOrgUserList(data) {
 
 const controllerName2 = 'operatePermissionApply'
 
-export function queryAllOperatePermissionApply(data){
+export function queryAllOperatePermissionApply(data) {
     return request({
         baseURL: baseURL,
         url: `/${controllerName2}/queryAllOperatePermissionApply`,
@@ -23,7 +24,7 @@ export function queryAllOperatePermissionApply(data){
 }
 
 
-export function insertOperatePermissionApply(data){
+export function insertOperatePermissionApply(data) {
     return request({
         baseURL: baseURL,
         url: `/${controllerName2}/insertOperatePermissionApply`,
@@ -32,7 +33,7 @@ export function insertOperatePermissionApply(data){
     })
 }
 
-export function deleteOperatePermissionApply(data){
+export function deleteOperatePermissionApply(data) {
     return request({
         baseURL: baseURL,
         url: `/${controllerName2}/deleteOperatePermissionApply`,
@@ -41,17 +42,17 @@ export function deleteOperatePermissionApply(data){
     })
 }
 
-export function getDefaultPersonId(data){
+export function getDefaultPersonId(data) {
     return request({
         baseURL: baseURL,
         url: `/${controllerName2}/getDefaultPersonId`,
         method: 'get',
-        params:{operatePermissionApplyUuid: data}
+        params: {operatePermissionApplyUuid: data}
     })
 }
 
-export function updateForHandle(data){
-    return request ({
+export function updateForHandle(data) {
+    return request({
         baseURL: baseURL,
         url: `/${controllerName2}/updateForHandle`,
         method: 'post',
@@ -59,8 +60,8 @@ export function updateForHandle(data){
     })
 }
 
-export function updateForFinishHandle(data){
-    return request ({
+export function updateForFinishHandle(data) {
+    return request({
         baseURL: baseURL,
         url: `/${controllerName2}/updateForFinishHandle`,
         method: 'post',
@@ -68,8 +69,8 @@ export function updateForFinishHandle(data){
     })
 }
 
-export function updateForBackApplicationHandle(data){
-    return request ({
+export function updateForBackApplicationHandle(data) {
+    return request({
         baseURL: baseURL,
         url: `/${controllerName2}/updateForBackApplicationHandle`,
         method: 'post',
@@ -77,11 +78,29 @@ export function updateForBackApplicationHandle(data){
     })
 }
 
-export function queryByOperatePermissionApplyUuid(data){
+export function queryByOperatePermissionApplyUuid(data) {
     return request({
         baseURL: baseURL,
         url: `/${controllerName2}/queryByOperatePermissionApplyUuid`,
         method: 'get',
-        params:{operatePermissionApplyUuid: data}
+        params: data
+    })
+}
+
+export function getDataSetAndUsersByApplyUuid(data) {
+    return request({
+        baseURL: baseURL,
+        url: `/${controllerName2}/getDataSetAndUsersByApplyUuid`,
+        method: 'get',
+        params: {operatePermissionApplyUuid: data}
+    })
+}
+
+export function updateOperatePermissionApply(data){
+    return request({
+        baseURL: baseURL,
+        url: `/${controllerName2}/updateOperatePermissionApply`,
+        method: 'post',
+        data
     })
 }
