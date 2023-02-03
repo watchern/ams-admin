@@ -789,6 +789,7 @@
                         this.$refs.tree_left.loadLeftTreeTypeFun("4");
                     })
                     this.tableData = this.tableNullData
+                    this.form.loadType = ''
                 } else {
                     this.tableDataOffline = this.tableNullDataOffline
                 }
@@ -990,6 +991,7 @@
                             position: "bottom-right",
                         });
                     });
+                }).catch(()=>{
                 });
             },
             //办理
