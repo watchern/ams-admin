@@ -48,7 +48,7 @@
             </div>
             <div class="padding10">
                 <div class="right_btn">
-                    <el-button size="mini" type="primary" @click="apply_add()">添加</el-button>
+                    <el-button size="mini" type="primary" @click="apply_add()">新增</el-button>
                     <el-button size="mini" type="primary" :disabled="Selectval_list.length === 0"
                                @click="apply_deletes()">删除
                     </el-button>
@@ -145,7 +145,7 @@
                                       prop="applyName">
                             <el-input type="text"
                                       v-model="form.applyName"
-                                      style="width: 100%;"
+                                      style="width: 80%;"
                                       :rows="4">
                             </el-input>
                         </el-form-item>
@@ -153,7 +153,7 @@
                     <el-col :span="12">
                         <el-form-item label="申请人 "
                                       prop="applyPerson">
-                            <el-input style="width: 100%;"
+                            <el-input style="width: 80%;"
                                       type="text"
                                       v-model="form.applyPerson"
                                       :rows="4" disabled></el-input>
@@ -231,7 +231,6 @@
                                 prop="displayTableName"
                                 min-width="100px"
                                 label="表名称"
-                                align="center"
                                 show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <el-input v-model="scope.row.displayTableName" id="displayTableName" type="text"
@@ -242,14 +241,12 @@
                                 prop="fileType"
                                 min-width="100px"
                                 label="文件类型"
-                                align="center"
                                 show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
                                 prop="lineSeparator"
                                 min-width="100px"
                                 label="行分隔符"
-                                align="center"
                                 show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <el-select
@@ -273,7 +270,6 @@
                                 prop="columnSeparator"
                                 label="列分隔符"
                                 min-width="100px"
-                                align="center"
                                 show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <el-select
@@ -309,7 +305,6 @@
                                 <el-link
                                         size="mini"
                                         type="danger"
-                                        style="margin-right:10px"
                                         @click="lineDelete(scope.$index,'file')"
                                 >删除
                                 </el-link>
@@ -319,7 +314,7 @@
                 </el-row>
 
 
-                <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
+                <el-row v-if="form.operationType === '1'" style="margin-left: 5%">
                     <el-col :span="6">
                         <LeftTrees ref="tree_left"></LeftTrees>
                     </el-col>
@@ -357,18 +352,17 @@
                                   @selection-change="handleSelectionTreeChange">
                             <!--                            <el-table-column width="40px" type="selection"/>-->
                             <el-table-column type="selection" width="55px"/>
-                            <el-table-column label="序号" width="60px" align="center" type="index"/>
+                            <el-table-column label="序号" width="60px" type="index"/>
                             <el-table-column prop="tableMetaId" v-if="false"/>
                             <el-table-column
                                     label="表路径"
                                     prop="tablePath"
-                                    min-width="150px"
+                                    min-width="200px"
                                     show-overflow-tooltip>
                             </el-table-column>
                             <el-table-column
                                     label="归档方式"
-                                    min-width="200px"
-                                    align="center"
+                                    min-width="100px"
                                     prop="archiveType"
                                     props
                                     show-overflow-tooltip>
@@ -385,8 +379,7 @@
                             </el-table-column>
                             <el-table-column
                                     label="归档文件/表名称"
-                                    align="center"
-                                    min-width="200px"
+                                    min-width="100px"
                                     prop="archiveFileTableName"
                                     show-overflow-tooltip>
                                 <template slot-scope="scope">
@@ -599,7 +592,7 @@
                 operationTypes: [
                     {
                         value: '0',
-                        label: '数据装载-一次性装载'
+                        label: '数据装载（一次性装载）'
                     },
                     {
                         value: '1',
