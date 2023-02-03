@@ -44,12 +44,6 @@
                        :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-button
-                type="primary"
-                @click="refreshTreeList"
-                class="oper-btn btn-width-md"
-        >刷新树测试
-        </el-button>
       </el-form>
     </div>
     <div v-if="loading == true"
