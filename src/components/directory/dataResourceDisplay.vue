@@ -293,8 +293,36 @@ export default {
       // common_dialog: false,//导入数据源
       title: '',//弹窗共用标题
       check_list: [],//多选批量的数量
-      dropDownData: ["测试", "测试11111"],
-
+      dropDownData: [
+        // "表名", "表中文名", "系统", "主题", "分层", "字段",
+        {
+          code: 'tableName',
+          name: '表名',
+          vallist: []
+        },
+        {
+          code: 'tableCnName',
+          name: '表中文名',
+          vallist: []
+        },
+        // {
+        //   code: 'businessName',
+        //   name: '系统'
+        // },
+        // {
+        //   code: 'themeName',
+        //   name: '主题'
+        // },
+        // {
+        //   code: 'layeredName',
+        //   name: '分层'
+        // },
+        {
+          code: 'columnName',
+          name: '字段',
+          vallist: []
+        },
+      ]
     };
   },
   created () {
@@ -327,11 +355,12 @@ export default {
 
     onChange (data) {
       this.TagsAll = data
+      // console.log(this.TagsAll);
     },
-
     // 查询
     search () {
-      console.log(this.TagsAll);
+      // console.log(this.TagsAll);
+
       // this.$emit("search", this.search_name);
 
     },
