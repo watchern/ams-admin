@@ -1152,9 +1152,9 @@ export default {
           dataObj.listenerType === "afterTaskDropTable" ||
           dataObj.listenerType === "afterTaskDropView"
         ) {
-          //刷新树
-          var tree_list = _this.$refs.tree_left.tree_list;
-          dropTable(dataObj.dropTableNameList,tree_list);
+          //删除智能提示 刷新树
+          dropTable(dataObj.dropTableNameList);
+          _this.$refs.tree_left.refreshTreeList(dataObj.dropTableNameList);
           console.log(tree_list.remove(tree_list[2]))
           console.log(dataObj.dropTableNameList)
         }
