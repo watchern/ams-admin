@@ -363,7 +363,10 @@ export default {
           this.activeName = "3"
           this.post_getPersonSpaceTree(); //个人空间
         }
-
+        if (this.loadLeftTreeType == "5") {
+          this.isShowLoadLeftTreeBtn = false;
+          this.isShowPersonSpaceTab = true;
+        }
       }
     },
     // 选择数据源
@@ -490,7 +493,48 @@ export default {
     //     this.tableData = resp.data;
     //   });
     // },
-
+    //删除表之后刷新树
+    refreshTreeList(dropTableNameList){
+      console.log(this.tree_list)
+      console.log(dropTableNameList)
+      var tree_list2 = [];
+      var _this = this;
+      this.tree_list.forEach(function(item,index){
+        if(item.type!= "table" && item.children.length>0){
+          _this.screenChildrenTree(item.children,dropTableNameList)
+          tree_list2.push(item)
+        }else{
+          var isEqual = true;
+          for(var k=0;k<dropTableNameList.length;k++){
+            if(item.label === dropTableNameList[k]){
+              isEqual = false
+              break
+            }
+          }
+          if(isEqual){
+            tree_list2.push(item)
+          }
+        }
+      })
+      this.tree_list=[];
+      this.tree_list = tree_list2;
+    },
+    //递归筛选children数据
+    screenChildrenTree(datas,dropTableNameList){
+      var _this = this;
+      datas.forEach(function(item,index){
+        if(item.type!= "table" && item.children.length>0){
+          _this.screenChildrenTree(item.children,dropTableNameList)
+        }else{
+          for(var k=0;k<dropTableNameList.length;k++){
+            if(item.label === dropTableNameList[k]){
+              datas.splice(index,1)
+              break
+            }
+          }
+        }
+      })
+    },
     // 反选
     inverse () {
       var strLevel = this.activeName + this.query.dataSource;

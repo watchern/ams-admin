@@ -1,6 +1,6 @@
 <template>
     <!--数据资源管理 数据装载与下线申请 -->
-    <div >
+    <div>
         <div class="filter-container">
             <div class="query-field">
                 <el-form :inline="true"
@@ -79,15 +79,15 @@
                                  min-width="100px"
                                  prop="applyTime"
                                  show-overflow-tooltip/>
-<!--                <el-table-column label="当前环节"-->
-<!--                                 align="center"-->
-<!--                                 min-width="100px"-->
-<!--                                 prop="currentLink"-->
-<!--                                 show-overflow-tooltip/>-->
-<!--                <el-table-column label="上一办理人"-->
-<!--                                 align="center"-->
-<!--                                 min-width="100px"-->
-<!--                                 prop=""/>-->
+                <!--                <el-table-column label="当前环节"-->
+                <!--                                 align="center"-->
+                <!--                                 min-width="100px"-->
+                <!--                                 prop="currentLink"-->
+                <!--                                 show-overflow-tooltip/>-->
+                <!--                <el-table-column label="上一办理人"-->
+                <!--                                 align="center"-->
+                <!--                                 min-width="100px"-->
+                <!--                                 prop=""/>-->
                 <el-table-column label="状态"
                                  align="center"
                                  min-width="100px"
@@ -522,6 +522,8 @@
                 tableDataOffline: [],
                 //给tableData赋空的空数组
                 tableNullData: [],
+                //给tableDataOffline赋空的空数组
+                tableNullDataOffline: [],
                 //存储分割文件名的数组
                 splitName: [],
                 isUpload: false,
@@ -793,6 +795,9 @@
                     this.$nextTick(() => {
                         this.$refs.tree_left.loadLeftTreeTypeFun("4");
                     })
+                    this.tableData = this.tableNullData
+                } else {
+                    this.tableDataOffline = this.tableNullDataOffline
                 }
             },
             //下线方法
@@ -939,23 +944,33 @@
                 // this.details_details();
                 getById(this.form.applyUuid).then(res => {
                     this.form = res.data
-                    this.tableData = res.data.fileList
-                    this.tableData.forEach((r) => {
-                        r.isUpload = true
-                        r.disabled = r.fileType !== "txt";
-                    })
                     //只有状态为草稿时才能实现对数据的编辑修改
                     if (this.form.status !== '草稿') {
                         this.$notify.warning("只有草稿状态可编辑")
-                        this.form.applyName = ''
-                        this.form.loadType = ''
+                        // this.form.applyName = ''
+                        // this.form.loadType = ''
+                        this.form = this.$options.data().form
                         this.tableData = this.tableNullData
+                        this.tableDataOffline = this.tableNullDataOffline
+                        return
                     } else {
                         this.dialogStatusValue = true
                         this.applyDialogVisible = true
                         this.dialogStatus = 'update'
                         this.isDisable = false
                         this.updateShow = true
+                    }
+                    if (this.form.operationType == 0) {
+                        this.tableData = res.data.fileList
+                        this.tableData.forEach((r) => {
+                            r.isUpload = true
+                            r.disabled = r.fileType !== "txt";
+                        })
+                    } else {
+                        this.$nextTick(() => {
+                            this.$refs.tree_left.loadLeftTreeTypeFun("4");
+                        })
+                        this.tableDataOffline = res.data.fileList
                     }
                 })
 
@@ -1111,13 +1126,53 @@
                 this.$refs[form].validate((valid) => {
                     if (valid) {
                         let isUpload = true
-                        //校验文件是否上传
-                        this.fileList.forEach((r) => {
-                            if (r.isUpload === false) {
-                                this.$notify.warning("所选文件" + r.name + "未上传")
-                                isUpload = false
+                        //校验是否选择了文件
+                        if (this.tableData.length == 0 && this.form.operationType == 0) {
+                            this.$notify.warning("请选择文件！")
+                            return
+                        } else if (this.tableDataOffline.length == 0 && this.form.operationType == 1) {
+                            this.$notify.warning("请选择下线表！")
+                            return
+                        } else if (this.tableData.length != 0 && this.form.operationType == 0) {
+                            //校验文件是否上传
+                            this.fileList.forEach((r) => {
+                                if (r.isUpload === false) {
+                                    this.$notify.warning("所选文件" + r.name + "未上传")
+                                    isUpload = false
+                                }
+                            })
+                        }
+                        //定义数组接收未填写文件名的行数
+                        let number = []
+                        //判断装载与下线文件列表中是否填写了文件名，并将未填写文件名的行数填入number数组中
+                        if (this.form.operationType == 0 && isUpload) {
+                            this.tableData.forEach((item, index, array) => {
+                                if (array[index].displayTableName === "") {
+                                    number.push(index + 1)
+                                }
+                            })
+                        } else {
+                            this.tableDataOffline.forEach((item, index, array) => {
+                                if (array[index].archiveFileTableName === "") {
+                                    number.push(index + 1)
+                                }
+                            })
+                        }
+                        //判断数组不为空
+                        if (number !== undefined && number != null && number.length > 0) {
+                            let lineNumber = "";
+                            number.forEach((item, index) => {
+                                lineNumber += number[index] + ","
+                            })
+
+                            lineNumber = lineNumber.substring(0, lineNumber.lastIndexOf(','));
+                            if (this.form.operationType == 0) {
+                                this.$notify.warning("第" + lineNumber + "行数据未填写表名称！")
+                            } else {
+                                this.$notify.warning("第" + lineNumber + "行数据未填写归档文件/表名称！")
                             }
-                        })
+                            return
+                        }
                         if (this.title === '创建申请') {
                             let params = {
                                 loadDownApply: {
@@ -1129,43 +1184,6 @@
 
                                 "tableData": this.form.operationType == 0 ? JSON.stringify(this.tableData) : JSON.stringify(this.tableDataOffline),
                             }
-                            //校验是否选择了文件
-                            if (this.tableData.length == 0 && this.form.operationType == 0) {
-                                this.$notify.warning("请选择文件！")
-                                return
-                            }
-                            //定义数组接收未填写文件名的行数
-                            let number = []
-                            //判断装载与下线文件列表中是否填写了文件名，并将未填写文件名的行数填入number数组中
-                            if (this.form.operationType == 0) {
-                                this.tableData.forEach((item, index, array) => {
-                                    if (array[index].displayTableName === "") {
-                                        number.push(index + 1)
-                                    }
-                                })
-                            } else {
-                                this.tableDataOffline.forEach((item, index, array) => {
-                                    if (array[index].archiveFileTableName === "") {
-                                        number.push(index + 1)
-                                    }
-                                })
-                            }
-                            //判断数组不为空
-                            if (number !== undefined && number != null && number.length > 0) {
-                                let lineNumber = "";
-                                number.forEach((item, index) => {
-                                    lineNumber += number[index] + ","
-                                })
-
-                                lineNumber = lineNumber.substring(0, lineNumber.lastIndexOf(','));
-                                if (this.form.operationType == 0) {
-                                    this.$notify.warning("第" + lineNumber + "行数据未填写表名称！")
-                                } else {
-                                    this.$notify.warning("第" + lineNumber + "行数据未填写归档文件/表名称！")
-                                }
-                                return
-                            }
-
                             //save_data方法调用后台save接口实现新增功能
                             if (isUpload) {
                                 save_data(params).then(res => {
@@ -1232,6 +1250,8 @@
             // 关闭弹窗
             handleClose(form) {
                 this.$refs[form].resetFields() //清空添加的值
+                //关闭弹窗时清空form表单的值
+                this.form = this.$options.data().form
                 this.updateShow = false
                 this.fileList = []
                 this.tableData = []

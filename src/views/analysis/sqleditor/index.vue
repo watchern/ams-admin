@@ -1091,6 +1091,7 @@ export default {
       /*      const webSocketPath =
                   'ws://localhost:8086/analysis/websocket?' +
                   this.$store.getters.personuuid*/
+      var _this = this
       const webSocketPath =
         this.AmsWebsocket.getWSBaseUrl(this.AmsModules.ANALYSIS) +
         this.$store.getters.personuuid +
@@ -1151,7 +1152,11 @@ export default {
           dataObj.listenerType === "afterTaskDropTable" ||
           dataObj.listenerType === "afterTaskDropView"
         ) {
+          //删除智能提示 刷新树
           dropTable(dataObj.dropTableNameList);
+          _this.$refs.tree_left.refreshTreeList(dataObj.dropTableNameList);
+          console.log(tree_list.remove(tree_list[2]))
+          console.log(dataObj.dropTableNameList)
         }
       };
       const func2 = function func3 (val) {

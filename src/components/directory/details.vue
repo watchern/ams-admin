@@ -209,28 +209,24 @@
                   </el-form-item>
                 </div>
 
-                <!-- <el-form-item label="数据标签：">
-                  <div class="input_blue"
-                       @click="onclick_infotion_tag()">
-                    <div v-for="(item, index) in TagsAll"
-                         :key="index"
-                         class="spanbox">
-                      <span class="tagspan">
-                        {{ item }}
-                      </span>
-                      <i class="span_close"
-                         @click="removeTag_infotion_tag(index, item)"></i>
+                <div class="son_check">
+                  <el-form-item label="数据标签：">
+                    <div class="_width tag_conter">
+                      <el-tag :key="tag.labelLibraryId"
+                              v-for="tag in form.labelList"
+                              :closable="isDisable_input == false"
+                              :disable-transitions="false"
+                              @close="handleDeleteLabel(tag)">
+                        {{ tag.labelLibraryName }}
+                      </el-tag>
                     </div>
-                    <input v-model="search_name_infotion"
-                           @keyup.enter="addTags_infotion_tag"
-                           @keyup.delete="deleteTags_infotion_tag"
-                           :style="inputStyle"
-                           class="inputTag"
-                           ref="inputTag"
-                           disabled
-                           type="text" />
-                  </div>
-                </el-form-item> -->
+                  </el-form-item>
+                  <el-button type="primary"
+                            class="oper-btn"
+                            v-if="isDisable_input == false"
+                            :disabled="isDisable_input"
+                            @click="check_tag()">选择</el-button>
+                </div>
 
                 <el-form-item label="表热度：">
                   <ul class="Heat_ul _width">
@@ -354,9 +350,8 @@
           <h2 :class="{
               isActive: navgatorIndex == 4,
             }">
-            数据表字典信息
+            数据血缘影响分析
           </h2>
-          开发中...
           <div class="padding20">
             <!-- <LineMap></LineMap> -->
             <!-- <EditMap></EditMap> -->
@@ -376,6 +371,15 @@
         </div>
       </div>
     </div>
+
+    <!-- 选中标签 -->
+    <select-label
+      title="选择标签"
+      :visible.sync="dialogVisible_tag"
+      :close-on-click-modal="false"
+      :has-selected="form.labelList"
+      @confirm="confirmSelectLabel"
+    ></select-label>
 
     <!-- 查看sql -->
     <el-dialog title="查看sql"
@@ -648,6 +652,7 @@ import {
 import {
   getListTree, //注册资源下一步
 } from "@/api/lhg/register.js";
+import SelectLabel from "@/components/directory/selectLabel.vue";
 import { getTableByCol } from "@/api/data/table-info";
 export default {
   components: {
@@ -655,15 +660,10 @@ export default {
     ProcessTree,
     LineMap,
     EditMap,
+    SelectLabel,
     personTree: () => import("@/components/publicpersontree/index"),
   },
   props: {
-    parentArr: {
-      type: Array,
-      default () {
-        return [];
-      },
-    },
     limit: {
       // 最多生成标签数量
       type: Number,
@@ -739,15 +739,12 @@ export default {
         personUuid: "", //资源责任人
         partitions: "", //表分区
         isSpike: 1, //是否增量
+        labelList: [],
         tableLayeredName: '',//数据源
       },
       tableData: [],
       sceneCode: "auditor",
       Column_tableData_index: [], //索引信息
-      TagsAll: [],
-      inputLength: "",
-      search_name_infotion: "", //标签
-
       next_data: [], // 点击下一步的数据
       // 增量全量
       option_isSpike: [
@@ -781,6 +778,8 @@ export default {
           label: "视图",
         },
       ],
+
+      dialogVisible_tag: false, //选择标签
 
       Heat: [
         {
@@ -872,26 +871,8 @@ export default {
       isdisable: true,//不可更改数据源
     };
   },
-  computed: {
-    inputStyle () {
-      let style = {};
-      style.width = `${this.inputLength}px`;
-      return style;
-    },
-    finall () {
-      return this.TagsAll.join(",");
-    },
-  },
+  computed: {},
   watch: {
-    TagsAll () {
-      this.$emit("on-change", this.TagsAll);
-    },
-    search_name_infotion (val) {
-      this.inputLength = this.$refs.inputTag.value.length * 12 + 50;
-    },
-    parentArr () {
-      this.TagsAll = this.parentArr.length ? this.parentArr : [];
-    },
     tableMetaUuid (newVal, oldVal) {
       // newVal是新值，oldVal是旧值
       this.tableMetaUuid = newVal;
@@ -925,7 +906,6 @@ export default {
     // 返回上一步
     step () {
       this.$emit("step",)
-
     },
     handleScrollTop () {
       this.$nextTick(() => {
@@ -1048,9 +1028,20 @@ export default {
         }
         this.form.partitions = resp.data.partitions; //表分区
         this.form.isSpike = resp.data.tableRelationQuery.isSpike; //增量全量
-
+        this.form.labelList = resp.data.labelList; //标签列表
         this.table_visible_form.tableMetaUuid = resp.data.tableMetaUuid//主表从表新增用
       });
+    },
+    // 选择标签
+    check_tag () {
+      this.dialogVisible_tag = true;
+    },
+    confirmSelectLabel(val) {
+      this.form.labelList = val;
+    },
+    // 删除标签
+    handleDeleteLabel (tag) {
+      this.form.labelList.splice(this.form.labelList.indexOf(tag), 1);
     },
     // 修改保存
     update_save () {
@@ -1083,6 +1074,7 @@ export default {
           dataDate: this.form.dataDate,
         },
         personLiables: personLiables,
+        labelList: this.form.labelList,
       };
       updateTableInfo(params).then((resp) => {
         if (resp.code == 0) {
@@ -1183,26 +1175,6 @@ export default {
         this.form.personLiables = personNames.join(",");
       }
       this.resultShareDialogIsSee = false;
-    },
-    // 删除标签
-    removeTag_infotion_tag (index, item) {
-      this.TagsAll.splice(index, 1);
-    },
-    //生成标签
-    addTags_infotion_tag () {
-      if (this.search_name_infotion) {
-        this.TagsAll.push(this.search_name_infotion);
-        this.search_name_infotion = "";
-      }
-    },
-    //键盘删除键删除tag
-    deleteTags_infotion_tag () {
-      this.TagsAll.pop();
-    },
-    onclick_infotion_tag () {
-      this.$nextTick(() => {
-        this.$refs.inputTag.focus();
-      });
     },
     // 查看sql
     previewSql () {
@@ -1525,81 +1497,41 @@ export default {
   line-height: 25px;
 }
 
-/* 基本信息标签 */
+.son_check {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
 
-.input_blue {
-  /* width: 300px; */
-  margin-right: 20px;
-  flex: 1;
+.son_check >>> .el-form-item {
+  width: 100%;
+  margin-bottom: 0px !important;
+}
+
+.son_check >>> .el-button {
+  margin-left: 10px;
+  height: 36px !important;
+}
+
+/* 标签回显框 */
+.tag_conter {
+  color: #c0c4cc;
+  cursor: not-allowed;
   box-sizing: border-box;
-  background-color: white;
-  border: 1px solid #dcdee2;
+  width: 100%;
+  font-size: inherit;
+  color: #606266;
+  background-color: #ffffff;
+  border: 1px solid #dcdfe6;
   border-radius: 4px;
-  font-size: 12px;
-  text-align: left;
-  word-wrap: break-word;
-  overflow: hidden;
+  padding: 4px 7px 7px 7px;
+  min-height: 48px;
 }
 
-.spanbox {
-  display: inline-block;
-  font-size: 14px;
-  margin: 3px 4px;
-  background-color: rgb(229, 229, 229);
-  border: 1px solid #e8eaec;
-  border-radius: 3px;
+.tag_conter span {
+  margin: 0 3px;
 }
-
-.tagspan {
-  height: 24px;
-  line-height: 22px;
-  max-width: 99%;
-  position: relative;
-  display: inline-block;
-  padding-left: 8px;
-  color: #495060;
-  font-size: 14px;
-  cursor: pointer;
-  opacity: 1;
-  vertical-align: middle;
-  overflow: hidden;
-  transition: 0.25s linear;
-  color: rgb(26, 26, 26, 0.5);
-}
-
-.span_close {
-  padding: 0 4px 0 4px;
-  opacity: 1;
-  -webkit-filter: none;
-  filter: none;
-  color: rgb(26, 26, 26, 0.5);
-  font-weight: 200;
-}
-
-.span_close:after {
-  content: "\00D7";
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  /* line-height: 27px; */
-  transition: 0.3s, color 0s;
-}
-
-.inputTag {
-  font-size: 16px;
-  border: none;
-  box-shadow: none;
-  outline: none;
-  background-color: transparent;
-  padding: 0;
-  width: auto;
-  min-width: 250px;
-  vertical-align: top;
-  height: 32px;
-  color: #495060;
-  line-height: 32px;
-}
-
-/* 基本信息 标签 :end */
 
 .son_people {
   display: flex;

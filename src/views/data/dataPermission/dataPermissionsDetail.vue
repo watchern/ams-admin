@@ -54,10 +54,14 @@ export default {
         this.$emit("fromSon");
     },
     methods: {
-        queryByUuid(value) {
-            queryByOperatePermissionApplyUuid(value)
+        queryByUuid(value1,value2) {
+            queryByOperatePermissionApplyUuid({
+                operatePermissionApplyUuid: value1,
+                isNotShowAll: value2
+            })
                 .then((res) => {
                     this.tableData = res.data;
+                    this.tableData.sort();
                     // for (let i = 0; i < data.length; i++) {
                     //     if (data[i].systemName != undefined && data[i].systemName != null) {
                     //         this.tableData.push({

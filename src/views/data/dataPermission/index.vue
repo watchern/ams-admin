@@ -71,18 +71,10 @@
                 </div> -->
                 <div class="operationBut">
                     <el-button size="mini" type="primary" @click="add">添加</el-button>
-                    <el-button size="mini" type="primary" @click="goDelete"
-                    >删除
-                    </el-button
-                    >
-                    <el-button size="mini" type="primary" @click="goHandle"
-                    >办理
-                    </el-button
-                    >
-<!--                    <el-button size="mini" type="primary" @click="goExport"-->
-<!--                    >导出-->
-<!--                    </el-button-->
-<!--                    >-->
+                    <el-button size="mini" type="primary" @click="goDelete">删除</el-button>
+                    <el-button size="mini" type="primary" @click="goUpdate">修改</el-button>
+                    <el-button size="mini" type="primary" @click="goHandle">办理</el-button>
+<!--                    <el-button size="mini" type="primary" @click="goExport">导出</el-button>-->
                 </div>
             </div>
             <el-table
@@ -102,7 +94,12 @@
                     label="申请名称"
                     show-overflow-tooltip
                     min-width="150px"
-                ></el-table-column>
+                >
+                    <template slot-scope="scope">
+                        <span
+                            @click="showApplyDetail(scope.row)">{{ scope.row.permissionApplyName }}</span>
+                    </template>
+                </el-table-column>
                 <el-table-column
                     prop="createTime"
                     label="申请时间"
@@ -146,13 +143,13 @@
         <!-- 新增弹窗 -->
         <el-dialog
             :visible.sync="showAddDialog"
-            title="创建申请"
+            :title="addOrUpdate == 0 ? '创建申请':'修改申请'"
             :close-on-click-modal="false"
             :modal-append-to-body="false"
             width="80%"
             :close-on-press-escape="false"
         >
-            <Add @close="closeAddDrawer" @oka="addSucceed" v-if="showAddDialog"></Add>
+            <Add :temp="temp" :addOrUpdate="addOrUpdate" @close="closeAddDrawer" @oka="addSucceed" v-if="showAddDialog"></Add>
         </el-dialog>
         <!--    流程办理弹窗-->
         <el-dialog
@@ -216,6 +213,29 @@
         >
       </span>
         </el-dialog>
+        <!--申请详情弹窗-->
+        <el-dialog
+            title="申请详情"
+            :visible.sync="showDetail"
+            v-if="showDetail"
+            width="80%"
+        >
+            <div>
+                <Add :temp="tempDetail" :addOrUpdate="2"></Add>
+                <dataPermissionsDetail ref="applyPage"
+                                       @fromSon="fromSon"
+                ></dataPermissionsDetail>
+            </div>
+            <span slot="footer">
+        <el-button
+            size="mini"
+            type="info"
+            class="table_header_btn"
+            @click="showDetail = false"
+        >关闭</el-button
+        >
+      </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -229,6 +249,7 @@ import {
 import {formatDate} from "ams-etlscheduler-hx/src/components/etl/filter/filter";
 import FlowItem from '@/components/starflow/todowork/flowItem'
 import flowOpinionList from "@/components/starflow/todowork/flowOpinionList";
+import dataPermissionsDetail from "@/views/data/dataPermission/dataPermissionsDetail.vue";
 
 export default {
     name: "dataPermission",
@@ -236,6 +257,7 @@ export default {
         Add,
         FlowItem,
         flowOpinionList,
+        dataPermissionsDetail,
     },
     props: [],
     data() {
@@ -296,6 +318,10 @@ export default {
             defaultPersonId: [],
             todoFlow: false, //流程查看的弹窗控制
             applyPage: "applyPage", //有这个标识 查询流程的时候会走相对应的方法
+            showDetail: false, //是否显示详情
+            operatePermissionApplyUuid: '',//当前显示详情的申请id
+            addOrUpdate: 0,//0为新增，1为修改
+            tempDetail:''//查看详情临时对象
         };
     },
     computed: {},
@@ -356,6 +382,7 @@ export default {
         },
         // 添加
         add() {
+            this.addOrUpdate = 0;
             this.showAddDialog = true;
         },
         // 删除
@@ -463,6 +490,36 @@ export default {
                     this.goQuery();
                 })
         },
+        //显示详情初始化数据
+        fromSon() {
+            this.$refs.applyPage.queryByUuid(this.operatePermissionApplyUuid, false);
+        },
+        //显示详情
+        showApplyDetail(temp) {
+            this.operatePermissionApplyUuid = temp.operatePermissionApplyUuid;
+            this.tempDetail = temp;
+            this.showDetail = true;
+        },
+        //修改申请信息
+        goUpdate(){
+            if (this.selected.length == 0) {
+                this.$notify.warning("未选择要修改的申请")
+                return
+            }
+            if (this.selected.length > 1) {
+                this.$notify.warning("一次只能修改一条数据")
+                return
+            }
+            if (this.selected[0].workFlowState != '0') {
+                this.$notify.warning("办理中或办理完成的业务不可修改")
+                return
+            }
+            this.addOrUpdate = 1;
+            this.operatePermissionApplyUuid = this.selected[0].operatePermissionApplyUuid;
+            this.temp = Object.assign({}, this.selected[0])
+            this.showAddDialog = true;
+
+        }
     },
     filters: {
         workFlowStateFilter(val) {

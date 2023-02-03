@@ -50,14 +50,14 @@
                  :visible.sync="registTableFlag"
                  class="dlag_width"
                  width="60%"
-                 top="10vh">
+                 top="5vh">
 
         <!-- 选择模式 -->
         <div class="model_search">
           模式名称：
           <el-select v-model="schemaName"
                      @change="filterTables"
-                     style="width: 400px"
+                     style="width: 400px;"
                      clearable>
             <el-option v-for="item in schemaData"
                        :key="item"
@@ -65,12 +65,14 @@
                        :value="item"></el-option>
           </el-select>
         </div>
-
-        <el-input style="width: 330px;margin-left:70px"
+        <div>
+          表名称：
+          <el-input style="width: 330px;margin-left: 10px;"
                   v-model="filterText1"
                   placeholder="输入想要查询的表名称（模糊搜索）" />
-        <el-button @click="getTables">搜索</el-button>
-
+          <el-button @click="getTables">搜索</el-button>
+        </div>
+        
         <div class="dlag_conter containerselect padding10">
           <MyElTree ref="tree1"
                     v-loading="treeLoading"
@@ -171,9 +173,9 @@
                  class="data_res dlag_width"
                  :visible.sync="dialogVisible_information"
                  @close="handleClose('form')"
-                 width="60%">
-        <div class="dlag_conter">
-
+                 width="60%"
+                 top="5vh">
+        <div style="height: calc(75vh); overflow: auto;">
           <el-form :rules="rules"
                    ref="form"
                    label-width="100px"
@@ -367,12 +369,12 @@
               <div class="son_check">
                 <el-form-item label="数据标签：">
                   <div class="_width tag_conter">
-                    <el-tag :key="tag"
-                            v-for="tag in tagsarr"
+                    <el-tag :key="tag.labelLibraryId"
+                            v-for="tag in form.labelList"
                             closable
                             :disable-transitions="false"
-                            @close="handleClose(tag)">
-                      {{ tag }}
+                            @close="handleDeleteLabel(tag)">
+                      {{ tag.labelLibraryName }}
                     </el-tag>
                   </div>
                 </el-form-item>
@@ -457,86 +459,13 @@
       </el-dialog>
 
       <!-- 选择标签 -->
-      <el-dialog title="选择标签"
-                 :close-on-click-modal="false"
-                 :visible.sync="dialogVisible_tag"
-                 width="60%"
-                 class="dlag_width">
-        <div class="dlag_conter">
-          <div class="right_query">
-            <el-form :inline="true"
-                     :model="tag_query"
-                     label-position="bottom">
-              <el-form-item>
-                <el-input v-model="tag_query.name"
-                          placeholder="标签名"
-                          clearable />
-              </el-form-item>
-
-              <el-form-item>
-                <el-select v-model="tag_query.status"
-                           :rows="4"
-                           placeholder="请选择是否增量">
-                  <el-option v-for="item in option_isSpike"
-                             :key="item.value"
-                             :label="item.label"
-                             :value="item.value" />
-                </el-select>
-              </el-form-item>
-
-              <el-form-item>
-                <el-button type="primary"
-                           @keyup.enter.native="search">查询</el-button>
-                <el-button type="primary">清空</el-button>
-              </el-form-item>
-            </el-form>
-          </div>
-          <!-- <div class="padding10_l">
-            <el-table :data="tableDatas"
-                      style="width: 100%">
-              <el-table-column prop="date"
-                               align="center"
-                               label="标签树">
-              </el-table-column>
-              <el-table-column prop="name"
-                               align="center"
-                               label="被引用次数">
-              </el-table-column>
-              <el-table-column prop="address"
-                               align="center"
-                               label="标签状态">
-              </el-table-column>
-
-              <el-table-column prop="address"
-                               align="center"
-                               label="创建人">
-              </el-table-column>
-
-              <el-table-column prop="address"
-                               align="center"
-                               label="创建时间">
-              </el-table-column>
-
-              <el-table-column label="操作"
-                               align="center"
-                               prop="address"
-                               width="100px">
-                <template slot-scope="scope"
-                          v-if="!scope.row.noShow">
-                  <el-button type="primary"
-                             size="mini">操作</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div> -->
-        </div>
-        <span slot="footer"
-              class="dialog-footer">
-          <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary"
-                     @click="dialogVisible_tag = false">确 定</el-button>
-        </span>
-      </el-dialog>
+      <select-label
+        title="选择标签"
+        :visible.sync="dialogVisible_tag"
+        :close-on-click-modal="false"
+        :has-selected="form.labelList"
+        @confirm="confirmSelectLabel"
+      ></select-label>
 
       <!-- 认权管理 -->
       <el-dialog title="认权管理"
@@ -640,7 +569,6 @@ import {
   getColsInfoByTableName, //获取列信息
   synDataStructure, //同步数据
   listSchemas, //获取模式名
-  getLabelTree, // 获取标签树
 } from "@/api/data/table-info";
 import QueryField from "@/components/public/query-field/index";
 import personTree from "@/components/publicpersontree/index";
@@ -654,7 +582,7 @@ import {
 } from "@/api/data/dict";
 import qs from "qs";
 import axios from "axios";
-
+import SelectLabel from "@/components/directory/selectLabel.vue";
 import {
   batchSaveTable_save, //下一步 保存
   getListTree, //注册资源下一步
@@ -671,6 +599,7 @@ export default {
     tabledatatabs,
     QueryField,
     DataResourceDisplay,
+    SelectLabel,
     Details,
     directoryFileImport,
     personTree: () => import("@/components/publicpersontree/index"),
@@ -813,7 +742,7 @@ export default {
         personUuid: '',//资源责任人
         partitions: '',//表分区
         isSpike: 1,//是否增量
-
+        labelList: [], // 标签列表
         // folderUuid: '',//所属目录
         // increment: '',//是否增量
         isSentFile: 0, //是否推送文件
@@ -898,16 +827,6 @@ export default {
       formList: [], //
 
       dialogVisible_tag: false, //选择标签
-      // 标签树
-      labelTreeData: [],
-      // 标签
-      tag_query: {
-        name: "",
-        status: "",
-      },
-      // 选择的标签
-      tagsarr: [],
-      inputValue: "",
 
       // 导入按钮
       // updata_ing: false,
@@ -977,10 +896,9 @@ export default {
     // this.query_list(data);
   },
   methods: {
-
     // 返回上一步
     Step () {
-      this.show_details = false
+      this.show_details = false;
       this.query_list(this.$refs.tree_left.query, false);
     },
     // 获取资料书的参数
@@ -988,7 +906,6 @@ export default {
       this.query_list(this.$refs.tree_left.query, false);
       this.update_tree();//更新左侧树
     },
-
     // 更新左侧树
     update_tree () {
       if (this.$refs.tree_left.activeName == '0') {
@@ -1781,13 +1698,13 @@ export default {
                 personLiables: this.form.personLiables, // 资源责任人
                 // increment: this.form.increment,//是否增量
                 isSpike: this.form.isSpike, //是否增量
+                labelList: this.form.labelList,
                 tableRelationQuery: {
                   tableDataSource: this.$refs.tree_left.query.dataSource, //数据源
                   businessSystemId: this.form.businessSystemId, //id主键
                   tableCode: this.form.tableCode, //资源编码
                   tableLayeredId: this.form.tableLayeredId, //资源分层主键
                   tableMetaUuid: this.form.check_list[i].id, //资源主键
-
                   tableRemarks: this.form.tableRemarks, //资源备注
                   tableThemeId: this.form.tableThemeId, //资源主题主键
                   tableType: this.form.tableType, //资源类型
@@ -1855,18 +1772,14 @@ export default {
     },
     // 选择标签
     check_tag () {
-      this.getLabelTree();
       this.dialogVisible_tag = true;
     },
-    // 删除标签
-    handleClose (tag) {
-      this.tagsarr.splice(this.tagsarr.indexOf(tag), 1);
+    confirmSelectLabel(val) {
+      this.form.labelList = val;
     },
-    // 查询标签树
-    getLabelTree () {
-      getLabelTree().then((res) => {
-        console.log(res);
-      })
+    // 删除标签
+    handleDeleteLabel (tag) {
+      this.form.labelList.splice(this.form.labelList.indexOf(tag), 1);
     },
     // 清除多选框
     clearcheckbox () {
@@ -2058,7 +1971,8 @@ export default {
   background-color: #ffffff;
   border: 1px solid #dcdfe6;
   border-radius: 4px;
-  padding: 0 7px;
+  padding: 4px 7px 7px 7px;
+  min-height: 48px;
 }
 
 .tag_conter span {
@@ -2237,6 +2151,15 @@ export default {
 
 .tree-line-btn {
   background: rgba(255, 255, 255, 0) !important;
+}
+
+.custom-label-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 15px;
 }
 
 // .left_conter >>> .el-input.is-disabled .el-input__inner,
