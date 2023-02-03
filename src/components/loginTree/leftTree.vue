@@ -494,30 +494,45 @@ export default {
     //   });
     // },
     //删除表之后刷新树
-    refreshTreeList(dropTableNameList){
-      console.log(this.tree_list)
-      console.log(dropTableNameList)
-      var tree_list2 = [];
-      var _this = this;
-      this.tree_list.forEach(function(item,index){
-        if(item.type!= "table" && item.children.length>0){
-          _this.screenChildrenTree(item.children,dropTableNameList)
-          tree_list2.push(item)
-        }else{
-          var isEqual = true;
-          for(var k=0;k<dropTableNameList.length;k++){
-            if(item.label === dropTableNameList[k]){
-              isEqual = false
-              break
+    refreshTreeList(dropTableNameList,type){
+      var activeName = this.activeName
+      if(type==='1'){
+        if(activeName==='0'){
+          this.post_getBusinessSystemTree()
+        }
+        if(activeName==='1'){
+          this.post_getThemeTree()
+        }
+        if(activeName==='2'){
+          this.post_getLayeredTree() 
+        }
+        if(activeName==='3'){
+          this.post_getPersonSpaceTree();
+        }
+      }
+      if(type==='2'){
+        var tree_list2 = [];
+        var _this = this;
+        this.tree_list.forEach(function(item,index){
+          if(item.type!= "table" && item.children.length>0){
+            _this.screenChildrenTree(item.children,dropTableNameList)
+            tree_list2.push(item)
+          }else{
+            var isEqual = true;
+            for(var k=0;k<dropTableNameList.length;k++){
+              if(item.label === dropTableNameList[k]){
+                isEqual = false
+                break
+              }
+            }
+            if(isEqual){
+              tree_list2.push(item)
             }
           }
-          if(isEqual){
-            tree_list2.push(item)
-          }
-        }
-      })
-      this.tree_list=[];
-      this.tree_list = tree_list2;
+        })
+        this.tree_list=[];
+        this.tree_list = tree_list2;
+      }
     },
     //递归筛选children数据
     screenChildrenTree(datas,dropTableNameList){

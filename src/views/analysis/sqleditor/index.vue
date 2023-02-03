@@ -549,6 +549,7 @@ import {
   getColumnSqlInfo,
   positionSqlError,
   refushTableTree,
+  refushTableTree2,
   dropTable,
   getIsUpdate,
   setIsUpdate,
@@ -1104,6 +1105,7 @@ export default {
       // 发送消息
       this.webSocket.onmessage = function (event) {
         const dataObj = JSON.parse(event.data);
+        // console.log(dataObj)
         if (
           dataObj.listenerType === "afterTaskChangeTable" ||
           dataObj.listenerType === "afterTaskCreateView"
@@ -1121,16 +1123,19 @@ export default {
                 isExist: 0,
                 isParent: true,
                 name: treeNodeInfo[i].displayTbName,
+                label: treeNodeInfo[i].displayTbName,
                 enName: treeNodeInfo[i].displayTbName,
                 personNode: false,
                 pid: treeNodeInfo[i].folderUuid,
                 timeColNum: 0,
-                // type: "table",
                 type: dataObj.listenerType === 'afterTaskChangeTable' ? 'table' : 'view'
               };
               treeNodes.push(treeNode);
             }
-            refushTableTree(treeNodes, this.dataSource);
+            //加载智能提示
+            refushTableTree2(treeNodes, this.dataSource);
+            //重新刷新表
+            _this.$refs.tree_left.refreshTreeList("",'1');
           }
         }
         if (dataObj.listenerType === "onSQLResult") {
@@ -1154,9 +1159,7 @@ export default {
         ) {
           //删除智能提示 刷新树
           dropTable(dataObj.dropTableNameList);
-          _this.$refs.tree_left.refreshTreeList(dataObj.dropTableNameList);
-          console.log(tree_list.remove(tree_list[2]))
-          console.log(dataObj.dropTableNameList)
+          _this.$refs.tree_left.refreshTreeList(dataObj.dropTableNameList,'2');
         }
       };
       const func2 = function func3 (val) {
