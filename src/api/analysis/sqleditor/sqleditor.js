@@ -1154,11 +1154,17 @@ export function refushTableTree(treeNodes, dataSource) {
  * 删除表或试图后删除左侧树
  * @param dropTableArr 删除的表
  */
-export function dropTable(dropTableArr) {
+export function dropTable(dropTableArr,tree_list) {
   if (dropTableArr != undefined && dropTableArr.length > 0) {
     for (var k = 0; k < dropTableArr.length; k++) {
-      var dropedNode = zTreeObj.getNodesByParam('name', dropTableArr[k], null)[0]
-      zTreeObj.removeNode(dropedNode)
+      /* for (var i = 0; i < tree_list.length; i++) {
+        if(tree_list[i].label === dropTableArr[k]){
+
+        }
+
+      } */
+      // var dropedNode = zTreeObj.getNodesByParam('name', dropTableArr[k], null)[0]
+      // zTreeObj.removeNode(dropedNode)
       // 删除智能提示
       delete CodeMirror.tableColMapping[dropTableArr[k]]
       // 清除表与列的关系
