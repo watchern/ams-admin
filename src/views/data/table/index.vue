@@ -69,11 +69,11 @@
         <div>
           表名称：
           <el-input style="width: 330px;margin-left: 10px;"
-                  v-model="filterText1"
-                  placeholder="输入想要查询的表名称（模糊搜索）" />
+                    v-model="filterText1"
+                    placeholder="输入想要查询的表名称（模糊搜索）" />
           <el-button @click="getTables">搜索</el-button>
         </div>
-        
+
         <div class="dlag_conter containerselect padding10">
           <MyElTree ref="tree1"
                     v-loading="treeLoading"
@@ -460,13 +460,11 @@
       </el-dialog>
 
       <!-- 选择标签 -->
-      <select-label
-        title="选择标签"
-        :visible.sync="dialogVisible_tag"
-        :close-on-click-modal="false"
-        :has-selected="form.labelList"
-        @confirm="confirmSelectLabel"
-      ></select-label>
+      <select-label title="选择标签"
+                    :visible.sync="dialogVisible_tag"
+                    :close-on-click-modal="false"
+                    :has-selected="form.labelList"
+                    @confirm="confirmSelectLabel"></select-label>
 
       <!-- 认权管理 -->
       <el-dialog title="认权管理"
@@ -898,7 +896,7 @@ export default {
   },
   methods: {
     // 查询
-    search(serachParams) {
+    search (serachParams) {
       let data = this.$refs.tree_left.query;
       this.dataSource = data.dataSource//新增关系树 和注册首页数据源绑定且不可修改
       this.show_details = false; //显示列表
@@ -916,6 +914,7 @@ export default {
       };
       listByTreePage(params).then(res => {
         console.log(res);
+        this.update_tree();//更新左侧树
         this.list_loading = false; //子组件loading
         this.list_data = res.data;
         this.list = res.data.records;
@@ -1799,7 +1798,7 @@ export default {
     check_tag () {
       this.dialogVisible_tag = true;
     },
-    confirmSelectLabel(val) {
+    confirmSelectLabel (val) {
       this.form.labelList = val;
     },
     // 删除标签
