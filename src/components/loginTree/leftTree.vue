@@ -306,7 +306,7 @@ export default {
     async loadNode (node, resolve) {
       if (node.level === 0) {
         return resolve(node.data);
-      } else if (node.level === 1) {
+      } else if (node.level >= 1) {
         //只有SQL编辑器的表才需要展示字段
         if (node.data.type === "table" && this.loadLeftTreeType === "1") {
           var strLevel = this.activeName + this.query.dataSource;
@@ -314,10 +314,13 @@ export default {
           Promise.all([nodeList]).then((res) => {
             resolve(res[0]);
           });
-        } else {
+        } else if(node.data.type === "table" && this.loadLeftTreeType != "1") {
+          //去掉表加载字段
+          resolve([]);
+        }else{
           return resolve(node.data.children);
         }
-      } else if (node.level == 2) {
+      } /* else if (node.level == 2) {
         if (this.loadLeftTreeType != "1") {
           //去掉表加载字段
           resolve([]);
@@ -328,7 +331,7 @@ export default {
             resolve(res[0]);
           });
         }
-      }
+      } */
     },
     // 区分不同模块
     loadLeftTreeTypeFun (data) {
