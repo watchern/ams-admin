@@ -123,6 +123,7 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :total="dataBaseData.total"
+          class="page-content"
         ></el-pagination>
 <!--      </div>-->
     </div>
@@ -340,4 +341,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.page-content{
+  padding-left: 15px;
+}
+</style>
