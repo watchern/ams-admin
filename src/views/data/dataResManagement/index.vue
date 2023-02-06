@@ -108,105 +108,102 @@
     <el-dialog :title="title"
                :visible.sync="dialogVisible"
                @close="handleClose('form')"
-               class="data_res"
-
+               class="dialog"
     >
-      <el-form :rules="rules"
-               ref="form"
-               label-width="130px"
-               :model="form"
-               :inline="false"
-               width="80%"
-      >
-<!--        class="detail-form"-->
+      <div class="add-dialog">
+        <el-form :rules="rules"
+                 ref="form"
+                 :model="form"
+                 :inline="false"
+                class="detail-form"
+        >
+  <!--        width="40%"-->
 
-        <el-form-item label="系统名称:"
-                      prop="businessSystemName">
-          <el-input type="text"
-                    v-model="form.businessSystemName"
-                    style="width: 80%;"
-                    :disabled="title == '查看业务系统'"
-                    :rows="4">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="系统代码:"
-                      prop="businessSystemCode">
-          <el-input style="width: 80%;"
-                    type="textarea"
-                    :disabled="title == '查看业务系统'"
-                    v-model="form.businessSystemCode"></el-input>
-        </el-form-item>
-        <el-form-item label="执行时间间隔:"
-                      prop="businessSystemEtldate">
-          <!-- <el-date-picker v-model="form.businessSystemEtldate"
-                            type="date"
-                            :disabled="title == '查看业务系统'"
-                            format="yyyy-MM-dd"
-                            value-format="yyyy-MM-dd"
-                            placeholder="选择日期"> -->
-
-          <el-input style="width: 80%;"
-                    type="input"
-                    :disabled="title == '查看业务系统'"
-                    v-model.number="form.businessSystemEtldate"></el-input>
-
-          <!-- </el-date-picker> -->
-
-        </el-form-item>
-        <!-- <el-form-item label="创建人:"
-                        prop="createUserName">
-            <el-input type="textarea"
-                      style="width: 80%;"
-                      :rows="4"
+          <el-form-item label="系统名称:"
+                        prop="businessSystemName">
+            <el-input type="text"
+                      style="width: 95%"
+                      v-model="form.businessSystemName"
                       :disabled="title == '查看业务系统'"
-                      v-model="form.createUserName">
+                      :rows="3">
             </el-input>
-          </el-form-item> -->
+          </el-form-item>
+          <el-form-item label="系统代码:"
+                        prop="businessSystemCode">
+            <el-input
+                      style="width: 95%"
+                      type="textarea"
+                      :disabled="title == '查看业务系统'"
+                      v-model="form.businessSystemCode"></el-input>
+          </el-form-item>
+          <el-form-item label="执行时间间隔:"
+                        prop="businessSystemEtldate">
+            <!-- <el-date-picker v-model="form.businessSystemEtldate"
+                              type="date"
+                              :disabled="title == '查看业务系统'"
+                              format="yyyy-MM-dd"
+                              value-format="yyyy-MM-dd"
+                              placeholder="选择日期"> -->
+            <el-input
+                      type="input"
+                      style="width: 95%"
+                      :disabled="title == '查看业务系统'"
+                      v-model.number="form.businessSystemEtldate"></el-input>
+            <!-- </el-date-picker> -->
 
-        <el-form-item label="文件推送路径:"
-                      prop="filePushPath">
-          <el-input type="textarea"
-                    style="width: 80%;"
-                    :rows="4"
-                    :disabled="title == '查看业务系统'"
-                    v-model="form.filePushPath">
-          </el-input>
-        </el-form-item>
+          </el-form-item>
+          <!-- <el-form-item label="创建人:"
+                          prop="createUserName">
+              <el-input type="textarea"
+                        style="width: 80%;"
+                        :rows="4"
+                        :disabled="title == '查看业务系统'"
+                        v-model="form.createUserName">
+              </el-input>
+            </el-form-item> -->
 
-        <el-form-item label="数据备份路径:"
-                      prop="dataBackupPath">
-          <el-input type="textarea"
-                    style="width: 80%;"
-                    :rows="4"
-                    :disabled="title == '查看业务系统'"
-                    v-model="form.dataBackupPath">
-          </el-input>
-        </el-form-item>
+          <el-form-item label="文件推送路径:"
+                        prop="filePushPath">
+            <el-input type="textarea"
+                      :rows="3"
+                      style="width: 95%"
+                      :disabled="title == '查看业务系统'"
+                      v-model="form.filePushPath">
+            </el-input>
+          </el-form-item>
 
-        <el-form-item label="数据移动目录:"
-                      prop="dataMoveDir">
-          <el-input type="textarea"
-                    style="width: 80%;"
-                    :rows="4"
-                    :disabled="title == '查看业务系统'"
-                    v-model="form.dataMoveDir">
-          </el-input>
-        </el-form-item>
-      </el-form>
+          <el-form-item label="数据备份路径:"
+                        prop="dataBackupPath">
+            <el-input type="textarea"
+                      :rows="3"
+                      style="width: 95%"
+                      :disabled="title == '查看业务系统'"
+                      v-model="form.dataBackupPath">
+            </el-input>
+          </el-form-item>
 
-      <span slot="footer"
-            class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary"
-                   :disabled="isDisable"
-                   v-if="title !== '查看业务系统'"
-                   @click="save('form')">保存</el-button>
+          <el-form-item label="数据移动目录:"
+                        prop="dataMoveDir">
+            <el-input type="textarea"
+                      :rows="3"
+                      style="width: 95%"
+                      :disabled="title == '查看业务系统'"
+                      v-model="form.dataMoveDir">
+            </el-input>
+          </el-form-item>
+        </el-form>
 
-      </span>
+        <span slot="footer"
+              class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary"
+                     :disabled="isDisable"
+                     v-if="title !== '查看业务系统'"
+                     @click="save('form')">保存</el-button>
+        </span>
+      </div>
     </el-dialog>
-
   </div>
-
 </template>
 
 <script>
@@ -493,31 +490,48 @@ export default {
 <style scoped >
 @import url("./../../../assets/css/common.css");
 
-.data_res >>> .el-form-item {
-   margin-top: 25px !important;
-   display: flex;
- }
-.data_res >>> .el-form-item--medium .el-form-item__label {
-  text-align: right;
-  float: left !important;
-}
-.data_res >>> .el-form-item__content {
-  flex: 1;
-  margin-left: 0 !important;
-  float: left;
-}
-.data_res >>> .el-textarea .el-textarea__inner {
-  resize: none;
-}
-
-
-/*  .detail-form >>> .el-textarea .el-textarea__inner{*/
-/*    border: 1px solid #343942!important;*/
-/*  }*/
-
-/*.detail-form >>> .el-form-item__content {*/
-/*  margin-left: 10px !important;*/
-
+/*.data_res >>> .el-form-item {*/
+/*   margin-top: 25px !important;*/
+/*   display: flex;*/
+/* }*/
+/*.data_res >>> .el-form-item--medium .el-form-item__label {*/
+/*  text-align: right;*/
+/*  float: left !important;*/
 /*}*/
+/*.data_res >>> .el-form-item__content {*/
+/*  flex: 1;*/
+/*  margin-left: 0 !important;*/
+/*  ;*/
+/*}*/
+/*.data_res >>> .el-textarea .el-textarea__inner {*/
+/*  resize: none;*/
+/*}*/
+.dialog >>> .el-dialog__body{
+  padding: 5px 0 20px 20px !important;
+}
 
+.add-dialog {
+  height: 70vh !important;
+  overflow-y: auto;
+}
+
+
+.detail-form {
+  padding: 5px 0 20px 20px !important;
+}
+
+  .detail-form >>> .el-textarea .el-textarea__inner{
+    border: 1px solid #343942!important;
+    resize: none;
+    border-radius: 1px;
+  }
+
+.detail-form >>> .el-form-item__content {
+  margin-left: 10px !important;
+}
+
+.dialog-footer{
+  float: right;
+  padding-right: 20px;
+}
 </style>
