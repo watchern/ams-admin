@@ -2,8 +2,8 @@
   <div class="preview_conter padding10_l">
     <!-- 查询 -->
     <div class="header_search">
-      <!-- <p>查询条件：</p>
-         <div class="input_blue"
+      <p>查询条件：</p>
+      <div class="input_blue"
            @click="onclick()">
         <div v-for="(item, index) in TagsAll"
              :key="index"
@@ -21,24 +21,22 @@
                ref="inputTag"
                type="text" />
       </div>
-      <el-button size="mini"
+      <!-- <el-button size="mini"
                  type="primary"
                  @click="search()">查询</el-button>
       <el-button size="mini"
                  type="info"
                  @click="clear_search()">重置</el-button> -->
 
-      <query-tags :dropDownData="dropDownData"
+      <!-- <query-tags :dropDownData="dropDownData"
                   ref="tags"
-                  @change="onChange"></query-tags>
+                  @change="onChange"></query-tags> -->
       <div class="padding10 flex">
 
         <el-button size="mini"
-                   type="primary"
-                   @click="search()">查询</el-button>
-        <!-- <el-button size="mini"
-                   type="info"
-                   @click="clear_search()">重置</el-button> -->
+                   type="primary">查询</el-button>
+        <el-button size="mini"
+                   type="info">重置</el-button>
       </div>
 
     </div>
@@ -287,7 +285,7 @@ export default {
       form: {
         title: '',
       },
-      // search_name: '',
+      search_name: '',
       TagsAll: [],
       inputLength: '',
       // common_dialog: false,//导入数据源
@@ -322,7 +320,8 @@ export default {
           name: '字段',
           vallist: []
         },
-      ]
+      ],
+      serachParams: [],
     };
   },
   created () {
@@ -353,14 +352,14 @@ export default {
   },
   methods: {
 
-    onChange (data) {
-      this.TagsAll = data
+    onChange (serachParams) {
+      this.serachParams = serachParams
+      // console.log(this.serachParams);
       // console.log(this.TagsAll);
     },
     // 查询
     search () {
-      // console.log(this.TagsAll);
-
+      // console.log(this.serachParams);
       // this.$emit("search", this.search_name);
 
     },
@@ -370,12 +369,12 @@ export default {
       this.TagsAll.splice(index, 1)
     },
     //生成标签
-    // addTags () {
-    //   if (this.search_name) {
-    //     this.TagsAll.push(this.search_name);
-    //     this.search_name = '';
-    //   }
-    // },
+    addTags () {
+      if (this.search_name) {
+        this.TagsAll.push(this.search_name);
+        this.search_name = '';
+      }
+    },
 
     //键盘删除键删除tag
     deleteTags () {

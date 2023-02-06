@@ -129,16 +129,19 @@
     <el-dialog
       title="个人空间申请"
       :visible.sync="openInsertDialog"
-      width="60%"
+
     >
       <el-form
         :model="personalSpace"
         class="demo-ruleForm"
         label-width="80px"
         :rules="rules"
+        width="60%"
+        ref="form"
       >
+
         <el-form-item label="申请名称" class="item-b" prop="personalSpaceName">
-          <el-input
+          <el-input class="item-b-input"
             v-model="personalSpace.personalSpaceName"
             placeholder="申请名称"
           ></el-input>
@@ -150,13 +153,13 @@
         >
           <div style="display: flex">
             <el-input
-              v-model="personalSpace.personalSpaceCapacity"
-              placeholder="扩容容量"
-              type="number"
-              :max="1024"
-              :min="0"
-              @input="inputChange"
-              style="width: 80%"
+                    v-model="personalSpace.personalSpaceCapacity"
+                    placeholder="扩容容量"
+                    type="number"
+                    :max="1024"
+                    :min="0"
+                    @input="inputChange"
+                    style="width: 80%"
             ></el-input>
             <el-select
               v-model="personalSpaceCapacityNeed"
@@ -331,10 +334,10 @@ export default {
       },
       rules: {
         personalSpaceName: [
-          { required: true, message: "请输入", trigger: "blur" },
+          { required: true, message: "申请名称不能为空", trigger: "blur" },
         ],
         personalSpaceCapacity: [
-          { required: true, message: "请输入", trigger: "blur" },
+          { required: true, message: "扩容容量不能为空", trigger: "blur" },
         ],
       },
       personalSpaceDataList: [], //查询并展示的数据集合
@@ -386,6 +389,14 @@ export default {
       todoFlow: false, //流程查看的弹窗控制
       applyPage: "applyPage", //有这个标识 查询流程的时候会走相对应的方法
     };
+  },
+  watch:{
+    openInsertDialog(val){
+      if(!val){
+        this.$refs['form'].resetFields();
+      }
+    }
+
   },
   mounted() {
     this.initPersonalSpaceData();
@@ -677,5 +688,6 @@ export default {
     vertical-align: middle;
     float: left !important;
   }
+
 }
 </style>
