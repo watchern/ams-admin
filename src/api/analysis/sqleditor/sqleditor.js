@@ -1151,6 +1151,18 @@ export function refushTableTree(treeNodes, dataSource) {
 }
 
 /**
+ * 执行create语句后刷新左侧树
+ */
+export function refushTableTree2(treeNodes, dataSource) {
+  for (var i = 0; i < treeNodes.length; i++) {
+    // 添加sql编辑器智能提示
+    CodeMirror.tableColMapping[treeNodes[i].name] = []
+    // 重新加载表与列的关系
+    editorObj.options.hintOptions.tables[treeNodes[i].name] = []
+  }
+}
+
+/**
  * 删除表或试图后删除左侧树
  * @param dropTableArr 删除的表
  */

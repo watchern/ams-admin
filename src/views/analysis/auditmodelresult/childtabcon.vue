@@ -3110,6 +3110,15 @@ export default {
      * 显示模型结果详细提取公共代码
      * */
     getIntoModelResultDetail(nextValue) {
+      if(nextValue.result===undefined){
+        //执行CREATE、INSERT、DELETE等操作返回没有结果
+        this.isSee = false;
+        this.showDeleteErrorMessage = true;
+        this.modelResultPageIsSee = false;
+        this.modelResultButtonIsShow = false;
+        this.errorMessage = nextValue.executeSQL.msg;
+        return false
+      }
       if(this.useType == "sqlEditor" && nextValue.executeSQL.state == 2 && nextValue.result.length > 0 ){
       // 纯前端分页处理开始
       var pageResultData = nextValue.result;

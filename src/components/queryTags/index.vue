@@ -28,7 +28,7 @@
            :key="index"
            class="dropDownItem"
            @click="addTags(item)">
-        <div class="dropDownTitel">{{ item }}</div>
+        <div class="dropDownTitel">{{ item.name }}:</div>
         {{ currentval }}
       </div>
     </div>
@@ -62,6 +62,7 @@ export default {
       TagsAll: [],
       dropDown: [],
       inputLength: "",
+      serachParams: {}
     };
   },
   watch: {
@@ -69,7 +70,7 @@ export default {
       this.$emit("change", this.TagsAll);
     },
     currentval (val) {
-      // console.log(val);
+      // 
       // 实时改变input输入框宽度，防止输入内容超出input默认宽度显示不全
       this.inputLength = this.$refs.inputTag.value.length * 12 + 50;
     },
@@ -94,7 +95,6 @@ export default {
   },
   methods: {
     removeTag (index, item) {
-      console.log(item);
       this.TagsAll.splice(index, 1);
     },
 
@@ -107,11 +107,16 @@ export default {
           val = val + ": ";
           obj = { label: val, value: this.currentval };
         } else {
-          val = this.dropDown[0] + ": ";
-          obj = { label: val, value: this.currentval };
+          obj = { label: val.name + ": ", value: this.currentval, code: val.code };
         }
         this.TagsAll.push(obj);
-        this.currentval = "";
+        for (let i = 0; i < this.dropDown.length; i++) {
+          if (this.dropDown[i].code == obj.code) {
+            this.dropDown[i].vallist.push(obj.value);
+            this.serachParams[this.dropDown[i].code] = this.dropDown[i].vallist.join(',')
+          }
+        }
+        this.currentval = "";//清空输入的值
       }
     },
     //键盘删除键删除tag
