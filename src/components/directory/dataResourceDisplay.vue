@@ -2,8 +2,8 @@
   <div class="preview_conter padding10_l">
     <!-- 查询 -->
     <div class="header_search">
-      <p>查询条件：</p>
-      <div class="input_blue"
+      <!-- <p>查询条件：</p>
+         <div class="input_blue"
            @click="onclick()">
         <div v-for="(item, index) in TagsAll"
              :key="index"
@@ -21,22 +21,23 @@
                ref="inputTag"
                type="text" />
       </div>
-      <!-- <el-button size="mini"
+      <el-button size="mini"
                  type="primary"
                  @click="search()">查询</el-button>
       <el-button size="mini"
                  type="info"
                  @click="clear_search()">重置</el-button> -->
 
-      <!-- <query-tags :dropDownData="dropDownData"
-                  ref="tags"
-                  @change="onChange"></query-tags> -->
+      <query-tags ref="tags"
+                  @change="onChange"></query-tags>
       <div class="padding10 flex">
 
         <el-button size="mini"
-                   type="primary">查询</el-button>
-        <el-button size="mini"
-                   type="info">重置</el-button>
+                   type="primary"
+                   @click="search()">查询</el-button>
+        <!-- <el-button size="mini"
+                   type="info"
+                   @click="clear_search()">重置</el-button> -->
       </div>
 
     </div>
@@ -285,42 +286,42 @@ export default {
       form: {
         title: '',
       },
-      search_name: '',
+      // search_name: '',
       TagsAll: [],
       inputLength: '',
       // common_dialog: false,//导入数据源
       title: '',//弹窗共用标题
       check_list: [],//多选批量的数量
-      dropDownData: [
-        // "表名", "表中文名", "系统", "主题", "分层", "字段",
-        {
-          code: 'tableName',
-          name: '表名',
-          vallist: []
-        },
-        {
-          code: 'tableCnName',
-          name: '表中文名',
-          vallist: []
-        },
-        // {
-        //   code: 'businessName',
-        //   name: '系统'
-        // },
-        // {
-        //   code: 'themeName',
-        //   name: '主题'
-        // },
-        // {
-        //   code: 'layeredName',
-        //   name: '分层'
-        // },
-        {
-          code: 'columnName',
-          name: '字段',
-          vallist: []
-        },
-      ],
+      // dropDownData: [
+      //   // "表名", "表中文名", "系统", "主题", "分层", "字段",
+      //   {
+      //     code: 'tableName',
+      //     name: '表名',
+      //     value: []
+      //   },
+      //   {
+      //     code: 'tableCnName',
+      //     name: '表中文名',
+      //     value: []
+      //   },
+      //   // {
+      //   //   code: 'businessName',
+      //   //   name: '系统'
+      //   // },
+      //   // {
+      //   //   code: 'themeName',
+      //   //   name: '主题'
+      //   // },
+      //   // {
+      //   //   code: 'layeredName',
+      //   //   name: '分层'
+      //   // },
+      //   {
+      //     code: 'columnName',
+      //     name: '字段',
+      //     value: []
+      //   },
+      // ],
       serachParams: [],
     };
   },
@@ -354,12 +355,10 @@ export default {
 
     onChange (serachParams) {
       this.serachParams = serachParams
-      // console.log(this.serachParams);
-      // console.log(this.TagsAll);
     },
     // 查询
     search () {
-      // console.log(this.serachParams);
+      console.log(this.serachParams);
       // this.$emit("search", this.search_name);
 
     },
@@ -369,12 +368,12 @@ export default {
       this.TagsAll.splice(index, 1)
     },
     //生成标签
-    addTags () {
-      if (this.search_name) {
-        this.TagsAll.push(this.search_name);
-        this.search_name = '';
-      }
-    },
+    // addTags () {
+    //   if (this.search_name) {
+    //     this.TagsAll.push(this.search_name);
+    //     this.search_name = '';
+    //   }
+    // },
 
     //键盘删除键删除tag
     deleteTags () {
