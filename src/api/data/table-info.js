@@ -451,3 +451,13 @@ export function getLabelList(labelLibraryId, pageNo, pageSize, labelName) {
     method: 'get',
   })
 }
+
+// 查询
+export function searchByParams(serachParams) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/getTableInfoBySearchCondition`,
+    method: 'post',
+    data: serachParams,
+  })
+}

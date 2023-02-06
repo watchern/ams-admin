@@ -27,6 +27,7 @@
                              :list_data="list_data"
                              :list_loading="list_loading"
                              @edit_list="Edit_list"
+                             @search="search"
                              ref="Display"
                              v-if="show_details == false">
         </DataResourceDisplay>
@@ -569,6 +570,7 @@ import {
   getColsInfoByTableName, //获取列信息
   synDataStructure, //同步数据
   listSchemas, //获取模式名
+  searchByParams, // 查询
 } from "@/api/data/table-info";
 import QueryField from "@/components/public/query-field/index";
 import personTree from "@/components/publicpersontree/index";
@@ -896,6 +898,14 @@ export default {
     // this.query_list(data);
   },
   methods: {
+    // 查询
+    search(params) {
+      params.pageNo = 1;
+      params.pageSize = 10;
+      searchByParams(params).then(res => {
+        console.log(res);
+      });
+    },
     // 返回上一步
     Step () {
       this.show_details = false;

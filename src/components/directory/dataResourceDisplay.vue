@@ -358,9 +358,8 @@ export default {
     },
     // 查询
     search () {
-      console.log(this.serachParams);
-      // this.$emit("search", this.search_name);
-
+      console.log("搜索条件", this.serachParams);
+      this.$emit("search", this.serachParams);
     },
     // 删除标签
     removeTag (index, item) {
