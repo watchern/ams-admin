@@ -67,10 +67,10 @@ export default {
   },
   watch: {
     TagsAll () {
-      this.$emit("change", this.TagsAll);
+      this.$emit("change", this.serachParams);
     },
     currentval (val) {
-      // 
+      // console.log(val);
       // 实时改变input输入框宽度，防止输入内容超出input默认宽度显示不全
       this.inputLength = this.$refs.inputTag.value.length * 12 + 50;
     },
@@ -94,9 +94,6 @@ export default {
     this.dropDown = this.dropDownData;
   },
   methods: {
-    removeTag (index, item) {
-      this.TagsAll.splice(index, 1);
-    },
 
     //回车-- 增加tag
     addTags (val) {
@@ -107,6 +104,9 @@ export default {
           val = val + ": ";
           obj = { label: val, value: this.currentval };
         } else {
+          console.log(this.dropDown);//所有的类型
+          // console.log(val.code);//选择的类型
+          // console.log(this.currentval);// 输入的值
           obj = { label: val.name + ": ", value: this.currentval, code: val.code };
         }
         this.TagsAll.push(obj);
@@ -116,13 +116,21 @@ export default {
             this.serachParams[this.dropDown[i].code] = this.dropDown[i].vallist.join(',')
           }
         }
+        console.log(this.serachParams);
         this.currentval = "";//清空输入的值
       }
     },
+    removeTag (index, item) {
+      console.log(item);
+      this.TagsAll.splice(index, 1);
+      console.log(this.TagsAll);
+    },
+
     //键盘删除键删除tag
     deleteTags () {
       if (this.currentval === "") {
         this.TagsAll.pop();
+        console.log(this.TagsAll);
       }
     },
     onclick () {
