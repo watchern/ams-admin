@@ -913,8 +913,7 @@ export default {
         param: serachParams
       };
       listByTreePage(params).then(res => {
-        console.log(res);
-        this.update_tree();//更新左侧树
+
         this.list_loading = false; //子组件loading
         this.list_data = res.data;
         this.list = res.data.records;
@@ -984,8 +983,8 @@ export default {
           const filename = decodeURI(
             res.headers["content-disposition"].split(";")[1].split("=")[1]
           );
-          console.log(res.headers);
-          console.log(res.headers["content-disposition"]);
+
+
           const blob = new Blob([res.data], {
             type: "application/octet-stream",
           });
@@ -1060,7 +1059,7 @@ export default {
     },
     // 上传文件信息
     fileuploadname (data) {
-      console.log(data);
+
       // 文件名
       this.importtemp.tableFileName = data;
     },
@@ -1411,7 +1410,7 @@ export default {
       // this.registTableFlag = true;//关闭上一步
       this.dialogVisible_information = false; //关闭基本信息
       this.clear();
-      console.log(this.form.tbName);
+
     },
     // 清除注册资源第二步的数据
     clear () {
@@ -1513,9 +1512,9 @@ export default {
           this.Column_table = resp.data;
         } else {
 
-          // console.log(this.Column_table_query.tbName.toString());
+          // 
           this.form.tbName = this.Column_table_query.tbName.toString(); //表名赋值
-          console.log(this.form.tbName);
+
 
           this.Column_table = resp.data[0].colMetas
           this.form.rowNum = resp.data[0].rowNum//表数据量
