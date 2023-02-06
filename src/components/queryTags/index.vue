@@ -161,7 +161,7 @@ export default {
     removeTag (index, item) {
 
       this.TagsAll.splice(index, 1);
-      this.serachParams = []
+      this.serachParams = {}
       let arrs = []
 
       for (let a = 0; a < this.TagsAll.length; a++) {
@@ -180,7 +180,7 @@ export default {
     deleteTags () {
       if (this.currentval === "") {
         this.TagsAll.pop();
-        this.serachParams = []
+        this.serachParams = {}
         let arr = []
         for (let a = 0; a < this.dropDown.length; a++) {
           for (let b = 0; b < this.TagsAll.length; b++) {

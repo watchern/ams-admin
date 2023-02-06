@@ -52,7 +52,7 @@
 
       <el-table v-loading="listLoading"
                 :data="page_list.records"
-                height="400px"
+                height="calc(100vh - 321px)"
                 border
                 fit
                 highlight-current-row
@@ -106,15 +106,19 @@
 
     <!-- 新增编辑 -->
     <el-dialog :title="title"
-               class="data_res"
                :visible.sync="dialogVisible"
                @close="handleClose('form')"
-               width="40%">
+               class="data_res"
+
+    >
       <el-form :rules="rules"
                ref="form"
                label-width="130px"
                :model="form"
-               :inline="false">
+               :inline="false"
+               width="80%"
+      >
+<!--        class="detail-form"-->
 
         <el-form-item label="系统名称:"
                       prop="businessSystemName">
@@ -490,9 +494,9 @@ export default {
 @import url("./../../../assets/css/common.css");
 
 .data_res >>> .el-form-item {
-  margin-top: 25px !important;
-  display: flex;
-}
+   margin-top: 25px !important;
+   display: flex;
+ }
 .data_res >>> .el-form-item--medium .el-form-item__label {
   text-align: right;
   float: left !important;
@@ -505,4 +509,15 @@ export default {
 .data_res >>> .el-textarea .el-textarea__inner {
   resize: none;
 }
+
+
+/*  .detail-form >>> .el-textarea .el-textarea__inner{*/
+/*    border: 1px solid #343942!important;*/
+/*  }*/
+
+/*.detail-form >>> .el-form-item__content {*/
+/*  margin-left: 10px !important;*/
+
+/*}*/
+
 </style>

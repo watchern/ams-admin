@@ -62,7 +62,7 @@
         :data="personalSpaceDataList"
         border
         style="width: 100%"
-        height="calc(100vh - 310px)"
+        height="calc(100vh - 317px)"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55"> </el-table-column>
@@ -120,6 +120,7 @@
           :page-size="query.pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="dataTotal"
+          class="pagination"
         >
         </el-pagination>
       </el-row>
@@ -688,6 +689,8 @@ export default {
     vertical-align: middle;
     float: left !important;
   }
-
+}
+.pagination{
+  padding-left: 15px;
 }
 </style>
