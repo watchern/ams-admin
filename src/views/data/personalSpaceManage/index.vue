@@ -337,12 +337,17 @@ export default {
           this.query.pageSize = res.data.size
           this.dataTotal = res.data.total
           res.data.records.forEach((value, index) => {
-            var tempParam = value.tblType.substr(0, 1).toUpperCase()
-            if (tempParam == "T") {
-              value.tblType = '表'
-            }
-            if (tempParam == "V") {
-              value.tblType = '视图'
+            if(value.tblType != null){
+              var tempParam = value.tblType.substr(0, 1).toUpperCase()
+              var param = tempParam.toUpperCase()
+              if (param == "T") {
+                value.tblType = '表'
+              }
+              if (param == "V") {
+                value.tblType = '视图'
+              }
+            }else{
+              value.tblType = '---'
             }
           })
           this.tableMetaDataList = res.data.records
@@ -553,6 +558,10 @@ export default {
     },
     personalSpaceQueryByTreeNode (data, node) {
       if (node.level == 1) {
+        //然后直接把展示的dataList 赋值 data.children
+        this.initPersonalSpaceManageData()
+      }
+      if (node.level == 2) {
         //然后直接把展示的dataList 赋值 data.children
         var folderUuid = data.id
         var seneInstUuid = data.pid
