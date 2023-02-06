@@ -62,7 +62,7 @@
         :data="personalSpaceDataList"
         border
         style="width: 100%"
-        height="calc(100vh - 310px)"
+        height="calc(100vh - 294px)"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55"> </el-table-column>
