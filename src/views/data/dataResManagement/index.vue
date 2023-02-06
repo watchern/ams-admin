@@ -124,7 +124,7 @@
             <el-input type="text"
                       style="width: 95%"
                       v-model="form.businessSystemName"
-                      :disabled="title == '查看业务系统'"
+                      :readonly="title == '查看业务系统'"
                       :rows="3">
             </el-input>
           </el-form-item>
@@ -133,7 +133,7 @@
             <el-input
                       style="width: 95%"
                       type="textarea"
-                      :disabled="title == '查看业务系统'"
+                      :readonly="title == '查看业务系统'"
                       v-model="form.businessSystemCode"></el-input>
           </el-form-item>
           <el-form-item label="执行时间间隔:"
@@ -147,7 +147,7 @@
             <el-input
                       type="input"
                       style="width: 95%"
-                      :disabled="title == '查看业务系统'"
+                      :readonly="title == '查看业务系统'"
                       v-model.number="form.businessSystemEtldate"></el-input>
             <!-- </el-date-picker> -->
 
@@ -167,7 +167,7 @@
             <el-input type="textarea"
                       :rows="3"
                       style="width: 95%"
-                      :disabled="title == '查看业务系统'"
+                      :readonly="title == '查看业务系统'"
                       v-model="form.filePushPath">
             </el-input>
           </el-form-item>
@@ -177,7 +177,7 @@
             <el-input type="textarea"
                       :rows="3"
                       style="width: 95%"
-                      :disabled="title == '查看业务系统'"
+                      :readonly="title == '查看业务系统'"
                       v-model="form.dataBackupPath">
             </el-input>
           </el-form-item>
@@ -187,7 +187,7 @@
             <el-input type="textarea"
                       :rows="3"
                       style="width: 95%"
-                      :disabled="title == '查看业务系统'"
+                      :readonly="title == '查看业务系统'"
                       v-model="form.dataMoveDir">
             </el-input>
           </el-form-item>
@@ -197,7 +197,7 @@
               class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
           <el-button type="primary"
-                     :disabled="isDisable"
+                     :readonly="isDisable"
                      v-if="title !== '查看业务系统'"
                      @click="save('form')">保存</el-button>
         </span>
