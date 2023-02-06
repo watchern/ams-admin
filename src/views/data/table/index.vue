@@ -570,7 +570,6 @@ import {
   getColsInfoByTableName, //获取列信息
   synDataStructure, //同步数据
   listSchemas, //获取模式名
-  searchByParams, // 查询
 } from "@/api/data/table-info";
 import QueryField from "@/components/public/query-field/index";
 import personTree from "@/components/publicpersontree/index";
@@ -899,11 +898,27 @@ export default {
   },
   methods: {
     // 查询
-    search(params) {
-      params.pageNo = 1;
-      params.pageSize = 10;
-      searchByParams(params).then(res => {
+    search(serachParams) {
+      let data = this.$refs.tree_left.query;
+      this.dataSource = data.dataSource//新增关系树 和注册首页数据源绑定且不可修改
+      this.show_details = false; //显示列表
+      this.list_loading = true; //子组件loading
+      let params = {
+        businessSystemId: data.businessSystemId, //id主键
+        tableThemeId: data.tableThemeId, //主题
+        tableLayeredId: data.tableLayeredId, //分层
+        folderUuid: data.folderUuid, //目录
+        dataSource: data.dataSource, //数据源
+        pageNo: data.pageNo,
+        pageSize: data.pageSize,
+        tbName: data.tbName,
+        param: serachParams
+      };
+      listByTreePage(params).then(res => {
         console.log(res);
+        this.list_loading = false; //子组件loading
+        this.list_data = res.data;
+        this.list = res.data.records;
       });
     },
     // 返回上一步
