@@ -102,7 +102,8 @@
                                  min-width="100px"
                                  prop="viewProcess">
                     <template slot-scope="scope">
-                        <el-link type="primary"
+                        <el-link v-if="scope.row.status == '办理中' || scope.row.status == '办理完成'"
+                                type="primary"
                                  :underline="false"
                                  @click="todoOpinionList(scope.row)">流程跟踪
                         </el-link>

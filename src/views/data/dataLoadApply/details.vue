@@ -53,7 +53,7 @@
             </el-row>
             <el-table v-if="form.operationType === '0'"
                       :data="tableData"
-                      height="250"
+                      height="316px"
                       border
                       style="width: 100%">
                 <el-table-column
@@ -102,7 +102,7 @@
                 </el-table-column>
 
             </el-table>
-            <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
+            <el-row v-if="form.operationType === '1'">
                 <el-col :span="24">
                     <el-table key="colMetaUuid"
                               border
