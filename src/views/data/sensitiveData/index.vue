@@ -134,6 +134,7 @@
       :close-on-click-modal="false"
       :modal-append-to-body="false"
       width="40%"
+      class="dialog-add"
       :close-on-press-escape="false"
     >
       <Add
@@ -141,6 +142,7 @@
         :sensitiveObj="sensitiveObj"
         @ok="addSucceed"
         v-if="showAddDialog"
+        class="detail-form"
       ></Add>
     </el-dialog>
   </div>
@@ -345,4 +347,27 @@ export default {
 .page-content{
   padding-left: 15px;
 }
+
+/*修改文本框样式*/
+.detail-form ::v-deep .el-textarea .el-textarea__inner{
+  border: 1px solid #343942!important;
+  border-radius: 1px;
+}
+.detail-form ::v-deep .el-textarea .el-textarea__inner{
+  border: 1px solid #343942!important;
+  border-radius: 1px;
+}
+
+/*.detail-form ::v-deep .footBtn{*/
+/*  float: right;*/
+/*}*/
+/*  !*按钮边框黑色*!*/
+/*  .detail-form ::v-deep .el-radio__inner {*/
+/*    border: 1px solid #343942;*/
+/*  }*/
+/*!*选中后按钮边框蓝色*!*/
+/*.detail-form ::v-deep .el-radio__inner.is-checked  {*/
+/*  border: 1px solid #1890ff;*/
+/*}*/
+
 </style>
