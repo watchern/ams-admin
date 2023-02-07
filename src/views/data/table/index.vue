@@ -1288,11 +1288,12 @@ export default {
     // 点击切换树 切换 表单
     // 查看详情
     Details (tableMetaUuid, show_details, isDisable_input) {
+      console.log("1111111111111");
       this.tableMetaUuid = tableMetaUuid
       this.show_details = show_details;
       this.isDisable_input = isDisable_input;
       this.$nextTick(() => {
-        this.$refs.Details_ref.$refs.tableLines.init(1)//刷新列表 更新关系树
+        // this.$refs.Details_ref.$refs.tableLines.init(1)//刷新列表 更新关系树
         this.$refs.Details_ref.post_sql_data()//更新查看sql
         this.$refs.Details_ref.table_list(this.tableMetaUuid)//更新列信息
       })

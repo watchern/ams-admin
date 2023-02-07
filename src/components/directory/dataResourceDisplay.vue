@@ -184,7 +184,6 @@
                       <span class="_title"
                             v-if="scope.row.tableRelationQuery.businessSystemName">{{ scope.row.tableRelationQuery.businessSystemName }}</span>
                     </div>
-
                   </div>
 
                   <div class="new_right">
@@ -194,9 +193,8 @@
                                  v-if="scope.row.relations.length !== 0">
                           <p v-for="(its, index_relations) in scope.row.relations"
                              :key="index_relations">
-                            {{ its.relationTableName }}</p>
+                            {{ its.relationTableName == scope.row.tbName ? its.tbName : its.relationTableName }}</p>
                         </el-card>
-
                       </div>
                       <div class="two tt">使用此表模型数：<span>{{ scope.row.models.length }}</span>
                         <el-card class="show_tips"
@@ -215,7 +213,6 @@
                        v-if="scope.row.colMeta">字段：{{ scope.row.colMeta }}</p>
                     <p class="text"
                        v-else>字段：暂无</p>
-
                     <div class="data_list">
                       <!-- {{scope.row.tableRelationQuery}} -->
                       <span class="data_time"
