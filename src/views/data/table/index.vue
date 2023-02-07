@@ -568,6 +568,9 @@ import {
   getColsInfoByTableName, //获取列信息
   synDataStructure, //同步数据
   listSchemas, //获取模式名
+  downTemplateDictionary, // 下载资源目录模版
+  downTemplateCN, // 下载汉化信息模版
+  downTemplateTable, // 下载表关系模版
 } from "@/api/data/table-info";
 import QueryField from "@/components/public/query-field/index";
 import personTree from "@/components/publicpersontree/index";
@@ -972,19 +975,10 @@ export default {
     DownTemplateDictionary () {
       // 导出表信息作为模板
       // this.$message({ type: 'info', message: '无选择表,失败!' })
-      axios
-        .post(`/data/tableMeta/exportTableFile`, qs.stringify({}), {
-          responseType: "blob",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式
-          },
-        })
-        .then((res) => {
+      downTemplateDictionary().then((res) => {
           const filename = decodeURI(
             res.headers["content-disposition"].split(";")[1].split("=")[1]
           );
-
-
           const blob = new Blob([res.data], {
             type: "application/octet-stream",
           });
@@ -997,65 +991,45 @@ export default {
           link.click();
         });
     },
-
     // 汉化模版下载
     DownTemplateCN (data) {
       // 导出表信息作为模板
       // this.$message({ type: 'info', message: '无选择表,失败!' })
-      axios
-        .post(
-          `/data/tableMeta/exportFile`,
-          qs.stringify({ tableMetasJson: JSON.stringify(data) }),
-          {
-            responseType: "blob",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式
-            },
-          }
-        )
-        .then((res) => {
-          const filename = decodeURI(
-            res.headers["content-disposition"].split(";")[1].split("=")[1]
-          );
-          const blob = new Blob([res.data], {
-            type: "application/octet-stream",
-          });
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.style.display = "none";
-          link.href = url;
-          link.setAttribute("download", filename);
-          document.body.appendChild(link);
-          link.click();
+      downTemplateCN(qs.stringify({ tableMetasJson: JSON.stringify(data) })).then((res) => {
+        const filename = decodeURI(
+          res.headers["content-disposition"].split(";")[1].split("=")[1]
+        );
+        const blob = new Blob([res.data], {
+          type: "application/octet-stream",
         });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.style.display = "none";
+        link.href = url;
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+      });
     },
-
     // 表关系下载
     DownTemplateTable () {
       // 导出表信息作为模板
       // this.$message({ type: 'info', message: '无选择表,失败!' })
-      axios
-        .post(`/data/tableRelation/exportFile`, qs.stringify({}), {
-          responseType: "blob",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式
-          },
-        })
-        .then((res) => {
-          const filename = decodeURI(
-            res.headers["content-disposition"].split(";")[1].split("=")[1]
-          );
-          const blob = new Blob([res.data], {
-            type: "application/octet-stream",
-          });
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.style.display = "none";
-          link.href = url;
-          link.setAttribute("download", filename);
-          document.body.appendChild(link);
-          link.click();
+      downTemplateTable().then((res) => {
+        const filename = decodeURI(
+          res.headers["content-disposition"].split(";")[1].split("=")[1]
+        );
+        const blob = new Blob([res.data], {
+          type: "application/octet-stream",
         });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.style.display = "none";
+        link.href = url;
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+      });
     },
     // 上传文件信息
     fileuploadname (data) {
