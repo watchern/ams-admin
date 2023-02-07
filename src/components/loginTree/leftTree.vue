@@ -692,12 +692,16 @@ export default {
           this.query.tbName = "";
           this.$emit("queryList", this.query, this.show_details);
         } else if (data.type == "table") {
-          this.query.businessSystemId = "0";
-          this.query.tableThemeId = "0";
-          this.query.tableLayeredId = "0";
-          this.query.folderUuid = ""; //目录id
-          this.query.tbName = node.data.label;
-          this.$emit("queryList", this.query, this.show_details);
+          // this.query.businessSystemId = "0";
+          // this.query.tableThemeId = "0";
+          // this.query.tableLayeredId = "0";
+          // this.query.folderUuid = ""; //目录id
+          // this.query.tbName = node.data.label;
+          // this.$emit("queryList", this.query, this.show_details);
+          this.tableMetaUuid = node.data.id;
+          this.show_details = true;
+          this.isDisable_input = true;
+          this.$emit("details", this.tableMetaUuid, this.show_details, this.isDisable_input);
         }
       } else {
         // 进入详情
