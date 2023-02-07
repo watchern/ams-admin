@@ -353,6 +353,7 @@ export default {
           this.tableMetaDataList = res.data.records
           this.clearParams()
         })
+      //获取当前人个人空间使用情况
       getCurrentUserPersonSpace()
         .then((res) => {
           this.personUsedSpace = res.data.personUsedSpace
@@ -361,10 +362,12 @@ export default {
           var length2 = this.personHoldedSpace.length
           var value1 = this.personUsedSpace.substr(0, length1 - 2)
           var value2 = this.personHoldedSpace.substr(0, length2 - 2)
+          //采用向上取整的形式 保证就算百分之百的情况下 也有部分空间剩余  保证有足够使用空间
           var usedPercent = Math.ceil(((value1 / value2) * 100))
           this.spaceUsedPercent = usedPercent + '%'
         })
     },
+    //复选框改变触发事件
     handleSelectionChange (value) {
       this.tableMetaIdList = []
       this.tableMetaSelectionList = []
@@ -558,8 +561,13 @@ export default {
     },
     personalSpaceQueryByTreeNode (data, node) {
       if (node.level == 1) {
-        //然后直接把展示的dataList 赋值 data.children
-        this.initPersonalSpaceManageData()
+        if(data.label == '个人空间'){
+          this.initPersonalSpaceManageData()
+        }
+        if(data.label == '全行空间'){
+          this.tableMetaDetail.folderUuid = data.id
+          this.initPersonalSpaceManageData()
+        }
       }
       if (node.level == 2) {
         //然后直接把展示的dataList 赋值 data.children
