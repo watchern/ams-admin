@@ -942,7 +942,7 @@ export async function getTableField(node,dataSource,treeType,strLevel){
           editorObj.options.hintOptions.tablesTitle[result.data[i].colName] = result.data[i].chnName
         }
       }
-      if (columns.length > 0) {
+      if (columns.length > 0 && treeType ==='1') {
         CodeMirror.tableColMapping[tableName] = columns
         editorObj.options.hintOptions.tables[tableName] = columns
         // zTreeObj.addNodes(treeNode, nodeList)

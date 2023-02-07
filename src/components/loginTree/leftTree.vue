@@ -309,14 +309,14 @@ export default {
       if (node.level === 0) {
         return resolve(node.data);
       } else if (node.level >= 1) {
-        //只有SQL编辑器的表才需要展示字段
-        if (node.data.type === "table" && this.loadLeftTreeType === "1") {
+        //SQL编辑器、数据注册的表才需要展示字段
+        if (node.data.type === "table" && (this.loadLeftTreeType === "1" || this.loadLeftTreeType==="")) {
           var strLevel = this.activeName + this.query.dataSource;
           var nodeList = getTableField(node, this.query.dataSource, this.loadLeftTreeType, strLevel);
           Promise.all([nodeList]).then((res) => {
             resolve(res[0]);
           });
-        } else if (node.data.type === "table" && this.loadLeftTreeType != "1") {
+        } else if (node.data.type === "table" && (this.loadLeftTreeType != "1" || this.loadLeftTreeType != "")) {
           //去掉表加载字段
           resolve([]);
         } else {
