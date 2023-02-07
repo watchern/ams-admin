@@ -931,10 +931,13 @@ export default {
     },
     // 更新左侧树
     update_tree () {
+
       if (this.$refs.tree_left.activeName == '0') {
         this.$refs.tree_left.post_getBusinessSystemTree() //系统
       } else if (this.$refs.tree_left.activeName == '1') {
-        this.$refs.tree_left.post_getThemeTree(); //分层
+        this.$refs.tree_left.post_getThemeTree(); //主题
+      } else if (this.$refs.tree_left.activeName == '2') {
+        this.$refs.tree_left.post_getLayeredTree(); //分层
       } else {
         this.$refs.tree_left.post_getDataTreeNode(); //目录
       }
@@ -1391,7 +1394,8 @@ export default {
     registTable () {
       this.registTableFlag = true;
       this.schemaName = ''
-      this.filterText1 = ''
+      this.filterText1 = null
+
       this.getSchemas();
       this.getTables();
 
