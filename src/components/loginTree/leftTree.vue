@@ -597,7 +597,7 @@ export default {
               }
             }
           }
-          if (node.id != null && node.type != "noNeedCheck") {
+          if (node.id != null && node.type != "noNeedCheck" && node.type === "table") {
             // this.$refs.tree2.setChecked(node.id, true);
             checkedKeys.push(node.id);
           }

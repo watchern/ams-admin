@@ -957,16 +957,18 @@ export async function getTableField(node,dataSource,treeType,strLevel){
  * 智能提示
  */
 export function initSQLEditorTips(treeList){ 
-  treeList.forEach(function(item,index){
-    if(item.type!= "table" && item.children.length>0){
-      screenChildrenTree(item.children)
-    }else{
-      if(item.type === "table"){
-        CodeMirror.tableColMapping[item.label] = []
-        editorObj.options.hintOptions.tables[item.label] = []
+  if(treeList!=null){
+    treeList.forEach(function(item,index){
+      if(item.type!= "table" && item.children.length>0){
+        screenChildrenTree(item.children)
+      }else{
+        if(item.type === "table"){
+          CodeMirror.tableColMapping[item.label] = []
+          editorObj.options.hintOptions.tables[item.label] = []
+        }
       }
-    }
-  })
+    })
+  }
 }
   
 //递归筛选children数据
