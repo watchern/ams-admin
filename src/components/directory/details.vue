@@ -937,7 +937,7 @@ export default {
   methods: {
     // 返回上一步
     step () {
-      this.$emit("step",)
+      this.$emit("step");
     },
     handleScrollTop () {
       this.$nextTick(() => {
