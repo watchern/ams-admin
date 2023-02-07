@@ -147,6 +147,7 @@ import {
   showRMenu, //节点右键事件
   getTableField, //加载表字段
   addDragEvent, //树节点拖拽方法
+  initSQLEditorTips,// 初始化SQL编辑器智能提示问题
 } from "@/api/analysis/sqleditor/sqleditor";
 import { init } from "leancloud-storage";
 export default {
@@ -292,7 +293,7 @@ export default {
       // 只有表和字段能拖拽
       if (
         draggingNode.data.type === "table" ||
-        draggingNode.data.type === "table"
+        draggingNode.data.type === "column"
       ) {
         var dragNodeName = draggingNode.data.label;
         addDragEvent(dragNodeName);
@@ -310,7 +311,7 @@ export default {
         //只有SQL编辑器的表才需要展示字段
         if (node.data.type === "table" && this.loadLeftTreeType === "1") {
           var strLevel = this.activeName + this.query.dataSource;
-          var nodeList = getTableField(node.data.id, this.query.dataSource, this.loadLeftTreeType, strLevel);
+          var nodeList = getTableField(node, this.query.dataSource, this.loadLeftTreeType, strLevel);
           Promise.all([nodeList]).then((res) => {
             resolve(res[0]);
           });
@@ -410,6 +411,10 @@ export default {
       getBusinessSystemTree(true, this.query.dataSource, true, this.loadLeftTreeType).then((resp) => {
         if (this.activeName === '0') {
           this.tree_list = resp.data;
+          if(this.loadLeftTreeType==='1'){
+            //如果SQL编辑器需要加载智能提示
+            initSQLEditorTips(this.tree_list)
+          }
           this.tree_list.forEach(item => {
             //SQL编辑器中，如果是表 需要展示字段不能去掉
             if (item.type != 'table' && item.children.length == 0) {
@@ -431,6 +436,10 @@ export default {
       this.tabclick = true;
       getThemeTree(true, this.query.dataSource, true, this.loadLeftTreeType).then((resp) => {
         this.tree_list = resp.data;
+        if(this.loadLeftTreeType==='1'){
+          //如果SQL编辑器需要加载智能提示
+          initSQLEditorTips(this.tree_list)
+        }
         this.tree_list.forEach(item => {
           //SQL编辑器中，如果是表 需要展示字段不能去掉
           if (item.type != 'table' && item.children.length == 0) {
@@ -451,6 +460,10 @@ export default {
       this.tabclick = true;
       getLayeredTree(true, this.query.dataSource, true, this.loadLeftTreeType).then((resp) => {
         this.tree_list = resp.data;
+        if(this.loadLeftTreeType==='1'){
+          //如果SQL编辑器需要加载智能提示
+          initSQLEditorTips(this.tree_list)
+        }
         this.tree_list.forEach(item => {
           //SQL编辑器中，如果是表 需要展示字段不能去掉
           if (item.type != 'table' && item.children.length == 0) {
@@ -472,6 +485,10 @@ export default {
       getPersonSpaceTree("", "", this.query.dataSource, this.loadLeftTreeType).then((resp) => {
         if (this.activeName === '3') {
           this.tree_list = resp.data;
+          if(this.loadLeftTreeType==='1'){
+            //如果SQL编辑器需要加载智能提示
+            initSQLEditorTips(this.tree_list)
+          }
           this.tree_list.forEach(item => {
             //SQL编辑器中，如果是表 需要展示字段不能去掉
             if (item.type != 'table' && item.children.length == 0) {

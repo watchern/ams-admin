@@ -883,10 +883,12 @@ export function initTableTree(result,dataSource) {
 /**
  * 获取表字段
  */
-export async function getTableField(tableMetaUuid,dataSource,treeType,strLevel){
+export async function getTableField(node,dataSource,treeType,strLevel){
   // 处理拿回来的数据 处理成列表
   const columns = []
   var nodeList = []
+  var tableName = node.data.label
+  var tableMetaUuid = node.data.id
   await request({
     baseURL: dataUrl,
     url: '/tableMeta/getCols',
@@ -952,6 +954,36 @@ export async function getTableField(tableMetaUuid,dataSource,treeType,strLevel){
 }
 
 /**
+ * 智能提示
+ */
+export function initSQLEditorTips(treeList){ 
+  treeList.forEach(function(item,index){
+    if(item.type!= "table" && item.children.length>0){
+      screenChildrenTree(item.children)
+    }else{
+      if(item.type === "table"){
+        CodeMirror.tableColMapping[item.label] = []
+        editorObj.options.hintOptions.tables[item.label] = []
+      }
+    }
+  })
+}
+  
+//递归筛选children数据
+function screenChildrenTree(datas){
+  datas.forEach(function(item,index){
+    if(item.type!= "table" && item.children.length>0){
+      screenChildrenTree(item.children)
+    }else{
+      if(item.type === "table"){
+        CodeMirror.tableColMapping[item.label] = []
+        editorObj.options.hintOptions.tables[item.label] = []
+      }
+    }
+  })
+}
+
+/**
  * 数据表树节点拖拽方法
  */
 export function addDragEvent(dragNodeName){
@@ -959,9 +991,9 @@ export function addDragEvent(dragNodeName){
   var height = $('#sqlEditorDiv').height()+150
   var offLeft = $('.leftCon').width()
   var offTop = $('.table-view-caption').height()
-  if ((mouseX < (offLeft + 30) || (mouseX > (offLeft + width)) || (mouseY < offTop) || (mouseY > height))) {
+  /* if ((mouseX < (offLeft + 30) || (mouseX > (offLeft + width)) || (mouseY < offTop) || (mouseY > height))) {
     return
-  }
+  } */
   var cursor = editorObj.getCursor()
   dragOne(dragNodeName + " ", cursor, cursor)
 }
@@ -1943,9 +1975,9 @@ function funOnDrop(event, treeId, treeNodes) {
   var height = $('#sqlEditorDiv').height()
   var offLeft = $('.leftCon').width()
   var offTop = $('.table-view-caption').height()
-  if ((mouseX < (offLeft + 30) || (mouseX > (offLeft + width)) || (mouseY < offTop) || (mouseY > height))) {
+  /* if ((mouseX < (offLeft + 30) || (mouseX > (offLeft + width)) || (mouseY < offTop) || (mouseY > height))) {
     return
-  }
+  } */
   var cursor = editorObj.getCursor()
   var funContent = treeNodes[0].content || treeNodes[0].name
   dragOne(funContent, cursor, cursor)
