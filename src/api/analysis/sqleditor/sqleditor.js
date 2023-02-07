@@ -1201,8 +1201,9 @@ export function refushTableTree2(treeNodes, dataSource) {
 export function dropTable(dropTableArr) {
   if (dropTableArr != undefined && dropTableArr.length > 0) {
     for (var k = 0; k < dropTableArr.length; k++) {
-      var dropedNode = zTreeObj.getNodesByParam('name', dropTableArr[k], null)[0]
-      zTreeObj.removeNode(dropedNode)
+      //旧数据树已经废弃
+      /* var dropedNode = zTreeObj.getNodesByParam('name', dropTableArr[k], null)[0]
+      zTreeObj.removeNode(dropedNode) */
       // 删除智能提示
       delete CodeMirror.tableColMapping[dropTableArr[k]]
       // 清除表与列的关系
@@ -2628,10 +2629,12 @@ export function getSaveInfo() {
  */
 export function getSelectSql(menuId,dataSource,strLevel) {
   hideRMenu(menuId)
-  var nodes = zTreeObj.getSelectedNodes()
+  //使用新的树对象 旧树已经废弃
+  /* var nodes = zTreeObj.getSelectedNodes()
   if(nodes.length==0){
     nodes = sqlEditorLeftTreeObj
-  }
+  } */
+  var nodes = sqlEditorLeftTreeObj
   if (nodes.length > 0) {
     var tableName = nodes[0].enName
     if(tableName==undefined){
