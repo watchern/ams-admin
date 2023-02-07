@@ -652,6 +652,7 @@ import {
   selectIndexInfo, //查询索引信息
   getTableZipperList, //查询数据字典
   cong_table_list_data, //从表字段
+  moveFolder4Authority, //授权资源目录同步
 } from "@/api/data/table-info";
 import {
   getListTree, //注册资源下一步
@@ -1119,6 +1120,8 @@ export default {
               this.$emit("query_data"); //刷新页面
               this.table_list(this.tableMetaUuid);
               // this.$emit("update_list");
+              //资源目录修改同步修改授权资源目录
+              moveFolder4Authority(this.tableMetaUuid,this.dataSource).then(resp => {});
             } else {
               this.$message({
                 type: "error",

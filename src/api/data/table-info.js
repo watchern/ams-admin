@@ -491,3 +491,12 @@ export function downTemplateTable() {
     method: 'post',
   })
 }
+
+export function moveFolder4Authority(tableMetaUuid, tableDataSource) {
+  return request({
+    baseURL: baseURL,
+    url: `/roleTable/moveFolder4Authority`,
+    params: {tableMetaUuid: tableMetaUuid, tableDataSource: tableDataSource},
+    method: 'get',
+  })
+}
