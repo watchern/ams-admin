@@ -1127,8 +1127,6 @@ export default {
             }
           });
         } else {
-
-
           this.$message({
             message: "请填写信息",
             type: "info",

@@ -109,7 +109,8 @@
                          @click.stop="() => handleCreateFolder(node, data)">
                 <i class="el-icon-circle-plus" />
               </el-button>
-              <el-button v-if="data.extMap && data.extMap.folder_type === 'maintained'"
+              <el-button v-if="(data.extMap && data.extMap.folder_type === 'maintained') ||
+                         data.type === 'table' || data.type === 'view'"
                          type="text"
                          size="mini"
                          v-show="isShowLoadLeftTreeBtn"
@@ -794,19 +795,11 @@ export default {
       this.folderFormVisible = true;
     },
     handleUpdateFolder (node, data) {
-      this.resetFolderForm();
-      this.tempData = data;
-      this.dialogStatus = "update";
-      this.folderForm.folderUuid = data.id;
-      this.folderForm.folderName = data.label;
-      // 修改为使用后台拼接，原因path.label取得是修改之前的label
-      // let fullPath = [];
-      // 拼接全路径（从ROOT节点开始一直到自己）
-      // this.$refs.tree2.getNodePath(data).forEach((path) => {
-      //   fullPath.push(path.label);
-      // });
-      // this.folderForm.fullPath = fullPath.join("/");
-      this.folderFormVisible = true;
+      let check_list = [];
+      check_list.push({
+        tableMetaUuid: data.id
+      });
+      this.$emit("edit_list", check_list);
     },
     handleRemove (node, data) {
       this.$confirm("是否删除？", "提示", {
