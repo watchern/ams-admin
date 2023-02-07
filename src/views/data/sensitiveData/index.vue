@@ -78,6 +78,7 @@
         <el-table-column
           prop="isAtartUp"
           label="是否启动"
+          align="center"
           show-overflow-tooltip
           width="150px"
         >
@@ -90,17 +91,20 @@
           prop="secretLevelName"
           label="数据密级"
           width="150px"
+          align="center"
           show-overflow-tooltip
         ></el-table-column>
         <el-table-column
           prop="recognitionRulesName"
           label="试别规则"
           width="150px"
+          align="center"
           show-overflow-tooltip
         ></el-table-column>
         <el-table-column
           prop="createTime"
           label="创建时间"
+          align="center"
           show-overflow-tooltip
           width="200px"
         >
@@ -112,6 +116,7 @@
         <el-table-column
           prop="createUserName"
           label="创建人"
+          align="center"
           show-overflow-tooltip
           width="200px"
         ></el-table-column>
