@@ -1390,8 +1390,11 @@ export default {
     // 注册资源
     registTable () {
       this.registTableFlag = true;
+      this.schemaName = ''
+      this.filterText1 = ''
       this.getSchemas();
       this.getTables();
+
     },
     // 选择注册表 筛选
     filterNode (value, data) {
