@@ -266,7 +266,7 @@ export default {
   background-color: transparent;
   padding: 0;
   width: auto;
-  min-width: 250px;
+  min-width: 350px;
   vertical-align: top;
   height: 32px;
   color: #495060;
