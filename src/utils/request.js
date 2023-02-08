@@ -55,7 +55,7 @@ service.interceptors.response.use(
    * You can also judge the status by HTTP Status Code
    */
   response => {
-    if (response.config.reqType !== 'base'){
+    if (response.config.reqType !== 'base' || response.config.responseType === 'blob'){
       return response
     }
     const res = response.data

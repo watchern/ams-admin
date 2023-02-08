@@ -9,7 +9,7 @@
       ref="ruleForm"
     >
       <el-form-item label="规则名称" prop="ruleName" class="item-b">
-        <el-input v-model="apComDataBaseData.ruleName" maxlength="200"></el-input>
+        <el-input v-model="apComDataBaseData.ruleName" maxlength="200" style="width: 85%"></el-input>
       </el-form-item>
       <el-form-item label="启动" prop="isAtartUp" class="item-b">
         <el-radio-group v-model="apComDataBaseData.isAtartUp">
@@ -23,6 +23,7 @@
           filterable
           clearable
           size="small"
+          style="width: 85%"
           @change="secretLevelChange"
         >
           <el-option
@@ -39,6 +40,7 @@
           filterable
           clearable
           size="small"
+          style="width: 85%"
           @change="recognitionRulesChange"
         >
           <el-option
@@ -54,11 +56,12 @@
           type="textarea"
           v-model="apComDataBaseData.regularExpression"
           placeholder="请输入内容"
+          style="width: 85%"
           :rows="6"
         ></el-input>
       </el-form-item>
     </el-form>
-    <div class="itemBtn">
+    <div class="footBtn">
       <el-button size="mini" type="primary" @click="submitForm('ruleForm')"
         >保存</el-button
       >
@@ -200,5 +203,8 @@ export default {
     vertical-align: middle;
     float: left !important;
   }
+}
+.footBtn{
+  padding-left: 75%;
 }
 </style>

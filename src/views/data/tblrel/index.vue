@@ -71,21 +71,25 @@
                  class="detail-form">
           <el-form-item prop="tableMetaUuid"
                         label="表名称">
-            <el-input v-model="temp.tbName"
-                      :disabled="true" />
-            <el-input v-model="temp.tableMetaUuid"
-                      :disabled="true"
-                      style="display: none" />
+            <el-col :span="22">
+              <el-input v-model="temp.tbName"
+                         readonly/>
+<!--              :disabled="true"-->
+              <el-input v-model="temp.tableMetaUuid"
+                        readonly
+                        style="display: none" />
+            </el-col>
           </el-form-item>
           <el-form-item prop="colMetaUuid"
                         label="字段名称">
             <el-row>
               <el-col :span="22">
                 <el-input v-model="temp.colName"
-                          :disabled="true" />
+                          readonly />
                 <el-input v-model="temp.colMetaUuid"
-                          :disabled="true"
-                          style="display: none" />
+                          readonly
+                          style="display: none"
+                />
               </el-col>
               <el-col :span="2">
                 <el-button @click="showDataTree(1)">选择</el-button>
@@ -94,22 +98,25 @@
           </el-form-item>
           <el-form-item prop="relTableMeataUuid"
                         label="从表名称">
-            <el-input v-model="temp.relationTableName"
-                      :disabled="true" />
-            <el-input v-model="temp.relTableMetaUuid"
-                      :disabled="true"
-                      style="display: none" />
+            <el-col span="22">
+              <el-input v-model="temp.relationTableName"
+                        readonly />
+              <el-input v-model="temp.relTableMetaUuid"
+                        readonly
+                        style="display: none"
+              />
+            </el-col>
           </el-form-item>
           <el-form-item prop="relColMetaUuid"
                         label="从表字段">
             <el-row>
               <el-col :span="22">
                 <el-input v-model="temp.relationCol"
-                          :disabled="true" />
+                          readonly />
                 <el-input v-model="temp.relColMetaUuid"
                           style="display: none"
                           hidden
-                          :disabled="true" />
+                          readonly />
               </el-col>
               <el-col :span="2">
                 <el-button @click="showDataTree(2)">选择</el-button>
@@ -118,16 +125,18 @@
           </el-form-item>
           <el-form-item prop="sqlGenJoinType"
                         label="关联关系">
-            <el-select v-model="temp.sqlGenJoinType"
-                       filterable
-                       placeholder="请选择关联关系"
-                       style="width: 100%">
-              <el-option v-for="item in sqlJoinCols"
-                         :key="item.sqlGenJoinType"
-                         :label="item.sqlGenJoinName"
-                         :value="item.sqlGenJoinType"
-                         :disabled="item.disabled" />
-            </el-select>
+            <el-col span="22">
+              <el-select v-model="temp.sqlGenJoinType"
+                         filterable
+                         placeholder="请选择关联关系"
+                         style="width: 100%">
+                <el-option v-for="item in sqlJoinCols"
+                           :key="item.sqlGenJoinType"
+                           :label="item.sqlGenJoinName"
+                           :value="item.sqlGenJoinType"
+                           :disabled="item.disabled" />
+              </el-select>
+            </el-col>
           </el-form-item>
         </el-form>
       </template>

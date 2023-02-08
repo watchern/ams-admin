@@ -883,10 +883,12 @@ export function initTableTree(result,dataSource) {
 /**
  * 获取表字段
  */
-export async function getTableField(tableMetaUuid,dataSource,treeType,strLevel){
+export async function getTableField(node,dataSource,treeType,strLevel){
   // 处理拿回来的数据 处理成列表
   const columns = []
   var nodeList = []
+  var tableName = node.data.label
+  var tableMetaUuid = node.data.id
   await request({
     baseURL: dataUrl,
     url: '/tableMeta/getCols',
@@ -940,7 +942,7 @@ export async function getTableField(tableMetaUuid,dataSource,treeType,strLevel){
           editorObj.options.hintOptions.tablesTitle[result.data[i].colName] = result.data[i].chnName
         }
       }
-      if (columns.length > 0) {
+      if (columns.length > 0 && treeType ==='1') {
         CodeMirror.tableColMapping[tableName] = columns
         editorObj.options.hintOptions.tables[tableName] = columns
         // zTreeObj.addNodes(treeNode, nodeList)
@@ -952,6 +954,38 @@ export async function getTableField(tableMetaUuid,dataSource,treeType,strLevel){
 }
 
 /**
+ * 智能提示
+ */
+export function initSQLEditorTips(treeList){ 
+  if(treeList!=null){
+    treeList.forEach(function(item,index){
+      if(item.type!= "table" && item.children.length>0){
+        screenChildrenTree(item.children)
+      }else{
+        if(item.type === "table"){
+          CodeMirror.tableColMapping[item.label] = []
+          editorObj.options.hintOptions.tables[item.label] = []
+        }
+      }
+    })
+  }
+}
+  
+//递归筛选children数据
+function screenChildrenTree(datas){
+  datas.forEach(function(item,index){
+    if(item.type!= "table" && item.children.length>0){
+      screenChildrenTree(item.children)
+    }else{
+      if(item.type === "table"){
+        CodeMirror.tableColMapping[item.label] = []
+        editorObj.options.hintOptions.tables[item.label] = []
+      }
+    }
+  })
+}
+
+/**
  * 数据表树节点拖拽方法
  */
 export function addDragEvent(dragNodeName){
@@ -959,9 +993,9 @@ export function addDragEvent(dragNodeName){
   var height = $('#sqlEditorDiv').height()+150
   var offLeft = $('.leftCon').width()
   var offTop = $('.table-view-caption').height()
-  if ((mouseX < (offLeft + 30) || (mouseX > (offLeft + width)) || (mouseY < offTop) || (mouseY > height))) {
+  /* if ((mouseX < (offLeft + 30) || (mouseX > (offLeft + width)) || (mouseY < offTop) || (mouseY > height))) {
     return
-  }
+  } */
   var cursor = editorObj.getCursor()
   dragOne(dragNodeName + " ", cursor, cursor)
 }
@@ -1151,14 +1185,27 @@ export function refushTableTree(treeNodes, dataSource) {
 }
 
 /**
+ * 执行create语句后刷新左侧树
+ */
+export function refushTableTree2(treeNodes, dataSource) {
+  for (var i = 0; i < treeNodes.length; i++) {
+    // 添加sql编辑器智能提示
+    CodeMirror.tableColMapping[treeNodes[i].name] = []
+    // 重新加载表与列的关系
+    editorObj.options.hintOptions.tables[treeNodes[i].name] = []
+  }
+}
+
+/**
  * 删除表或试图后删除左侧树
  * @param dropTableArr 删除的表
  */
 export function dropTable(dropTableArr) {
   if (dropTableArr != undefined && dropTableArr.length > 0) {
     for (var k = 0; k < dropTableArr.length; k++) {
-      var dropedNode = zTreeObj.getNodesByParam('name', dropTableArr[k], null)[0]
-      zTreeObj.removeNode(dropedNode)
+      //旧数据树已经废弃
+      /* var dropedNode = zTreeObj.getNodesByParam('name', dropTableArr[k], null)[0]
+      zTreeObj.removeNode(dropedNode) */
       // 删除智能提示
       delete CodeMirror.tableColMapping[dropTableArr[k]]
       // 清除表与列的关系
@@ -1931,9 +1978,9 @@ function funOnDrop(event, treeId, treeNodes) {
   var height = $('#sqlEditorDiv').height()
   var offLeft = $('.leftCon').width()
   var offTop = $('.table-view-caption').height()
-  if ((mouseX < (offLeft + 30) || (mouseX > (offLeft + width)) || (mouseY < offTop) || (mouseY > height))) {
+  /* if ((mouseX < (offLeft + 30) || (mouseX > (offLeft + width)) || (mouseY < offTop) || (mouseY > height))) {
     return
-  }
+  } */
   var cursor = editorObj.getCursor()
   var funContent = treeNodes[0].content || treeNodes[0].name
   dragOne(funContent, cursor, cursor)
@@ -2584,10 +2631,12 @@ export function getSaveInfo() {
  */
 export function getSelectSql(menuId,dataSource,strLevel) {
   hideRMenu(menuId)
-  var nodes = zTreeObj.getSelectedNodes()
+  //使用新的树对象 旧树已经废弃
+  /* var nodes = zTreeObj.getSelectedNodes()
   if(nodes.length==0){
     nodes = sqlEditorLeftTreeObj
-  }
+  } */
+  var nodes = sqlEditorLeftTreeObj
   if (nodes.length > 0) {
     var tableName = nodes[0].enName
     if(tableName==undefined){

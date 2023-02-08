@@ -83,7 +83,7 @@
                 prop="chnName"
               /> -->
             </el-table>
-            <div style="margin: 8px">
+            <div style="margin: 8px;display: flex;align-items: center">
               <el-input
                 v-model="whereStr"
                 type="textarea"
@@ -91,12 +91,41 @@
                 v-on:input="whereStrFun"
                 placeholder="请输入筛选语句，如： name='张三' and age=19 "
               />
+                <el-button style="height: 40px;margin-left: 20px" type="primary" @click="showSelect = true">选择条件</el-button>
             </div>
           </el-form-item>
         </el-form>
       </el-col>
     </el-row>
-
+      <!--选择查询条件-->
+      <el-dialog
+          title="选择条件"
+          :visible.sync="showSelect"
+          v-if="showSelect"
+          width="80%"
+      >
+          <div>
+              <myQueryBuilder
+                  v-if="showSelect"
+                  ref="myquerybuilder"
+                  :columns="queryData"
+                  :data="queryJson"
+              />
+          </div>
+          <span slot="footer">
+        <el-button
+            size="mini"
+            type="info"
+            class="table_header_btn"
+            @click="showSelect = false"
+        >关闭</el-button>
+        <el-button
+            size="mini"
+            type="primary"
+            @click="changeWhereStr"
+              >保存</el-button>
+      </span>
+      </el-dialog>
   </div>
 </template>
 <script>
@@ -112,9 +141,10 @@ import {
 } from "@/api/data/table-info";
 import { commonNotify } from "@/utils";
 import _ from "lodash";
+import myQueryBuilder from "@/views/analysis/auditmodelresult/myquerybuilder";
 
 export default {
-  components: { LeftTrees, CentreTree },
+  components: { LeftTrees, CentreTree, myQueryBuilder },
   data() {
     return {
       
@@ -154,6 +184,9 @@ export default {
       treeNodeSelectedObj:"",//选中的树节点-需要保存的数据
       tableColCheckedMap:{},//临时勾选的表字段，用于反选
       whereStr:"",//字段条件
+      showSelect:false, //显示选择查询条件对话框
+      queryData: [], // querybuilder的规则数据
+      queryJson: {}, // queryBuilder上动态绑定的json数据
     };
   },
   computed: {},
@@ -560,7 +593,17 @@ export default {
           node.cols = resp.data;
           this.currentData = node;
           this.whereStr = resp.data[0].whereStr
+          // 将条件选择数据置空
+          this.queryData=[];
           this.currentData.cols.forEach((d) => {
+              // 初始化条件选择数据
+              let obj = {};
+              obj.columnType=d.dataType
+              obj.columnName= d.colName
+              if (obj.columnType.toUpperCase().indexOf("INT") == -1){
+                  obj.columnType = "VARCHAR";
+              }
+              this.queryData.push(obj);
             //先清空勾选信息
             this.$set(d, "selected", false);
             var checkedCols = _this.tableColCheckedMap.get(node.strLevelType +'-'+ node.id)
@@ -575,6 +618,8 @@ export default {
               this.$set(d, "selected", d.roleCol != null);
             }
           });
+            // 初始化条件选择数据
+          this.queryData.columnList=this.queryData;
         }).catch(err=>{
           this.listLoading = false;
           this.$notify(commonNotify({ type: "error", message: "查询失败" }));
@@ -726,6 +771,14 @@ export default {
         });
       }
     },
+      //获取条件选择组件数据
+    changeWhereStr(){
+        const obj = this.$refs.myquerybuilder.getSelectSql();
+        this.queryJson = obj.queryJson;
+        this.whereStr = obj.sql;
+        this.showSelect = false;
+        this.whereStrFun(this.whereStr);
+    }
   }, // 注册
 };
 </script>

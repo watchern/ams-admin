@@ -451,3 +451,52 @@ export function getLabelList(labelLibraryId, pageNo, pageSize, labelName) {
     method: 'get',
   })
 }
+
+// 下载数据资源模版
+export function downTemplateDictionary() {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/exportTableFile`,
+    responseType: "blob",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式
+    },
+    method: 'post',
+  })
+}
+
+// 下载汉化信息模版
+export function downTemplateCN(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/exportFile`,
+    responseType: "blob",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式
+    },
+    method: 'post',
+    data
+  })
+}
+
+// 下载表关系模版
+export function downTemplateTable() {
+  return request({
+    baseURL: baseURL,
+    url: `/tableRelation/exportFile`,
+    responseType: "blob",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式
+    },
+    method: 'post',
+  })
+}
+
+export function moveFolder4Authority(tableMetaUuid, tableDataSource) {
+  return request({
+    baseURL: baseURL,
+    url: `/roleTable/moveFolder4Authority`,
+    params: {tableMetaUuid: tableMetaUuid, tableDataSource: tableDataSource},
+    method: 'get',
+  })
+}

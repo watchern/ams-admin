@@ -337,17 +337,23 @@ export default {
           this.query.pageSize = res.data.size
           this.dataTotal = res.data.total
           res.data.records.forEach((value, index) => {
-            var tempParam = value.tblType.substr(0, 1).toUpperCase()
-            if (tempParam == "T") {
-              value.tblType = '表'
-            }
-            if (tempParam == "V") {
-              value.tblType = '视图'
+            if(value.tblType != null){
+              var tempParam = value.tblType.substr(0, 1).toUpperCase()
+              var param = tempParam.toUpperCase()
+              if (param == "T") {
+                value.tblType = '表'
+              }
+              if (param == "V") {
+                value.tblType = '视图'
+              }
+            }else{
+              value.tblType = '---'
             }
           })
           this.tableMetaDataList = res.data.records
           this.clearParams()
         })
+      //获取当前人个人空间使用情况
       getCurrentUserPersonSpace()
         .then((res) => {
           this.personUsedSpace = res.data.personUsedSpace
@@ -356,10 +362,12 @@ export default {
           var length2 = this.personHoldedSpace.length
           var value1 = this.personUsedSpace.substr(0, length1 - 2)
           var value2 = this.personHoldedSpace.substr(0, length2 - 2)
+          //采用向上取整的形式 保证就算百分之百的情况下 也有部分空间剩余  保证有足够使用空间
           var usedPercent = Math.ceil(((value1 / value2) * 100))
           this.spaceUsedPercent = usedPercent + '%'
         })
     },
+    //复选框改变触发事件
     handleSelectionChange (value) {
       this.tableMetaIdList = []
       this.tableMetaSelectionList = []
@@ -553,6 +561,15 @@ export default {
     },
     personalSpaceQueryByTreeNode (data, node) {
       if (node.level == 1) {
+        if(data.label == '个人空间'){
+          this.initPersonalSpaceManageData()
+        }
+        if(data.label == '全行空间'){
+          this.tableMetaDetail.folderUuid = data.id
+          this.initPersonalSpaceManageData()
+        }
+      }
+      if (node.level == 2) {
         //然后直接把展示的dataList 赋值 data.children
         var folderUuid = data.id
         var seneInstUuid = data.pid

@@ -78,6 +78,7 @@
         <el-table-column
           prop="isAtartUp"
           label="是否启动"
+          align="center"
           show-overflow-tooltip
           width="150px"
         >
@@ -90,17 +91,20 @@
           prop="secretLevelName"
           label="数据密级"
           width="150px"
+          align="center"
           show-overflow-tooltip
         ></el-table-column>
         <el-table-column
           prop="recognitionRulesName"
           label="试别规则"
           width="150px"
+          align="center"
           show-overflow-tooltip
         ></el-table-column>
         <el-table-column
           prop="createTime"
           label="创建时间"
+          align="center"
           show-overflow-tooltip
           width="200px"
         >
@@ -112,6 +116,7 @@
         <el-table-column
           prop="createUserName"
           label="创建人"
+          align="center"
           show-overflow-tooltip
           width="200px"
         ></el-table-column>
@@ -123,6 +128,7 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :total="dataBaseData.total"
+          class="page-content"
         ></el-pagination>
 <!--      </div>-->
     </div>
@@ -133,6 +139,7 @@
       :close-on-click-modal="false"
       :modal-append-to-body="false"
       width="40%"
+      class="dialog-add"
       :close-on-press-escape="false"
     >
       <Add
@@ -140,6 +147,7 @@
         :sensitiveObj="sensitiveObj"
         @ok="addSucceed"
         v-if="showAddDialog"
+        class="detail-form"
       ></Add>
     </el-dialog>
   </div>
@@ -340,4 +348,31 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.page-content{
+  padding-left: 15px;
+}
+
+/*修改文本框样式*/
+.detail-form ::v-deep .el-textarea .el-textarea__inner{
+  border: 1px solid #343942!important;
+  border-radius: 1px;
+}
+.detail-form ::v-deep .el-textarea .el-textarea__inner{
+  border: 1px solid #343942!important;
+  border-radius: 1px;
+}
+
+/*.detail-form ::v-deep .footBtn{*/
+/*  float: right;*/
+/*}*/
+/*  !*按钮边框黑色*!*/
+/*  .detail-form ::v-deep .el-radio__inner {*/
+/*    border: 1px solid #343942;*/
+/*  }*/
+/*!*选中后按钮边框蓝色*!*/
+/*.detail-form ::v-deep .el-radio__inner.is-checked  {*/
+/*  border: 1px solid #1890ff;*/
+/*}*/
+
+</style>

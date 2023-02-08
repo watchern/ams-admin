@@ -53,7 +53,7 @@
             </el-row>
             <el-table v-if="form.operationType === '0'"
                       :data="tableData"
-                      height="250"
+                      height="316px"
                       border
                       style="width: 100%">
                 <el-table-column
@@ -102,7 +102,7 @@
                 </el-table-column>
 
             </el-table>
-            <el-row v-if="form.operationType === '1'" style="margin-left: 10%">
+            <el-row v-if="form.operationType === '1'">
                 <el-col :span="24">
                     <el-table key="colMetaUuid"
                               border
@@ -127,10 +127,11 @@
                             <template slot-scope="scope">
                                 <el-select v-model="scope.row.archiveType" disabled>
                                     <el-option
-                                            v-for="item in options"
-                                            :key="item.value"
+                                            v-for="(item, index) in options"
+                                            :label="item.label"
                                             :value="item.value"
-                                            :label="item.lable">
+                                            :key="index"
+                                            >
                                     </el-option>
                                 </el-select>
                             </template>
@@ -258,8 +259,11 @@
                 getById(value)
                     .then((res) => {
                         this.form = res.data
-                        this.tableData = res.data.fileList
-                        this.tableDataOffline = res.data.fileList
+                        if (this.form.operationType == 0) {
+                            this.tableData = res.data.fileList
+                        } else if (this.form.operationType == 1) {
+                            this.tableDataOffline = res.data.fileList
+                        }
                     })
             },
             updateApplyStatus(value) {
