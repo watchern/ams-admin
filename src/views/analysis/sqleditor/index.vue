@@ -149,7 +149,7 @@
                   > -->
                 </el-dropdown-menu>
               </el-dropdown>
-              <label style="
+              <!-- <label style="
                   margin-right: -43px;
                   color: #9b4c4c;
                   margin-left: 10px;
@@ -157,7 +157,7 @@
                   cursor: pointer;
                 "
                      @click="modelResultSavePathDialog = true">{{ path }} <i class="el-icon-edit"
-                   style="font-size: 16px"></i></label>
+                   style="font-size: 16px"></i></label> -->
               <!-- 切换数据源下拉框 -->
               <!-- <div class="chooseDataSource"
                    v-if="typeof callType == 'undefined'">
@@ -853,9 +853,9 @@ export default {
           $(graphToolDiv).height() - 120 + "px";
       }
     } catch (e) { }
+    sendSqlEditorVue(this);
     this.initData();
     this.initWebSocket();
-    sendSqlEditorVue(this);
     // 默认隐藏放大按钮
     this.$refs.maxSize.style.display = "none"
   },
@@ -1211,13 +1211,45 @@ export default {
       initEvent();
       initParamTreeNew(this.modelFolderPath);
       initDraftTree();
-      this.executeLoading = true;
-      this.loadText = "正在初始化数据表...";
+
       //新数据表树
       this.$refs.tree_left.loadLeftTreeTypeFun("1");
 
-      initTableTip(this.dataUserId, this.sceneCode1, this.dataSource)
-        .then((result) => {
+      // initSQLEditor(document.getElementById('sql'), relTableMap, expTableMap) // 初始化SQL编辑器
+      initSQLEditor(this.$refs.sql, {}, {});
+      if (this.sqlValue != "" && this.sqlValue != undefined) {
+        // 编辑模型的sql  反显数据
+        editorSql(this.sqlValue, this.sqlEditorParamObj);
+        this.tempPath = this.locationName;
+        this.tempId = this.locationUuid;
+        this.path = "当前执行SQL保存路径:" + this.tempPath;
+        this.modelResultSavePathId = this.tempId;
+      } else {
+        // 只要不是编辑从任何地方进来都给一个默认的执行路径
+        getDefaultSqlEditorLocationByPersonUuid().then((result) => {
+          if (result.data == null) {
+            // 证明当前登录人没有任何执行路径记录 直接给一个默认的  从数据模块那面取  暂时没有 因为数据那面让写死  数据组长-张闯
+            this.tempPath = "根路径";
+            // this.tempPath = ''
+            this.tempId = this.$store.getters.datauserid;
+            // this.tempId = ''
+            this.path = "当前执行SQL保存路径:" + this.tempPath;
+            this.modelResultSavePathId = this.tempId;
+          } else {
+            // 如果不为空则反显上次选中的
+            this.tempPath = result.data.sqlLocationName;
+            this.tempId = result.data.sqlLocationId;
+            this.path = "当前执行SQL保存路径:" + this.tempPath;
+            this.modelResultSavePathId = this.tempId;
+            this.defaultSqlLocation = result.data;
+          }
+        });
+      }
+      refreshCodeMirror();
+
+      /* this.executeLoading = true;  旧的数据表树已经废弃
+      this.loadText = "正在初始化数据表..."; */
+      /* initTableTip(this.dataUserId, this.sceneCode1, this.dataSource).then((result) => {
           initTableTree(result, this.dataSource);
           var relTableMap = {};
           var expTableMap = {};
@@ -1229,45 +1261,13 @@ export default {
               }
             }
           }
-          // initSQLEditor(document.getElementById('sql'), relTableMap, expTableMap) // 初始化SQL编辑器
-          initSQLEditor(this.$refs.sql, relTableMap, expTableMap);
-          this.executeLoading = false;
-          this.loadText = "";
-          if (this.sqlValue != "" && this.sqlValue != undefined) {
-            // 编辑模型的sql  反显数据
-            editorSql(this.sqlValue, this.sqlEditorParamObj);
-            this.tempPath = this.locationName;
-            this.tempId = this.locationUuid;
-            this.path = "当前执行SQL保存路径:" + this.tempPath;
-            this.modelResultSavePathId = this.tempId;
-          } else {
-            // 只要不是编辑从任何地方进来都给一个默认的执行路径
-            getDefaultSqlEditorLocationByPersonUuid().then((result) => {
-              if (result.data == null) {
-                // 证明当前登录人没有任何执行路径记录 直接给一个默认的  从数据模块那面取  暂时没有 因为数据那面让写死  数据组长-张闯
-                this.tempPath = "根路径";
-                // this.tempPath = ''
-                this.tempId = this.$store.getters.datauserid;
-                // this.tempId = ''
-                this.path = "当前执行SQL保存路径:" + this.tempPath;
-                this.modelResultSavePathId = this.tempId;
-              } else {
-                // 如果不为空则反显上次选中的
-                this.tempPath = result.data.sqlLocationName;
-                this.tempId = result.data.sqlLocationId;
-                this.path = "当前执行SQL保存路径:" + this.tempPath;
-                this.modelResultSavePathId = this.tempId;
-                this.defaultSqlLocation = result.data;
-              }
-            });
-          }
-          refreshCodeMirror();
+          
         })
         .catch(() => {
           this.$message({ type: "error", message: "初始化数据表失败!" });
           this.executeLoading = false;
           this.loadText = "";
-        });
+        }); */
     },
     /**
      * 数据表树搜索

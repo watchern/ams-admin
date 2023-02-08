@@ -102,7 +102,8 @@
                                  min-width="100px"
                                  prop="viewProcess">
                     <template slot-scope="scope">
-                        <el-link type="primary"
+                        <el-link v-if="scope.row.status == '办理中' || scope.row.status == '办理完成'"
+                                type="primary"
                                  :underline="false"
                                  @click="todoOpinionList(scope.row)">流程跟踪
                         </el-link>
@@ -186,7 +187,6 @@
                                     id="loadType"
                                     name="loadType"
                             >
-                                <el-option value="">请选择</el-option>
                                 <el-option value="个人数据">个人数据</el-option>
                                 <el-option value="全行数据">全行数据</el-option>
                             </el-select>
@@ -230,16 +230,14 @@
                         <el-table-column
                                 prop="displayTableName"
                                 min-width="100px"
-                                label="表名称"
-                                show-overflow-tooltip>
+                                label="表名称">
                             <template slot-scope="scope">
-                                <el-input v-model="scope.row.displayTableName" id="displayTableName" type="text"
-                                ></el-input>
+                                <el-input v-model="scope.row.displayTableName" id="displayTableName" type="text"/>
                             </template>
                         </el-table-column>
                         <el-table-column
                                 prop="fileType"
-                                min-width="100px"
+                                min-width="50px"
                                 label="文件类型"
                                 show-overflow-tooltip>
                         </el-table-column>
@@ -346,7 +344,7 @@
                                   border
                                   fit
                                   :data="tableDataOffline"
-                                  height="316px"
+                                  height="288px"
                                   highlight-current-row
                                   style="width: 100%;"
                                   @selection-change="handleSelectionTreeChange">
@@ -357,15 +355,14 @@
                             <el-table-column
                                     label="表路径"
                                     prop="tablePath"
-                                    min-width="200px"
+                                    min-width="150px"
                                     show-overflow-tooltip>
                             </el-table-column>
                             <el-table-column
                                     label="归档方式"
                                     min-width="100px"
                                     prop="archiveType"
-                                    props
-                                    show-overflow-tooltip>
+                                    props>
                                 <template slot-scope="scope">
                                     <el-select v-model="scope.row.archiveType" placeholder="请选择">
                                         <el-option

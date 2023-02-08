@@ -28,8 +28,7 @@
                  type="info"
                  @click="clear_search()">重置</el-button> -->
 
-      <query-tags :dropDownData="dropDownData"
-                  ref="tags"
+      <query-tags ref="tags"
                   @change="onChange"></query-tags>
       <div class="padding10 flex">
 
@@ -185,7 +184,6 @@
                       <span class="_title"
                             v-if="scope.row.tableRelationQuery.businessSystemName">{{ scope.row.tableRelationQuery.businessSystemName }}</span>
                     </div>
-
                   </div>
 
                   <div class="new_right">
@@ -195,9 +193,8 @@
                                  v-if="scope.row.relations.length !== 0">
                           <p v-for="(its, index_relations) in scope.row.relations"
                              :key="index_relations">
-                            {{ its.relationTableName }}</p>
+                            {{ its.relationTableName == scope.row.tbName ? its.tbName : its.relationTableName }}</p>
                         </el-card>
-
                       </div>
                       <div class="two tt">使用此表模型数：<span>{{ scope.row.models.length }}</span>
                         <el-card class="show_tips"
@@ -216,7 +213,6 @@
                        v-if="scope.row.colMeta">字段：{{ scope.row.colMeta }}</p>
                     <p class="text"
                        v-else>字段：暂无</p>
-
                     <div class="data_list">
                       <!-- {{scope.row.tableRelationQuery}} -->
                       <span class="data_time"
@@ -293,36 +289,37 @@ export default {
       // common_dialog: false,//导入数据源
       title: '',//弹窗共用标题
       check_list: [],//多选批量的数量
-      dropDownData: [
-        // "表名", "表中文名", "系统", "主题", "分层", "字段",
-        {
-          code: 'tableName',
-          name: '表名',
-          vallist: []
-        },
-        {
-          code: 'tableCnName',
-          name: '表中文名',
-          vallist: []
-        },
-        // {
-        //   code: 'businessName',
-        //   name: '系统'
-        // },
-        // {
-        //   code: 'themeName',
-        //   name: '主题'
-        // },
-        // {
-        //   code: 'layeredName',
-        //   name: '分层'
-        // },
-        {
-          code: 'columnName',
-          name: '字段',
-          vallist: []
-        },
-      ]
+      // dropDownData: [
+      //   // "表名", "表中文名", "系统", "主题", "分层", "字段",
+      //   {
+      //     code: 'tableName',
+      //     name: '表名',
+      //     value: []
+      //   },
+      //   {
+      //     code: 'tableCnName',
+      //     name: '表中文名',
+      //     value: []
+      //   },
+      //   // {
+      //   //   code: 'businessName',
+      //   //   name: '系统'
+      //   // },
+      //   // {
+      //   //   code: 'themeName',
+      //   //   name: '主题'
+      //   // },
+      //   // {
+      //   //   code: 'layeredName',
+      //   //   name: '分层'
+      //   // },
+      //   {
+      //     code: 'columnName',
+      //     name: '字段',
+      //     value: []
+      //   },
+      // ],
+      serachParams: [],
     };
   },
   created () {
@@ -353,16 +350,13 @@ export default {
   },
   methods: {
 
-    onChange (data) {
-      this.TagsAll = data
-      // console.log(this.TagsAll);
+    onChange (serachParams) {
+      this.serachParams = serachParams
     },
     // 查询
     search () {
-      // console.log(this.TagsAll);
-
-      // this.$emit("search", this.search_name);
-
+      console.log("搜索条件", this.serachParams);
+      this.$emit("search", this.serachParams);
     },
     // 删除标签
     removeTag (index, item) {

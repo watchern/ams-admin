@@ -4,7 +4,8 @@
     <div class="left_conter">
       <LeftTrees ref="tree_left"
                  @details='Details'
-                 @queryList='query_list'></LeftTrees>
+                 @queryList='query_list'
+                 @edit_list="Edit_list"></LeftTrees>
     </div>
     <!-- left_conter end-->
     <!-- right_conter -->
@@ -27,6 +28,7 @@
                              :list_data="list_data"
                              :list_loading="list_loading"
                              @edit_list="Edit_list"
+                             @search="search"
                              ref="Display"
                              v-if="show_details == false">
         </DataResourceDisplay>
@@ -68,11 +70,11 @@
         <div>
           表名称：
           <el-input style="width: 330px;margin-left: 10px;"
-                  v-model="filterText1"
-                  placeholder="输入想要查询的表名称（模糊搜索）" />
+                    v-model="filterText1"
+                    placeholder="输入想要查询的表名称（模糊搜索）" />
           <el-button @click="getTables">搜索</el-button>
         </div>
-        
+
         <div class="dlag_conter containerselect padding10">
           <MyElTree ref="tree1"
                     v-loading="treeLoading"
@@ -459,13 +461,11 @@
       </el-dialog>
 
       <!-- 选择标签 -->
-      <select-label
-        title="选择标签"
-        :visible.sync="dialogVisible_tag"
-        :close-on-click-modal="false"
-        :has-selected="form.labelList"
-        @confirm="confirmSelectLabel"
-      ></select-label>
+      <select-label title="选择标签"
+                    :visible.sync="dialogVisible_tag"
+                    :close-on-click-modal="false"
+                    :has-selected="form.labelList"
+                    @confirm="confirmSelectLabel"></select-label>
 
       <!-- 认权管理 -->
       <el-dialog title="认权管理"
@@ -569,6 +569,9 @@ import {
   getColsInfoByTableName, //获取列信息
   synDataStructure, //同步数据
   listSchemas, //获取模式名
+  downTemplateDictionary, // 下载资源目录模版
+  downTemplateCN, // 下载汉化信息模版
+  downTemplateTable, // 下载表关系模版
 } from "@/api/data/table-info";
 import QueryField from "@/components/public/query-field/index";
 import personTree from "@/components/publicpersontree/index";
@@ -896,6 +899,30 @@ export default {
     // this.query_list(data);
   },
   methods: {
+    // 查询
+    search (serachParams) {
+      let data = this.$refs.tree_left.query;
+      this.dataSource = data.dataSource//新增关系树 和注册首页数据源绑定且不可修改
+      this.show_details = false; //显示列表
+      this.list_loading = true; //子组件loading
+      let params = {
+        businessSystemId: data.businessSystemId, //id主键
+        tableThemeId: data.tableThemeId, //主题
+        tableLayeredId: data.tableLayeredId, //分层
+        folderUuid: data.folderUuid, //目录
+        dataSource: data.dataSource, //数据源
+        pageNo: data.pageNo,
+        pageSize: data.pageSize,
+        tbName: data.tbName,
+        param: serachParams
+      };
+      listByTreePage(params).then(res => {
+
+        this.list_loading = false; //子组件loading
+        this.list_data = res.data;
+        this.list = res.data.records;
+      });
+    },
     // 返回上一步
     Step () {
       this.show_details = false;
@@ -908,10 +935,13 @@ export default {
     },
     // 更新左侧树
     update_tree () {
+
       if (this.$refs.tree_left.activeName == '0') {
         this.$refs.tree_left.post_getBusinessSystemTree() //系统
       } else if (this.$refs.tree_left.activeName == '1') {
-        this.$refs.tree_left.post_getThemeTree(); //分层
+        this.$refs.tree_left.post_getThemeTree(); //主题
+      } else if (this.$refs.tree_left.activeName == '2') {
+        this.$refs.tree_left.post_getLayeredTree(); //分层
       } else {
         this.$refs.tree_left.post_getDataTreeNode(); //目录
       }
@@ -949,19 +979,10 @@ export default {
     DownTemplateDictionary () {
       // 导出表信息作为模板
       // this.$message({ type: 'info', message: '无选择表,失败!' })
-      axios
-        .post(`/data/tableMeta/exportTableFile`, qs.stringify({}), {
-          responseType: "blob",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式
-          },
-        })
-        .then((res) => {
+      downTemplateDictionary().then((res) => {
           const filename = decodeURI(
             res.headers["content-disposition"].split(";")[1].split("=")[1]
           );
-          console.log(res.headers);
-          console.log(res.headers["content-disposition"]);
           const blob = new Blob([res.data], {
             type: "application/octet-stream",
           });
@@ -974,69 +995,49 @@ export default {
           link.click();
         });
     },
-
     // 汉化模版下载
     DownTemplateCN (data) {
       // 导出表信息作为模板
       // this.$message({ type: 'info', message: '无选择表,失败!' })
-      axios
-        .post(
-          `/data/tableMeta/exportFile`,
-          qs.stringify({ tableMetasJson: JSON.stringify(data) }),
-          {
-            responseType: "blob",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式
-            },
-          }
-        )
-        .then((res) => {
-          const filename = decodeURI(
-            res.headers["content-disposition"].split(";")[1].split("=")[1]
-          );
-          const blob = new Blob([res.data], {
-            type: "application/octet-stream",
-          });
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.style.display = "none";
-          link.href = url;
-          link.setAttribute("download", filename);
-          document.body.appendChild(link);
-          link.click();
+      downTemplateCN(qs.stringify({ tableMetasJson: JSON.stringify(data) })).then((res) => {
+        const filename = decodeURI(
+          res.headers["content-disposition"].split(";")[1].split("=")[1]
+        );
+        const blob = new Blob([res.data], {
+          type: "application/octet-stream",
         });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.style.display = "none";
+        link.href = url;
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+      });
     },
-
     // 表关系下载
     DownTemplateTable () {
       // 导出表信息作为模板
       // this.$message({ type: 'info', message: '无选择表,失败!' })
-      axios
-        .post(`/data/tableRelation/exportFile`, qs.stringify({}), {
-          responseType: "blob",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式
-          },
-        })
-        .then((res) => {
-          const filename = decodeURI(
-            res.headers["content-disposition"].split(";")[1].split("=")[1]
-          );
-          const blob = new Blob([res.data], {
-            type: "application/octet-stream",
-          });
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.style.display = "none";
-          link.href = url;
-          link.setAttribute("download", filename);
-          document.body.appendChild(link);
-          link.click();
+      downTemplateTable().then((res) => {
+        const filename = decodeURI(
+          res.headers["content-disposition"].split(";")[1].split("=")[1]
+        );
+        const blob = new Blob([res.data], {
+          type: "application/octet-stream",
         });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.style.display = "none";
+        link.href = url;
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+      });
     },
     // 上传文件信息
     fileuploadname (data) {
-      console.log(data);
+
       // 文件名
       this.importtemp.tableFileName = data;
     },
@@ -1287,11 +1288,12 @@ export default {
     // 点击切换树 切换 表单
     // 查看详情
     Details (tableMetaUuid, show_details, isDisable_input) {
+      console.log("1111111111111");
       this.tableMetaUuid = tableMetaUuid
       this.show_details = show_details;
       this.isDisable_input = isDisable_input;
       this.$nextTick(() => {
-        this.$refs.Details_ref.$refs.tableLines.init(1)//刷新列表 更新关系树
+        // this.$refs.Details_ref.$refs.tableLines.init(1)//刷新列表 更新关系树
         this.$refs.Details_ref.post_sql_data()//更新查看sql
         this.$refs.Details_ref.table_list(this.tableMetaUuid)//更新列信息
       })
@@ -1367,8 +1369,12 @@ export default {
     // 注册资源
     registTable () {
       this.registTableFlag = true;
+      this.schemaName = ''
+      this.filterText1 = null
+
       this.getSchemas();
       this.getTables();
+
     },
     // 选择注册表 筛选
     filterNode (value, data) {
@@ -1387,7 +1393,7 @@ export default {
       // this.registTableFlag = true;//关闭上一步
       this.dialogVisible_information = false; //关闭基本信息
       this.clear();
-      console.log(this.form.tbName);
+
     },
     // 清除注册资源第二步的数据
     clear () {
@@ -1489,9 +1495,9 @@ export default {
           this.Column_table = resp.data;
         } else {
 
-          // console.log(this.Column_table_query.tbName.toString());
+          // 
           this.form.tbName = this.Column_table_query.tbName.toString(); //表名赋值
-          console.log(this.form.tbName);
+
 
           this.Column_table = resp.data[0].colMetas
           this.form.rowNum = resp.data[0].rowNum//表数据量
@@ -1774,7 +1780,7 @@ export default {
     check_tag () {
       this.dialogVisible_tag = true;
     },
-    confirmSelectLabel(val) {
+    confirmSelectLabel (val) {
       this.form.labelList = val;
     },
     // 删除标签

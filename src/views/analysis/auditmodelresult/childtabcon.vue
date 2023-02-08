@@ -3113,7 +3113,7 @@ export default {
       if(nextValue.result===undefined){
         //执行CREATE、INSERT、DELETE等操作返回没有结果
         this.isSee = false;
-        this.showDeleteErrorMessage = true;
+        this.showDeleteErrorMessage = false;
         this.modelResultPageIsSee = false;
         this.modelResultButtonIsShow = false;
         this.errorMessage = nextValue.executeSQL.msg;

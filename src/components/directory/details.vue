@@ -29,8 +29,10 @@
           </h2>
           <div class="information_form padding10">
             <el-form ref="form"
+                     :rules="rules_form"
                      :model="form"
-                     label-width="80px">
+                     :inline="false"
+                     label-width="100px">
 
               <el-form-item label="表名称："
                             prop="tbName">
@@ -69,7 +71,8 @@
                 <div :class="
                     isDisable_input == true ? 'is_disabled' : 'yes_disabled'
                   ">
-                  <el-form-item label="资源类型：">
+                  <el-form-item label="资源类型："
+                                prop="tableType">
                     <el-select v-model="form.tableType"
                                @input="change($event)"
                                :disabled="isDisable_input">
@@ -83,7 +86,8 @@
               </div>
               <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
                 <div class="son">
-                  <el-form-item label="资源主题：">
+                  <el-form-item label="资源主题："
+                                prop="tableThemeId">
                     <el-select v-model="form.tableThemeId"
                                @input="change($event)"
                                @change="tableThemeName_change"
@@ -94,7 +98,8 @@
                                  :value="item.codeUuid" />
                     </el-select>
                   </el-form-item>
-                  <el-form-item label="资源分层：">
+                  <el-form-item label="资源分层："
+                                prop="tableLayeredId">
                     <el-select v-model="form.tableLayeredId"
                                @input="change($event)"
                                :disabled="isDisable_input">
@@ -107,7 +112,8 @@
                 </div>
 
                 <div class="son">
-                  <el-form-item label="所属系统：">
+                  <el-form-item label="所属系统："
+                                prop="businessSystemId">
                     <el-select v-model="form.businessSystemId"
                                @input="change($event)"
                                :disabled="isDisable_input"
@@ -222,10 +228,10 @@
                     </div>
                   </el-form-item>
                   <el-button type="primary"
-                            class="oper-btn"
-                            v-if="isDisable_input == false"
-                            :disabled="isDisable_input"
-                            @click="check_tag()">选择</el-button>
+                             class="oper-btn"
+                             v-if="isDisable_input == false"
+                             :disabled="isDisable_input"
+                             @click="check_tag()">选择</el-button>
                 </div>
 
                 <el-form-item label="表热度：">
@@ -363,7 +369,7 @@
           <el-button type="primary"
                      @click="step()">返回</el-button>
           <el-button type="primary"
-                     @click="update_save()"
+                     @click="update_save('form')"
                      :disabled="isDisable_input"
                      v-if="!isDisable_input">
             保存
@@ -373,13 +379,11 @@
     </div>
 
     <!-- 选中标签 -->
-    <select-label
-      title="选择标签"
-      :visible.sync="dialogVisible_tag"
-      :close-on-click-modal="false"
-      :has-selected="form.labelList"
-      @confirm="confirmSelectLabel"
-    ></select-label>
+    <select-label title="选择标签"
+                  :visible.sync="dialogVisible_tag"
+                  :close-on-click-modal="false"
+                  :has-selected="form.labelList"
+                  @confirm="confirmSelectLabel"></select-label>
 
     <!-- 查看sql -->
     <el-dialog title="查看sql"
@@ -648,6 +652,7 @@ import {
   selectIndexInfo, //查询索引信息
   getTableZipperList, //查询数据字典
   cong_table_list_data, //从表字段
+  moveFolder4Authority, //授权资源目录同步
 } from "@/api/data/table-info";
 import {
   getListTree, //注册资源下一步
@@ -742,6 +747,34 @@ export default {
         labelList: [],
         tableLayeredName: '',//数据源
       },
+
+      rules_form: {
+        tableCode: [
+          { required: true, message: '请输入资源编码', trigger: 'blur' },
+        ],
+        tableType: [
+          { required: true, message: "请选择资源类型", trigger: "change" },
+        ],
+
+        tableThemeId: [
+          { required: true, message: "请选择所属主题", trigger: "change" },
+        ],
+        businessSystemId: [
+          { required: true, message: "请选择所属系统", trigger: "change" },
+        ],
+
+        tableLayeredId: [
+          { required: true, message: "请选择资源分层", trigger: "change" },
+        ],
+        // fileName: [
+        //   { required: true, message: "请输入文件名称", trigger: "change" },
+        // ],
+        // personName_str: [
+        //   { required: true, message: "请选择资源责任人", trigger: "change" },
+        // ],
+      },
+
+
       tableData: [],
       sceneCode: "auditor",
       Column_tableData_index: [], //索引信息
@@ -905,7 +938,7 @@ export default {
   methods: {
     // 返回上一步
     step () {
-      this.$emit("step",)
+      this.$emit("step");
     },
     handleScrollTop () {
       this.$nextTick(() => {
@@ -951,6 +984,7 @@ export default {
     // 更新视图
     change (e) {
       this.$forceUpdate();
+      this.form = JSON.parse(JSON.stringify(this.form));
     },
     // 资源主题
     tableThemeName_change (val) {
@@ -963,10 +997,10 @@ export default {
     },
     // 基本信息
     details (tableId) {
-      this.form = JSON.parse(JSON.stringify(this.form));
       this.$forceUpdate();
       getBasicInfo(tableId).then((resp) => {
         this.form = resp.data;
+
         // var _data = resp.data;
         this.form.tbName = resp.data.tbName; //表名称
         this.form.chnName = resp.data.chnName; //中文名
@@ -1021,7 +1055,6 @@ export default {
             // this.form.personName_str.push(objs)
           });
           // this.form.personLiables = personName.join(",");//负责人
-
           // var personLiables = resp.data.personLiables.toString();//负责人
         } else {
           this.form.personLiables = "";
@@ -1036,7 +1069,7 @@ export default {
     check_tag () {
       this.dialogVisible_tag = true;
     },
-    confirmSelectLabel(val) {
+    confirmSelectLabel (val) {
       this.form.labelList = val;
     },
     // 删除标签
@@ -1044,58 +1077,67 @@ export default {
       this.form.labelList.splice(this.form.labelList.indexOf(tag), 1);
     },
     // 修改保存
-    update_save () {
-      var personLiables = [];
-      if (this.form.personName_str) {
-        // 如果默认有 没有修改
-        this.form.personName_str.forEach((item) => {
-          let objs = {
-            personUuid: item.personUuid,
-            personName: item.personName,
+    update_save (form) {
+      this.$forceUpdate()
+      this.$refs[form].validate((valid) => {
+        if (valid) {
+          var personLiables = [];
+          if (this.form.personName_str) {
+            // 如果默认有 没有修改
+            this.form.personName_str.forEach((item) => {
+              let objs = {
+                personUuid: item.personUuid,
+                personName: item.personName,
+              };
+              personLiables.push(objs);
+            });
+          }
+          let params = {
+            tableMetaUuid: this.tableMetaUuid,
+            chnName: this.form.chnName,
+            tableRelationQuery: {
+              tableRelationQueryUuid: this.form.tableRelationQueryUuid,
+              tableMetaUuid: this.tableMetaUuid,
+              tableCode: this.form.tableCode,
+              tableType: this.form.tableType,
+              businessSystemId: this.form.businessSystemId,
+              tableThemeId: this.form.tableThemeId,
+              tableLayeredId: this.form.tableLayeredId,
+              tableRemarks: this.form.tableRemarks,
+              fileName: this.form.fileName,
+              isSpike: this.form.isSpike,
+              dataDate: this.form.dataDate,
+            },
+            personLiables: personLiables,
+            labelList: this.form.labelList,
           };
-          personLiables.push(objs);
-        });
-      }
-
-      let params = {
-        tableMetaUuid: this.tableMetaUuid,
-        chnName: this.form.chnName,
-        tableRelationQuery: {
-          tableRelationQueryUuid: this.form.tableRelationQueryUuid,
-          tableMetaUuid: this.tableMetaUuid,
-          tableCode: this.form.tableCode,
-          tableType: this.form.tableType,
-          businessSystemId: this.form.businessSystemId,
-          tableThemeId: this.form.tableThemeId,
-          tableLayeredId: this.form.tableLayeredId,
-          tableRemarks: this.form.tableRemarks,
-          fileName: this.form.fileName,
-          isSpike: this.form.isSpike,
-          dataDate: this.form.dataDate,
-        },
-        personLiables: personLiables,
-        labelList: this.form.labelList,
-      };
-      updateTableInfo(params).then((resp) => {
-        if (resp.code == 0) {
-          this.$message({
-            type: "success",
-            message: "修改成功!",
+          updateTableInfo(params).then((resp) => {
+            if (resp.code == 0) {
+              this.$message({
+                type: "success",
+                message: "修改成功!",
+              });
+              this.$emit("query_data"); //刷新页面
+              this.table_list(this.tableMetaUuid);
+              // this.$emit("update_list");
+              //资源目录修改同步修改授权资源目录
+              moveFolder4Authority(this.tableMetaUuid,this.dataSource).then(resp => {});
+            } else {
+              this.$message({
+                type: "error",
+                message: resp.msg,
+              });
+            }
           });
-          this.$emit("query_data"); //刷新页面
-          this.table_list(this.tableMetaUuid);
-
-
-
-
-          // this.$emit("update_list");
         } else {
           this.$message({
-            type: "error",
-            message: resp.msg,
+            message: "请填写信息",
+            type: "info",
+            showClose: true,
           });
+          return false;
         }
-      });
+      })
     },
     // 索引信息
     getIndexInfo (tableId) {
@@ -1611,6 +1653,9 @@ export default {
   overflow-y: auto;
 }
 
+.information_form >>> .el-form-item--medium .el-form-item__label {
+  text-align: right !important;
+}
 /* 保存按钮 */
 .fixed_btn {
   text-align: right;

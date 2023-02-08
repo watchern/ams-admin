@@ -82,18 +82,21 @@
             },
             //更新对应业务状态方法 可以加入自己的style
             updateApplyStatus(value){
-              queryByPersonalSpaceUuid(value)
-              .then((res)=>{
-                var param = res.data.personalSpaceCapacity
-                //调用个人空间管理的扩容方法 对 已经办理完成的空间进行扩容
-                incrementPersonalSpaceManage(param)
-              })
                 var personalSpace = {
                     personalSpaceUuid: value
                 }
                 var relParam = []
                 relParam.push(personalSpace)
                 batchUpdateForFinishHandle(relParam)
+                .then((res)=>{
+                  //查询这次办理完成的 空间容量
+                  queryByPersonalSpaceUuid(value)
+                      .then((res)=>{
+                        var param = res.data.personalSpaceCapacity
+                        //调用个人空间管理的扩容方法 对 已经办理完成的空间进行扩容
+                        incrementPersonalSpaceManage(param)
+                      })
+                })
             },
             updateApplyStatusBecauseBackApplication(value){
                 //以后可能会出现扩展 这边先自己拼装一个 实体类 传到后台
