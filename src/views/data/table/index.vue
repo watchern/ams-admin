@@ -664,10 +664,6 @@ export default {
       upload_title: "", // 导入数据弹窗名称
       importtemp: {}, // 导入文件信息
       Column_table: [], //列信息
-      Column_table_query: {
-        dbName: "",
-        tbName: "",
-      },
       list_loading: false, // 右侧列表加载
       list: [], // 右侧列表数据
       list_data: {}, // 右侧列表分页信息
@@ -1167,38 +1163,36 @@ export default {
         this.is_next = false;
       }
     },
-    // 注册资源 单挑数据 下一步
+    // 注册资源 下一步
     next () {
-      // 选择多个数据表
-      if (this.form.check_list.length >= 2) {
-        this.dialogVisible_forms = true;
-      } else {
-        this.dialogVisible_information = true; //显示下一步 基本信息
-      }
-      this.btnLoading = false;
-      this.post_getColsInfoByTableName(); //获取列信息
-      this.getListTree_data();
-    },
-    // 获取列信息
-    post_getColsInfoByTableName () {
-      let arr = [];
+      let dbName = []; // 选中的模式 唯一
+      let tbList = []; // 选中的表
       this.form.check_list.forEach(item => {
         if (item.pid != 'ROOT') {
-          this.Column_table_query.dbName = item.pid;
-          arr.push(item.label);
+          if (dbName.indexOf(item.pid) == -1) {
+            dbName.push(item.pid);
+          }
+          tbList.push(item.label);
         }
       });
-      this.Column_table_query.tbName = arr;
+      if (dbName.length > 1) {
+        this.$message({
+          type: "warning",
+          message: "不能跨模式注册资源！",
+        });
+        return false;
+      }
       const params = {
-        dbName: this.Column_table_query.dbName,
-        tbNames: this.Column_table_query.tbName,
+        dbName: dbName[0],
+        tbNames: tbList,
         tableDataSource: this.$refs.tree_left.query.dataSource,
-      };
+      }
+      // 获取列信息
       getColsInfoByTableName(params).then((resp) => {
         if (resp.data.length !== 1) {
           this.Column_table = resp.data;
         } else {
-          this.form.tbName = this.Column_table_query.tbName.toString(); //表名赋值
+          this.form.tbName = resp.data[0].tbName; //表名赋值
           this.Column_table = resp.data[0].colMetas; // 列信息
           this.form.rowNum = resp.data[0].rowNum; //表数据量
           this.form.tableSize = resp.data[0].tableSize; //表大小
@@ -1207,12 +1201,21 @@ export default {
           this.form.tableRemarks = resp.data[0].tableRelationQuery.tableRemarks; //表说明
         }
       });
+      // 获取系统、主题、分层列表
+      getListTree().then((res) => {
+        this.next_data = res.data;
+      });
+      // 判断是批量注册还是单个注册
+      if (this.form.check_list.length >= 2) {
+        this.dialogVisible_forms = true;
+      } else {
+        this.dialogVisible_information = true; 
+      }
     },
     // 选择多个的情况  下一步的确认 批量多个注册
     next_save () {
       for (var i = 0; i < this.form.check_list.length; i++) {
         const tableForm = {
-          tbName: this.Column_table_query.tbName, //表名
           tableMetaUuid: this.form.check_list[i].id,
           displayTbName: this.form.check_list[i].label,
           dbName: this.form.check_list[i].pid,
@@ -1269,11 +1272,6 @@ export default {
         this.registTableFlag = false; //关闭上一步
       });
       this.dialogVisible_forms = false; //关闭多选的表单弹窗显示
-    },
-    getListTree_data () {
-      getListTree().then((res) => {
-        this.next_data = res.data;
-      });
     },
     // 点击 所属目录层级联动
     handleChange (val) {
