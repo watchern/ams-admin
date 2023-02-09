@@ -102,6 +102,37 @@
                class="el-icon-c-scale-to-original" />
             <span>{{ node.label }}</span>
             <span style="margin-left: 10px">
+              <el-button v-if="loadLeftTreeType==='3' && isPersonSpaceAdminRole && data.type==='folder' &&
+                        data.sceneInstUuid==='allBankSpaceFolder'"
+                  title="添加文件夹"
+                  type="text"
+                  size="mini"
+                  class="tree-line-btn"
+                  @click.stop="() => handCreateAllSpaceFolder(node, data)"
+              >
+                <svg-icon icon-class="icon-add-1" />
+              </el-button>
+              <el-button v-if="loadLeftTreeType==='3' && isPersonSpaceAdminRole && data.type==='folder' &&
+                        data.sceneInstUuid==='allBankSpaceFolder' && data.id != 'allBankSpaceFolder'"
+                  title="修改文件夹"
+                  type="text"
+                  size="mini"
+                  class="tree-line-btn"
+                  @click.stop="() => handEditAllSpaceFolder(node, data)"
+              >
+                <svg-icon icon-class="icon-edit-1" />
+              </el-button>
+              <el-button v-if="loadLeftTreeType==='3' && isPersonSpaceAdminRole && data.type==='folder' &&
+                        data.sceneInstUuid==='allBankSpaceFolder' && data.id != 'allBankSpaceFolder'"
+                  title="删除文件夹"
+                  type="text"
+                  size="mini"
+                  class="tree-line-btn"
+                  @click.stop="() => handDeleteAllSpaceFolder(node, data)"
+              >
+                <svg-icon icon-class="icon-delete-1" />
+              </el-button>
+
               <el-button v-if="data.id === 'ROOT' || (data.extMap && data.extMap.folder_type === 'maintained')"
                          type="text"
                          size="mini"
@@ -131,6 +162,24 @@
       </div>
       <!-- 目录 -->
     </div>
+    <el-dialog v-if="allSpaceDialogFormVisible"
+               title="请填写文件夹名称"
+               :visible.sync="allSpaceDialogFormVisible"
+               :append-to-body="true">
+      <el-form ref="allSpaceForm"
+               :model="allSpaceForm"
+               :rules="allSpaceFormRules">
+        <el-form-item label="文件夹名称"
+                      prop="folderName">
+          <el-input v-model="allSpaceForm.folderName"
+                    autocomplete="off" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="allSpaceDialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="choosePath()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -138,10 +187,10 @@
 import { commonNotify } from '@/utils'
 import MyElTree from "@/components/public/tree/src/tree.vue";
 import {
-  getBusinessSystemTree, //系统
-  getThemeTree, //主题
-  getLayeredTree, //分层
-  delTable,
+    getBusinessSystemTree, //系统
+    getThemeTree, //主题
+    getLayeredTree, //分层
+    delTable, delByTableMetaUuid, moveFolder4Authority,
 } from "@/api/data/table-info";
 import {
   getPersonSpaceTree, //个人空间
@@ -149,6 +198,10 @@ import {
   getTableField, //加载表字段
   addDragEvent, //树节点拖拽方法
   initSQLEditorTips,// 初始化SQL编辑器智能提示问题
+  getLoginUserAdminRole,//获取当前登陆人是否有个人空间管理员角色
+  saveAllSpaceFolder ,//保存文件夹
+  deleteAllSpaceFolder,//删除文件夹
+  editAllSpaceFolder,//修改文件夹
 } from "@/api/analysis/sqleditor/sqleditor";
 import { init } from "leancloud-storage";
 export default {
@@ -208,6 +261,26 @@ export default {
       elTabsName: "", //选中的页签名称
       treeNodeSelectedObj: [], //树节点勾选对象
       defaultExpandedKeys: ["ROOT"], //默认展开节点的数组
+      isPersonSpaceAdminRole:false,//是否个人空间管理员
+      allSpaceFormRules: {
+        folderName: [
+          {
+            type: "string",
+            required: true,
+            message: "请输入文件夹名称",
+            trigger: "blur",
+          },
+        ],
+      },
+      allSpaceForm: {
+        folderUuid: "",
+        folderName: "",
+        fullPath: "",
+        parentFolderUuid: "",
+        sceneInstUuid: "allBankSpaceFolder"//个人空间全行数据
+      },
+      allSpaceFormType:"",//判断修改还是新增
+      allSpaceDialogFormVisible:false,
     };
   },
   computed: {},
@@ -224,8 +297,16 @@ export default {
       this.post_getBusinessSystemTree(); //系统
     });
     this.$emit("queryList", this.query, (this.show_details = false));
+    this.post_getLoginUserAdminRole();
   },
   methods: {
+    post_getLoginUserAdminRole () {
+      this.loading = true;
+      getLoginUserAdminRole().then((resp) => {
+        this.isPersonSpaceAdminRole = resp.data
+        this.loading = false;
+      });
+    },
     //树节点选择
     setCheckedNodes (node, isChecked) {
       var _this = this;
@@ -705,6 +786,9 @@ export default {
           this.$emit("details", this.tableMetaUuid, this.show_details, this.isDisable_input);
         }
       } else {
+        if(data.type==='column'){
+          return false
+        }
         // 进入详情
         this.tableMetaUuid = node.data.id;
         this.show_details = true;
@@ -753,6 +837,7 @@ export default {
           event.clientY,
           data
         );
+        this.$emit("nodeContextmenuSQLEditor",data)
       } else {
         return false;
       }
@@ -825,6 +910,8 @@ export default {
                 // 分层
                 this.post_getLayeredTree(); //分层
               }
+              // 同步删除数据收授权下的资源
+              delByTableMetaUuid(data.id,this.query.dataSource);
             });
           } else {
             delFolder(data.id).then((resp) => {
@@ -912,6 +999,84 @@ export default {
         });
       });
     },
+    //个人空间模块-全行空间文件夹下创建文件夹
+    handCreateAllSpaceFolder(node,data){
+      this.allSpaceForm.parentFolderUuid = data.id
+      this.allSpaceForm.fullPath = data.label
+      this.allSpaceDialogFormVisible = true
+      this.allSpaceFormType = "add"
+    },
+    //个人空间模块-全行空间文件夹下修改文件夹
+    handEditAllSpaceFolder(node,data){
+      this.allSpaceDialogFormVisible = true
+      
+      this.allSpaceForm.folderUuid = data.id
+      this.allSpaceForm.folderName = data.label
+      this.allSpaceForm.fullPath = data.path
+      this.allSpaceForm.parentFolderUuid = data.pid
+      this.allSpaceFormType = "edit"
+    },
+    //个人空间模块-全行空间文件夹下删除文件夹
+    handDeleteAllSpaceFolder(node,data){
+      if(data.children.length>0){
+        this.$notify(
+          commonNotify({
+            type: "info",
+            message: `当前文件夹下存在子集，不能删除`,
+          })
+        );
+        return false
+      }
+      this.loading = true;
+      deleteAllSpaceFolder(data.id).then((resp) => {
+        this.loading = false;
+        this.$notify(
+          commonNotify({
+            type: "success",
+            message: `删除成功`,
+          })
+        );
+        this.post_getPersonSpaceTree();
+        
+      });
+
+    },
+    choosePath(){
+      if(this.allSpaceForm.folderName.trim()===''){
+        return false
+      }
+      this.allSpaceDialogFormVisible = false
+      this.loading = true;
+      if(this.allSpaceFormType==="add"){
+        saveAllSpaceFolder(this.allSpaceForm).then((resp) => {
+          this.loading = false;
+          this.allSpaceForm.folderName = ""
+          
+          this.$notify(
+            commonNotify({
+              type: "success",
+              message: `保存成功`,
+            })
+          );
+          this.post_getPersonSpaceTree();
+          
+        });
+      }else{
+        editAllSpaceFolder(this.allSpaceForm).then((resp) => {
+          this.loading = false;
+          this.allSpaceForm.folderName = ""
+          
+          this.$notify(
+            commonNotify({
+              type: "success",
+              message: `保存成功`,
+            })
+          );
+          this.post_getPersonSpaceTree();
+          
+        });
+      }
+    }
   },
 };
 </script>

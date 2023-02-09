@@ -215,7 +215,7 @@
                   </el-form-item>
                 </div>
 
-                <div class="son_check">
+                <!-- <div class="son_check">
                   <el-form-item label="数据标签：">
                     <div class="_width tag_conter">
                       <el-tag :key="tag.labelLibraryId"
@@ -232,7 +232,7 @@
                              v-if="isDisable_input == false"
                              :disabled="isDisable_input"
                              @click="check_tag()">选择</el-button>
-                </div>
+                </div> -->
 
                 <el-form-item label="表热度：">
                   <ul class="Heat_ul _width">
@@ -367,7 +367,10 @@
         <!-- 保存按钮 返回上一步 -->
         <div class="fixed_btn">
           <el-button type="primary"
-                     @click="step()">返回</el-button>
+                     @click="step()"
+                     v-if="isHide_step">
+            返回
+          </el-button>
           <el-button type="primary"
                      @click="update_save('form')"
                      :disabled="isDisable_input"
@@ -379,17 +382,18 @@
     </div>
 
     <!-- 选中标签 -->
-    <select-label title="选择标签"
+    <!-- <select-label title="选择标签"
                   :visible.sync="dialogVisible_tag"
                   :close-on-click-modal="false"
                   :has-selected="form.labelList"
-                  @confirm="confirmSelectLabel"></select-label>
+                  @confirm="confirmSelectLabel"></select-label> -->
 
     <!-- 查看sql -->
     <el-dialog title="查看sql"
                :close-on-click-modal="false"
                class="dlag_width"
                :visible.sync="visible_sql"
+               :modal="false"
                width="40%">
       <div class="preview_sql">
         <el-input type="textarea"
@@ -681,6 +685,12 @@ export default {
     },
     // isDisable_input: Boolean,
 
+    isHide_step: {
+      type: Boolean,
+      default () {
+        return true
+      },
+    },
     isDisable_input: {
       type: Boolean,
       default () {
@@ -744,7 +754,7 @@ export default {
         personUuid: "", //资源责任人
         partitions: "", //表分区
         isSpike: 1, //是否增量
-        labelList: [],
+        labelList: [], // 标签
         tableLayeredName: '',//数据源
       },
 
