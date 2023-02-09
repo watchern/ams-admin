@@ -10,7 +10,7 @@
         <!--        办理按钮-->
         <el-row>
             <el-col align="right">
-                <el-button type="primary" class="oper-btn transact" @click="handleTransact()"/>
+                <el-button type="primary" class="oper-btn transact" :disabled="selections.length !== 1" @click="handleTransact()"/>
             </el-col>
         </el-row>
         <el-table
@@ -24,6 +24,7 @@
                 style="width: 100%;"
                 height="calc(100vh - 330px)"
                 @sort-change="sortChange"
+                @selection-change="handleSelectionChange"
         >
             <el-table-column type="selection" width="55"/>
             <el-table-column
@@ -92,7 +93,7 @@
                             type="primary"
                             class="oper-btn"
                             style="width: auto"
-                            @click="showFlow()">流程查看
+                            @click="showFlow()">流程跟踪
                     </el-button>
                     <el-button
                             v-if="scope.row.status == '2'"
@@ -111,36 +112,43 @@
                 </template>
             </el-table-column>
         </el-table>
-        <!--        v-show="total>0"-->
         <pagination
                 :total="total"
                 :page.sync="pageQuery.pageNo"
                 :limit.sync="pageQuery.pageSize"
                 @pagination="getList"
         />
-        <el-dialog title="办理" :visible.sync="dialogTransactVisible" :close-on-click-modal="false">
+        <el-dialog title="办理" v-if="dialogFlowItemShow" :visible.sync="dialogTransactVisible" :close-on-click-modal="false">
+            <div>
+                <FlowItem></FlowItem>
+            </div>
+            <span class="sess-flowitem" slot="footer">
+                <el-button
+                        size="mini"
+                        type="primary"
+                        class="table_header_btn"
+                        @click="saveOpinion"
+                >提交</el-button
+                >
+                <el-button
+                        size="mini"
+                        type="primary"
+                        class="table_header_btn"
+                        @click="dialogFlowItemShow = false"
+                >关闭</el-button
+                >
+              </span>
         </el-dialog>
-        <el-dialog title="流程" :visible.sync="dialogFlowVisible" :close-on-click-modal="false">
+        <el-dialog title="流程跟踪" :visible.sync="dialogFlowVisible" :close-on-click-modal="false">
+            <div>
+                <flowOpinionList></flowOpinionList>
+            </div>
         </el-dialog>
         <el-dialog title="下载" :visible.sync="dialogdownLoadVisible" :close-on-click-modal="false">
         </el-dialog>
         <el-dialog title="文件预览" :visible.sync="dialogFileVisible" :close-on-click-modal="false">
             <div class="detail-form">
                 <template class="detail-form">
-                    <!--                    :key="tableKey"-->
-                    <!--                    v-loading="listLoading"-->
-                    <!--                    <el-table-->
-                    <!--                            :data="countList"-->
-                    <!--                            stripe-->
-                    <!--                            border-->
-                    <!--                            fit-->
-                    <!--                            style="width: 100%;"-->
-                    <!--                            highlight-current-row-->
-                    <!--                            @current-change="handleCurrentChange"-->
-                    <!--                    >-->
-                    <!--                        <el-table-column type="index" width="50"></el-table-column>-->
-                    <!--                        <el-table-column label="申请名称" align="center" prop="shenqingmingcheng" />-->
-                    <!--                    </el-table>-->
                 </template>
             </div>
             <div slot="footer" class="table-footer">
@@ -154,14 +162,16 @@
     </div>
 </template>
 <script>
-    ///查询条件
     import QueryField from '@/components/public/query-field/index'
-    //分页组件
-    import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+    import Pagination from '@/components/Pagination'
     import {listByPage} from '@/api/data/exportApproval'
+    import flowOpinionList from "@/components/starflow/todowork/flowOpinionList";
+    import FlowItem from '@/components/starflow/todowork/flowItem'
+
+
 
     export default {
-        components: {Pagination, QueryField},
+        components: { FlowItem,flowOpinionList,Pagination, QueryField},
         data() {
             return {
                 //查询条件
@@ -179,53 +189,26 @@
                         value: ''
                     },
                     {
-                        label: '列表类型',
-                        name: 'LisrType',
+                        label: '状态',
+                        name: 'status',
                         type: 'select',
-                        data: [{name: '草稿', value: 1}, {name: '待办理', value: 2}, {name: '已办理', value: 3}],
+                        data: [{name: '草稿', value: 0}, {name: '待办理', value: 1}, {name: '已办理', value: 2}],
                     },
                     {
                         label: "申请时间范围",
-                        name: "requsetTimePeriod",
-                        type: "timePeriod",
-                        data: [],
-                        default: "-1",
+                        name: "requsetTime",
+                        type: "timePeriod"
                     }
                 ],
-                // //复选框选中个数
-                // selections: [],
+                //复选框选中个数
+                selections: [],
                 //查询列表的接口主键
-                // tableKey: 'dataRoleUuid',
                 tableKey: '',
+                dataExportUuid:'',
                 //表单加载
                 listLoading: false,
                 //表单列表
                 tableData: [],
-                // tableData: [{
-                //     requestModelName: 'SQL编辑器',
-                //     requestTime: '2016-05-02',
-                //     refSafeTable: '安全表',
-                //     tableSafeLevel: '三级',
-                //     currentLink:'',
-                //     status:'待办理',
-                //     requestPersionName:''
-                // }, {
-                //     requestModelName: 'SQL编辑器SQL编辑器SQL编辑器SQL编辑器',
-                //     requestTime: '2016-05-02 11:11:00',
-                //     refSafeTable: '安全表2安全表2安全表2安全表2安全表2安全表2安全表2安全表2安全表2',
-                //     tableSafeLevel: '三级2',
-                //     currentLink:'',
-                //     status:'已办理',
-                //     requestPersionName:''
-                // },{
-                //     requestModelName: 'SQL编辑器2',
-                //     requestTime: '2016-05-02',
-                //     refSafeTable: '安全表2',
-                //     tableSafeLevel: '三级2',
-                //     currentLink:'',
-                //     status:'草稿',
-                //     requestPersionName:''
-                // }],
                 //页面列表分页
                 pageQuery: {
                     condition: null,
@@ -235,8 +218,6 @@
                     sortName: 'create_time'
                 },
                 total: 0,
-                //之前页面的类型
-                // authenTypeJson: [],
                 //列表按钮对应弹框
                 dialogTransactVisible: false,
                 dialogFlowVisible: false,
@@ -247,14 +228,23 @@
                 totalVisible: false
             }
         },
-        //vue声明周期 页面刷新前执行 getList获取总条数
         created() {
             this.getList()
         },
 
         methods: {
+            //复选框操作
+            handleSelectionChange(val) {
+                this.selections = val
+            },
             //办理
             handleTransact() {
+                console.log(this.selections,'this.selections')
+                debugger
+                if (this.selections[0].workFlowState == '2') {
+                    this.$notify.warning("办理完成的业务不可提交")
+                    return
+                }
                 this.dialogTransactVisible = true
             },
             //分页
@@ -269,13 +259,11 @@
                 this.getList()
             },
 
-            // //复选框操作
-            // handleSelectionChange(val) {
-            //     this.selections = val
-            // },
+
 
             //查看流程
-            showFlow() {
+            showFlow(row) {
+                this.applyUuid = row.dataExportUuid;
                 this.dialogFlowVisible = true
             },
             //下载
@@ -295,16 +283,6 @@
                 this.totalVisible = true
             },
 
-
-            // //原页面授权方式状态转换码
-            // formatAuthenType(row, column) {
-            //     var data = getDictList('004001')
-            //     // var authenObj = data.filter(obj => { return obj.codeValue === row.authenType })
-            //     // if (authenObj !== null) {
-            //     //     return authenObj[0].codeName
-            //     // }
-            // },
-
             //状态转换
             statusFormat(row, column){
                 let status = {
@@ -314,7 +292,6 @@
                 }
                 return status[row.status]
             },
-
             //分页查询
             getList(query) {
                 if (query) this.pageQuery.condition = query
