@@ -836,9 +836,7 @@ export default {
               duration: 2000,
               position: "bottom-right",
             });
-
             this.update_tree();//更新左侧树
-
             this.query_list(this.$refs.tree_left.query, false);
           } else {
             this.$message({
@@ -1056,7 +1054,6 @@ export default {
     // 点击切换树 切换 表单
     // 查看详情
     Details (tableMetaUuid, show_details, isDisable_input) {
-      console.log("1111111111111");
       this.tableMetaUuid = tableMetaUuid
       this.show_details = show_details;
       this.isDisable_input = isDisable_input;

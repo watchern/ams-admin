@@ -38,7 +38,6 @@ export default {
   },
   methods: {
     init (num) {
-      console.log("22222222222222");
       if (num) {
         this.myDiagram.div = null;
         this.nodeDataArray = [];
