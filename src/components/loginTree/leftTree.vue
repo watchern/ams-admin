@@ -102,7 +102,8 @@
                class="el-icon-c-scale-to-original" />
             <span>{{ node.label }}</span>
             <span style="margin-left: 10px">
-              <el-button v-if="loadLeftTreeType==='3' && isPersonSpaceAdminRole && data.sceneInstUuid==='allBankSpaceFolder'"
+              <el-button v-if="loadLeftTreeType==='3' && isPersonSpaceAdminRole && data.type==='folder' &&
+                        data.sceneInstUuid==='allBankSpaceFolder'"
                   title="添加文件夹"
                   type="text"
                   size="mini"
@@ -111,7 +112,7 @@
               >
                 <svg-icon icon-class="icon-add-1" />
               </el-button>
-              <el-button v-if="loadLeftTreeType==='3' && isPersonSpaceAdminRole && 
+              <el-button v-if="loadLeftTreeType==='3' && isPersonSpaceAdminRole && data.type==='folder' &&
                         data.sceneInstUuid==='allBankSpaceFolder' && data.id != 'allBankSpaceFolder'"
                   title="修改文件夹"
                   type="text"
@@ -121,7 +122,7 @@
               >
                 <svg-icon icon-class="icon-edit-1" />
               </el-button>
-              <el-button v-if="loadLeftTreeType==='3' && isPersonSpaceAdminRole && 
+              <el-button v-if="loadLeftTreeType==='3' && isPersonSpaceAdminRole && data.type==='folder' &&
                         data.sceneInstUuid==='allBankSpaceFolder' && data.id != 'allBankSpaceFolder'"
                   title="删除文件夹"
                   type="text"
