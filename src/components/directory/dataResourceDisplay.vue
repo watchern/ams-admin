@@ -236,7 +236,7 @@
                      @current-change="handleCurrentChange"
                      :page-size="list_data.size"
                      background
-                     :current-page-sync="list_data.current"
+                     :current-page.sync="list_data.current"
                      layout="total, sizes, prev, pager, next, jumper"
                      :total="list_data.total"
                      v-if="list_data.total"></el-pagination>
