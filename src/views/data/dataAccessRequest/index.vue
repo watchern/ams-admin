@@ -9,11 +9,13 @@
         </div>
         <el-row>
             <el-col align="right">
-                <el-button type="primary" class="oper-btn add" @click="handleAdd()" />
-                <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
-                <el-button type="primary" class="oper-btn delete" @click="handleDel()" />
-                <el-button type="primary" class="oper-btn transact" @click="handleTransact()" />
-                <el-button type="primary" class="oper-btn export" @click="handleExport()" />
+                <el-button type="primary" class="oper-btn add" @click="handleAdd()"/>
+                <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1"
+                           @click="handleUpdate()"/>
+                <el-button type="primary" class="oper-btn delete" :disabled="selections.length == 0"
+                           @click="handleDel()"/>
+                <el-button type="primary" class="oper-btn transact" @click="handleTransact()"/>
+                <el-button type="primary" class="oper-btn export" @click="handleExport()"/>
             </el-col>
         </el-row>
         <el-table
@@ -29,7 +31,7 @@
                 height="calc(100vh - 330px)"
                 @sort-change="sortChange"
         >
-            <el-table-column type="selection" width="55" />
+            <el-table-column type="selection" width="55"/>
             <el-table-column
                     label="申请名称"
                     prop="requestName"
@@ -74,19 +76,14 @@
                     show-overflow-tooltip
             />
             <el-table-column label="操作" align="center" min-width="100px">
-<!--                    <el-button-->
-<!--                            type="primary"-->
-<!--                            class="oper-btn"-->
-<!--                            style="width: auto"-->
-<!--                            @click="showFlow()">流程查看-->
-<!--                    </el-button>-->
                 <template slot-scope="scope">
                     <el-link
                             @click="showFlow(scope.row)"
                             type="primary"
                             :underline="false"
                             class="linkClass"
-                    >流程跟踪</el-link>
+                    >流程跟踪
+                    </el-link>
                 </template>
             </el-table-column>
         </el-table>
@@ -117,68 +114,60 @@
                     <el-form-item prop="requestTableName" label="申请表名称">
                         <el-button @click="add()" style="float:right">添加一行</el-button>
                         <div v-for="(item,index) in requestTableNamelist" :key="item.id" style="display:flex">
-                            <el-input v-model="item.name" /> <div @click="goDelete(index)" style="margin-left: 10px;cursor:pointer">×</div>
+                            <el-input v-model="item.name"/>
+                            <div @click="goDelete(index)" style="margin-left: 10px;cursor:pointer">×</div>
                         </div>
                     </el-form-item>
                     <el-form-item prop="remark" label="备注">
-                        <el-input v-model="temp.remark" />
+                        <el-input v-model="temp.remark"/>
                     </el-form-item>
                 </el-form>
             </template>
             <div slot="footer">
                 <el-button @click="closeDialog()"
-                >取消</el-button
+                >取消
+                </el-button
                 >
                 <el-button
                         type="primary"
                         @click="dialogStatus === 'create' ? createData() : updateData()"
-                >保存</el-button
+                >保存
+                </el-button
                 >
             </div>
         </el-dialog>
         <el-dialog title="办理" :visible.sync="dialogTransactVisible" :close-on-click-modal="false">
         </el-dialog>
-<!--        流程跟踪弹框-->
-<!--        <el-dialog-->
-<!--                title="流程跟踪"-->
-<!--                :visible.sync="todoFlow"-->
-<!--                v-if="todoFlow"-->
-<!--                width="80%"-->
-<!--        >-->
-<!--            <div>-->
-<!--                <flowOpinionList-->
-<!--                        :applyUuid="applyUuid"-->
-<!--                        :pageFrom="applyPage"-->
-<!--                ></flowOpinionList>-->
-<!--            </div>-->
-<!--            <span slot="footer">-->
-<!--        <el-button-->
-<!--                size="mini"-->
-<!--                type="info"-->
-<!--                class="table_header_btn"-->
-<!--                @click="todoFlow = false"-->
-<!--        >关闭</el-button-->
-<!--        >-->
-<!--        </span>-->
-<!--        </el-dialog>-->
+        <el-dialog
+                title="流程跟踪"
+                :visible.sync="dialogFlowVisible"
+                :close-on-click-modal="false"
+        >
+            <div>
+                <flowOpinionList></flowOpinionList>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
     import QueryField from '@/components/public/query-field/index'
     import Pagination from '@/components/Pagination'
-    import { listByPage,save,update,del,exportData } from '@/api/data/accessRequest'
-    // import flowOpinionList from "@/components/starflow/todowork/flowOpinionList";
+    import {listByPage, save, update, del, exportData} from '@/api/data/accessRequest'
+    import flowOpinionList from "@/components/starflow/todowork/flowOpinionList";
+
     import axios from "axios";
     import qs from "qs";
 
     export default {
-        // flowOpinionList
-        components: { Pagination, QueryField },
+        components: { flowOpinionList,Pagination, QueryField},
         data() {
             return {
                 //新增/修改弹框申请表名称数组
-                requestTableNamelist:[],
+                requestTableNamelist: [{
+                    id: 0,
+                    name: '',
+                }],
                 //查询条件
                 queryFields: [
                     {
@@ -198,12 +187,12 @@
                         name: 'dataStatus',
                         type: 'select',
                         data: [
-                            { name: '需求提出', value:0 },
-                            { name: '上游协调', value:1 },
-                            { name: '数据推送', value:2 },
-                            { name: '数据接入', value:3 },
-                            { name: '数据上线', value:4 }
-                            ],
+                            {name: '需求提出', value: 0},
+                            {name: '上游协调', value: 1},
+                            {name: '数据推送', value: 2},
+                            {name: '数据接入', value: 3},
+                            {name: '数据上线', value: 4}
+                        ],
                     },
                     {
                         label: "申请时间范围",
@@ -230,9 +219,9 @@
                     sortName: 'create_time'
                 },
                 //新增修改弹框
-                dialogFormVisible:false,
-                dialogStatus:"",
-                textMap:{
+                dialogFormVisible: false,
+                dialogStatus: "",
+                textMap: {
                     create: "新增",
                     update: "修改",
                 },
@@ -240,53 +229,31 @@
                     dataAccessReqUuid: undefined,//主键
                     requestName: "",//申请名称
                     requestTime: "",//申请时间
-                    currentCirPerName:"",//当前环节办理人名称
+                    currentCirPerName: "",//当前环节办理人名称
                     requestTableName: "",//申请表名称
                     dataStatus: "",
                     requestPersionName: "",
                     remark: "",
-                    requestTableNamelist:[]
+                    requestTableNamelist: []
                 },
                 rules: {
                     requestName: [
-                        { required: true, message: "申请名称不能为空", trigger: 'blur' },
+                        {required: true, message: "申请名称不能为空", trigger: 'blur'},
                     ],
-                    //申请表名称 现在换成多条了  requestTableNamelist数组
-                    // requestTableName: [
-                    //     { required: true, message: "申请表名称不能为空", trigger: 'blur' },
-                    // ],
+                    requestTableName: [
+                        {required: true, message: "申请表名称不能为空", trigger: 'blur'},
+                    ],
                 },
                 //办理按钮弹框
-                dialogTransactVisible:false,
+                dialogTransactVisible: false,
                 //查看流程弹框
-                dialogFlowVisible:false,
+                dialogFlowVisible: false,
             }
         },
         created() {
             this.getList()
         },
         methods: {
-            // //申请时间格式化
-            // dateFormatter(row, column) {
-            //     debugger
-            //     const datetime = row.requsetTime
-            //     console.log(datetime)
-            //     if (datetime) {
-            //         var dateMat = new Date(datetime)
-            //         var year = dateMat.getFullYear()
-            //         var month = dateMat.getMonth() + 1
-            //         var day = dateMat.getDate()
-            //         var hh = dateMat.getHours()
-            //         var mm = dateMat.getMinutes()
-            //         var ss = dateMat.getSeconds()
-            //         console.log(dateMat,'dateMat')
-            //         console.log(year,'year')
-            //         var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
-            //         console.log(timeFormat,'timeFormat')
-            //         return timeFormat
-            //     }
-            //     return ''
-            // },
             //数据状态格式化
             dataStatusFormat(row, column) {
                 let dataStatus = {
@@ -299,47 +266,54 @@
                 return dataStatus[row.dataStatus]
             },
             //关闭新增/修改弹窗
-            closeDialog(){
+            closeDialog() {
                 this.dialogFormVisible = false
-                this.requestTableNamelist = []
+                this.requestTableNamelist = [
+                    {
+                        id: "0",
+                        name: ""
+                    }
+                ]
             },
             //新增申请表名称
-            add(){
-                let obj ={
-                    id:"",
-                    name:""
+            add() {
+                let obj = {
+                    id: "",
+                    name: ""
                 }
                 this.requestTableNamelist.push(obj)
             },
             //删除添加的申请表名称输入框
-            goDelete(index){
+            goDelete(index) {
                 //控制删除添加的必留
-                if(this.requestTableNamelist.length>1){
-                    this.requestTableNamelist.splice(index,1)
+                if (this.requestTableNamelist.length > 1) {
+                    this.requestTableNamelist.splice(index, 1)
                 }
             },
             //重置
             resetTemp() {
                 this.temp = {
-                    dataAccessReqUuid:'',
+                    dataAccessReqUuid: '',
                     requestName: '',
                     requestTableName: '',
                     remark: '',
-                    requestTableNamelist:[]
+                    requestTableNamelist: []
                 }
             },
             //添加按钮
-            handleAdd(){
+            handleAdd() {
                 this.resetTemp();
                 this.dialogStatus = "create";
                 this.dialogFormVisible = true;
-                this.requestTableNamelist= []
-        },
+                this.$nextTick(() => {
+                    this.$refs['dataForm'].clearValidate()
+                })
+            },
             //新增保存
-            createData(){
-                var arr =[]
-                this.requestTableNamelist.forEach((item,index) =>{
-                    if(item.name){
+            createData() {
+                var arr = []
+                this.requestTableNamelist.forEach((item, index) => {
+                    if (item.name) {
                         arr.push(item.name)
                     }
                 })
@@ -360,9 +334,10 @@
                         })
                     }
                 })
+
             },
             //修改按钮
-            handleUpdate(){
+            handleUpdate() {
                 this.dialogStatus = "update";
                 this.dialogFormVisible = true;
                 this.$nextTick(() => {
@@ -370,20 +345,23 @@
                 })
                 this.temp = Object.assign({}, this.selections[0])
                 //将表名拆分成数组
+                if (this.temp) {
                     var arr = this.temp.requestTableName.split(",")
-                    arr.forEach(item=>{
-                        let obj ={
+                    arr.forEach(item => {
+                        let obj = {
                             id: '',
-                            name:item
+                            name: item
                         }
                         this.requestTableNamelist.push(obj)
                     })
+                }
+
             },
             //修改保存
             updateData() {
-                var arr =[]
-                this.requestTableNamelist.forEach((item,index) =>{
-                    if(item.name){
+                var arr = []
+                this.requestTableNamelist.forEach((item, index) => {
+                    if (item.name) {
                         arr.push(item.name)
                     }
                 })
@@ -408,9 +386,11 @@
                 })
             },
             //删除
-            handleDel(){
+            handleDel() {
                 var ids = []
-                this.selections.forEach((r, i) => { ids.push(r.dataAccessReqUuid)})
+                this.selections.forEach((r, i) => {
+                    ids.push(r.dataAccessReqUuid)
+                })
                 this.$confirm('此操作将永久删除这些数据，是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -431,11 +411,11 @@
             },
 
             //办理
-            handleTransact(){
+            handleTransact() {
                 this.dialogTransactVisible = true
             },
             //导出按钮
-            handleExport(){
+            handleExport() {
                 axios
                     .post(`/data/accessRequest/dataAccReqExcelInfo`, qs.stringify({}), {
                         // qs.stringify 定义传参格式
@@ -446,26 +426,25 @@
                             "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式
                         },
                     })
-                .then((res) => {
-                    //decodeURI函数用于解码 URI 参数是url 返回值是解码后的字符串
-                    const filename = decodeURI(
-                        res.headers["content-disposition"].split(";")[1].split("=")[1]
-                    );
-                    const blob = new Blob([res.data], {
-                        type: "application/octet-stream",
+                    .then((res) => {
+                        //decodeURI函数用于解码 URI 参数是url 返回值是解码后的字符串
+                        const filename = decodeURI(
+                            res.headers["content-disposition"].split(";")[1].split("=")[1]
+                        );
+                        const blob = new Blob([res.data], {
+                            type: "application/octet-stream",
+                        });
+                        debugger
+                        //创建下载链接
+                        const url = window.URL.createObjectURL(blob);
+                        const link = document.createElement("a");
+                        link.style.display = "none";
+                        link.href = url;  //链接到创建的下载地址
+                        link.setAttribute("download", filename); //下载后文件名
+                        document.body.appendChild(link); //下载完成移除元素
+                        link.click(); //点击下载
                     });
-                    debugger
-                    //创建下载链接
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement("a");
-                    link.style.display = "none";
-                    link.href = url;  //链接到创建的下载地址
-                    link.setAttribute("download", filename); //下载后文件名
-                    document.body.appendChild(link); //下载完成移除元素
-                    link.click(); //点击下载
-                });
             },
-
             // handleExport(){
             //     var obj={
             //         requestName:"111"
@@ -510,7 +489,7 @@
             // // },
             //分页
             sortChange(data) {
-                const { prop, order } = data
+                const {prop, order} = data
                 this.pageQuery.sortBy = order
                 this.pageQuery.sortName = prop
                 this.handleFilter()
@@ -524,9 +503,10 @@
                 this.selections = val
             },
             //查看流程
-            showFlow(){
-                this.dialogFlowVisible=true
+            showFlow() {
+                this.dialogFlowVisible = true
             },
+
             getList(query) {
                 this.listLoading = true
                 if (query) this.pageQuery.condition = query
@@ -536,7 +516,7 @@
                     this.listLoading = false
                 })
             },
-            getSortClass: function(key) {
+            getSortClass: function (key) {
                 const sort = this.pageQuery.sort
                 return sort === `+${key}` ? 'asc' : 'desc'
             },
