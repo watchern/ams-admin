@@ -12,10 +12,16 @@
           <el-option label="全部" value="" />
           <el-option v-for="opt in fd.data" :label="opt.name" :value="opt.value" />
         </el-select>
-        <template v-if="fd.type==='timePeriod'">
-          <el-date-picker v-model="query[fd.name+'Start']" :type="dateType" placeholder="开始时间" :style="timeStyle"/>
-          <el-date-picker v-model="query[fd.name+'End']" :type="dateType" placeholder="结束时间" :style="timeStyle"/>
-        </template>
+          <template v-if="fd.type==='timePeriod'">
+              <el-date-picker v-model="query[fd.name+'Start']" :type="dateType" placeholder="开始时间" :style="timeStyle"
+                              :picker-options="(query[fd.name+'End'] != null &&  query[fd.name+'End'] != '') ?
+                               { disabledDate(time) { return query[fd.name+'End'] <  time.getTime() }} :
+                               { disabledDate() { return null }}" />
+              <el-date-picker v-model="query[fd.name+'End']" :type="dateType" placeholder="结束时间" :style="timeStyle"
+                              :picker-options="(query[fd.name+'Start'] != null  &&  query[fd.name+'Start'] != '')  ?
+                               { disabledDate(time) { return time.getTime() <  query[fd.name+'Start'] }} :
+                               { disabledDate() { return null }}" />
+          </template>
       </el-form-item>
 
       <el-form-item v-if="searchBar == '0'">
