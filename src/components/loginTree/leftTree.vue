@@ -786,6 +786,9 @@ export default {
           this.$emit("details", this.tableMetaUuid, this.show_details, this.isDisable_input);
         }
       } else {
+        if(data.type==='column'){
+          return false
+        }
         // 进入详情
         this.tableMetaUuid = node.data.id;
         this.show_details = true;
