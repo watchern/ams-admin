@@ -138,10 +138,10 @@
 import { commonNotify } from '@/utils'
 import MyElTree from "@/components/public/tree/src/tree.vue";
 import {
-  getBusinessSystemTree, //系统
-  getThemeTree, //主题
-  getLayeredTree, //分层
-  delTable,
+    getBusinessSystemTree, //系统
+    getThemeTree, //主题
+    getLayeredTree, //分层
+    delTable, delByTableMetaUuid, moveFolder4Authority,
 } from "@/api/data/table-info";
 import {
   getPersonSpaceTree, //个人空间
@@ -825,6 +825,8 @@ export default {
                 // 分层
                 this.post_getLayeredTree(); //分层
               }
+              // 同步删除数据收授权下的资源
+              delByTableMetaUuid(data.id,this.query.dataSource);
             });
           } else {
             delFolder(data.id).then((resp) => {
