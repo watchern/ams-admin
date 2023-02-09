@@ -1721,6 +1721,46 @@ export function getPersonSpaceTree(dataUserId, scenecode, dataSource, treeType) 
   })
 }
 
+//获取当前登陆人是否有个人空间管理员角色
+export function getLoginUserAdminRole() {
+  return request({
+    baseURL: dataUrl,
+    url: '/tableMeta/getLoginUserAdminRole',
+    method: 'post',
+    params: {}
+  })
+}
+
+//保存文件夹
+export function saveAllSpaceFolder(params) {
+  return request({
+    baseURL: dataUrl,
+    url: '/folder/save',
+    method: 'post',
+    data:params
+  })
+}
+
+//删除文件夹
+export function deleteAllSpaceFolder(ids) {
+  return request({
+    baseURL: dataUrl,
+    url: `/folder/delete/${ids}`,
+    method: 'delete',
+  })
+}
+
+//修改文件夹
+export function editAllSpaceFolder(params) {
+  return request({
+    baseURL: dataUrl,
+    url: '/folder/update',
+    method: 'put',
+    data:params
+  })
+}
+
+
 /**
  * 节点右键事件
  * @param type 类型

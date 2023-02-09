@@ -31,7 +31,7 @@
           <ul id="dataTree"
               class="ztree"
               style="margin-top: 5px" /> -->
-          <LeftTrees ref="tree_left" ></LeftTrees>
+          <LeftTrees ref="tree_left" @nodeContextmenuSQLEditor="nodeContextmenuSQLEditor" ></LeftTrees>
         </div>
         <div class="left-paramTree">
           <el-input id="paramSearch"
@@ -416,7 +416,11 @@
                :append-to-body="true"
                class="tableInfo">
       <!-- 基本信息详情 -->
-      <Details ref="Details_ref"></Details>
+      <Details ref="Details_ref"
+              :isDisable_input="true"
+              :is_Edit_list="0"
+              :dataSource="tableDetailsDataSource"
+              :tableMetaUuid="detailsTableMetaUuid"></Details>
       <div slot="footer"
            class="dialog-footer">
         <el-button @click="selectTableInfoDialog = false">关闭</el-button>
@@ -802,6 +806,8 @@ export default {
       personalTitle: '审计人员场景',
       // 是否为管理员身份
       isManager: false,
+      tableDetailsDataSource:'',//查看表详细信息时 需要的数据源
+      detailsTableMetaUuid:'',//查看表详细信息时 表主键 
     };
   },
   watch: {
@@ -1873,10 +1879,16 @@ export default {
      * 查看表信息
      */
     selectTableInfo (tableMenu) {
-      var nodes = getZtreeSelectNode();
-      this.selectTableInfoTableId = nodes[0].id;
+      /* var nodes = getZtreeSelectNode();
+      this.selectTableInfoTableId = nodes[0].id; */
       this.selectTableInfoDialog = true;
+      
+      this.tableDetailsDataSource = this.$refs.tree_left.query.dataSource;
+      
       hideRMenu(tableMenu);
+    },
+    nodeContextmenuSQLEditor(data){
+      this.detailsTableMetaUuid = data.id
     },
   },
 };
@@ -1895,7 +1907,7 @@ export default {
 }
 #rightPart {
   /*width: 69.6732%;*/
-  width: 84.82%;
+  width: 81%;
   position: relative;
   padding: 0;
   overflow: hidden;
@@ -1974,7 +1986,7 @@ export default {
 
 #vertical {
   position: absolute;
-  left: 15.08%;
+  left: 18.08%;
   height: 100%;
   width: 8px;
   /* overflow: hidden; */
@@ -2055,7 +2067,8 @@ export default {
 .left-part {
   overflow-x: hidden;
   overflow-y: auto;
-  width: 14.66666667%;
+  /* width: 14.66666667%; */
+  width: 18%;
   /*width: 29.6732%;*/
   float: left;
   height: 100%;
