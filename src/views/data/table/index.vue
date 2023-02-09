@@ -341,7 +341,7 @@
               </el-form-item>
             </div>
             <!-- 数据标签 -->
-            <div class="son">
+            <!-- <div class="son">
               <div class="son_check">
                 <el-form-item label="数据标签：">
                   <div class="_width tag_conter">
@@ -358,7 +358,7 @@
                            class="oper-btn"
                            @click="check_tag()">选择</el-button>
               </div>
-            </div>
+            </div> -->
           </el-form>
           <!-- 列信息 -->
           <div class="padding10_l">
@@ -411,11 +411,11 @@
       </el-dialog>
 
       <!-- 选择标签 -->
-      <select-label title="选择标签"
+      <!-- <select-label title="选择标签"
                     :visible.sync="dialogVisible_tag"
                     :close-on-click-modal="false"
                     :has-selected="form.labelList"
-                    @confirm="confirmSelectLabel"></select-label>
+                    @confirm="confirmSelectLabel"></select-label> -->
 
       <!-- 认权管理 -->
       <el-dialog title="认权管理"
@@ -1327,12 +1327,9 @@ export default {
       }, 2000);
       this.$refs[form].validate((valid) => {
         if (valid) {
-          // var ckFolder = this.$refs.tree2.getCurrentNode();
-          // ckTbs.filter((tb) => { return tb.type === "TABLE"; }).forEach((node) => {
           let names = this.form.check_list.map((item) => item["fileName"]);
           let nameSet = new Set(names);
           if (nameSet.size == names.length) {
-            //
             for (var i = 0; i < this.form.check_list.length; i++) {
               const tableForm = {
                 chnName: this.form.chnName,
@@ -1342,7 +1339,6 @@ export default {
                 tbName: this.form.check_list[i].label,
                 folderUuid: this.form.folderUuid, //目录id
                 personLiables: this.form.personLiables, // 资源责任人
-                // increment: this.form.increment,//是否增量
                 isSpike: this.form.isSpike, //是否增量
                 labelList: this.form.labelList,
                 tableRelationQuery: {
@@ -1381,7 +1377,6 @@ export default {
               } else {
                 this.btnLoading = false;
                 this.$message.error(res.msg);
-
               }
               this.dialogVisible_information = false;//关闭注册资源
               this.registTableFlag = false; //关闭上一步

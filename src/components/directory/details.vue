@@ -215,7 +215,7 @@
                   </el-form-item>
                 </div>
 
-                <div class="son_check">
+                <!-- <div class="son_check">
                   <el-form-item label="数据标签：">
                     <div class="_width tag_conter">
                       <el-tag :key="tag.labelLibraryId"
@@ -232,7 +232,7 @@
                              v-if="isDisable_input == false"
                              :disabled="isDisable_input"
                              @click="check_tag()">选择</el-button>
-                </div>
+                </div> -->
 
                 <el-form-item label="表热度：">
                   <ul class="Heat_ul _width">
@@ -379,11 +379,11 @@
     </div>
 
     <!-- 选中标签 -->
-    <select-label title="选择标签"
+    <!-- <select-label title="选择标签"
                   :visible.sync="dialogVisible_tag"
                   :close-on-click-modal="false"
                   :has-selected="form.labelList"
-                  @confirm="confirmSelectLabel"></select-label>
+                  @confirm="confirmSelectLabel"></select-label> -->
 
     <!-- 查看sql -->
     <el-dialog title="查看sql"
@@ -744,7 +744,7 @@ export default {
         personUuid: "", //资源责任人
         partitions: "", //表分区
         isSpike: 1, //是否增量
-        labelList: [],
+        labelList: [], // 标签
         tableLayeredName: '',//数据源
       },
 
