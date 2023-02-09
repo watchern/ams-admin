@@ -412,12 +412,14 @@
     </el-dialog>
     <el-dialog title="表信息"
                :visible.sync="selectTableInfoDialog"
+               :close-on-click-modal="false"
                width="60%"
                :append-to-body="true"
                class="tableInfo">
       <!-- 基本信息详情 -->
       <Details ref="Details_ref"
               :isDisable_input="true"
+              :isHide_step="false"
               :is_Edit_list="0"
               :dataSource="tableDetailsDataSource"
               :tableMetaUuid="detailsTableMetaUuid"></Details>
