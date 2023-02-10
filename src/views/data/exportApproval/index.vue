@@ -118,8 +118,9 @@
                 :limit.sync="pageQuery.pageSize"
                 @pagination="getList"
         />
-        <el-dialog title="办理" v-if="dialogFlowItemShow" :visible.sync="dialogTransactVisible" :close-on-click-modal="false">
+        <el-dialog title="办理" :visible.sync="dialogTransactVisible" :close-on-click-modal="false">
             <div>
+                <div>待开发</div>>
                 <FlowItem></FlowItem>
             </div>
             <span class="sess-flowitem" slot="footer">
@@ -139,16 +140,18 @@
                 >
               </span>
         </el-dialog>
-        <el-dialog title="流程跟踪" :visible.sync="dialogFlowVisible" :close-on-click-modal="false">
+        <el-dialog title="流程跟踪---待开发" :visible.sync="dialogFlowVisible" :close-on-click-modal="false">
             <div>
                 <flowOpinionList></flowOpinionList>
             </div>
         </el-dialog>
         <el-dialog title="下载" :visible.sync="dialogdownLoadVisible" :close-on-click-modal="false">
+            <div>待开发</div>>
         </el-dialog>
         <el-dialog title="文件预览" :visible.sync="dialogFileVisible" :close-on-click-modal="false">
             <div class="detail-form">
                 <template class="detail-form">
+                    <div>待开发</div>
                 </template>
             </div>
             <div slot="footer" class="table-footer">
@@ -262,8 +265,7 @@
 
 
             //查看流程
-            showFlow(row) {
-                this.applyUuid = row.dataExportUuid;
+            showFlow() {
                 this.dialogFlowVisible = true
             },
             //下载
