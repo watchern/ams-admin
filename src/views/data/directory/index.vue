@@ -13,6 +13,7 @@
                            :isBtn="isBtn"
                            @handleCurrentChange="handleCurrent"
                            @handleSizeChange="handleSize"
+                           @search="search"
                            :list="list"
                            :list_data="list_data"
                            :list_loading="list_loading"
@@ -121,6 +122,26 @@ export default {
       this.$refs.dataTree.query.pageSize = val;
       this.query_list_data(this.$refs.dataTree.query, false);
     },
+    search(serachParams){
+      this.list_loading = true;
+      let data = this.$refs.dataTree.query;
+      let params = {
+        businessSystemId: data.businessSystemId, //id主键
+        tableThemeId: data.tableThemeId, //主题
+        tableLayeredId: data.tableLayeredId, //分层
+        folderUuid: data.folderUuid, //目录
+        dataSource: data.dataSource, //数据源
+        pageNo: data.pageNo,
+        pageSize: data.pageSize,
+        tbName: data.tbName,
+        param: serachParams
+      };
+      listByTreePage(params).then(res => {
+        this.list_loading = false; //子组件loading
+        this.list_data = res.data;
+        this.list = res.data.records;
+      });
+    }
   },
 };
 </script>

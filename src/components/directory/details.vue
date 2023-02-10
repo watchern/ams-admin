@@ -1015,6 +1015,20 @@ export default {
         this.form.tbName = resp.data.tbName; //表名称
         this.form.chnName = resp.data.chnName; //中文名
         this.form.tableRemarks = resp.data.tableRelationQuery.tableRemarks; //表说明
+        var tempParam = resp.data.tableSize
+        if(tempParam == null || tempParam == ''){
+          this.form.tableSize = 0
+        }
+        var length = tempParam.length
+        if(length == 0 || length ==1){
+          this.$notify.error("表大小单位错误")
+          return
+        }
+        //取出 表大小的值  ?KB 就取KB 之前的值   ?B 就取 B 之前的值
+        var tempValue = length > 2 ? tempParam.substr(0,length - 2) : tempParam.substr(0,length - 1)
+        if(tempValue == 0 || tempValue == 'null' || tempValue == 'NULL'){
+          this.form.tableSize = 0
+        }
         this.form.tableSize = resp.data.tableSize; //表大小
         this.form.rowNum = resp.data.rowNum; //表数据量
         let tableCode = resp.data.tableRelationQuery.tableCode.substring(
