@@ -256,16 +256,15 @@
           <li @click="selectTableInfo('tableMenu')">查看表信息</li>
         </ul>
       </div>
-      <div id="paramfolderMenu"
-           class="rightMenu">
+      <div id="paramfolderMenu" class="rightMenu">
         <ul>
           <li @click="addParamForm()">添加参数</li>
           <li @click="setSelectTreeNode(1)">添加分类</li>
-          <!--<li onclick="">查看表信息</li>-->
+          <li @click="setSelectTreeNode(2)">修改分类</li>
+          <li @click="setSelectTreeNode(3)">删除分类</li>
         </ul>
       </div>
-      <div id="paramMenu"
-           class="rightMenu">
+      <div id="paramMenu" class="rightMenu">
         <ul>
           <li @click="updateParamForm()">修改参数</li>
           <li @click="deleteParam()">删除参数</li>
@@ -922,21 +921,34 @@ export default {
      * 设置选中的节点
      * @param node 整个节点数据
      * @param data 数据 要设置的节点数据
-     * @param operationType 1、添加；2、修改
+     * @param operationType 1、添加；2、修改 3、删除
      */
     setSelectTreeNode (operationType) {
+      var isShowOperation = true
       this.pfd = $("#paramfolderdatabox").val();
-      console.log(this.pfd);
       this.operationType = operationType;
       this.selectTreeNode = this.pfd;
       if (operationType === 2) {
         if (this.pfd.pid == 0) {
-          this.$message({ type: "info", message: "不允许修改根节点!" });
-          return;
+          this.$message({ type: "info", message: "不允许修改根节点" });
+          return false;
         }
         this.folderform.folderName = this.selectTreeNode.label;
       }
-      this.dialogFolderVisible = true;
+      if (operationType === 3) {
+        isShowOperation = false;
+        if (this.pfd.pid == 0) {
+          this.$message({ type: "info", message: "不允许删除根节点" });
+          return false;
+        }
+        if(this.pfd.children != undefined){
+          this.$message({ type: "info", message: "存在子节点,不允许删除" });
+          return false;
+        }
+        this.deleteModelParamFolder()
+      }
+      hideRMenu('paramfolderMenu')
+      this.dialogFolderVisible = isShowOperation
     },
     addModelParamFolder () {
       this.folderform.folderId = getUuid();
@@ -946,25 +958,39 @@ export default {
       addFolder(this.folderform).then((result) => {
         if (result.data != null) {
           this.refshParamList();
+          this.folderform.folderName = "";
           this.dialogFolderVisible = false;
-          this.$message({ type: "success", message: "添加成功!" });
+          this.$message({ type: "success", message: "添加成功" });
         } else {
-          this.$message({ type: "error", message: "添加失败!" });
+          this.$message({ type: "error", message: "添加失败" });
         }
       });
     },
     updateModelParamFolder () {
-      this.form.folderId = this.selectTreeNode.id;
-      this.form.parentFolderId = null;
-      this.form.folderPath = null;
+      this.folderform.folderId = this.selectTreeNode.id;
+      this.folderform.parentFolderId = null;
+      this.folderform.folderPath = null;
       //加入修改方法
-      editFolder(this.form).then((result) => {
+      editFolder(this.folderform).then((result) => {
         if (result.data != null) {
-          this.initTreeData();
-          this.form.folderName = "";
+          this.refshParamList();
+          this.folderform.folderName = "";
           this.dialogFolderVisible = false;
+          this.$message({ type: "success", message: "修改成功" });
         } else {
-          this.$message({ type: "error", message: "修改失败!" });
+          this.$message({ type: "error", message: "修改失败" });
+        }
+      });
+    },
+    deleteModelParamFolder () {
+      //加入删除方法
+      delFolder(this.selectTreeNode.id,this.selectTreeNode.label).then((result) => {
+        if (result.data != null) {
+          this.refshParamList();
+          hideRMenu('paramfolderMenu')
+          this.$message({ type: "success", message: "删除成功" });
+        } else {
+          this.$message({ type: "error", message: "删除失败" });
         }
       });
     },
@@ -986,6 +1012,7 @@ export default {
       this.operationObj.paramUuid = "";
       this.dialogStatus = "create";
       this.addParamDialog = true;
+      hideRMenu('paramfolderMenu')
     },
     /**
      * 修改参数
@@ -1002,6 +1029,7 @@ export default {
       this.operationObj.paramUuid = selectObj.id;
       this.dialogStatus = "update";
       this.addParamDialog = true;
+      hideRMenu('paramMenu')
     },
     deleteParam () {
       let that = this;
@@ -1988,7 +2016,7 @@ export default {
 
 #vertical {
   position: absolute;
-  left: 18.08%;
+  left: 18.4%;
   height: 100%;
   width: 8px;
   /* overflow: hidden; */
@@ -2009,7 +2037,7 @@ export default {
 
 #horizontal {
   position: absolute;
-  top: 37%;
+  top: 40%;
   right: 0;
   /* width: 100vh; */
   width: 100%;

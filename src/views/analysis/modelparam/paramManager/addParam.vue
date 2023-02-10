@@ -1467,6 +1467,13 @@ export default {
         //type==2
         sql = $("#optionsSql").val();
       }
+      if(sql.trim()===""){
+        this.$message({
+          type: "info",
+          message: "请输入SQL语句",
+        });
+        return false
+      }
       this.seeDataSql = sql;
       this.seeSqlDataDialog = true;
     },
