@@ -947,8 +947,8 @@ export default {
         this.personReverseDisplay = [];
         personLibaleList.forEach(item => {
           personLibales.push(item.personName);
-          this.personReverseDisplay.push(item.personUuid);
         });
+        this.personReverseDisplay = personLibaleList;
         this.Recognition.personName_str = personLibales.join("、")
       });
       this.visible_Recognition = true;

@@ -20,7 +20,7 @@
                   fit
                   highlight-current-row
                   :row-key="row => row.personuuid"
-                  @selection-change="handleSelectionChange">
+                  @select="handleSelectionChange">
           <el-table-column type="selection"
                            reserve-selection
                            width="55" />
@@ -65,7 +65,7 @@ export default {
     };
   },
   props: {
-    reverseDisplay: { // 反显数据，传递personuuid 字符串集合
+    reverseDisplay: { // 反显数据，传递人员对象集合
       type: Array,
       required: false,
     }
@@ -77,6 +77,7 @@ export default {
     },
     reverseDisplay:{
       handler(){
+        this.refreshSelected();
         this.reverseDisplaySelected();
       },
       deep: true
@@ -159,14 +160,31 @@ export default {
     /**
      * 当多选框改变时触发
      */
-    handleSelectionChange (val) {
-      this.selectValue = val
+    handleSelectionChange (val,row) {
+      // 如果没有传递需要返显的数据，按原来的方式运行
+      if (this.reverseDisplay == null){
+        this.selectValue = val;
+        return;
+      }
+      if (val.length && val.indexOf(row) !== -1){
+        this.reverseDisplay.push(row)
+      }else {
+        for (let i = 0; i < this.reverseDisplay.length; i++) {
+          if (this.reverseDisplay[i].personuuid == row.personuuid){
+            this.reverseDisplay.splice(i,1);
+            i--;
+          }
+        }
+      }
     },
     /**
      * 返回选中的数据方法
      */
     getSelectValue () {
-      return this.selectValue
+      if (this.reverseDisplay == null){
+        return this.selectValue;
+      }
+      return this.reverseDisplay;
     },
     /**
      * 手动刷新人员选中数据
@@ -179,14 +197,20 @@ export default {
      */
     reverseDisplaySelected(){
       // 数据反显
-      this.refreshSelected();
       if (this.reverseDisplay != null && this.reverseDisplay.length > 0) {
         this.list.forEach(data => {
-          this.reverseDisplay.forEach(display => {
-            if (data.personuuid == display) {
+          this.$refs.multipleTable.toggleRowSelection(data, false);
+          for (let i = 0; i < this.reverseDisplay.length; i++) {
+            if (data.personuuid == this.reverseDisplay[i].personuuid || data.personuuid == this.reverseDisplay[i].personUuid) {
               this.$refs.multipleTable.toggleRowSelection(data, true);
+              this.reverseDisplay[i] = data;
             }
-          });
+            // 同步传递进来的数据格式
+            if (this.reverseDisplay[i].personUuid != undefined && this.reverseDisplay[i].personName != undefined) {
+              this.reverseDisplay[i].personuuid = this.reverseDisplay[i].personUuid;
+              this.reverseDisplay[i].cnname = this.reverseDisplay[i].personName;
+            }
+          }
         });
       }
     }
