@@ -509,3 +509,12 @@ export function delByTableMetaUuid(tableMetaUuid, tableDataSource) {
     method: 'get',
   })
 }
+
+export function getPersonLiableByTableMetaUuid(data){
+  return request({
+    baseURL: baseURL,
+    url: `/personLiable/getPersonLiableByTableMetaUuid`,
+    method: 'post',
+    data
+  })
+}

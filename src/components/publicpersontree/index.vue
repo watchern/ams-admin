@@ -19,8 +19,10 @@
                   border
                   fit
                   highlight-current-row
+                  :row-key="row => row.personuuid"
                   @selection-change="handleSelectionChange">
           <el-table-column type="selection"
+                           reserve-selection
                            width="55" />
           <el-table-column label="人员名称"
                            align="center"
@@ -53,7 +55,7 @@ export default {
         label: "name",
       },
       filterText: null, //组织树筛选框输入数据
-      list: null, //人员表格数据
+      list: [], //人员表格数据
       listLoading: true,
       dataList: [], //存放后台传来的所有人员数据，用于前台分页
       total: 0, //存放分页总数据条数
@@ -62,11 +64,23 @@ export default {
       selectValue: [], //存放多选框选中的数据
     };
   },
+  props: {
+    reverseDisplay: { // 反显数据，传递personuuid 字符串集合
+      type: Array,
+      required: false,
+    }
+  },
   watch: {
     filterText (val) {
       // 搜索树
       this.$refs.tree.filter(val);
     },
+    reverseDisplay:{
+      handler(){
+        this.reverseDisplaySelected();
+      },
+      deep: true
+    }
   },
   components: {},
   mounted: function () {
@@ -128,6 +142,8 @@ export default {
           index < this.page * this.limit &&
           index >= this.limit * (this.page - 1)
       );
+      // 反显数据默认选中
+      this.reverseDisplaySelected();
       this.total = this.dataList.length;
     },
     // 当每页数量改变
@@ -151,6 +167,28 @@ export default {
      */
     getSelectValue () {
       return this.selectValue
+    },
+    /**
+     * 手动刷新人员选中数据
+     */
+    refreshSelected(){
+      this.$refs.multipleTable.clearSelection();
+    },
+    /**
+     * 反显数据
+     */
+    reverseDisplaySelected(){
+      // 数据反显
+      this.refreshSelected();
+      if (this.reverseDisplay != null && this.reverseDisplay.length > 0) {
+        this.list.forEach(data => {
+          this.reverseDisplay.forEach(display => {
+            if (data.personuuid == display) {
+              this.$refs.multipleTable.toggleRowSelection(data, true);
+            }
+          });
+        });
+      }
     }
   },
 };

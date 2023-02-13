@@ -151,7 +151,7 @@ export default {
 /* 隐藏列表的多选框 */
 .right_conter >>> .el-table__header-wrapper {
   /* border: 1px solid blue; */
-  display: none;
+  /*display: none;*/
 }
 
 .page-container {
