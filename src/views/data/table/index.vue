@@ -402,7 +402,7 @@
                  width="80%"
                  class="dlag_width">
         <div class="dlag_conter">
-          <personTree ref="orgPeopleTree"></personTree>
+          <personTree :reverseDisplay="personReverseDisplay" ref="orgPeopleTree"></personTree>
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button @click="close_people()">取消</el-button>
@@ -504,6 +504,7 @@ import {
   downTemplateDictionary, // 下载资源目录模版
   downTemplateCN, // 下载汉化信息模版
   downTemplateTable, // 下载表关系模版
+  getPersonLiableByTableMetaUuid,// 获取认权人信息
 } from "@/api/data/table-info";
 import QueryField from "@/components/public/query-field/index";
 import personTree from "@/components/publicpersontree/index";
@@ -670,6 +671,7 @@ export default {
       tableMetaUuid: "", //详情id
       is_Edit_list: 0, //是否编辑
       dataSource: '',// 详情数据源
+      personReverseDisplay: [],// 认权人人员选择反显
     };
   },
   computed: {},
@@ -933,8 +935,22 @@ export default {
     // 认权管理
     recognitionChange (data) {
       this.Recognition_check_list = data;
-
+      let tableMetaUuidList = [];
+      this.Recognition_check_list.forEach(item => {
+        tableMetaUuidList.push(item.tableMetaUuid)
+      })
       this.Recognition.personName_str = "";
+      // 获取当前表认权人
+      getPersonLiableByTableMetaUuid(tableMetaUuidList).then(resp => {
+        let personLibaleList = resp.data;
+        let personLibales = [];
+        this.personReverseDisplay = [];
+        personLibaleList.forEach(item => {
+          personLibales.push(item.personName);
+          this.personReverseDisplay.push(item.personUuid);
+        });
+        this.Recognition.personName_str = personLibales.join("、")
+      });
       this.visible_Recognition = true;
 
       if (this.$refs.orgPeopleTree) {
@@ -959,6 +975,8 @@ export default {
         var personNames = [];
         var arr = [];
         var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
+        // 清除人员组件选择数据
+        this.$refs.orgPeopleTree.refreshSelected();
         for (var i = 0; i < selectedNode.length; i++) {
           personUuids.push(selectedNode[i].personuuid);
           personNames.push(selectedNode[i].cnname);
@@ -1441,6 +1459,10 @@ export default {
 
       var arr = [];
       var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
+      if (selectedNode != null && selectedNode.length == 0){
+        this.form.personName_str = ""
+        this.Recognition.personName_str = ""
+      }
       for (var i = 0; i < selectedNode.length; i++) {
         personUuids.push(selectedNode[i].personuuid);
         personNames.push(selectedNode[i].cnname);
