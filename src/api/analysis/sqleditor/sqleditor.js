@@ -943,7 +943,9 @@ export async function getTableField(node,dataSource,treeType,strLevel){
             'enName': result.data[i].colName
           }
           nodeList.push(node)
-          editorObj.options.hintOptions.tablesTitle[result.data[i].colName] = result.data[i].chnName
+          if(treeType === '1'){
+            editorObj.options.hintOptions.tablesTitle[result.data[i].colName] = result.data[i].chnName
+          }
         }
       }
       if (columns.length > 0 && treeType ==='1') {
