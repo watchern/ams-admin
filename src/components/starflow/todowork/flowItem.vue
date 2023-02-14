@@ -245,7 +245,9 @@ export default {
                         }
                     });
                 }
-                this.initForApply();
+                if (this.flowItem.wftype === 'dtOperatePermissionApply') {
+                    this.initForApply();
+                }
             });
         },
         handleChange(val) {
