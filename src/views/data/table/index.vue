@@ -83,8 +83,7 @@
                     show-checkbox
                     :filter-node-method="filterNode"
                     @check-change="nodeClick_table"
-                    @node-click="nodeClick_table"
-                    default-expand-all>
+                    @node-click="nodeClick_table">
             <span slot-scope="{ node, data }" class="custom-tree-node">
               <i v-if="data.type === 'USER'">
                 <img src="../../../assets/img/table_0.png"
