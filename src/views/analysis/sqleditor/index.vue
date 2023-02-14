@@ -105,8 +105,9 @@
                          @click="executeSQL" />
               <el-button type="primary"
                          size="small"
-                         class="oper-btn opensql btn-width-md"
-                         @click="openSqlDraftList" />
+                         class="oper-btn"
+                         @click="openSqlDraftList"
+                         style="width: 120px">SQL草稿管理</el-button>
               <el-button type="primary"
                          size="small"
                          class="oper-btn"
