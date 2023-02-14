@@ -110,6 +110,11 @@
               <el-button type="primary"
                          size="small"
                          class="oper-btn"
+                         @click="assistSqlEditor"
+                         style="width: 120px">辅助SQL编辑器</el-button>
+              <el-button type="primary"
+                         size="small"
+                         class="oper-btn"
                          @click="openNewEditor"
                          style="width: 120px">打开新SQL编辑器</el-button>
               <el-button type="primary"
@@ -268,8 +273,8 @@
         <ul>
           <li @click="updateParamForm()">修改参数</li>
           <li @click="deleteParam()">删除参数</li>
-          <!-- <li @click="selectParamModel()">查看参数关联</li> -->
-          <!--<li onclick="">查看表信息</li>-->
+          <li @click="selectParamModel()">查看参数关联</li>
+          <li @click="updateParamForm('1')">查看属性</li>
         </ul>
       </div>
     </div>
@@ -458,7 +463,7 @@
       <div slot="footer"
            class="dialog-footer">
         <el-button @click="addParamDialog = false">取 消</el-button>
-        <el-button type="primary"
+        <el-button type="primary" :disabled="operationObj.isDetail"
                    @click="() => saveParam()">确 定</el-button>
       </div>
     </el-dialog>
@@ -485,6 +490,21 @@
       <div slot="footer"
            class="dialog-footer">
         <el-button @click="ParamModelDialog = false">关 闭</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog v-if="assistSqlEditorDialogFormVisible"
+               title="辅助SQL编辑器"
+               :visible.sync="assistSqlEditorDialogFormVisible"
+               :close-on-click-modal="false"
+               width="90%"
+               top="2vh"
+               :append-to-body="true">
+        <div class="el-dialog-div">
+          <assistSqlEditor ref="assistSqlEditor" />
+        </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="assistSqlEditorDialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveSqlDialog()">确 定</el-button>
       </div>
     </el-dialog>
     <div id="paramfolderdatabox"></div>
@@ -569,6 +589,7 @@ import {
 } from "@/api/analysis/sqleditor/sqleditor";
 import sqlDraftList from "@/views/analysis/sqleditor/sqldraftlist";
 import sqlDraftTree from "@/views/analysis/sqleditor/sqldrafttree";
+import assistSqlEditor from "@/views/analysis/sqleditor/assistSqlEditor";
 import { updateDraft } from "@/api/analysis/sqleditor/sqldraft";
 import childTabs from "@/views/analysis/auditmodelresult/childtabs";
 import paramDraw from "@/views/analysis/modelparam/paramdraw";
@@ -629,6 +650,7 @@ export default {
     addParam,
     Details,
     LeftTrees,
+    assistSqlEditor,
   },
   props: [
     "sqlEditorParamObj",
@@ -708,11 +730,14 @@ export default {
         operationType: 1,
         //参数编号
         paramUuid: "",
+        //是否是查看详情
+        isDetail:false,
       },
       pfd: {}, //分类路径对象
       textMap: {
         update: "修改模型参数",
         create: "添加模型参数",
+        detail: "模型参数详情"
       },
       dialogStatus: "create",
       selectTreeNode: null,
@@ -744,6 +769,8 @@ export default {
           },
         ],
       },
+      //辅助SQL编辑器
+      assistSqlEditorDialogFormVisible: false,
       // SQL草稿dialog
       sqlDraftDialogFormVisible: false,
       // SQL草稿选择保存路径dialog
@@ -867,6 +894,10 @@ export default {
     this.$refs.maxSize.style.display = "none"
   },
   methods: {
+    //辅助sql编辑器
+    assistSqlEditor(){
+      this.assistSqlEditorDialogFormVisible = true
+    },
     openNewEditor () {
       window.open(window.location.href);
     },
@@ -998,6 +1029,7 @@ export default {
      *添加参数窗体
      */
     addParamForm () {
+      this.operationObj.isDetail = false
       this.pfd = $("#paramfolderdatabox").val();
       this.selectTreeNode = this.pfd;
       if (this.selectTreeNode == null) {
@@ -1016,8 +1048,10 @@ export default {
     },
     /**
      * 修改参数
+     * type: 1-查看详情
      */
-    updateParamForm () {
+    updateParamForm (type) {
+      this.operationObj.isDetail = false
       this.pfd = $("#paramfolderdatabox").val();
       this.selectTreeNode = this.pfd;
       var selectObj = $("#paramdatabox").val();
@@ -1028,6 +1062,10 @@ export default {
       this.operationObj.operationType = 2;
       this.operationObj.paramUuid = selectObj.id;
       this.dialogStatus = "update";
+      if(type==='1'){
+        this.operationObj.isDetail = true
+        this.dialogStatus = "detail";
+      }
       this.addParamDialog = true;
       hideRMenu('paramMenu')
     },
@@ -1095,7 +1133,9 @@ export default {
     /**
      * 获取参数关联
      */
-    getParamModel () { },
+    getParamModel () { 
+      this.$message({ type: "info", message: "暂时先放放" });
+    },
     /**
      * 查看参数关联
      */
@@ -2170,5 +2210,9 @@ div.rightMenu ul li:hover {
 }
 .list-side {
   margin-left: 10px;
+}
+.el-dialog-div{
+  height: 80vh;
+  overflow-x: hidden;
 }
 </style>
