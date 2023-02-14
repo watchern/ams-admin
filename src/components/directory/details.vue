@@ -932,7 +932,7 @@ export default {
     this.getListTree_data(); //下拉框默认值
     this.getIndexInfo(this.tableMetaUuid);
     this.getDictInfo(this.tableMetaUuid);
-
+    
     this.qost_cong_table_list_data(this.tableMetaUuid); //获取从表字段
     window.addEventListener("scroll", this.handleScroll, true);
   },
@@ -1087,6 +1087,7 @@ export default {
         this.form.isSpike = resp.data.tableRelationQuery.isSpike; //增量全量
         this.form.labelList = resp.data.labelList; //标签列表
         this.table_visible_form.tableMetaUuid = resp.data.tableMetaUuid//主表从表新增用
+        this.$refs.tableLines.init(1); // 初始化表关联关系
       });
     },
     // 选择标签

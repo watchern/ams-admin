@@ -32,7 +32,6 @@ export default {
   computed: {},
   watch: {},
   mounted () {
-    this.init();//初始化表关系
   },
   created () {
   },
