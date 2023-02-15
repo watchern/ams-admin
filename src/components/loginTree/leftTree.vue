@@ -899,7 +899,8 @@ export default {
                 commonNotify({ type: "success", message: "删除成功！" })
               );
               this.$refs.tree2.remove(data);
-              this.$emit("queryList", this.query, this.show_details);//刷新右侧列表
+              this.query.businessSystemId = "";
+              this.$emit("delete_list");
               if (this.activeName == "0") {
                 // 系统
                 this.post_getBusinessSystemTree(); //系统
@@ -919,7 +920,8 @@ export default {
                 commonNotify({ type: "success", message: "删除成功！" })
               );
               this.$refs.tree2.remove(data);
-              this.$emit("queryList", this.query, this.show_details);//刷新右侧列表
+              this.query.businessSystemId = "";
+              this.$emit("delete_list");
               if (this.activeName == "0") {
                 // 系统
                 this.post_getBusinessSystemTree(); //系统

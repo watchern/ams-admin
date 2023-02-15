@@ -5,7 +5,8 @@
       <LeftTrees ref="tree_left"
                  @details='Details'
                  @queryList='query_list'
-                 @edit_list="Edit_list"></LeftTrees>
+                 @edit_list="Edit_list"
+                 @delete_list="delete_list"></LeftTrees>
     </div>
     <!-- left_conter end-->
     <!-- right_conter -->
@@ -1223,7 +1224,7 @@ export default {
       if (this.form.check_list.length >= 2) {
         this.dialogVisible_forms = true;
       } else {
-        this.dialogVisible_information = true; 
+        this.dialogVisible_information = true;
       }
     },
     // 选择多个的情况  下一步的确认 批量多个注册
@@ -1491,6 +1492,13 @@ export default {
       }
       this.show_details = true
       this.isDisable_input = false
+    },
+    //删除
+    delete_list(){
+      var query = this.$refs.tree_left.query;
+      query.businessSystemId = ''
+      this.query_list(query, false);
+      this.update_tree();//更新左侧树
     },
     // 分页
     handleCurrent (val) {
