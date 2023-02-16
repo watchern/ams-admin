@@ -50,7 +50,6 @@
           class="filter-tree"
           highlight-current="true"
           node-key="id"
-          @node-click="nodeClick"
           :expand-on-click-node="false"
           :default-expand-all	= "true"
         >
@@ -77,7 +76,16 @@
               v-if="data.type === 'column'"
               class="el-icon-c-scale-to-original"
             />
-            <span>{{ node.label }}</span>
+            <span @click="nodeClick(data)">{{ node.label }}</span>
+            <span style="margin-left:2vh;" v-if="data.type === 'table' || data.type === 'view'"> 
+              <el-button
+                title="删除节点"
+                type="text"
+                size="mini"
+                @click="() => removeNode(node, data)">
+                <svg-icon icon-class="icon-delete-1" />
+              </el-button>
+            </span>
             
           </span>
         </MyElTree>
@@ -92,6 +100,7 @@ import MyElTree from "@/components/public/tree/src/tree.vue";
 import {
 
 } from "@/api/data/table-info";
+import { XmlFactory } from 'ag-grid-community';
 export default {
   components: { MyElTree },
   data() {
@@ -149,6 +158,22 @@ export default {
 
   },
   methods: {
+    //删除节点
+    removeNode(node,data){
+      //如果文件夹下只有一张表则连同文件夹一起删除
+      if(node.parent.childNodes>1){
+        //只删除表
+        
+      }else{
+        //删除文件夹和表
+
+      }
+
+      console.log(node,data)
+      console.log(this.tree_list)
+      console.log(this.treeNodeSelectedObj)
+
+    },
     //获取选中的值
     loadLeftTreeTypeFun(datas) {
       //将数组置空
@@ -185,7 +210,12 @@ export default {
             // var childNode = otherObj[item.pid];
             // otherObj[item.pid].children=[]
             // 4.3.利用当前对象的 otherObj[pid] 找到 otherObj[id] 中对应当前对象的父级对象, 将当前对象添加到其对应的父级对象的 children 属性中
-            otherObj[item.pid].children.push(item)
+            var x = otherObj[item.pid]
+            if(x===undefined){
+              tree.push(item)
+            }else{
+              x.children.push(item)
+            }
 
         } else {
           // 4.3.当前对象 pid 如果为空, 则为树状结构的根对象
@@ -275,7 +305,7 @@ export default {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
-    nodeClick (data, node, tree) {
+    nodeClick (data) {
       var strLevel = this.activeName + this.query.dataSource
       data.strLevelType = strLevel
       this.$emit("nodeClick",data)

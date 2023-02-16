@@ -715,7 +715,9 @@ export default {
 
     },
     filterNode (value, data, node) {
-
+      console.log(value)
+      console.log(data)
+      console.log(node)
       // if (!value) return true;
       // return data.label.indexOf(value) !== -1;
 
