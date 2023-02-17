@@ -29,7 +29,7 @@
 
       <!-- @选中的表数据@ -->
       <el-col :span="6">
-        <CentreTree ref="tree_centre" @nodeClick="onclick2" ></CentreTree>
+        <CentreTree ref="tree_centre" @nodeClick="onclick2" @unLeftTreeSelected="unLeftTreeSelected" ></CentreTree>
       </el-col> 
 
       <!-- @表及表字段选择@ -->
@@ -218,6 +218,13 @@ export default {
     });
   },
   methods: {
+    //取消左侧树节点勾选状态
+    unLeftTreeSelected(data,newTreeNodeSelectedObj){
+      this.$refs.tree_left.unLeftTreeSelected(data.id)
+      //重新取最新数据
+      this.treeNodeSelectedObj = []
+      this.treeNodeSelectedObj = newTreeNodeSelectedObj
+    },
     whereStrFun(val){
       //取筛选语句
       var strLevelType = this.currentData.strLevelType
@@ -407,8 +414,8 @@ export default {
     // 获取数据并赋权
     addRoleCheck() {
       this.treeNodeSelectedObj = []
-      this.treeNodeSelectedObj = this.$refs.tree_left.treeNodeSelectedObj
-      this.$refs.tree_centre.loadLeftTreeTypeFun(this.$refs.tree_left.treeNodeSelectedObj)
+      this.treeNodeSelectedObj = JSON.parse(JSON.stringify(this.$refs.tree_left.treeNodeSelectedObj))
+      this.$refs.tree_centre.loadLeftTreeTypeFun(this.treeNodeSelectedObj)
     },
     clearWriteNode() {
       let leftCheckNode = this.$refs.treeTable.getCheckedNodes(false, false);
@@ -657,7 +664,6 @@ export default {
         background: "rgba(0, 0, 0, 0.7)",
       });
       //encryptType: 'NONE',
-      console.log(this.treeNodeSelectedObj)
       saveRoleTable2(this.roleUuid, this.treeNodeSelectedObj).then(() => {
         loading.close();
         this.$notify(commonNotify({ type: "success", message: "保存成功！" }));

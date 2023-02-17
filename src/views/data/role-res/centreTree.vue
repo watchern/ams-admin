@@ -143,7 +143,7 @@ export default {
       loadLeftTreeType: "", //因为很多模块需要用到这棵树，用此类型来区分不同模块; 1-SQL编辑器 2-数据授权管理-资源绑定 左侧树
       isShowLoadLeftTreeBtn: true, //是否展示树节点操作按钮
       isShowPersonSpaceTab: false, //是否展示个人空间页签
-      treeNodeSelectedObj:[],//树节点勾选对象
+      centreTreeNodeSelectedObj:[],//树节点勾选对象
     };
   },
   computed: {},
@@ -160,32 +160,60 @@ export default {
   methods: {
     //删除节点
     removeNode(node,data){
-      //如果文件夹下只有一张表则连同文件夹一起删除
-      if(node.parent.childNodes>1){
-        //只删除表
-        
-      }else{
-        //删除文件夹和表
-
+      if(node.level===1){
+        //如果是根节点下的表则直接删除
+        this.centreTreeNodeSelectedObj.forEach(function(item,k){
+          item.data.forEach(function(t,index){
+            if(t.id===data.id){
+              item.data.splice(index, 1);
+            }
+          })
+        })
       }
-
-      console.log(node,data)
-      console.log(this.tree_list)
-      console.log(this.treeNodeSelectedObj)
-
+      if(node.level>1){
+        //如果文件夹下只有一张表则连同文件夹一起删除
+        if(node.parent.childNodes.length>1){
+          //只删除表
+          this.centreTreeNodeSelectedObj.forEach(function(item,k){
+            item.data.forEach(function(t,index){
+              if(t.id===data.id){
+                item.data.splice(index, 1);
+              }
+            })
+          })
+        }else{
+          //删除文件夹和表
+          this.centreTreeNodeSelectedObj.forEach(function(item,k){
+            item.data.forEach(function(t,index){
+              if(t.id===data.id){
+                item.data.splice(index, 1);
+              }
+            })
+            item.data.forEach(function(t,index){
+              if(t.id===data.pid){
+                item.data.splice(index, 1);
+              }
+            })
+          })
+        }
+      }
+      //刷新树
+      this.loadLeftTreeTypeFun(this.centreTreeNodeSelectedObj)
+      //去掉左侧树的勾选状态
+      this.$emit("unLeftTreeSelected",data,this.centreTreeNodeSelectedObj)
     },
     //获取选中的值
     loadLeftTreeTypeFun(datas) {
       //将数组置空
       this.tree_list = []
-      this.treeNodeSelectedObj = []
+      this.centreTreeNodeSelectedObj = []
 
       //重新赋值
-      this.treeNodeSelectedObj = datas
+      this.centreTreeNodeSelectedObj = datas
       var strLevel = this.activeName + this.query.dataSource
-      for(var i=0;i<this.treeNodeSelectedObj.length;i++){
-        if(this.treeNodeSelectedObj[i].strLevel === strLevel){
-          var treeData = this.toTree(this.treeNodeSelectedObj[i].data)
+      for(var i=0;i<this.centreTreeNodeSelectedObj.length;i++){
+        if(this.centreTreeNodeSelectedObj[i].strLevel === strLevel){
+          var treeData = this.toTree(this.centreTreeNodeSelectedObj[i].data)
           this.tree_list = treeData
         }
       }
@@ -251,9 +279,9 @@ export default {
       this.loading = true;
       this.tabclick = true;
       var strLevel = this.activeName + this.query.dataSource
-      for(var i=0;i<this.treeNodeSelectedObj.length;i++){
-        if(this.treeNodeSelectedObj[i].strLevel === strLevel){
-          var treeData = this.toTree(this.treeNodeSelectedObj[i].data)
+      for(var i=0;i<this.centreTreeNodeSelectedObj.length;i++){
+        if(this.centreTreeNodeSelectedObj[i].strLevel === strLevel){
+          var treeData = this.toTree(this.centreTreeNodeSelectedObj[i].data)
           this.tree_list = treeData
         }
       }
@@ -265,9 +293,9 @@ export default {
       this.loading = true;
       this.tabclick = true;
       var strLevel = this.activeName + this.query.dataSource
-      for(var i=0;i<this.treeNodeSelectedObj.length;i++){
-        if(this.treeNodeSelectedObj[i].strLevel === strLevel){
-          var treeData = this.toTree(this.treeNodeSelectedObj[i].data)
+      for(var i=0;i<this.centreTreeNodeSelectedObj.length;i++){
+        if(this.centreTreeNodeSelectedObj[i].strLevel === strLevel){
+          var treeData = this.toTree(this.centreTreeNodeSelectedObj[i].data)
           this.tree_list = treeData
         }
       }
@@ -279,9 +307,9 @@ export default {
       this.loading = true;
       this.tabclick = true;
       var strLevel = this.activeName + this.query.dataSource
-      for(var i=0;i<this.treeNodeSelectedObj.length;i++){
-        if(this.treeNodeSelectedObj[i].strLevel === strLevel){
-          var treeData = this.toTree(this.treeNodeSelectedObj[i].data)
+      for(var i=0;i<this.centreTreeNodeSelectedObj.length;i++){
+        if(this.centreTreeNodeSelectedObj[i].strLevel === strLevel){
+          var treeData = this.toTree(this.centreTreeNodeSelectedObj[i].data)
           this.tree_list = treeData
         }
       }
