@@ -212,9 +212,7 @@
               </el-form-item>
               <el-form-item label="资源类型："
                             prop="tableType">
-                <el-select v-model="form.tableType"
-                           :rows="4"
-                           placeholder="请选择资源类型">
+                <el-select v-model="form.tableType" placeholder="请选择资源类型">
                   <el-option v-for="item in data_type"
                              :key="item.value"
                              :label="item.label"
@@ -226,9 +224,7 @@
             <div class="son">
               <el-form-item label="资源主题："
                             prop="tableThemeId">
-                <el-select v-model="form.tableThemeId"
-                           :rows="4"
-                           placeholder="请选择资源主题">
+                <el-select v-model="form.tableThemeId" placeholder="请选择资源主题">
                   <el-option v-for="item in next_data.themeList"
                              :key="item.codeUuid"
                              :label="item.codeName"
@@ -641,11 +637,11 @@ export default {
       ischeck_data: {}, //第一步选择的数据库
       data_type: [
         {
-          value: 1,
+          value: "1",
           label: "表",
         },
         {
-          value: 2,
+          value: "2",
           label: "视图",
         },
       ], // 资源类型
@@ -1212,6 +1208,7 @@ export default {
           this.form.tableSize = resp.data[0].tableSize; //表大小
           this.form.partitions = resp.data[0].partitions; //表分区
           this.form.tableCode = resp.data[0].tableRelationQuery.tableCode; //资源编码
+          this.form.tableType = resp.data[0].tableRelationQuery.tableType;//资源类型
           this.form.tableRemarks = resp.data[0].tableRelationQuery.tableRemarks; //表说明
         }
       });
