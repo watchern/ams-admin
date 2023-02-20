@@ -1,5 +1,6 @@
 <template>
-  <div class="page-container">
+  <div class="page-container"
+       style="background-color: none;border: none;">
     <!-- left_conter -->
     <div class="left_conter">
       <LeftTrees ref="tree_left"
@@ -9,7 +10,7 @@
     </div>
     <!-- left_conter end-->
     <!-- right_conter -->
-    <div class="right_conter padding10">
+    <div class="right_conter">
       <div class="list_style">
         <DataResourceDisplay @down_template_cn="DownTemplateCN"
                              @Important_cn="ImportantCn"
@@ -72,7 +73,9 @@
           <el-input style="width: 330px;margin-left: 10px;"
                     v-model="filterText1"
                     placeholder="输入想要查询的表名称（模糊搜索）" />
-          <el-button @click="getTables">搜索</el-button>
+          <el-button type="primary"
+                     size="small"
+                     @click="getTables">查询</el-button>
         </div>
 
         <div class="dlag_conter containerselect padding10">
@@ -208,7 +211,8 @@
 
             <!--  表说明-->
             <div class="son">
-              <el-form-item label="表说明：">
+              <el-form-item label="表说明："
+                            prop="tableRemarks">
                 <el-input type="textarea"
                           placeholder="请输入表说明"
                           style="resize: none"
@@ -331,7 +335,7 @@
                   </el-input>
                 </el-form-item>
                 <el-button type="primary"
-                           class="oper-btn"
+                           size="small"
                            @click="check_people()">选择</el-button>
               </div>
             </div>
@@ -531,21 +535,20 @@
           </el-col>
         </el-row>
         <span slot="footer">
-          <el-button size="mini"
-                     type="primary"
+          <el-button size="small"
                      @click="importVisible = false">取消</el-button>
 
           <el-button @click="importTableDictionary()"
-                     size="mini"
+                     size="small"
                      type="primary"
                      v-if="upload_title == '导入数据资源'">导入</el-button>
           <el-button @click="importTablCn()"
-                     size="mini"
+                     size="small"
                      type="primary"
                      v-else-if="upload_title == '导入汉化信息'">导入</el-button>
           <el-button @click="importTableTable()"
                      v-else
-                     size="mini"
+                     size="small"
                      type="primary">导入</el-button>
 
           <!-- <el-button type="primary"
@@ -683,6 +686,9 @@ export default {
       dialogVisible_information: false, //下一步 基本信息
 
       rules: {
+        tableRemarks: [
+          { required: true, message: '请输入资源编码', trigger: 'blur' },
+        ],
         tableCode: [
           { required: true, message: '请输入资源编码', trigger: 'blur' },
         ],
@@ -980,20 +986,20 @@ export default {
       // 导出表信息作为模板
       // this.$message({ type: 'info', message: '无选择表,失败!' })
       downTemplateDictionary().then((res) => {
-          const filename = decodeURI(
-            res.headers["content-disposition"].split(";")[1].split("=")[1]
-          );
-          const blob = new Blob([res.data], {
-            type: "application/octet-stream",
-          });
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.style.display = "none";
-          link.href = url;
-          link.setAttribute("download", filename);
-          document.body.appendChild(link);
-          link.click();
+        const filename = decodeURI(
+          res.headers["content-disposition"].split(";")[1].split("=")[1]
+        );
+        const blob = new Blob([res.data], {
+          type: "application/octet-stream",
         });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.style.display = "none";
+        link.href = url;
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+      });
     },
     // 汉化模版下载
     DownTemplateCN (data) {
@@ -1164,18 +1170,23 @@ export default {
     },
     // 认权管理
     recognitionChange (data) {
-      this.Recognition_check_list = data;
+      this.Recognition_check_list = []
+      this.$refs.orgPeopleTree.selectValue = [] //清空选择的认权人
 
+      this.Recognition_check_list = data;
       this.Recognition.personName_str = "";
       this.visible_Recognition = true;
 
+
+      console.log(0);
       if (this.$refs.orgPeopleTree) {
-        if (this.$refs.multipleTable) {
-          this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection(); //清空选择的认权人
-          this.$refs.orgPeopleTree.findOrgTree_data();
-          this.$refs.orgPeopleTree.list = [];
-          this.$refs.orgPeopleTree.total = 0;
-        }
+        console.log(1);
+        // if (this.$refs.multipleTable) {
+        this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection(); //清空选择的认权人
+        this.$refs.orgPeopleTree.findOrgTree_data();
+        this.$refs.orgPeopleTree.list = [];
+        this.$refs.orgPeopleTree.total = 0;
+        // }
       }
     },
     // 认权确认
@@ -1288,12 +1299,11 @@ export default {
     // 点击切换树 切换 表单
     // 查看详情
     Details (tableMetaUuid, show_details, isDisable_input) {
-      console.log("1111111111111");
       this.tableMetaUuid = tableMetaUuid
       this.show_details = show_details;
       this.isDisable_input = isDisable_input;
       this.$nextTick(() => {
-        // this.$refs.Details_ref.$refs.tableLines.init(1)//刷新列表 更新关系树
+        this.$refs.Details_ref.$refs.tableLines.init(1)//刷新列表 更新关系树
         this.$refs.Details_ref.post_sql_data()//更新查看sql
         this.$refs.Details_ref.table_list(this.tableMetaUuid)//更新列信息
       })
@@ -1463,7 +1473,7 @@ export default {
       } else {
         // this.registTableFlag = false;//关闭上一步
         this.dialogVisible_information = true; //显示下一步 基本信息
-
+        this.form.personLiables = []//清空责任人
       }
       // this.form.chnName = ''
       this.btnLoading = false;
@@ -1766,7 +1776,7 @@ export default {
     // 选择责任人
     check_people () {
       this.resultShareDialogIsSee = true;
-      this.form.personLiables = "";
+      this.form.personLiables = [];
       this.clearcheckbox();
       // this.$nextTick(() => {
       //   if (this.$refs.orgPeopleTree) {
@@ -1790,11 +1800,11 @@ export default {
     // 清除多选框
     clearcheckbox () {
       this.$nextTick(() => {
-        if (this.$refs.multipleTable) {
-          this.$refs.multipleTable.clearSelection(); //清除多选框
+        if (this.$refs.orgPeopleTree.$refs.multipleTable) {
+          this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection(); //清除多选框
         }
         if (this.$refs.orgPeopleTree) {
-          if (this.$refs.multipleTable) {
+          if (this.$refs.orgPeopleTree.$refs.multipleTable) {
             this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection(); //清空选择的认权人
             this.$refs.orgPeopleTree.findOrgTree_data();
             this.$refs.orgPeopleTree.list = [];
@@ -1879,12 +1889,13 @@ export default {
 
 .left_conter {
   /* height: calc(100vh - 140px); */
-  height: calc(100vh - 120px);
+  /* height: calc(100vh - 120px); */
 }
 
 .page-container {
   display: flex;
   padding: 0 !important;
+  background: transparent !important;
 }
 
 .dlag_width >>> .el-dialog {

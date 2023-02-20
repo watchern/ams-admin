@@ -32,8 +32,8 @@
                   @change="onChange"></query-tags>
       <div class="padding10 flex">
 
-        <el-button size="mini"
-                   type="primary"
+        <el-button type="primary"
+                   size="small"
                    @click="search()">查询</el-button>
         <!-- <el-button size="mini"
                    type="info"
@@ -48,51 +48,62 @@
          v-if="isBtn == true">
       <div class="click_btn">
         <el-button type="primary"
+                   class="oper-btn"
                    size="small">数据资源导入导出</el-button>
         <div class="show_btn">
           <el-button type="primary"
+                     class="oper-btn"
                      size="small"
                      @click="down_template_dictionary()">模版下载</el-button>
           <el-button type="primary"
                      size="small"
+                     class="oper-btn"
                      @click="Importdata_dictionary()">导入数据资源</el-button>
         </div>
       </div>
 
       <div class="click_btn">
         <el-button type="primary"
+                   class="oper-btn"
                    size="small">汉化信息导入导出</el-button>
         <div class="show_btn">
           <el-button type="primary"
                      size="small"
+                     class="oper-btn"
                      @click="down_template_cn()">模版下载</el-button>
           <el-button type="primary"
                      size="small"
+                     class="oper-btn"
                      @click="Important_cn()">导入汉化信息</el-button>
         </div>
       </div>
 
       <div class="click_btn">
         <el-button type="primary"
+                   class="oper-btn"
                    size="small">表关系导入导出</el-button>
         <div class="show_btn">
           <el-button type="primary"
                      size="small"
+                     class="oper-btn"
                      @click="down_template_table()">模版下载</el-button>
           <el-button type="primary"
                      size="small"
+                     class="oper-btn"
                      @click="Important_table()">导入表关系</el-button>
         </div>
       </div>
 
       <div class="click_btn">
         <el-button type="primary"
+                   class="oper-btn"
                    size="small"
                    @click="sync_data()">同步数据结构</el-button>
       </div>
 
       <div class="click_btn">
         <el-button type="primary"
+                   class="oper-btn"
                    size="small"
                    @click="Recognition()">认权管理</el-button>
       </div>
@@ -100,18 +111,20 @@
       <div class="click_btn">
         <el-button type="primary"
                    size="small"
+                   class="oper-btn"
                    @click="on_register()">注册资源</el-button>
       </div>
 
       <div class="click_btn">
         <el-button type="primary"
                    size="small"
+                   class="oper-btn"
                    @click="edit_list()">修改</el-button>
       </div>
 
     </div>
 
-    <el-skeleton style="width:100%;float: left;height: calc(100vh - 270px);overflow: auto;"
+    <el-skeleton style="width:100%;float: left;height: calc(100vh - 280px);overflow: auto;"
                  animated
                  :loading="list_loading"
                  :count="4">
@@ -235,7 +248,6 @@
       <el-pagination @size-change="handleSizeChange"
                      @current-change="handleCurrentChange"
                      :page-size="list_data.size"
-                     background
                      :current-page-sync="list_data.current"
                      layout="total, sizes, prev, pager, next, jumper"
                      :total="list_data.total"
@@ -481,6 +493,8 @@ export default {
   justify-content: flex-end;
   width: 100%;
   width: 100%;
+  padding-right: 20px;
+  box-sizing: border-box;
 }
 
 .common_btn >>> .el-button--medium {
@@ -488,8 +502,11 @@ export default {
 }
 
 .click_btn {
-  margin: 0 10px 10px;
+  margin: 0 10px 0 0;
   float: left;
+}
+.common_btn .click_btn:last-child {
+  margin: 0 !important;
 }
 
 .click_btn {
@@ -923,5 +940,9 @@ export default {
 
 .list_table >>> .el-table__empty-block {
   min-height: 400px !important;
+}
+
+.list_table >>> .el-table tr {
+  background: transparent !important;
 }
 </style>

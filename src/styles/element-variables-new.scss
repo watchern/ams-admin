@@ -1,0 +1,449 @@
+$dividers:#3D6EF6;//主色调蓝 背景色
+$primary-btn-color:#7798FA;//次要颜色
+$text-color-bold:#333333;//加粗标题
+$text-color-black:#666666;//主文字
+$text-color-title:#999999;//次要字体颜色
+$text-color-blue:#3D91F7;//链接
+$text-color-red:#FF3B30;//错误警告
+$border-color:#E7EAF0;//border
+$disable-color:#E7F2FF;//disable
+$btn-disable:#EAEEF3;//按钮disable
+$radius5:5px;//圆角 输入框
+$radius10:10px;//圆角 弹窗
+$radius15:15px;//圆角 容器
+$radius30:30px;//圆角 按钮
+
+.pd20{
+  padding: 20px; box-sizing: border-box;
+}
+
+.pd10{
+  padding: 20px; box-sizing: border-box;
+}
+
+.mb10{
+  margin-bottom: 10px;
+}
+
+.mt10{
+  margin-top: 10px;
+}
+// 默认button
+.el-button {
+  background: #ffffff !important;
+  border-color: $primary-btn-color !important;
+  color: $primary-btn-color !important;
+  font-weight: bold;
+  border-radius: $radius30!important;
+
+}
+// 控制button的icon 居中
+.el-button span{
+  display: flex;
+  justify-content: center;
+}
+
+.el-button:active {
+  // background: rgb(90, 195, 235) !important;
+  // border-color: rgb(90, 195, 235) !important;
+    	background:$dividers  !important;
+    border-color: $dividers !important;
+  color: rgb(242, 243, 253) !important;
+  outline: none;
+  font-weight: bold;
+  border-radius: $radius30!important;
+}
+
+.el-button:hover,
+.el-button:focus {
+  background: $primary-btn-color !important;
+  border-color: $primary-btn-color !important;
+  color: rgb(242, 243, 253) !important;
+  font-weight: bold;
+  border-radius: $radius30!important;
+	box-shadow: 1px 4px 10px 0px #ADC2FF;
+}
+
+
+
+
+.el-button--primary {
+  	background:$dividers  !important;
+    border-color: $dividers !important;
+  // background: $primary-btn-color !important;
+  // border-color: $primary-btn-color !important;
+  color: rgb(242, 243, 253) !important;
+  font-weight: bold;
+  border-radius: $radius30!important;
+}
+
+.el-button--primary:active {
+  background: rgb(90, 195, 235) !important;
+  border-color: rgb(90, 195, 235) !important;
+  color: rgb(242, 243, 253) !important;
+  outline: none;
+  font-weight: bold;
+  border-radius: $radius30!important;
+}
+
+.el-button--primary:hover,
+.el-button--primary:focus {
+  background: $primary-btn-color !important;
+  border-color: $primary-btn-color !important;
+  color: rgb(242, 243, 253) !important;
+  font-weight: bold;
+  border-radius: $radius30!important;
+	box-shadow: 1px 4px 10px 0px #ADC2FF;
+}
+.oper-btn .is-disabled,
+.oper-btn .is-disabled:hover,
+.el-button--primary.is-disabled,
+.el-button--primary.is-disabled:hover,
+.el-button--primary.is-disabled:focus,
+.el-button--primary.is-disabled:active {
+  color: $text-color-title!important;
+  // background-color: $btn-disable!important;
+  border-color: #EAEEF3!important;
+  background: #EAEEF3!important;
+}
+
+.el-button--small{
+  height: 32px;
+  line-height: 32px;
+	padding:0 24px !important;
+	font-size: 14px!important;
+}
+// 操作样式按钮 
+.oper-btn{
+  background: #FCFCFD linear-gradient(180deg, #F2F5F8 0%, #FFFFFF 100%)!important;
+  box-shadow: 5px 3px 10px 0px #D7DDE4, 0px -3px 10px 0px #FFFFFF!important;
+  border-radius: 16px!important;
+  border: 1px solid #FFFFFF!important;
+  color: $dividers !important;;
+  min-width: 80px!important;
+  height: 32px!important;
+  padding: 0 20px!important;
+  border-radius: 4px;
+  position: relative;
+  color:ffffff;
+  font-style: normal;
+  font-family: "iconfont" !important;
+  font-weight: normal !important;
+  width: auto!important;
+}
+// 文字按钮
+.el-button--text,.el-link--inner{
+  background:none!important;
+  border: none!important;
+  box-shadow: none!important;
+  color: $text-color-blue !important;
+  margin: 0 4px;
+}
+.el-button--text:hover,.el-link--inner:hover{
+  background:none!important;
+  border: none!important;
+  box-shadow: none!important;
+  color: $dividers !important;
+  
+}
+
+// 查询按钮
+// .search_btn{
+// 	background:$dividers  !important;
+// 	border-radius: 39px !important;
+// 	color: #fff!important;
+// }
+.disable_btn{
+  background: $btn-disable !important;
+  color: $text-color-title !important;
+  border: none!important;
+}
+.search_btn:hover{
+	background:$primary-btn-color !important;
+	box-shadow: 1px 7px 10px 0px #ADC2FF;
+}
+// baby区域
+.home{
+    background:  linear-gradient(133deg, #ABC2FA 0%, #D9DACD 37%, #E8F2FF 64%, #9EB9F8 100%) !important;
+}
+// 内容区域
+.page-container{
+  background: #F4F6F9 linear-gradient(134deg, #FEFEFF 0%, #F3F0FF 33%, #EBF5FD 70%, #F6F9FF 100%);
+	border-radius: $radius15;
+  height: calc(100% - 20px)!important;
+  padding: 0!important;
+  border: 2px solid #FFFFFF;
+}
+
+.home-right {
+//  #F4F6F9 linear-gradient(134deg, #FEFEFF 0%, #F3F0FF 33%, #EBF5FD 70%, #F6F9FF 100%);
+  // background: linear-gradient(133deg, #ABC2FA 0%, #D9DACD 37%, #E8F2FF 64%, #9EB9F8 100%)!important;
+  // background:#F4F6F9 linear-gradient(234deg, #F6F1FF 0%, #F3F0FF 33%, #EBF5FD 70%, #D0DDF7 100%)!important;
+
+  min-width: 1366px;
+  width: 100vw;
+}
+
+
+// 左侧
+.left_conter{
+  background: #F4F6F9 linear-gradient(134deg, #FEFEFF 0%, #F3F0FF 33%, #EBF5FD 70%, #F6F9FF 100%);
+  min-width: 264px;
+  width: 264px;
+  margin-right: 20px;
+	border-radius: $radius15;
+  
+	}
+// 右侧
+.right_conter{
+  background: #F4F6F9 linear-gradient(134deg, #FEFEFF 0%, #F3F0FF 33%, #EBF5FD 70%, #F6F9FF 100%);
+  border: 2px solid #FFFFFF;
+	min-width: 1042px;
+	border-radius: $radius15;
+	// padding: 0 20px;
+	// box-sizing: border-box;
+	// width: calc(100% - 302px );
+  	width: calc(100% - 282px);
+	// margin-right: 20px;
+}
+// tab切换 资料树
+.el-tabs--card > .el-tabs__header .el-tabs__nav{
+	border-radius: $radius15 $radius15 0 0!important;
+}
+.el-tabs__nav{
+  display: flex;
+}
+.left_conter .el-tabs__item{
+  width: 100%!important;
+  padding-right: 0!important;
+  padding-left: 0!important;
+  text-align: center;
+}
+// table
+.el-table__header-wrapper{
+background: #EEF0FD !important;
+    border-bottom: 1px solid #D9D9D9!important;
+}
+.el-table,.el-table__cell,.el-table--border,tr{
+  background: transparent!important;
+  // border: none!important;
+}
+  .el-table::before{
+    background: transparent!important;
+  }
+
+  .el-table .cell.el-tooltip{
+      color: $text-color-black!important;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-size: 14px!important;
+  }
+
+// 多选框
+ .el-checkbox .el-checkbox__input .el-checkbox__inner{
+  border: 1px solid #ddd !important;
+  background-color: #fff!important;
+  width: $radius15!important;
+  height: $radius15!important;
+}
+.el-checkbox__input.is-checked .el-checkbox__inner{
+  background: $primary-btn-color !important;
+    border: 1px solid $primary-btn-color !important;
+  width: $radius15!important;
+  height: $radius15!important;
+  border-radius: 3px!important;
+}
+
+.el-checkbox__input.is-disabled .el-checkbox__inner{
+  width: $radius15!important;
+  height: $radius15!important;
+  border: 1px solid #ddd !important;
+  background-color: $disable-color !important;
+    border-radius: 3px!important;
+
+}
+// 底部面包屑导航
+.home-right-footer{
+  z-index: 99;
+}
+
+.el-input__inner::placeholder {
+  color: $text-color-title!important;
+}
+
+// 分页样式
+.el-pagination .el-select .el-input .el-input__inner,
+.el-pagination .btn-next, .el-pagination .btn-prev,
+.el-pagination__editor.el-input .el-input__inner,
+.el-pager li{
+  background-color: transparent!important;
+}
+.filter-container{
+  padding-bottom: 10px!important;
+  margin-bottom: 0!important;
+}
+.pagination-container{
+  margin-top: 0!important;
+}
+.el-pagination__total,.el-pager li{
+  color: $text-color-black!important;
+}
+.el-pager li.active{
+  color: $dividers!important;
+}
+// 分页样式 end
+
+
+
+// 下拉框
+.el-select .el-input.is-focus .el-input__inner{
+  border: 1px solid $border-color!important;
+  border-radius: 5px!important;
+  background: #fff !important;
+  color:$text-color-black !important;
+
+}
+// 下拉框高亮
+.el-select-dropdown__item.selected,
+.el-select-dropdown__item.hover, .el-select-dropdown__item:hover{
+background-color: #EBF2FC!important;
+}
+
+.el-select-dropdown__item{
+  color: $text-color-title!important;
+}
+
+
+// form 表单 label
+.el-form-item__label{
+  color:$text-color-black !important;
+}
+
+// 输入框 
+.el-input--medium .el-input__inner{
+  border: 1px solid $border-color!important;
+  border-radius: $radius5!important;
+  background: #fff !important;
+}
+
+
+
+//  警告
+.el-form-item.is-error .el-input__inner, 
+ .el-form-item.is-error .el-textarea__inner{
+  border-bottom:red!important;
+  border: 1px solid $text-color-red!important;
+  border-radius: $radius5!important;
+  background: #fff !important;
+  border-color: $text-color-red!important;
+ }
+// 文本框
+ .el-textarea .el-textarea__inner{
+  border: 1px solid $border-color!important;
+  border-radius: $radius5!important;
+  background: #fff !important;
+ }
+
+  .el-form-item.is-error .el-textarea__inner:focus{
+  border-bottom:none!important;
+  border: 1px solid $border-color!important;
+  border-radius: $radius5!important;
+  background: #fff !important;
+  border-color:  $border-color!important;
+ }
+
+//  时间框
+.el-range-editor.el-input__inner{
+  border: 1px solid $border-color!important;
+  border-radius: $radius5!important;
+  background-color: #fff !important;
+  height: 36px!important;
+}
+
+
+// 树
+.el-tree{
+  background: none!important;
+}
+// 按钮icon
+.btn_icon{
+  width: 14px;
+  margin-right: 4px;
+  transition: background .3s;
+}
+
+.icon2{
+  // display: none;
+  width: 0;
+  margin-right: 0;
+
+}
+.el-button:hover .icon1{
+  // display: none!important;
+    width: 0;
+    margin-right: 0!important;
+
+
+}
+.el-button:hover .icon2{
+  // display: block!important;
+    width: 14px;
+    margin-right: 4px!important;
+
+
+}
+
+// 顶部筛选条件
+.query-field .el-form-item{
+  margin-bottom: 10px!important;
+}
+
+
+
+
+// 弹窗
+.el-dialog__wrapper .el-dialog{
+    border-radius: $radius10 !important;
+}
+
+.el-dialog__body{
+  padding: 10px 20px!important; 
+}
+
+.dialog-footer{
+ text-align: right; 
+}
+
+
+
+// 底部导航
+.right-footer{
+    background: #F3F6F9!important;
+    // border-top: 1px solid #fff;
+}
+.right-footer .tag{
+  height: 30px!important;
+  color: #6C8AB6!important;
+  border-right: none!important
+}
+
+.right-footer .tag-active{
+    color:#fff!important;
+    background: $primary-btn-color!important
+}
+.right-footer .tag .close{
+  background-color: #fff!important;
+  color: $primary-btn-color!important;
+}
+// 底部导航 end
+
+/* icon font path, required */
+$--font-path: "~element-ui/lib/theme-chalk/fonts";
+
+@import "~element-ui/packages/theme-chalk/src/index";
+
+// the :export directive is the magic sauce for webpack
+// https://www.bluematador.com/blog/how-to-share-variables-between-js-and-sass
+:export {
+  // theme: $--color-primary;
+  theme:$primary-btn-color
+}

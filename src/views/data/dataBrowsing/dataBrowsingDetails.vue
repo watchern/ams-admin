@@ -1,75 +1,65 @@
 <template>
   <div class="preview_conter padding10_l">
-    <el-skeleton
-      style="width: 100%; height: calc(100vh - 480px)"
-      animated
-      :loading="list_loading"
-      :count="4"
-    >
+    <el-skeleton style="width: 100%; height: calc(100vh - 480px)"
+                 animated
+                 :loading="list_loading"
+                 :count="4">
       <template slot="template">
         <div class="box_ard">
           <div class="conter_list">
             <div class="box_ard_header">
-              <el-skeleton-item variant="h3" style="width: 30%" />
+              <el-skeleton-item variant="h3"
+                                style="width: 30%" />
             </div>
             <div class="new_left">
-              <el-skeleton-item
-                variant="image"
-                style="width: 130px; height: 130px"
-              />
+              <el-skeleton-item variant="image"
+                                style="width: 130px; height: 130px" />
             </div>
             <div class="new_right">
               <div class="table_type">
-                <el-skeleton-item
-                  variant="h3"
-                  style="width: 10%; margin-right: 60px"
-                />
-                <el-skeleton-item variant="h3" style="width: 10%" />
+                <el-skeleton-item variant="h3"
+                                  style="width: 10%; margin-right: 60px" />
+                <el-skeleton-item variant="h3"
+                                  style="width: 10%" />
               </div>
               <div class="text">
-                <el-skeleton-item variant="h3" style="width: 30%" />
-                <el-skeleton-item variant="text" style="margin-right: 16px" />
-                <el-skeleton-item variant="text" style="width: 30%" />
+                <el-skeleton-item variant="h3"
+                                  style="width: 30%" />
+                <el-skeleton-item variant="text"
+                                  style="margin-right: 16px" />
+                <el-skeleton-item variant="text"
+                                  style="width: 30%" />
               </div>
               <div class="data_list">
-                <el-skeleton-item
-                  variant="text"
-                  style="width: 10%; margin-right: 20px"
-                />
-                <el-skeleton-item variant="text" style="width: 10%" />
+                <el-skeleton-item variant="text"
+                                  style="width: 10%; margin-right: 20px" />
+                <el-skeleton-item variant="text"
+                                  style="width: 10%" />
               </div>
             </div>
           </div>
         </div>
       </template>
       为您找到相关结果约{{ list_data.total }}个
-      <div
-        class="list_table"
-        style="height: calc(100vh - 480px); overflow: auto"
-      >
-        <el-table
-          ref="multipleTable"
-          :data="dataList"
-          style="width: 100%"
-          :show-overflow-tooltip="true"
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column type="selection" width="30"> </el-table-column>
+      <div class="list_table"
+           style="height: calc(100vh - 480px); overflow: auto">
+        <el-table ref="multipleTable"
+                  :data="dataList"
+                  style="width: 100%"
+                  :show-overflow-tooltip="true"
+                  @selection-change="handleSelectionChange">
+          <el-table-column type="selection"
+                           width="30"> </el-table-column>
           <el-table-column>
             <template slot-scope="scope">
               <div class="box_ard">
                 <div class="conter_list">
-                  <div
-                    class="box_ard_header _width"
-                    @click="on_deails(scope.row)"
-                  >
+                  <div class="box_ard_header _width"
+                       @click="on_deails(scope.row)">
                     <p class="new_num">{{ scope.row.tbName }}</p>
                     <p class="new_title">{{ scope.row.chnName }}</p>
-                    <span
-                      class="new_type"
-                      v-if="scope.row.tableRelationQuery"
-                      >{{ scope.row.tableRelationQuery.tableThemeName }}</span
-                    >
+                    <span class="new_type"
+                          v-if="scope.row.tableRelationQuery">{{ scope.row.tableRelationQuery.tableThemeName }}</span>
                   </div>
 
                   <div class="new_left padding7">
@@ -91,15 +81,11 @@
                         表关联数量：<span v-if="scope.row.relations">{{
                           scope.row.relations.length
                         }}</span>
-                        <el-card
-                          class="show_tips"
-                          v-if="scope.row.relations.length !== 0"
-                        >
-                          <p
-                            v-for="(its, index_relations) in scope.row
+                        <el-card class="show_tips"
+                                 v-if="scope.row.relations.length !== 0">
+                          <p v-for="(its, index_relations) in scope.row
                               .relations"
-                            :key="index_relations"
-                          >
+                             :key="index_relations">
                             {{ its.relationTableName }}
                           </p>
                         </el-card>
@@ -108,41 +94,37 @@
                         使用此表模型数：<span>{{
                           scope.row.models.length
                         }}</span>
-                        <el-card
-                          class="show_tips"
-                          v-if="scope.row.models.length !== 0"
-                        >
-                          <p
-                            v-for="(it, index_model) in scope.row.models"
-                            :key="index_model"
-                          >
+                        <el-card class="show_tips"
+                                 v-if="scope.row.models.length !== 0">
+                          <p v-for="(it, index_model) in scope.row.models"
+                             :key="index_model">
                             {{ it.MODEL_NAME }}
                           </p>
                         </el-card>
                       </div>
                     </div>
-                    <p class="text" v-if="scope.row.tableRelationQuery">
+                    <p class="text"
+                       v-if="scope.row.tableRelationQuery">
                       描述：{{ scope.row.tableRelationQuery.tableRemarks }}
                     </p>
-                    <p class="text" v-else>描述：暂无</p>
-                    <p class="text" v-if="scope.row.colMeta">
+                    <p class="text"
+                       v-else>描述：暂无</p>
+                    <p class="text"
+                       v-if="scope.row.colMeta">
                       字段：{{ scope.row.colMeta }}
                     </p>
-                    <p class="text" v-else>字段：暂无</p>
+                    <p class="text"
+                       v-else>字段：暂无</p>
 
                     <div class="data_list">
                       <!-- {{scope.row.tableRelationQuery}} -->
-                      <span
-                        class="data_time"
-                        v-if="scope.row.tableRelationQuery.dataDate != null"
-                        >数据日期：{{
+                      <span class="data_time"
+                            v-if="scope.row.tableRelationQuery.dataDate != null">数据日期：{{
                           scope.row.tableRelationQuery.dataDate
-                        }}</span
-                      >
-                      <span class="data_time" v-else>数据日期：暂无</span>
-                      <span class="data_number"
-                        >数据量 {{ scope.row.rowNum }} 条</span
-                      >
+                        }}</span>
+                      <span class="data_time"
+                            v-else>数据日期：暂无</span>
+                      <span class="data_number">数据量 {{ scope.row.rowNum }} 条</span>
                     </div>
                   </div>
                 </div>
@@ -152,14 +134,11 @@
         </el-table>
       </div>
     </el-skeleton>
-    <el-pagination
-      style="margin-top: 40px"
-      background
-      layout="total, sizes, prev, pager, next, jumper"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :total="list_data.total"
-    ></el-pagination>
+    <el-pagination style="margin-top: 40px"
+                   layout="total, sizes, prev, pager, next, jumper"
+                   @size-change="handleSizeChange"
+                   @current-change="handleCurrentChange"
+                   :total="list_data.total"></el-pagination>
   </div>
 </template>
 
@@ -171,7 +150,7 @@ export default {
   name: "dataBrowsingDetails",
   components: {},
   props: [],
-  data() {
+  data () {
     return {
       dataList: [],
       checkList: [],
@@ -185,19 +164,19 @@ export default {
   },
   computed: {},
   watch: {},
-  mounted() {
+  mounted () {
     this.query_list();
   },
   methods: {
-    on_deails(data) {
+    on_deails (data) {
       console.log(data);
     },
     // 全选
-    handleSelectionChange(val) {
+    handleSelectionChange (val) {
       this.checkList = val;
     },
     // 列表 接口
-    query_list() {
+    query_list () {
       this.list_loading = true;
       let params = {
         businessSystemId: "", //id主键
@@ -216,12 +195,12 @@ export default {
       });
     },
     // 分页
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.list_data.pageNo = val;
       this.query_list();
     },
     // 每页多少条
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.list_data.pageSize = val;
       this.query_list();
     },

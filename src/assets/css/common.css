@@ -8,11 +8,11 @@
 }
 .left_conter {
   /* border: 1px solid red; */
-  width: 280px;
+  /* width: 280px; */
 }
 .right_conter {
-  flex: 1;
-  min-width: 800px;
+  /* flex: 1; */
+  /* min-width: 800px; */
   /* border: 1px solid red; */
 }
 ul {

@@ -14,13 +14,13 @@
 
       <!-- 输入框 -->
       <!-- @keyup.enter="addTags" -->
-      <input placeholder="请输入查询的内容然后选择查询的类别"
-             v-model="currentval"
-             @keyup.delete="deleteTags"
-             :style="inputStyle"
-             class="inputTag"
-             ref="inputTag"
-             type="text" />
+      <el-input placeholder="请输入查询的内容然后选择查询的类别"
+                v-model="currentval"
+                @keyup.delete="deleteTags"
+                :style="inputStyle"
+                class="inputTag"
+                ref="inputTag"
+                type="text" />
     </div>
     <div v-if="currentval && dropDown.length > 0"
          class="dropDownBox">
@@ -212,9 +212,10 @@ export default {
   border-radius: 4px;
   font-size: 12px;
   text-align: left;
-  padding-left: 5px;
   word-wrap: break-word;
   overflow: hidden;
+  padding: 0 4px;
+  box-sizing: border-box;
 }
 /* 标签 */
 .spanbox {
@@ -239,8 +240,13 @@ export default {
   vertical-align: middle;
   overflow: hidden;
   transition: 0.25s linear;
-  color: rgb(26, 26, 26);
-  font-weight: 600;
+  color: #666;
+  font-weight: 400;
+
+  transition: all 0.3s;
+}
+.tagspan:hover {
+  border: 1px solid #999;
 }
 .span_close {
   padding: 0 4px 0 4px;
@@ -272,6 +278,9 @@ export default {
   color: #495060;
   line-height: 32px;
 }
+.inputTag >>> .el-input__inner {
+  border: none !important;
+}
 .dropDownBox {
   /* min-height: 50px; */
   width: 100%;
@@ -287,9 +296,10 @@ export default {
   border-radius: 10px;
 }
 .dropDownItem {
-  height: 25px;
-  line-height: 25px;
+  height: 30px;
+  line-height: 30px;
   /* margin-left: 10px; */
+  color: #666 !important;
 }
 .dropDownItem:hover {
   cursor: pointer;

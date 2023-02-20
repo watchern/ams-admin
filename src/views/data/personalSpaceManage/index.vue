@@ -213,7 +213,7 @@
         <el-table :data="inTableDataList"
                   border
                   style="width: 100%"
-                  height="calc(100vh - 290px)"
+                  height="calc(100vh - 300px)"
                   @selection-change="handleSelectionChange">
           <el-table-column v-for="key in inTableDataColumnNameList"
                            :key="key"
@@ -337,7 +337,7 @@ export default {
           this.query.pageSize = res.data.size
           this.dataTotal = res.data.total
           res.data.records.forEach((value, index) => {
-            if(value.tblType != null){
+            if (value.tblType != null) {
               var tempParam = value.tblType.substr(0, 1).toUpperCase()
               var param = tempParam.toUpperCase()
               if (param == "T") {
@@ -346,7 +346,7 @@ export default {
               if (param == "V") {
                 value.tblType = '视图'
               }
-            }else{
+            } else {
               value.tblType = '---'
             }
           })
@@ -561,10 +561,10 @@ export default {
     },
     personalSpaceQueryByTreeNode (data, node) {
       if (node.level == 1) {
-        if(data.label == '个人空间'){
+        if (data.label == '个人空间') {
           this.initPersonalSpaceManageData()
         }
-        if(data.label == '全行空间'){
+        if (data.label == '全行空间') {
           this.tableMetaDetail.folderUuid = data.id
           this.initPersonalSpaceManageData()
         }

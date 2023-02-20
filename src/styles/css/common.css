@@ -314,11 +314,11 @@ form::-webkit-scrollbar-corner,
   z-index: 2100!important;
 }
 /*el-tree横向滚动条*/
-.flow-tree{
+/* .flow-tree{
     overflow: auto;
     width: 100%;
     height: calc(100%);
-}
+} */
 .el-tree-node__children{
     overflow: visible !important;
 }

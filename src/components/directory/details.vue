@@ -173,6 +173,7 @@
                               v-model="form.personLiables"></el-input>
                   </el-form-item>
                   <el-button type="primary"
+                             size="small"
                              v-if="isDisable_input == false"
                              :disabled="isDisable_input"
                              class="oper-btn"
@@ -335,6 +336,8 @@
           <div class="padding20"
                style="text-align: right">
             <el-button type="primary"
+                       size="small"
+                       class="oper-btn"
                        v-if="isDisable_input == false"
                        :disabled="isDisable_input"
                        @click="add_table()">
@@ -1121,7 +1124,7 @@ export default {
               this.table_list(this.tableMetaUuid);
               // this.$emit("update_list");
               //资源目录修改同步修改授权资源目录
-              moveFolder4Authority(this.tableMetaUuid,this.dataSource).then(resp => {});
+              moveFolder4Authority(this.tableMetaUuid, this.dataSource).then(resp => { });
             } else {
               this.$message({
                 type: "error",
@@ -1417,6 +1420,8 @@ export default {
 
 .top_tag {
   width: 160px;
+  padding: 10px 0 0 20px;
+  box-sizing: border-box;
 }
 
 .navgatorLi {
@@ -1447,6 +1452,7 @@ export default {
   min-height: 400px;
   overflow-y: auto;
   margin-bottom: 30px;
+  padding-top: 10px;
 }
 
 .rightList .rightList_child h2 {
@@ -1483,8 +1489,8 @@ export default {
 }
 
 .is_disabled >>> .el-textarea__inner {
-  background-color: rgba(0, 0, 0, 0.05) !important;
-  color: #606266 !important;
+  color: #999 !important;
+  background: #ebeff2 !important;
 }
 
 .yes_disabled >>> .el-select,
@@ -1580,7 +1586,7 @@ export default {
 }
 
 .son_people >>> .el-form-item__content {
-  width: 237px;
+  width: 217px;
 }
 
 .is_width >>> .el-form-item__content {
@@ -1661,7 +1667,8 @@ export default {
   text-align: right;
   float: left;
   position: fixed;
-  bottom: 40px;
+  bottom: 60px;
   right: 40px;
+  z-index: 9;
 }
 </style>

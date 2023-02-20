@@ -1,25 +1,25 @@
 <template>
   <div class="right-footer h100">
     <div class="h100 flex a-center j-start flex-row">
-      <div
-        v-for="(item,index) in tagList"
-        :key="index"
-        ref="tagDom"
-        class="tag flex a-center j-center flex-row animated slideInLeft"
-        :class="[item.isActive && 'tag-active']"
-        @click="select(item)"
-        @contextmenu.prevent="contextmenu(item,$event,index)"
-      >
-        <span class="name" :title="item.name">{{ item.name }}</span>
-        <span class="close" @click.stop.prevent="close(item)">x</span>
+      <div v-for="(item,index) in tagList"
+           :key="index"
+           ref="tagDom"
+           class="tag flex a-center j-center flex-row animated slideInLeft"
+           :class="[item.isActive && 'tag-active']"
+           @click="select(item)"
+           @contextmenu.prevent="contextmenu(item,$event,index)">
+        <span class="name"
+              :title="item.name">{{ item.name }}</span>
+        <span class="close"
+              @click.stop.prevent="close(item)">x</span>
       </div>
-      <div v-if="isShowPopover" class="popover" :style="computedStyle">
-        <div
-          v-for="(item,index) in popoverList"
-          :key="index"
-          class="li"
-          @click="sure(item)"
-        >{{ item.name }}</div>
+      <div v-if="isShowPopover"
+           class="popover"
+           :style="computedStyle">
+        <div v-for="(item,index) in popoverList"
+             :key="index"
+             class="li"
+             @click="sure(item)">{{ item.name }}</div>
       </div>
     </div>
   </div>
@@ -27,7 +27,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       isShowPopover: false,
       popoverLeft: 0,
@@ -54,17 +54,17 @@ export default {
     }
   },
   computed: {
-    computedStyle() {
+    computedStyle () {
       return {
         left: `${this.popoverLeft}px`,
         top: `${this.popoverTop - 118}px`
       }
     },
-    tagList() {
+    tagList () {
       return this.$store.state.aceState.rightFooterTags
     }
   },
-  mounted() {
+  mounted () {
     // this.activeTags({
     //   type: 'active',
     //   val: {
@@ -73,21 +73,21 @@ export default {
     //   }
     // })
     window.addEventListener("click", this.clickOther)
-    },
+  },
   methods: {
-    close(item) {
+    close (item) {
       this.selectItem = item
       this.sure({
         prop: 'close'
       })
     },
-    select(item) {
+    select (item) {
       this.activeTags({
         type: 'active',
         val: item
       })
     },
-    activeTags(item) {
+    activeTags (item) {
       //2021.6.4 太仓需求sql编辑页保留编辑内容
       // if(item.val.path=='/analysis/sqleditor' && item.type == 'active'){
       //   item.type = 'reset'
@@ -97,13 +97,13 @@ export default {
         val: item.val
       })
     },
-    contextmenu(item, e, index) {
+    contextmenu (item, e, index) {
       this.selectItem = item
       this.isShowPopover = true
       this.popoverLeft = e.clientX
       this.popoverTop = e.clientY
     },
-    sure(item) {
+    sure (item) {
       this.isShowPopover = false
       this.activeTags({
         type: item.prop,
@@ -114,9 +114,9 @@ export default {
       this.isShowPopover = false
     }
   },
-  watch:{
+  watch: {
     // 监听url到first页面时关闭下方页签
-    $route(to,from){
+    $route (to, from) {
       if (to.name === "amsFirst") {
         this.$store.commit('aceState/setRightFooterTags', {
           type: 'closeAll',
@@ -130,9 +130,9 @@ export default {
 
 <style lang="scss" scoped>
 .right-footer {
-  background: rgb(85,158,212);
+  // background: rgb(85, 158, 212);
   overflow: hidden;
-  width: 100vw;
+  width: 100%;
   .animat-enter-active,
   .animat-leave-active {
     transition: all 1s;
@@ -150,12 +150,12 @@ export default {
     height: 24px;
     cursor: pointer;
     padding: 0 10px;
-    border-right: 1px solid rgba(95,190,235,.6);
+    border-right: 1px solid rgba(95, 190, 235, 0.6);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     &-active {
-      background: rgb(95,190,235);
+      // background: rgb(95, 190, 235);
     }
     .name {
       display: inline-block;
@@ -165,7 +165,7 @@ export default {
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .close{
+    .close {
       display: inline-block;
       width: 12px;
       height: 12px;
@@ -175,16 +175,15 @@ export default {
       font-size: 8px;
       position: relative;
       top: 1px;
-      &:hover{
+      &:hover {
         background: white;
         color: #000000;
       }
-      &:active{
+      &:active {
         background: white;
         color: #000000;
       }
     }
-
   }
   .popover {
     position: fixed;

@@ -127,7 +127,7 @@
     <!-- left_conter end-->
 
     <!-- right_conter -->
-    <div class="right_conter padding10">
+    <div class="right_conter">
 
       <!-- 默认表单 -->
       <div v-if="divInfo == false">
@@ -215,7 +215,6 @@
         <el-pagination v-show="list.total>0"
                        :total="list.total"
                        :current-page="list.currentPage"
-                       background
                        @current-change="handleCurrentChange"
                        @size-change="handleSizeChange"
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>

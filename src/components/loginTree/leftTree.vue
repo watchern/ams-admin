@@ -275,19 +275,19 @@ export default {
     },
     //节点开始拖拽时触发的事件
     handleDragStart (node, ev) {
-      // console.log('drag start', node);
+      // 
     },
     //拖拽进入其他节点时触发的事件
     handleDragEnter (draggingNode, dropNode, ev) {
-      // console.log('tree drag enter: ', dropNode.label);
+      // 
     },
     //拖拽离开某个节点时触发的事件
     handleDragLeave (draggingNode, dropNode, ev) {
-      // console.log('tree drag leave: ', dropNode.label);
+      // 
     },
     //在拖拽节点时触发的事件（类似浏览器的 mouseover 事件）
     handleDragOver (draggingNode, dropNode, ev) {
-      // console.log('tree drag over: ', dropNode.label);
+      // 
     },
     //拖拽结束时（可能未成功）触发的事件
     handleDragEnd (draggingNode, dropNode, dropType, ev) {
@@ -302,7 +302,7 @@ export default {
     },
     // 拖拽成功完成时
     handleDrop (draggingNode, dropNode, dropType, ev) {
-      // console.log(draggingNode, dropNode, dropType, ev);
+      // 
     },
     // 懒加载表字段
     async loadNode (node, resolve) {
@@ -310,7 +310,7 @@ export default {
         return resolve(node.data);
       } else if (node.level >= 1) {
         //SQL编辑器、数据注册的表才需要展示字段
-        if (node.data.type === "table" && (this.loadLeftTreeType === "1" || this.loadLeftTreeType==="")) {
+        if (node.data.type === "table" && (this.loadLeftTreeType === "1" || this.loadLeftTreeType === "")) {
           var strLevel = this.activeName + this.query.dataSource;
           var nodeList = getTableField(node, this.query.dataSource, this.loadLeftTreeType, strLevel);
           Promise.all([nodeList]).then((res) => {
@@ -704,7 +704,7 @@ export default {
           this.isDisable_input = true;
           this.$emit("details", this.tableMetaUuid, this.show_details, this.isDisable_input);
         }
-      } else {
+      } else if (node.level == 2) {
         // 进入详情
         this.tableMetaUuid = node.data.id;
         this.show_details = true;
@@ -924,7 +924,8 @@ export default {
 }
 
 .conter_vh {
-  height: calc(100% - 170px);
+  height: calc(100% - 160px);
+  overflow: auto;
 }
 .conter_vh_size {
   height: calc(100% - 100px);
@@ -945,11 +946,11 @@ export default {
   /* position: absolute;
   left: 0;
   bottom: 0; */
-  height: calc(100% - 160px);
+  height: calc(100% - 150px);
   width: 100%;
   z-index: 9;
   background: rgba(106, 106, 106, 0.0862745098);
-  border-radius: 15.5px;
+  border-radius: 15px;
 }
 
 .conter_loadings {
@@ -957,8 +958,9 @@ export default {
   height: 100%;
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: blur(10px);
-  background-color: rgba(255, 255, 255, 0.7);
-
+  background: #f4f6f9
+    linear-gradient(134deg, #f6f1ff 0%, #f3f0ff 33%, #ebf5fd 70%, #d0ddf7 100%);
+  border-radius: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1039,5 +1041,8 @@ export default {
   background-image: url("../../styles/icons/view.png");
   vertical-align: top;
   *vertical-align: middle;
+}
+.dataSource .el-form-item {
+  margin-bottom: 0 !important;
 }
 </style>

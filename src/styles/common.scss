@@ -1,13 +1,13 @@
 .searchBlock {
-    padding: 24px 12px 12px;
-    overflow: hidden;
+    // padding: 24px 12px 12px;
+    // overflow: hidden;
 
-    .search {
-        display: inline-block;
-        margin-right: 16px;
-        margin-bottom: 8px;
-        width: 28%;
-    }
+    // .search {
+    //     display: inline-block;
+    //     margin-right: 16px;
+    //     margin-bottom: 8px;
+    //     width: 28%;
+    // }
 
     .search-title {
         display: inline-block;
@@ -103,19 +103,19 @@
     }
 }
 
-.pager {
-    position: absolute;
-    bottom: 10px;
-    // width: 100%;
-    left: 0;
-    z-index: 2;
+// .pager {
+//     position: absolute;
+//     bottom: 10px;
+//     // width: 100%;
+//     left: 0;
+//     z-index: 2;
 
-    .el-pagination {
-        padding: 16px 12px 16px 12px;
-        white-space: nowrap;
-        text-align: right;
-    }
-}
+//     .el-pagination {
+//         padding: 16px 12px 16px 12px;
+//         white-space: nowrap;
+//         text-align: right;
+//     }
+// }
 
 
 .item-a {
