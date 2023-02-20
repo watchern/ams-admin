@@ -402,6 +402,12 @@ export default {
         //数据授权方式
         formatAuthenType(row, column) {
             var data = getDictList('004001')
+            if(data===null){
+                cacheDict().then((resp) => {
+                sessionStorage.setItem("sysDict", JSON.stringify(resp.data));
+                });
+                data = getDictList('004001')
+            }
             var authenObj = data.filter(obj => {
                 return obj.codeValue === row.authenType
             })

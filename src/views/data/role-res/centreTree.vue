@@ -50,7 +50,6 @@
           class="filter-tree"
           highlight-current="true"
           node-key="id"
-          @node-click="nodeClick"
           :expand-on-click-node="false"
           :default-expand-all	= "true"
         >
@@ -77,7 +76,16 @@
               v-if="data.type === 'column'"
               class="el-icon-c-scale-to-original"
             />
-            <span>{{ node.label }}</span>
+            <span @click="nodeClick(data)">{{ node.label }}</span>
+            <span style="margin-left:2vh;" v-if="data.type === 'table' || data.type === 'view'"> 
+              <el-button
+                title="删除节点"
+                type="text"
+                size="mini"
+                @click="() => removeNode(node, data)">
+                <svg-icon icon-class="icon-delete-1" />
+              </el-button>
+            </span>
             
           </span>
         </MyElTree>
@@ -92,6 +100,7 @@ import MyElTree from "@/components/public/tree/src/tree.vue";
 import {
 
 } from "@/api/data/table-info";
+import { XmlFactory } from 'ag-grid-community';
 export default {
   components: { MyElTree },
   data() {
@@ -134,7 +143,7 @@ export default {
       loadLeftTreeType: "", //因为很多模块需要用到这棵树，用此类型来区分不同模块; 1-SQL编辑器 2-数据授权管理-资源绑定 左侧树
       isShowLoadLeftTreeBtn: true, //是否展示树节点操作按钮
       isShowPersonSpaceTab: false, //是否展示个人空间页签
-      treeNodeSelectedObj:[],//树节点勾选对象
+      centreTreeNodeSelectedObj:[],//树节点勾选对象
     };
   },
   computed: {},
@@ -149,18 +158,62 @@ export default {
 
   },
   methods: {
+    //删除节点
+    removeNode(node,data){
+      if(node.level===1){
+        //如果是根节点下的表则直接删除
+        this.centreTreeNodeSelectedObj.forEach(function(item,k){
+          item.data.forEach(function(t,index){
+            if(t.id===data.id){
+              item.data.splice(index, 1);
+            }
+          })
+        })
+      }
+      if(node.level>1){
+        //如果文件夹下只有一张表则连同文件夹一起删除
+        if(node.parent.childNodes.length>1){
+          //只删除表
+          this.centreTreeNodeSelectedObj.forEach(function(item,k){
+            item.data.forEach(function(t,index){
+              if(t.id===data.id){
+                item.data.splice(index, 1);
+              }
+            })
+          })
+        }else{
+          //删除文件夹和表
+          this.centreTreeNodeSelectedObj.forEach(function(item,k){
+            item.data.forEach(function(t,index){
+              if(t.id===data.id){
+                item.data.splice(index, 1);
+              }
+            })
+            item.data.forEach(function(t,index){
+              if(t.id===data.pid){
+                item.data.splice(index, 1);
+              }
+            })
+          })
+        }
+      }
+      //刷新树
+      this.loadLeftTreeTypeFun(this.centreTreeNodeSelectedObj)
+      //去掉左侧树的勾选状态
+      this.$emit("unLeftTreeSelected",data,this.centreTreeNodeSelectedObj)
+    },
     //获取选中的值
     loadLeftTreeTypeFun(datas) {
       //将数组置空
       this.tree_list = []
-      this.treeNodeSelectedObj = []
+      this.centreTreeNodeSelectedObj = []
 
       //重新赋值
-      this.treeNodeSelectedObj = datas
+      this.centreTreeNodeSelectedObj = datas
       var strLevel = this.activeName + this.query.dataSource
-      for(var i=0;i<this.treeNodeSelectedObj.length;i++){
-        if(this.treeNodeSelectedObj[i].strLevel === strLevel){
-          var treeData = this.toTree(this.treeNodeSelectedObj[i].data)
+      for(var i=0;i<this.centreTreeNodeSelectedObj.length;i++){
+        if(this.centreTreeNodeSelectedObj[i].strLevel === strLevel){
+          var treeData = this.toTree(this.centreTreeNodeSelectedObj[i].data)
           this.tree_list = treeData
         }
       }
@@ -185,7 +238,12 @@ export default {
             // var childNode = otherObj[item.pid];
             // otherObj[item.pid].children=[]
             // 4.3.利用当前对象的 otherObj[pid] 找到 otherObj[id] 中对应当前对象的父级对象, 将当前对象添加到其对应的父级对象的 children 属性中
-            otherObj[item.pid].children.push(item)
+            var x = otherObj[item.pid]
+            if(x===undefined){
+              tree.push(item)
+            }else{
+              x.children.push(item)
+            }
 
         } else {
           // 4.3.当前对象 pid 如果为空, 则为树状结构的根对象
@@ -221,9 +279,9 @@ export default {
       this.loading = true;
       this.tabclick = true;
       var strLevel = this.activeName + this.query.dataSource
-      for(var i=0;i<this.treeNodeSelectedObj.length;i++){
-        if(this.treeNodeSelectedObj[i].strLevel === strLevel){
-          var treeData = this.toTree(this.treeNodeSelectedObj[i].data)
+      for(var i=0;i<this.centreTreeNodeSelectedObj.length;i++){
+        if(this.centreTreeNodeSelectedObj[i].strLevel === strLevel){
+          var treeData = this.toTree(this.centreTreeNodeSelectedObj[i].data)
           this.tree_list = treeData
         }
       }
@@ -235,9 +293,9 @@ export default {
       this.loading = true;
       this.tabclick = true;
       var strLevel = this.activeName + this.query.dataSource
-      for(var i=0;i<this.treeNodeSelectedObj.length;i++){
-        if(this.treeNodeSelectedObj[i].strLevel === strLevel){
-          var treeData = this.toTree(this.treeNodeSelectedObj[i].data)
+      for(var i=0;i<this.centreTreeNodeSelectedObj.length;i++){
+        if(this.centreTreeNodeSelectedObj[i].strLevel === strLevel){
+          var treeData = this.toTree(this.centreTreeNodeSelectedObj[i].data)
           this.tree_list = treeData
         }
       }
@@ -249,9 +307,9 @@ export default {
       this.loading = true;
       this.tabclick = true;
       var strLevel = this.activeName + this.query.dataSource
-      for(var i=0;i<this.treeNodeSelectedObj.length;i++){
-        if(this.treeNodeSelectedObj[i].strLevel === strLevel){
-          var treeData = this.toTree(this.treeNodeSelectedObj[i].data)
+      for(var i=0;i<this.centreTreeNodeSelectedObj.length;i++){
+        if(this.centreTreeNodeSelectedObj[i].strLevel === strLevel){
+          var treeData = this.toTree(this.centreTreeNodeSelectedObj[i].data)
           this.tree_list = treeData
         }
       }
@@ -275,7 +333,7 @@ export default {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
-    nodeClick (data, node, tree) {
+    nodeClick (data) {
       var strLevel = this.activeName + this.query.dataSource
       data.strLevelType = strLevel
       this.$emit("nodeClick",data)

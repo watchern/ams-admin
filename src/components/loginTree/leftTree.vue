@@ -67,7 +67,7 @@
                   highlight-current="true"
                   node-key="id"
                   :load="loadNode"
-                  lazy
+                  :lazy="isLazyTree"
                   @node-click="nodeClick"
                   @node-contextmenu="nodeContextmenu"
                   @node-drag-start="handleDragStart"
@@ -251,7 +251,7 @@ export default {
       treeLoading: false,
       tableData: [],
       chooseTables: [],
-      //1-SQL编辑器 2-数据授权管理-资源绑定-左侧树 3-个人空间 4-数据装载与下线
+      //1-SQL编辑器 2-数据授权管理-资源绑定-左侧树 3-个人空间 4-数据装载与下线 5-数据资源目录
       loadLeftTreeType: "", //因为很多模块需要用到这棵树，用此类型来区分不同模块; 
       isShowLoadLeftTreeBtn: true, //是否展示树节点操作按钮
       isShowPersonSpaceTab: false, //是否展示个人空间页签
@@ -281,6 +281,7 @@ export default {
       },
       allSpaceFormType:"",//判断修改还是新增
       allSpaceDialogFormVisible:false,
+      isLazyTree:true,//树是否懒加载
     };
   },
   computed: {},
@@ -431,6 +432,7 @@ export default {
           this.isShowLoadLeftTreeBtn = false;
           this.draggable = false;
           this.showCheckbox = true;
+          this.isLazyTree = false
         }
         //个人空间
         if (this.loadLeftTreeType == "3") {
@@ -449,6 +451,7 @@ export default {
           this.activeName = "3"
           this.post_getPersonSpaceTree(); //个人空间
         }
+        //数据资源目录
         if (this.loadLeftTreeType == "5") {
           this.isShowLoadLeftTreeBtn = false;
           this.isShowPersonSpaceTab = true;
@@ -690,6 +693,10 @@ export default {
     uncheckTreeNode (data) {
       this.treeNodeSelectedObj = data
     },
+    //取消树节点勾选状态
+    unLeftTreeSelected(id){
+      this.$refs.tree2.setChecked(id, false, false);
+    },
     handleClick (tab, event) {
       this.elTabsName = tab.label;
       if (tab.name == "0") {
@@ -715,7 +722,6 @@ export default {
 
     },
     filterNode (value, data, node) {
-
       // if (!value) return true;
       // return data.label.indexOf(value) !== -1;
 
@@ -745,13 +751,13 @@ export default {
     },
     nodeClick (data, node, tree) {
       this.tableMetaUuid = "";
+      this.show_details = false; //显示列表
       // 个人空间模块
       if (this.loadLeftTreeType == "3") {
         this.$emit("personalSpacePageQueryByTreeNode", data, node);
       }
       // 显示列表
       if (node.level == 1) {
-        this.show_details = false; //显示列表
         if (data.type == "system") {
           this.query.businessSystemId = node.data.id;
           this.query.tableThemeId = "";
@@ -787,6 +793,16 @@ export default {
         }
       } else {
         if(data.type==='column'){
+          return false
+        }
+        //数据资源目录
+        if(data.type==="folder"){
+          this.query.businessSystemId = "";
+          this.query.tableThemeId = "";
+          this.query.tableLayeredId = "";
+          this.query.folderUuid = node.data.id;
+          this.query.tbName = "";
+          this.$emit("queryList", this.query, this.show_details);
           return false
         }
         // 进入详情
@@ -899,7 +915,8 @@ export default {
                 commonNotify({ type: "success", message: "删除成功！" })
               );
               this.$refs.tree2.remove(data);
-              this.$emit("queryList", this.query, this.show_details);//刷新右侧列表
+              this.query.businessSystemId = "";
+              this.$emit("delete_list");
               if (this.activeName == "0") {
                 // 系统
                 this.post_getBusinessSystemTree(); //系统
@@ -919,7 +936,8 @@ export default {
                 commonNotify({ type: "success", message: "删除成功！" })
               );
               this.$refs.tree2.remove(data);
-              this.$emit("queryList", this.query, this.show_details);//刷新右侧列表
+              this.query.businessSystemId = "";
+              this.$emit("delete_list");
               if (this.activeName == "0") {
                 // 系统
                 this.post_getBusinessSystemTree(); //系统

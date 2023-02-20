@@ -96,8 +96,8 @@
                     min-width="150px"
                 >
                     <template slot-scope="scope">
-                        <span
-                            @click="showApplyDetail(scope.row)">{{ scope.row.permissionApplyName }}</span>
+                        <span style="color:blue;cursor:pointer;"
+                             @click="showApplyDetail(scope.row)">{{ scope.row.permissionApplyName }}</span>
                     </template>
                 </el-table-column>
                 <el-table-column
