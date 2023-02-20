@@ -160,6 +160,7 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 import { listByPage, save, update, del, getSceneFilter, changeRoleFilter } from '@/api/data/role'
 import QueryField from '@/components/public/query-field/index'
 import { getDictList, commonNotify } from '@/utils'
+import { cacheDict } from "@/api/base/sys-dict";
 
 export default {
   components: { Pagination, QueryField },
@@ -249,6 +250,12 @@ export default {
     },
     getList (query) {
       this.authenTypeJson = getDictList('004001')
+      if(this.authenTypeJson===null){
+        cacheDict().then((resp) => {
+          sessionStorage.setItem("sysDict", JSON.stringify(resp.data));
+        });
+        this.authenTypeJson = getDictList('004001')
+      }
       this.listLoading = true
       if (query) this.pageQuery.condition = query
       listByPage(this.pageQuery).then(resp => {
@@ -341,6 +348,12 @@ export default {
     // },
     formatAuthenType (row, column) {
       var data = getDictList('004001')
+      if(data===null){
+        cacheDict().then((resp) => {
+          sessionStorage.setItem("sysDict", JSON.stringify(resp.data));
+        });
+        data = getDictList('004001')
+      }
       var authenObj = data.filter(obj => { return obj.codeValue === row.authenType })
       if (authenObj !== null) {
         return authenObj[0].codeName

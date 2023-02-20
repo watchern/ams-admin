@@ -29,7 +29,7 @@
 
       <!-- @选中的表数据@ -->
       <el-col :span="6">
-        <CentreTree ref="tree_centre" @nodeClick="onclick2" ></CentreTree>
+        <CentreTree ref="tree_centre" @nodeClick="onclick2" @unLeftTreeSelected="unLeftTreeSelected" ></CentreTree>
       </el-col> 
 
       <!-- @表及表字段选择@ -->
@@ -183,6 +183,7 @@ export default {
       tableCellUUID:"",//选中单元格的主键
       treeNodeSelectedObj:"",//选中的树节点-需要保存的数据
       tableColCheckedMap:{},//临时勾选的表字段，用于反选
+      tableWhereStrMap:{},//临时填写的表条件，用于反选
       whereStr:"",//字段条件
       showSelect:false, //显示选择查询条件对话框
       queryData: [], // querybuilder的规则数据
@@ -200,7 +201,7 @@ export default {
   },
   created() {
     this.tableColCheckedMap = new Map()
-   
+    this.tableWhereStrMap = new Map()
   },
   mounted () {
     //初始左侧数据表树 添加复选框
@@ -217,6 +218,13 @@ export default {
     });
   },
   methods: {
+    //取消左侧树节点勾选状态
+    unLeftTreeSelected(data,newTreeNodeSelectedObj){
+      this.$refs.tree_left.unLeftTreeSelected(data.id)
+      //重新取最新数据
+      this.treeNodeSelectedObj = []
+      this.treeNodeSelectedObj = newTreeNodeSelectedObj
+    },
     whereStrFun(val){
       //取筛选语句
       var strLevelType = this.currentData.strLevelType
@@ -406,8 +414,8 @@ export default {
     // 获取数据并赋权
     addRoleCheck() {
       this.treeNodeSelectedObj = []
-      this.treeNodeSelectedObj = this.$refs.tree_left.treeNodeSelectedObj
-      this.$refs.tree_centre.loadLeftTreeTypeFun(this.$refs.tree_left.treeNodeSelectedObj)
+      this.treeNodeSelectedObj = JSON.parse(JSON.stringify(this.$refs.tree_left.treeNodeSelectedObj))
+      this.$refs.tree_centre.loadLeftTreeTypeFun(this.treeNodeSelectedObj)
     },
     clearWriteNode() {
       let leftCheckNode = this.$refs.treeTable.getCheckedNodes(false, false);
@@ -587,12 +595,21 @@ export default {
             })
           }
           this.tableColCheckedMap.set(tableType,selectedCols)
+          this.tableWhereStrMap.set(tableType,this.whereStr)
         }
         getRoleCols(this.roleUuid, node.id, node.strLevelType).then((resp) => {
           this.listLoading = false;
           node.cols = resp.data;
           this.currentData = node;
           this.whereStr = resp.data[0].whereStr
+          //先从临时条件获取 存在取临时条件
+          var lsWhereStr = _this.tableWhereStrMap.get(node.strLevelType +'-'+ node.id)
+          var whereStrKey = node.strLevelType +'-'+ node.id
+          _this.tableWhereStrMap.forEach(function(value,key){
+            if(whereStrKey===key){
+              _this.whereStr = lsWhereStr
+            }
+          })
           // 将条件选择数据置空
           this.queryData=[];
           this.currentData.cols.forEach((d) => {

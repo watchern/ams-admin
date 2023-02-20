@@ -19,8 +19,10 @@
                   border
                   fit
                   highlight-current-row
-                  @selection-change="handleSelectionChange">
+                  :row-key="row => row.personuuid"
+                  @select="handleSelectionChange">
           <el-table-column type="selection"
+                           reserve-selection
                            width="55" />
           <el-table-column label="人员名称"
                            align="center"
@@ -53,7 +55,7 @@ export default {
         label: "name",
       },
       filterText: null, //组织树筛选框输入数据
-      list: null, //人员表格数据
+      list: [], //人员表格数据
       listLoading: true,
       dataList: [], //存放后台传来的所有人员数据，用于前台分页
       total: 0, //存放分页总数据条数
@@ -62,11 +64,24 @@ export default {
       selectValue: [], //存放多选框选中的数据
     };
   },
+  props: {
+    reverseDisplay: { // 反显数据，传递人员对象集合
+      type: Array,
+      required: false,
+    }
+  },
   watch: {
     filterText (val) {
       // 搜索树
       this.$refs.tree.filter(val);
     },
+    reverseDisplay:{
+      handler(){
+        this.refreshSelected();
+        this.reverseDisplaySelected();
+      },
+      deep: true
+    }
   },
   components: {},
   mounted: function () {
@@ -128,6 +143,8 @@ export default {
           index < this.page * this.limit &&
           index >= this.limit * (this.page - 1)
       );
+      // 反显数据默认选中
+      this.reverseDisplaySelected();
       this.total = this.dataList.length;
     },
     // 当每页数量改变
@@ -143,14 +160,59 @@ export default {
     /**
      * 当多选框改变时触发
      */
-    handleSelectionChange (val) {
-      this.selectValue = val
+    handleSelectionChange (val,row) {
+      // 如果没有传递需要返显的数据，按原来的方式运行
+      if (this.reverseDisplay == null){
+        this.selectValue = val;
+        return;
+      }
+      if (val.length && val.indexOf(row) !== -1){
+        this.reverseDisplay.push(row)
+      }else {
+        for (let i = 0; i < this.reverseDisplay.length; i++) {
+          if (this.reverseDisplay[i].personuuid == row.personuuid){
+            this.reverseDisplay.splice(i,1);
+            i--;
+          }
+        }
+      }
     },
     /**
      * 返回选中的数据方法
      */
     getSelectValue () {
-      return this.selectValue
+      if (this.reverseDisplay == null){
+        return this.selectValue;
+      }
+      return this.reverseDisplay;
+    },
+    /**
+     * 手动刷新人员选中数据
+     */
+    refreshSelected(){
+      this.$refs.multipleTable.clearSelection();
+    },
+    /**
+     * 反显数据
+     */
+    reverseDisplaySelected(){
+      // 数据反显
+      if (this.reverseDisplay != null && this.reverseDisplay.length > 0) {
+        this.list.forEach(data => {
+          this.$refs.multipleTable.toggleRowSelection(data, false);
+          for (let i = 0; i < this.reverseDisplay.length; i++) {
+            if (data.personuuid == this.reverseDisplay[i].personuuid || data.personuuid == this.reverseDisplay[i].personUuid) {
+              this.$refs.multipleTable.toggleRowSelection(data, true);
+              this.reverseDisplay[i] = data;
+            }
+            // 同步传递进来的数据格式
+            if (this.reverseDisplay[i].personUuid != undefined && this.reverseDisplay[i].personName != undefined) {
+              this.reverseDisplay[i].personuuid = this.reverseDisplay[i].personUuid;
+              this.reverseDisplay[i].cnname = this.reverseDisplay[i].personName;
+            }
+          }
+        });
+      }
     }
   },
 };

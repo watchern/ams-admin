@@ -256,7 +256,9 @@ export default {
             }
           });
         }
-        this.initForApply();
+        if (this.flowItem.wftype === 'dtOperatePermissionApply') {
+          this.initForApply();
+        }
       });
     },
     handleChange (val) {
@@ -475,6 +477,7 @@ export default {
   }
 };
 </script>
+
 <style src="../css/tableItem.css" scoped>
 </style>
 <style scoped>

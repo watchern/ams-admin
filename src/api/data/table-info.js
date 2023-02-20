@@ -500,3 +500,21 @@ export function moveFolder4Authority(tableMetaUuid, tableDataSource) {
     method: 'get',
   })
 }
+
+export function delByTableMetaUuid(tableMetaUuid, tableDataSource) {
+  return request({
+    baseURL: baseURL,
+    url: `/roleTable/delByTableMetaUuid`,
+    params: {tableMetaUuid: tableMetaUuid, tableDataSource: tableDataSource},
+    method: 'get',
+  })
+}
+
+export function getPersonLiableByTableMetaUuid(data){
+  return request({
+    baseURL: baseURL,
+    url: `/personLiable/getPersonLiableByTableMetaUuid`,
+    method: 'post',
+    data
+  })
+}

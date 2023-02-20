@@ -32,13 +32,11 @@ export default {
   computed: {},
   watch: {},
   mounted () {
-    this.init();//初始化表关系
   },
   created () {
   },
   methods: {
     init (num) {
-
       if (num) {
         this.myDiagram.div = null;
         this.nodeDataArray = [];

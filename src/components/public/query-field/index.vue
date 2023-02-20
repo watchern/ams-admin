@@ -32,11 +32,17 @@
           <el-date-picker v-model="query[fd.name+'Start']"
                           :type="dateType"
                           placeholder="开始时间"
-                          :style="timeStyle" />
+                          :style="timeStyle"
+                          :picker-options="(query[fd.name+'End'] != null &&  query[fd.name+'End'] != '') ?
+                               { disabledDate(time) { return query[fd.name+'End'] <  time.getTime() }} :
+                               { disabledDate() { return null }}" />
           <el-date-picker v-model="query[fd.name+'End']"
                           :type="dateType"
                           placeholder="结束时间"
-                          :style="timeStyle" />
+                          :style="timeStyle"
+                          :picker-options="(query[fd.name+'Start'] != null  &&  query[fd.name+'Start'] != '')  ?
+                               { disabledDate(time) { return time.getTime() <  query[fd.name+'Start'] }} :
+                               { disabledDate() { return null }}" />
         </template>
       </el-form-item>
 

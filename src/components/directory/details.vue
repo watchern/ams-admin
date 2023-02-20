@@ -216,7 +216,7 @@
                   </el-form-item>
                 </div>
 
-                <div class="son_check">
+                <!-- <div class="son_check">
                   <el-form-item label="数据标签：">
                     <div class="_width tag_conter">
                       <el-tag :key="tag.labelLibraryId"
@@ -233,7 +233,7 @@
                              v-if="isDisable_input == false"
                              :disabled="isDisable_input"
                              @click="check_tag()">选择</el-button>
-                </div>
+                </div> -->
 
                 <el-form-item label="表热度：">
                   <ul class="Heat_ul _width">
@@ -370,7 +370,10 @@
         <!-- 保存按钮 返回上一步 -->
         <div class="fixed_btn">
           <el-button type="primary"
-                     @click="step()">返回</el-button>
+                     @click="step()"
+                     v-if="isHide_step">
+            返回
+          </el-button>
           <el-button type="primary"
                      @click="update_save('form')"
                      :disabled="isDisable_input"
@@ -382,17 +385,18 @@
     </div>
 
     <!-- 选中标签 -->
-    <select-label title="选择标签"
+    <!-- <select-label title="选择标签"
                   :visible.sync="dialogVisible_tag"
                   :close-on-click-modal="false"
                   :has-selected="form.labelList"
-                  @confirm="confirmSelectLabel"></select-label>
+                  @confirm="confirmSelectLabel"></select-label> -->
 
     <!-- 查看sql -->
     <el-dialog title="查看sql"
                :close-on-click-modal="false"
                class="dlag_width"
                :visible.sync="visible_sql"
+               :modal="false"
                width="40%">
       <div class="preview_sql">
         <el-input type="textarea"
@@ -684,6 +688,12 @@ export default {
     },
     // isDisable_input: Boolean,
 
+    isHide_step: {
+      type: Boolean,
+      default () {
+        return true
+      },
+    },
     isDisable_input: {
       type: Boolean,
       default () {
@@ -747,7 +757,7 @@ export default {
         personUuid: "", //资源责任人
         partitions: "", //表分区
         isSpike: 1, //是否增量
-        labelList: [],
+        labelList: [], // 标签
         tableLayeredName: '',//数据源
       },
 
@@ -925,7 +935,7 @@ export default {
     this.getListTree_data(); //下拉框默认值
     this.getIndexInfo(this.tableMetaUuid);
     this.getDictInfo(this.tableMetaUuid);
-
+    
     this.qost_cong_table_list_data(this.tableMetaUuid); //获取从表字段
     window.addEventListener("scroll", this.handleScroll, true);
   },
@@ -1008,6 +1018,20 @@ export default {
         this.form.tbName = resp.data.tbName; //表名称
         this.form.chnName = resp.data.chnName; //中文名
         this.form.tableRemarks = resp.data.tableRelationQuery.tableRemarks; //表说明
+        var tempParam = resp.data.tableSize
+        if(tempParam == null || tempParam == ''){
+          this.form.tableSize = 0
+        }
+        var length = tempParam.length
+        if(length == 0 || length ==1){
+          this.$notify.error("表大小单位错误")
+          return
+        }
+        //取出 表大小的值  ?KB 就取KB 之前的值   ?B 就取 B 之前的值
+        var tempValue = length > 2 ? tempParam.substr(0,length - 2) : tempParam.substr(0,length - 1)
+        if(tempValue == 0 || tempValue == 'null' || tempValue == 'NULL'){
+          this.form.tableSize = 0
+        }
         this.form.tableSize = resp.data.tableSize; //表大小
         this.form.rowNum = resp.data.rowNum; //表数据量
         let tableCode = resp.data.tableRelationQuery.tableCode.substring(
@@ -1066,6 +1090,7 @@ export default {
         this.form.isSpike = resp.data.tableRelationQuery.isSpike; //增量全量
         this.form.labelList = resp.data.labelList; //标签列表
         this.table_visible_form.tableMetaUuid = resp.data.tableMetaUuid//主表从表新增用
+        this.$refs.tableLines.init(1); // 初始化表关联关系
       });
     },
     // 选择标签

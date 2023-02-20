@@ -1533,7 +1533,7 @@
 </style>
 <style src="../css/form.css">
 </style>
-<style scoped >
+<style scoped>
   .admin_right_main{
     height: calc(100vh - 100px);
     overflow: auto;

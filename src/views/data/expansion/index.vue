@@ -133,7 +133,9 @@
 
       <!--     添加弹窗-->
       <el-dialog title="个人空间申请"
-                 :visible.sync="openInsertDialog">
+                 :visible.sync="openInsertDialog"
+                 :close-on-click-modal="false"
+                 :close-on-press-escape="false">
         <el-form :model="personalSpace"
                  class="demo-ruleForm"
                  label-width="80px"
@@ -141,50 +143,7 @@
                  width="60%"
                  ref="form">
 
-          <el-form-item label="申请名称"
-                        class="item-b"
-                        prop="personalSpaceName">
-            <el-input class="item-b-input"
-                      v-model="personalSpace.personalSpaceName"
-                      placeholder="申请名称"></el-input>
-          </el-form-item>
-          <el-form-item label="扩容容量"
-                        class="item-b"
-                        prop="personalSpaceCapacity">
-            <div style="display: flex">
-              <el-input v-model="personalSpace.personalSpaceCapacity"
-                        placeholder="扩容容量"
-                        type="number"
-                        :max="1024"
-                        :min="0"
-                        @input="inputChange"
-                        style="width: 80%"></el-input>
-              <el-select v-model="personalSpaceCapacityNeed"
-                         placeholder="容量单位"
-                         style="margin-left: 10px">
-                <el-option label="GB"
-                           value="GB"></el-option>
-                <el-option label="MB"
-                           value="MB"></el-option>
-                <el-option label="KB"
-                           value="KB"></el-option>
-              </el-select>
-            </div>
-          </el-form-item>
-          <!--        <el-form-item label="审批人">-->
-          <!--          <el-input v-model="personalSpace.personalSpaceApproving"-->
-          <!--                    placeholder="选择审批人"-->
-          <!--                    style="width: 670px"></el-input>-->
-          <!--          <el-button type="primary">选择</el-button>-->
-          <!--        </el-form-item>-->
-        </el-form>
-        <el-row type="flex"
-                justify="end">
-          <el-button @click="closeInsertDialog">关闭</el-button>
-          <el-button type="primary"
-                     @click="onSubmit">保存</el-button>
-
-        </el-row>
+          </el-row>
       </el-dialog>
       <!--    修改弹窗-->
       <el-dialog title="个人空间申请"
@@ -397,26 +356,68 @@ export default {
           this.dataTotal = res.data.total;
           this.query.pageSize = res.data.size;
           this.query.pageNo = res.data.current;
-          this.clearParams();
         })
         .catch((err) => { });
     },
     exportAllData () {
-      if (
-        this.personalSpaceUuidList.length == 0 ||
-        this.personalSpaceUuidList.length == undefined
+      if (this.personalSpaceUuidList.length == undefined ||
+        this.personalSpaceUuidList.length == 0
       ) {
         this.$confirm("未选择指定数据将导出全部?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         }).then(() => {
-          exportAllPersonalSpace();
+          this.$axios
+            .get("/data/personalSpace/exportAllPersonalSpace", {
+              responseType: "blob",
+              headers: {
+                "ContentType": 'application/x-www-form-urlencoded'
+              }
+            })
+            .then((res) => {
+              const filename = decodeURI(
+                res.headers["content-disposition"].split(";")[1].split("=")[1]
+              );
+              const blob = new Blob([res.data], {
+                type: "application/octet-stream",
+              });
+              const url = window.URL.createObjectURL(blob);
+              const link = document.createElement("a");
+              link.style.display = "none";
+              link.href = url;
+              link.setAttribute("download", filename);
+              document.body.appendChild(link);
+              link.click();
+            });
+          // exportAllPersonalSpace();
         });
       } else {
         setPersonalSpaceSession(this.personalSpaceUuidList).then((res) => {
           if (res.msg == "成功") {
-            exportAllPersonalSpace();
+            this.$axios
+              .get("/data/personalSpace/exportAllPersonalSpace", {
+                responseType: "blob",
+                headers: {
+                  "ContentType": 'application/x-www-form-urlencoded'
+                }
+              })
+              .then((res) => {
+                const filename = decodeURI(
+                  res.headers["content-disposition"].split(";")[1].split("=")[1]
+                );
+                const blob = new Blob([res.data], {
+                  type: "application/octet-stream",
+                });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.style.display = "none";
+                link.href = url;
+                link.setAttribute("download", filename);
+                document.body.appendChild(link);
+                link.click();
+              });
+            // exportAllPersonalSpace();
           }
         });
       }
@@ -559,6 +560,10 @@ export default {
     },
     //提交按钮
     handleEvent () {
+      if (this.personalSpaceSelectionList.length == 0) {
+        this.$notify.warning("请选择要提交的数据");
+        return;
+      }
       if (this.personalSpaceSelectionList.length > 1) {
         this.$notify.warning("一次只能提交一条数据");
         return;
@@ -644,6 +649,10 @@ export default {
       batchUpdateForHandle(this.personalSpaceSelectionList).then((res) => {
         this.initPersonalSpaceData();
       });
+    },
+    searchData () {
+      this.query.pageNo = 1
+      this.initPersonalSpaceData()
     }
   },
 };

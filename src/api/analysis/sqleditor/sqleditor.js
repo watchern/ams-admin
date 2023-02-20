@@ -285,7 +285,7 @@ export function initDragAndDrop() {
     var overWidth = document.getElementById('container').clientWidth - 229
     if (tree_shuju == false && tree_canshu == false && tree_sql == false && tree_bj == false) {
       $('#leftPart').stop(true).animate({ 'width': 203 }, 300)
-      $('#vertical').delay(300).fadeIn(100).css('left', 11.5 + '%')
+      $('#vertical').delay(300).fadeIn(100).css('left', 13.8 + '%')
       $('#rightPart').stop(true).animate({ 'width': overWidth + 'px', 'left': 0 }, 300)
       $('#sidebar').css('border-right', 1 + 'px' + ' solid' + ' rgb(206,208,212)')
     }
@@ -412,9 +412,13 @@ export function initDragAndDrop() {
       iT < 0 && (iT = 0)
       iT > maxT && (iT = maxT)
       var cmWrap = $('.CodeMirror-wrap')[0]
-      horizontal.style.top = topPart.style.height = iT + 'px'
-      cmWrap.style.height = iT - 37 + 'px'
-      bottomPart.style.height = rightPart.clientHeight - iT - 11 + 'px'
+      //控制上下拖拽范围
+      if(rightPart.clientHeight - iT - 11>10 && iT>65){
+        horizontal.style.top = iT + 'px'
+        topPart.style.height = iT - 5 + 'px'
+        cmWrap.style.height = iT - 37 + 'px'
+        bottomPart.style.height = rightPart.clientHeight - iT - 11 + 'px'
+      }
       if (grids) {
         grids.style.height = rightPart.clientHeight - iT - 197 + 'px'
       }
@@ -939,7 +943,9 @@ export async function getTableField(node,dataSource,treeType,strLevel){
             'enName': result.data[i].colName
           }
           nodeList.push(node)
-          editorObj.options.hintOptions.tablesTitle[result.data[i].colName] = result.data[i].chnName
+          if(treeType === '1'){
+            editorObj.options.hintOptions.tablesTitle[result.data[i].colName] = result.data[i].chnName
+          }
         }
       }
       if (columns.length > 0 && treeType ==='1') {
@@ -1481,7 +1487,7 @@ export function initParamTreeNew(modelFolderPath) {
         if (!treeNode) {
           return false
         }
-        zTreeObj.selectNode(treeNode)
+        // zTreeObj.selectNode(treeNode)
         var menuId = ''
         var numm = $(document).height() - event.clientY
         if (treeNode.type === 'folder') {
@@ -1499,7 +1505,7 @@ export function initParamTreeNew(modelFolderPath) {
       },
       onExpand: function (event, treeId, treeNode) {
         $('#paramfolderdatabox').val(treeNode)
-        console.log(treeNode)
+        // console.log(treeNode)
         /*        if (!treeNode.children || treeNode.children.length === 0) {
                   loadParamChildrenNodes(treeNode)
                 }*/
@@ -1720,6 +1726,46 @@ export function getPersonSpaceTree(dataUserId, scenecode, dataSource, treeType) 
     params: params
   })
 }
+
+//获取当前登陆人是否有个人空间管理员角色
+export function getLoginUserAdminRole() {
+  return request({
+    baseURL: dataUrl,
+    url: '/tableMeta/getLoginUserAdminRole',
+    method: 'post',
+    params: {}
+  })
+}
+
+//保存文件夹
+export function saveAllSpaceFolder(params) {
+  return request({
+    baseURL: dataUrl,
+    url: '/folder/save',
+    method: 'post',
+    data:params
+  })
+}
+
+//删除文件夹
+export function deleteAllSpaceFolder(ids) {
+  return request({
+    baseURL: dataUrl,
+    url: `/folder/delete/${ids}`,
+    method: 'delete',
+  })
+}
+
+//修改文件夹
+export function editAllSpaceFolder(params) {
+  return request({
+    baseURL: dataUrl,
+    url: '/folder/update',
+    method: 'put',
+    data:params
+  })
+}
+
 
 /**
  * 节点右键事件

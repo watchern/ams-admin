@@ -48,7 +48,7 @@
                 highlight-current-row
                 @selection-change="handleSelectionChange"
                 style="width: 100%;"
-                height="calc(100vh - 300px)"
+                height="calc(100vh - 330px)"
                 @sort-change="sortChange">
         <el-table-column type="selection"
                          width="55" />
@@ -87,21 +87,17 @@
         <el-table-column label="操作"
                          align="center"
                          min-width="100px">
-          <!--                    <el-button-->
-          <!--                            type="primary"-->
-          <!--                            class="oper-btn"-->
-          <!--                            style="width: auto"-->
-          <!--                            @click="showFlow()">流程查看-->
-          <!--                    </el-button>-->
           <template slot-scope="scope">
             <el-link @click="showFlow(scope.row)"
                      type="primary"
                      :underline="false"
-                     class="linkClass">流程跟踪</el-link>
+                     class="linkClass">流程跟踪
+            </el-link>
           </template>
         </el-table-column>
       </el-table>
-      <pagination :total="total"
+      <pagination v-show="total>0"
+                  :total="total"
                   :page.sync="pageQuery.pageNo"
                   :limit.sync="pageQuery.pageSize"
                   @pagination="getList" />
@@ -113,92 +109,91 @@
                    :rules="rules"
                    :model="temp"
                    label-position="right"
-                   width="90%"
-                   label-width="100px"
+                   width="80%"
                    class="detail-form">
-
             <el-form-item prop="requestName"
-                          label="申请名称：">
-              <el-col :span="24">
-                <el-input v-model="temp.requestName" />
-              </el-col>
+                          label="申请名称">
+              <el-input v-model="temp.requestName" />
             </el-form-item>
             <el-form-item prop="requestTableName"
-                          label="申请表名称：">
-              <el-col :span="24">
-
-                <el-button @click="add()"
-                           style="float:right">添加一行</el-button>
-                <div v-for="(item,index) in requestTableNamelist"
-                     :key="item.id"
-                     style="display:flex">
-                  <el-input v-model="item.name" />
-                  <div @click="goDelete(index)"
-                       style="margin-left: 10px;cursor:pointer">×</div>
-                </div>
-              </el-col>
+                          label="申请表名称">
+              <el-button @click="add()"
+                         style="float:right">添加一行</el-button>
+              <div v-for="(item,index) in requestTableNamelist"
+                   :key="item.id"
+                   style="display:flex">
+                <el-input v-model="item.name" />
+                <div @click="goDelete(index)"
+                     style="margin-left: 10px;cursor:pointer">×</div>
+              </div>
             </el-form-item>
             <el-form-item prop="remark"
-                          label="备注：">
-              <el-col :span="24">
-                <el-input v-model="temp.remark" />
-              </el-col>
+                          label="备注">
+              <el-input v-model="temp.remark" />
             </el-form-item>
           </el-form>
         </template>
         <div slot="footer">
-          <el-button @click="closeDialog()">取消</el-button>
+          <el-button @click="closeDialog()">取消
+          </el-button>
           <el-button type="primary"
-                     @click="dialogStatus === 'create' ? createData() : updateData()">保存</el-button>
+                     @click="dialogStatus === 'create' ? createData() : updateData()">保存
+          </el-button>
         </div>
       </el-dialog>
       <el-dialog title="办理"
                  :visible.sync="dialogTransactVisible"
                  :close-on-click-modal="false">
+        <div>
+          <div>待开发</div>
+          <FlowItem ref="flowItem">
+
+          </FlowItem>
+        </div>
+        <span class="sess-flowitem"
+              slot="footer">
+          <el-button size="mini"
+                     type="primary"
+                     class="table_header_btn"
+                     @click="saveOpinion">提交</el-button>
+          <el-button size="mini"
+                     type="primary"
+                     class="table_header_btn"
+                     @click="dialogFlowItemShow = false">关闭</el-button>
+        </span>
       </el-dialog>
-      <!--        流程跟踪弹框-->
-      <!--        <el-dialog-->
-      <!--                title="流程跟踪"-->
-      <!--                :visible.sync="todoFlow"-->
-      <!--                v-if="todoFlow"-->
-      <!--                width="80%"-->
-      <!--        >-->
-      <!--            <div>-->
-      <!--                <flowOpinionList-->
-      <!--                        :applyUuid="applyUuid"-->
-      <!--                        :pageFrom="applyPage"-->
-      <!--                ></flowOpinionList>-->
-      <!--            </div>-->
-      <!--            <span slot="footer">-->
-      <!--        <el-button-->
-      <!--                size="mini"-->
-      <!--                type="info"-->
-      <!--                class="table_header_btn"-->
-      <!--                @click="todoFlow = false"-->
-      <!--        >关闭</el-button-->
-      <!--        >-->
-      <!--        </span>-->
-      <!--        </el-dialog>-->
+      <el-dialog title="流程跟踪"
+                 :visible.sync="dialogFlowVisible"
+                 :close-on-click-modal="false">
+        <div>
+          <div>待开发</div>
+          <flowOpinionList></flowOpinionList>
+        </div>
+      </el-dialog>
     </div>
   </div>
 
 </template>
-
 <script>
 import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination'
 import { listByPage, save, update, del, exportData } from '@/api/data/accessRequest'
-// import flowOpinionList from "@/components/starflow/todowork/flowOpinionList";
+import flowOpinionList from "@/components/starflow/todowork/flowOpinionList";
+import FlowItem from "@/components/starflow/todowork/flowItem";
+
+
 import axios from "axios";
 import qs from "qs";
 
 export default {
-  // flowOpinionList
-  components: { Pagination, QueryField },
+  components: { FlowItem, flowOpinionList, Pagination, QueryField },
   data () {
     return {
       //新增/修改弹框申请表名称数组
-      requestTableNamelist: [],
+      requestTableNamelist: [{
+        id: 0,
+        name: '',
+      }],
       //查询条件
       queryFields: [
         {
@@ -271,42 +266,34 @@ export default {
         requestName: [
           { required: true, message: "申请名称不能为空", trigger: 'blur' },
         ],
-        //申请表名称 现在换成多条了  requestTableNamelist数组
-        // requestTableName: [
-        //     { required: true, message: "申请表名称不能为空", trigger: 'blur' },
-        // ],
+        requestTableName: [
+          { required: true, message: "申请表名称不能为空", trigger: 'blur' },
+        ],
       },
       //办理按钮弹框
       dialogTransactVisible: false,
       //查看流程弹框
       dialogFlowVisible: false,
+
+      //    办理
+      flowItem: {
+        //动态赋值
+        wftype: "auditNotice", //当前业务所属的流程的id
+        applyUuid: "", //申请单主键id
+        detailUuids: "",
+        applyTitle: "", //请求的标题
+        workEffortId: "", //节点id
+        appDataUuid: "", //业务主键id
+        versionUuid: "", //版本id
+        isSecond: false,
+        temp1: "",
+      },
     }
   },
   created () {
     this.getList()
   },
   methods: {
-    // //申请时间格式化
-    // dateFormatter(row, column) {
-    //     debugger
-    //     const datetime = row.requsetTime
-    //     console.log(datetime)
-    //     if (datetime) {
-    //         var dateMat = new Date(datetime)
-    //         var year = dateMat.getFullYear()
-    //         var month = dateMat.getMonth() + 1
-    //         var day = dateMat.getDate()
-    //         var hh = dateMat.getHours()
-    //         var mm = dateMat.getMinutes()
-    //         var ss = dateMat.getSeconds()
-    //         console.log(dateMat,'dateMat')
-    //         console.log(year,'year')
-    //         var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
-    //         console.log(timeFormat,'timeFormat')
-    //         return timeFormat
-    //     }
-    //     return ''
-    // },
     //数据状态格式化
     dataStatusFormat (row, column) {
       let dataStatus = {
@@ -321,7 +308,12 @@ export default {
     //关闭新增/修改弹窗
     closeDialog () {
       this.dialogFormVisible = false
-      this.requestTableNamelist = []
+      this.requestTableNamelist = [
+        {
+          id: "0",
+          name: ""
+        }
+      ]
     },
     //新增申请表名称
     add () {
@@ -353,7 +345,9 @@ export default {
       this.resetTemp();
       this.dialogStatus = "create";
       this.dialogFormVisible = true;
-      this.requestTableNamelist = []
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
     },
     //新增保存
     createData () {
@@ -380,6 +374,7 @@ export default {
           })
         }
       })
+
     },
     //修改按钮
     handleUpdate () {
@@ -390,14 +385,17 @@ export default {
       })
       this.temp = Object.assign({}, this.selections[0])
       //将表名拆分成数组
-      var arr = this.temp.requestTableName.split(",")
-      arr.forEach(item => {
-        let obj = {
-          id: '',
-          name: item
-        }
-        this.requestTableNamelist.push(obj)
-      })
+      if (this.temp) {
+        var arr = this.temp.requestTableName.split(",")
+        arr.forEach(item => {
+          let obj = {
+            id: '',
+            name: item
+          }
+          this.requestTableNamelist.push(obj)
+        })
+      }
+
     },
     //修改保存
     updateData () {
@@ -430,7 +428,9 @@ export default {
     //删除
     handleDel () {
       var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.dataAccessReqUuid) })
+      this.selections.forEach((r, i) => {
+        ids.push(r.dataAccessReqUuid)
+      })
       this.$confirm('此操作将永久删除这些数据，是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -455,36 +455,36 @@ export default {
       this.dialogTransactVisible = true
     },
     //导出按钮
-    handleExport () {
-      axios
-        .post(`/data/accessRequest/dataAccReqExcelInfo`, qs.stringify({}), {
-          // qs.stringify 定义传参格式
-          responseType: "blob",//返回的文件流转成blob对象
-          // 如果是通过页面表单方式提交，用"application/x-www-form-urlencoded"；
-          // 如果是json（要反序列化成字符串），就用"application/json"。
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式
-          },
-        })
-        .then((res) => {
-          //decodeURI函数用于解码 URI 参数是url 返回值是解码后的字符串
-          const filename = decodeURI(
-            res.headers["content-disposition"].split(";")[1].split("=")[1]
-          );
-          const blob = new Blob([res.data], {
-            type: "application/octet-stream",
-          });
-          debugger
-          //创建下载链接
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.style.display = "none";
-          link.href = url;  //链接到创建的下载地址
-          link.setAttribute("download", filename); //下载后文件名
-          document.body.appendChild(link); //下载完成移除元素
-          link.click(); //点击下载
-        });
-    },
+    // handleExport() {
+    //     axios
+    //         .post(`/data/accessRequest/dataAccReqExcelInfo`, qs.stringify({}), {
+    //             // qs.stringify 定义传参格式
+    //             responseType: "blob",//返回的文件流转成blob对象
+    //             // 如果是通过页面表单方式提交，用"application/x-www-form-urlencoded"；
+    //             // 如果是json（要反序列化成字符串），就用"application/json"。
+    //             headers: {
+    //                 "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式
+    //             },
+    //         })
+    //         .then((res) => {
+    //             //decodeURI函数用于解码 URI 参数是url 返回值是解码后的字符串
+    //             const filename = decodeURI(
+    //                 res.headers["content-disposition"].split(";")[1].split("=")[1]
+    //             );
+    //             const blob = new Blob([res.data], {
+    //                 type: "application/octet-stream",
+    //             });
+    //             debugger
+    //             //创建下载链接
+    //             const url = window.URL.createObjectURL(blob);
+    //             const link = document.createElement("a");
+    //             link.style.display = "none";
+    //             link.href = url;  //链接到创建的下载地址
+    //             link.setAttribute("download", filename); //下载后文件名
+    //             document.body.appendChild(link); //下载完成移除元素
+    //             link.click(); //点击下载
+    //         });
+    // },
 
     // handleExport(){
     //     var obj={
@@ -499,35 +499,54 @@ export default {
     //     );
     //     // window.open()
     // },
-
+    handleExport () {
+      if (
+        this.selections.length == 0 || this.selections.length == undefined
+      ) {
+        this.$confirm("未选择指定数据将导出全部?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }).then(() => {
+          exportData();
+        });
+      } else {
+        setdataSession(this.selections).then((res) => {
+          if (res.msg == "成功") {
+            exportData();
+          }
+        });
+      }
+    },
     // handleExport(query) {
-    //     // debugger
-    //     // // if (query) this.pageQuery.condition = query
-    //     // // console.log(query)
-    //     // // listByPage(this.pageQuery).then(resp => {
-    //     // //     this.total = resp.data.total
-    //     // //     this.tableData = resp.data.records
-    //     // //     this.listLoading = false
-    //     // // })
-    //     // if (this.selections.length == 0 || this.selections.length == undefined) {
-    //     //     this.$confirm('未选择指定数据将导出全部?', '提示', {
-    //     //         confirmButtonText: '确定',
-    //     //         cancelButtonText: '取消',
-    //     //         type: 'warning',
-    //     //     }).then(()=>{
-    //     //         exportData()
-    //     //             })
-    //     //     }
-    //     //     // else{
-    //     //     //     setPersonalSpaceSession(this.personalSpaceUuidList)
-    //     //     //         .then((res)=>{
-    //     //     //             if(res.msg == "成功"){
-    //     //     //                 exportAllPersonalSpace()
-    //     //     //             }
-    //     //     //         })
-    //     //     //  }
-    //     // },
-    // // },
+    //     debugger
+    // if (query) this.pageQuery.condition = query
+    // console.log(query)
+    // listByPage(this.pageQuery).then(resp => {
+    //     this.total = resp.data.total
+    //     this.tableData = resp.data.records
+    //     this.listLoading = false
+    // })
+    //     if (this.selections.length == 0 || this.selections.length == undefined) {
+    //         this.$confirm('未选择指定数据将导出全部?', '提示', {
+    //             confirmButtonText: '确定',
+    //             cancelButtonText: '取消',
+    //             type: 'warning',
+    //         }).then(()=>{
+    //             exportData()
+    //                 })
+    //         }
+    //         else{
+    //
+    //             setPersonalSpaceSession(this.personalSpaceUuidList)
+    //                 .then((res)=>{
+    //                     if(res.msg == "成功"){
+    //                         exportAllPersonalSpace()
+    //                     }
+    //                 })
+    //          }
+    //     },
+    // },
     //分页
     sortChange (data) {
       const { prop, order } = data
@@ -547,6 +566,7 @@ export default {
     showFlow () {
       this.dialogFlowVisible = true
     },
+
     getList (query) {
       this.listLoading = true
       if (query) this.pageQuery.condition = query
