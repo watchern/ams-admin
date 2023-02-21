@@ -57,29 +57,30 @@
                    alt="">
               新增
             </el-button>
-            <el-button size="mini"
-                       type="primary"
+
+            <el-button type="primary"
                        class="oper-btn"
-                       @click="edit"><img src="../../../styles/image/edits.png"
-                   class="btn_icon icon1"
-                   alt="">修改</el-button>
-            <el-button size="mini"
-                       class="oper-btn"
+                       @click="edit">
+              <img src="../../../styles/image/edits.png"
+                   class="btn_icon"
+                   alt="">
+              编辑</el-button>
+            <el-button class="oper-btn"
                        type="primary"
                        @click="goDelete"><img src="../../../styles/image/delete.png"
-                   class="btn_icon icon1"
+                   class="btn_icon"
                    alt="">删除</el-button>
-
           </el-col>
         </el-row>
       </div>
 
       <!-- 列表 -->
-      <el-table :data="tableData"
+      <el-table
+                v-loading="loading"
+                :data="tableData"
                 border
                 style="width: 100%"
                 stripe
-                v-loading="loading"
                 row-key="id"
                 height="calc(100vh - 300px)"
                 @selection-change="handleSelectionChange">
@@ -245,7 +246,7 @@ export default {
         });
       } else {
         this.$message({
-          message: "只能选择一条数据进行修改",
+          message: "只能选择一条数据删除",
           type: "warning",
         });
       }
@@ -267,7 +268,7 @@ export default {
         });
       } else {
         this.$message({
-          message: "只能选择一条数据进行修改",
+          message: "请选择一条数据进行修改",
           type: "warning",
         });
       }
