@@ -314,13 +314,36 @@
             <el-table-column prop="isHeaderLine"
                              label="首行是否为标题行"
                              align="center"
-                             min-width="80px">
+                             min-width="60px">
               <template slot-scope="scope">
                 <el-checkbox v-model="scope.row.isHeaderLine"
                              true-label="true"
                              false-label="false">
                 </el-checkbox>
               </template>
+            </el-table-column>
+            <el-table-column align="center"
+                             min-width="80px"
+                             label="补充表名">
+              <template slot-scope="scope">
+<!--                  <el-select v-model="scope.row.selectTableName"-->
+<!--                             :disabled="scope.row.isHeaderLine==='true'"-->
+<!--                             placeholder="选择文件">-->
+<!--                      <el-option v-for="item in FileInfo" :key="item.loadDownAppyFileUuid" :label="item.displayTableName" :value="item.tableMetaId"></el-option>-->
+<!--                  </el-select>-->
+                <el-input v-model="scope.row.selectTableName" :disabled='true'/>
+              </template>
+
+            </el-table-column>
+            <el-table-column align="center"
+                             min-width="60px"
+                             label="选择">
+              <template slot-scope="scope">
+                <el-link size="small"
+                         :disabled="scope.row.isHeaderLine==='true'"
+                         @click="selectFile(scope.$index,scope.row.fileName)">选择</el-link>
+              </template>
+
             </el-table-column>
             <el-table-column align="center"
                              min-width="80px"
@@ -489,6 +512,26 @@
         </span>
       </el-dialog>
 
+      <!--选择文件弹窗-->
+    <el-dialog title="选择补充文件"
+               :visible.sync="selectFileInfo"
+               v-if="selectFileInfo"
+               width="30%">
+      <LeftTrees ref="tree_left"></LeftTrees>
+
+      <span class="sess-flowitem"
+            slot="footer">
+          <el-button size="small"
+                     class="table_header_btn"
+                     @click="selectFileInfo = false">关闭</el-button>
+          <el-button size="small"
+                     type="primary"
+                     class="table_header_btn"
+                     @click="confirmFile">确认</el-button>
+
+        </span>
+    </el-dialog>
+
     </div>
   </div>
 
@@ -502,7 +545,7 @@ import {
   update_data,//编辑保存
   delete_data,//删除
   batchUpdateForHandle,
-  upload
+  upload,//文件上传
 } from "@/api/data/loadApply";
 import LeftTrees from '@/components/loginTree/leftTree.vue';
 import FlowItem from '@/components/starflow/todowork/flowItem';
@@ -531,6 +574,10 @@ export default {
       selections: [],
       treeLoading: false,
       orgTreeData: [],
+      selectTableName: '',
+      FileInfo: [],
+      curItempItemInd: 0,
+      fileName: '',
       props: {
         label: "name",
         isLeaf: "leaf",
@@ -544,6 +591,7 @@ export default {
         columnSeparator: '',
         isHeaderLine: 'true',
         disabled: false,
+        selectTableName: '',
       },
       // 查询列表
       query: {
@@ -711,6 +759,7 @@ export default {
       updateShow: false,
       applySelectionList: [],
       todoFlow: false, //流程查看的弹窗控制
+      selectFileInfo: false,//选择补充文件的弹窗控制
       applyPage: 'applyPage', //有这个标识 查询流程的时候会走相对应的方法
 
       rules: {
@@ -790,6 +839,39 @@ export default {
     this.getList();//刷新列表
   },
   methods: {
+    //选择补充文件按钮
+    selectFile (index,obj){
+      this.curItempItemInd = index;
+      this.fileName = obj;
+      this.selectFileInfo = true;
+      this.$nextTick(() => {
+        this.$refs.tree_left.loadLeftTreeTypeFun("4");
+      })
+    },
+    //选择补充文件弹窗确认按钮
+    confirmFile(){
+      var nodes = [];
+      nodes = this.$refs.tree_left.treeNodeSelectedObj[0].data;
+      this.FileInfo = [];
+      nodes.forEach((node) => {
+        if (node.type === "table") {
+          this.FileInfo.push({
+            selectTableName: node.label,
+          });
+        }
+      });
+      if (this.FileInfo.length != 1){
+        this.$notify.warning("只能选择单个文件！")
+      } else {
+        this.selectTableName = this.FileInfo[0].selectTableName
+        this.selectFileInfo = false;
+        this.tableData.forEach((item) => {
+          if (this.fileName == item.fileName) {
+            this.$set(item, "selectTableName", this.selectTableName)
+          }
+        })
+      }
+    },
     typeChange (val) {
       if (val === "1") {
         this.$nextTick(() => {
@@ -1173,6 +1255,17 @@ export default {
             } else {
               this.$notify.warning("第" + lineNumber + "行数据未填写归档文件/表名称！")
             }
+            return
+          }
+          //判断不为标题行时是否选择了文件
+          let nums = 0;
+          this.tableData.forEach((item)=>{
+            if (item.isHeaderLine == "false" && item.selectTableName == ""){
+              nums = 1;
+            }
+          })
+          if (nums == 1){
+            this.$notify.warning("未选择补充表名!");
             return
           }
           if (this.title === '创建申请') {
