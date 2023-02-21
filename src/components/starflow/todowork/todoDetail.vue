@@ -1544,7 +1544,7 @@
   }
 
   .todoDetail  >>>.el-form-item__label {
-    float: left !important;
+    /*float: left !important;*/
   }
 
   .todoDetail .form_item_one >>>.el-form-item__content {
