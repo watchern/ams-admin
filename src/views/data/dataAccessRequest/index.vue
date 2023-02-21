@@ -105,10 +105,11 @@
                  :visible.sync="dialogFormVisible"
                  :before-close="closeDialog">
         <template>
-          <el-form ref="dataForm"
+          <el-form
+              :label-position="labelPosition"
+              ref="dataForm"
                    :rules="rules"
                    :model="temp"
-                   label-position="right"
                    width="80%"
                    class="detail-form">
             <el-form-item prop="requestName"
@@ -152,14 +153,13 @@
         </div>
         <span class="sess-flowitem"
               slot="footer">
+           <el-button size="mini"
+                      @click="dialogFlowItemShow = false">关闭</el-button>
           <el-button size="mini"
                      type="primary"
                      class="table_header_btn"
                      @click="saveOpinion">提交</el-button>
-          <el-button size="mini"
-                     type="primary"
-                     class="table_header_btn"
-                     @click="dialogFlowItemShow = false">关闭</el-button>
+
         </span>
       </el-dialog>
       <el-dialog title="流程跟踪"
@@ -189,6 +189,7 @@ export default {
   components: { FlowItem, flowOpinionList, Pagination, QueryField },
   data () {
     return {
+      labelPosition:"top",
       //新增/修改弹框申请表名称数组
       requestTableNamelist: [{
         id: 0,

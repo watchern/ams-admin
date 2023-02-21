@@ -138,7 +138,8 @@
       <!--     添加弹窗-->
       <el-dialog title="个人空间申请"
                  :visible.sync="openInsertDialog">
-        <el-form :model="personalSpace"
+        <el-form :label-position="labelPosition"
+            :model="personalSpace"
                  class="demo-ruleForm"
                  label-width="80px"
                  :rules="rules"
@@ -184,10 +185,11 @@
         </el-form>
         <el-row type="flex"
                 justify="end">
+          <el-button
+              @click="closeInsertDialog">关闭</el-button>
           <el-button type="primary"
                      @click="onSubmit">保存</el-button>
-          <el-button type="primary"
-                     @click="closeInsertDialog">关闭</el-button>
+
         </el-row>
       </el-dialog>
       <!--    修改弹窗-->
@@ -258,14 +260,13 @@
         </div>
         <span class="sess-flowitem"
               slot="footer">
+            <el-button size="mini"
+                       @click="dialogFlowItemShow = false">关闭</el-button>
           <el-button size="mini"
                      type="primary"
                      class="table_header_btn"
                      @click="saveOpinion">提交</el-button>
-          <el-button size="mini"
-                     type="primary"
-                     class="table_header_btn"
-                     @click="dialogFlowItemShow = false">关闭</el-button>
+
         </span>
       </el-dialog>
       <!--流程跟踪弹窗-->
@@ -311,6 +312,7 @@ export default {
   },
   data () {
     return {
+      labelPosition:"top",
       personalSpace: {
         personalSpaceName: "", //个人空间申请名称
         personalSpaceApplication: "", //申请人
@@ -674,7 +676,7 @@ export default {
   ::v-deep .el-form-item__label {
     text-align: right;
     vertical-align: middle;
-    float: left !important;
+    //float: left !important;
   }
 }
 .pagination {

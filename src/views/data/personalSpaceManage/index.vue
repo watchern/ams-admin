@@ -603,7 +603,7 @@ export default {
   ::v-deep .el-form-item__label {
     text-align: right;
     vertical-align: middle;
-    float: left !important;
+    //float: left !important;
   }
 }
 
