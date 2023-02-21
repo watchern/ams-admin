@@ -10,24 +10,29 @@
           <div class="father_box"
                @click="onclick">
             <!-- 生成的标签 -->
-            <div v-for="(item, index) in TagsAll"
-                 :key="index"
-                 class="spanbox">
-              <span class="tagspan">{{ item.name }}{{ item.value }}</span>
-              <i class="span_close"
-                 @click="removeTag(index, item)"></i>
-            </div>
+            <div class="left">
+              <div class="TagsAll"
+                   :class="TagsAll.length == 0 ?'dw':''">
+                <div v-for="(item, index) in TagsAll"
+                     :key="index"
+                     class="spanbox">
+                  <span class="tagspan">{{ item.name }}{{ item.value }}</span>
+                  <i class="span_close"
+                     @click="removeTag(index, item)"></i>
+                </div>
+              </div>
 
-            <!-- 输入框 -->
-            <!-- @keyup.enter="addTags" -->
-            <el-input placeholder="请输入查询的内容然后选择查询的类别"
-                      v-model="currentval"
-                      @keyup.delete="deleteTags"
-                      :style="inputStyle"
-                      class="inputTag"
-                      ref="inputTag"
-                      :class="TagsAll !== []?'is_margin_top':''"
-                      type="text" />
+              <!-- 输入框 -->
+              <!-- @keyup.enter="addTags" -->
+              <el-input placeholder="请输入查询的内容然后选择查询的类别"
+                        v-model="currentval"
+                        @keyup.delete="deleteTags"
+                        :style="inputStyle"
+                        class="inputTag"
+                        ref="inputTag"
+                        :class="TagsAll !== []?'is_margin_top':''"
+                        type="text" />
+            </div>
 
             <i class="el-icon-search searchbtn"
                @click="search()"></i>
@@ -239,7 +244,6 @@ export default {
 }
 /* 外层div */
 .father_box {
-  /* width: 300px; */
   box-sizing: border-box;
   background-color: white;
   border: 1px solid #dcdee2;
@@ -251,6 +255,37 @@ export default {
   padding: 4px 110px 2px 10px;
   box-sizing: border-box;
   border-radius: 25px;
+}
+/* 隐藏搜索滚动条  */
+.father_box ::-webkit-scrollbar {
+  display: none;
+}
+.father_box::-webkit-scrollbar {
+  width: 0 !important;
+}
+.father_box {
+  -ms-overflow-style: none;
+}
+.father_box {
+  overflow: -moz-scrollbars-none;
+}
+/* 隐藏搜索滚动条 end */
+
+.left {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  float: left;
+}
+.TagsAll {
+  height: 40px;
+  float: left;
+  width: auto;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.dw {
+  width: 0 !important;
 }
 /* 标签 */
 .spanbox {
@@ -310,6 +345,7 @@ export default {
   height: 36px;
   color: #495060;
   line-height: 32px;
+  float: left;
 }
 .inputTag >>> .el-input__inner {
   border: none !important;

@@ -261,6 +261,10 @@ background: #EEF0FD !important;
     border-radius: 3px!important;
 
 }
+.el-checkbox__inner::after{
+    left: 5px!important;
+    top: 2px!important;
+}
 // 底部面包屑导航
 .home-right-footer{
   z-index: 99;
@@ -318,12 +322,7 @@ background-color: #EBF2FC!important;
   color:$text-color-black !important;
 }
 
-// 输入框 
-.el-input--medium .el-input__inner{
-  border: 1px solid $border-color!important;
-  border-radius: $radius5!important;
-  background: #fff !important;
-}
+
 
 
 
@@ -398,7 +397,18 @@ background-color: #EBF2FC!important;
   margin-bottom: 10px!important;
 }
 
-
+// 输入框 
+.el-input--medium .el-input__inner{
+  border: 1px solid $border-color!important;
+  border-radius: $radius5!important;
+  background: #fff !important;
+}
+// 输入框 disabled
+.el-input.is-disabled .el-input__inner{
+  color: #606266!important;
+  background: rgba(0, 0, 0, 0.05) !important;
+  // background-color: #ffffff!important;
+}
 
 
 // 弹窗
@@ -452,3 +462,29 @@ $--font-path: "~element-ui/lib/theme-chalk/fonts";
   // theme: $--color-primary;
   theme:$primary-btn-color
 }
+/*yw修改列表样式 2023-2-21*/
+.el-pagination{
+  text-align: center!important;
+  .el-select .el-input .el-input__inner,.el-pagination__editor.el-input .el-input__inner{
+    background: #fff!important;
+  }
+}
+.el-table__header-wrapper{
+  background: transparent!important;
+  border-bottom: none!important;
+  color:#eee;
+}
+.el-table{
+  border: none!important;
+  thead{
+    color:#666666!important;
+  }
+}
+.el-table--border .el-table__cell{
+  border-right: none!important;
+}
+.el-table th.el-table__cell.is-leaf, .el-table td.el-table__cell{
+  border-bottom: 1px solid #D9D9D9!important;
+}
+
+//结束
