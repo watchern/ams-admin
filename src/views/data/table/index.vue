@@ -31,6 +31,7 @@
                              :list_loading="list_loading"
                              @edit_list="Edit_list"
                              @search="search"
+                             @clearSearch="clearSearch"
                              ref="Display"
                              v-if="show_details == false">
         </DataResourceDisplay>
@@ -71,7 +72,8 @@
         <div>
           表名称：
           <el-input style="width: 330px;margin-left: 10px;"
-                    v-model="filterText1"
+                    v-model="tableNameFilter"
+                    clearable
                     placeholder="输入想要查询的表名称（模糊搜索）" />
           <el-button type="primary"
                      size="small"
@@ -180,179 +182,228 @@
           <el-form :rules="rules"
                    ref="form"
                    label-width="100px"
+                   label-position="top"
                    :model="form"
                    :inline="false">
             <!-- 表名-->
-            <div class="son">
-              <el-form-item label="表名称："
-                            prop="tbName">
-                <el-input type="text"
-                          disabled
-                          placeholder="请输入表名称"
-                          v-model="form.tbName"
-                          :rows="4">
-                </el-input>
-              </el-form-item>
-            </div>
-            <!-- 表中文名 -->
-            <div class="son">
-              <el-form-item label="表中文名：">
-                <el-input type="text"
-                          placeholder="请输入表中文名"
-                          v-model="form.chnName"
-                          :rows="4">
-                </el-input>
-              </el-form-item>
-            </div>
-            <!--  表说明-->
-            <div class="son">
-              <el-form-item label="表说明："
-                            prop="tableRemarks">
-                <el-input type="textarea"
-                          placeholder="请输入表说明"
-                          style="resize: none"
-                          v-model="form.tableRemarks">
-                </el-input>
-              </el-form-item>
-            </div>
-            <!-- 资源编码 && 资源类型：-->
-            <div class="son">
-              <el-form-item label="资源编码："
-                            prop="tableCode">
-                <el-input type="text"
-                          placeholder="请输入资源编码"
-                          v-model="form.tableCode"
-                          disabled
-                          :rows="4">
-                </el-input>
-              </el-form-item>
-              <el-form-item label="资源类型："
-                            prop="tableType">
-                <el-select v-model="form.tableType" placeholder="请选择资源类型">
-                  <el-option v-for="item in data_type"
-                             :key="item.value"
-                             :label="item.label"
-                             :value="item.value" />
-                </el-select>
-              </el-form-item>
-            </div>
-            <!-- 资源主题 && 资源分层 -->
-            <div class="son">
-              <el-form-item label="资源主题："
-                            prop="tableThemeId">
-                <el-select v-model="form.tableThemeId" placeholder="请选择资源主题">
-                  <el-option v-for="item in next_data.themeList"
-                             :key="item.codeUuid"
-                             :label="item.codeName"
-                             :value="item.codeUuid" />
-                </el-select>
-              </el-form-item>
-              <el-form-item label="资源分层："
-                            prop="tableLayeredId">
-                <el-select v-model="form.tableLayeredId"
-                           :rows="4"
-                           placeholder="请选择资源分层">
-                  <el-option v-for="item in next_data.layeredList"
-                             :key="item.codeUuid"
-                             :label="item.codeName"
-                             :value="item.codeUuid" />
-                </el-select>
-              </el-form-item>
-            </div>
-            <!-- 所属系统 && 文件名-->
-            <div class="son">
-              <el-form-item label="所属系统："
-                            prop="businessSystemId">
-                <el-select v-model="form.businessSystemId"
-                           :rows="4"
-                           placeholder="请选择所属系统">
-                  <el-option v-for="item in next_data.businessSystemList"
-                             :key="item.businessSystemUuid"
-                             :label="item.businessSystemName"
-                             :value="item.businessSystemUuid" />
-                </el-select>
-              </el-form-item>
-              <el-form-item label="文件名：">
-                <el-input type="text"
-                          placeholder="请输入文件名称"
-                          v-model="form.fileName"
-                          :rows="4">
-                </el-input>
-              </el-form-item>
-            </div>
-            <!-- 数据日期 && 表大小-->
-            <div class="son">
-              <el-form-item label="数据日期：">
-                <el-date-picker format="yyyy-MM-dd"
-                                type="date"
-                                value-format="yyyy-MM-dd"
-                                @change="changeRelationParam"
-                                placeholder="请输入数据日期"
-                                :rows="4"
-                                v-model="form.dataDate">
-                </el-date-picker>
-              </el-form-item>
-              <el-form-item label="表大小：">
-                <el-input type="text"
-                          disabled
-                          placeholder="请输入表大小"
-                          v-model="form.tableSize"
-                          :rows="4">
-                </el-input>
-              </el-form-item>
-            </div>
-            <!-- 表数据量 && 负责人-->
-            <div class="son">
-              <el-form-item label="表数据量：">
-                <el-input type="text"
-                          disabled
-                          placeholder="请输入表数据量"
-                          v-model="form.rowNum"
-                          :rows="4">
-                </el-input>
-              </el-form-item>
-              <div class="son_check">
-                <el-form-item label="负责人：">
-                  <el-input type="textarea"
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="表名称："
+                              prop="tbName">
+                  <el-input type="text"
                             disabled
-                            v-model="form.personName_str">
+                            placeholder="请输入表名称"
+                            v-model="form.tbName"
+                            style="width: 100%;"
+                            :rows="4">
                   </el-input>
                 </el-form-item>
-                <el-button type="primary"
-                           size="small"
-                           @click="check_people()">选择</el-button>
-              </div>
-            </div>
-            <!--表分区 && 增全量 -->
-            <div class="son">
-              <el-form-item label="表分区："
-                            prop="partitions">
-                <div class="table">
-                  <div class="head">分区名称</div>
-                  <div v-if="form.partitions == null">--</div>
-                  <div v-else>
-                    <div v-for="(item, index_partitions) in form.partitions"
-                         :key="index_partitions"
-                         class="li_son">
-                      {{ item }}
+              </el-col>
+            </el-row>
+            <!-- 表中文名 -->
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="表中文名：">
+                  <el-input type="text"
+                            placeholder="请输入表中文名"
+                            style="width: 100%;"
+                            v-model="form.chnName"
+                            :rows="4">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <!--  表说明-->
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="表说明："
+                              prop="tableRemarks">
+                  <el-input type="textarea"
+                            placeholder="请输入表说明"
+                            style="resize: none;width: 100%;"
+                            v-model="form.tableRemarks">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <!-- 资源编码 && 资源类型：-->
+              <el-col :span="11">
+                <el-form-item label="资源编码："
+                              prop="tableCode">
+                  <el-input type="text"
+                            placeholder="请输入资源编码"
+                            v-model="form.tableCode"
+                            style="width: 100%;"
+                            disabled
+                            :rows="4">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="11"
+                      :offset="2">
+                <el-form-item label="资源类型："
+                              prop="tableType">
+                  <el-select v-model="form.tableType"
+                             style="width: 100%;"
+                             placeholder="请选择资源类型">
+                    <el-option v-for="item in data_type"
+                               :key="item.value"
+                               :label="item.label"
+                               :value="item.value" />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <!-- </div> -->
+              <!-- 资源主题 && 资源分层 -->
+              <el-col :span="24">
+                <el-form-item label="资源主题："
+                              prop="tableThemeId">
+                  <el-select v-model="form.tableThemeId"
+                             style="width: 100%;"
+                             placeholder="请选择资源主题">
+                    <el-option v-for="item in next_data.themeList"
+                               :key="item.codeUuid"
+                               :label="item.codeName"
+                               :value="item.codeUuid" />
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="资源分层："
+                              prop="tableLayeredId">
+                  <el-select v-model="form.tableLayeredId"
+                             style="width: 100%;"
+                             :rows="4"
+                             placeholder="请选择资源分层">
+                    <el-option v-for="item in next_data.layeredList"
+                               :key="item.codeUuid"
+                               :label="item.codeName"
+                               :value="item.codeUuid" />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <!-- 所属系统 && 文件名-->
+              <el-col :span="11">
+
+                <el-form-item label="所属系统："
+                              prop="businessSystemId">
+                  <el-select v-model="form.businessSystemId"
+                             style="width: 100%;"
+                             :rows="4"
+                             placeholder="请选择所属系统">
+                    <el-option v-for="item in next_data.businessSystemList"
+                               :key="item.businessSystemUuid"
+                               :label="item.businessSystemName"
+                               :value="item.businessSystemUuid" />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="11"
+                      :offset="2">
+
+                <el-form-item label="文件名：">
+                  <el-input type="text"
+                            placeholder="请输入文件名称"
+                            style="width: 100%;"
+                            v-model="form.fileName"
+                            :rows="4">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <!-- 数据日期 && 表大小-->
+              <el-col :span="11">
+                <el-form-item label="数据日期：">
+                  <el-date-picker format="yyyy-MM-dd"
+                                  type="date"
+                                  style="width: 100%;"
+                                  value-format="yyyy-MM-dd"
+                                  @change="changeRelationParam"
+                                  placeholder="请输入数据日期"
+                                  :rows="4"
+                                  v-model="form.dataDate">
+                  </el-date-picker>
+                </el-form-item>
+              </el-col>
+              <el-col :span="11"
+                      :offset="2">
+                <el-form-item label="表大小：">
+                  <el-input type="text"
+                            disabled
+                            style="width: 100%;"
+                            placeholder="请输入表大小"
+                            v-model="form.tableSize"
+                            :rows="4">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <!-- 表数据量 && 负责人-->
+              <el-col :span="11">
+
+                <el-form-item label="表数据量：">
+                  <el-input type="text"
+                            disabled
+                            style="width: 100%;"
+                            placeholder="请输入表数据量"
+                            v-model="form.rowNum"
+                            :rows="4">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="11"
+                      :offset="2">
+                <div class="son_check">
+                  <el-form-item label="负责人：">
+                    <el-col :span="19">
+                      <el-input type="textarea"
+                                disabled
+                                style="width: 100%;"
+                                v-model="form.personName_str">
+                      </el-input>
+                    </el-col>
+                    <el-col :span="2">
+                      <el-button type="primary"
+                                 size="small"
+                                 @click="check_people()">选择</el-button>
+                    </el-col>
+                  </el-form-item>
+
+                </div>
+              </el-col>
+              <!-- </div> -->
+              <!-- </div> -->
+              <!--表分区 && 增全量 -->
+              <!-- <div class="son"> -->
+              <el-col :span="11">
+                <el-form-item label="表分区："
+                              prop="partitions">
+                  <div class="table">
+                    <div class="head">分区名称</div>
+                    <div v-if="form.partitions == null">--</div>
+                    <div v-else>
+                      <div v-for="(item, index_partitions) in form.partitions"
+                           :key="index_partitions"
+                           class="li_son">
+                        {{ item }}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </el-form-item>
-              <el-form-item label="增全量："
-                            prop="isSpike">
-                <el-select v-model="form.isSpike"
-                           :rows="4"
-                           placeholder="请选择是否增量">
-                  <el-option v-for="item in option_isSpike"
-                             :key="item.value"
-                             :label="item.label"
-                             :value="item.value" />
-                </el-select>
-              </el-form-item>
-            </div>
-            <!-- 数据标签 -->
-            <!-- <div class="son">
+                </el-form-item>
+              </el-col>
+              <el-col :span="11"
+                      :offset="2">
+                <el-form-item label="增全量："
+                              prop="isSpike">
+                  <el-select v-model="form.isSpike"
+                             style="width: 100%;"
+                             :rows="4"
+                             placeholder="请选择是否增量">
+                    <el-option v-for="item in option_isSpike"
+                               :key="item.value"
+                               :label="item.label"
+                               :value="item.value" />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <!-- </div> -->
+              <!-- 数据标签 -->
+              <!-- <div class="son">
               <div class="son_check">
                 <el-form-item label="数据标签：">
                   <div class="_width tag_conter">
@@ -370,10 +421,13 @@
                            @click="check_tag()">选择</el-button>
               </div>
             </div> -->
+            </el-row>
+
           </el-form>
           <!-- 列信息 -->
           <div class="padding10_l">
-            <p style="text-align: center">列信息</p>
+            <p style="text-align: center"
+               class="mb10">列信息</p>
             <el-table :data="Column_table"
                       :show-overflow-tooltip='true'
                       style="width: 100%">
@@ -439,14 +493,16 @@
                  width="60%"
                  class="dlag_width">
         <div class="dlag_conter">
-          <div class="data_res com">
+          <div class="com">
             <el-form ref="form"
+                     label-width="80px"
                      :model="Recognition">
               <el-form-item label="认权人:"
                             prop="people">
                 <el-input type="text"
                           disabled
                           placeholder="请选择认权人"
+                          style="width: 30%;"
                           v-model="Recognition.personName_str">
                 </el-input>
                 <el-button type="primary"
@@ -707,6 +763,7 @@ export default {
       is_Edit_list: 0, //是否编辑
       dataSource: '',// 详情数据源
       personReverseDisplay: [],// 认权人人员选择反显
+      serachParams: {},
     };
   },
   computed: {},
@@ -719,6 +776,8 @@ export default {
   methods: {
     // 查询
     search (serachParams) {
+      this.serachParams = serachParams;
+
       let data = this.$refs.tree_left.query;
       this.dataSource = data.dataSource//新增关系树 和注册首页数据源绑定且不可修改
       this.show_details = false; //显示列表
@@ -732,13 +791,18 @@ export default {
         pageNo: data.pageNo,
         pageSize: data.pageSize,
         tbName: data.tbName,
-        param: serachParams
+        param: this.serachParams,
       };
       listByTreePage(params).then(res => {
         this.list_loading = false; //子组件loading
         this.list_data = res.data;
         this.list = res.data.records;
       });
+    },
+
+    clearSearch (data) {
+      this.serachParams = data
+
     },
     // 返回上一步
     Step () {
@@ -969,10 +1033,11 @@ export default {
     },
     // 认权管理
     recognitionChange (data) {
-      this.Recognition_check_list = []
-      this.$refs.orgPeopleTree.selectValue = [] //清空选择的认权人
-
       this.Recognition_check_list = data;
+      let tableMetaUuidList = [];
+      this.Recognition_check_list.forEach(item => {
+        tableMetaUuidList.push(item.tableMetaUuid)
+      })
       this.Recognition.personName_str = "";
       // 获取当前表认权人
       getPersonLiableByTableMetaUuid(tableMetaUuidList).then(resp => {
@@ -987,16 +1052,13 @@ export default {
       });
       this.visible_Recognition = true;
 
-
-      console.log(0);
       if (this.$refs.orgPeopleTree) {
-        console.log(1);
-        // if (this.$refs.multipleTable) {
-        this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection(); //清空选择的认权人
-        this.$refs.orgPeopleTree.findOrgTree_data();
-        this.$refs.orgPeopleTree.list = [];
-        this.$refs.orgPeopleTree.total = 0;
-        // }
+        if (this.$refs.multipleTable) {
+          this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection(); //清空选择的认权人
+          this.$refs.orgPeopleTree.findOrgTree_data();
+          this.$refs.orgPeopleTree.list = [];
+          this.$refs.orgPeopleTree.total = 0;
+        }
       }
     },
     // 认权确认
@@ -1227,15 +1289,23 @@ export default {
           tbList.push(item.label);
         }
       });
-      // 选择多个数据表
-      if (this.form.check_list.length >= 2) {
-        this.post_getColsInfoByTableName(); //获取列信息
-        this.dialogVisible_forms = true;
-      } else {
-        // this.registTableFlag = false;//关闭上一步
-        this.dialogVisible_information = true; //显示下一步 基本信息
-        this.form.personLiables = []//清空责任人
+      if (dbName.length > 1) {
+        this.$message({
+          type: "warning",
+          message: "不能跨模式注册资源！",
+        });
+        return false;
       }
+      // 选择多个数据表
+      // if (this.form.check_list.length >= 2) {
+      //   this.post_getColsInfoByTableName(); //获取列信息
+      //   this.dialogVisible_forms = true;
+      // } else {
+      //   // this.registTableFlag = false;//关闭上一步
+      //   this.dialogVisible_information = true; //显示下一步 基本信息
+      //   this.form.personLiables = []//清空责任人
+      // }
+
       const params = {
         dbName: dbName[0],
         tbNames: tbList,
@@ -1585,6 +1655,10 @@ export default {
   background: transparent !important;
 }
 
+.data_res >>> .el-form-item {
+  /* margin-bottom: 0 !important; */
+}
+/* 
 .dlag_width >>> .el-dialog {
   min-width: 600px !important;
 }
@@ -1612,19 +1686,23 @@ export default {
   flex: 1;
   margin-left: 0 !important;
   float: left;
-}
+} */
 
 .data_res >>> .el-textarea .el-textarea__inner {
   resize: none;
 }
 
-.data_res >>> .el-form-item--medium .el-form-item__label {
+/* .data_res >>> .el-form-item--medium .el-form-item__label {
   float: left !important;
   text-align: right;
-}
+  width: 110px;
+} */
 .son_check >>> .el-textarea.is-disabled .el-textarea__inner {
   color: #606266 !important;
   background-color: rgba(0, 0, 0, 0.05) !important;
+}
+.son_check >>> .el-form-item {
+  width: 100% !important;
 }
 .son_check {
   display: flex;
@@ -1685,10 +1763,10 @@ export default {
 
 /* 认权人 */
 .com >>> .el-form {
-  width: 100%;
+  /* width: 100%; */
 }
 
-.com >>> .el-form-item__content {
+/* .com >>> .el-form-item__content {
   width: 100%;
   display: flex;
   align-items: center;
@@ -1700,7 +1778,7 @@ export default {
 
 .com >>> .el-input {
   width: 300px;
-}
+} */
 
 .com >>> .el-button {
   margin: 0 10px;

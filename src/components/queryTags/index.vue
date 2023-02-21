@@ -1,37 +1,55 @@
 <template>
-  <div style="width:100%;position:relative">
-    <!-- 父盒子 -->
-    <div class="father_box"
-         @click="onclick">
-      <!-- 生成的标签 -->
-      <div v-for="(item, index) in TagsAll"
-           :key="index"
-           class="spanbox">
-        <span class="tagspan">{{ item.name }}{{ item.value }}</span>
-        <i class="span_close"
-           @click="removeTag(index, item)"></i>
-      </div>
+  <div class="padding10 _width">
 
-      <!-- 输入框 -->
-      <!-- @keyup.enter="addTags" -->
-      <el-input placeholder="请输入查询的内容然后选择查询的类别"
-                v-model="currentval"
-                @keyup.delete="deleteTags"
-                :style="inputStyle"
-                class="inputTag"
-                ref="inputTag"
-                type="text" />
-    </div>
-    <div v-if="currentval && dropDown.length > 0"
-         class="dropDownBox">
-      <div v-for="(item, index) in dropDown"
-           :key="index"
-           class="dropDownItem"
-           @click="addTags(item)">
-        <div class="dropDownTitel">{{ item.name }}:</div>
-        {{ currentval }}
-      </div>
-    </div>
+    <el-row :gutter="20">
+      <el-col :span="12"
+              :offset="6">
+        <div class="search_conter">
+
+          <!-- 父盒子 -->
+          <div class="father_box"
+               @click="onclick">
+            <!-- 生成的标签 -->
+            <div v-for="(item, index) in TagsAll"
+                 :key="index"
+                 class="spanbox">
+              <span class="tagspan">{{ item.name }}{{ item.value }}</span>
+              <i class="span_close"
+                 @click="removeTag(index, item)"></i>
+            </div>
+
+            <!-- 输入框 -->
+            <!-- @keyup.enter="addTags" -->
+            <el-input placeholder="请输入查询的内容然后选择查询的类别"
+                      v-model="currentval"
+                      @keyup.delete="deleteTags"
+                      :style="inputStyle"
+                      class="inputTag"
+                      ref="inputTag"
+                      :class="TagsAll !== []?'is_margin_top':''"
+                      type="text" />
+
+            <i class="el-icon-search searchbtn"
+               @click="search()"></i>
+            <i class="el-icon-close clear_search"
+               @click="clear_search()"></i>
+
+          </div>
+
+          <div v-if="currentval && dropDown.length > 0"
+               class="dropDownBox">
+            <div v-for="(item, index) in dropDown"
+                 :key="index"
+                 class="dropDownItem"
+                 @click="addTags(item)">
+              <div class="dropDownTitel">{{ item.name }}:</div>
+              {{ currentval }}
+            </div>
+          </div>
+        </div>
+      </el-col>
+    </el-row>
+
   </div>
 </template>
 
@@ -123,6 +141,19 @@ export default {
     // this.dropDown = this.dropDownData;
   },
   methods: {
+    // 查询
+    search () {
+      // this.$emit("search", this.serachParams);
+      this.$emit("search", this.TagsAll);
+
+    },
+    // 重置
+    clear_search () {
+      this.TagsAll = [];
+      this.serachParams = {}
+      this.$emit("clearSearch", this.TagsAll, this.serachParams);
+
+    },
 
     //回车-- 增加tag
     addTags (val) {
@@ -203,6 +234,9 @@ export default {
 </script>
 
 <style scoped>
+.search_conter {
+  position: relative;
+}
 /* 外层div */
 .father_box {
   /* width: 300px; */
@@ -214,21 +248,22 @@ export default {
   text-align: left;
   word-wrap: break-word;
   overflow: hidden;
-  padding: 0 4px;
+  padding: 4px 110px 2px 10px;
   box-sizing: border-box;
+  border-radius: 25px;
 }
 /* 标签 */
 .spanbox {
   display: inline-block;
   font-size: 14px;
-  margin: 3px 4px 3px 0;
+  margin: 0px 4px 2px 0;
   background-color: rgb(229, 229, 229);
   border: 1px solid #e8eaec;
-  border-radius: 3px;
+  border-radius: 25px;
 }
 .tagspan {
-  height: 24px;
-  line-height: 22px;
+  height: 36px;
+  line-height: 36px;
   max-width: 99%;
   position: relative;
   display: inline-block;
@@ -239,17 +274,15 @@ export default {
   opacity: 1;
   vertical-align: middle;
   overflow: hidden;
-  transition: 0.25s linear;
   color: #666;
   font-weight: 400;
-
   transition: all 0.3s;
 }
-.tagspan:hover {
+.spanbox:hover {
   border: 1px solid #999;
 }
 .span_close {
-  padding: 0 4px 0 4px;
+  padding: 0 5px 0 4px;
   opacity: 1;
   -webkit-filter: none;
   filter: none;
@@ -274,7 +307,7 @@ export default {
   width: auto;
   min-width: 350px;
   vertical-align: top;
-  height: 32px;
+  height: 36px;
   color: #495060;
   line-height: 32px;
 }
@@ -293,7 +326,7 @@ export default {
   overflow: auto;
   position: absolute;
   z-index: 99;
-  border-radius: 10px;
+  border-radius: 15px;
 }
 .dropDownItem {
   height: 30px;
@@ -311,5 +344,50 @@ export default {
   width: 80px;
   text-align: right;
   margin-right: 20px;
+}
+.searchbtn {
+  position: absolute;
+  right: 3px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  /* border: 1px solid; */
+  border-radius: 27px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: rgb(0 0 0 / 30%);
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.clear_search {
+  position: absolute;
+  right: 42px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-right: 1px solid rgb(0 0 0 / 30%);
+  width: 40px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: rgb(0 0 0 / 30%);
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.searchbtn:hover,
+.clear_search:hover {
+  color: rgb(0 0 0 / 50%) !important;
+}
+
+.inputTag >>> .el-input__inner {
+  border-radius: 25px;
+  padding: 0 !important;
+}
+.is_margin_top {
+  margin-top: 2px !important;
 }
 </style>

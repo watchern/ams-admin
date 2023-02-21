@@ -157,17 +157,20 @@
       <!-- 添加 -->
       <el-dialog :title="title"
                  class="data_res"
+                 top="5vh"
                  :visible.sync="applyDialogVisible"
                  @close="handleClose('form')"
                  width="70%">
         <el-form :rules="rules"
                  ref="form"
+                 label-position="top"
                  label-width="130px"
                  :model="form"
                  :inline="false">
+
           <el-row>
-            <el-col :span="12">
-              <el-form-item label="申请名称 "
+            <el-col :span="11">
+              <el-form-item label="申请名称："
                             prop="applyName">
                 <el-input type="text"
                           v-model="form.applyName"
@@ -176,8 +179,10 @@
                 </el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
-              <el-form-item label="申请人 "
+            <el-col :span="11"
+                    :offset="2">
+              <el-form-item label="申请人："
+                            label-position="top"
                             prop="applyPerson">
                 <el-input style="width: 100%;"
                           type="text"
@@ -188,8 +193,8 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-col :span="12">
-              <el-form-item label="操作类型"
+            <el-col :span="11">
+              <el-form-item label="操作类型："
                             prop="operationType">
                 <el-select v-model="form.operationType"
                            style="width: 100%;"
@@ -204,9 +209,10 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="11"
+                    :offset="2">
               <el-form-item v-if="form.operationType === '0'"
-                            label="装载类型 "
+                            label="装载类型："
                             prop="loadType">
                 <el-select v-model="form.loadType"
                            style="width: 100%;"
@@ -221,27 +227,25 @@
           <el-row>
             <el-col align="right">
               <el-form-item v-if="form.operationType === '0'">
-                <div class="mb10">
-
-                  <div style="float:right">
-                    <el-upload class="upload-demo"
-                               ref="upload"
-                               :on-change="select"
-                               action=""
-                               :file-list="fileList"
-                               :show-file-list="false"
-                               :auto-upload="false"
-                               accept=".xls,.xlsx,.txt">
-                      <el-button slot="trigger"
-                                 size="small"
-                                 type="primary">选取文件</el-button>
-                      <el-button style="margin-left: 10px;"
-                                 size="small"
-                                 type="success"
-                                 @click="submitUpload">上传
-                      </el-button>
-                    </el-upload>
-                  </div>
+                <div class="padding10"
+                     style="float:right">
+                  <el-upload class="upload-demo"
+                             ref="upload"
+                             :on-change="select"
+                             action=""
+                             :file-list="fileList"
+                             :show-file-list="false"
+                             :auto-upload="false"
+                             accept=".xls,.xlsx,.txt">
+                    <el-button slot="trigger"
+                               size="small"
+                               type="primary">选取文件</el-button>
+                    <el-button style="margin-left: 10px;"
+                               size="small"
+                               type="success"
+                               @click="submitUpload">上传
+                    </el-button>
+                  </el-upload>
                 </div>
 
               </el-form-item>
@@ -348,7 +352,7 @@
               </el-col>
               <el-col :span="16"
                       text-align="right">
-                <div class="mb10">
+                <div class="padding10">
 
                   <el-button type="primary"
                              class="oper-btn"
@@ -1304,24 +1308,7 @@ export default {
 
 .data_res >>> .el-form-item {
   /* margin-bottom: 0 !important; */
-  display: flex;
 }
-
-.data_res >>> .el-form-item--medium .el-form-item__label {
-  text-align: right;
-  float: left !important;
-}
-
-.data_res >>> .el-form-item__content {
-  flex: 1;
-  margin-left: 0 !important;
-  float: left;
-}
-
-.data_res >>> .el-textarea .el-textarea__inner {
-  resize: none;
-}
-
 .transfer-center {
   display: flex;
   justify-content: center;

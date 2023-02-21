@@ -3,16 +3,9 @@
     <!-- 查询 -->
     <div class="header_search">
       <query-tags ref="tags"
+                  @search="search"
+                  @clearSearch="clear"
                   @change="onChange"></query-tags>
-      <div class="padding10 flex">
-
-        <el-button type="primary"
-                   size="small"
-                   @click="search()">查询</el-button>
-        <!-- <el-button size="mini"
-                   type="info"
-                   @click="clear_search()">重置</el-button> -->
-      </div>
     </div>
     <!-- 查询 end-->
 
@@ -90,7 +83,7 @@
       </div>
     </div>
 
-    <el-skeleton style="width:100%;float: left;height: calc(100vh - 280px);overflow: auto;"
+    <el-skeleton style="width:100%;float: left;height: calc(100vh - 290px);overflow: auto;"
                  animated
                  :loading="list_loading"
                  :count="4">
@@ -256,6 +249,10 @@ export default {
     // 查询
     search () {
       this.$emit("search", this.serachParams);
+    },
+    // 重置
+    clear (data) {
+      this.serachParams = data
     },
     // 数据字典下载模版
     down_template_dictionary () {
