@@ -335,7 +335,6 @@
               </el-col>
               <!-- 表数据量 && 负责人-->
               <el-col :span="11">
-
                 <el-form-item label="表数据量：">
                   <el-input type="text"
                             disabled

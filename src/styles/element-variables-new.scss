@@ -318,12 +318,7 @@ background-color: #EBF2FC!important;
   color:$text-color-black !important;
 }
 
-// 输入框 
-.el-input--medium .el-input__inner{
-  border: 1px solid $border-color!important;
-  border-radius: $radius5!important;
-  background: #fff !important;
-}
+
 
 
 
@@ -398,7 +393,18 @@ background-color: #EBF2FC!important;
   margin-bottom: 10px!important;
 }
 
-
+// 输入框 
+.el-input--medium .el-input__inner{
+  border: 1px solid $border-color!important;
+  border-radius: $radius5!important;
+  background: #fff !important;
+}
+// 输入框 disabled
+.el-input.is-disabled .el-input__inner{
+  color: #606266!important;
+  background: rgba(0, 0, 0, 0.05) !important;
+  // background-color: #ffffff!important;
+}
 
 
 // 弹窗
