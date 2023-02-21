@@ -261,6 +261,10 @@ background: #EEF0FD !important;
     border-radius: 3px!important;
 
 }
+.el-checkbox__inner::after{
+    left: 5px!important;
+    top: 2px!important;
+}
 // 底部面包屑导航
 .home-right-footer{
   z-index: 99;

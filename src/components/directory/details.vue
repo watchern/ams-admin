@@ -206,7 +206,7 @@
                     <el-form-item label="负责人：">
                       <el-input type="textarea"
                                 :disabled="disabled"
-                                style="width:100%;background-color: rgba(0, 0, 0, 0.05) !important"
+                                style="width:100%;"
                                 v-model="form.personLiables"></el-input>
                       <el-button type="primary"
                                  size="small"
@@ -1562,11 +1562,8 @@ export default {
 
 .is_disabled >>> .el-textarea__inner {
   cursor: not-allowed !important;
-}
-
-.is_disabled >>> .el-textarea__inner {
   color: #999 !important;
-  background: #ebeff2 !important;
+  background: rgba(0, 0, 0, 0.05) !important;
 }
 
 .yes_disabled >>> .el-select,
