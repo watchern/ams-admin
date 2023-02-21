@@ -1,12 +1,13 @@
 <template>
   <div class="page-container">
+
     <div class="pd20">
       <div class="header_Filter searchBlock query-field">
         <el-row>
           <el-form :inline="true"
                    :model="personalSpace"
                    class="demo-form-inline">
-            <el-form-item label="申请名称:">
+            <el-form-item label="申请名称：">
               <el-input v-model="personalSpace.personalSpaceName"
                         placeholder="申请名称"></el-input>
             </el-form-item>
@@ -14,7 +15,7 @@
               <el-input v-model="personalSpace.personalSpaceApplication"
                         placeholder="申请人"></el-input>
             </el-form-item>
-            <el-form-item label="列表类型:">
+            <el-form-item label="列表类型：">
               <el-select v-model="personalSpace.personalSpaceType"
                          placeholder="状态选择">
                 <el-option label="草稿"
@@ -25,7 +26,7 @@
                            value="办理完成"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="申请时间范围:">
+            <el-form-item label="申请时间范围：">
               <el-date-picker v-model="personalSpace.personalSpaceDate"
                               type="datetimerange"
                               format="yyyy-MM-dd"
