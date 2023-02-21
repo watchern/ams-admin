@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div class="pd20">
-
+      <div class="filter-container">
       <div class="query-field">
         <el-form :inline="true"
                  :model="query"
@@ -21,7 +21,7 @@
           <el-form-item label="创建时间：">
             <el-date-picker v-model="createTime"
                             type="daterange"
-                            range-separator="至"
+                            range-separator="-"
                             start-placeholder="开始日期"
                             end-placeholder="结束日期"
                             @change="getTime">
@@ -29,18 +29,12 @@
           </el-form-item>
 
           <el-form-item>
-
             <el-button type="primary"
-                       size="small"
                        @click="goQuery">查询</el-button>
             <el-button type="primary"
-                       size="small"
                        @click="reset">重置</el-button>
-
           </el-form-item>
-
         </el-form>
-
       </div>
 
       <div class="mb10">
@@ -127,11 +121,13 @@
                          show-overflow-tooltip
                          width="200px"></el-table-column>
       </el-table>
+      </div>
       <el-pagination layout="total, sizes, prev, pager, next, jumper"
                      @size-change="handleSizeChange"
                      @current-change="handleCurrentChange"
                      :total="dataBaseData.total"
-                     class="page-content"></el-pagination>
+                     class="buttom-page-content"
+                     ></el-pagination>
     </div>
 
     <!-- 新增弹窗 -->
@@ -347,8 +343,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.page-content {
-  padding-left: 15px;
+.buttom-page-content {
+  display:flex;
+  justify-content: center;
+  padding-top: 25px;
+
 }
 
 /*修改文本框样式*/

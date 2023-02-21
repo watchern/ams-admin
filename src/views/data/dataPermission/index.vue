@@ -48,10 +48,10 @@
                 </el-form-item>
                 <el-form-item>
 
-                  <el-button size="small"
+                  <el-button
                              type="primary"
                              @click="goQuery">查询</el-button>
-                  <el-button size="small"
+                  <el-button
                              type="primary"
                              @click="reset">重置</el-button>
                 </el-form-item>
@@ -195,7 +195,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination small
+        <el-pagination
                        layout="total, sizes, prev, pager, next, jumper"
                        @size-change="handleSizeChange"
                        @current-change="handleCurrentChange"

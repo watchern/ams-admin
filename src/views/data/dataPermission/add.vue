@@ -76,7 +76,7 @@
             <el-input type="textarea"
                       v-model="operatePermissionApply.applyRemark"
                       placeholder="请输入内容"
-                      :rows="6"
+                      :rows="4"
                       :disabled="addOrUpdate == 2"></el-input>
           </el-form-item>
         </el-col>
