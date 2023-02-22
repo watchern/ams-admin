@@ -72,12 +72,12 @@ export default {
       // 最多生成标签数，这里可以设置最多生成的标签数量
       type: Number,
     },
-    // dropDownData: {
-    //   type: Array,
-    //   default () {
-    //     return [];
-    //   },
-    // },
+    dropDown: {
+      type: Array,
+      default () {
+        return [];
+      },
+    },
   },
   data () {
     return {
@@ -85,36 +85,6 @@ export default {
       TagsAll: [],
       inputLength: "",
       serachParams: {},
-      dropDown: [
-        // "表名", "表中文名", "系统", "主题", "分层", "字段",
-        {
-          code: 'tableName',
-          name: '表名',
-          value: []
-        },
-        {
-          code: 'tableCnName',
-          name: '表中文名',
-          value: []
-        },
-        // {
-        //   code: 'businessName',
-        //   name: '系统'
-        // },
-        // {
-        //   code: 'themeName',
-        //   name: '主题'
-        // },
-        // {
-        //   code: 'layeredName',
-        //   name: '分层'
-        // },
-        {
-          code: 'columnName',
-          name: '字段',
-          value: []
-        },
-      ],
     };
   },
   watch: {
@@ -156,7 +126,7 @@ export default {
     clear_search () {
       this.TagsAll = [];
       this.serachParams = {}
-      this.$emit("clearSearch", this.TagsAll, this.serachParams);
+      // this.$emit("clearSearch_click", this.TagsAll, this.serachParams);
 
     },
 

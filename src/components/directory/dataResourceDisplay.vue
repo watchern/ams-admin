@@ -5,6 +5,7 @@
       <query-tags ref="tags"
                   @search="search"
                   @clearSearch="clear"
+                  :dropDown="dropDown"
                   @change="onChange"></query-tags>
     </div>
     <!-- 查询 end-->
@@ -227,6 +228,12 @@ export default {
       type: Object,
       default () {
         return {};
+      },
+    },
+    dropDown: {
+      type: Array,
+      default () {
+        return [];
       },
     },
     isBtn: Boolean,

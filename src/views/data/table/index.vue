@@ -31,7 +31,7 @@
                              :list_loading="list_loading"
                              @edit_list="Edit_list"
                              @search="search"
-                             @clearSearch="clearSearch"
+                             :dropDown="dropDown"
                              ref="Display"
                              v-if="show_details == false">
         </DataResourceDisplay>
@@ -763,6 +763,38 @@ export default {
       dataSource: '',// 详情数据源
       personReverseDisplay: [],// 认权人人员选择反显
       serachParams: {},
+
+      // 搜索栏类型
+      dropDown: [
+        // "表名", "表中文名", "系统", "主题", "分层", "字段",
+        {
+          code: 'tableName',
+          name: '表名',
+          value: []
+        },
+        {
+          code: 'tableCnName',
+          name: '表中文名',
+          value: []
+        },
+        // {
+        //   code: 'businessName',
+        //   name: '系统'
+        // },
+        // {
+        //   code: 'themeName',
+        //   name: '主题'
+        // },
+        // {
+        //   code: 'layeredName',
+        //   name: '分层'
+        // },
+        {
+          code: 'columnName',
+          name: '字段',
+          value: []
+        },
+      ]
     };
   },
   computed: {},
@@ -799,10 +831,11 @@ export default {
       });
     },
 
-    clearSearch (data) {
-      this.serachParams = data
-
-    },
+    // clearSearch_click (data, datas) {
+    //   this.serachParams = data
+    //   console.log(datas);
+    //   console.log(this.serachParams);
+    // },
     // 返回上一步
     Step () {
       this.show_details = false;
