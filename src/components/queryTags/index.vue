@@ -11,12 +11,16 @@
              @click="onclick">
           <!-- 生成的标签 -->
           <!-- :class="TagsAll.length == 0 ?'dw':''" -->
+          <!-- :style="{right:( this.TagsAll.length !== 0 ? this.left_width + 'px' :'')}" -->
+          <!-- :style="{ right: this.left_width + 'px',maxWidth: '395px'}" -->
+
           <div class="left">
             <div class="TagsAll_conter"
-                 :style="{ right: this.left_width + 'px'}"
+                 :style="{maxWidth: maxWidths}"
                  ref="TagsAll">
               <div v-for="(item, index) in TagsAll"
                    :key="index"
+                   :id="'arr'+[index]"
                    class="spanbox">
                 <span class="tagspan">{{ item.name }}{{ item.value }}</span>
                 <i class="span_close"
@@ -27,13 +31,14 @@
             <!-- 输入框 -->
             <!-- @keyup.enter="addTags" -->
             <!-- :style="inputStyle" -->
-            <el-input placeholder="请输入查询的内容然后选择查询的类别"
-                      v-model="currentval"
+            <!-- :style="{left:this.input_left + 'px'}" -->
+            <!-- :class="TagsAll !== []?'is_margin_top':''" -->
+            <el-input v-model="currentval"
                       @keyup.delete="deleteTags"
                       class="inputTag"
                       ref="inputTag"
-                      :style="{left:this.input_left + 'px'}"
                       :class="TagsAll !== []?'is_margin_top':''"
+                      :style="{width:this.minWIdth + 'px'}"
                       type="text" />
           </div>
 
@@ -92,6 +97,8 @@ export default {
       serachParams: {},
       left_width: '',//左侧搜索词 容器
       input_left: "",//右侧输入框距离左侧距离
+      minWIdth: 580,
+      maxWidths: '',
 
     };
   },
@@ -122,10 +129,8 @@ export default {
   mounted () {
     this.TagsAll = this.parentArr;
     // this.dropDown = this.dropDownData;
-
     this.watch_width();//监听输入框宽度
   },
-
 
   methods: {
     watch_width () {
@@ -134,35 +139,35 @@ export default {
       const that = this
       erd.listenTo(document.querySelector('.TagsAll_conter'), function (element) {
         that.input_left = element.offsetWidth
-        console.log(that.input_left);
-        let minWidth = '450'//设置左侧最大宽度
+        // console.log(that.input_left);
 
-        if (that.input_left >= minWidth) {
-          let maxLeft = that.input_left - minWidth
-          console.log(maxLeft);
-
-          that.left_width = (maxLeft + 50)
-          console.log(that.left_width);
-          // this.left_width = '100'//左侧输入框
-          // this.input_left = '100'//右侧输入框
-          console.log('到极限了');
-          return false
+        if (that.input_left >= 395) {
+          that.maxWidths = 395 + 'px'
+          that.minWIdth = 185
+        } else {
+          that.minWIdth = (580 - that.input_left)
         }
       })
-
-      // 如果输入内容宽度达到右侧输入框最小宽度的极限 那么则向左偏移搜索词组的容器
-
     },
+
+
     // 查询
     search () {
       // this.$emit("search", this.serachParams);
       this.$emit("search", this.TagsAll);
-
     },
     // 重置
     clear_search () {
       this.TagsAll = [];
       this.serachParams = {}
+      // 如果内容清空后 返回默认位置
+      console.log(this.TagsAll.length);
+      if (this.TagsAll.length == 0) {
+        // this.left_width = 0;
+        this.input_left = 0;
+        // this.$refs.TagsAll.$el.style.right = "0px"
+        // this.$refs.inputTag.$el.style.left = "0px"
+      }
       // this.$emit("clearSearch_click", this.TagsAll, this.serachParams);
     },
 
@@ -216,6 +221,11 @@ export default {
           }
         }
       }
+      // 如果内容清空后 返回默认位置
+      if (this.TagsAll == []) {
+        this.left_wid = '';
+        this.input_left = '';
+      }
     },
 
     //键盘删除键删除tag
@@ -260,7 +270,7 @@ export default {
   text-align: left;
   word-wrap: break-word;
   overflow: hidden;
-  padding: 4px 110px 2px 10px;
+  padding: 2px 108px 2px 4px;
   box-sizing: border-box;
   border-radius: 25px;
   height: 47px;
@@ -290,13 +300,15 @@ export default {
 .TagsAll_conter {
   position: absolute;
   left: 0;
-  top: 0;
-  height: 40px;
+  top: 1px;
+  height: 39px;
   float: left;
   /* border: 1px solid blue; */
   /* width: auto;
   overflow-x: auto; */
+  width: auto;
   white-space: nowrap;
+  overflow: hidden;
 }
 /* .dw {
   width: 0 !important;
@@ -305,7 +317,7 @@ export default {
 .spanbox {
   /* display: inline-block; */
   font-size: 14px;
-  margin: 0px 4px 2px 0;
+  margin: 0px 4px 0px 0;
   background-color: rgb(229, 229, 229);
   border: 1px solid #e8eaec;
   border-radius: 25px;
@@ -317,8 +329,8 @@ export default {
   float: left;
 }
 .tagspan {
-  height: 36px;
-  line-height: 36px;
+  height: 37px;
+  line-height: 37px;
   max-width: 99%;
   position: relative;
   display: inline-block;
@@ -353,8 +365,10 @@ export default {
 }
 /* input */
 .inputTag {
+  /* width: 580px; */
+  /* min-width: 105px; */
   position: absolute;
-  left: 0px;
+  right: 0px;
   top: 0;
   font-size: 16px;
   border: none;
@@ -362,7 +376,7 @@ export default {
   outline: none;
   background-color: transparent;
   padding: 0;
-  width: auto;
+  /* width: auto; */
   /* min-width: 350px; */
   vertical-align: top;
   height: 36px;
@@ -384,7 +398,7 @@ export default {
   box-shadow: 0 10px 10px 0 rgb(0 0 0 / 10%);
   overflow: auto;
   position: absolute;
-  z-index: 99;
+  z-index: 2000;
   border-radius: 15px;
 }
 .dropDownItem {
@@ -400,9 +414,9 @@ export default {
 }
 .dropDownTitel {
   display: inline-block;
-  width: 80px;
+  width: 110px;
   text-align: right;
-  margin-right: 20px;
+  margin-right: 10px;
 }
 .searchbtn {
   position: absolute;
