@@ -523,7 +523,7 @@
                                align="center"
                                label="表类型">
                 <template slot-scope="scope">
-                  <div v-if="scope.row.tableRelationQuery">{{ scope.row.tableRelationQuery.tableThemeName }}</div>
+                  <div>{{scope.row.tableRelationQuery.tableType | getLabel}}</div>
                 </template>
 
               </el-table-column>
@@ -1653,6 +1653,27 @@ export default {
       this.$refs.tree_left.query.pageSize = val;
       this.query_list(this.$refs.tree_left.query, false);
     },
+  },
+  filters:{
+    getLabel(value){
+      if (value == 1) {
+        return "表"
+      } else if (value == 2) {
+        return "视图"
+      } else if (value == 3) {
+        return "存储过程"
+      } else if (value == 4) {
+        return "接口"
+      } else if (value == 5) {
+        return "报表"
+      } else if (value == 6) {
+        return "指标"
+      } else if (value == 7) {
+        return "标签"
+      } else if (value == 8) {
+        return "其他"
+      }
+    }
   },
 };
 </script>
