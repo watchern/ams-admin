@@ -37,15 +37,15 @@
                                :value="item.id"></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="列表类型："
-                              prop="condition">
-                  <el-date-picker v-model="dataBaseData.times"
-                                  type="daterange"
-                                  range-separator="至"
-                                  start-placeholder="开始日期"
-                                  end-placeholder="结束日期">
-                  </el-date-picker>
-                </el-form-item>
+<!--                <el-form-item label="申请时间范围："-->
+<!--                              prop="condition">-->
+<!--                  <el-date-picker v-model="dataBaseData.times"-->
+<!--                                  type="daterange"-->
+<!--                                  range-separator="至"-->
+<!--                                  start-placeholder="开始日期"-->
+<!--                                  end-placeholder="结束日期">-->
+<!--                  </el-date-picker>-->
+<!--                </el-form-item>-->
 
 <!--                2.22修改时间查询-->
                 <el-form-item label="申请时间范围："
