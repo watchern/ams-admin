@@ -46,6 +46,20 @@
                                   end-placeholder="结束日期">
                   </el-date-picker>
                 </el-form-item>
+
+<!--                2.22修改时间查询-->
+                <el-form-item label="申请时间范围："
+                              prop="createTime"
+                              style="display: inline-block;">
+                  <el-date-picker v-model="dataBaseData.condition.permissionApplyStartTime"
+                                  type="datetime"
+                                  placeholder="开始时间"
+                                  value-format="yyyy-MM-dd HH:mm:ss" />
+                  <el-date-picker v-model="dataBaseData.condition.permissionApplyEndTime"
+                                  type="datetime"
+                                  placeholder="结束时间"
+                                  value-format="yyyy-MM-dd HH:mm:ss" />
+                </el-form-item>
                 <el-form-item>
 
                   <el-button
@@ -313,7 +327,10 @@ export default {
       dataBaseData: {
         pageSize: 10,
         pageNo: 1,
-        times: [],
+        // times: [],
+        //时间查询范围
+        startTime:'',
+        endTime:'',
         condition: {
           permissionApplyName: '',
           createUserName: '',
@@ -391,12 +408,13 @@ export default {
     },
     // 查询
     goQuery () {
-      if (this.dataBaseData.times && this.dataBaseData.times.length > 0) {
-        let startTime = new Date(this.dataBaseData.times[0]);
-        let endTime = new Date(this.dataBaseData.times[1]);
-        this.dataBaseData.condition.permissionApplyStartTime = formatDate(startTime);
-        this.dataBaseData.condition.permissionApplyEndTime = formatDate(endTime);
-      }
+      // if (this.dataBaseData.times && this.dataBaseData.times.length > 0) {
+      //   let startTime = new Date(this.dataBaseData.times[0]);
+      //   let endTime = new Date(this.dataBaseData.times[1]);
+      //   this.dataBaseData.condition.permissionApplyStartTime = formatDate(startTime);
+      //   this.dataBaseData.condition.permissionApplyEndTime = formatDate(endTime);
+      // }
+      console.log(permissionApplyStartTime,"permissionApplyStartTime")
       queryAllOperatePermissionApply(this.dataBaseData).then(resp => {
         if (resp.data) {
           this.tableData = resp.data.records;
@@ -497,7 +515,7 @@ export default {
       this.dialogFlowItemShow = val;
     },
     // 导出
-    goExport () {
+      goExport () {
     }
     ,
     // 流程查看

@@ -18,16 +18,27 @@
                       clearable></el-input>
           </el-form-item>
 
-          <el-form-item label="创建时间：">
-            <el-date-picker v-model="createTime"
-                            type="daterange"
-                            range-separator="-"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期"
-                            @change="getTime">
-            </el-date-picker>
-          </el-form-item>
-
+<!--          <el-form-item label="创建时间：">-->
+<!--            <el-date-picker v-model="createTime"-->
+<!--                            type="daterange"-->
+<!--                            range-separator="-"-->
+<!--                            start-placeholder="开始日期"-->
+<!--                            end-placeholder="结束日期"-->
+<!--                            @change="getTime">-->
+<!--            </el-date-picker>-->
+<!--          </el-form-item>-->
+          <el-form-item label="创建时间范围："
+                                        prop="createTime"
+                                        style="display: inline-block;">
+          <el-date-picker v-model="dataBaseData.startTime"
+                          type="datetime"
+                          placeholder="开始时间"
+                          value-format="yyyy-MM-dd HH:mm:ss" />
+          <el-date-picker v-model="dataBaseData.endTime"
+                          type="datetime"
+                          placeholder="结束时间"
+                          value-format="yyyy-MM-dd HH:mm:ss" />
+        </el-form-item>
           <el-form-item>
             <el-button type="primary"
                        @click="goQuery">查询</el-button>
@@ -126,7 +137,6 @@
                      @size-change="handleSizeChange"
                      @current-change="handleCurrentChange"
                      :total="dataBaseData.total"
-                     class="buttom-page-content"
                      ></el-pagination>
     </div>
 
@@ -195,10 +205,10 @@ export default {
         this.dataBaseData.total = res.data.total;
       });
     },
-    getTime (date) {
-      this.dataBaseData.startTime = date[0];
-      this.dataBaseData.endTime = date[1];
-    },
+    // getTime (date) {
+    //   this.dataBaseData.startTime = date[0];
+    //   this.dataBaseData.endTime = date[1];
+    // },
     // 查询
     goQuery () {
       this.init();
@@ -343,12 +353,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.buttom-page-content {
-  display:flex;
-  justify-content: center;
-  padding-top: 25px;
+/*.buttom-page-content {*/
+/*  display:flex;*/
+/*  justify-content: center;*/
+/*  padding-top: 25px;*/
 
-}
+/*}*/
 
 /*修改文本框样式*/
 // .detail-form ::v-deep .el-textarea .el-textarea__inner {
