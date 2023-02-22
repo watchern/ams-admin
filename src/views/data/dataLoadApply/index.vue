@@ -323,7 +323,7 @@
               </template>
             </el-table-column>
             <el-table-column align="center"
-                             min-width="80px"
+                             min-width="120px"
                              label="补充表名">
               <template slot-scope="scope">
 <!--                  <el-select v-model="scope.row.selectTableName"-->
@@ -331,20 +331,21 @@
 <!--                             placeholder="选择文件">-->
 <!--                      <el-option v-for="item in FileInfo" :key="item.loadDownAppyFileUuid" :label="item.displayTableName" :value="item.tableMetaId"></el-option>-->
 <!--                  </el-select>-->
-                <el-input v-model="scope.row.selectTableName" :disabled='true'/>
-              </template>
-
-            </el-table-column>
-            <el-table-column align="center"
-                             min-width="60px"
-                             label="选择">
-              <template slot-scope="scope">
+                <el-input v-model="scope.row.selectTableName" :disabled='true' style="max-width: 100px"/>
                 <el-link size="small"
                          :disabled="scope.row.isHeaderLine==='true'"
-                         @click="selectFile(scope.$index,scope.row.fileName)">选择</el-link>
+                         @click="selectFile(scope.$index,scope.row.fileName)" style="max-width: 40px">选择</el-link>
               </template>
 
             </el-table-column>
+<!--            <el-table-column align="center"-->
+<!--                             min-width="60px"-->
+<!--                             label="选择">-->
+<!--              <template slot-scope="scope">-->
+
+<!--              </template>-->
+
+<!--            </el-table-column>-->
             <el-table-column align="center"
                              min-width="80px"
                              label="操作">
