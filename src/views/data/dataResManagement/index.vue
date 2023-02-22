@@ -152,6 +152,7 @@
                             prop="businessSystemCode">
                 <el-input style="width: 90%;resize: none"
                           type="textarea"
+                          :rows="3"
                           :readonly="title == '查看业务系统'"
                           v-model="form.businessSystemCode"></el-input>
               </el-form-item>
@@ -505,4 +506,8 @@ export default {
 
 <style scoped >
 @import url("./../../../assets/css/common.css");
+
+.dialog >>> .el-textarea__inner {
+  resize: none;
+}
 </style>

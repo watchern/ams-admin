@@ -2,11 +2,16 @@
   <div class="preview_conter padding10_l">
     <!-- 查询 -->
     <div class="header_search">
-      <query-tags ref="tags"
+      <!-- <query-tags ref="tags"
                   @search="search"
                   @clearSearch="clear"
                   :dropDown="dropDown"
-                  @change="onChange"></query-tags>
+                  @change="onChange"></query-tags> -->
+      <SearchCommon ref="tags"
+                    @search="search"
+                    @clearSearch="clear"
+                    :dropDown="dropDown"
+                    @change="onChange"></SearchCommon>
     </div>
     <!-- 查询 end-->
 
@@ -213,10 +218,10 @@
 </template>
 
 <script>
-import queryTags from "@/components/queryTags";
+// import queryTags from "@/components/queryTags";
 
 export default {
-  components: { queryTags },
+  // components: { queryTags },
   props: {
     list: {
       type: Array,
@@ -729,5 +734,10 @@ export default {
 
 .list_table >>> .el-table tr {
   background: transparent !important;
+}
+
+.list_table >>> .el-table th.el-table__cell.is-leaf,
+.list_table >>> .el-table td.el-table__cell {
+  border: none !important;
 }
 </style>

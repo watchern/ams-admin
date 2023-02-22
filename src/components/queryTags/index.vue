@@ -1,59 +1,64 @@
 <template>
   <div class="padding10 _width">
 
-    <el-row :gutter="20">
-      <el-col :span="12"
-              :offset="6">
-        <div class="search_conter">
-
-          <!-- 父盒子 -->
-          <div class="father_box"
-               @click="onclick">
-            <!-- 生成的标签 -->
-            <div class="left">
-              <div class="TagsAll"
-                   :class="TagsAll.length == 0 ?'dw':''">
-                <div v-for="(item, index) in TagsAll"
-                     :key="index"
-                     class="spanbox">
-                  <span class="tagspan">{{ item.name }}{{ item.value }}</span>
-                  <i class="span_close"
-                     @click="removeTag(index, item)"></i>
-                </div>
+    <!-- <el-row :gutter="20"> -->
+    <!-- <el-col :span="12"
+              :offset="6"> -->
+    <div class="search_center">
+      <div class="search_conter">
+        <!-- 父盒子 -->
+        <div class="father_box"
+             @click="onclick">
+          <!-- 生成的标签 -->
+          <!-- :class="TagsAll.length == 0 ?'dw':''" -->
+          <div class="left">
+            <div class="TagsAll_conter"
+                 :style="{ right: this.left_width + 'px'}"
+                 ref="TagsAll">
+              <div v-for="(item, index) in TagsAll"
+                   :key="index"
+                   class="spanbox">
+                <span class="tagspan">{{ item.name }}{{ item.value }}</span>
+                <i class="span_close"
+                   @click="removeTag(index, item)"></i>
               </div>
-
-              <!-- 输入框 -->
-              <!-- @keyup.enter="addTags" -->
-              <el-input placeholder="请输入查询的内容然后选择查询的类别"
-                        v-model="currentval"
-                        @keyup.delete="deleteTags"
-                        :style="inputStyle"
-                        class="inputTag"
-                        ref="inputTag"
-                        :class="TagsAll !== []?'is_margin_top':''"
-                        type="text" />
             </div>
 
-            <i class="el-icon-search searchbtn"
-               @click="search()"></i>
-            <i class="el-icon-close clear_search"
-               @click="clear_search()"></i>
-
+            <!-- 输入框 -->
+            <!-- @keyup.enter="addTags" -->
+            <!-- :style="inputStyle" -->
+            <el-input placeholder="请输入查询的内容然后选择查询的类别"
+                      v-model="currentval"
+                      @keyup.delete="deleteTags"
+                      class="inputTag"
+                      ref="inputTag"
+                      :style="{left:this.input_left + 'px'}"
+                      :class="TagsAll !== []?'is_margin_top':''"
+                      type="text" />
           </div>
 
-          <div v-if="currentval && dropDown.length > 0"
-               class="dropDownBox">
-            <div v-for="(item, index) in dropDown"
-                 :key="index"
-                 class="dropDownItem"
-                 @click="addTags(item)">
-              <div class="dropDownTitel">{{ item.name }}:</div>
-              {{ currentval }}
-            </div>
+          <i class="el-icon-search searchbtn"
+             @click="search()"></i>
+          <i class="el-icon-close clear_search"
+             @click="clear_search()"></i>
+
+        </div>
+
+        <div v-if="currentval && dropDown.length > 0"
+             class="dropDownBox">
+          <div v-for="(item, index) in dropDown"
+               :key="index"
+               class="dropDownItem"
+               @click="addTags(item)">
+            <div class="dropDownTitel">{{ item.name }}:</div>
+            {{ currentval }}
           </div>
         </div>
-      </el-col>
-    </el-row>
+      </div>
+    </div>
+
+    <!-- </el-col> -->
+    <!-- </el-row> -->
 
   </div>
 </template>
@@ -85,6 +90,9 @@ export default {
       TagsAll: [],
       inputLength: "",
       serachParams: {},
+      left_width: '',//左侧搜索词 容器
+      input_left: "",//右侧输入框距离左侧距离
+
     };
   },
   watch: {
@@ -94,7 +102,7 @@ export default {
     currentval (val) {
       // 
       // 实时改变input输入框宽度，防止输入内容超出input默认宽度显示不全
-      this.inputLength = this.$refs.inputTag.value.length * 12 + 50;
+      // this.inputLength = this.$refs.inputTag.value.length * 12 + 50;
     },
     parentArr () {
       this.TagsAll = this.parentArr.length ? this.parentArr : [];
@@ -114,8 +122,37 @@ export default {
   mounted () {
     this.TagsAll = this.parentArr;
     // this.dropDown = this.dropDownData;
+
+    this.watch_width();//监听输入框宽度
   },
+
+
   methods: {
+    watch_width () {
+      const elementResizeDetectorMaker = require("element-resize-detector");
+      const erd = elementResizeDetectorMaker()
+      const that = this
+      erd.listenTo(document.querySelector('.TagsAll_conter'), function (element) {
+        that.input_left = element.offsetWidth
+        console.log(that.input_left);
+        let minWidth = '450'//设置左侧最大宽度
+
+        if (that.input_left >= minWidth) {
+          let maxLeft = that.input_left - minWidth
+          console.log(maxLeft);
+
+          that.left_width = (maxLeft + 50)
+          console.log(that.left_width);
+          // this.left_width = '100'//左侧输入框
+          // this.input_left = '100'//右侧输入框
+          console.log('到极限了');
+          return false
+        }
+      })
+
+      // 如果输入内容宽度达到右侧输入框最小宽度的极限 那么则向左偏移搜索词组的容器
+
+    },
     // 查询
     search () {
       // this.$emit("search", this.serachParams);
@@ -127,7 +164,6 @@ export default {
       this.TagsAll = [];
       this.serachParams = {}
       // this.$emit("clearSearch_click", this.TagsAll, this.serachParams);
-
     },
 
     //回车-- 增加tag
@@ -161,7 +197,7 @@ export default {
       } else {
         this.$message({ type: "warning", message: "请选择一条类型" });
       }
-
+      this.watch_width();
     },
     // 点击删除
     removeTag (index, item) {
@@ -210,7 +246,9 @@ export default {
 
 <style scoped>
 .search_conter {
+  margin: 0 auto;
   position: relative;
+  width: 700px;
 }
 /* 外层div */
 .father_box {
@@ -225,6 +263,7 @@ export default {
   padding: 4px 110px 2px 10px;
   box-sizing: border-box;
   border-radius: 25px;
+  height: 47px;
 }
 /* 隐藏搜索滚动条  */
 .father_box ::-webkit-scrollbar {
@@ -246,25 +285,36 @@ export default {
   width: 100%;
   height: 100%;
   float: left;
+  position: relative;
 }
-.TagsAll {
+.TagsAll_conter {
+  position: absolute;
+  left: 0;
+  top: 0;
   height: 40px;
   float: left;
-  width: auto;
-  overflow-x: auto;
+  /* border: 1px solid blue; */
+  /* width: auto;
+  overflow-x: auto; */
   white-space: nowrap;
 }
-.dw {
+/* .dw {
   width: 0 !important;
-}
+} */
 /* 标签 */
 .spanbox {
-  display: inline-block;
+  /* display: inline-block; */
   font-size: 14px;
   margin: 0px 4px 2px 0;
   background-color: rgb(229, 229, 229);
   border: 1px solid #e8eaec;
   border-radius: 25px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  float: left;
 }
 .tagspan {
   height: 36px;
@@ -303,6 +353,9 @@ export default {
 }
 /* input */
 .inputTag {
+  position: absolute;
+  left: 0px;
+  top: 0;
   font-size: 16px;
   border: none;
   box-shadow: none;
@@ -310,7 +363,7 @@ export default {
   background-color: transparent;
   padding: 0;
   width: auto;
-  min-width: 350px;
+  /* min-width: 350px; */
   vertical-align: top;
   height: 36px;
   color: #495060;
@@ -395,5 +448,9 @@ export default {
 }
 .is_margin_top {
   margin-top: 2px !important;
+}
+
+.inputTag >>> .el-input__inner {
+  /* border: 1px solid red !important; */
 }
 </style>

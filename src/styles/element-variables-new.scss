@@ -147,6 +147,17 @@ $radius30:30px;//圆角 按钮
   
 }
 
+// 删除
+.el-link.el-link--danger .el-link--inner{
+  color: $text-color-red!important;
+}
+// .el-link--danger:hover{
+
+// }
+.el-link.el-link--danger.is-underline:hover:after{
+   border-color: $text-color-red!important;
+}
+
 // 查询按钮
 // .search_btn{
 // 	background:$dividers  !important;
@@ -165,6 +176,7 @@ $radius30:30px;//圆角 按钮
 // baby区域
 .home{
     background:  linear-gradient(133deg, #ABC2FA 0%, #D9DACD 37%, #E8F2FF 64%, #9EB9F8 100%) !important;
+    min-width: 1366px!important;
 }
 // 内容区域
 .page-container{
