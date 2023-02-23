@@ -62,8 +62,7 @@
           模式名称：
           <el-select v-model="schemaNameFilter"
                      @change="filterTablesBySchema"
-                     style="width: 400px;"
-                     clearable>
+                     style="width: 400px;">
             <el-option v-for="item in schemaData"
                        :key="item"
                        :label="item"
@@ -72,12 +71,13 @@
         </div>
         <div>
           表名称：
-          <el-input style="width: 330px;margin-left: 10px;"
+          <el-input style="width: 330px; margin-left: 10px;"
                     v-model="tableNameFilter"
                     clearable
                     placeholder="输入想要查询的表名称（模糊搜索）" />
           <el-button type="primary"
                      size="small"
+                     style="margin-left: 10px;"
                      @click="getTables">查询</el-button>
         </div>
         <div class="dlag_conter containerselect padding10">
@@ -89,7 +89,8 @@
                     show-checkbox
                     :filter-node-method="filterNode"
                     @check-change="nodeClick_table"
-                    @node-click="nodeClick_table">
+                    @node-click="nodeClick_table"
+                    default-expand-all>
             <span slot-scope="{ node, data }"
                   class="custom-tree-node">
               <i v-if="data.type === 'USER'">
@@ -551,22 +552,23 @@
             <directory-file-import @fileuploadname="fileuploadname" />
           </el-col>
         </el-row>
-        <span slot="footer">
-          <el-button size="small"
-                     @click="importVisible = false">取消</el-button>
-
+        <span slot="footer" class="dialog-footer">
+          <el-button size="small" @click="importVisible = false">取消</el-button>
           <el-button @click="importTableDictionary()"
                      size="small"
                      type="primary"
+                     :loading="importLoad"
                      v-if="upload_title == '导入数据资源'">导入</el-button>
           <el-button @click="importTablCn()"
                      size="small"
                      type="primary"
+                     :loading="importLoad"
                      v-else-if="upload_title == '导入汉化信息'">导入</el-button>
           <el-button @click="importTableTable()"
-                     v-else
                      size="small"
-                     type="primary">导入</el-button>
+                     type="primary"
+                     :loading="importLoad"
+                     v-else>导入</el-button>
 
           <!-- <el-button type="primary"
                      @click="upload_title = '数据字典导入' ? importTableDictionary()
@@ -632,7 +634,7 @@ export default {
       activeName: "0", //tab切换
       registTableFlag: false, // 注册资源弹窗显示
       schemaNameFilter: "", // 注册资源搜索模式名
-      tableNameFilter: null, // 注册资源搜索表名
+      tableNameFilter: "", // 注册资源搜索表名
       props: {
         label: "label",
         isLeaf: "leaf",
@@ -695,6 +697,7 @@ export default {
         tableLayeredId: '',//资源分层 id
         businessSystemName: '',//所属系统
         businessSystemId: '',//所属系统 id
+        folderUuid: '',//目录id
         fileName: '',//文件名
         dataDate: '',//数据日期
         tableSize: '',//表大小:
@@ -764,7 +767,6 @@ export default {
       dataSource: '',// 详情数据源
       personReverseDisplay: [],// 认权人人员选择反显
       serachParams: {},
-
       // 搜索栏类型
       dropDown: [
         // "表名", "表中文名", "系统", "主题", "分层", "字段",
@@ -795,15 +797,11 @@ export default {
           name: '字段',
           value: []
         },
-      ]
+      ],
+      importLoad: false
     };
   },
   computed: {},
-  watch: {
-    tableNameFilter (val) {
-      this.$refs.tree1.filter(val);
-    },
-  },
   created () { },
   methods: {
     // 查询
@@ -960,9 +958,11 @@ export default {
           message: '请先上传文件',
         });
       } else {
+        this.importLoad = true;
         import_dictionary(this.importtemp).then((res) => {
           if (res.data.code === "200") {
             this.importVisible = false;
+            this.importLoad = false;
             this.$notify({
               title: "成功",
               message: res.data.msg,
@@ -973,6 +973,7 @@ export default {
             this.update_tree();//更新左侧树
             this.query_list(this.$refs.tree_left.query, false);
           } else {
+            this.importLoad = false;
             this.$message({
               type: "error",
               message: res.data.msg,
@@ -1084,7 +1085,6 @@ export default {
         this.Recognition.personName_str = personLibales.join("、")
       });
       this.visible_Recognition = true;
-
       if (this.$refs.orgPeopleTree) {
         if (this.$refs.multipleTable) {
           this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection(); //清空选择的认权人
@@ -1160,25 +1160,17 @@ export default {
       this.tableMetaUuid = data.tableMetaUuid;
       this.show_details = true;
       this.isDisable_input = true;
-
     },
     // 通过模式名过滤表名
-    filterTablesBySchema (val) {
-      if (val) {
-        this.tableData = [];
-        this.tableDataAll.forEach(item => {
-          if (item.id == val) {
-            this.tableData.push(item);
-          }
-        })
-      } else {
-        this.tableData = this.tableDataAll;
-      }
+    filterTablesBySchema () {
+      this.getTables();
     },
     // 获取模式名
     getSchemas () {
       listSchemas(this.$refs.tree_left.query.dataSource).then((res) => {
         this.schemaData = res.data;
+        this.schemaNameFilter = res.data[0];
+        this.getTables();
       });
     },
     // 点击注册资源的 数据库列表
@@ -1187,7 +1179,8 @@ export default {
       listUnCached(
         "table",
         "",
-        this.tableNameFilter == null ? "" : this.tableNameFilter,
+        this.tableNameFilter,
+        this.schemaNameFilter,
         this.$refs.tree_left.query.dataSource
       ).then((resp) => {
         this.treeLoading = false;
@@ -1241,10 +1234,8 @@ export default {
     // 注册资源
     registTable () {
       this.registTableFlag = true;
-      this.schemaNameFilter = '';
-      this.tableNameFilter = null;
+      this.tableNameFilter = "";
       this.getSchemas();
-      this.getTables();
     },
     // 选择注册表 筛选
     filterNode (value, data) {
@@ -1430,16 +1421,6 @@ export default {
         this.registTableFlag = false; //关闭上一步
       });
       this.dialogVisible_forms = false; //关闭多选的表单弹窗显示
-    },
-    // 点击 所属目录层级联动
-    handleChange (val) {
-      // const checkedNode = this.$refs["cascaderArr"].getCheckedNodes();
-      //   //获取当前点击节点的label值
-      //   //获取由label组成的数组
-      // return false
-      // this.form.folderUuid = checkedNode[0].id
-      let folderUuid = val.toString();
-      this.form.folderUuid = folderUuid;
     },
     // 格式化数据，递归将空的children置为undefined
     formatCascaderData (data) {
