@@ -60,19 +60,36 @@
             <el-button type="primary"
                        class="oper-btn "
                        @click="onDelete"><img src="../../../styles/image/delete.png"
-                   class="btn_icon"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/delete2.png"
+                   class="btn_icon icon2"
                    alt="">删除</el-button>
             <el-button type="primary"
                        class="oper-btn "
                        @click="joinUpdateDialog"><img src="../../../styles/image/edits.png"
-                   class="btn_icon"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/edits2.png"
+                   class="btn_icon icon2"
                    alt="">编辑</el-button>
             <el-button type="primary"
                        class="oper-btn "
-                       @click="handleEvent">提交</el-button>
+                       @click="handleEvent"><img src="../../../styles/image/submit.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/submit2.png"
+                   class="btn_icon icon2"
+                   alt="">提交</el-button>
             <el-button type="primary"
                        class="oper-btn "
-                       @click="exportAllData">导出</el-button>
+                       @click="exportAllData">
+              <img src="../../../styles/image/export.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/export2.png"
+                   class="btn_icon icon2"
+                   alt="">导出</el-button>
             <!--        <el-button type="primary"-->
             <!--                   @click="backToUpPage">关闭</el-button>-->
           </el-col>
@@ -139,7 +156,7 @@
       <el-dialog title="个人空间申请"
                  :visible.sync="openInsertDialog">
         <el-form :label-position="labelPosition"
-            :model="personalSpace"
+                 :model="personalSpace"
                  class="demo-ruleForm"
                  label-width="80px"
                  :rules="rules"
@@ -185,8 +202,7 @@
         </el-form>
         <el-row type="flex"
                 justify="end">
-          <el-button
-              @click="closeInsertDialog">关闭</el-button>
+          <el-button @click="closeInsertDialog">关闭</el-button>
           <el-button type="primary"
                      @click="onSubmit">保存</el-button>
 
@@ -260,8 +276,8 @@
         </div>
         <span class="sess-flowitem"
               slot="footer">
-            <el-button size="mini"
-                       @click="dialogFlowItemShow = false">关闭</el-button>
+          <el-button size="mini"
+                     @click="dialogFlowItemShow = false">关闭</el-button>
           <el-button size="mini"
                      type="primary"
                      class="table_header_btn"
@@ -312,7 +328,7 @@ export default {
   },
   data () {
     return {
-      labelPosition:"top",
+      labelPosition: "top",
       personalSpace: {
         personalSpaceName: "", //个人空间申请名称
         personalSpaceApplication: "", //申请人

@@ -387,12 +387,16 @@
           <div class="padding20"
                style="text-align: right">
             <el-button type="primary"
-                       size="small"
-                       class="oper-btn"
+                       class="oper-btn "
                        v-if="isDisable_input == false"
                        :disabled="isDisable_input"
                        @click="add_table()">
-              新增
+              <img src="../../../src/styles/image/add.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../src/styles/image/add2.png"
+                   class="btn_icon icon2"
+                   alt="">新增
             </el-button>
           </div>
           <div style="padding: 0 20px"

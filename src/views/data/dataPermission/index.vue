@@ -47,7 +47,7 @@
                   </el-date-picker>
                 </el-form-item>
 
-<!--                2.22修改时间查询-->
+                <!--                2.22修改时间查询-->
                 <el-form-item label="申请时间范围："
                               prop="createTime"
                               style="display: inline-block;">
@@ -62,11 +62,9 @@
                 </el-form-item>
                 <el-form-item>
 
-                  <el-button
-                             type="primary"
+                  <el-button type="primary"
                              @click="goQuery">查询</el-button>
-                  <el-button
-                             type="primary"
+                  <el-button type="primary"
                              @click="reset">重置</el-button>
                 </el-form-item>
               </el-row>
@@ -145,18 +143,30 @@
                          type="primary"
                          class="oper-btn"
                          @click="goDelete"><img src="../../../styles/image/delete.png"
-                     class="btn_icon"
+                     class="btn_icon icon1"
+                     alt="">
+                <img src="../../../styles/image/delete2.png"
+                     class="btn_icon icon2"
                      alt="">删除</el-button>
               <el-button size="small"
                          type="primary"
                          class="oper-btn"
                          @click="goUpdate"><img src="../../../styles/image/edits.png"
-                     class="btn_icon"
+                     class="btn_icon icon1"
+                     alt="">
+                <img src="../../../styles/image/edits2.png"
+                     class="btn_icon icon2"
                      alt="">编辑</el-button>
               <el-button size="small"
                          type="primary"
                          class="oper-btn"
-                         @click="goHandle">办理</el-button>
+                         @click="goHandle">
+                <img src="../../../styles/image/ban.png"
+                     class="btn_icon icon1"
+                     alt="">
+                <img src="../../../styles/image/ban2.png"
+                     class="btn_icon icon2"
+                     alt="">办理</el-button>
               <!--                    <el-button size="mini" type="primary" @click="goExport">导出</el-button>-->
             </el-col>
           </el-row>
@@ -178,7 +188,8 @@
                            min-width="150px">
             <template slot-scope="scope">
               <el-link type="text"
-                       :underline="false" @click="showApplyDetail(scope.row)">{{ scope.row.permissionApplyName }}
+                       :underline="false"
+                       @click="showApplyDetail(scope.row)">{{ scope.row.permissionApplyName }}
               </el-link>
             </template>
           </el-table-column>
@@ -211,8 +222,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination
-                       layout="total, sizes, prev, pager, next, jumper"
+        <el-pagination layout="total, sizes, prev, pager, next, jumper"
                        @size-change="handleSizeChange"
                        @current-change="handleCurrentChange"
                        :total="total"></el-pagination>
@@ -331,8 +341,8 @@ export default {
         pageNo: 1,
         // times: [],
         //时间查询范围
-        startTime:'',
-        endTime:'',
+        startTime: '',
+        endTime: '',
         condition: {
           permissionApplyName: '',
           createUserName: '',
@@ -520,7 +530,7 @@ export default {
       this.dialogFlowItemShow = val;
     },
     // 导出
-      goExport () {
+    goExport () {
     }
     ,
     // 流程查看

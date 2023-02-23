@@ -68,14 +68,21 @@
                      class="oper-btn"
                      :disabled="Selectval_list.length === 0"
                      @click="apply_deletes()"><img src="../../../styles/image/delete.png"
-                 class="btn_icon"
+                 class="btn_icon icon1"
+                 alt="">
+            <img src="../../../styles/image/delete2.png"
+                 class="btn_icon icon2"
                  alt="">删除
           </el-button>
           <el-button class="oper-btn"
                      type="primary"
                      :disabled="Selectval_list.length === 0"
-                     @click="apply_transact()"><img src="../../../styles/image/ban.png"
-                 class="btn_icon"
+                     @click="apply_transact()">
+            <img src="../../../styles/image/ban.png"
+                 class="btn_icon icon1"
+                 alt="">
+            <img src="../../../styles/image/ban2.png"
+                 class="btn_icon icon2"
                  alt="">办理
           </el-button>
           <el-button type="primary"
@@ -83,9 +90,11 @@
                      :disabled="Selectval_list.length !== 1"
                      @click="apply_edit()">
             <img src="../../../styles/image/edits.png"
-                 class="btn_icon"
+                 class="btn_icon icon1"
                  alt="">
-            编辑
+            <img src="../../../styles/image/edits2.png"
+                 class="btn_icon icon2"
+                 alt="">编辑
           </el-button>
         </div>
         <el-table v-loading="listLoading"
@@ -326,26 +335,29 @@
                              min-width="120px"
                              label="补充表名">
               <template slot-scope="scope">
-<!--                  <el-select v-model="scope.row.selectTableName"-->
-<!--                             :disabled="scope.row.isHeaderLine==='true'"-->
-<!--                             placeholder="选择文件">-->
-<!--                      <el-option v-for="item in FileInfo" :key="item.loadDownAppyFileUuid" :label="item.displayTableName" :value="item.tableMetaId"></el-option>-->
-<!--                  </el-select>-->
-                <el-input v-model="scope.row.selectTableName" :disabled='true' style="max-width: 100px"/>
+                <!--                  <el-select v-model="scope.row.selectTableName"-->
+                <!--                             :disabled="scope.row.isHeaderLine==='true'"-->
+                <!--                             placeholder="选择文件">-->
+                <!--                      <el-option v-for="item in FileInfo" :key="item.loadDownAppyFileUuid" :label="item.displayTableName" :value="item.tableMetaId"></el-option>-->
+                <!--                  </el-select>-->
+                <el-input v-model="scope.row.selectTableName"
+                          :disabled='true'
+                          style="max-width: 100px" />
                 <el-link size="small"
                          :disabled="scope.row.isHeaderLine==='true'"
-                         @click="selectFile(scope.$index,scope.row.fileName)" style="max-width: 40px">选择</el-link>
+                         @click="selectFile(scope.$index,scope.row.fileName)"
+                         style="max-width: 40px">选择</el-link>
               </template>
 
             </el-table-column>
-<!--            <el-table-column align="center"-->
-<!--                             min-width="60px"-->
-<!--                             label="选择">-->
-<!--              <template slot-scope="scope">-->
+            <!--            <el-table-column align="center"-->
+            <!--                             min-width="60px"-->
+            <!--                             label="选择">-->
+            <!--              <template slot-scope="scope">-->
 
-<!--              </template>-->
+            <!--              </template>-->
 
-<!--            </el-table-column>-->
+            <!--            </el-table-column>-->
             <el-table-column align="center"
                              min-width="80px"
                              label="操作">
@@ -382,7 +394,10 @@
                              class="oper-btn"
                              :disabled="selections.length === 0"
                              @click="removeGrp()"><img src="../../../styles/image/delete.png"
-                         class="btn_icon"
+                         class="btn_icon icon1"
+                         alt="">
+                    <img src="../../../styles/image/delete2.png"
+                         class="btn_icon icon2"
                          alt="">删除</el-button>
                 </div>
 
@@ -514,14 +529,14 @@
       </el-dialog>
 
       <!--选择文件弹窗-->
-    <el-dialog title="选择补充文件"
-               :visible.sync="selectFileInfo"
-               v-if="selectFileInfo"
-               width="30%">
-      <LeftTrees ref="tree_left"></LeftTrees>
+      <el-dialog title="选择补充文件"
+                 :visible.sync="selectFileInfo"
+                 v-if="selectFileInfo"
+                 width="30%">
+        <LeftTrees ref="tree_left"></LeftTrees>
 
-      <span class="sess-flowitem"
-            slot="footer">
+        <span class="sess-flowitem"
+              slot="footer">
           <el-button size="small"
                      class="table_header_btn"
                      @click="selectFileInfo = false">关闭</el-button>
@@ -531,7 +546,7 @@
                      @click="confirmFile">确认</el-button>
 
         </span>
-    </el-dialog>
+      </el-dialog>
 
     </div>
   </div>
@@ -841,7 +856,7 @@ export default {
   },
   methods: {
     //选择补充文件按钮
-    selectFile (index,obj){
+    selectFile (index, obj) {
       this.curItempItemInd = index;
       this.fileName = obj;
       this.selectFileInfo = true;
@@ -850,7 +865,7 @@ export default {
       })
     },
     //选择补充文件弹窗确认按钮
-    confirmFile(){
+    confirmFile () {
       var nodes = [];
       nodes = this.$refs.tree_left.treeNodeSelectedObj[0].data;
       this.FileInfo = [];
@@ -861,7 +876,7 @@ export default {
           });
         }
       });
-      if (this.FileInfo.length != 1){
+      if (this.FileInfo.length != 1) {
         this.$notify.warning("只能选择单个文件！")
       } else {
         this.selectTableName = this.FileInfo[0].selectTableName
@@ -1260,12 +1275,12 @@ export default {
           }
           //判断不为标题行时是否选择了文件
           let nums = 0;
-          this.tableData.forEach((item)=>{
-            if (item.isHeaderLine == "false" && item.selectTableName == ""){
+          this.tableData.forEach((item) => {
+            if (item.isHeaderLine == "false" && item.selectTableName == "") {
               nums = 1;
             }
           })
-          if (nums == 1){
+          if (nums == 1) {
             this.$notify.warning("未选择补充表名!");
             return
           }

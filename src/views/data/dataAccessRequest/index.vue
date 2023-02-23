@@ -21,20 +21,39 @@
             <el-button type="primary"
                        class="oper-btn"
                        :disabled="selections.length !== 1"
-                       @click="handleUpdate()"><img src="../../../styles/image/edits.png"
-                   class="btn_icon"
+                       @click="handleUpdate()">
+              <img src="../../../styles/image/edits.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/edits2.png"
+                   class="btn_icon icon2"
                    alt="">编辑</el-button>
             <el-button type="primary"
                        class="oper-btn"
                        @click="handleDel()"><img src="../../../styles/image/delete.png"
-                   class="btn_icon"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/delete2.png"
+                   class="btn_icon icon2"
                    alt="">删除</el-button>
             <el-button type="primary"
                        class="oper-btn "
-                       @click="handleTransact()">办理</el-button>
+                       @click="handleTransact()">
+              <img src="../../../styles/image/ban.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/ban2.png"
+                   class="btn_icon icon2"
+                   alt="">办理</el-button>
             <el-button type="primary"
                        class="oper-btn "
-                       @click="handleExport()">导出</el-button>
+                       @click="handleExport()">
+              <img src="../../../styles/image/export.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/export2.png"
+                   class="btn_icon icon2"
+                   alt="">导出</el-button>
           </el-col>
         </el-row>
       </div>
@@ -105,9 +124,8 @@
                  :visible.sync="dialogFormVisible"
                  :before-close="closeDialog">
         <template>
-          <el-form
-              :label-position="labelPosition"
-              ref="dataForm"
+          <el-form :label-position="labelPosition"
+                   ref="dataForm"
                    :rules="rules"
                    :model="temp"
                    width="80%"
@@ -153,8 +171,8 @@
         </div>
         <span class="sess-flowitem"
               slot="footer">
-           <el-button size="mini"
-                      @click="dialogFlowItemShow = false">关闭</el-button>
+          <el-button size="mini"
+                     @click="dialogFlowItemShow = false">关闭</el-button>
           <el-button size="mini"
                      type="primary"
                      class="table_header_btn"
@@ -189,7 +207,7 @@ export default {
   components: { FlowItem, flowOpinionList, Pagination, QueryField },
   data () {
     return {
-      labelPosition:"top",
+      labelPosition: "top",
       //新增/修改弹框申请表名称数组
       requestTableNamelist: [{
         id: 0,

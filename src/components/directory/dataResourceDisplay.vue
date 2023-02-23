@@ -85,11 +85,18 @@
         <el-button type="primary"
                    size="small"
                    class="oper-btn"
-                   @click="edit_list()">修改</el-button>
+                   @click="edit_list()"><img src="../../../src/styles/image/edits.png"
+               class="btn_icon icon1"
+               alt="">
+          <img src="../../../src/styles/image/edits2.png"
+               class="btn_icon icon2"
+               alt="">
+          修改</el-button>
       </div>
     </div>
 
-    <el-skeleton style="width:100%;float: left;height: calc(100vh - 290px);overflow: auto;"
+    <el-skeleton style="width:100%;float: left;overflow: auto;"
+                 :class="isBtn == true ?'is_min_heihgt':'is_heihgt'"
                  animated
                  :loading="list_loading"
                  :count="4">
@@ -129,7 +136,8 @@
           </div>
         </div>
       </template>
-      <div class="list_table">
+      <div class="list_table"
+           :class="isBtn == true ?'is_min_heihgt':'is_heihgt'">
         <el-table ref="multipleTable"
                   :data="list"
                   style="width: 100%"
@@ -212,8 +220,7 @@
                      :page-size="list_data.size"
                      :current-page-sync="list_data.current"
                      layout="total, sizes, prev, pager, next, jumper"
-                     :total="list_data.total"
-                     v-if="list_data.total"></el-pagination>
+                     :total="list_data.total"></el-pagination>
     </div>
 
   </div>
@@ -355,6 +362,14 @@ export default {
 };
 </script>
 <style scoped>
+/* 有按钮 */
+.is_min_heihgt {
+  height: calc(100vh - 290px);
+}
+/* 没有按钮 */
+.is_heihgt {
+  height: calc(100vh - 260px);
+}
 /* 操作btn */
 .common_btn {
   box-sizing: border-box;
@@ -736,8 +751,15 @@ export default {
   /* overflow: auto; */
 }
 
+/* table 暂无数据 */
 .list_table >>> .el-table__empty-block {
-  min-height: 400px !important;
+  /* min-height: 400px !important; */
+  height: calc(100vh - 300px) !important;
+  box-sizing: border-box;
+}
+/* 隐藏列表的多选框 */
+.list_table >>> .el-table__header-wrapper {
+  display: none;
 }
 
 .list_table >>> .el-table tr {

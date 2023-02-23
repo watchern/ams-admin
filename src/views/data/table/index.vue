@@ -1672,7 +1672,6 @@ export default {
 
 /* 隐藏列表的多选框 */
 .list_style >>> .el-table__header-wrapper {
-  /* border: 1px solid blue; */
   display: none;
 }
 

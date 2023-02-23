@@ -29,7 +29,13 @@
                     align="right">
               <el-button type="primary"
                          class="oper-btn"
-                         @click="showExportList">导出</el-button>
+                         @click="showExportList">
+                <img src="../../../styles/image/export.png"
+                     class="btn_icon icon1"
+                     alt="">
+                <img src="../../../styles/image/export2.png"
+                     class="btn_icon icon2"
+                     alt="">导出</el-button>
               <el-button type="primary"
                          class="oper-btn"
                          @click="showCountList">统计</el-button>
