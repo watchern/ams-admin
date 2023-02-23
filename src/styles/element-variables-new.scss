@@ -105,6 +105,7 @@ $radius30:30px;//圆角 按钮
   background: #EAEEF3!important;
 }
 
+
 .el-button--small{
   height: 32px;
   line-height: 32px;
@@ -398,17 +399,22 @@ background-color: #EBF2FC!important;
 .el-button:hover .icon1{
   // display: none!important;
     width: 0;
-    margin-right: 0!important;
-
-
+    margin-right: 0;
 }
 .el-button:hover .icon2{
   // display: block!important;
     width: 14px;
-    margin-right: 4px!important;
-
-
+    margin-right: 4px;
 }
+ .is-disabled:hover .icon1{
+  width: 14px!important;;
+  margin-right: 4px!important;
+}
+.is-disabled:hover .icon2{
+    width: 0!important;
+    margin-right: 0!important;
+}
+
 
 // 顶部筛选条件
 .query-field .el-form-item{
