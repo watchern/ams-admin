@@ -544,7 +544,7 @@
                  :rules="rules_table"
                  :inline="false"
                  :model="table_visible_form"
-                 label-width="90px">
+                 label-width="100px">
 
           <!-- 主表的情况 -->
           <div v-if="is_main_table">

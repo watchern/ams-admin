@@ -13,7 +13,7 @@
     <!-- right_conter -->
     <div class="right_conter">
       <div class="list_style">
-        
+
         <DataResourceDisplay @down_template_cn="DownTemplateCN"
                              @Important_cn="ImportantCn"
                              @Importdata_dictionary="ImportdataDictionary"
@@ -218,8 +218,7 @@
             <!--  表说明-->
             <el-row>
               <el-col :span="24">
-                <el-form-item label="表说明："
-                              prop="tableRemarks">
+                <el-form-item label="表说明：">
                   <el-input type="textarea"
                             placeholder="请输入表说明"
                             style="resize: none;width: 100%;"
@@ -552,8 +551,10 @@
             <directory-file-import @fileuploadname="fileuploadname" />
           </el-col>
         </el-row>
-        <span slot="footer" class="dialog-footer">
-          <el-button size="small" @click="importVisible = false">取消</el-button>
+        <span slot="footer"
+              class="dialog-footer">
+          <el-button size="small"
+                     @click="importVisible = false">取消</el-button>
           <el-button @click="importTableDictionary()"
                      size="small"
                      type="primary"
@@ -1636,8 +1637,8 @@ export default {
       this.query_list(this.$refs.tree_left.query, false);
     },
   },
-  filters:{
-    getLabel(value){
+  filters: {
+    getLabel (value) {
       if (value == 1) {
         return "表"
       } else if (value == 2) {
@@ -1821,25 +1822,25 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-.trees {
-  width: 45%;
-  float: left;
-  margin-top: 1%;
-  height: 95%;
-}
+// .trees {
+//   width: 45%;
+//   float: left;
+//   margin-top: 1%;
+//   height: 95%;
+// }
 
-.divContent {
-  position: absolute;
-  width: 56%;
-  left: 45%;
-  height: 95%;
-}
+// .divContent {
+//   position: absolute;
+//   width: 56%;
+//   left: 45%;
+//   height: 95%;
+// }
 
-.select-link {
-  // margin-top: 10px;
-  cursor: pointer;
-  margin-left: 10px;
-}
+// .select-link {
+//   // margin-top: 10px;
+//   cursor: pointer;
+//   margin-left: 10px;
+// }
 
 // .page-container .tree-containerselect {
 //   height: 55vh;
@@ -1848,136 +1849,136 @@ export default {
 // }
 // 选择注册表
 
-.transfer-center-item {
-  width: 40px;
-  margin: 2px;
-  height: 40vh;
-}
+// .transfer-center-item {
+//   width: 40px;
+//   margin: 2px;
+//   height: 40vh;
+// }
 
-.agreeicon0 {
-  display: inline-block;
-  height: 16px;
-  width: 16px;
-  margin-right: 2px;
-  margin-top: 0;
-  background-size: 100%;
-  background-image: url("../../../assets/img/table_0.png");
-  vertical-align: top;
-  *vertical-align: middle;
-}
+// .agreeicon0 {
+//   display: inline-block;
+//   height: 16px;
+//   width: 16px;
+//   margin-right: 2px;
+//   margin-top: 0;
+//   background-size: 100%;
+//   background-image: url("../../../assets/img/table_0.png");
+//   vertical-align: top;
+//   *vertical-align: middle;
+// }
 
-.agreeicon1 {
-  display: inline-block;
-  height: 16px;
-  width: 16px;
-  margin-right: 2px;
-  margin-top: 0;
-  background-size: 100%;
-  background-image: url("../../../assets/img/table_1.png");
-  vertical-align: top;
-  *vertical-align: middle;
-}
+// .agreeicon1 {
+//   display: inline-block;
+//   height: 16px;
+//   width: 16px;
+//   margin-right: 2px;
+//   margin-top: 0;
+//   background-size: 100%;
+//   background-image: url("../../../assets/img/table_1.png");
+//   vertical-align: top;
+//   *vertical-align: middle;
+// }
 
-.agreeicon2 {
-  display: inline-block;
-  height: 14px;
-  width: 14px;
-  margin-right: 2px;
-  margin-top: 0;
-  background-size: 100%;
-  background-image: url("../../../assets/img/table_2.png");
-  vertical-align: top;
-  *vertical-align: middle;
-}
+// .agreeicon2 {
+//   display: inline-block;
+//   height: 14px;
+//   width: 14px;
+//   margin-right: 2px;
+//   margin-top: 0;
+//   background-size: 100%;
+//   background-image: url("../../../assets/img/table_2.png");
+//   vertical-align: top;
+//   *vertical-align: middle;
+// }
 
-.agreeicon4 {
-  display: inline-block;
-  height: 16px;
-  width: 16px;
-  margin-right: 2px;
-  margin-top: 0;
-  background-size: 100%;
-  background-image: url("../../../styles/icons/view.png");
-  vertical-align: top;
-  *vertical-align: middle;
-}
+// .agreeicon4 {
+//   display: inline-block;
+//   height: 16px;
+//   width: 16px;
+//   margin-right: 2px;
+//   margin-top: 0;
+//   background-size: 100%;
+//   background-image: url("../../../styles/icons/view.png");
+//   vertical-align: top;
+//   *vertical-align: middle;
+// }
 
-.controlTreeNode {
-  width: 100%;
-  height: 36px;
-  text-align: center;
-}
+// .controlTreeNode {
+//   width: 100%;
+//   height: 36px;
+//   text-align: center;
+// }
 
-.expandTreeNode {
-  position: relative;
-  border: 1px #656565;
-  top: 6px;
-  left: 10px;
-  height: 25px;
-  width: 25px;
-  display: inline-block;
-  background: #559ed4;
+// .expandTreeNode {
+//   position: relative;
+//   border: 1px #656565;
+//   top: 6px;
+//   left: 10px;
+//   height: 25px;
+//   width: 25px;
+//   display: inline-block;
+//   background: #559ed4;
 
-  &:active {
-    background: #5ac3eb !important;
-  }
+//   &:active {
+//     background: #5ac3eb !important;
+//   }
 
-  &:hover {
-    background: #5ac3eb !important;
-  }
+//   &:hover {
+//     background: #5ac3eb !important;
+//   }
 
-  &:focus {
-    background: #5ac3eb !important;
-  }
-}
+//   &:focus {
+//     background: #5ac3eb !important;
+//   }
+// }
 
-.collapseTreeNode {
-  position: relative;
-  border: 1px #656565;
-  top: 6px;
-  left: 5px;
-  height: 25px;
-  width: 25px;
-  display: inline-block;
-  background: #559ed4;
+// .collapseTreeNode {
+//   position: relative;
+//   border: 1px #656565;
+//   top: 6px;
+//   left: 5px;
+//   height: 25px;
+//   width: 25px;
+//   display: inline-block;
+//   background: #559ed4;
 
-  &:active {
-    background: #5ac3eb !important;
-  }
+//   &:active {
+//     background: #5ac3eb !important;
+//   }
 
-  &:hover {
-    background: #5ac3eb !important;
-  }
+//   &:hover {
+//     background: #5ac3eb !important;
+//   }
 
-  &:focus {
-    background: #5ac3eb !important;
-  }
-}
+//   &:focus {
+//     background: #5ac3eb !important;
+//   }
+// }
 
-.expandIcon {
-  height: 12px;
-  z-index: 100;
-  position: relative;
-}
+// .expandIcon {
+//   height: 12px;
+//   z-index: 100;
+//   position: relative;
+// }
 
-.collapseIcon {
-  height: 12px;
-  z-index: 100;
-  position: relative;
-}
+// .collapseIcon {
+//   height: 12px;
+//   z-index: 100;
+//   position: relative;
+// }
 
-.tree-line-btn {
-  background: rgba(255, 255, 255, 0) !important;
-}
+// .tree-line-btn {
+//   background: rgba(255, 255, 255, 0) !important;
+// }
 
-.custom-label-tree-node {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
-  padding-right: 15px;
-}
+// .custom-label-tree-node {
+//   flex: 1;
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+//   font-size: 14px;
+//   padding-right: 15px;
+// }
 
 // .left_conter >>> .el-input.is-disabled .el-input__inner,
 // .right_conter >>> .el-input.is-disabled .el-input__inner {

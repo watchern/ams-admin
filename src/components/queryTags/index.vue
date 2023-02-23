@@ -86,7 +86,6 @@ export default {
       input_left: "",//右侧输入框距离左侧距离
       minWIdth: 580,
       maxWidths: '',
-
     };
   },
   watch: {
@@ -116,6 +115,7 @@ export default {
   mounted () {
     this.TagsAll = this.parentArr;
     // this.dropDown = this.dropDownData;
+
     this.watch_width();//监听输入框宽度
   },
 
@@ -129,7 +129,7 @@ export default {
 
         // 如果左侧输入宽度超过395的尺寸 则为左侧最大宽度；minWIdth 为右侧输入框墨人最小宽度
         if (that.input_left >= 395) {
-          that.maxWidths = 395 
+          that.maxWidths = 395
           that.minWIdth = 185
         } else {
           // 如果没有 则右侧输入框撑满

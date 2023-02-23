@@ -178,13 +178,15 @@
                         </el-card>
                       </div>
                     </div>
-                    <p class="text"
-                       v-if="scope.row.tableRelationQuery">
+                    <p class="text vertical"
+                       :title="scope.row.tableRelationQuery.tableRemarks"
+                       v-if="scope.row.tableRelationQuery.tableRemarks">
                       描述：{{ scope.row.tableRelationQuery.tableRemarks }}
                     </p>
-                    <p class="text"
+                    <p class="text "
                        v-else>描述：暂无</p>
-                    <p class="text"
+                    <p class="text vertical"
+                       :title="scope.row.colMeta"
                        v-if="scope.row.colMeta">字段：{{ scope.row.colMeta }}</p>
                     <p class="text"
                        v-else>字段：暂无</p>
@@ -578,6 +580,12 @@ export default {
   color: #7f7f7f;
   margin-bottom: 7px;
   font-size: 14px;
+}
+.vertical {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
 }
 
 .table_type {
