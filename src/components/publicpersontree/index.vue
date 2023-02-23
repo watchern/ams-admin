@@ -20,7 +20,8 @@
                   fit
                   highlight-current-row
                   :row-key="row => row.personuuid"
-                  @select="handleSelectionChange">
+                  @select="handleSelectionChange"
+                  @select-all="handleSelectionChange2">
           <el-table-column type="selection"
                            reserve-selection
                            width="55" />
@@ -175,6 +176,32 @@ export default {
             i--;
           }
         }
+      }
+    },
+    /**
+     * 全选是将全选人员去重添加到返回人员中，如果取消全选，从返回人员中去除
+     */
+    handleSelectionChange2(val){
+      if (val.length == 0){
+        for (let i = 0; i < this.reverseDisplay.length; i++) {
+          for (let j = 0; j < this.list.length; j++) {
+            if (this.reverseDisplay[i].personuuid == this.list[j].personuuid){
+              this.reverseDisplay.splice(i,1);
+              i--;
+            }
+          }
+        }
+      }else {
+        let tempArr = val;
+        for (let i = 0; i < this.reverseDisplay.length; i++) {
+          for (let j = 0; j < tempArr.length; j++) {
+            if (this.reverseDisplay[i].personuuid == tempArr[j].personuuid){
+              tempArr.splice(j,1);
+              j--;
+            }
+          }
+        }
+        this.reverseDisplay.push(...tempArr);
       }
     },
     /**
