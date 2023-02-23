@@ -419,8 +419,9 @@ export default {
         return resolve(node.data);
       } else if (node.level >= 1) {
         //SQL编辑器、数据注册的表才需要展示字段
-        if (node.data.type === "table" && (this.loadLeftTreeType === "1" || this.loadLeftTreeType === "")) {
-          var strLevel = this.activeName + this.query.dataSource;
+        if (node.data.type === "table" && (this.loadLeftTreeType === "1" || this.loadLeftTreeType==="")) {
+          //个人空间下的表查询字段不需要权限
+          var strLevel = this.activeName
           var nodeList = getTableField(node, this.query.dataSource, this.loadLeftTreeType, strLevel);
           Promise.all([nodeList]).then((res) => {
             resolve(res[0]);
