@@ -551,22 +551,23 @@
             <directory-file-import @fileuploadname="fileuploadname" />
           </el-col>
         </el-row>
-        <span slot="footer">
-          <el-button size="small"
-                     @click="importVisible = false">取消</el-button>
-
+        <span slot="footer" class="dialog-footer">
+          <el-button size="small" @click="importVisible = false">取消</el-button>
           <el-button @click="importTableDictionary()"
                      size="small"
                      type="primary"
+                     :loading="importLoad"
                      v-if="upload_title == '导入数据资源'">导入</el-button>
           <el-button @click="importTablCn()"
                      size="small"
                      type="primary"
+                     :loading="importLoad"
                      v-else-if="upload_title == '导入汉化信息'">导入</el-button>
           <el-button @click="importTableTable()"
-                     v-else
                      size="small"
-                     type="primary">导入</el-button>
+                     type="primary"
+                     :loading="importLoad"
+                     v-else>导入</el-button>
 
           <!-- <el-button type="primary"
                      @click="upload_title = '数据字典导入' ? importTableDictionary()
@@ -765,7 +766,6 @@ export default {
       dataSource: '',// 详情数据源
       personReverseDisplay: [],// 认权人人员选择反显
       serachParams: {},
-
       // 搜索栏类型
       dropDown: [
         // "表名", "表中文名", "系统", "主题", "分层", "字段",
@@ -796,7 +796,8 @@ export default {
           name: '字段',
           value: []
         },
-      ]
+      ],
+      importLoad: false
     };
   },
   computed: {},
@@ -956,9 +957,11 @@ export default {
           message: '请先上传文件',
         });
       } else {
+        this.importLoad = true;
         import_dictionary(this.importtemp).then((res) => {
           if (res.data.code === "200") {
             this.importVisible = false;
+            this.importLoad = false;
             this.$notify({
               title: "成功",
               message: res.data.msg,
@@ -969,6 +972,7 @@ export default {
             this.update_tree();//更新左侧树
             this.query_list(this.$refs.tree_left.query, false);
           } else {
+            this.importLoad = false;
             this.$message({
               type: "error",
               message: res.data.msg,
