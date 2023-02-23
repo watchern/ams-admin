@@ -28,6 +28,10 @@ $radius30:30px;//圆角 按钮
 .mt10{
   margin-top: 10px;
 }
+// 控制button的icon 居中
+.oper-btn span{
+  display: flex;
+}
 // 默认button
 .el-button {
   background: #ffffff !important;
@@ -37,17 +41,11 @@ $radius30:30px;//圆角 按钮
   border-radius: $radius30!important;
 
 }
-// 控制button的icon 居中
-.el-button span{
-  display: flex;
-  justify-content: center;
-}
+
 
 .el-button:active {
-  // background: rgb(90, 195, 235) !important;
-  // border-color: rgb(90, 195, 235) !important;
-    	background:$dividers  !important;
-    border-color: $dividers !important;
+  background:$dividers  !important;
+  border-color: $dividers !important;
   color: rgb(242, 243, 253) !important;
   outline: none;
   font-weight: bold;

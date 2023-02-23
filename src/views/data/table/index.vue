@@ -13,6 +13,7 @@
     <!-- right_conter -->
     <div class="right_conter">
       <div class="list_style">
+        
         <DataResourceDisplay @down_template_cn="DownTemplateCN"
                              @Important_cn="ImportantCn"
                              @Importdata_dictionary="ImportdataDictionary"
