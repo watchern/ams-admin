@@ -32,75 +32,96 @@
                      :rules="rules_form"
                      :model="form"
                      :inline="false"
+                     label-position="top"
                      label-width="100px">
-
-              <el-form-item label="表名称："
-                            prop="tbName">
-                <el-input v-model="form.tbName"
-                          disabled></el-input>
-              </el-form-item>
-              <div :class="
+              <el-row>
+                <el-col :span="24">
+                  <el-form-item label="表名称："
+                                prop="tbName">
+                    <el-input v-model="form.tbName"
+                              disabled></el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="24">
+                  <div :class="
                   isDisable_input == true ? 'is_disabled' : 'yes_disabled'
                 ">
-                <el-form-item label="表中文名："
-                              prop="chnName">
-                  <el-input v-model="form.chnName"
-                            @input="change($event)"
-                            :disabled="isDisable_input"></el-input>
-                </el-form-item>
-                <el-form-item label="表说明：">
-                  <el-input v-model="form.tableRemarks"
-                            style="resize: none"
-                            @input="change($event)"
-                            :disabled="isDisable_input"
-                            type="textarea"></el-input>
-                </el-form-item>
-              </div>
-
-              <div class="son">
-                <div class="is_disabled">
-                  <el-form-item label="资源编码："
-                                prop="tableCode">
-                    <el-input type="text"
-                              disabled
-                              @input="change($event)"
-                              v-model="form.tableCode"
-                              :rows="4"></el-input>
-                  </el-form-item>
-                </div>
-                <div :class="
+                    <el-form-item label="表中文名："
+                                  prop="chnName">
+                      <el-input v-model="form.chnName"
+                                @input="change($event)"
+                                style="width: 100%;"
+                                :disabled="isDisable_input"></el-input>
+                    </el-form-item>
+                    <el-form-item label="表说明：">
+                      <el-input v-model="form.tableRemarks"
+                                style="resize: none;width: 100%;"
+                                @input="change($event)"
+                                :disabled="isDisable_input"
+                                type="textarea"></el-input>
+                    </el-form-item>
+                  </div>
+                </el-col>
+                <el-col :span="11">
+                  <!-- <div class="son"> -->
+                  <div class="is_disabled">
+                    <el-form-item label="资源编码："
+                                  prop="tableCode">
+                      <el-input type="text"
+                                disabled
+                                @input="change($event)"
+                                style="width: 100%;"
+                                v-model="form.tableCode"
+                                :rows="4"></el-input>
+                    </el-form-item>
+                  </div>
+                </el-col>
+                <el-col :span="11"
+                        :offset="2">
+                  <div :class="
                     isDisable_input == true ? 'is_disabled' : 'yes_disabled'
                   ">
-                  <el-form-item label="资源类型："
-                                prop="tableType">
-                    <el-select v-model="form.tableType"
-                               @input="change($event)"
-                               :disabled="isDisable_input">
-                      <el-option v-for="item in data_type"
-                                 :key="item.value"
-                                 :label="item.label"
-                                 :value="item.value" />
-                    </el-select>
-                  </el-form-item>
-                </div>
-              </div>
-              <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
-                <div class="son">
-                  <el-form-item label="资源主题："
-                                prop="tableThemeId">
-                    <el-select v-model="form.tableThemeId"
-                               @input="change($event)"
-                               @change="tableThemeName_change"
-                               :disabled="isDisable_input">
-                      <el-option v-for="item in next_data.themeList"
-                                 :key="item.codeUuid"
-                                 :label="item.codeName"
-                                 :value="item.codeUuid" />
-                    </el-select>
-                  </el-form-item>
+                    <el-form-item label="资源类型："
+                                  prop="tableType">
+                      <el-select v-model="form.tableType"
+                                 style="width: 100%;"
+                                 @input="change($event)"
+                                 :disabled="isDisable_input">
+                        <el-option v-for="item in data_type"
+                                   :key="item.value"
+                                   :label="item.label"
+                                   :value="item.value" />
+                      </el-select>
+                    </el-form-item>
+                  </div>
+                </el-col>
+
+                <el-col :span="11">
+                  <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
+                    <!-- <div class="son"> -->
+                    <el-form-item label="资源主题："
+                                  prop="tableThemeId">
+                      <el-select v-model="form.tableThemeId"
+                                 style="width: 100%;"
+                                 @input="change($event)"
+                                 @change="tableThemeName_change"
+                                 :disabled="isDisable_input">
+                        <el-option v-for="item in next_data.themeList"
+                                   :key="item.codeUuid"
+                                   :label="item.codeName"
+                                   :value="item.codeUuid" />
+                      </el-select>
+                    </el-form-item>
+                  </div>
+
+                </el-col>
+
+                <el-col :span="11"
+                        :offset="2">
                   <el-form-item label="资源分层："
                                 prop="tableLayeredId">
                     <el-select v-model="form.tableLayeredId"
+                               style="width: 100%;"
                                @input="change($event)"
                                :disabled="isDisable_input">
                       <el-option v-for="item in next_data.layeredList"
@@ -109,13 +130,15 @@
                                  :value="item.codeUuid" />
                     </el-select>
                   </el-form-item>
-                </div>
-
-                <div class="son">
+                  <!-- </div> -->
+                </el-col>
+                <el-col :span="11">
+                  <!-- <div class="son"> -->
                   <el-form-item label="所属系统："
                                 prop="businessSystemId">
                     <el-select v-model="form.businessSystemId"
                                @input="change($event)"
+                               style="width: 100%;"
                                :disabled="isDisable_input"
                                :rows="4">
                       <el-option v-for="item in next_data.businessSystemList"
@@ -124,89 +147,112 @@
                                  :value="item.businessSystemUuid" />
                     </el-select>
                   </el-form-item>
+                </el-col>
+                <el-col :span="11"
+                        :offset="2">
                   <el-form-item label="文件名：">
                     <el-input :disabled="isDisable_input"
                               @input="change($event)"
+                              style="width: 100%;"
                               v-model="form.fileName"
                               :rows="4"></el-input>
                   </el-form-item>
-                </div>
-              </div>
+                  <!-- </div> -->
+                </el-col>
 
-              <div class="son">
+                <!-- <div class="son"> -->
+                <el-col :span="11">
 
-                <el-form-item label="数据日期：">
-                  <el-date-picker format="yyyy-MM-dd"
-                                  @input="change($event)"
-                                  :disabled="isDisable_input"
-                                  type="date"
-                                  value-format="yyyy-MM-dd"
-                                  @change="changeRelationParam"
-                                  :rows="4"
-                                  v-model="form.dataDate" />
-                </el-form-item>
-                <div class="is_disabled">
-                  <el-form-item label="表大小：">
-                    <el-input placeholder="请输入表大小"
+                  <el-form-item label="数据日期：">
+                    <el-date-picker format="yyyy-MM-dd"
+                                    style="width: 100%;"
+                                    @input="change($event)"
+                                    :disabled="isDisable_input"
+                                    type="date"
+                                    value-format="yyyy-MM-dd"
+                                    @change="changeRelationParam"
+                                    :rows="4"
+                                    v-model="form.dataDate" />
+                  </el-form-item>
+
+                </el-col>
+                <el-col :span="11"
+                        :offset="2">
+                  <div class="is_disabled">
+                    <el-form-item label="表大小：">
+                      <el-input placeholder="请输入表大小"
+                                @input="change($event)"
+                                style="width: 100%;"
+                                :disabled="disabled"
+                                v-model="form.tableSize"></el-input>
+                    </el-form-item>
+                  </div>
+                </el-col>
+
+                <el-col :span="11">
+                  <el-form-item label="表数据量：">
+                    <el-input type="text"
+                              :disabled="disabled"
                               @input="change($event)"
-                              :disabled="disabled"
-                              v-model="form.tableSize"></el-input>
+                              style="width: 100%;"
+                              v-model="form.rowNum"
+                              :rows="4"></el-input>
                   </el-form-item>
-                </div>
+                </el-col>
+                <el-col :span="11"
+                        :offset="2">
+                  <div class="son_people is_disabled"
+                       :class="isDisable_input == true ? 'is_width':''">
+                    <el-form-item label="负责人：">
+                      <el-input type="textarea"
+                                :disabled="disabled"
+                                style="width:100%;"
+                                v-model="form.personLiables"></el-input>
+                      <el-button type="primary"
+                                 size="small"
+                                 v-if="isDisable_input == false"
+                                 :disabled="isDisable_input"
+                                 class="oper-btn"
+                                 @click="check_people()">
+                        选择
+                      </el-button>
+                    </el-form-item>
 
-              </div>
+                  </div>
+                </el-col>
+                <!-- </div> -->
 
-              <div class="son">
-                <el-form-item label="数据数量：">
-                  <el-input type="text"
-                            :disabled="disabled"
-                            @input="change($event)"
-                            v-model="form.rowNum"
-                            :rows="4"></el-input>
-                </el-form-item>
-                <div class="son_people is_disabled"
-                     :class="isDisable_input == true ? 'is_width':''">
-                  <el-form-item label="负责人：">
-                    <el-input type="textarea"
-                              :disabled="disabled"
-                              style="background-color: rgba(0, 0, 0, 0.05) !important"
-                              v-model="form.personLiables"></el-input>
-                  </el-form-item>
-                  <el-button type="primary"
-                             size="small"
-                             v-if="isDisable_input == false"
-                             :disabled="isDisable_input"
-                             class="oper-btn"
-                             @click="check_people()">
-                    选择
-                  </el-button>
-                </div>
-              </div>
+                <el-col :span="11">
 
-              <div :class="
+                  <div :class="
                   isDisable_input == true ? 'is_disabled' : 'yes_disabled'
                 ">
-                <div class="son">
-                  <el-form-item label="表分区："
-                                :disabled="disabled"
-                                prop="partitions">
-                    <div class="table">
-                      <div class="head">分区名称</div>
+                    <!-- <div class="son"> -->
 
-                      <div v-if="form.partitions == null">--</div>
-                      <div v-else>
-                        <div v-for="(item, index_partitions) in form.partitions"
-                             :key="index_partitions"
-                             class="li_son">
-                          {{ item }}
+                    <el-form-item label="表分区："
+                                  :disabled="disabled"
+                                  prop="partitions">
+                      <div class="table">
+                        <div class="head">分区名称</div>
+
+                        <div v-if="form.partitions == null">--</div>
+                        <div v-else>
+                          <div v-for="(item, index_partitions) in form.partitions"
+                               :key="index_partitions"
+                               class="li_son">
+                            {{ item }}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </el-form-item>
-
+                    </el-form-item>
+                  </div>
+                </el-col>
+                <el-col :span="11"
+                        :offset="2">
                   <el-form-item label="增全量：">
                     <el-select v-model="form.isSpike"
                                @input="change($event)"
+                               style="width: 100%;"
                                :disabled="isDisable_input">
                       <el-option v-for="item in option_isSpike"
                                  :key="item.value"
@@ -214,7 +260,8 @@
                                  :value="item.value" />
                     </el-select>
                   </el-form-item>
-                </div>
+                </el-col>
+                <!-- </div> -->
 
                 <!-- <div class="son_check">
                   <el-form-item label="数据标签：">
@@ -234,27 +281,31 @@
                              :disabled="isDisable_input"
                              @click="check_tag()">选择</el-button>
                 </div> -->
+                <el-col :span="24">
+                  <el-form-item label="表热度：">
+                    <ul class="Heat_ul _width">
+                      <li v-for="(it, i) in Heat"
+                          :key="i">
+                        <p>
+                          {{ it.name }}
+                        </p>
+                        <span>
+                          {{ it.num }}
+                        </span>
+                      </li>
+                    </ul>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="24">
 
-                <el-form-item label="表热度：">
-                  <ul class="Heat_ul _width">
-                    <li v-for="(it, i) in Heat"
-                        :key="i">
-                      <p>
-                        {{ it.name }}
-                      </p>
-                      <span>
-                        {{ it.num }}
-                      </span>
-                    </li>
-                  </ul>
-                </el-form-item>
-                <div class="son">
+                  <!-- <div class="son"> -->
                   <el-button type="primary"
                              @click="previewSql()">
                     查看SQL语句
                   </el-button>
-                </div>
-              </div>
+                </el-col>
+              </el-row>
+
             </el-form>
           </div>
         </div>
@@ -935,7 +986,7 @@ export default {
     this.getListTree_data(); //下拉框默认值
     this.getIndexInfo(this.tableMetaUuid);
     this.getDictInfo(this.tableMetaUuid);
-    
+
     this.qost_cong_table_list_data(this.tableMetaUuid); //获取从表字段
     window.addEventListener("scroll", this.handleScroll, true);
   },
@@ -1019,17 +1070,17 @@ export default {
         this.form.chnName = resp.data.chnName; //中文名
         this.form.tableRemarks = resp.data.tableRelationQuery.tableRemarks; //表说明
         var tempParam = resp.data.tableSize
-        if(tempParam == null || tempParam == ''){
+        if (tempParam == null || tempParam == '') {
           this.form.tableSize = 0
         }
         var length = tempParam.length
-        if(length == 0 || length ==1){
+        if (length == 0 || length == 1) {
           this.$notify.error("表大小单位错误")
           return
         }
         //取出 表大小的值  ?KB 就取KB 之前的值   ?B 就取 B 之前的值
-        var tempValue = length > 2 ? tempParam.substr(0,length - 2) : tempParam.substr(0,length - 1)
-        if(tempValue == 0 || tempValue == 'null' || tempValue == 'NULL'){
+        var tempValue = length > 2 ? tempParam.substr(0, length - 2) : tempParam.substr(0, length - 1)
+        if (tempValue == 0 || tempValue == 'null' || tempValue == 'NULL') {
           this.form.tableSize = 0
         }
         this.form.tableSize = resp.data.tableSize; //表大小
@@ -1485,11 +1536,11 @@ export default {
 }
 
 /* 基本信息 */
-.information_form {
+/* .information_form {
   box-sizing: border-box;
-}
+} */
 
-.information_form >>> .el-form-item {
+/* .information_form >>> .el-form-item {
   display: flex;
   margin-bottom: 20px !important;
 }
@@ -1497,9 +1548,9 @@ export default {
 .information_form >>> .el-form-item__content {
   flex: 1;
   margin-left: 0 !important;
-}
+} */
 
-.son {
+/* .son {
   display: flex;
   justify-content: space-between;
 }
@@ -1507,15 +1558,12 @@ export default {
 .son >>> .el-form-item__content,
 .son >>> .el-date-editor {
   width: 300px;
-}
+} */
 
 .is_disabled >>> .el-textarea__inner {
   cursor: not-allowed !important;
-}
-
-.is_disabled >>> .el-textarea__inner {
   color: #999 !important;
-  background: #ebeff2 !important;
+  background: rgba(0, 0, 0, 0.05) !important;
 }
 
 .yes_disabled >>> .el-select,
@@ -1607,15 +1655,18 @@ export default {
 }
 
 .son_people {
-  display: flex;
+  /* display: flex; */
 }
 
 .son_people >>> .el-form-item__content {
-  width: 217px;
+  /* width: 217px; */
+  width: 98%;
+  display: flex;
 }
 
 .is_width >>> .el-form-item__content {
-  width: 300px;
+  /* width: 300px; */
+  width: 100% !important;
 }
 
 .son .el-form-item__content,
@@ -1684,9 +1735,9 @@ export default {
   overflow-y: auto;
 }
 
-.information_form >>> .el-form-item--medium .el-form-item__label {
+/* .information_form >>> .el-form-item--medium .el-form-item__label {
   text-align: right !important;
-}
+} */
 /* 保存按钮 */
 .fixed_btn {
   text-align: right;

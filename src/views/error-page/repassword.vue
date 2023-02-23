@@ -230,6 +230,6 @@ export default {
   padding-bottom: 25px;
 }
 .bullshitrepassword .el-form-item__label {
-  float: left !important;
+  /*float: left !important;*/
 }
 </style>

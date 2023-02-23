@@ -147,6 +147,17 @@ $radius30:30px;//圆角 按钮
   
 }
 
+// 删除
+.el-link.el-link--danger .el-link--inner{
+  color: $text-color-red!important;
+}
+// .el-link--danger:hover{
+
+// }
+.el-link.el-link--danger.is-underline:hover:after{
+   border-color: $text-color-red!important;
+}
+
 // 查询按钮
 // .search_btn{
 // 	background:$dividers  !important;
@@ -165,6 +176,7 @@ $radius30:30px;//圆角 按钮
 // baby区域
 .home{
     background:  linear-gradient(133deg, #ABC2FA 0%, #D9DACD 37%, #E8F2FF 64%, #9EB9F8 100%) !important;
+    min-width: 1366px!important;
 }
 // 内容区域
 .page-container{
@@ -261,6 +273,10 @@ background: #EEF0FD !important;
     border-radius: 3px!important;
 
 }
+.el-checkbox__inner::after{
+    left: 5px!important;
+    top: 2px!important;
+}
 // 底部面包屑导航
 .home-right-footer{
   z-index: 99;
@@ -318,12 +334,7 @@ background-color: #EBF2FC!important;
   color:$text-color-black !important;
 }
 
-// 输入框 
-.el-input--medium .el-input__inner{
-  border: 1px solid $border-color!important;
-  border-radius: $radius5!important;
-  background: #fff !important;
-}
+
 
 
 
@@ -341,6 +352,7 @@ background-color: #EBF2FC!important;
   border: 1px solid $border-color!important;
   border-radius: $radius5!important;
   background: #fff !important;
+  font-family: YaHei UI!important;
  }
 
   .el-form-item.is-error .el-textarea__inner:focus{
@@ -397,7 +409,18 @@ background-color: #EBF2FC!important;
   margin-bottom: 10px!important;
 }
 
-
+// 输入框 
+.el-input--medium .el-input__inner{
+  border: 1px solid $border-color!important;
+  border-radius: $radius5!important;
+  background: #fff !important;
+}
+// 输入框 disabled
+.el-input.is-disabled .el-input__inner{
+  color: #606266!important;
+  background: rgba(0, 0, 0, 0.05) !important;
+  // background-color: #ffffff!important;
+}
 
 
 // 弹窗
@@ -414,6 +437,10 @@ background-color: #EBF2FC!important;
 }
 
 
+// form 表单 label 边距
+.el-form--label-top .el-form-item__label{
+  padding: 0!important;
+}
 
 // 底部导航
 .right-footer{
@@ -447,3 +474,29 @@ $--font-path: "~element-ui/lib/theme-chalk/fonts";
   // theme: $--color-primary;
   theme:$primary-btn-color
 }
+/*yw修改列表样式 2023-2-21*/
+.el-pagination{
+  text-align: center!important;
+  .el-select .el-input .el-input__inner,.el-pagination__editor.el-input .el-input__inner{
+    background: #fff!important;
+  }
+}
+.el-table__header-wrapper{
+  background: transparent!important;
+  border-bottom: none!important;
+  color:#eee;
+}
+.el-table{
+  border: none!important;
+  thead{
+    color:#666666!important;
+  }
+}
+.el-table--border .el-table__cell{
+  border-right: none!important;
+}
+.el-table th.el-table__cell.is-leaf, .el-table td.el-table__cell{
+  border-bottom: 1px solid #D9D9D9!important;
+}
+
+//结束

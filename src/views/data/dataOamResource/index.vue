@@ -211,7 +211,9 @@
                  :visible.sync="dialogVisible"
                  @close="handleClose('form')"
                  width="40%">
-        <el-form :rules="rules"
+        <el-form
+            :label-position="labelPosition"
+            :rules="rules"
                  ref="form"
                  label-width="130px"
                  :model="form"
@@ -228,7 +230,7 @@
             </el-col>
 
           </el-form-item>
-          <el-form-item label="业务描述:"
+          <el-form-item label="业务描述222:"
                         prop="serviceDescription">
             <el-col :span="24">
 
@@ -313,6 +315,7 @@ export default {
   /*树end*/
   data () {
     return {
+      labelPosition:"top",
       query: {
         checkName: "", // 规则名称
         serviceDescription: "", // 业务描述
@@ -826,16 +829,16 @@ export default {
 <style scoped>
 .data_res >>> .el-form-item {
   /* margin-top: 25px !important; */
-  display: flex;
+  /*display: flex;*/
 }
 .data_res >>> .el-form-item--medium .el-form-item__label {
   text-align: right;
-  float: left !important;
+  /*float: left !important;*/
 }
 .data_res >>> .el-form-item__content {
   flex: 1;
   margin-left: 0 !important;
-  float: left;
+  /*float: left;*/
 }
 .data_res >>> .el-textarea .el-textarea__inner {
   resize: none;
@@ -844,4 +847,5 @@ export default {
   display: flex;
   background: transparent !important;
 }
+
 </style>

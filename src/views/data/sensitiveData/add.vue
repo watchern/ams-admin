@@ -1,7 +1,7 @@
 <template>
   <div style="padding: 20px 0"
        v-loading="loading">
-    <el-form label-position="right"
+    <el-form label-position="top"
              :model="apComDataBaseData"
              :rules="rules"
              label-width="110px"
@@ -59,7 +59,7 @@
                   v-model="apComDataBaseData.regularExpression"
                   placeholder="请输入内容"
                   style="width: 100%"
-                  :rows="6"></el-input>
+                  :rows="4"></el-input>
       </el-form-item>
     </el-form>
 
@@ -205,7 +205,10 @@ export default {
   ::v-deep .el-form-item__label {
     text-align: right;
     vertical-align: middle;
-    float: left !important;
+    //float: left !important;
+  }
+  .el-radio{
+    padding-left:10px;
   }
 }
 </style>

@@ -47,6 +47,7 @@
     "core-js": "^3.6.5",
     "dropzone": "^5.5.1",
     "echarts": "5.1.2",
+    "element-resize-detector": "^1.2.4",
     "element-theme": "^2.0.1",
     "element-ui": "^2.15.12",
     "exceljs": "^4.3.0",

@@ -46,12 +46,26 @@
                                   end-placeholder="结束日期">
                   </el-date-picker>
                 </el-form-item>
+
+<!--                2.22修改时间查询-->
+                <el-form-item label="申请时间范围："
+                              prop="createTime"
+                              style="display: inline-block;">
+                  <el-date-picker v-model="dataBaseData.condition.permissionApplyStartTime"
+                                  type="datetime"
+                                  placeholder="开始时间"
+                                  value-format="yyyy-MM-dd HH:mm:ss" />
+                  <el-date-picker v-model="dataBaseData.condition.permissionApplyEndTime"
+                                  type="datetime"
+                                  placeholder="结束时间"
+                                  value-format="yyyy-MM-dd HH:mm:ss" />
+                </el-form-item>
                 <el-form-item>
 
-                  <el-button size="small"
+                  <el-button
                              type="primary"
                              @click="goQuery">查询</el-button>
-                  <el-button size="small"
+                  <el-button
                              type="primary"
                              @click="reset">重置</el-button>
                 </el-form-item>
@@ -163,7 +177,9 @@
                            show-overflow-tooltip
                            min-width="150px">
             <template slot-scope="scope">
-              <span @click="showApplyDetail(scope.row)">{{ scope.row.permissionApplyName }}</span>
+              <el-link type="text"
+                       :underline="false" @click="showApplyDetail(scope.row)">{{ scope.row.permissionApplyName }}
+              </el-link>
             </template>
           </el-table-column>
           <el-table-column prop="createTime"
@@ -195,7 +211,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination small
+        <el-pagination
                        layout="total, sizes, prev, pager, next, jumper"
                        @size-change="handleSizeChange"
                        @current-change="handleCurrentChange"
@@ -313,7 +329,10 @@ export default {
       dataBaseData: {
         pageSize: 10,
         pageNo: 1,
-        times: [],
+        // times: [],
+        //时间查询范围
+        startTime:'',
+        endTime:'',
         condition: {
           permissionApplyName: '',
           createUserName: '',
@@ -391,12 +410,12 @@ export default {
     },
     // 查询
     goQuery () {
-      if (this.dataBaseData.times && this.dataBaseData.times.length > 0) {
-        let startTime = new Date(this.dataBaseData.times[0]);
-        let endTime = new Date(this.dataBaseData.times[1]);
-        this.dataBaseData.condition.permissionApplyStartTime = formatDate(startTime);
-        this.dataBaseData.condition.permissionApplyEndTime = formatDate(endTime);
-      }
+      // if (this.dataBaseData.times && this.dataBaseData.times.length > 0) {
+      //   let startTime = new Date(this.dataBaseData.times[0]);
+      //   let endTime = new Date(this.dataBaseData.times[1]);
+      //   this.dataBaseData.condition.permissionApplyStartTime = formatDate(startTime);
+      //   this.dataBaseData.condition.permissionApplyEndTime = formatDate(endTime);
+      // }
       queryAllOperatePermissionApply(this.dataBaseData).then(resp => {
         if (resp.data) {
           this.tableData = resp.data.records;
@@ -434,6 +453,10 @@ export default {
     goDelete () {
       if (this.selected.length == 0) {
         this.$notify.warning('未选择要删除的对象');
+        return;
+      }
+      if (this.selected[0].workFlowState != '0') {
+        this.$notify.warning('办理中或办理完成的业务不可删除');
         return;
       }
       let operatePermissionApplyUuidList = [];
@@ -497,7 +520,7 @@ export default {
       this.dialogFlowItemShow = val;
     },
     // 导出
-    goExport () {
+      goExport () {
     }
     ,
     // 流程查看

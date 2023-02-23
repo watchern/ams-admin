@@ -1,13 +1,13 @@
 <template>
     <div>
-        <el-form :model="personalSpace"
+        <el-form  :label-position="labelPosition" :model="personalSpace"
                  class="demo-ruleForm"
                  label-width="80px">
             <el-form-item label="申请名称" class="item-b">
                 <el-input v-model="personalSpace.personalSpaceName"
                           placeholder="申请名称"></el-input>
             </el-form-item>
-            <el-form-item label="扩容容量" class="item-b">
+            <el-form-item label="扩容容量" class="item-b topLabel">
                 <div style="display: flex">
                     <el-input v-model="personalSpace.personalSpaceCapacity"
                               placeholder="扩容容量"
@@ -37,10 +37,11 @@
         </el-form>
         <el-row type="flex"
                 justify="end">
+          <el-button
+                     @click="closeUpdateDialog">关闭</el-button>
           <el-button type="primary"
                      @click="onUpdate">保存</el-button>
-          <el-button type="primary"
-                     @click="closeUpdateDialog">关闭</el-button>
+
         </el-row>
     </div>
 </template>
@@ -57,6 +58,7 @@
         },
         data(){
             return{
+              labelPosition:"top",
                 personalSpace: {
                     personalSpaceName: '',
                     personalSpaceApplication: '',
@@ -123,7 +125,7 @@
         ::v-deep .el-form-item__label {
             text-align: right;
             vertical-align: middle;
-            float: left !important;
+            //float: left !important;
         }
     }
 </style>

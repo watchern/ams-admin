@@ -16,6 +16,14 @@ import Element from 'element-ui'
 // import Skeleton from 'element-ui'
 // import './styles/element-variables.scss'//原默认
 
+// 监听尺寸变化
+import ElementResizeDetectorMaker from "element-resize-detector";
+Vue.prototype.$erd = ElementResizeDetectorMaker();
+
+// 公用搜索组件
+import SearchCommon from './components/queryTags'
+Vue.component('SearchCommon', SearchCommon)
+
 
 import "./styles/common.scss"
 import 'font-awesome/css/font-awesome.min.css'

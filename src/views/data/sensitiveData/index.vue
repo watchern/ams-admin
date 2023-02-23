@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div class="pd20">
-
+      <div class="filter-container">
       <div class="query-field">
         <el-form :inline="true"
                  :model="query"
@@ -18,29 +18,34 @@
                       clearable></el-input>
           </el-form-item>
 
-          <el-form-item label="创建时间：">
-            <el-date-picker v-model="createTime"
-                            type="daterange"
-                            range-separator="至"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期"
-                            @change="getTime">
-            </el-date-picker>
-          </el-form-item>
-
+<!--          <el-form-item label="创建时间：">-->
+<!--            <el-date-picker v-model="createTime"-->
+<!--                            type="daterange"-->
+<!--                            range-separator="-"-->
+<!--                            start-placeholder="开始日期"-->
+<!--                            end-placeholder="结束日期"-->
+<!--                            @change="getTime">-->
+<!--            </el-date-picker>-->
+<!--          </el-form-item>-->
+          <el-form-item label="创建时间范围："
+                                        prop="createTime"
+                                        style="display: inline-block;">
+          <el-date-picker v-model="dataBaseData.startTime"
+                          type="datetime"
+                          placeholder="开始时间"
+                          value-format="yyyy-MM-dd HH:mm:ss" />
+          <el-date-picker v-model="dataBaseData.endTime"
+                          type="datetime"
+                          placeholder="结束时间"
+                          value-format="yyyy-MM-dd HH:mm:ss" />
+        </el-form-item>
           <el-form-item>
-
             <el-button type="primary"
-                       size="small"
                        @click="goQuery">查询</el-button>
             <el-button type="primary"
-                       size="small"
                        @click="reset">重置</el-button>
-
           </el-form-item>
-
         </el-form>
-
       </div>
 
       <div class="mb10">
@@ -57,29 +62,30 @@
                    alt="">
               新增
             </el-button>
-            <el-button size="mini"
-                       type="primary"
+
+            <el-button type="primary"
                        class="oper-btn"
-                       @click="edit"><img src="../../../styles/image/edits.png"
-                   class="btn_icon icon1"
-                   alt="">修改</el-button>
-            <el-button size="mini"
-                       class="oper-btn"
+                       @click="edit">
+              <img src="../../../styles/image/edits.png"
+                   class="btn_icon"
+                   alt="">
+              编辑</el-button>
+            <el-button class="oper-btn"
                        type="primary"
                        @click="goDelete"><img src="../../../styles/image/delete.png"
-                   class="btn_icon icon1"
+                   class="btn_icon"
                    alt="">删除</el-button>
-
           </el-col>
         </el-row>
       </div>
 
       <!-- 列表 -->
-      <el-table :data="tableData"
+      <el-table
+                v-loading="loading"
+                :data="tableData"
                 border
                 style="width: 100%"
                 stripe
-                v-loading="loading"
                 row-key="id"
                 height="calc(100vh - 300px)"
                 @selection-change="handleSelectionChange">
@@ -126,11 +132,12 @@
                          show-overflow-tooltip
                          width="200px"></el-table-column>
       </el-table>
+      </div>
       <el-pagination layout="total, sizes, prev, pager, next, jumper"
                      @size-change="handleSizeChange"
                      @current-change="handleCurrentChange"
                      :total="dataBaseData.total"
-                     class="page-content"></el-pagination>
+                     ></el-pagination>
     </div>
 
     <!-- 新增弹窗 -->
@@ -198,10 +205,10 @@ export default {
         this.dataBaseData.total = res.data.total;
       });
     },
-    getTime (date) {
-      this.dataBaseData.startTime = date[0];
-      this.dataBaseData.endTime = date[1];
-    },
+    // getTime (date) {
+    //   this.dataBaseData.startTime = date[0];
+    //   this.dataBaseData.endTime = date[1];
+    // },
     // 查询
     goQuery () {
       this.init();
@@ -245,7 +252,7 @@ export default {
         });
       } else {
         this.$message({
-          message: "只能选择一条数据进行修改",
+          message: "只能选择一条数据删除",
           type: "warning",
         });
       }
@@ -267,7 +274,7 @@ export default {
         });
       } else {
         this.$message({
-          message: "只能选择一条数据进行修改",
+          message: "请选择一条数据进行修改",
           type: "warning",
         });
       }
@@ -346,9 +353,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.page-content {
-  padding-left: 15px;
-}
+/*.buttom-page-content {*/
+/*  display:flex;*/
+/*  justify-content: center;*/
+/*  padding-top: 25px;*/
+
+/*}*/
 
 /*修改文本框样式*/
 // .detail-form ::v-deep .el-textarea .el-textarea__inner {

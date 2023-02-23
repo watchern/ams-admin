@@ -2314,7 +2314,7 @@ export default {
 }
 
 .data_res >>> .el-form-item--medium .el-form-item__label {
-  float: left !important;
+  /*float: left !important;*/
   text-align: right;
 }
 .son >>> .el-form-item,

@@ -203,6 +203,7 @@ import MyElTree from "@/components/public/tree/src/tree.vue";
 import { getAllScene, initSceneTree, queryOrgTree } from "@/api/data/scene";
 import { saveRoleGrp, getRoleGrp, getById } from "@/api/data/role";
 import { commonNotify } from "@/utils";
+import {parseDateTimeFromString} from "@ag-grid-community/core/dist/es6/utils/date";
 export default {
   components: { MyElTree },
   data() {
@@ -309,6 +310,9 @@ export default {
       }
       if(this.temp.endTime === null || this.temp.endTime === undefined || this.temp.endTime === ""){
         return this.$message({ type: "error", message: "请填写结束时间" });
+      }
+      if (parseDateTimeFromString(this.temp.endTime) < new Date()){
+        return this.$message({ type: "error", message: "结束时间不可以早于当前时间" });
       }
       this.tableData[tableId-1].startTime = this.temp.startTime
       this.tableData[tableId-1].endTime = this.temp.endTime

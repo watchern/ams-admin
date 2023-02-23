@@ -76,7 +76,7 @@
             <el-input type="textarea"
                       v-model="operatePermissionApply.applyRemark"
                       placeholder="请输入内容"
-                      :rows="6"
+                      :rows="4"
                       :disabled="addOrUpdate == 2"></el-input>
           </el-form-item>
         </el-col>
@@ -267,7 +267,7 @@ import Cookies from 'js-cookie';
 import { getDictList } from "@/utils";
 import { listByPage } from "@/api/data/role";
 import Pagination from '@/components/Pagination'
-import { formatDate } from "ams-etlscheduler-hx/src/components/etl/filter/filter"; // secondary package based on el-pagination
+import { formatDate } from "ams-etlscheduler-hx/src/components/etl/filter/filter";
 
 export default {
   name: "dataPermissionAdd",
@@ -280,6 +280,13 @@ export default {
     Pagination
   },
   data () {
+    var checkDate = (rule, value, callback) => {
+      if (value && value[1] < new Date()){
+        callback(new Error('结束时间不可以早于当前时间'));
+      }else {
+        callback();
+      }
+    };
     return {
       tableData: [],
       // tree节点配置
@@ -322,7 +329,7 @@ export default {
         permissionApplyName: [{ required: true, message: "请输入", trigger: "blur" }],
         createUserName: [{ required: true, message: "请选择", trigger: "change" }],
         type: [{ required: true, message: "请选择", trigger: "change" }],
-        times: [{ required: true, message: "请输入", trigger: "blur" }],
+        times: [{ required: true, message: "请选择", trigger: "blur" },{ validator: checkDate, trigger: "blur" }],
         loginname: [{ required: true, message: "请输入", trigger: "blur" }],
         loginpassword: [{ required: true, message: "请输入", trigger: "blur" }],
         port: [{ required: true, message: "请输入", trigger: "change" }],

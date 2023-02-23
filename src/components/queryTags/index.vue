@@ -1,37 +1,70 @@
 <template>
-  <div style="width:100%;position:relative">
-    <!-- 父盒子 -->
-    <div class="father_box"
-         @click="onclick">
-      <!-- 生成的标签 -->
-      <div v-for="(item, index) in TagsAll"
-           :key="index"
-           class="spanbox">
-        <span class="tagspan">{{ item.name }}{{ item.value }}</span>
-        <i class="span_close"
-           @click="removeTag(index, item)"></i>
-      </div>
+  <div class="padding10 _width">
 
-      <!-- 输入框 -->
-      <!-- @keyup.enter="addTags" -->
-      <el-input placeholder="请输入查询的内容然后选择查询的类别"
-                v-model="currentval"
-                @keyup.delete="deleteTags"
-                :style="inputStyle"
-                class="inputTag"
-                ref="inputTag"
-                type="text" />
-    </div>
-    <div v-if="currentval && dropDown.length > 0"
-         class="dropDownBox">
-      <div v-for="(item, index) in dropDown"
-           :key="index"
-           class="dropDownItem"
-           @click="addTags(item)">
-        <div class="dropDownTitel">{{ item.name }}:</div>
-        {{ currentval }}
+    <!-- <el-row :gutter="20"> -->
+    <!-- <el-col :span="12"
+              :offset="6"> -->
+    <div class="search_center">
+      <div class="search_conter">
+        <!-- 父盒子 -->
+        <div class="father_box"
+             @click="onclick">
+          <!-- 生成的标签 -->
+          <!-- :class="TagsAll.length == 0 ?'dw':''" -->
+          <!-- :style="{right:( this.TagsAll.length !== 0 ? this.left_width + 'px' :'')}" -->
+          <!-- :style="{ right: this.left_width + 'px',maxWidth: '395px'}" -->
+
+          <div class="left">
+            <div class="TagsAll_conter"
+                 :style="{maxWidth: maxWidths}"
+                 ref="TagsAll">
+              <div v-for="(item, index) in TagsAll"
+                   :key="index"
+                   :id="'arr'+[index]"
+                   class="spanbox">
+                <span class="tagspan">{{ item.name }}{{ item.value }}</span>
+                <i class="span_close"
+                   @click="removeTag(index, item)"></i>
+              </div>
+            </div>
+
+            <!-- 输入框 -->
+            <!-- @keyup.enter="addTags" -->
+            <!-- :style="inputStyle" -->
+            <!-- :style="{left:this.input_left + 'px'}" -->
+            <!-- :class="TagsAll !== []?'is_margin_top':''" -->
+            <el-input v-model="currentval"
+                      @keyup.delete="deleteTags"
+                      class="inputTag"
+                      ref="inputTag"
+                      :class="TagsAll !== []?'is_margin_top':''"
+                      :style="{width:this.minWIdth + 'px'}"
+                      type="text" />
+          </div>
+
+          <i class="el-icon-search searchbtn"
+             @click="search()"></i>
+          <i class="el-icon-close clear_search"
+             @click="clear_search()"></i>
+
+        </div>
+
+        <div v-if="currentval && dropDown.length > 0"
+             class="dropDownBox">
+          <div v-for="(item, index) in dropDown"
+               :key="index"
+               class="dropDownItem"
+               @click="addTags(item)">
+            <div class="dropDownTitel">{{ item.name }}:</div>
+            {{ currentval }}
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- </el-col> -->
+    <!-- </el-row> -->
+
   </div>
 </template>
 
@@ -49,12 +82,12 @@ export default {
       // 最多生成标签数，这里可以设置最多生成的标签数量
       type: Number,
     },
-    // dropDownData: {
-    //   type: Array,
-    //   default () {
-    //     return [];
-    //   },
-    // },
+    dropDown: {
+      type: Array,
+      default () {
+        return [];
+      },
+    },
   },
   data () {
     return {
@@ -62,36 +95,11 @@ export default {
       TagsAll: [],
       inputLength: "",
       serachParams: {},
-      dropDown: [
-        // "表名", "表中文名", "系统", "主题", "分层", "字段",
-        {
-          code: 'tableName',
-          name: '表名',
-          value: []
-        },
-        {
-          code: 'tableCnName',
-          name: '表中文名',
-          value: []
-        },
-        // {
-        //   code: 'businessName',
-        //   name: '系统'
-        // },
-        // {
-        //   code: 'themeName',
-        //   name: '主题'
-        // },
-        // {
-        //   code: 'layeredName',
-        //   name: '分层'
-        // },
-        {
-          code: 'columnName',
-          name: '字段',
-          value: []
-        },
-      ],
+      left_width: '',//左侧搜索词 容器
+      input_left: "",//右侧输入框距离左侧距离
+      minWIdth: 580,
+      maxWidths: '',
+
     };
   },
   watch: {
@@ -101,7 +109,7 @@ export default {
     currentval (val) {
       // 
       // 实时改变input输入框宽度，防止输入内容超出input默认宽度显示不全
-      this.inputLength = this.$refs.inputTag.value.length * 12 + 50;
+      // this.inputLength = this.$refs.inputTag.value.length * 12 + 50;
     },
     parentArr () {
       this.TagsAll = this.parentArr.length ? this.parentArr : [];
@@ -121,8 +129,47 @@ export default {
   mounted () {
     this.TagsAll = this.parentArr;
     // this.dropDown = this.dropDownData;
+    this.watch_width();//监听输入框宽度
   },
+
   methods: {
+    watch_width () {
+      const elementResizeDetectorMaker = require("element-resize-detector");
+      const erd = elementResizeDetectorMaker()
+      const that = this
+      erd.listenTo(document.querySelector('.TagsAll_conter'), function (element) {
+        that.input_left = element.offsetWidth
+        // console.log(that.input_left);
+
+        if (that.input_left >= 395) {
+          that.maxWidths = 395 + 'px'
+          that.minWIdth = 185
+        } else {
+          that.minWIdth = (580 - that.input_left)
+        }
+      })
+    },
+
+
+    // 查询
+    search () {
+      // this.$emit("search", this.serachParams);
+      this.$emit("search", this.TagsAll);
+    },
+    // 重置
+    clear_search () {
+      this.TagsAll = [];
+      this.serachParams = {}
+      // 如果内容清空后 返回默认位置
+      console.log(this.TagsAll.length);
+      if (this.TagsAll.length == 0) {
+        // this.left_width = 0;
+        this.input_left = 0;
+        // this.$refs.TagsAll.$el.style.right = "0px"
+        // this.$refs.inputTag.$el.style.left = "0px"
+      }
+      // this.$emit("clearSearch_click", this.TagsAll, this.serachParams);
+    },
 
     //回车-- 增加tag
     addTags (val) {
@@ -155,7 +202,7 @@ export default {
       } else {
         this.$message({ type: "warning", message: "请选择一条类型" });
       }
-
+      this.watch_width();
     },
     // 点击删除
     removeTag (index, item) {
@@ -173,6 +220,11 @@ export default {
             this.serachParams[this.TagsAll[a].code] = arrs.join(',')
           }
         }
+      }
+      // 如果内容清空后 返回默认位置
+      if (this.TagsAll == []) {
+        this.left_wid = '';
+        this.input_left = '';
       }
     },
 
@@ -203,9 +255,13 @@ export default {
 </script>
 
 <style scoped>
+.search_conter {
+  margin: 0 auto;
+  position: relative;
+  width: 700px;
+}
 /* 外层div */
 .father_box {
-  /* width: 300px; */
   box-sizing: border-box;
   background-color: white;
   border: 1px solid #dcdee2;
@@ -214,21 +270,67 @@ export default {
   text-align: left;
   word-wrap: break-word;
   overflow: hidden;
-  padding: 0 4px;
+  padding: 2px 108px 2px 4px;
   box-sizing: border-box;
+  border-radius: 25px;
+  height: 47px;
 }
+/* 隐藏搜索滚动条  */
+.father_box ::-webkit-scrollbar {
+  display: none;
+}
+.father_box::-webkit-scrollbar {
+  width: 0 !important;
+}
+.father_box {
+  -ms-overflow-style: none;
+}
+.father_box {
+  overflow: -moz-scrollbars-none;
+}
+/* 隐藏搜索滚动条 end */
+
+.left {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  float: left;
+  position: relative;
+}
+.TagsAll_conter {
+  position: absolute;
+  left: 0;
+  top: 1px;
+  height: 39px;
+  float: left;
+  /* border: 1px solid blue; */
+  /* width: auto;
+  overflow-x: auto; */
+  width: auto;
+  white-space: nowrap;
+  overflow: hidden;
+}
+/* .dw {
+  width: 0 !important;
+} */
 /* 标签 */
 .spanbox {
-  display: inline-block;
+  /* display: inline-block; */
   font-size: 14px;
-  margin: 3px 4px 3px 0;
+  margin: 0px 4px 0px 0;
   background-color: rgb(229, 229, 229);
   border: 1px solid #e8eaec;
-  border-radius: 3px;
+  border-radius: 25px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  float: left;
 }
 .tagspan {
-  height: 24px;
-  line-height: 22px;
+  height: 37px;
+  line-height: 37px;
   max-width: 99%;
   position: relative;
   display: inline-block;
@@ -239,17 +341,15 @@ export default {
   opacity: 1;
   vertical-align: middle;
   overflow: hidden;
-  transition: 0.25s linear;
   color: #666;
   font-weight: 400;
-
   transition: all 0.3s;
 }
-.tagspan:hover {
+.spanbox:hover {
   border: 1px solid #999;
 }
 .span_close {
-  padding: 0 4px 0 4px;
+  padding: 0 5px 0 4px;
   opacity: 1;
   -webkit-filter: none;
   filter: none;
@@ -265,18 +365,24 @@ export default {
 }
 /* input */
 .inputTag {
+  /* width: 580px; */
+  /* min-width: 105px; */
+  position: absolute;
+  right: 0px;
+  top: 0;
   font-size: 16px;
   border: none;
   box-shadow: none;
   outline: none;
   background-color: transparent;
   padding: 0;
-  width: auto;
-  min-width: 350px;
+  /* width: auto; */
+  /* min-width: 350px; */
   vertical-align: top;
-  height: 32px;
+  height: 36px;
   color: #495060;
   line-height: 32px;
+  float: left;
 }
 .inputTag >>> .el-input__inner {
   border: none !important;
@@ -292,8 +398,8 @@ export default {
   box-shadow: 0 10px 10px 0 rgb(0 0 0 / 10%);
   overflow: auto;
   position: absolute;
-  z-index: 99;
-  border-radius: 10px;
+  z-index: 2000;
+  border-radius: 15px;
 }
 .dropDownItem {
   height: 30px;
@@ -308,8 +414,57 @@ export default {
 }
 .dropDownTitel {
   display: inline-block;
-  width: 80px;
+  width: 110px;
   text-align: right;
-  margin-right: 20px;
+  margin-right: 10px;
+}
+.searchbtn {
+  position: absolute;
+  right: 3px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  /* border: 1px solid; */
+  border-radius: 27px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: rgb(0 0 0 / 30%);
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.clear_search {
+  position: absolute;
+  right: 42px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-right: 1px solid rgb(0 0 0 / 30%);
+  width: 40px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: rgb(0 0 0 / 30%);
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.searchbtn:hover,
+.clear_search:hover {
+  color: rgb(0 0 0 / 50%) !important;
+}
+
+.inputTag >>> .el-input__inner {
+  border-radius: 25px;
+  padding: 0 !important;
+}
+.is_margin_top {
+  margin-top: 2px !important;
+}
+
+.inputTag >>> .el-input__inner {
+  /* border: 1px solid red !important; */
 }
 </style>

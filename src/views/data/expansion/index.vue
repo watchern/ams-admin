@@ -1,12 +1,13 @@
 <template>
   <div class="page-container">
+
     <div class="pd20">
       <div class="header_Filter searchBlock query-field">
         <el-row>
           <el-form :inline="true"
                    :model="personalSpace"
                    class="demo-form-inline">
-            <el-form-item label="申请名称:">
+            <el-form-item label="申请名称：">
               <el-input v-model="personalSpace.personalSpaceName"
                         placeholder="申请名称"></el-input>
             </el-form-item>
@@ -14,7 +15,7 @@
               <el-input v-model="personalSpace.personalSpaceApplication"
                         placeholder="申请人"></el-input>
             </el-form-item>
-            <el-form-item label="列表类型:">
+            <el-form-item label="列表类型：">
               <el-select v-model="personalSpace.personalSpaceType"
                          placeholder="状态选择">
                 <el-option label="草稿"
@@ -25,7 +26,7 @@
                            value="办理完成"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="申请时间范围:">
+            <el-form-item label="申请时间范围：">
               <el-date-picker v-model="personalSpace.personalSpaceDate"
                               type="datetimerange"
                               format="yyyy-MM-dd"
@@ -44,7 +45,6 @@
           </el-form>
         </el-row>
       </div>
-      <!-- <div class="buttonExpan padding10"> -->
       <div class="mb10">
         <el-row>
           <el-col align="right">
@@ -122,28 +122,75 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination @size-change="handleSizeChange"
-                     @current-change="handleCurrentChange"
-                     :current-page="query.pageNo"
-                     :page-sizes="[5, 10, 15, 20]"
-                     :page-size="query.pageSize"
-                     layout="total, sizes, prev, pager, next, jumper"
-                     :total="dataTotal">
-      </el-pagination>
+      <el-row>
+        <el-pagination @size-change="handleSizeChange"
+                       @current-change="handleCurrentChange"
+                       background
+                       :current-page="query.pageNo"
+                       :page-sizes="[5, 10, 15, 20]"
+                       :page-size="query.pageSize"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="dataTotal"
+                       class="pagination">
+        </el-pagination>
+      </el-row>
 
       <!--     添加弹窗-->
       <el-dialog title="个人空间申请"
-                 :visible.sync="openInsertDialog"
-                 :close-on-click-modal="false"
-                 :close-on-press-escape="false">
-        <el-form :model="personalSpace"
+                 :visible.sync="openInsertDialog">
+        <el-form :label-position="labelPosition"
+            :model="personalSpace"
                  class="demo-ruleForm"
                  label-width="80px"
                  :rules="rules"
                  width="60%"
                  ref="form">
 
-          </el-row>
+          <el-form-item label="申请名称"
+                        class="item-b"
+                        prop="personalSpaceName">
+            <el-input class="item-b-input"
+                      v-model="personalSpace.personalSpaceName"
+                      placeholder="申请名称"></el-input>
+          </el-form-item>
+          <el-form-item label="扩容容量"
+                        class="item-b"
+                        prop="personalSpaceCapacity">
+            <div style="display: flex">
+              <el-input v-model="personalSpace.personalSpaceCapacity"
+                        placeholder="扩容容量"
+                        type="number"
+                        :max="1024"
+                        :min="0"
+                        @input="inputChange"
+                        style="width: 80%"></el-input>
+              <el-select v-model="personalSpaceCapacityNeed"
+                         placeholder="容量单位"
+                         style="margin-left: 10px">
+                <el-option label="GB"
+                           value="GB"></el-option>
+                <el-option label="MB"
+                           value="MB"></el-option>
+                <el-option label="KB"
+                           value="KB"></el-option>
+              </el-select>
+            </div>
+          </el-form-item>
+          <!--        <el-form-item label="审批人">-->
+          <!--          <el-input v-model="personalSpace.personalSpaceApproving"-->
+          <!--                    placeholder="选择审批人"-->
+          <!--                    style="width: 670px"></el-input>-->
+          <!--          <el-button type="primary">选择</el-button>-->
+          <!--        </el-form-item>-->
+        </el-form>
+        <el-row type="flex"
+                justify="end">
+          <el-button
+              @click="closeInsertDialog">关闭</el-button>
+          <el-button type="primary"
+                     @click="onSubmit">保存</el-button>
+
+        </el-row>
       </el-dialog>
       <!--    修改弹窗-->
       <el-dialog title="个人空间申请"
@@ -213,14 +260,13 @@
         </div>
         <span class="sess-flowitem"
               slot="footer">
+            <el-button size="mini"
+                       @click="dialogFlowItemShow = false">关闭</el-button>
           <el-button size="mini"
                      type="primary"
                      class="table_header_btn"
                      @click="saveOpinion">提交</el-button>
-          <el-button size="mini"
-                     type="primary"
-                     class="table_header_btn"
-                     @click="dialogFlowItemShow = false">关闭</el-button>
+
         </span>
       </el-dialog>
       <!--流程跟踪弹窗-->
@@ -266,6 +312,7 @@ export default {
   },
   data () {
     return {
+      labelPosition:"top",
       personalSpace: {
         personalSpaceName: "", //个人空间申请名称
         personalSpaceApplication: "", //申请人
@@ -356,68 +403,26 @@ export default {
           this.dataTotal = res.data.total;
           this.query.pageSize = res.data.size;
           this.query.pageNo = res.data.current;
+          this.clearParams();
         })
         .catch((err) => { });
     },
     exportAllData () {
-      if (this.personalSpaceUuidList.length == undefined ||
-        this.personalSpaceUuidList.length == 0
+      if (
+        this.personalSpaceUuidList.length == 0 ||
+        this.personalSpaceUuidList.length == undefined
       ) {
         this.$confirm("未选择指定数据将导出全部?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         }).then(() => {
-          this.$axios
-            .get("/data/personalSpace/exportAllPersonalSpace", {
-              responseType: "blob",
-              headers: {
-                "ContentType": 'application/x-www-form-urlencoded'
-              }
-            })
-            .then((res) => {
-              const filename = decodeURI(
-                res.headers["content-disposition"].split(";")[1].split("=")[1]
-              );
-              const blob = new Blob([res.data], {
-                type: "application/octet-stream",
-              });
-              const url = window.URL.createObjectURL(blob);
-              const link = document.createElement("a");
-              link.style.display = "none";
-              link.href = url;
-              link.setAttribute("download", filename);
-              document.body.appendChild(link);
-              link.click();
-            });
-          // exportAllPersonalSpace();
+          exportAllPersonalSpace();
         });
       } else {
         setPersonalSpaceSession(this.personalSpaceUuidList).then((res) => {
           if (res.msg == "成功") {
-            this.$axios
-              .get("/data/personalSpace/exportAllPersonalSpace", {
-                responseType: "blob",
-                headers: {
-                  "ContentType": 'application/x-www-form-urlencoded'
-                }
-              })
-              .then((res) => {
-                const filename = decodeURI(
-                  res.headers["content-disposition"].split(";")[1].split("=")[1]
-                );
-                const blob = new Blob([res.data], {
-                  type: "application/octet-stream",
-                });
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement("a");
-                link.style.display = "none";
-                link.href = url;
-                link.setAttribute("download", filename);
-                document.body.appendChild(link);
-                link.click();
-              });
-            // exportAllPersonalSpace();
+            exportAllPersonalSpace();
           }
         });
       }
@@ -560,10 +565,6 @@ export default {
     },
     //提交按钮
     handleEvent () {
-      if (this.personalSpaceSelectionList.length == 0) {
-        this.$notify.warning("请选择要提交的数据");
-        return;
-      }
       if (this.personalSpaceSelectionList.length > 1) {
         this.$notify.warning("一次只能提交一条数据");
         return;
@@ -649,10 +650,6 @@ export default {
       batchUpdateForHandle(this.personalSpaceSelectionList).then((res) => {
         this.initPersonalSpaceData();
       });
-    },
-    searchData () {
-      this.query.pageNo = 1
-      this.initPersonalSpaceData()
     }
   },
 };
@@ -679,20 +676,10 @@ export default {
   ::v-deep .el-form-item__label {
     text-align: right;
     vertical-align: middle;
-    float: left !important;
+    //float: left !important;
   }
 }
 .pagination {
   padding-left: 15px;
-}
-</style>
-<style scoped>
-.searchBlock >>> .el-range-editor--medium.el-input__inner .el-range-input {
-  height: 32px;
-  width: 100px;
-}
-.searchBlock >>> .el-date-editor {
-  width: 240px;
-  height: 32px;
 }
 </style>
