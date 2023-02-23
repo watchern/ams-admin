@@ -1,8 +1,5 @@
 <template>
-
-  <div class="app-container max_width"
-       style="width:100%;">
-
+  <div class="app-container max_width" style="width:100%;">
     <el-tabs v-model="activeName"
              type="card"
              @tab-click="handleClick">
@@ -55,12 +52,9 @@
                          :value="item.value" />
             </el-select>
           </div>
-
         </el-form-item>
       </el-form>
-
     </div>
-
     <div v-if="loading== true"
          class="loading padding10 max_width"
          style="position: inherit;">
@@ -70,10 +64,8 @@
                alt=""></span>
       </div>
     </div>
-
     <!-- 系统 主题 分层  目录-->
-    <div class="tree-containerall padding10 max_width"
-         v-if="loading== false">
+    <div class="tree-containerall padding10 max_width" v-if="loading== false">
       <MyElTree ref="tree1"
                 :props="props"
                 class="filter-tree"
@@ -95,8 +87,7 @@
              class="el-icon-s-home"
              style="color: #409eff" />
           <!-- class="el-icon-folder" style="color:#409EFF" / -->
-          <i
-             v-if="data.type === 'folder' || data.type === 'system' || data.type === 'layered' || data.type === 'theme'">
+          <i v-if="data.type === 'folder' || data.type === 'system' || data.type === 'layered' || data.type === 'theme'">
             <img src="../../../assets/img/table_0.png"
                  style="
                 height: 16px;
@@ -190,7 +181,6 @@ import {
   delTable,
   listByTreePage,//列表
 } from "@/api/data/table-info";
-
 import MyElTree from "@/components/public/tree/src/tree.vue";
 import {
   getResELTree,
@@ -199,9 +189,6 @@ import {
   saveRoleTable,
   getTableCol,
 } from "@/api/data/table-info";
-import { commonNotify } from "@/utils";
-import { truncate } from "fs";
-import { log } from 'console';
 
 export default {
   components: { MyElTree },
@@ -308,13 +295,11 @@ export default {
   },
   created () {
     this.query.businessSystemId = "";
-    this.post_getBusinessSystemTree();//系统
-
     if (this.dataSource) {
       this.query.dataSource = this.dataSource;
     }
-    this.$emit("queryListData", this.query, this.show_details = false)
-
+    this.post_getBusinessSystemTree();//系统
+    this.$emit("queryListData", this.query, this.show_details = false);
   },
   methods: {
     // 系统
@@ -363,7 +348,6 @@ export default {
     //     // this.openlist = ["ROOT"];
     //   });
     // },
-
     // tab切换
     handleClick (tab, event) {
       if (tab.index == '0') {
@@ -407,9 +391,7 @@ export default {
       //   this.post_getDataTreeNode();//目录
       // }
       // }
-
     },
-
     selectdat_2 (val) {
       if (val !== this.form.tableLayeredName) {
         this.$message({
@@ -435,10 +417,7 @@ export default {
         //   this.post_getDataTreeNode();//目录
         // }
       }
-
     },
-
-
     // filterNode (value, data) {
     //   if (!value) return true;
     //   return data.label.indexOf(value) !== -1;
@@ -446,7 +425,6 @@ export default {
     filterNode (value, data, node) {
       // if (!value) return true;
       // return data.label.indexOf(value) !== -1;
-
       // 过滤后显示子级
       if (!value) {
         return true;
@@ -460,18 +438,15 @@ export default {
       });
       return result;
     },
-
     // 处理过滤后显示二级++
     getReturnNode (node, _array, value) {
       let isPass = node.data && node.data.label && node.data.label.indexOf(value) !== -1;
       isPass ? _array.push(isPass) : '';
       this.index++;
-
       if (!isPass && node.level != 1 && node.parent) {
         this.getReturnNode(node.parent, _array, value);
       }
     },
-
     getTree () {
       return this.$refs.tree1;
     },
@@ -529,7 +504,6 @@ export default {
               title: e.chnName,
             });
           });
-
           resolve(nodes);
         });
       }

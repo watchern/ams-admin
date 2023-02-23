@@ -326,6 +326,7 @@
                              min-width="60px">
               <template slot-scope="scope">
                 <el-checkbox v-model="scope.row.isHeaderLine"
+                             @change="checkHeaderLine(scope.row.fileName)"
                              true-label="true"
                              false-label="false">
                 </el-checkbox>
@@ -862,6 +863,13 @@ export default {
       this.selectFileInfo = true;
       this.$nextTick(() => {
         this.$refs.tree_left.loadLeftTreeTypeFun("4");
+      })
+    },
+    checkHeaderLine(obj){
+      this.tableData.forEach((item) => {
+        if (obj == item.fileName && item.isHeaderLine == "true"){
+          this.$set(item, "selectTableName", "");
+        }
       })
     },
     //选择补充文件弹窗确认按钮
