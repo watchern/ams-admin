@@ -1321,16 +1321,6 @@ export default {
         });
         return false;
       }
-      // 选择多个数据表
-      // if (this.form.check_list.length >= 2) {
-      //   this.post_getColsInfoByTableName(); //获取列信息
-      //   this.dialogVisible_forms = true;
-      // } else {
-      //   // this.registTableFlag = false;//关闭上一步
-      //   this.dialogVisible_information = true; //显示下一步 基本信息
-      //   this.form.personLiables = []//清空责任人
-      // }
-
       const params = {
         dbName: dbName[0],
         tbNames: tbList,
@@ -1356,7 +1346,7 @@ export default {
         this.next_data = res.data;
       });
       // 判断是批量注册还是单个注册
-      if (this.form.check_list.length >= 2) {
+      if (tbList.length >= 2) {
         this.dialogVisible_forms = true;
       } else {
         this.dialogVisible_information = true;
