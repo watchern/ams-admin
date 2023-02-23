@@ -9,7 +9,7 @@ const BusinessSystem = 'businessSystem'
 
 
 /* 元数据操作*/
-export function listUnCached (requestType, pid, tableName, dataSource) {
+export function listUnCached (requestType, pid, tableName, schemaName, dataSource) {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/listUnCached`,
@@ -18,6 +18,7 @@ export function listUnCached (requestType, pid, tableName, dataSource) {
       requestType: requestType,
       pid: pid,
       tableName: tableName,
+      schemaName: schemaName,
       dataSource: dataSource,
     }
   })

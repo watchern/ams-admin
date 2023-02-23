@@ -104,32 +104,29 @@
             <span style="margin-left: 10px">
               <el-button v-if="loadLeftTreeType==='3' && isPersonSpaceAdminRole && data.type==='folder' &&
                         data.sceneInstUuid==='allBankSpaceFolder'"
-                  title="添加文件夹"
-                  type="text"
-                  size="mini"
-                  class="tree-line-btn"
-                  @click.stop="() => handCreateAllSpaceFolder(node, data)"
-              >
+                         title="添加文件夹"
+                         type="text"
+                         size="mini"
+                         class="tree-line-btn"
+                         @click.stop="() => handCreateAllSpaceFolder(node, data)">
                 <svg-icon icon-class="icon-add-1" />
               </el-button>
               <el-button v-if="loadLeftTreeType==='3' && isPersonSpaceAdminRole && data.type==='folder' &&
                         data.sceneInstUuid==='allBankSpaceFolder' && data.id != 'allBankSpaceFolder'"
-                  title="修改文件夹"
-                  type="text"
-                  size="mini"
-                  class="tree-line-btn"
-                  @click.stop="() => handEditAllSpaceFolder(node, data)"
-              >
+                         title="修改文件夹"
+                         type="text"
+                         size="mini"
+                         class="tree-line-btn"
+                         @click.stop="() => handEditAllSpaceFolder(node, data)">
                 <svg-icon icon-class="icon-edit-1" />
               </el-button>
               <el-button v-if="loadLeftTreeType==='3' && isPersonSpaceAdminRole && data.type==='folder' &&
                         data.sceneInstUuid==='allBankSpaceFolder' && data.id != 'allBankSpaceFolder'"
-                  title="删除文件夹"
-                  type="text"
-                  size="mini"
-                  class="tree-line-btn"
-                  @click.stop="() => handDeleteAllSpaceFolder(node, data)"
-              >
+                         title="删除文件夹"
+                         type="text"
+                         size="mini"
+                         class="tree-line-btn"
+                         @click.stop="() => handDeleteAllSpaceFolder(node, data)">
                 <svg-icon icon-class="icon-delete-1" />
               </el-button>
 
@@ -175,9 +172,11 @@
                     autocomplete="off" />
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer"
+           class="dialog-footer">
         <el-button @click="allSpaceDialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="choosePath()">确 定</el-button>
+        <el-button type="primary"
+                   @click="choosePath()">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -187,10 +186,10 @@
 import { commonNotify } from '@/utils'
 import MyElTree from "@/components/public/tree/src/tree.vue";
 import {
-    getBusinessSystemTree, //系统
-    getThemeTree, //主题
-    getLayeredTree, //分层
-    delTable, delByTableMetaUuid, moveFolder4Authority,
+  getBusinessSystemTree, //系统
+  getThemeTree, //主题
+  getLayeredTree, //分层
+  delTable, delByTableMetaUuid, moveFolder4Authority,
 } from "@/api/data/table-info";
 import {
   getPersonSpaceTree, //个人空间
@@ -199,7 +198,7 @@ import {
   addDragEvent, //树节点拖拽方法
   initSQLEditorTips,// 初始化SQL编辑器智能提示问题
   getLoginUserAdminRole,//获取当前登陆人是否有个人空间管理员角色
-  saveAllSpaceFolder ,//保存文件夹
+  saveAllSpaceFolder,//保存文件夹
   deleteAllSpaceFolder,//删除文件夹
   editAllSpaceFolder,//修改文件夹
 } from "@/api/analysis/sqleditor/sqleditor";
@@ -261,7 +260,7 @@ export default {
       elTabsName: "", //选中的页签名称
       treeNodeSelectedObj: [], //树节点勾选对象
       defaultExpandedKeys: ["ROOT"], //默认展开节点的数组
-      isPersonSpaceAdminRole:false,//是否个人空间管理员
+      isPersonSpaceAdminRole: false,//是否个人空间管理员
       allSpaceFormRules: {
         folderName: [
           {
@@ -279,9 +278,9 @@ export default {
         parentFolderUuid: "",
         sceneInstUuid: "allBankSpaceFolder"//个人空间全行数据
       },
-      allSpaceFormType:"",//判断修改还是新增
-      allSpaceDialogFormVisible:false,
-      isLazyTree:true,//树是否懒加载
+      allSpaceFormType: "",//判断修改还是新增
+      allSpaceDialogFormVisible: false,
+      isLazyTree: true,//树是否懒加载
     };
   },
   computed: {},
@@ -385,19 +384,19 @@ export default {
     },
     //节点开始拖拽时触发的事件
     handleDragStart (node, ev) {
-      // console.log('drag start', node);
+      // 
     },
     //拖拽进入其他节点时触发的事件
     handleDragEnter (draggingNode, dropNode, ev) {
-      // console.log('tree drag enter: ', dropNode.label);
+      // 
     },
     //拖拽离开某个节点时触发的事件
     handleDragLeave (draggingNode, dropNode, ev) {
-      // console.log('tree drag leave: ', dropNode.label);
+      // 
     },
     //在拖拽节点时触发的事件（类似浏览器的 mouseover 事件）
     handleDragOver (draggingNode, dropNode, ev) {
-      // console.log('tree drag over: ', dropNode.label);
+      // 
     },
     //拖拽结束时（可能未成功）触发的事件
     handleDragEnd (draggingNode, dropNode, dropType, ev) {
@@ -412,7 +411,7 @@ export default {
     },
     // 拖拽成功完成时
     handleDrop (draggingNode, dropNode, dropType, ev) {
-      // console.log(draggingNode, dropNode, dropType, ev);
+      // 
     },
     // 懒加载表字段
     async loadNode (node, resolve) {
@@ -420,9 +419,8 @@ export default {
         return resolve(node.data);
       } else if (node.level >= 1) {
         //SQL编辑器、数据注册的表才需要展示字段
-        if (node.data.type === "table" && (this.loadLeftTreeType === "1" || this.loadLeftTreeType==="")) {
-          //个人空间下的表查询字段不需要权限
-          var strLevel = this.activeName
+        if (node.data.type === "table" && (this.loadLeftTreeType === "1" || this.loadLeftTreeType === "")) {
+          var strLevel = this.activeName + this.query.dataSource;
           var nodeList = getTableField(node, this.query.dataSource, this.loadLeftTreeType, strLevel);
           Promise.all([nodeList]).then((res) => {
             resolve(res[0]);
@@ -736,7 +734,7 @@ export default {
       this.treeNodeSelectedObj = data
     },
     //取消树节点勾选状态
-    unLeftTreeSelected(id){
+    unLeftTreeSelected (id) {
       this.$refs.tree2.setChecked(id, false, false);
     },
     handleClick (tab, event) {
@@ -836,11 +834,11 @@ export default {
           this.$emit("details", this.tableMetaUuid, this.show_details, this.isDisable_input);
         }
       } else {
-        if(data.type==='column'){
+        if (data.type === 'column') {
           return false
         }
         //数据资源目录
-        if(data.type==="folder"){
+        if (data.type === "folder") {
           this.query.businessSystemId = "";
           this.query.tableThemeId = "";
           this.query.tableLayeredId = "";
@@ -897,7 +895,7 @@ export default {
           event.clientY,
           data
         );
-        this.$emit("nodeContextmenuSQLEditor",data)
+        this.$emit("nodeContextmenuSQLEditor", data)
       } else {
         return false;
       }
@@ -972,7 +970,7 @@ export default {
                 this.post_getLayeredTree(); //分层
               }
               // 同步删除数据收授权下的资源
-              delByTableMetaUuid(data.id,this.query.dataSource);
+              delByTableMetaUuid(data.id, this.query.dataSource);
             });
           } else {
             delFolder(data.id).then((resp) => {
@@ -1062,16 +1060,16 @@ export default {
       });
     },
     //个人空间模块-全行空间文件夹下创建文件夹
-    handCreateAllSpaceFolder(node,data){
+    handCreateAllSpaceFolder (node, data) {
       this.allSpaceForm.parentFolderUuid = data.id
       this.allSpaceForm.fullPath = data.label
       this.allSpaceDialogFormVisible = true
       this.allSpaceFormType = "add"
     },
     //个人空间模块-全行空间文件夹下修改文件夹
-    handEditAllSpaceFolder(node,data){
+    handEditAllSpaceFolder (node, data) {
       this.allSpaceDialogFormVisible = true
-      
+
       this.allSpaceForm.folderUuid = data.id
       this.allSpaceForm.folderName = data.label
       this.allSpaceForm.fullPath = data.path
@@ -1079,8 +1077,8 @@ export default {
       this.allSpaceFormType = "edit"
     },
     //个人空间模块-全行空间文件夹下删除文件夹
-    handDeleteAllSpaceFolder(node,data){
-      if(data.children.length>0){
+    handDeleteAllSpaceFolder (node, data) {
+      if (data.children.length > 0) {
         this.$notify(
           commonNotify({
             type: "info",
@@ -1099,21 +1097,21 @@ export default {
           })
         );
         this.post_getPersonSpaceTree();
-        
+
       });
 
     },
-    choosePath(){
-      if(this.allSpaceForm.folderName.trim()===''){
+    choosePath () {
+      if (this.allSpaceForm.folderName.trim() === '') {
         return false
       }
       this.allSpaceDialogFormVisible = false
       this.loading = true;
-      if(this.allSpaceFormType==="add"){
+      if (this.allSpaceFormType === "add") {
         saveAllSpaceFolder(this.allSpaceForm).then((resp) => {
           this.loading = false;
           this.allSpaceForm.folderName = ""
-          
+
           this.$notify(
             commonNotify({
               type: "success",
@@ -1121,13 +1119,13 @@ export default {
             })
           );
           this.post_getPersonSpaceTree();
-          
+
         });
-      }else{
+      } else {
         editAllSpaceFolder(this.allSpaceForm).then((resp) => {
           this.loading = false;
           this.allSpaceForm.folderName = ""
-          
+
           this.$notify(
             commonNotify({
               type: "success",
@@ -1135,7 +1133,7 @@ export default {
             })
           );
           this.post_getPersonSpaceTree();
-          
+
         });
       }
     }
@@ -1151,7 +1149,8 @@ export default {
 }
 
 .conter_vh {
-  height: calc(100% - 170px);
+  height: calc(100% - 160px);
+  overflow: auto;
 }
 .conter_vh_size {
   height: calc(100% - 100px);
@@ -1172,11 +1171,11 @@ export default {
   /* position: absolute;
   left: 0;
   bottom: 0; */
-  height: calc(100% - 160px);
+  height: calc(100% - 150px);
   width: 100%;
   z-index: 9;
   background: rgba(106, 106, 106, 0.0862745098);
-  border-radius: 15.5px;
+  border-radius: 15px;
 }
 
 .conter_loadings {
@@ -1184,8 +1183,9 @@ export default {
   height: 100%;
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: blur(10px);
-  background-color: rgba(255, 255, 255, 0.7);
-
+  background: #f4f6f9
+    linear-gradient(134deg, #f6f1ff 0%, #f3f0ff 33%, #ebf5fd 70%, #d0ddf7 100%);
+  border-radius: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1266,5 +1266,8 @@ export default {
   background-image: url("../../styles/icons/view.png");
   vertical-align: top;
   *vertical-align: middle;
+}
+.dataSource .el-form-item {
+  margin-bottom: 0 !important;
 }
 </style>

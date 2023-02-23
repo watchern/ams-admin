@@ -1,156 +1,160 @@
 <template>
-  <div class="sensitiveData">
-    <!-- 搜索 -->
-    <div class="searchBlock">
-      <div class="search">
-        <div class="search-title">规则名称:</div>
-        <div class="search-operation">
-          <el-input
-            v-model="dataBaseData.ruleName"
-            size="small"
-            placeholder="请输入内容"
-            clearable
-          ></el-input>
-        </div>
+  <div class="page-container">
+    <div class="pd20">
+      <div class="filter-container">
+      <div class="query-field">
+        <el-form :inline="true"
+                 :model="query"
+                 label-position="bottom">
+          <el-form-item label="规则名称：">
+            <el-input v-model="dataBaseData.ruleName"
+                      placeholder="请输入内容"
+                      clearable></el-input>
+          </el-form-item>
+
+          <el-form-item label="角色名称：">
+            <el-input v-model="dataBaseData.createUserName"
+                      placeholder="请输入内容"
+                      clearable></el-input>
+          </el-form-item>
+
+<!--          <el-form-item label="创建时间：">-->
+<!--            <el-date-picker v-model="createTime"-->
+<!--                            type="daterange"-->
+<!--                            range-separator="-"-->
+<!--                            start-placeholder="开始日期"-->
+<!--                            end-placeholder="结束日期"-->
+<!--                            @change="getTime">-->
+<!--            </el-date-picker>-->
+<!--          </el-form-item>-->
+          <el-form-item label="创建时间范围："
+                                        prop="createTime"
+                                        style="display: inline-block;">
+          <el-date-picker v-model="dataBaseData.startTime"
+                          type="datetime"
+                          placeholder="开始时间"
+                          value-format="yyyy-MM-dd HH:mm:ss" />
+          <el-date-picker v-model="dataBaseData.endTime"
+                          type="datetime"
+                          placeholder="结束时间"
+                          value-format="yyyy-MM-dd HH:mm:ss" />
+        </el-form-item>
+          <el-form-item>
+            <el-button type="primary"
+                       @click="goQuery">查询</el-button>
+            <el-button type="primary"
+                       @click="reset">重置</el-button>
+          </el-form-item>
+        </el-form>
       </div>
-      <div class="search">
-        <div class="search-title">角色名称:</div>
-        <div class="search-operation">
-          <el-input
-            v-model="dataBaseData.createUserName"
-            size="small"
-            placeholder="请输入内容"
-            clearable
-          ></el-input>
-        </div>
+
+      <div class="mb10">
+        <el-row>
+          <el-col align="right">
+            <el-button type="primary"
+                       class="oper-btn"
+                       @click="add()">
+              <img src="../../../styles/image/add.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/add2.png"
+                   class="btn_icon icon2"
+                   alt="">
+              新增
+            </el-button>
+
+            <el-button type="primary"
+                       class="oper-btn"
+                       @click="edit">
+              <img src="../../../styles/image/edits.png"
+                   class="btn_icon"
+                   alt="">
+              编辑</el-button>
+            <el-button class="oper-btn"
+                       type="primary"
+                       @click="goDelete"><img src="../../../styles/image/delete.png"
+                   class="btn_icon"
+                   alt="">删除</el-button>
+          </el-col>
+        </el-row>
       </div>
-      <div class="search">
-        <div class="search-title">创建时间:</div>
-        <div class="search-operation">
-          <el-date-picker
-            v-model="createTime"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            @change="getTime"
-          >
-          </el-date-picker>
-        </div>
-      </div>
-      <div class="search-btn">
-        <el-button type="primary" @click="goQuery">查询</el-button>
-        <el-button type="primary" @click="reset">重置</el-button>
-      </div>
-    </div>
-    <!-- 列表 -->
-    <div class="listDisplay">
-      <div class="operation">
-        <!-- <div class="num">
-          查询结果 <span>{{ dataBaseData.total }}</span> 条
-        </div> -->
-        <div class="operationBut">
-          <el-button size="mini" type="primary" @click="add">添加</el-button>
-          <el-button size="mini" type="primary" @click="edit">修改</el-button>
-          <el-button size="mini" type="primary" @click="goDelete"
-            >删除</el-button
-          >
-        </div>
-      </div>
+
+      <!-- 列表 -->
       <el-table
-        :data="tableData"
-        border
-        style="width: 100%"
-        stripe
-        v-loading="loading"
-        row-key="id"
-        height="calc(100vh - 309px)"
-        @selection-change="handleSelectionChange"
-      >
+                v-loading="loading"
+                :data="tableData"
+                border
+                style="width: 100%"
+                stripe
+                row-key="id"
+                height="calc(100vh - 300px)"
+                @selection-change="handleSelectionChange">
         <!-- :reserve-selection="true" -->
-        <el-table-column type="selection" width="55"> </el-table-column>
-        <el-table-column
-          prop="ruleName"
-          label="规则名称"
-          show-overflow-tooltip
-          min-width="150px"
-        ></el-table-column>
-        <el-table-column
-          prop="isAtartUp"
-          label="是否启动"
-          align="center"
-          show-overflow-tooltip
-          width="150px"
-        >
+        <el-table-column type="selection"
+                         width="55"> </el-table-column>
+        <el-table-column prop="ruleName"
+                         label="规则名称"
+                         show-overflow-tooltip
+                         min-width="150px"></el-table-column>
+        <el-table-column prop="isAtartUp"
+                         label="是否启动"
+                         align="center"
+                         show-overflow-tooltip
+                         width="150px">
           <template slot-scope="scope">
             <span v-if="scope.row.isAtartUp === 0">否</span>
             <span v-if="scope.row.isAtartUp === 1">是</span>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="secretLevelName"
-          label="数据密级"
-          width="150px"
-          align="center"
-          show-overflow-tooltip
-        ></el-table-column>
-        <el-table-column
-          prop="recognitionRulesName"
-          label="试别规则"
-          width="150px"
-          align="center"
-          show-overflow-tooltip
-        ></el-table-column>
-        <el-table-column
-          prop="createTime"
-          label="创建时间"
-          align="center"
-          show-overflow-tooltip
-          width="200px"
-        >
+        <el-table-column prop="secretLevelName"
+                         label="数据密级"
+                         width="150px"
+                         align="center"
+                         show-overflow-tooltip></el-table-column>
+        <el-table-column prop="recognitionRulesName"
+                         label="试别规则"
+                         width="150px"
+                         align="center"
+                         show-overflow-tooltip></el-table-column>
+        <el-table-column prop="createTime"
+                         label="创建时间"
+                         align="center"
+                         show-overflow-tooltip
+                         width="200px">
           <template slot-scope="scope">
             {{ dateFormatter(scope.row.createTime) }}
           </template>
         </el-table-column>
 
-        <el-table-column
-          prop="createUserName"
-          label="创建人"
-          align="center"
-          show-overflow-tooltip
-          width="200px"
-        ></el-table-column>
+        <el-table-column prop="createUserName"
+                         label="创建人"
+                         align="center"
+                         show-overflow-tooltip
+                         width="200px"></el-table-column>
       </el-table>
-<!--      <div class="pager">-->
-        <el-pagination
-          background
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :total="dataBaseData.total"
-          class="page-content"
-        ></el-pagination>
-<!--      </div>-->
+      </div>
+      <el-pagination layout="total, sizes, prev, pager, next, jumper"
+                     @size-change="handleSizeChange"
+                     @current-change="handleCurrentChange"
+                     :total="dataBaseData.total"
+                     ></el-pagination>
     </div>
+
     <!-- 新增弹窗 -->
-    <el-dialog
-      :visible.sync="showAddDialog"
-      :title="sensitiveTitle"
-      :close-on-click-modal="false"
-      :modal-append-to-body="false"
-      width="40%"
-      class="dialog-add"
-      :close-on-press-escape="false"
-    >
-      <Add
-        @close="closeAddDrawer"
-        :sensitiveObj="sensitiveObj"
-        @ok="addSucceed"
-        v-if="showAddDialog"
-        class="detail-form"
-      ></Add>
+    <el-dialog :visible.sync="showAddDialog"
+               :title="sensitiveTitle"
+               :close-on-click-modal="false"
+               :modal-append-to-body="false"
+               width="40%"
+               class="dialog-add"
+               :close-on-press-escape="false">
+      <Add @close="closeAddDrawer"
+           :sensitiveObj="sensitiveObj"
+           @ok="addSucceed"
+           v-if="showAddDialog"></Add>
     </el-dialog>
   </div>
+
 </template>
 
 <script>
@@ -162,7 +166,7 @@ export default {
     Add,
   },
   props: [],
-  data() {
+  data () {
     return {
       //新增弹窗是否显示
       showAddDialog: false,
@@ -188,11 +192,11 @@ export default {
   },
   computed: {},
   watch: {},
-  mounted() {
+  mounted () {
     this.init();
   },
   methods: {
-    init() {
+    init () {
       this.loading = true;
       this.pageQuery.condition = this.dataBaseData;
       getList(this.pageQuery).then((res) => {
@@ -201,32 +205,32 @@ export default {
         this.dataBaseData.total = res.data.total;
       });
     },
-    getTime(date) {
-      this.dataBaseData.startTime = date[0];
-      this.dataBaseData.endTime = date[1];
-    },
+    // getTime (date) {
+    //   this.dataBaseData.startTime = date[0];
+    //   this.dataBaseData.endTime = date[1];
+    // },
     // 查询
-    goQuery() {
+    goQuery () {
       this.init();
     },
     // 重置
-    reset() {
+    reset () {
       this.dataBaseData = {
         ruleName: "",
         createUserName: "",
         startTime: null,
         endTime: null,
       };
-      this.createTime=[]
+      this.createTime = []
       this.goQuery()
     },
     // 添加
-    add() {
+    add () {
       this.sensitiveTitle = "新增敏感数据识别规则";
       this.showAddDialog = true;
     },
     // 删除
-    goDelete() {
+    goDelete () {
       if (this.multipleSelection.length === 1) {
         this.$confirm("确定删除该条数据?", "提示", {
           confirmButtonText: "确定",
@@ -248,13 +252,13 @@ export default {
         });
       } else {
         this.$message({
-          message: "只能选择一条数据进行修改",
+          message: "只能选择一条数据删除",
           type: "warning",
         });
       }
     },
     // 修改
-    edit() {
+    edit () {
       if (this.multipleSelection.length === 1) {
         getById(this.multipleSelection[0].bizSensitiveUuid).then((res) => {
           if (res.code === 0) {
@@ -270,34 +274,34 @@ export default {
         });
       } else {
         this.$message({
-          message: "只能选择一条数据进行修改",
+          message: "请选择一条数据进行修改",
           type: "warning",
         });
       }
     },
     // 分页
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.dataBaseData.pageSize = val;
       this.init();
     },
     // 分页
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.dataBaseData.pageNo = val;
       this.init();
     },
     // 关闭弹窗
-    closeAddDrawer() {
+    closeAddDrawer () {
       this.showAddDialog = false;
     },
     // 添加保存
-    addSucceed() {
+    addSucceed () {
       this.showAddDialog = false;
       this.init();
     },
-    handleSelectionChange(val) {
+    handleSelectionChange (val) {
       this.multipleSelection = val;
     },
-    dateFormatter(str, time) {
+    dateFormatter (str, time) {
       const datetime = str;
       if (datetime) {
         let dateMat = new Date(datetime);
@@ -349,19 +353,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.page-content{
-  padding-left: 15px;
-}
+/*.buttom-page-content {*/
+/*  display:flex;*/
+/*  justify-content: center;*/
+/*  padding-top: 25px;*/
+
+/*}*/
 
 /*修改文本框样式*/
-.detail-form ::v-deep .el-textarea .el-textarea__inner{
-  border: 1px solid #343942!important;
-  border-radius: 1px;
-}
-.detail-form ::v-deep .el-textarea .el-textarea__inner{
-  border: 1px solid #343942!important;
-  border-radius: 1px;
-}
+// .detail-form ::v-deep .el-textarea .el-textarea__inner {
+//   border: 1px solid #343942 !important;
+//   border-radius: 1px;
+// }
+// .detail-form ::v-deep .el-textarea .el-textarea__inner {
+//   border: 1px solid #343942 !important;
+//   border-radius: 1px;
+// }
 
 /*.detail-form ::v-deep .footBtn{*/
 /*  float: right;*/
@@ -374,5 +381,51 @@ export default {
 /*.detail-form ::v-deep .el-radio__inner.is-checked  {*/
 /*  border: 1px solid #1890ff;*/
 /*}*/
-
 </style>
+<style  scoped>
+.listDisplay {
+  height: calc(100vh - 140px);
+}
+.searchBlock {
+  width: 100%;
+  float: left;
+}
+.search {
+  float: left;
+  display: inline-block;
+  margin-right: 16px;
+  margin-bottom: 8px;
+}
+.searchBlock_left {
+  float: left;
+}
+.search-btn {
+  float: right;
+  width: 170px;
+  text-align: right;
+  display: flex;
+}
+.searchBlock .search-title {
+  width: auto;
+}
+.searchBlock .search-operation {
+  min-width: 180px;
+}
+.searchBlock >>> .el-input__inner {
+  width: 180px;
+}
+.searchBlock >>> .el-range-editor--medium.el-input__inner .el-range-input {
+  height: 32px;
+  width: 100px;
+}
+.searchBlock >>> .el-date-editor {
+  width: 240px;
+  height: 32px;
+}
+.operationBut {
+  padding: 10px;
+  box-sizing: border-box;
+}
+</style>
+
+

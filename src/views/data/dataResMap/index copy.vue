@@ -155,6 +155,7 @@ export default {
 
 .page-container {
   padding: 0 !important;
+  background: transparent !important;
 }
 .page-container >>> #dv-full-screen-container {
   position: inherit;

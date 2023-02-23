@@ -156,7 +156,6 @@
       <el-pagination v-show="page_list.total>0"
                      :total="page_list.total"
                      :current-page="page_list.currentPage"
-                     background
                      @current-change="handleCurrentChange"
                      @size-change="handleSizeChange"
                      layout="total, sizes, prev, pager, next, jumper"></el-pagination>

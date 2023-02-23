@@ -4,25 +4,18 @@
       <LeftMenu @changestyle="changestyle" />
     </div>
     <!-- 内容盒子 -->
-    <div
-      class="home-right flex1 flex a-start j-start flex-column change-box"
-      :style="stylestring"
-    >
-      <div
-        class="breadcrumboutbox"
-        v-if="
+    <div class="home-right flex1 flex a-start j-start flex-column change-box"
+         :style="stylestring">
+      <div class="breadcrumboutbox"
+           v-if="
           breadcrumblist != '' &&
           breadcrumblist != [] &&
           breadcrumblist[0] != '首页' &&
           breadcrumblist[0] != '审计概览'
-        "
-      >
+        ">
         <el-breadcrumb separator="/">
-          <el-breadcrumb-item
-            v-for="(item, i) in breadcrumblist"
-            :key="'breadcrumb' + i"
-            >{{ item }}</el-breadcrumb-item
-          >
+          <el-breadcrumb-item v-for="(item, i) in breadcrumblist"
+                              :key="'breadcrumb' + i">{{ item }}</el-breadcrumb-item>
         </el-breadcrumb>
       </div>
       <div class="home-right-content flex1 w100 skin-home-rc">
@@ -43,18 +36,21 @@
           ></i>
         </el-tooltip> -->
       </div>
-      <div
-        v-if="isShowRightFooter"
-        class="home-right-footer flex-shrink w100"
-        style="height: 0"
-      >
+      <div v-if="isShowRightFooter"
+           class="home-right-footer flex-shrink w100"
+           style="height: 0">
         <RightFooter />
       </div>
     </div>
-    <div class="readonlyTo" v-if="showHelpHeight" v-loading="loading">
-      <div class="readonlyChild" id="readonlyChild"></div>
-      <div @click="showHelpHeight = false" class="readonlyToX">X</div>
-      <div class="readonlyClose" @click="showHelpHeight = false"></div>
+    <div class="readonlyTo"
+         v-if="showHelpHeight"
+         v-loading="loading">
+      <div class="readonlyChild"
+           id="readonlyChild"></div>
+      <div @click="showHelpHeight = false"
+           class="readonlyToX">X</div>
+      <div class="readonlyClose"
+           @click="showHelpHeight = false"></div>
     </div>
   </div>
 </template>
@@ -70,7 +66,7 @@ export default {
     LeftMenu,
     RightFooter,
   },
-  data() {
+  data () {
     return {
       showHelpHeight: false,
       loading: false,
@@ -80,7 +76,7 @@ export default {
     };
   },
   computed: {
-    isShowRightFooter() {
+    isShowRightFooter () {
       // const result = this.$route.meta && this.$route.meta.isShowRightFooter
       // return result || false
       if (this.$store.state.aceState.rightFooterTags.length > 0) {
@@ -90,7 +86,7 @@ export default {
       }
     },
   },
-  created() {
+  created () {
     // let cache = [];
     // let rep = JSON.parse(
     //   JSON.stringify(mainstore.state, function (key, value) {
@@ -123,7 +119,7 @@ export default {
       sessionStorage.setItem("store", JSON.stringify(this.$store.state));
     });
 
-    this.$store.dispatch("user/login", {}).then(() => {});
+    this.$store.dispatch("user/login", {}).then(() => { });
     if (this.$route.meta) {
       this.breadcrumblist = this.$route.meta.title
         ? this.$route.meta.title.split("-")
@@ -133,7 +129,7 @@ export default {
   },
   watch: {
     $route: {
-      handler(val, oldval) {
+      handler (val, oldval) {
         console.log(val.meta.title); //新路由信息
         if (val.meta) {
           this.breadcrumblist = val.meta.title ? val.meta.title.split("-") : [];
@@ -145,7 +141,7 @@ export default {
     },
   },
   methods: {
-    transformTimestamp(timestamp) {
+    transformTimestamp (timestamp) {
       let a = new Date(timestamp).getTime();
       const date = new Date(a);
       const Y = date.getFullYear() + "-";
@@ -165,7 +161,7 @@ export default {
       return dateString;
     },
     //获取当前登录人信息
-    getWatermark() {
+    getWatermark () {
       //获取当前登录人信息
       // get_userInfo().then((resp) => {
       //   this.userInfo = resp.data;
@@ -180,7 +176,7 @@ export default {
       //   );
       // });
     },
-    getHelp() {
+    getHelp () {
       let saveData = [];
       saveData.push({
         menuPath: this.$route.fullPath,
@@ -204,7 +200,7 @@ export default {
         }
       });
     },
-    changestyle(stylestring) {
+    changestyle (stylestring) {
       this.stylestring = stylestring;
     },
   },
@@ -214,7 +210,7 @@ export default {
 <style lang="scss" scoped >
 .home {
   height: 100vh;
-  background: #fff url("style/images/bg.png") no-repeat left center fixed;
+  // background: #fff url("style/images/bg.png") no-repeat left center fixed;
   background-size: 100% 100%;
   &-left {
     height: 100vh;

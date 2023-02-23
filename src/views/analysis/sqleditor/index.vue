@@ -31,7 +31,8 @@
           <ul id="dataTree"
               class="ztree"
               style="margin-top: 5px" /> -->
-          <LeftTrees ref="tree_left" @nodeContextmenuSQLEditor="nodeContextmenuSQLEditor" ></LeftTrees>
+          <LeftTrees ref="tree_left"
+                     @nodeContextmenuSQLEditor="nodeContextmenuSQLEditor"></LeftTrees>
         </div>
         <div class="left-paramTree">
           <el-input id="paramSearch"
@@ -117,7 +118,7 @@
                          size="small"
                          class="oper-btn"
                          @click="openNewEditor"
-                         style="width: 120px">打开新SQL编辑器</el-button>
+                         style="width: 150px">打开新SQL编辑器</el-button>
               <el-button type="primary"
                          size="small"
                          class="oper-btn sqlcheck btn-width-md"
@@ -262,7 +263,8 @@
           <li @click="selectTableInfo('tableMenu')">查看表信息</li>
         </ul>
       </div>
-      <div id="paramfolderMenu" class="rightMenu">
+      <div id="paramfolderMenu"
+           class="rightMenu">
         <ul>
           <li @click="addParamForm()">添加参数</li>
           <li @click="setSelectTreeNode(1)">添加分类</li>
@@ -270,7 +272,8 @@
           <li @click="setSelectTreeNode(3)">删除分类</li>
         </ul>
       </div>
-      <div id="paramMenu" class="rightMenu">
+      <div id="paramMenu"
+           class="rightMenu">
         <ul>
           <li @click="updateParamForm()">修改参数</li>
           <li @click="deleteParam()">删除参数</li>
@@ -423,11 +426,11 @@
                class="tableInfo">
       <!-- 基本信息详情 -->
       <Details ref="Details_ref"
-              :isDisable_input="true"
-              :isHide_step="false"
-              :is_Edit_list="0"
-              :dataSource="tableDetailsDataSource"
-              :tableMetaUuid="detailsTableMetaUuid"></Details>
+               :isDisable_input="true"
+               :isHide_step="false"
+               :is_Edit_list="0"
+               :dataSource="tableDetailsDataSource"
+               :tableMetaUuid="detailsTableMetaUuid"></Details>
       <div slot="footer"
            class="dialog-footer">
         <el-button @click="selectTableInfoDialog = false">关闭</el-button>
@@ -464,7 +467,8 @@
       <div slot="footer"
            class="dialog-footer">
         <el-button @click="addParamDialog = false">取 消</el-button>
-        <el-button type="primary" :disabled="operationObj.isDetail"
+        <el-button type="primary"
+                   :disabled="operationObj.isDetail"
                    @click="() => saveParam()">确 定</el-button>
       </div>
     </el-dialog>
@@ -500,12 +504,14 @@
                width="90%"
                top="2vh"
                :append-to-body="true">
-        <div class="el-dialog-div">
-          <assistSqlEditor ref="assistSqlEditor" />
-        </div>
-      <div slot="footer" class="dialog-footer">
+      <div class="el-dialog-div">
+        <assistSqlEditor ref="assistSqlEditor" />
+      </div>
+      <div slot="footer"
+           class="dialog-footer">
         <el-button @click="assistSqlEditorDialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveSqlDialog()">确 定</el-button>
+        <el-button type="primary"
+                   @click="saveSqlDialog()">确 定</el-button>
       </div>
     </el-dialog>
     <div id="paramfolderdatabox"></div>
@@ -732,7 +738,7 @@ export default {
         //参数编号
         paramUuid: "",
         //是否是查看详情
-        isDetail:false,
+        isDetail: false,
       },
       pfd: {}, //分类路径对象
       textMap: {
@@ -835,8 +841,8 @@ export default {
       personalTitle: '审计人员场景',
       // 是否为管理员身份
       isManager: false,
-      tableDetailsDataSource:'',//查看表详细信息时 需要的数据源
-      detailsTableMetaUuid:'',//查看表详细信息时 表主键 
+      tableDetailsDataSource: '',//查看表详细信息时 需要的数据源
+      detailsTableMetaUuid: '',//查看表详细信息时 表主键 
     };
   },
   watch: {
@@ -896,7 +902,7 @@ export default {
   },
   methods: {
     //辅助sql编辑器
-    assistSqlEditor(){
+    assistSqlEditor () {
       this.assistSqlEditorDialogFormVisible = true
     },
     openNewEditor () {
@@ -973,7 +979,7 @@ export default {
           this.$message({ type: "info", message: "不允许删除根节点" });
           return false;
         }
-        if(this.pfd.children != undefined){
+        if (this.pfd.children != undefined) {
           this.$message({ type: "info", message: "存在子节点,不允许删除" });
           return false;
         }
@@ -1016,7 +1022,7 @@ export default {
     },
     deleteModelParamFolder () {
       //加入删除方法
-      delFolder(this.selectTreeNode.id,this.selectTreeNode.label).then((result) => {
+      delFolder(this.selectTreeNode.id, this.selectTreeNode.label).then((result) => {
         if (result.data != null) {
           this.refshParamList();
           hideRMenu('paramfolderMenu')
@@ -1063,7 +1069,7 @@ export default {
       this.operationObj.operationType = 2;
       this.operationObj.paramUuid = selectObj.id;
       this.dialogStatus = "update";
-      if(type==='1'){
+      if (type === '1') {
         this.operationObj.isDetail = true
         this.dialogStatus = "detail";
       }
@@ -1134,7 +1140,7 @@ export default {
     /**
      * 获取参数关联
      */
-    getParamModel () { 
+    getParamModel () {
       this.$message({ type: "info", message: "暂时先放放" });
     },
     /**
@@ -1212,7 +1218,7 @@ export default {
             //加载智能提示
             refushTableTree2(treeNodes, this.dataSource);
             //重新刷新表
-            _this.$refs.tree_left.refreshTreeList("",'1');
+            _this.$refs.tree_left.refreshTreeList("", '1');
           }
         }
         if (dataObj.listenerType === "onSQLResult") {
@@ -1236,7 +1242,7 @@ export default {
         ) {
           //删除智能提示 刷新树
           dropTable(dataObj.dropTableNameList);
-          _this.$refs.tree_left.refreshTreeList(dataObj.dropTableNameList,'2');
+          _this.$refs.tree_left.refreshTreeList(dataObj.dropTableNameList, '2');
         }
       };
       const func2 = function func3 (val) {
@@ -1464,7 +1470,7 @@ export default {
      */
     getSelectSql (menuId) {
       var strLevel = this.$refs.tree_left.activeName + this.$refs.tree_left.query.dataSource;
-      getSelectSql(menuId, this.$refs.tree_left.query.dataSource,strLevel)
+      getSelectSql(menuId, this.$refs.tree_left.query.dataSource, strLevel)
     },
     /**
      *打开sql保存草稿窗体
@@ -1887,7 +1893,7 @@ export default {
       currentExecuteProgress = 0;
       this.currentExecuteSQL = [];
       lastResultColumn = [];
-      const data = { sql: result.sql, dataSource: this.$refs.tree_left.query.dataSource, treeType:this.$refs.tree_left.activeName };
+      const data = { sql: result.sql, dataSource: this.$refs.tree_left.query.dataSource, treeType: this.$refs.tree_left.activeName };
       this.executeLoading = true;
       this.loadText = "正在获取SQL列...";
       getColumnSqlInfo(data)
@@ -1953,12 +1959,12 @@ export default {
       /* var nodes = getZtreeSelectNode();
       this.selectTableInfoTableId = nodes[0].id; */
       this.selectTableInfoDialog = true;
-      
+
       this.tableDetailsDataSource = this.$refs.tree_left.query.dataSource;
-      
+
       hideRMenu(tableMenu);
     },
-    nodeContextmenuSQLEditor(data){
+    nodeContextmenuSQLEditor (data) {
       this.detailsTableMetaUuid = data.id
     },
   },
@@ -2212,7 +2218,7 @@ div.rightMenu ul li:hover {
 .list-side {
   margin-left: 10px;
 }
-.el-dialog-div{
+.el-dialog-div {
   height: 80vh;
   overflow-x: hidden;
 }

@@ -1,14 +1,13 @@
 <template>
-  <div class="page-container">
+  <div class="page-container"
+       style="background-color: none;border: none;">
     <!-- left_conter -->
     <div class="left_conter">
-      <LeftTree
-        ref="dataTree"
-        @details="Details"
-        @queryList="query_list_data"
-      ></LeftTree>
+      <LeftTree ref="dataTree"
+                @details="Details"
+                @queryList="query_list_data"></LeftTree>
     </div>
-    <div class="right_conter padding10">
+    <div class="right_conter">
       <DataResourceDisplay @on_deails="onDeailsChange"
                            :isBtn="isBtn"
                            @handleCurrentChange="handleCurrent"
@@ -157,12 +156,13 @@ export default {
 .page-container {
   display: flex;
   padding: 0 !important;
+  background: transparent !important;
 }
 
 .left_conter {
   width: 340px;
   position: relative;
-  height: calc(100vh - 120px);
+  /* height: calc(100vh - 120px); */
 }
 
 .left_conter >>> .el-tabs__item {

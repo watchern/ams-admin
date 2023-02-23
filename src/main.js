@@ -8,13 +8,23 @@ import Cookies from 'js-cookie'
 import $ from 'jquery'
 Vue.prototype.$ = $
 import "bootstrap"
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import '../node_modules/bootstrap/dist/js/bootstrap.min.js';
+// import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+// import '../node_modules/bootstrap/dist/js/bootstrap.min.js';
 // import "bootstrap/dist/css/bootstrap.min.css"
 // import "bootstrap/dist/js/bootstrap.min.js"
 import Element from 'element-ui'
 // import Skeleton from 'element-ui'
-import './styles/element-variables.scss'
+// import './styles/element-variables.scss'//原默认
+
+// 监听尺寸变化
+import ElementResizeDetectorMaker from "element-resize-detector";
+Vue.prototype.$erd = ElementResizeDetectorMaker();
+
+// 公用搜索组件
+import SearchCommon from './components/queryTags'
+Vue.component('SearchCommon', SearchCommon)
+
+
 import "./styles/common.scss"
 import 'font-awesome/css/font-awesome.min.css'
 // Ace start
@@ -31,8 +41,8 @@ Vue.use(DataV)
 import { borderBox1 } from '@jiaminghi/data-view'
 Vue.use(borderBox1)
 // 指标注释
-import 'ams-indicator-vue/src/styles/element-variables.scss'
-import 'ams-indicator-vue/src/styles/index.scss' // global css
+// import 'ams-indicator-vue/src/styles/element-variables.scss'
+// import 'ams-indicator-vue/src/styles/index.scss' // global css
 // import '@ag-grid-community/all-modules/dist/styles/ag-grid.css';
 // import '@ag-grid-community/all-modules/dist/styles/ag-theme-alpine.css';// global css
 Vue.use(components)
@@ -40,7 +50,8 @@ Vue.use(components)
 // Ace end
 
 
-require(`@/styles/index-${process.env.VUE_APP_BASE_SKIN}.scss`);
+// require(`@/styles/index-${process.env.VUE_APP_BASE_SKIN}.scss`);
+import './styles/element-variables-new.scss'//新修改皮肤
 import App from './App'
 import store from './store'
 import router from './router'

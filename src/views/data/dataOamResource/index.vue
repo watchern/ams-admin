@@ -1,175 +1,159 @@
 <template>
   <!--数据资源管理 业务系统管理 -->
-  <div class="page-container">
-    <div id="leftPart" class="left-part">
-      <el-input
-        v-model="filterText"
-        placeholder="输入关键字进行树的过滤"
-        class="tree-search"
-      />
-      <MyElTree
-        ref="tree"
-        :data="data"
-        :props="defaultProps"
-        :filter-node-method="filterNode"
-        :expand-on-click-node="false"
-        node-key="id"
-        check-strictly
-        @node-click="handleNodeClick"
-      >
-        <span slot-scope="{ node, data }" class="custom-tree-node">
+  <div class="page-container"
+       style="background-color: none !important;border: none;">
+    <div class="left_conter pd20">
+      <el-input v-model="filterText"
+                placeholder="输入关键字进行树的过滤"
+                class="tree-search" />
+      <MyElTree ref="tree"
+                :data="data"
+                :props="defaultProps"
+                :filter-node-method="filterNode"
+                :expand-on-click-node="false"
+                node-key="id"
+                check-strictly
+                @node-click="handleNodeClick">
+        <span slot-scope="{ node, data }"
+              class="custom-tree-node">
           <span> <i :class="data.icon" />{{ node.label }} </span>
-          <el-button
-            title="添加SQL草稿文件夹"
-            type="text"
-            size="mini"
-            class="tree-line-btn"
-            @click.stop="() => setSelectTreeNode(node, data, 1)"
-          >
+          <el-button title="添加SQL草稿文件夹"
+                     type="text"
+                     size="mini"
+                     class="tree-line-btn"
+                     @click.stop="() => setSelectTreeNode(node, data, 1)">
             <svg-icon icon-class="icon-add-1" />
           </el-button>
-          <el-button
-            title="修改SQL草稿文件夹"
-            type="text"
-            size="mini"
-            class="tree-line-btn"
-            @click.stop="() => setSelectTreeNode(node, data, 2)"
-            v-if="data.pid != 'root'"
-          >
+          <el-button title="修改SQL草稿文件夹"
+                     type="text"
+                     size="mini"
+                     class="tree-line-btn"
+                     @click.stop="() => setSelectTreeNode(node, data, 2)"
+                     v-if="data.pid != 'root'">
             <svg-icon icon-class="icon-edit-1" />
           </el-button>
-          <el-button
-            title="删除SQL草稿文件夹"
-            type="text"
-            size="mini"
-            class="tree-line-btn"
-            @click.stop="() => deleteFolder(node, data)"
-            v-if="data.pid != 'root'"
-          >
+          <el-button title="删除SQL草稿文件夹"
+                     type="text"
+                     size="mini"
+                     class="tree-line-btn"
+                     @click.stop="() => deleteFolder(node, data)"
+                     v-if="data.pid != 'root'">
             <svg-icon icon-class="icon-delete-1" />
           </el-button>
         </span>
       </MyElTree>
       <!--   新增修改树   -->
-      <el-dialog
-        append-to-body
-        v-if="dialogFormVisible"
-        title="请填写文件夹信息"
-        :visible.sync="dialogFormVisible"
-        :close-on-click-modal="false"
-      >
-        <el-form :model="formtree" class="detail-form">
+      <el-dialog append-to-body
+                 v-if="dialogFormVisible"
+                 title="请填写文件夹信息"
+                 :visible.sync="dialogFormVisible"
+                 :close-on-click-modal="false">
+        <el-form :model="formtree"
+                 class="detail-form">
           <el-form-item label="文件夹名称">
-            <el-input v-model="formtree.folderName" autocomplete="off" />
+            <el-input v-model="formtree.folderName"
+                      autocomplete="off" />
           </el-form-item>
         </el-form>
-        <div slot="footer" class="dialog-footer">
+        <div slot="footer"
+             class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="enterBtn">确 定</el-button>
+          <el-button type="primary"
+                     @click="enterBtn">确 定</el-button>
         </div>
       </el-dialog>
       <!--   新增修改树 end   -->
     </div>
 
     <!--右侧数据列表-->
-    <div id="rightPart" style="height: 100%">
-      <div class="filter-container">
+    <div class="right_conter">
+      <div class="pd20">
         <div class="query-field">
-          <el-form :inline="true" :model="query" label-position="bottom">
+          <el-form :inline="true"
+                   :model="query"
+                   label-position="bottom">
             <el-form-item label="校验名称：">
-              <el-input v-model="query.checkName" clearable />
+              <el-input v-model="query.checkName"
+                        clearable />
             </el-form-item>
 
             <el-form-item label="校验SQL：">
-              <el-input v-model="query.serviceDescription" clearable />
+              <el-input v-model="query.serviceDescription"
+                        clearable />
             </el-form-item>
 
             <el-form-item label="规则类型：">
-              <el-select
-                v-model="query.ruleType"
-                clearable
-                @change="selectdata_type"
-                placeholder="请选择规则类型"
-              >
-                <el-option
-                  v-for="item in options_type_list"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
+              <el-select v-model="query.ruleType"
+                         clearable
+                         @change="selectdata_type"
+                         placeholder="请选择规则类型">
+                <el-option v-for="item in options_type_list"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
               </el-select>
             </el-form-item>
 
             <el-form-item>
-              <el-button
-                type="primary"
-                @keyup.enter.native="search"
-                @click="search()"
-                >查询</el-button
-              >
-              <el-button type="primary" @click="clearAll()">清空</el-button>
+              <el-button type="primary"
+                         @keyup.enter.native="search"
+                         @click="search()">查询</el-button>
+              <el-button type="primary"
+                         @click="clearAll()">清空</el-button>
             </el-form-item>
           </el-form>
         </div>
-        <div class="padding10">
+        <div class="mb10">
           <el-row>
             <el-col align="right">
-              <el-button
-                type="primary"
-                class="oper-btn add btn-width-md"
-                @click="add()"
-              />
+              <el-button type="primary"
+                         class="oper-btn "
+                         @click="add()"> <img src="../../../styles/image/add.png"
+                     class="btn_icon icon1"
+                     alt="">
+                <img src="../../../styles/image/add2.png"
+                     class="btn_icon icon2"
+                     alt="">新增
+              </el-button>
             </el-col>
           </el-row>
         </div>
 
-        <el-table
-          v-loading="listLoading"
-          :data="page_list.records"
-          border
-          fit
-          highlight-current-row
-          style="width: 100%; overflow: auto"
-          height="calc(100vh - 320px)"
-          @selection-change="handleSelectionChange"
-        >
+        <el-table v-loading="listLoading"
+                  :data="page_list.records"
+                  border
+                  fit
+                  highlight-current-row
+                  style="width: 100%; overflow: auto"
+                  height="calc(100vh - 300px)"
+                  @selection-change="handleSelectionChange">
           <!-- <el-table-column type="selection"
                          width="55" /> -->
-          <el-table-column
-            label="校验名称"
-            prop="checkName"
-            show-overflow-tooltip
-            min-width="150px"
-          >
+          <el-table-column label="校验名称"
+                           prop="checkName"
+                           show-overflow-tooltip
+                           min-width="150px">
             <template slot-scope="scope">
-              <el-button
-                type="text"
-                size="mini"
-                prop="displayTbName"
-                style="background: none"
-                @click="details(scope.row.oamUuid)"
-                >{{ scope.row.checkName }}</el-button
-              >
+
+              <el-link type="text"
+                       :underline="false"
+                       prop="displayTbName"
+                       @click="details(scope.row.oamUuid)">{{ scope.row.checkName }}</el-link>
+
             </template>
           </el-table-column>
-          <el-table-column
-            label="业务描述"
-            prop="serviceDescription"
-            show-overflow-tooltip
-            min-width="150px"
-          />
-          <el-table-column
-            label="校验SQL"
-            prop="implementationLogic"
-            show-overflow-tooltip
-            min-width="150px"
-          />
-          <el-table-column
-            label="规则类型"
-            align="center"
-            prop="ruleType"
-            width="100"
-          >
+          <el-table-column label="业务描述"
+                           prop="serviceDescription"
+                           show-overflow-tooltip
+                           min-width="150px" />
+          <el-table-column label="校验SQL"
+                           prop="implementationLogic"
+                           show-overflow-tooltip
+                           min-width="150px" />
+          <el-table-column label="规则类型"
+                           align="center"
+                           prop="ruleType"
+                           width="100">
             <template slot-scope="scope">
               {{
                 scope.row.ruleType == 1
@@ -183,114 +167,124 @@
             </template>
           </el-table-column>
 
-          <el-table-column label="操作" align="center" width="200">
+          <el-table-column label="操作"
+                           align="center"
+                           width="200">
             <template slot-scope="scope">
-              <el-button
-                type="primary"
-                class="oper-btn edit"
-                title="修改"
-                size="mini"
-                @click="edit_table(scope.row.oamUuid)"
-              />
-              <el-button
-                type="primary"
-                class="oper-btn delete"
-                title="删除"
-                size="mini"
-                @click="delete_table(scope.row.oamUuid)"
-              />
+
+              <el-link type="text"
+                       :underline="false"
+                       @click="edit_table(scope.row.oamUuid)">编辑</el-link>
+
+              <el-link type="text"
+                       :underline="false"
+                       @click="delete_table(scope.row.oamUuid)">删除</el-link>
+              <!-- 
+              <el-button type="primary"
+                         class="oper-btn"
+                         title="修改"
+                         size="mini"
+                         @click="edit_table(scope.row.oamUuid)"><img src="../../../styles/image/edits.png"
+                     class="btn_icon"
+                     alt="">编辑</el-button> -->
+              <!-- <el-button type="primary"
+                         class="oper-btn"
+                         title="删除"
+                         size="mini"
+                         @click="delete_table(scope.row.oamUuid)"><img src="../../../styles/image/delete.png"
+                     class="btn_icon"
+                     alt="">删除</el-button> -->
             </template>
           </el-table-column>
         </el-table>
+        <el-pagination v-show="page_list.total > 0"
+                       :total="page_list.total"
+                       :current-page="page_list.currentPage"
+                       @current-change="handleCurrentChange"
+                       @size-change="handleSizeChange"
+                       layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div>
-      <el-pagination
-        v-show="page_list.total > 0"
-        :total="page_list.total"
-        :current-page="page_list.currentPage"
-        background
-        @current-change="handleCurrentChange"
-        @size-change="handleSizeChange"
-        layout="total, sizes, prev, pager, next, jumper"
-      ></el-pagination>
+
       <!-- 新增编辑 -->
-      <el-dialog
-        :title="title"
-        class="data_res"
-        :visible.sync="dialogVisible"
-        @close="handleClose('form')"
-        width="40%"
-      >
+      <el-dialog :title="title"
+                 class="data_res"
+                 :visible.sync="dialogVisible"
+                 @close="handleClose('form')"
+                 width="40%">
         <el-form
-          :rules="rules"
-          ref="form"
-          label-width="130px"
-          :model="form"
-          :inline="false"
-        >
-          <el-form-item label="校验名称:" prop="checkName">
-            <el-input
-              type="text"
-              v-model="form.checkName"
-              style="width: 80%"
-              :disabled="title == '查看校验规则'"
-              :rows="4"
-            >
-            </el-input>
+            :label-position="labelPosition"
+            :rules="rules"
+                 ref="form"
+                 label-width="130px"
+                 :model="form"
+                 :inline="false">
+          <el-form-item label="校验名称:"
+                        prop="checkName">
+            <el-col :span="24">
+              <el-input type="text"
+                        v-model="form.checkName"
+                        style="width: 100%"
+                        :disabled="title == '查看校验规则'"
+                        :rows="4">
+              </el-input>
+            </el-col>
+
           </el-form-item>
-          <el-form-item label="业务描述:" prop="serviceDescription">
-            <el-input
-              style="width: 80%"
-              type="textarea"
-              :disabled="title == '查看校验规则'"
-              v-model="form.serviceDescription"
-            ></el-input>
+          <el-form-item label="业务描述222:"
+                        prop="serviceDescription">
+            <el-col :span="24">
+
+              <el-input style="width: 100%"
+                        type="textarea"
+                        :disabled="title == '查看校验规则'"
+                        v-model="form.serviceDescription"></el-input>
+            </el-col>
           </el-form-item>
 
-          <el-form-item label="校验SQL:" prop="implementationLogic">
-            <el-input
-              type="textarea"
-              style="width: 80%"
-              :rows="4"
-              :disabled="title == '查看校验规则'"
-              v-model="form.implementationLogic"
-            >
-            </el-input>
+          <el-form-item label="校验SQL:"
+                        prop="implementationLogic">
+            <el-col :span="24">
+
+              <el-input type="textarea"
+                        style="width: 100%"
+                        :rows="4"
+                        :disabled="title == '查看校验规则'"
+                        v-model="form.implementationLogic">
+              </el-input>
+            </el-col>
           </el-form-item>
 
-          <el-form-item label="规则类型:" prop="ruleType">
+          <el-form-item label="规则类型:"
+                        prop="ruleType">
             <!--          <el-input type="textarea"-->
             <!--                    style="width: 80%;"-->
             <!--                    :rows="4"-->
             <!--                    :disabled="title == '查看校验规则'"-->
             <!--                    v-model="form.ruleType">-->
             <!--          </el-input>-->
+            <el-col :span="24">
 
-            <el-select
-              v-model="form.ruleType"
-              style="width: 80%"
-              :rows="4"
-              clearable
-              placeholder="请选择规则类型"
-            >
-              <el-option
-                v-for="item in options_type_list"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
+              <el-select v-model="form.ruleType"
+                         style="width: 100%"
+                         :rows="4"
+                         clearable
+                         placeholder="请选择规则类型">
+                <el-option v-for="item in options_type_list"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
+              </el-select>
+            </el-col>
           </el-form-item>
         </el-form>
 
-        <span slot="footer" class="dialog-footer">
+        <span slot="footer"
+              class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button
-            type="primary"
-            :disabled="isDisable"
-            v-if="title !== '查看校验规则'"
-            @click="save('form')"
-            >保存</el-button
-          >
+          <el-button type="primary"
+                     :disabled="isDisable"
+                     v-if="title !== '查看校验规则'"
+                     @click="save('form')">保存</el-button>
         </span>
       </el-dialog>
     </div>
@@ -319,8 +313,9 @@ export default {
   components: { MyElTree },
   // props: ["isShowDraft", "openType"],
   /*树end*/
-  data() {
+  data () {
     return {
+      labelPosition:"top",
       query: {
         checkName: "", // 规则名称
         serviceDescription: "", // 业务描述
@@ -400,7 +395,7 @@ export default {
   },
   /*树*/
   computed: {},
-  created() {
+  created () {
     this.dataUserId = this.$store.getters.datauserid;
     // 校验用户权限
     // isAdmin().then((res) => {
@@ -416,25 +411,25 @@ export default {
     this.getList();
   },
   watch: {
-    filterText(val) {
+    filterText (val) {
       // 搜索树
       this.$refs.tree.filter(val);
     },
   },
   methods: {
     // 清空
-    clearAll() {
+    clearAll () {
       this.query.checkName = "";
       this.query.serviceDescription = "";
       this.query.implementationLogic = "";
       this.query.ruleType = "";
     },
-    search() {
+    search () {
       this.query.pageNo = 1;
       this.getList(); //刷新列表
     },
     // 刷新列表
-    getList() {
+    getList () {
       this.listLoading = true;
       let params = {
         condition: {
@@ -452,28 +447,28 @@ export default {
       });
     },
     // 多选
-    handleSelectionChange(val) {
+    handleSelectionChange (val) {
       this.Selectval = val;
     },
     // 分页
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.query.pageNo = val;
       this.getList();
     },
     // 每页多少条
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.query.pageSize = val;
       this.getList();
     },
     // 详情
-    details(oamUuid) {
+    details (oamUuid) {
       this.title = "查看校验规则";
       this.form.oamUuid = oamUuid;
       this.dialogVisible = true;
       this.details_details();
     },
     // 新建
-    add() {
+    add () {
       // eslint-disable-next-line no-debugger
       if (
         this.form.parentUuid == null ||
@@ -515,7 +510,7 @@ export default {
       }
     },
     // 编辑
-    edit_table(oamUuid) {
+    edit_table (oamUuid) {
       this.title = "编辑校验规则";
       console.log(oamUuid);
       this.form.oamUuid = oamUuid;
@@ -525,7 +520,7 @@ export default {
     },
 
     // 详情 接口
-    details_details() {
+    details_details () {
       let params = {
         oamUuid: this.form.oamUuid,
       };
@@ -544,7 +539,7 @@ export default {
     },
 
     // 新建保存 && 编辑保存
-    save(form) {
+    save (form) {
       this.isDisable = true;
       setTimeout(() => {
         this.isDisable = false;
@@ -620,15 +615,15 @@ export default {
     //   this.addDialogVisible=false;
     // },
     // 关闭弹窗
-    handleClose(form) {
+    handleClose (form) {
       this.$refs[form].resetFields(); //清空添加的值
     },
 
     // 请选择规则类型
     // eslint-disable-next-line no-unused-vars
-    selectdata_type(val) {},
+    selectdata_type (val) { },
     // 删除
-    delete_table(oamUuid) {
+    delete_table (oamUuid) {
       this.$confirm("是否确定将选中的内容?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -661,7 +656,7 @@ export default {
     },
     /*树 开始*/
 
-    deleteFolder(node, data) {
+    deleteFolder (node, data) {
       this.$confirm("此操作将永久删除, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -681,7 +676,7 @@ export default {
      * 生成UUID
      * @returns {string} 返回生成的UUID
      */
-    getGuuid() {
+    getGuuid () {
       var s = [];
       var hexDigits = "0123456789abcdef";
       for (var i = 0; i < 36; i++) {
@@ -696,7 +691,7 @@ export default {
     /**
      * 修改文件夹
      */
-    updateFolder() {
+    updateFolder () {
       var pNode = this.selectTreeNode;
       // 再次校验非管理员不能操作公共文件夹
       // if(!this.isManager && pNode.sceneInstUuid == null){
@@ -722,7 +717,7 @@ export default {
     /**
      * 添加文件夹
      */
-    addFolder() {
+    addFolder () {
       var pNode = this.selectTreeNode;
       // 再次校验非管理员不能操作公共文件夹
       // if(!this.isManager && pNode.sceneInstUuid == null){
@@ -768,7 +763,7 @@ export default {
     /**
      * 表单确定按钮
      */
-    enterBtn() {
+    enterBtn () {
       if (this.operationType === 1) {
         this.addFolder();
       } else {
@@ -781,7 +776,7 @@ export default {
      * @param data 数据
      * @returns {boolean}
      */
-    filterNode(value, data) {
+    filterNode (value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
@@ -789,7 +784,7 @@ export default {
      * 树的点击事件
      * @param data 树的对象数据 包括子节点
      */
-    handleNodeClick(data) {
+    handleNodeClick (data) {
       this.selectTreeNode = data;
       /*点击树的时候把父节点id 赋给 查询和新增*/
       this.query.parentUuid = data.id; /*查询*/
@@ -802,7 +797,7 @@ export default {
     /**
      *获取草稿树(true：文件夹+草稿，false：文件夹)
      */
-    getTree() {
+    getTree () {
       getDraftTree().then((res) => {
         console.log(res.data, "res.data");
         this.data = res.data;
@@ -814,7 +809,7 @@ export default {
      * @param data 数据 要设置的节点数据
      * @param operationType 1、添加；2、修改
      */
-    setSelectTreeNode(node, data, operationType) {
+    setSelectTreeNode (node, data, operationType) {
       this.formtree.folderName = "";
       this.operationType = operationType;
       this.selectTreeNode = data;
@@ -823,7 +818,7 @@ export default {
       }
       this.dialogFormVisible = true;
     },
-    refreshTree() {
+    refreshTree () {
       this.getTree();
     },
     /*树 结束*/
@@ -833,40 +828,24 @@ export default {
 
 <style scoped>
 .data_res >>> .el-form-item {
-  margin-top: 25px !important;
-  display: flex;
+  /* margin-top: 25px !important; */
+  /*display: flex;*/
 }
 .data_res >>> .el-form-item--medium .el-form-item__label {
   text-align: right;
-  float: left !important;
+  /*float: left !important;*/
 }
 .data_res >>> .el-form-item__content {
   flex: 1;
   margin-left: 0 !important;
-  float: left;
+  /*float: left;*/
 }
 .data_res >>> .el-textarea .el-textarea__inner {
   resize: none;
 }
-
-.left-part {
-  width: 15%;
-  /*width: 29.6732%;*/
-  float: left;
-  height: 100%;
-  margin-left: 0.5%;
-  /*box-shadow: 15px 0 15px 0 #3f444d12;*/
-  position: relative;
-  z-index: 20;
-  padding: 0 20px;
+.page-container {
+  display: flex;
+  background: transparent !important;
 }
 
-#rightPart {
-  /*width: 69.6732%;*/
-
-  width: 84%;
-  position: relative;
-  padding: 0;
-  overflow: hidden;
-}
 </style>

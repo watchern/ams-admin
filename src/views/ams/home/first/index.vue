@@ -3,7 +3,7 @@
     <div class="top flex a-center j-between flex-row flex1 flex-shrink">
       <div class="right flex a-end j-center flex-column">
         <div class="bottom-card a-center j-between flex-row">
-        <!--  <div class="top-card flex j-start flex-row skin-shadow daiban">
+          <!--  <div class="top-card flex j-start flex-row skin-shadow daiban">
             <div
               class="
                 top-card-left
@@ -27,55 +27,51 @@
               <span class="card-more" @click="gotodowork()">更多</span>
             </div>
           </div>-->
-<!--          <div class="top-card-box">-->
-            <div
-              v-for="(item, index) in cardList"
-              :key="index"
-              class="top-card flex j-start flex-row skin-shadow"
-              :class="{
+          <!--          <div class="top-card-box">-->
+          <div v-for="(item, index) in cardList"
+               :key="index"
+               class="top-card flex j-start flex-row skin-shadow"
+               :class="{
                 backgroundColor:
                   index === 0 ? 'skin-wbgColor-1' : 'skin-wbgColor-2',
-              }"
-            >
-              <div class="top-card-left flex-shrink skin-bgColor flex a-center j-center">
-                <img :src="item.img" class="img" />
-              </div>
-              <div class="top-card-right">
-                <div class="title">{{ item.title }}</div>
-                <div
-                  v-for="(text, i) in item.des"
-                  :key="i"
-                  class="line"
-                >
-                  <span @click="toDoJump(text.index,index)" class="notes-text">{{
+              }">
+            <div class="top-card-left flex-shrink skin-bgColor flex a-center j-center">
+              <img :src="item.img"
+                   class="img" />
+            </div>
+            <div class="top-card-right">
+              <div class="title">{{ item.title }}</div>
+              <div v-for="(text, i) in item.des"
+                   :key="i"
+                   class="line">
+                <span @click="toDoJump(text.index,index)"
+                      class="notes-text">{{
                     text.text
                   }}</span>
-                  <span
-                    v-if="text.icon"
-                    :style="{ color: text.iconColor, width: text.width }"
-                    class="icon"
-                    >{{ text.icon }}</span
-                  >
-                  <i v-if="text.iconStatus" :class="text.iconStatus" :style="{ color: text.iconColor }"></i>
-                </div>
-                <span class="card-more" @click="moreJump(item)">更多</span>
+                <span v-if="text.icon"
+                      :style="{ color: text.iconColor, width: text.width }"
+                      class="icon">{{ text.icon }}</span>
+                <i v-if="text.iconStatus"
+                   :class="text.iconStatus"
+                   :style="{ color: text.iconColor }"></i>
               </div>
+              <span class="card-more"
+                    @click="moreJump(item)">更多</span>
             </div>
-<!--          </div>-->
+          </div>
+          <!--          </div>-->
         </div>
       </div>
       <div>
         <toolsTemplateIndex />
       </div>
     </div>
-    <el-dialog
-      :visible.sync="dialogFormVisible"
-      top="10vh"
-      title="消息详情"
-      width="50%"
-      v-model="this.PopUpContent"
-      :close-on-click-modal="false"
-    >
+    <el-dialog :visible.sync="dialogFormVisible"
+               top="10vh"
+               title="消息详情"
+               width="50%"
+               v-model="this.PopUpContent"
+               :close-on-click-modal="false">
       <span class="visible-span">消息标题</span>
       <p class="visible-p1">{{ this.PopUpContent[0].text }}</p>
       <span class="visible-span">消息内容</span>
@@ -93,7 +89,7 @@ export default {
   components: {
     toolsTemplateIndex
   },
-  data() {
+  data () {
     return {
       resultSpiltObjects: {},
       work: [
@@ -147,7 +143,7 @@ export default {
           content: "",
         },
       ],
-      todoData:[{applyTitle:'暂无'}],//待办工作流
+      todoData: [{ applyTitle: '暂无' }],//待办工作流
       //审核信息的状态
       applyInfo: {
         //业务主键
@@ -177,9 +173,9 @@ export default {
         opinionList: true,
         opinion: true,
         nextStep: true,
-        done:false,
+        done: false,
       },
-//初始化审批页面参数
+      //初始化审批页面参数
       flowItem: {
         wftype: "",
         applyUuid: "",
@@ -188,10 +184,10 @@ export default {
         workEffortId: "",
         activityId: "",
       },
-      projectStatus:"",
+      projectStatus: "",
     };
   },
-  mounted() {
+  mounted () {
     getRemindByDescTime().then((resp) => {
       this.cardList[0].des = [];
       for (let i = 0; i < 5; i++) {
@@ -246,67 +242,67 @@ export default {
     this.gettodowork()
   },
   methods: {
-    formatter(num) {
+    formatter (num) {
       return num < 10 ? "0" + num.toFixed(0) : num.toFixed(0);
     },
-    formatter1(num) {
+    formatter1 (num) {
       return num.toFixed(1);
     },
-    activeTags(item) {
+    activeTags (item) {
       this.$store.commit("aceState/setRightFooterTags", {
         type: item.type,
         val: item.val,
       });
     },
-    toDoJumpFlow(row,index) {
-        if (row.currentState == "CAL_SENT") {
-          this.updateToAccepted(row);
-          if (!this.partyAssignment) {
-            this.common.alertMsg(4, "数据更新失败");
-            return;
-          }
+    toDoJumpFlow (row, index) {
+      if (row.currentState == "CAL_SENT") {
+        this.updateToAccepted(row);
+        if (!this.partyAssignment) {
+          this.common.alertMsg(4, "数据更新失败");
+          return;
         }
-        this.applyInfo.appDataUuid = row.appDataUuid;
-        this.applyInfo.versionUuid = row.versionUuid;
-        this.applyInfo.detailUuids = row.detailUuids;
-        //待办列表里，默认审核状态是审核中value=1
-        this.applyInfo.status = "1";
-        //待办列表里，默认业务方法执行状态是空
-        this.applyInfo.mstate = "";
-        //待办列表里，默认流程方法执行状态是空
-        // this.applyInfo.fstate = "";
-        //待办列表里，默认流程方法执行状态是空
-        this.applyInfo.newFstate = "";
-        //业务数据是否更新过业务代码
-        // this.applyInfo.isUpdate = "";
-        //初始化vuex里的审核状态，或者覆盖之前存储的值
-        this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
-        //跳转页面，name值可以动态获取row.apptype;
-        this.applyDetail.type = row.applyType;
-        this.flowItem.applyUuid = row.applyUuid;
-        this.flowItem.appDataUuid = row.appDataUuid;
-        this.flowItem.versionUuid = row.versionUuid;
-        this.flowItem.detailUuids = row.detailUuids;
-        //用来区分主子项目
-        this.flowItem.planTag = row.temp2;
-        console.log(this.applyDetail.type);
-        this.flowItem.workEffortId = row.workEffortId;
-        this.flowItem.temp1 = row.temp1;
-        this.flowItem.wftype = this.dict.flowValueFun(row.applyType);
-        this.rojectType = row.workflowPackageId;
-        this.$router.push({
-          name: "todoDetail",
-          params: {
-            approvalData: row,
-            applyDetail: this.applyDetail,
-            flowSet: this.flowSet,
-            flowItem: this.flowItem,
-            projectStatus:this.projectStatus,
-          },
-        });
+      }
+      this.applyInfo.appDataUuid = row.appDataUuid;
+      this.applyInfo.versionUuid = row.versionUuid;
+      this.applyInfo.detailUuids = row.detailUuids;
+      //待办列表里，默认审核状态是审核中value=1
+      this.applyInfo.status = "1";
+      //待办列表里，默认业务方法执行状态是空
+      this.applyInfo.mstate = "";
+      //待办列表里，默认流程方法执行状态是空
+      // this.applyInfo.fstate = "";
+      //待办列表里，默认流程方法执行状态是空
+      this.applyInfo.newFstate = "";
+      //业务数据是否更新过业务代码
+      // this.applyInfo.isUpdate = "";
+      //初始化vuex里的审核状态，或者覆盖之前存储的值
+      this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
+      //跳转页面，name值可以动态获取row.apptype;
+      this.applyDetail.type = row.applyType;
+      this.flowItem.applyUuid = row.applyUuid;
+      this.flowItem.appDataUuid = row.appDataUuid;
+      this.flowItem.versionUuid = row.versionUuid;
+      this.flowItem.detailUuids = row.detailUuids;
+      //用来区分主子项目
+      this.flowItem.planTag = row.temp2;
+      console.log(this.applyDetail.type);
+      this.flowItem.workEffortId = row.workEffortId;
+      this.flowItem.temp1 = row.temp1;
+      this.flowItem.wftype = this.dict.flowValueFun(row.applyType);
+      this.rojectType = row.workflowPackageId;
+      this.$router.push({
+        name: "todoDetail",
+        params: {
+          approvalData: row,
+          applyDetail: this.applyDetail,
+          flowSet: this.flowSet,
+          flowItem: this.flowItem,
+          projectStatus: this.projectStatus,
+        },
+      });
     },
-    toDoJump(data,index) {
-      if (index == 0){
+    toDoJump (data, index) {
+      if (index == 0) {
         // 判断条件增加空判断
         if (this.cardList[0].des[data].url === "" || this.cardList[0].des[data].url == null) {
           this.dialogFormVisible = true;
@@ -332,7 +328,7 @@ export default {
         this.$router.push({ path: this.cardList[1].des[data].url });
       }
     },
-    getList() {
+    getList () {
       // 刷新提醒事项
       getRemindByDescTime().then((resp) => {
         this.cardList[0].des = [];
@@ -352,7 +348,7 @@ export default {
         }
       });
     },
-    gettodowork() {
+    gettodowork () {
       this.$axios
         .get("/starflow/applyMes/sf/apply/auditDataList", {
           params: {
@@ -371,12 +367,12 @@ export default {
           console.log(error);
         });
     },
-    gotodowork() {
+    gotodowork () {
       this.$router.push({
         path: "/todowork",
       });
     },
-    moreJump(data) {
+    moreJump (data) {
       if (data.title === "提醒事项") {
         this.$router.push({ path: "/base/remind" });
         this.$store.commit("aceState/setRightFooterTags", {
@@ -397,19 +393,19 @@ export default {
         });
       }
     },
-    toDoSomeJump() {
+    toDoSomeJump () {
       this.$router.push({
         path: "/base/frameto?url=psbcaudit/todoInfo/todoInfoList",
       });
     },
-    displayItem(data) {
+    displayItem (data) {
       let thisItem = document.getElementsByClassName("bottom");
       for (let i = 0; i < thisItem.length; i++) {
         thisItem[i].style.zIndex = 1;
       }
       thisItem[data].style.zIndex = 10;
     },
-    action(data, index) {
+    action (data, index) {
       if (data === "before") {
         if (index + 1 === 4) {
           index = -1;

@@ -1,71 +1,75 @@
 <template>
-  <div style="padding: 20px 0" v-loading="loading">
-    <el-form
-      label-position="right"
-      :model="apComDataBaseData"
-      :rules="rules"
-      label-width="120px"
-      class="demo-ruleForm"
-      ref="ruleForm"
-    >
-      <el-form-item label="规则名称" prop="ruleName" class="item-b">
-        <el-input v-model="apComDataBaseData.ruleName" maxlength="200" style="width: 85%"></el-input>
+  <div style="padding: 20px 0"
+       v-loading="loading">
+    <el-form label-position="top"
+             :model="apComDataBaseData"
+             :rules="rules"
+             label-width="110px"
+             class="demo-ruleForm"
+             ref="ruleForm">
+      <el-form-item label="规则名称"
+                    prop="ruleName"
+                    class="item-b">
+        <el-input v-model="apComDataBaseData.ruleName"
+                  maxlength="200"
+                  style="width: 100%"></el-input>
       </el-form-item>
-      <el-form-item label="启动" prop="isAtartUp" class="item-b">
+      <el-form-item label="启动"
+                    prop="isAtartUp"
+                    class="item-b">
         <el-radio-group v-model="apComDataBaseData.isAtartUp">
           <el-radio :label="1">是</el-radio>
           <el-radio :label="0">否</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="数据密级" prop="secretLevelName" class="item-b">
-        <el-select
-          v-model="apComDataBaseData.secretLevelName"
-          filterable
-          clearable
-          size="small"
-          style="width: 85%"
-          @change="secretLevelChange"
-        >
-          <el-option
-            v-for="item in secretLevelList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
-          ></el-option>
+      <el-form-item label="数据密级"
+                    prop="secretLevelName"
+                    class="item-b">
+        <el-select v-model="apComDataBaseData.secretLevelName"
+                   filterable
+                   clearable
+                   size="small"
+                   style="width: 100%"
+                   @change="secretLevelChange">
+          <el-option v-for="item in secretLevelList"
+                     :key="item.id"
+                     :label="item.name"
+                     :value="item.id"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="识别规则" prop="recognitionRulesName" class="item-b">
-        <el-select
-          v-model="apComDataBaseData.recognitionRulesName"
-          filterable
-          clearable
-          size="small"
-          style="width: 85%"
-          @change="recognitionRulesChange"
-        >
-          <el-option
-            v-for="item in listType"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
-          ></el-option>
+      <el-form-item label="识别规则"
+                    prop="recognitionRulesName"
+                    class="item-b">
+        <el-select v-model="apComDataBaseData.recognitionRulesName"
+                   filterable
+                   clearable
+                   size="small"
+                   style="width: 100%"
+                   @change="recognitionRulesChange">
+          <el-option v-for="item in listType"
+                     :key="item.id"
+                     :label="item.name"
+                     :value="item.id"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="正则表达式" prop="regularExpression" class="item-b">
-        <el-input
-          type="textarea"
-          v-model="apComDataBaseData.regularExpression"
-          placeholder="请输入内容"
-          style="width: 85%"
-          :rows="6"
-        ></el-input>
+      <el-form-item label="正则表达式"
+                    prop="regularExpression"
+                    class="item-b">
+        <el-input type="textarea"
+                  v-model="apComDataBaseData.regularExpression"
+                  placeholder="请输入内容"
+                  style="width: 100%"
+                  :rows="4"></el-input>
       </el-form-item>
     </el-form>
-    <div class="footBtn">
-      <el-button size="mini" type="primary" @click="submitForm('ruleForm')"
-        >保存</el-button
-      >
-      <el-button size="mini" @click="close('ruleForm')">取消</el-button>
+
+    <div class="dialog-footer">
+      <el-button size="small"
+                 @click="close('ruleForm')">取消</el-button>
+      <el-button size="small"
+                 type="primary"
+                 @click="submitForm('ruleForm')">保存</el-button>
+
     </div>
   </div>
 </template>
@@ -77,7 +81,7 @@ export default {
   name: "add",
   components: {},
   props: ["sensitiveObj"],
-  data() {
+  data () {
     return {
       listType: [{ name: "正则表达式", id: "1" }],
       secretLevelList: [
@@ -117,14 +121,14 @@ export default {
   },
   computed: {},
   watch: {},
-  mounted() {
+  mounted () {
     if (this.sensitiveObj.bizSensitiveUuid) {
       this.apComDataBaseData = this.sensitiveObj;
     }
   },
   methods: {
     //   保存
-    submitForm(formName) {
+    submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           if (!this.apComDataBaseData.bizSensitiveUuid) {
@@ -164,11 +168,11 @@ export default {
         }
       });
     },
-    close(formName) {
+    close (formName) {
       this.$refs[formName].resetFields();
       this.$emit("close");
     },
-    secretLevelChange(data) {
+    secretLevelChange (data) {
       this.secretLevelList.forEach((item) => {
         if (item.id === data) {
           this.apComDataBaseData.secretLevelName = item.name;
@@ -176,7 +180,7 @@ export default {
         }
       });
     },
-    recognitionRulesChange(data) {
+    recognitionRulesChange (data) {
       this.listType.forEach((item) => {
         if (item.id === data) {
           this.apComDataBaseData.recognitionRulesName = item.name;
@@ -201,10 +205,10 @@ export default {
   ::v-deep .el-form-item__label {
     text-align: right;
     vertical-align: middle;
-    float: left !important;
+    //float: left !important;
   }
-}
-.footBtn{
-  padding-left: 75%;
+  .el-radio{
+    padding-left:10px;
+  }
 }
 </style>
