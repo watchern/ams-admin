@@ -60,8 +60,7 @@
           模式名称：
           <el-select v-model="schemaNameFilter"
                      @change="filterTablesBySchema"
-                     style="width: 400px;"
-                     clearable>
+                     style="width: 400px;">
             <el-option v-for="item in schemaData"
                        :key="item"
                        :label="item"
@@ -70,11 +69,12 @@
         </div>
         <div>
           表名称：
-          <el-input style="width: 330px;margin-left: 10px;"
-                    v-model="filterText1"
+          <el-input style="width: 330px; margin-left: 10px;"
+                    v-model="tableNameFilter"
                     placeholder="输入想要查询的表名称（模糊搜索）" />
           <el-button type="primary"
                      size="small"
+                     style="margin-left: 10px;"
                      @click="getTables">查询</el-button>
         </div>
         <div class="dlag_conter containerselect padding10">
@@ -86,7 +86,8 @@
                     show-checkbox
                     :filter-node-method="filterNode"
                     @check-change="nodeClick_table"
-                    @node-click="nodeClick_table">
+                    @node-click="nodeClick_table"
+                    default-expand-all>
             <span slot-scope="{ node, data }"
                   class="custom-tree-node">
               <i v-if="data.type === 'USER'">
@@ -576,7 +577,7 @@ export default {
       activeName: "0", //tab切换
       registTableFlag: false, // 注册资源弹窗显示
       schemaNameFilter: "", // 注册资源搜索模式名
-      tableNameFilter: null, // 注册资源搜索表名
+      tableNameFilter: "", // 注册资源搜索表名
       props: {
         label: "label",
         isLeaf: "leaf",
@@ -639,6 +640,7 @@ export default {
         tableLayeredId: '',//资源分层 id
         businessSystemName: '',//所属系统
         businessSystemId: '',//所属系统 id
+        folderUuid: '',//目录id
         fileName: '',//文件名
         dataDate: '',//数据日期
         tableSize: '',//表大小:
@@ -710,11 +712,6 @@ export default {
     };
   },
   computed: {},
-  watch: {
-    tableNameFilter (val) {
-      this.$refs.tree1.filter(val);
-    },
-  },
   created () { },
   methods: {
     // 查询
@@ -986,11 +983,7 @@ export default {
         this.Recognition.personName_str = personLibales.join("、")
       });
       this.visible_Recognition = true;
-
-
-      console.log(0);
       if (this.$refs.orgPeopleTree) {
-        console.log(1);
         // if (this.$refs.multipleTable) {
         this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection(); //清空选择的认权人
         this.$refs.orgPeopleTree.findOrgTree_data();
@@ -1065,25 +1058,17 @@ export default {
       this.tableMetaUuid = data.tableMetaUuid;
       this.show_details = true;
       this.isDisable_input = true;
-
     },
     // 通过模式名过滤表名
-    filterTablesBySchema (val) {
-      if (val) {
-        this.tableData = [];
-        this.tableDataAll.forEach(item => {
-          if (item.id == val) {
-            this.tableData.push(item);
-          }
-        })
-      } else {
-        this.tableData = this.tableDataAll;
-      }
+    filterTablesBySchema () {
+      this.getTables();
     },
     // 获取模式名
     getSchemas () {
       listSchemas(this.$refs.tree_left.query.dataSource).then((res) => {
         this.schemaData = res.data;
+        this.schemaNameFilter = res.data[0];
+        this.getTables();
       });
     },
     // 点击注册资源的 数据库列表
@@ -1092,7 +1077,8 @@ export default {
       listUnCached(
         "table",
         "",
-        this.tableNameFilter == null ? "" : this.tableNameFilter,
+        this.tableNameFilter,
+        this.schemaNameFilter,
         this.$refs.tree_left.query.dataSource
       ).then((resp) => {
         this.treeLoading = false;
@@ -1146,10 +1132,8 @@ export default {
     // 注册资源
     registTable () {
       this.registTableFlag = true;
-      this.schemaNameFilter = '';
-      this.tableNameFilter = null;
+      this.tableNameFilter = "";
       this.getSchemas();
-      this.getTables();
     },
     // 选择注册表 筛选
     filterNode (value, data) {
@@ -1327,16 +1311,6 @@ export default {
         this.registTableFlag = false; //关闭上一步
       });
       this.dialogVisible_forms = false; //关闭多选的表单弹窗显示
-    },
-    // 点击 所属目录层级联动
-    handleChange (val) {
-      // const checkedNode = this.$refs["cascaderArr"].getCheckedNodes();
-      //   //获取当前点击节点的label值
-      //   //获取由label组成的数组
-      // return false
-      // this.form.folderUuid = checkedNode[0].id
-      let folderUuid = val.toString();
-      this.form.folderUuid = folderUuid;
     },
     // 格式化数据，递归将空的children置为undefined
     formatCascaderData (data) {
