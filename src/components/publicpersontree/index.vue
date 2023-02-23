@@ -229,7 +229,7 @@ export default {
   width: calc(100% - 300px);
   box-sizing: border-box;
 }
-.child_table >>> .el-table {
+.el-aside,.child_table >>> .el-table {
   height: 350px;
   overflow: auto;
 }

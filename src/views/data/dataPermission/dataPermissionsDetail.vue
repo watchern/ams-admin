@@ -3,26 +3,26 @@
         <el-table
             :data="tableData"
             style="width: 100%">
-            <el-table-column
-                prop="TYPENAME"
-                label="类型"
-                width="180">
-                <template slot-scope="scope">
-                    {{scope.row.TYPENAME | typeFilter}}
-                </template>
-            </el-table-column>
+<!--            <el-table-column-->
+<!--                prop="TYPENAME"-->
+<!--                label="类型"-->
+<!--                width="180">-->
+<!--                <template slot-scope="scope">-->
+<!--                    {{scope.row.TYPENAME | typeFilter}}-->
+<!--                </template>-->
+<!--            </el-table-column>-->
             <el-table-column
                 prop="TYPENAME"
                 label="数据源"
                 width="180">
                 <template slot-scope="scope">
-                    {{scope.row.TYPENAME | tableDataSourceFilter}}
+                    {{scope.row.TABLEDATASOURCE | tableDataSourceFilter}}
                 </template>
             </el-table-column>
-            <el-table-column
-                prop="FOLDER"
-                label="文件夹">
-            </el-table-column>
+<!--            <el-table-column-->
+<!--                prop="FOLDER"-->
+<!--                label="文件夹">-->
+<!--            </el-table-column>-->
             <el-table-column
                 prop="TABLENAME"
                 label="表名">
@@ -114,23 +114,23 @@ export default {
     },
     filters:{
         tableDataSourceFilter(val){
-            let str = val.substring(1,val.length);
-            if (str == 'Postgre'){
+            // let str = val.substring(1,val.length);
+            if (val == 'Postgre'){
                 return 'DWS'
-            }else if (str == 'Hive'){
+            }else if (val == 'Hive'){
                 return 'MRS'
             }
         },
-        typeFilter(val){
-            let str = val.substring(0,1);
-            if (str == '0'){
-                return '系统'
-            }else if (str == '1'){
-                return '主题'
-            }else if (str == '2'){
-                return '分层'
-            }
-        }
+        // typeFilter(val){
+        //     let str = val.substring(0,1);
+        //     if (str == '0'){
+        //         return '系统'
+        //     }else if (str == '1'){
+        //         return '主题'
+        //     }else if (str == '2'){
+        //         return '分层'
+        //     }
+        // }
     }
 }
 </script>

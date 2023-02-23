@@ -177,7 +177,9 @@
                            show-overflow-tooltip
                            min-width="150px">
             <template slot-scope="scope">
-              <span @click="showApplyDetail(scope.row)">{{ scope.row.permissionApplyName }}</span>
+              <el-link type="text"
+                       :underline="false" @click="showApplyDetail(scope.row)">{{ scope.row.permissionApplyName }}
+              </el-link>
             </template>
           </el-table-column>
           <el-table-column prop="createTime"
@@ -414,7 +416,6 @@ export default {
       //   this.dataBaseData.condition.permissionApplyStartTime = formatDate(startTime);
       //   this.dataBaseData.condition.permissionApplyEndTime = formatDate(endTime);
       // }
-      console.log(permissionApplyStartTime,"permissionApplyStartTime")
       queryAllOperatePermissionApply(this.dataBaseData).then(resp => {
         if (resp.data) {
           this.tableData = resp.data.records;
@@ -452,6 +453,10 @@ export default {
     goDelete () {
       if (this.selected.length == 0) {
         this.$notify.warning('未选择要删除的对象');
+        return;
+      }
+      if (this.selected[0].workFlowState != '0') {
+        this.$notify.warning('办理中或办理完成的业务不可删除');
         return;
       }
       let operatePermissionApplyUuidList = [];
