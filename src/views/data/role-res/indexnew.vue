@@ -10,7 +10,11 @@
     <el-row style="display: flex; height: 100%" :gutter="20">
       <!-- @原始数据表树@ -->
       <el-col :span="6">
-        <LeftTrees ref="tree_left" ></LeftTrees>
+        <LeftTrees ref="tree_left"
+          @switchTabAccredit="switchTabAccredit" 
+          @switchDataSourceAccredit="switchDataSourceAccredit"
+          @addRoleCheck="addRoleCheck"
+        ></LeftTrees>
       </el-col> 
 
       <!-- @>符号@ -->
@@ -29,7 +33,12 @@
 
       <!-- @选中的表数据@ -->
       <el-col :span="6">
-        <CentreTree ref="tree_centre" @nodeClick="onclick2" @unLeftTreeSelected="unLeftTreeSelected" ></CentreTree>
+        <CentreTree ref="tree_centre" 
+          @nodeClick="onclick2" 
+          @unLeftTreeSelected="unLeftTreeSelected"
+          @switchTabAccreditLeft="switchTabAccreditLeft" 
+          @switchDataSourceAccreditLeft="switchDataSourceAccreditLeft" 
+        ></CentreTree>
       </el-col> 
 
       <!-- @表及表字段选择@ -->
@@ -209,8 +218,6 @@ export default {
     
     //反显数据
     getResByRole2(this.$route.params.roleUuid).then((resp) => {
-      //显示选中树节点-中间树
-      this.$refs.tree_centre.loadLeftTreeTypeFun(resp.data)
       //反勾选树节点-左侧树
       this.$refs.tree_left.uncheckTreeNode(resp.data)
       //赋值
@@ -218,12 +225,34 @@ export default {
     });
   },
   methods: {
+    //页签切换联动
+    switchTabAccredit(index){
+      this.$refs.tree_centre.switchTabAccredit(index)
+    },
+    switchTabAccreditLeft(index){
+      this.$refs.tree_left.switchTabAccreditLeft(index)
+    },
+    //数据源切换
+    switchDataSourceAccredit(val){
+      this.$refs.tree_centre.switchDataSourceAccredit(val)
+    },
+    switchDataSourceAccreditLeft(val){
+      this.$refs.tree_left.switchDataSourceAccreditLeft(val)
+    },
     //取消左侧树节点勾选状态
-    unLeftTreeSelected(data,newTreeNodeSelectedObj){
+    unLeftTreeSelected(data){
       this.$refs.tree_left.unLeftTreeSelected(data.id)
-      //重新取最新数据
-      this.treeNodeSelectedObj = []
-      this.treeNodeSelectedObj = newTreeNodeSelectedObj
+      console.log(data)
+      this.treeNodeSelectedObj.forEach(function(item,k){
+        if(data.strLevel === item.strLevel){
+          item.data.forEach(function(t,k){
+            if(data.id === t.id){
+              item.data.splice(k, 1);
+            }
+            
+          })
+        }
+      })
     },
     whereStrFun(val){
       //取筛选语句
@@ -414,8 +443,14 @@ export default {
     // 获取数据并赋权
     addRoleCheck() {
       this.treeNodeSelectedObj = []
-      this.treeNodeSelectedObj = JSON.parse(JSON.stringify(this.$refs.tree_left.treeNodeSelectedObj))
-      this.$refs.tree_centre.loadLeftTreeTypeFun(this.treeNodeSelectedObj)
+      var treeNodeSelectedObj2 = this.$refs.tree_left.treeNodeSelectedObj
+      if(treeNodeSelectedObj2.length>0){
+        this.treeNodeSelectedObj = JSON.parse(JSON.stringify(this.$refs.tree_left.treeNodeSelectedObj))
+      }
+
+      //中间树数据反显
+      var leftTreeCheckedNodes = JSON.parse(JSON.stringify(this.$refs.tree_left.getCheckedNodes()))
+      this.$refs.tree_centre.loadLeftTreeTypeFun(leftTreeCheckedNodes)
     },
     clearWriteNode() {
       let leftCheckNode = this.$refs.treeTable.getCheckedNodes(false, false);
@@ -580,7 +615,7 @@ export default {
     /* 展示表字段 */
     onclick2(node) {
       var _this = this
-      if (node.type === "table") {
+      if (node.type === "table" || node.type === "view") {
         this.listLoading = true;
         if(this.currentData!=null){
           //取选中的字段集合
@@ -635,13 +670,24 @@ export default {
               this.$set(d, "selected", d.roleCol != null);
             }
           });
-            // 初始化条件选择数据
+          // 初始化条件选择数据
           this.queryData.columnList=this.queryData;
+          //赋值
+          for(var i=0;i<this.treeNodeSelectedObj.length;i++){
+            if(this.treeNodeSelectedObj[i].strLevel === node.strLevelType){
+              for(var k=0;k<this.treeNodeSelectedObj[i].data.length;k++){
+                if(node.id === this.treeNodeSelectedObj[i].data[k].id){
+                  this.treeNodeSelectedObj[i].data[k].cols = node.cols
+                  break
+                }
+              }
+              break
+            }
+          }
         }).catch(err=>{
           this.listLoading = false;
           this.$notify(commonNotify({ type: "error", message: "查询失败" }));
-      });;
-        
+        });;
       }
     },
     //全选
@@ -664,6 +710,7 @@ export default {
         background: "rgba(0, 0, 0, 0.7)",
       });
       //encryptType: 'NONE',
+      console.log(this.treeNodeSelectedObj)
       saveRoleTable2(this.roleUuid, this.treeNodeSelectedObj).then(() => {
         loading.close();
         this.$notify(commonNotify({ type: "success", message: "保存成功！" }));

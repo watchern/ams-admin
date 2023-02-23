@@ -158,16 +158,21 @@ export default {
 
   },
   methods: {
+    switchTabAccredit(index){
+      this.activeName = index
+    },
+    switchDataSourceAccredit(val){
+      this.query.dataSource = val
+    },
     //删除节点
     removeNode(node,data){
+      var _this=this
       if(node.level===1){
         //如果是根节点下的表则直接删除
         this.centreTreeNodeSelectedObj.forEach(function(item,k){
-          item.data.forEach(function(t,index){
-            if(t.id===data.id){
-              item.data.splice(index, 1);
-            }
-          })
+          if(item.id===data.id){
+            _this.centreTreeNodeSelectedObj.splice(k, 1);
+          }
         })
       }
       if(node.level>1){
@@ -175,32 +180,20 @@ export default {
         if(node.parent.childNodes.length>1){
           //只删除表
           this.centreTreeNodeSelectedObj.forEach(function(item,k){
-            item.data.forEach(function(t,index){
-              if(t.id===data.id){
-                item.data.splice(index, 1);
-              }
-            })
+            if(item.id===data.id){
+              _this.centreTreeNodeSelectedObj.splice(k, 1);
+            }
           })
         }else{
           //删除文件夹和表
-          this.centreTreeNodeSelectedObj.forEach(function(item,k){
-            item.data.forEach(function(t,index){
-              if(t.id===data.id){
-                item.data.splice(index, 1);
-              }
-            })
-            item.data.forEach(function(t,index){
-              if(t.id===data.pid){
-                item.data.splice(index, 1);
-              }
-            })
-          })
+          this.centreTreeNodeSelectedObj=[]
         }
       }
       //刷新树
       this.loadLeftTreeTypeFun(this.centreTreeNodeSelectedObj)
       //去掉左侧树的勾选状态
-      this.$emit("unLeftTreeSelected",data,this.centreTreeNodeSelectedObj)
+      data.strLevel = this.query.dataSource
+      this.$emit("unLeftTreeSelected",data)
     },
     //获取选中的值
     loadLeftTreeTypeFun(datas) {
@@ -210,13 +203,8 @@ export default {
 
       //重新赋值
       this.centreTreeNodeSelectedObj = datas
-      var strLevel = this.activeName + this.query.dataSource
-      for(var i=0;i<this.centreTreeNodeSelectedObj.length;i++){
-        if(this.centreTreeNodeSelectedObj[i].strLevel === strLevel){
-          var treeData = this.toTree(this.centreTreeNodeSelectedObj[i].data)
-          this.tree_list = treeData
-        }
-      }
+      var treeData = this.toTree(datas)
+      this.tree_list = treeData
     },
     toTree(data) {
       // 1.定义最外层的数组
@@ -273,6 +261,8 @@ export default {
         // 目录
         this.post_getDataTreeNode(); //目录
       }
+      //数据授权-资源绑定-切换数据源
+      this.$emit("switchDataSourceAccreditLeft", val)
     },
     // 系统
     post_getBusinessSystemTree() {
@@ -327,14 +317,15 @@ export default {
       } else if (tab.index == "2") {
         this.post_getLayeredTree(); //分层
       } 
-     
+      //数据授权-资源绑定-联动效果
+      this.$emit("switchTabAccreditLeft", tab.name)
     },
     filterNode(value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
     nodeClick (data) {
-      var strLevel = this.activeName + this.query.dataSource
+      var strLevel = this.query.dataSource
       data.strLevelType = strLevel
       this.$emit("nodeClick",data)
     },

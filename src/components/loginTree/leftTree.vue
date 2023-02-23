@@ -301,6 +301,33 @@ export default {
     this.post_getLoginUserAdminRole();
   },
   methods: {
+    switchTabAccreditLeft(index){
+      this.activeName = index
+      if (index == "0") {
+        this.post_getBusinessSystemTree(); //系统
+      } else if (index == "1") {
+        this.post_getThemeTree(); //主题
+      } else if (index == "2") {
+        this.post_getLayeredTree(); //分层
+      } 
+    },
+    switchDataSourceAccreditLeft(val){
+      this.query.dataSource = val
+      if (this.activeName == "0") {
+        // 系统
+        this.post_getBusinessSystemTree(); //系统
+      } else if (this.activeName == "1") {
+        // 主题
+        this.post_getThemeTree(); //主题
+      } else if (this.activeName == "2") {
+        // 分层
+        this.post_getLayeredTree(); //分层
+      }
+    },
+    getCheckedNodes(){
+      var leftTreeCheckedNodes = this.$refs.tree2.getCheckedNodes(false,true)
+      return leftTreeCheckedNodes
+    },
     post_getLoginUserAdminRole () {
       this.loading = true;
       getLoginUserAdminRole().then((resp) => {
@@ -311,7 +338,7 @@ export default {
     //树节点选择
     setCheckedNodes (node, isChecked) {
       var _this = this;
-      var strLevel = this.activeName + this.query.dataSource;
+      var strLevel = this.query.dataSource;
       var isRepeat = true;
       var obj = {};
       obj.strLevel = strLevel;
@@ -349,6 +376,7 @@ export default {
       } else {
         this.treeNodeSelectedObj.push(obj);
       }
+      console.log(this.treeNodeSelectedObj)
     },
 
     // 树内不可拖拽
@@ -393,7 +421,8 @@ export default {
       } else if (node.level >= 1) {
         //SQL编辑器、数据注册的表才需要展示字段
         if (node.data.type === "table" && (this.loadLeftTreeType === "1" || this.loadLeftTreeType==="")) {
-          var strLevel = this.activeName + this.query.dataSource;
+          //个人空间下的表查询字段不需要权限
+          var strLevel = this.activeName
           var nodeList = getTableField(node, this.query.dataSource, this.loadLeftTreeType, strLevel);
           Promise.all([nodeList]).then((res) => {
             resolve(res[0]);
@@ -487,6 +516,8 @@ export default {
       //   // 目录
       //   this.post_getDataTreeNode(); //目录
       // }
+      //数据授权-资源绑定-切换数据源
+      this.$emit("switchDataSourceAccredit", val)
     },
     // 系统
     post_getBusinessSystemTree () {
@@ -512,7 +543,10 @@ export default {
         //加载勾选数据
         this.$nextTick(() => {
           this.inverse();
+          //数据授权-资源绑定-联动效果
+          this.$emit("addRoleCheck")
         });
+        
       });
     },
     // 主题
@@ -536,6 +570,8 @@ export default {
         //加载勾选数据
         this.$nextTick(() => {
           this.inverse();
+          //数据授权-资源绑定-联动效果
+          this.$emit("addRoleCheck")
         });
       });
     },
@@ -560,6 +596,8 @@ export default {
         //加载勾选数据
         this.$nextTick(() => {
           this.inverse();
+          //数据授权-资源绑定-联动效果
+          this.$emit("addRoleCheck")
         });
       });
     },
@@ -657,7 +695,7 @@ export default {
     },
     // 反选
     inverse () {
-      var strLevel = this.activeName + this.query.dataSource;
+      var strLevel = this.query.dataSource;
       if (this.treeNodeSelectedObj.length > 0) {
         for (var i = 0; i < this.treeNodeSelectedObj.length; i++) {
           if (this.treeNodeSelectedObj[i].strLevel === strLevel) {
@@ -671,14 +709,18 @@ export default {
     batchSelect (seletedDatas) {
       if (typeof seletedDatas != "undefined") {
         var checkedKeys = []
+        this.defaultExpandedKeys=["ROOT"]
         seletedDatas.forEach((node) => {
-          if (node.type === "table") {
+          if (node.type === "table" || node.type === "view") {
             //设置默认展开的节点 如果不展开节点 默认选中不生效
-            for (var i = 0; i < this.defaultExpandedKeys.length; i++) {
-              if (this.defaultExpandedKeys[i] != node.pid) {
-                this.defaultExpandedKeys.push(node.pid);
-                break;
-              }
+            if(this.activeName==='0'){
+              this.defaultExpandedKeys.push(node.businessSystemId);
+            }
+            if(this.activeName==='1'){
+              this.defaultExpandedKeys.push(node.themeId);
+            }
+            if(this.activeName==='2'){
+              this.defaultExpandedKeys.push(node.layeredId);
             }
           }
           if (node.id != null && node.type != "noNeedCheck" && node.type === "table") {
@@ -719,7 +761,9 @@ export default {
       this.query.tableThemeId = ''
       this.query.tableLayeredId = ''
       this.$emit("queryList", this.query, this.show_details = false)//查询全部注册表
-
+      //数据授权-资源绑定-联动效果
+      this.$emit("switchTabAccredit", tab.name)
+      this.$emit("addRoleCheck")
     },
     filterNode (value, data, node) {
       // if (!value) return true;
