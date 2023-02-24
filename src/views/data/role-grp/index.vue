@@ -288,14 +288,15 @@ export default {
     getRoleGrp(this.roleUuid).then((resp) => {
       this.tableData = resp.data;
     });
+    
   },
   mounted() {
     setTimeout(() => {
       if (this.currentScene && this.currentScene.groups) {
-        document
-          .getElementById("tab-" + this.currentScene.groups[0].sceneGrpUuid)
-          .click();
+        document.getElementById("tab-" + this.currentScene.groups[0].sceneGrpUuid).click();
       }
+      //默认设置第一个选中
+      this.grpUuid = this.currentScene.groups[0].sceneGrpUuid
     }, 1000);
   },
   methods: {

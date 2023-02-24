@@ -2,11 +2,16 @@
   <div class="preview_conter padding10_l">
     <!-- 查询 -->
     <div class="header_search">
-      <query-tags ref="tags"
+      <!-- <query-tags ref="tags"
                   @search="search"
                   @clearSearch="clear"
                   :dropDown="dropDown"
-                  @change="onChange"></query-tags>
+                  @change="onChange"></query-tags> -->
+      <SearchCommon ref="tags"
+                    @search="search"
+                    @clearSearch="clear"
+                    :dropDown="dropDown"
+                    @change="onChange"></SearchCommon>
     </div>
     <!-- 查询 end-->
 
@@ -80,11 +85,18 @@
         <el-button type="primary"
                    size="small"
                    class="oper-btn"
-                   @click="edit_list()">修改</el-button>
+                   @click="edit_list()"><img src="../../../src/styles/image/edits.png"
+               class="btn_icon icon1"
+               alt="">
+          <img src="../../../src/styles/image/edits2.png"
+               class="btn_icon icon2"
+               alt="">
+          修改</el-button>
       </div>
     </div>
 
-    <el-skeleton style="width:100%;float: left;height: calc(100vh - 290px);overflow: auto;"
+    <el-skeleton style="width:100%;float: left;overflow: auto;"
+                 :class="isBtn == true ?'is_min_heihgt':'is_heihgt'"
                  animated
                  :loading="list_loading"
                  :count="4">
@@ -124,7 +136,8 @@
           </div>
         </div>
       </template>
-      <div class="list_table">
+      <div class="list_table"
+           :class="isBtn == true ?'is_min_heihgt':'is_heihgt'">
         <el-table ref="multipleTable"
                   :data="list"
                   style="width: 100%"
@@ -173,13 +186,15 @@
                         </el-card>
                       </div>
                     </div>
-                    <p class="text"
-                       v-if="scope.row.tableRelationQuery">
+                    <p class="text vertical"
+                       :title="scope.row.tableRelationQuery.tableRemarks"
+                       v-if="scope.row.tableRelationQuery.tableRemarks">
                       描述：{{ scope.row.tableRelationQuery.tableRemarks }}
                     </p>
-                    <p class="text"
+                    <p class="text "
                        v-else>描述：暂无</p>
-                    <p class="text"
+                    <p class="text vertical"
+                       :title="scope.row.colMeta"
                        v-if="scope.row.colMeta">字段：{{ scope.row.colMeta }}</p>
                     <p class="text"
                        v-else>字段：暂无</p>
@@ -205,18 +220,17 @@
                      :page-size="list_data.size"
                      :current-page-sync="list_data.current"
                      layout="total, sizes, prev, pager, next, jumper"
-                     :total="list_data.total"
-                     v-if="list_data.total"></el-pagination>
+                     :total="list_data.total"></el-pagination>
     </div>
 
   </div>
 </template>
 
 <script>
-import queryTags from "@/components/queryTags";
+// import queryTags from "@/components/queryTags";
 
 export default {
-  components: { queryTags },
+  // components: { queryTags },
   props: {
     list: {
       type: Array,
@@ -348,6 +362,14 @@ export default {
 };
 </script>
 <style scoped>
+/* 有按钮 */
+.is_min_heihgt {
+  height: calc(100vh - 290px);
+}
+/* 没有按钮 */
+.is_heihgt {
+  height: calc(100vh - 260px);
+}
 /* 操作btn */
 .common_btn {
   box-sizing: border-box;
@@ -574,6 +596,12 @@ export default {
   margin-bottom: 7px;
   font-size: 14px;
 }
+.vertical {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
 
 .table_type {
   display: flex;
@@ -723,11 +751,23 @@ export default {
   /* overflow: auto; */
 }
 
+/* table 暂无数据 */
 .list_table >>> .el-table__empty-block {
-  min-height: 400px !important;
+  /* min-height: 400px !important; */
+  height: calc(100vh - 300px) !important;
+  box-sizing: border-box;
+}
+/* 隐藏列表的多选框 */
+.list_table >>> .el-table__header-wrapper {
+  display: none;
 }
 
 .list_table >>> .el-table tr {
   background: transparent !important;
+}
+
+.list_table >>> .el-table th.el-table__cell.is-leaf,
+.list_table >>> .el-table td.el-table__cell {
+  border: none !important;
 }
 </style>

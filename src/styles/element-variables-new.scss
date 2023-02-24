@@ -28,6 +28,10 @@ $radius30:30px;//圆角 按钮
 .mt10{
   margin-top: 10px;
 }
+// 控制button的icon 居中
+.oper-btn span{
+  display: flex;
+}
 // 默认button
 .el-button {
   background: #ffffff !important;
@@ -37,17 +41,11 @@ $radius30:30px;//圆角 按钮
   border-radius: $radius30!important;
 
 }
-// 控制button的icon 居中
-.el-button span{
-  display: flex;
-  justify-content: center;
-}
+
 
 .el-button:active {
-  // background: rgb(90, 195, 235) !important;
-  // border-color: rgb(90, 195, 235) !important;
-    	background:$dividers  !important;
-    border-color: $dividers !important;
+  background:$dividers  !important;
+  border-color: $dividers !important;
   color: rgb(242, 243, 253) !important;
   outline: none;
   font-weight: bold;
@@ -107,6 +105,7 @@ $radius30:30px;//圆角 按钮
   background: #EAEEF3!important;
 }
 
+
 .el-button--small{
   height: 32px;
   line-height: 32px;
@@ -147,6 +146,17 @@ $radius30:30px;//圆角 按钮
   
 }
 
+// 删除
+.el-link.el-link--danger .el-link--inner{
+  color: $text-color-red!important;
+}
+// .el-link--danger:hover{
+
+// }
+.el-link.el-link--danger.is-underline:hover:after{
+   border-color: $text-color-red!important;
+}
+
 // 查询按钮
 // .search_btn{
 // 	background:$dividers  !important;
@@ -165,6 +175,7 @@ $radius30:30px;//圆角 按钮
 // baby区域
 .home{
     background:  linear-gradient(133deg, #ABC2FA 0%, #D9DACD 37%, #E8F2FF 64%, #9EB9F8 100%) !important;
+    min-width: 1366px!important;
 }
 // 内容区域
 .page-container{
@@ -239,6 +250,8 @@ background: #EEF0FD !important;
   }
 
 // 多选框
+
+
  .el-checkbox .el-checkbox__input .el-checkbox__inner{
   border: 1px solid #ddd !important;
   background-color: #fff!important;
@@ -264,6 +277,12 @@ background: #EEF0FD !important;
 .el-checkbox__inner::after{
     left: 5px!important;
     top: 2px!important;
+}
+// 全选框
+.el-checkbox__input.is-indeterminate .el-checkbox__inner{
+  background: $primary-btn-color !important;
+  border: 1px solid $primary-btn-color !important;
+  border-radius: 3px!important;
 }
 // 底部面包屑导航
 .home-right-footer{
@@ -380,17 +399,22 @@ background-color: #EBF2FC!important;
 .el-button:hover .icon1{
   // display: none!important;
     width: 0;
-    margin-right: 0!important;
-
-
+    margin-right: 0;
 }
 .el-button:hover .icon2{
   // display: block!important;
     width: 14px;
-    margin-right: 4px!important;
-
-
+    margin-right: 4px;
 }
+ .is-disabled:hover .icon1{
+  width: 14px!important;;
+  margin-right: 4px!important;
+}
+.is-disabled:hover .icon2{
+    width: 0!important;
+    margin-right: 0!important;
+}
+
 
 // 顶部筛选条件
 .query-field .el-form-item{

@@ -2,142 +2,145 @@
   <div class="page-container">
     <div class="pd20">
       <div class="filter-container">
-      <div class="query-field">
-        <el-form :inline="true"
-                 :model="query"
-                 label-position="bottom">
-          <el-form-item label="规则名称：">
-            <el-input v-model="dataBaseData.ruleName"
-                      placeholder="请输入内容"
-                      clearable></el-input>
-          </el-form-item>
+        <div class="query-field">
+          <el-form :inline="true"
+                   :model="query"
+                   label-position="bottom">
+            <el-form-item label="规则名称：">
+              <el-input v-model="dataBaseData.ruleName"
+                        placeholder="请输入内容"
+                        clearable></el-input>
+            </el-form-item>
 
-          <el-form-item label="角色名称：">
-            <el-input v-model="dataBaseData.createUserName"
-                      placeholder="请输入内容"
-                      clearable></el-input>
-          </el-form-item>
+            <el-form-item label="创建人名称：">
+              <el-input v-model="dataBaseData.createUserName"
+                        placeholder="请输入内容"
+                        clearable></el-input>
+            </el-form-item>
 
-<!--          <el-form-item label="创建时间：">-->
-<!--            <el-date-picker v-model="createTime"-->
-<!--                            type="daterange"-->
-<!--                            range-separator="-"-->
-<!--                            start-placeholder="开始日期"-->
-<!--                            end-placeholder="结束日期"-->
-<!--                            @change="getTime">-->
-<!--            </el-date-picker>-->
-<!--          </el-form-item>-->
-          <el-form-item label="创建时间范围："
-                                        prop="createTime"
-                                        style="display: inline-block;">
-          <el-date-picker v-model="dataBaseData.startTime"
-                          type="datetime"
-                          placeholder="开始时间"
-                          value-format="yyyy-MM-dd HH:mm:ss" />
-          <el-date-picker v-model="dataBaseData.endTime"
-                          type="datetime"
-                          placeholder="结束时间"
-                          value-format="yyyy-MM-dd HH:mm:ss" />
-        </el-form-item>
-          <el-form-item>
-            <el-button type="primary"
-                       @click="goQuery">查询</el-button>
-            <el-button type="primary"
-                       @click="reset">重置</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
+            <!--          <el-form-item label="创建时间：">-->
+            <!--            <el-date-picker v-model="createTime"-->
+            <!--                            type="daterange"-->
+            <!--                            range-separator="-"-->
+            <!--                            start-placeholder="开始日期"-->
+            <!--                            end-placeholder="结束日期"-->
+            <!--                            @change="getTime">-->
+            <!--            </el-date-picker>-->
+            <!--          </el-form-item>-->
+            <el-form-item label="创建时间范围："
+                          prop="createTime"
+                          style="display: inline-block;">
+              <el-date-picker v-model="dataBaseData.startTime"
+                              type="datetime"
+                              placeholder="开始时间"
+                              value-format="yyyy-MM-dd HH:mm:ss" />
+              <el-date-picker v-model="dataBaseData.endTime"
+                              type="datetime"
+                              placeholder="结束时间"
+                              value-format="yyyy-MM-dd HH:mm:ss" />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary"
+                         @click="goQuery">查询</el-button>
+              <el-button type="primary"
+                         @click="reset">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
 
-      <div class="mb10">
-        <el-row>
-          <el-col align="right">
-            <el-button type="primary"
-                       class="oper-btn"
-                       @click="add()">
-              <img src="../../../styles/image/add.png"
-                   class="btn_icon icon1"
-                   alt="">
-              <img src="../../../styles/image/add2.png"
-                   class="btn_icon icon2"
-                   alt="">
-              新增
-            </el-button>
+        <div class="mb10">
+          <el-row>
+            <el-col align="right">
+              <el-button type="primary"
+                         class="oper-btn"
+                         @click="add()">
+                <img src="../../../styles/image/add.png"
+                     class="btn_icon icon1"
+                     alt="">
+                <img src="../../../styles/image/add2.png"
+                     class="btn_icon icon2"
+                     alt="">
+                新增
+              </el-button>
 
-            <el-button type="primary"
-                       class="oper-btn"
-                       @click="edit">
-              <img src="../../../styles/image/edits.png"
-                   class="btn_icon"
-                   alt="">
-              编辑</el-button>
-            <el-button class="oper-btn"
-                       type="primary"
-                       @click="goDelete"><img src="../../../styles/image/delete.png"
-                   class="btn_icon"
-                   alt="">删除</el-button>
-          </el-col>
-        </el-row>
-      </div>
+              <el-button type="primary"
+                         class="oper-btn"
+                         @click="edit">
+                <img src="../../../styles/image/edits.png"
+                     class="btn_icon icon1"
+                     alt="">
+                <img src="../../../styles/image/edits2.png"
+                     class="btn_icon icon2"
+                     alt="">编辑</el-button>
+              <el-button class="oper-btn"
+                         type="primary"
+                         @click="goDelete"><img src="../../../styles/image/delete.png"
+                     class="btn_icon icon1"
+                     alt="">
+                <img src="../../../styles/image/delete2.png"
+                     class="btn_icon icon2"
+                     alt="">删除</el-button>
+            </el-col>
+          </el-row>
+        </div>
 
-      <!-- 列表 -->
-      <el-table
-                v-loading="loading"
-                :data="tableData"
-                border
-                style="width: 100%"
-                stripe
-                row-key="id"
-                height="calc(100vh - 300px)"
-                @selection-change="handleSelectionChange">
-        <!-- :reserve-selection="true" -->
-        <el-table-column type="selection"
-                         width="55"> </el-table-column>
-        <el-table-column prop="ruleName"
-                         label="规则名称"
-                         show-overflow-tooltip
-                         min-width="150px"></el-table-column>
-        <el-table-column prop="isAtartUp"
-                         label="是否启动"
-                         align="center"
-                         show-overflow-tooltip
-                         width="150px">
-          <template slot-scope="scope">
-            <span v-if="scope.row.isAtartUp === 0">否</span>
-            <span v-if="scope.row.isAtartUp === 1">是</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="secretLevelName"
-                         label="数据密级"
-                         width="150px"
-                         align="center"
-                         show-overflow-tooltip></el-table-column>
-        <el-table-column prop="recognitionRulesName"
-                         label="试别规则"
-                         width="150px"
-                         align="center"
-                         show-overflow-tooltip></el-table-column>
-        <el-table-column prop="createTime"
-                         label="创建时间"
-                         align="center"
-                         show-overflow-tooltip
-                         width="200px">
-          <template slot-scope="scope">
-            {{ dateFormatter(scope.row.createTime) }}
-          </template>
-        </el-table-column>
+        <!-- 列表 -->
+        <el-table v-loading="loading"
+                  :data="tableData"
+                  border
+                  style="width: 100%"
+                  stripe
+                  row-key="id"
+                  height="calc(100vh - 300px)"
+                  @selection-change="handleSelectionChange">
+          <!-- :reserve-selection="true" -->
+          <el-table-column type="selection"
+                           width="55"> </el-table-column>
+          <el-table-column prop="ruleName"
+                           label="规则名称"
+                           show-overflow-tooltip
+                           min-width="150px"></el-table-column>
+          <el-table-column prop="isAtartUp"
+                           label="是否启动"
+                           align="center"
+                           show-overflow-tooltip
+                           width="150px">
+            <template slot-scope="scope">
+              <span v-if="scope.row.isAtartUp === 0">否</span>
+              <span v-if="scope.row.isAtartUp === 1">是</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="secretLevelName"
+                           label="数据密级"
+                           width="150px"
+                           align="center"
+                           show-overflow-tooltip></el-table-column>
+          <el-table-column prop="recognitionRulesName"
+                           label="识别规则"
+                           width="150px"
+                           align="center"
+                           show-overflow-tooltip></el-table-column>
+          <el-table-column prop="createTime"
+                           label="创建时间"
+                           align="center"
+                           show-overflow-tooltip
+                           width="200px">
+            <template slot-scope="scope">
+              {{ dateFormatter(scope.row.createTime) }}
+            </template>
+          </el-table-column>
 
-        <el-table-column prop="createUserName"
-                         label="创建人"
-                         align="center"
-                         show-overflow-tooltip
-                         width="200px"></el-table-column>
-      </el-table>
+          <el-table-column prop="createUserName"
+                           label="创建人"
+                           align="center"
+                           show-overflow-tooltip
+                           width="200px"></el-table-column>
+        </el-table>
       </div>
       <el-pagination layout="total, sizes, prev, pager, next, jumper"
                      @size-change="handleSizeChange"
                      @current-change="handleCurrentChange"
-                     :total="dataBaseData.total"
-                     ></el-pagination>
+                     :total="dataBaseData.total"></el-pagination>
     </div>
 
     <!-- 新增弹窗 -->

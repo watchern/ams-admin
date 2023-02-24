@@ -109,11 +109,11 @@
                          class="oper-btn"
                          @click="openSqlDraftList"
                          style="width: 120px">SQL草稿管理</el-button>
-              <el-button type="primary"
+              <!-- <el-button type="primary"
                          size="small"
                          class="oper-btn"
                          @click="assistSqlEditor"
-                         style="width: 120px">辅助SQL编辑器</el-button>
+                         style="width: 120px">辅助SQL编辑器</el-button> -->
               <el-button type="primary"
                          size="small"
                          class="oper-btn"
@@ -1317,13 +1317,13 @@ export default {
             this.tempId = this.$store.getters.datauserid;
             // this.tempId = ''
             this.path = "当前执行SQL保存路径:" + this.tempPath;
-            this.modelResultSavePathId = this.tempId;
+            this.modelResultSavePathId = "createTemporaryDataFolder";
           } else {
             // 如果不为空则反显上次选中的
             this.tempPath = result.data.sqlLocationName;
             this.tempId = result.data.sqlLocationId;
             this.path = "当前执行SQL保存路径:" + this.tempPath;
-            this.modelResultSavePathId = this.tempId;
+            this.modelResultSavePathId = "createTemporaryDataFolder";
             this.defaultSqlLocation = result.data;
           }
         });

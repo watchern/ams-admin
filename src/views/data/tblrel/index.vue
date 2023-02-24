@@ -25,13 +25,19 @@
                        class="oper-btn edit"
                        :disabled="selections.length !== 1"
                        @click="update"><img src="../../../styles/image/edits.png"
-                   class="btn_icon"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/edits2.png"
+                   class="btn_icon icon2"
                    alt="">编辑</el-button>
             <el-button type="primary"
                        class="oper-btn"
                        :disabled="selections.length === 0"
                        @click="deleteRel"><img src="../../../styles/image/delete.png"
-                   class="btn_icon"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/delete2.png"
+                   class="btn_icon icon2"
                    alt="">删除</el-button>
           </el-col>
         </el-row>

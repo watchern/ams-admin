@@ -8,16 +8,17 @@
                 @queryList="query_list_data"></LeftTree>
     </div>
     <div class="right_conter">
-      <DataResourceDisplay @on_deails="onDeailsChange"
-                           :isBtn="isBtn"
-                           @handleCurrentChange="handleCurrent"
-                           @handleSizeChange="handleSize"
-                           @search="search"
-                           :list="list"
-                           :list_data="list_data"
-                           :list_loading="list_loading"
-                           v-if="show_details == false"></DataResourceDisplay>
-
+      <div class="list_style">
+        <DataResourceDisplay @on_deails="onDeailsChange"
+                             :isBtn="isBtn"
+                             @handleCurrentChange="handleCurrent"
+                             @handleSizeChange="handleSize"
+                             @search="search"
+                             :list="list"
+                             :list_data="list_data"
+                             :list_loading="list_loading"
+                             v-if="show_details == false"></DataResourceDisplay>
+      </div>
       <!-- 基本信息详情 -->
       <Details ref="Details_ref"
                :tableMetaUuid="tableMetaUuid"
@@ -121,7 +122,7 @@ export default {
       this.$refs.dataTree.query.pageSize = val;
       this.query_list_data(this.$refs.dataTree.query, false);
     },
-    search(serachParams){
+    search (serachParams) {
       this.list_loading = true;
       let data = this.$refs.dataTree.query;
       let params = {
@@ -147,12 +148,10 @@ export default {
 
 <style scoped>
 @import url("./../../../assets/css/common.css");
-/* 隐藏列表的多选框 */
-.right_conter >>> .el-table__header-wrapper {
-  /* border: 1px solid blue; */
-  /*display: none;*/
-}
-
+/* 隐藏列表的多选框
+.list_style >>> .el-table__header-wrapper {
+  display: none;
+} */
 .page-container {
   display: flex;
   padding: 0 !important;
@@ -181,7 +180,7 @@ export default {
 .tree .tree-option {
   margin-top: 0 !important;
 }
-
+/* 
 .agreeicon0 {
   display: inline-block;
   height: 16px;
@@ -216,5 +215,5 @@ export default {
   background-image: url("../../../assets/img/table_2.png");
   vertical-align: top;
   *vertical-align: middle;
-}
+} */
 </style>

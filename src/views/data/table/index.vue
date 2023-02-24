@@ -13,6 +13,7 @@
     <!-- right_conter -->
     <div class="right_conter">
       <div class="list_style">
+
         <DataResourceDisplay @down_template_cn="DownTemplateCN"
                              @Important_cn="ImportantCn"
                              @Importdata_dictionary="ImportdataDictionary"
@@ -61,8 +62,7 @@
           模式名称：
           <el-select v-model="schemaNameFilter"
                      @change="filterTablesBySchema"
-                     style="width: 400px;"
-                     clearable>
+                     style="width: 400px;">
             <el-option v-for="item in schemaData"
                        :key="item"
                        :label="item"
@@ -71,12 +71,13 @@
         </div>
         <div>
           表名称：
-          <el-input style="width: 330px;margin-left: 10px;"
+          <el-input style="width: 330px; margin-left: 10px;"
                     v-model="tableNameFilter"
                     clearable
                     placeholder="输入想要查询的表名称（模糊搜索）" />
           <el-button type="primary"
                      size="small"
+                     style="margin-left: 10px;"
                      @click="getTables">查询</el-button>
         </div>
         <div class="dlag_conter containerselect padding10">
@@ -88,7 +89,8 @@
                     show-checkbox
                     :filter-node-method="filterNode"
                     @check-change="nodeClick_table"
-                    @node-click="nodeClick_table">
+                    @node-click="nodeClick_table"
+                    default-expand-all>
             <span slot-scope="{ node, data }"
                   class="custom-tree-node">
               <i v-if="data.type === 'USER'">
@@ -216,8 +218,7 @@
             <!--  表说明-->
             <el-row>
               <el-col :span="24">
-                <el-form-item label="表说明："
-                              prop="tableRemarks">
+                <el-form-item label="表说明：">
                   <el-input type="textarea"
                             placeholder="请输入表说明"
                             style="resize: none;width: 100%;"
@@ -550,22 +551,25 @@
             <directory-file-import @fileuploadname="fileuploadname" />
           </el-col>
         </el-row>
-        <span slot="footer">
+        <span slot="footer"
+              class="dialog-footer">
           <el-button size="small"
                      @click="importVisible = false">取消</el-button>
-
           <el-button @click="importTableDictionary()"
                      size="small"
                      type="primary"
+                     :loading="importLoad"
                      v-if="upload_title == '导入数据资源'">导入</el-button>
           <el-button @click="importTablCn()"
                      size="small"
                      type="primary"
+                     :loading="importLoad"
                      v-else-if="upload_title == '导入汉化信息'">导入</el-button>
           <el-button @click="importTableTable()"
-                     v-else
                      size="small"
-                     type="primary">导入</el-button>
+                     type="primary"
+                     :loading="importLoad"
+                     v-else>导入</el-button>
 
           <!-- <el-button type="primary"
                      @click="upload_title = '数据字典导入' ? importTableDictionary()
@@ -631,7 +635,7 @@ export default {
       activeName: "0", //tab切换
       registTableFlag: false, // 注册资源弹窗显示
       schemaNameFilter: "", // 注册资源搜索模式名
-      tableNameFilter: null, // 注册资源搜索表名
+      tableNameFilter: "", // 注册资源搜索表名
       props: {
         label: "label",
         isLeaf: "leaf",
@@ -694,6 +698,7 @@ export default {
         tableLayeredId: '',//资源分层 id
         businessSystemName: '',//所属系统
         businessSystemId: '',//所属系统 id
+        folderUuid: '',//目录id
         fileName: '',//文件名
         dataDate: '',//数据日期
         tableSize: '',//表大小:
@@ -763,7 +768,6 @@ export default {
       dataSource: '',// 详情数据源
       personReverseDisplay: [],// 认权人人员选择反显
       serachParams: {},
-
       // 搜索栏类型
       dropDown: [
         // "表名", "表中文名", "系统", "主题", "分层", "字段",
@@ -794,15 +798,11 @@ export default {
           name: '字段',
           value: []
         },
-      ]
+      ],
+      importLoad: false
     };
   },
   computed: {},
-  watch: {
-    tableNameFilter (val) {
-      this.$refs.tree1.filter(val);
-    },
-  },
   created () { },
   methods: {
     // 查询
@@ -959,9 +959,11 @@ export default {
           message: '请先上传文件',
         });
       } else {
+        this.importLoad = true;
         import_dictionary(this.importtemp).then((res) => {
           if (res.data.code === "200") {
             this.importVisible = false;
+            this.importLoad = false;
             this.$notify({
               title: "成功",
               message: res.data.msg,
@@ -972,6 +974,7 @@ export default {
             this.update_tree();//更新左侧树
             this.query_list(this.$refs.tree_left.query, false);
           } else {
+            this.importLoad = false;
             this.$message({
               type: "error",
               message: res.data.msg,
@@ -1083,7 +1086,6 @@ export default {
         this.Recognition.personName_str = personLibales.join("、")
       });
       this.visible_Recognition = true;
-
       if (this.$refs.orgPeopleTree) {
         if (this.$refs.multipleTable) {
           this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection(); //清空选择的认权人
@@ -1159,25 +1161,17 @@ export default {
       this.tableMetaUuid = data.tableMetaUuid;
       this.show_details = true;
       this.isDisable_input = true;
-
     },
     // 通过模式名过滤表名
-    filterTablesBySchema (val) {
-      if (val) {
-        this.tableData = [];
-        this.tableDataAll.forEach(item => {
-          if (item.id == val) {
-            this.tableData.push(item);
-          }
-        })
-      } else {
-        this.tableData = this.tableDataAll;
-      }
+    filterTablesBySchema () {
+      this.getTables();
     },
     // 获取模式名
     getSchemas () {
       listSchemas(this.$refs.tree_left.query.dataSource).then((res) => {
         this.schemaData = res.data;
+        this.schemaNameFilter = res.data[0];
+        this.getTables();
       });
     },
     // 点击注册资源的 数据库列表
@@ -1186,7 +1180,8 @@ export default {
       listUnCached(
         "table",
         "",
-        this.tableNameFilter == null ? "" : this.tableNameFilter,
+        this.tableNameFilter,
+        this.schemaNameFilter,
         this.$refs.tree_left.query.dataSource
       ).then((resp) => {
         this.treeLoading = false;
@@ -1240,10 +1235,8 @@ export default {
     // 注册资源
     registTable () {
       this.registTableFlag = true;
-      this.schemaNameFilter = '';
-      this.tableNameFilter = null;
+      this.tableNameFilter = "";
       this.getSchemas();
-      this.getTables();
     },
     // 选择注册表 筛选
     filterNode (value, data) {
@@ -1328,16 +1321,6 @@ export default {
         });
         return false;
       }
-      // 选择多个数据表
-      // if (this.form.check_list.length >= 2) {
-      //   this.post_getColsInfoByTableName(); //获取列信息
-      //   this.dialogVisible_forms = true;
-      // } else {
-      //   // this.registTableFlag = false;//关闭上一步
-      //   this.dialogVisible_information = true; //显示下一步 基本信息
-      //   this.form.personLiables = []//清空责任人
-      // }
-
       const params = {
         dbName: dbName[0],
         tbNames: tbList,
@@ -1363,7 +1346,7 @@ export default {
         this.next_data = res.data;
       });
       // 判断是批量注册还是单个注册
-      if (this.form.check_list.length >= 2) {
+      if (tbList.length >= 2) {
         this.dialogVisible_forms = true;
       } else {
         this.dialogVisible_information = true;
@@ -1429,16 +1412,6 @@ export default {
         this.registTableFlag = false; //关闭上一步
       });
       this.dialogVisible_forms = false; //关闭多选的表单弹窗显示
-    },
-    // 点击 所属目录层级联动
-    handleChange (val) {
-      // const checkedNode = this.$refs["cascaderArr"].getCheckedNodes();
-      //   //获取当前点击节点的label值
-      //   //获取由label组成的数组
-      // return false
-      // this.form.folderUuid = checkedNode[0].id
-      let folderUuid = val.toString();
-      this.form.folderUuid = folderUuid;
     },
     // 格式化数据，递归将空的children置为undefined
     formatCascaderData (data) {
@@ -1654,8 +1627,8 @@ export default {
       this.query_list(this.$refs.tree_left.query, false);
     },
   },
-  filters:{
-    getLabel(value){
+  filters: {
+    getLabel (value) {
       if (value == 1) {
         return "表"
       } else if (value == 2) {
@@ -1689,7 +1662,6 @@ export default {
 
 /* 隐藏列表的多选框 */
 .list_style >>> .el-table__header-wrapper {
-  /* border: 1px solid blue; */
   display: none;
 }
 
@@ -1839,25 +1811,25 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-.trees {
-  width: 45%;
-  float: left;
-  margin-top: 1%;
-  height: 95%;
-}
+// .trees {
+//   width: 45%;
+//   float: left;
+//   margin-top: 1%;
+//   height: 95%;
+// }
 
-.divContent {
-  position: absolute;
-  width: 56%;
-  left: 45%;
-  height: 95%;
-}
+// .divContent {
+//   position: absolute;
+//   width: 56%;
+//   left: 45%;
+//   height: 95%;
+// }
 
-.select-link {
-  // margin-top: 10px;
-  cursor: pointer;
-  margin-left: 10px;
-}
+// .select-link {
+//   // margin-top: 10px;
+//   cursor: pointer;
+//   margin-left: 10px;
+// }
 
 // .page-container .tree-containerselect {
 //   height: 55vh;
@@ -1866,136 +1838,136 @@ export default {
 // }
 // 选择注册表
 
-.transfer-center-item {
-  width: 40px;
-  margin: 2px;
-  height: 40vh;
-}
+// .transfer-center-item {
+//   width: 40px;
+//   margin: 2px;
+//   height: 40vh;
+// }
 
-.agreeicon0 {
-  display: inline-block;
-  height: 16px;
-  width: 16px;
-  margin-right: 2px;
-  margin-top: 0;
-  background-size: 100%;
-  background-image: url("../../../assets/img/table_0.png");
-  vertical-align: top;
-  *vertical-align: middle;
-}
+// .agreeicon0 {
+//   display: inline-block;
+//   height: 16px;
+//   width: 16px;
+//   margin-right: 2px;
+//   margin-top: 0;
+//   background-size: 100%;
+//   background-image: url("../../../assets/img/table_0.png");
+//   vertical-align: top;
+//   *vertical-align: middle;
+// }
 
-.agreeicon1 {
-  display: inline-block;
-  height: 16px;
-  width: 16px;
-  margin-right: 2px;
-  margin-top: 0;
-  background-size: 100%;
-  background-image: url("../../../assets/img/table_1.png");
-  vertical-align: top;
-  *vertical-align: middle;
-}
+// .agreeicon1 {
+//   display: inline-block;
+//   height: 16px;
+//   width: 16px;
+//   margin-right: 2px;
+//   margin-top: 0;
+//   background-size: 100%;
+//   background-image: url("../../../assets/img/table_1.png");
+//   vertical-align: top;
+//   *vertical-align: middle;
+// }
 
-.agreeicon2 {
-  display: inline-block;
-  height: 14px;
-  width: 14px;
-  margin-right: 2px;
-  margin-top: 0;
-  background-size: 100%;
-  background-image: url("../../../assets/img/table_2.png");
-  vertical-align: top;
-  *vertical-align: middle;
-}
+// .agreeicon2 {
+//   display: inline-block;
+//   height: 14px;
+//   width: 14px;
+//   margin-right: 2px;
+//   margin-top: 0;
+//   background-size: 100%;
+//   background-image: url("../../../assets/img/table_2.png");
+//   vertical-align: top;
+//   *vertical-align: middle;
+// }
 
-.agreeicon4 {
-  display: inline-block;
-  height: 16px;
-  width: 16px;
-  margin-right: 2px;
-  margin-top: 0;
-  background-size: 100%;
-  background-image: url("../../../styles/icons/view.png");
-  vertical-align: top;
-  *vertical-align: middle;
-}
+// .agreeicon4 {
+//   display: inline-block;
+//   height: 16px;
+//   width: 16px;
+//   margin-right: 2px;
+//   margin-top: 0;
+//   background-size: 100%;
+//   background-image: url("../../../styles/icons/view.png");
+//   vertical-align: top;
+//   *vertical-align: middle;
+// }
 
-.controlTreeNode {
-  width: 100%;
-  height: 36px;
-  text-align: center;
-}
+// .controlTreeNode {
+//   width: 100%;
+//   height: 36px;
+//   text-align: center;
+// }
 
-.expandTreeNode {
-  position: relative;
-  border: 1px #656565;
-  top: 6px;
-  left: 10px;
-  height: 25px;
-  width: 25px;
-  display: inline-block;
-  background: #559ed4;
+// .expandTreeNode {
+//   position: relative;
+//   border: 1px #656565;
+//   top: 6px;
+//   left: 10px;
+//   height: 25px;
+//   width: 25px;
+//   display: inline-block;
+//   background: #559ed4;
 
-  &:active {
-    background: #5ac3eb !important;
-  }
+//   &:active {
+//     background: #5ac3eb !important;
+//   }
 
-  &:hover {
-    background: #5ac3eb !important;
-  }
+//   &:hover {
+//     background: #5ac3eb !important;
+//   }
 
-  &:focus {
-    background: #5ac3eb !important;
-  }
-}
+//   &:focus {
+//     background: #5ac3eb !important;
+//   }
+// }
 
-.collapseTreeNode {
-  position: relative;
-  border: 1px #656565;
-  top: 6px;
-  left: 5px;
-  height: 25px;
-  width: 25px;
-  display: inline-block;
-  background: #559ed4;
+// .collapseTreeNode {
+//   position: relative;
+//   border: 1px #656565;
+//   top: 6px;
+//   left: 5px;
+//   height: 25px;
+//   width: 25px;
+//   display: inline-block;
+//   background: #559ed4;
 
-  &:active {
-    background: #5ac3eb !important;
-  }
+//   &:active {
+//     background: #5ac3eb !important;
+//   }
 
-  &:hover {
-    background: #5ac3eb !important;
-  }
+//   &:hover {
+//     background: #5ac3eb !important;
+//   }
 
-  &:focus {
-    background: #5ac3eb !important;
-  }
-}
+//   &:focus {
+//     background: #5ac3eb !important;
+//   }
+// }
 
-.expandIcon {
-  height: 12px;
-  z-index: 100;
-  position: relative;
-}
+// .expandIcon {
+//   height: 12px;
+//   z-index: 100;
+//   position: relative;
+// }
 
-.collapseIcon {
-  height: 12px;
-  z-index: 100;
-  position: relative;
-}
+// .collapseIcon {
+//   height: 12px;
+//   z-index: 100;
+//   position: relative;
+// }
 
-.tree-line-btn {
-  background: rgba(255, 255, 255, 0) !important;
-}
+// .tree-line-btn {
+//   background: rgba(255, 255, 255, 0) !important;
+// }
 
-.custom-label-tree-node {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
-  padding-right: 15px;
-}
+// .custom-label-tree-node {
+//   flex: 1;
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+//   font-size: 14px;
+//   padding-right: 15px;
+// }
 
 // .left_conter >>> .el-input.is-disabled .el-input__inner,
 // .right_conter >>> .el-input.is-disabled .el-input__inner {

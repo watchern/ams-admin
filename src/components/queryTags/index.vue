@@ -1,60 +1,57 @@
 <template>
   <div class="padding10 _width">
-
-    <el-row :gutter="20">
-      <el-col :span="12"
-              :offset="6">
-        <div class="search_conter">
-
-          <!-- 父盒子 -->
-          <div class="father_box"
-               @click="onclick">
-            <!-- 生成的标签 -->
-            <div class="left">
-              <div class="TagsAll"
-                   :class="TagsAll.length == 0 ?'dw':''">
-                <div v-for="(item, index) in TagsAll"
-                     :key="index"
-                     class="spanbox">
-                  <span class="tagspan">{{ item.name }}{{ item.value }}</span>
-                  <i class="span_close"
-                     @click="removeTag(index, item)"></i>
-                </div>
+    <div class="search_center">
+      <div class="search_conter">
+        <!-- 父盒子 -->
+        <div class="father_box"
+             :class="currentval && dropDown.length > 0 ?'input_is_show':''"
+             @click="onclick">
+          <!-- 生成的标签 -->
+          <div class="left">
+            <div class="TagsAll_conter"
+                 id="list"
+                 :style="{maxWidth: maxWidths +'px'}"
+                 ref="TagsAll">
+              <div v-for="(item, index) in TagsAll"
+                   :key="index"
+                   :id="'arr'+[index]"
+                   class="spanbox">
+                <span class="tagspan">{{ item.name }}{{ item.value }}</span>
+                <i class="span_close el-icon-close"
+                   @click="removeTag(index, item)"></i>
               </div>
-
-              <!-- 输入框 -->
-              <!-- @keyup.enter="addTags" -->
-              <el-input placeholder="请输入查询的内容然后选择查询的类别"
-                        v-model="currentval"
-                        @keyup.delete="deleteTags"
-                        :style="inputStyle"
-                        class="inputTag"
-                        ref="inputTag"
-                        :class="TagsAll !== []?'is_margin_top':''"
-                        type="text" />
             </div>
 
-            <i class="el-icon-search searchbtn"
-               @click="search()"></i>
-            <i class="el-icon-close clear_search"
-               @click="clear_search()"></i>
-
+            <!-- 输入框 -->
+            <!-- @keyup.enter="addTags" -->
+            <!-- :style="inputStyle" -->
+            <el-input v-model="currentval"
+                      @keyup.delete="deleteTags"
+                      class="inputTag"
+                      ref="inputTag"
+                      :style="{width:this.minWIdth + 'px'}"
+                      type="text" />
           </div>
 
-          <div v-if="currentval && dropDown.length > 0"
-               class="dropDownBox">
-            <div v-for="(item, index) in dropDown"
-                 :key="index"
-                 class="dropDownItem"
-                 @click="addTags(item)">
-              <div class="dropDownTitel">{{ item.name }}:</div>
-              {{ currentval }}
-            </div>
+          <i class="el-icon-search searchbtn"
+             @click="search()"></i>
+          <i class="el-icon-close clear_search"
+             @click="clear_search()"></i>
+
+        </div>
+        <div v-if="currentval && dropDown.length > 0"
+             :class="currentval && dropDown.length > 0 ?'conter_is_show':''"
+             class="dropDownBox">
+          <div v-for="(item, index) in dropDown"
+               :key="index"
+               class="dropDownItem"
+               @click="addTags(item)">
+            <div class="dropDownTitel">{{ item.name }}:</div>
+            {{ currentval }}
           </div>
         </div>
-      </el-col>
-    </el-row>
-
+      </div>
+    </div>
   </div>
 </template>
 
@@ -85,6 +82,10 @@ export default {
       TagsAll: [],
       inputLength: "",
       serachParams: {},
+      left_width: '',//左侧搜索词 容器
+      input_left: "",//右侧输入框距离左侧距离
+      minWIdth: 580,
+      maxWidths: '',
     };
   },
   watch: {
@@ -94,7 +95,7 @@ export default {
     currentval (val) {
       // 
       // 实时改变input输入框宽度，防止输入内容超出input默认宽度显示不全
-      this.inputLength = this.$refs.inputTag.value.length * 12 + 50;
+      // this.inputLength = this.$refs.inputTag.value.length * 12 + 50;
     },
     parentArr () {
       this.TagsAll = this.parentArr.length ? this.parentArr : [];
@@ -114,20 +115,45 @@ export default {
   mounted () {
     this.TagsAll = this.parentArr;
     // this.dropDown = this.dropDownData;
+
+    this.watch_width();//监听输入框宽度
   },
+
   methods: {
+    watch_width () {
+      const elementResizeDetectorMaker = require("element-resize-detector");
+      const erd = elementResizeDetectorMaker()
+      const that = this
+      erd.listenTo(document.querySelector('.TagsAll_conter'), function (element) {
+        that.input_left = element.offsetWidth
+
+        // 如果左侧输入宽度超过395的尺寸 则为左侧最大宽度；minWIdth 为右侧输入框墨人最小宽度
+        if (that.input_left >= 395) {
+          that.maxWidths = 395
+          that.minWIdth = 185
+        } else {
+          // 如果没有 则右侧输入框撑满
+          that.minWIdth = (580 - that.input_left)
+        }
+      })
+    },
+
+
     // 查询
     search () {
       // this.$emit("search", this.serachParams);
       this.$emit("search", this.TagsAll);
-
     },
     // 重置
     clear_search () {
       this.TagsAll = [];
       this.serachParams = {}
+      // 如果内容清空后 返回默认位置
+      console.log(this.TagsAll.length);
+      if (this.TagsAll.length == 0) {
+        this.input_left = 0;
+      }
       // this.$emit("clearSearch_click", this.TagsAll, this.serachParams);
-
     },
 
     //回车-- 增加tag
@@ -161,7 +187,7 @@ export default {
       } else {
         this.$message({ type: "warning", message: "请选择一条类型" });
       }
-
+      this.watch_width();
     },
     // 点击删除
     removeTag (index, item) {
@@ -179,6 +205,11 @@ export default {
             this.serachParams[this.TagsAll[a].code] = arrs.join(',')
           }
         }
+      }
+      // 如果内容清空后 返回默认位置
+      if (this.TagsAll == []) {
+        this.left_wid = '';
+        this.input_left = '';
       }
     },
 
@@ -209,8 +240,14 @@ export default {
 </script>
 
 <style scoped>
+html {
+  --font-color: #fff;
+  --bg-color: rgba(255, 255, 255, 0.4);
+}
 .search_conter {
+  margin: 0 auto;
   position: relative;
+  width: 700px;
 }
 /* 外层div */
 .father_box {
@@ -222,9 +259,10 @@ export default {
   text-align: left;
   word-wrap: break-word;
   overflow: hidden;
-  padding: 4px 110px 2px 10px;
+  padding: 2px 108px 2px 4px;
   box-sizing: border-box;
   border-radius: 25px;
+  height: 42px;
 }
 /* 隐藏搜索滚动条  */
 .father_box ::-webkit-scrollbar {
@@ -246,29 +284,48 @@ export default {
   width: 100%;
   height: 100%;
   float: left;
-}
-.TagsAll {
-  height: 40px;
-  float: left;
-  width: auto;
-  overflow-x: auto;
-  white-space: nowrap;
-}
-.dw {
-  width: 0 !important;
-}
-/* 标签 */
-.spanbox {
-  display: inline-block;
-  font-size: 14px;
-  margin: 0px 4px 2px 0;
-  background-color: rgb(229, 229, 229);
-  border: 1px solid #e8eaec;
+  position: relative;
   border-radius: 25px;
 }
-.tagspan {
+.TagsAll_conter {
+  position: absolute;
+  left: 0;
+  top: 0px;
   height: 36px;
-  line-height: 36px;
+  float: left;
+  /* border: 1px solid blue; */
+  /* width: auto;
+  overflow-x: auto; */
+  width: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  border-radius: 25px;
+}
+/* .dw {
+  width: 0 !important;
+} */
+/* 标签 */
+.spanbox {
+  /* display: inline-block; */
+  font-size: 14px;
+  margin: 0px 4px 0px 0;
+  background-color: rgb(229, 229, 229);
+  /* background: #2c81fd; */
+  border: 1px solid rgb(229, 229, 229);
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  float: left;
+  transition: all 3s;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+.tagspan {
+  height: 34px;
+  line-height: 34px;
   max-width: 99%;
   position: relative;
   display: inline-block;
@@ -283,62 +340,86 @@ export default {
   font-weight: 400;
   transition: all 0.3s;
 }
-.spanbox:hover {
-  border: 1px solid #999;
-}
 .span_close {
   padding: 0 5px 0 4px;
   opacity: 1;
-  -webkit-filter: none;
+  line-height: 30px;
   filter: none;
-  color: rgb(26, 26, 26);
+  color: rgb(26, 26, 26, 0.8);
   font-weight: 600;
+  font-size: 12px;
 }
-.span_close:after {
-  content: "\00D7";
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  /* line-height: 27px; */
-  transition: 0.3s, color 0s;
+
+.spanbox::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  background-color: var(--bg-color);
+  transform-origin: center;
+  transform: translate3d(-50%, -50%, 0) scale(0, 0);
+  transition: transform 1000ms ease-in-out;
+  background: #e7eaf0;
+}
+.spanbox:hover::before {
+  /* transform: scale(1, 1); */
+  transform: translate3d(-50%, -50%, 0) scale(15, 15);
 }
 /* input */
 .inputTag {
+  position: absolute;
+  right: 0px;
+  top: 0px;
   font-size: 16px;
   border: none;
   box-shadow: none;
   outline: none;
   background-color: transparent;
   padding: 0;
-  width: auto;
-  min-width: 350px;
   vertical-align: top;
-  height: 36px;
+  height: 34px;
   color: #495060;
-  line-height: 32px;
+  line-height: 34px;
   float: left;
 }
 .inputTag >>> .el-input__inner {
   border: none !important;
 }
 .dropDownBox {
-  /* min-height: 50px; */
   width: 100%;
   max-height: 200px;
-  /* background-color: white; */
-  border: 1px solid rgba(255, 255, 255, 1);
-  backdrop-filter: saturate(200%) blur(60px);
+  border: 1px solid #dcdee2;
+  backdrop-filter: saturate(200%) blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 10px 10px 0 rgb(0 0 0 / 10%);
   overflow: auto;
   position: absolute;
-  z-index: 99;
+  z-index: 2000;
   border-radius: 15px;
 }
+.input_is_show {
+  border-radius: 25px 25px 0 0 !important;
+  border-bottom: 0 !important;
+  backdrop-filter: saturate(200%) blur(60px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  background: #f4f6f9
+    linear-gradient(134deg, #fefeff 0%, #f3f0ff 33%, #ebf5fd 70%, #f6f9ff 100%);
+}
+.conter_is_show {
+  border-top: 0 !important;
+  border-radius: 0 0 25px 25px !important;
+}
+
 .dropDownItem {
   height: 30px;
   line-height: 30px;
   /* margin-left: 10px; */
   color: #666 !important;
+  transition: all 0.3s;
 }
 .dropDownItem:hover {
   cursor: pointer;
@@ -347,9 +428,9 @@ export default {
 }
 .dropDownTitel {
   display: inline-block;
-  width: 80px;
+  width: 110px;
   text-align: right;
-  margin-right: 20px;
+  margin-right: 10px;
 }
 .searchbtn {
   position: absolute;
@@ -395,5 +476,11 @@ export default {
 }
 .is_margin_top {
   margin-top: 2px !important;
+}
+/* 搜索 右侧输入框 */
+.inputTag >>> .el-input__inner {
+  height: 36px;
+  /* background: none !important; */
+  /* background: orange !important; */
 }
 </style>
