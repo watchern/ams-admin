@@ -113,7 +113,6 @@
                       </el-select>
                     </el-form-item>
                   </div>
-
                 </el-col>
 
                 <el-col :span="11"
@@ -162,7 +161,6 @@
 
                 <!-- <div class="son"> -->
                 <el-col :span="11">
-
                   <el-form-item label="数据日期：">
                     <el-date-picker format="yyyy-MM-dd"
                                     style="width: 100%;"
@@ -174,7 +172,6 @@
                                     :rows="4"
                                     v-model="form.dataDate" />
                   </el-form-item>
-
                 </el-col>
                 <el-col :span="11"
                         :offset="2">
@@ -188,7 +185,6 @@
                     </el-form-item>
                   </div>
                 </el-col>
-
                 <el-col :span="11">
                   <el-form-item label="表数据量：">
                     <el-input type="text"
@@ -217,24 +213,18 @@
                         选择
                       </el-button>
                     </el-form-item>
-
                   </div>
                 </el-col>
                 <!-- </div> -->
 
                 <el-col :span="11">
-
-                  <div :class="
-                  isDisable_input == true ? 'is_disabled' : 'yes_disabled'
-                ">
+                  <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
                     <!-- <div class="son"> -->
-
                     <el-form-item label="表分区："
                                   :disabled="disabled"
                                   prop="partitions">
                       <div class="table">
                         <div class="head">分区名称</div>
-
                         <div v-if="form.partitions == null">--</div>
                         <div v-else>
                           <div v-for="(item, index_partitions) in form.partitions"
@@ -247,8 +237,7 @@
                     </el-form-item>
                   </div>
                 </el-col>
-                <el-col :span="11"
-                        :offset="2">
+                <el-col :span="11" :offset="2">
                   <el-form-item label="增全量：">
                     <el-select v-model="form.isSpike"
                                @input="change($event)"
@@ -297,7 +286,6 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="24">
-
                   <!-- <div class="son"> -->
                   <el-button type="primary"
                              @click="previewSql()">
@@ -305,7 +293,6 @@
                   </el-button>
                 </el-col>
               </el-row>
-
             </el-form>
           </div>
         </div>
@@ -336,7 +323,6 @@
                                show-overflow-tooltip
                                align="center"
                                label="字段长度"></el-table-column>
-
               <!-- <el-table-column prop="address"
                                align="center"
                                label="字段说明">
@@ -675,9 +661,8 @@
                   :scene-code="sceneCode" />
       </div>
       <div slot="footer">
-        <el-button @click="dataTableTree = false"> 取消 </el-button>
-        <el-button type="primary"
-                   @click="getDataTable()"> 确定 </el-button>
+        <el-button @click="dataTableTree = false">取消</el-button>
+        <el-button type="primary" @click="getDataTable()">确定</el-button>
       </div>
     </el-dialog>
 
@@ -687,12 +672,10 @@
                :visible.sync="resultShareDialogIsSee"
                width="50%">
       <personTree ref="orgPeopleTree"></personTree>
-      <span slot="footer"
-            class="dialog-footer">
-        <el-button @click="close_people()"> 取 消 </el-button>
-        <el-button type="primary"
-                   @click="modelResultShare()">
-          确 定
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="close_people()">取消</el-button>
+        <el-button type="primary" @click="modelResultShare()">
+          确定
         </el-button>
       </span>
     </el-dialog>
@@ -728,7 +711,7 @@ export default {
     LineMap,
     EditMap,
     SelectLabel,
-    personTree: () => import("@/components/publicpersontree/index"),
+    personTree,
   },
   props: {
     limit: {
@@ -1283,7 +1266,6 @@ export default {
     },
     // 确定责任人
     modelResultShare () {
-      // this.listLoading = true;
       var personUuids = [];
       var personNames = [];
       var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
@@ -1291,7 +1273,6 @@ export default {
       for (var i = 0; i < selectedNode.length; i++) {
         personUuids.push(selectedNode[i].personuuid);
         personNames.push(selectedNode[i].cnname);
-
         let objs = {
           personUuid: selectedNode[i].personuuid,
           personName: selectedNode[i].cnname,
@@ -1299,6 +1280,8 @@ export default {
         this.form.personName_str.push(objs);
         this.form.personLiables = personNames.join(",");
       }
+      console.log("负责人：", this.foem.personName_str);
+      console.log("负责人列表:", this.foem.personLiables);
       this.resultShareDialogIsSee = false;
     },
     // 查看sql

@@ -86,22 +86,10 @@ export default {
     }
   },
   components: {},
-  mounted: function () {
-    this.$nextTick(function () {
-      this.$on('clear', function () {
-        this.$refs.multipleTable.clearSelection();//清空选择的认权人
-        this.findOrgTree_data();
-        this.list = [];
-        this.total = 0;
-      })
-    })
-  },
-
   created () {
     this.findOrgTree_data();
     this.initData("");
   },
-
   methods: {
     /**
      * 初始化组织树
@@ -131,6 +119,7 @@ export default {
     initData (orgId) {
       findPeopleByOrgId(orgId).then((resp) => {
         this.dataList = resp.data;
+        console.log("加载人员", this.dataList);
         this.listLoading = false;
         if (this.dataList != null) {
           this.getList();

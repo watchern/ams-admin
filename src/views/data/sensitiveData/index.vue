@@ -12,7 +12,7 @@
                         clearable></el-input>
             </el-form-item>
 
-            <el-form-item label="角色名称：">
+            <el-form-item label="创建人名称：">
               <el-input v-model="dataBaseData.createUserName"
                         placeholder="请输入内容"
                         clearable></el-input>
@@ -116,7 +116,7 @@
                            align="center"
                            show-overflow-tooltip></el-table-column>
           <el-table-column prop="recognitionRulesName"
-                           label="试别规则"
+                           label="识别规则"
                            width="150px"
                            align="center"
                            show-overflow-tooltip></el-table-column>
