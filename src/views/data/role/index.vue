@@ -1,104 +1,143 @@
 <template>
   <div class="page-container">
-    <div class="filter-container">
-      <QueryField ref="queryfield"
-                  :form-data="queryFields"
-                  @submit="getList" />
-    </div>
-    <el-row>
-      <el-col align="right">
-        <el-button type="primary"
-                   class="oper-btn add"
-                   @click="handleCreate()" />
-        <el-button type="primary"
-                   class="oper-btn edit"
-                   :disabled="selections.length !== 1"
-                   @click="handleUpdate()" />
-        <el-button type="primary"
-                   class="oper-btn delete"
-                   :disabled="selections.length === 0"
-                   @click="handleDelete()" />
-        <el-button type="primary"
-                   class="oper-btn link-bindres btn-width-md"
-                   :disabled="selections.length !== 1"
-                   @click="bindRes()" />
-        <el-button type="primary"
-                   class="oper-btn auth"
-                   :disabled="selections.length !== 1"
-                   @click="authentic()" />
-      </el-col>
-    </el-row>
-    <el-table :key="tableKey"
-              v-loading="listLoading"
-              :data="list"
-              stripe
-              border
-              fit
-              highlight-current-row
-              style="width: 100%;"
-              height="calc(100vh - 330px)"
-              @sort-change="sortChange"
-              @selection-change="handleSelectionChange">
-      <el-table-column type="selection"
-                       width="55" />
-      <el-table-column label="数据角色名称"
-                       min-width="150px"
-                       prop="dataRoleName"
-                       show-overflow-tooltip />
-      <el-table-column label="创建时间"
-                       align="center"
-                       min-width="150px"
-                       prop="createTime"
-                       show-overflow-tooltip />
-      <el-table-column label="授权方式"
-                       align="center"
-                       prop="authenType"
-                       min-width="150px"
-                       :formatter="formatAuthenType" />
-      <!-- <el-table-column label="数据筛选" style="width: 50px" align="center">
+    <div class="pd20">
+      <div class="filter-container">
+        <QueryField ref="queryfield"
+                    :form-data="queryFields"
+                    @submit="getList" />
+      </div>
+      <div class="mb10">
+        <el-row>
+          <el-col align="right">
+            <el-button size="small"
+                       class="oper-btn"
+                       type="primary"
+                       @click="handleCreate()"><img src="../../../styles/image/add.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/add2.png"
+                   class="btn_icon icon2"
+                   alt="">
+              新增</el-button>
+
+            <el-button size="small"
+                       type="primary"
+                       class="oper-btn"
+                       :disabled="selections.length !== 1"
+                       @click="handleUpdate()"><img src="../../../styles/image/edits.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/edits2.png"
+                   class="btn_icon icon2"
+                   alt="">编辑</el-button>
+            <el-button size="small"
+                       type="primary"
+                       class="oper-btn"
+                       :disabled="selections.length === 0"
+                       @click="handleDelete()"><img src="../../../styles/image/delete.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/delete2.png"
+                   class="btn_icon icon2"
+                   alt="">删除</el-button>
+
+            <!-- 绑定资源 -->
+            <el-button size="small"
+                       type="primary"
+                       class="oper-btn"
+                       :disabled="selections.length !== 1"
+                       @click="bindRes()"><img src="../../../styles/image/bind.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/bind2.png"
+                   class="btn_icon icon2"
+                   alt="">绑定资源</el-button>
+
+            <el-button size="small"
+                       type="primary"
+                       class="oper-btn"
+                       :disabled="selections.length !== 1"
+                       @click="authentic()"><img src="../../../styles/image/authentic.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/authentic2.png"
+                   class="btn_icon icon2"
+                   alt="">授权</el-button>
+          </el-col>
+        </el-row>
+      </div>
+
+      <el-table :key="tableKey"
+                v-loading="listLoading"
+                :data="list"
+                stripe
+                border
+                fit
+                highlight-current-row
+                style="width: 100%;"
+                height="calc(100vh - 300px)"
+                @sort-change="sortChange"
+                @selection-change="handleSelectionChange">
+        <el-table-column type="selection"
+                         width="55" />
+        <el-table-column label="数据角色名称"
+                         min-width="150px"
+                         prop="dataRoleName"
+                         show-overflow-tooltip />
+        <el-table-column label="创建时间"
+                         align="center"
+                         min-width="150px"
+                         prop="createTime"
+                         show-overflow-tooltip />
+        <el-table-column label="授权方式"
+                         align="center"
+                         prop="authenType"
+                         min-width="150px"
+                         :formatter="formatAuthenType" />
+        <!-- <el-table-column label="数据筛选" style="width: 50px" align="center">
         <template slot-scope="scope">
           <el-button type="primary" class="oper-btn preview" size="mini" @click="openFilterPanel(scope.row.dataRoleUuid)" />
         </template>
       </el-table-column> -->
-      <!-- <el-table-column label="数据有效期"
+        <!-- <el-table-column label="数据有效期"
                        align="center"
                        prop="timeDuring"
                        :formatter="formatDuring"
                        width="400px"
                        show-overflow-tooltip /> -->
-    </el-table>
-    <pagination v-show="total>0"
-                :total="total"
-                :page.sync="pageQuery.pageNo"
-                :limit.sync="pageQuery.pageSize"
-                @pagination="getList" />
+      </el-table>
+      <pagination v-show="total>0"
+                  :total="total"
+                  :page.sync="pageQuery.pageNo"
+                  :limit.sync="pageQuery.pageSize"
+                  @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]"
-               :visible.sync="dialogFormVisible"
-               :close-on-click-modal="false">
-      <div class="detail-form">
-        <template class="detail-form">
-          <el-form ref="dataForm"
-                   :rules="rules"
-                   :model="temp"
-                   label-position="right">
-            <el-form-item label="数据角色名称"
-                          prop="dataRoleName">
-              <el-input v-model="temp.dataRoleName" />
-            </el-form-item>
-            <el-form-item label="授权方式"
-                          prop="authenType">
-              <el-select ref="authenType"
-                         v-model="temp.authenType"
-                         placeholder="请选择授权方式"
-                         style="width: 100%">
-                <el-option v-for="item in authenTypeJson"
-                           :key="item.codeValue"
-                           :label="item.codeName"
-                           :value="item.codeValue" />
-              </el-select>
-            </el-form-item>
-            <!-- <el-form-item label="开始时间"
+      <el-dialog :title="textMap[dialogStatus]"
+                 :visible.sync="dialogFormVisible"
+                 :close-on-click-modal="false">
+        <div class="detail-form">
+          <template class="detail-form">
+            <el-form ref="dataForm"
+                     :rules="rules"
+                     :model="temp"
+                     label-position="right">
+              <el-form-item label="数据角色名称"
+                            prop="dataRoleName">
+                <el-input v-model="temp.dataRoleName" />
+              </el-form-item>
+              <el-form-item label="授权方式"
+                            prop="authenType">
+                <el-select ref="authenType"
+                           v-model="temp.authenType"
+                           placeholder="请选择授权方式"
+                           style="width: 100%">
+                  <el-option v-for="item in authenTypeJson"
+                             :key="item.codeValue"
+                             :label="item.codeName"
+                             :value="item.codeValue" />
+                </el-select>
+              </el-form-item>
+              <!-- <el-form-item label="开始时间"
                           prop="startTime">
               <el-date-picker v-model="temp.startTime"
                               format="yyyy-MM-dd HH:mm:ss"
@@ -122,36 +161,37 @@
                               type="datetime"
                               :placeholder="dialogStatus=='view'?'':'请输入生效结束时间'" />
             </el-form-item> -->
+            </el-form>
+          </template>
+
+        </div>
+        <div slot="footer">
+          <el-button @click="dialogFormVisible = false">取消</el-button>
+          <el-button type="primary"
+                     @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
+        </div>
+      </el-dialog>
+
+      <el-dialog title="数据筛选选择"
+                 :visible.sync="filterVisible"
+                 :close-on-click-modal="false">
+        <template class="detail-form">
+          <el-form>
+            <el-form-item>
+              <el-checkbox v-for="filter in allFilters"
+                           :key="filter.filterName"
+                           v-model="filter.roleUuid"
+                           :label="filter.filterName" />
+            </el-form-item>
           </el-form>
         </template>
-
-      </div>
-      <div slot="footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary"
-                   @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog title="数据筛选选择"
-               :visible.sync="filterVisible"
-               :close-on-click-modal="false">
-      <template class="detail-form">
-        <el-form>
-          <el-form-item>
-            <el-checkbox v-for="filter in allFilters"
-                         :key="filter.filterName"
-                         v-model="filter.roleUuid"
-                         :label="filter.filterName" />
-          </el-form-item>
-        </el-form>
-      </template>
-      <div slot="footer">
-        <el-button @click="filterVisible = false">取消</el-button>
-        <el-button type="primary"
-                   @click="handleSaveRoleFilter">保存</el-button>
-      </div>
-    </el-dialog>
+        <div slot="footer">
+          <el-button @click="filterVisible = false">取消</el-button>
+          <el-button type="primary"
+                     @click="handleSaveRoleFilter">保存</el-button>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -250,7 +290,7 @@ export default {
     },
     getList (query) {
       this.authenTypeJson = getDictList('004001')
-      if(this.authenTypeJson===null){
+      if (this.authenTypeJson === null) {
         cacheDict().then((resp) => {
           sessionStorage.setItem("sysDict", JSON.stringify(resp.data));
         });
@@ -351,7 +391,7 @@ export default {
     // },
     formatAuthenType (row, column) {
       var data = getDictList('004001')
-      if(data===null){
+      if (data === null) {
         cacheDict().then((resp) => {
           sessionStorage.setItem("sysDict", JSON.stringify(resp.data));
         });

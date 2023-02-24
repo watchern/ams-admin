@@ -1,5 +1,5 @@
 <template>
-  <div class="dlag_conter">
+  <div>
     <el-container class="app-container">
       <el-aside class="tree-side">
         <el-input v-model="filterText"
@@ -11,9 +11,10 @@
                  :filter-node-method="filterNode"
                  ref="tree"></el-tree>
       </el-aside>
-      <div class="padding10 child_table">
+      <div class="padding10_l child_table">
         <el-table v-loading="listLoading"
                   ref="multipleTable"
+                  height="calc(100vh - 400px)"
                   style="width: 100%;"
                   :data="list"
                   border
@@ -76,8 +77,8 @@ export default {
       // 搜索树
       this.$refs.tree.filter(val);
     },
-    reverseDisplay:{
-      handler(){
+    reverseDisplay: {
+      handler () {
         this.refreshSelected();
         this.reverseDisplaySelected();
       },
@@ -161,18 +162,18 @@ export default {
     /**
      * 当多选框改变时触发
      */
-    handleSelectionChange (val,row) {
+    handleSelectionChange (val, row) {
       // 如果没有传递需要返显的数据，按原来的方式运行
-      if (this.reverseDisplay == null){
+      if (this.reverseDisplay == null) {
         this.selectValue = val;
         return;
       }
-      if (val.length && val.indexOf(row) !== -1){
+      if (val.length && val.indexOf(row) !== -1) {
         this.reverseDisplay.push(row)
-      }else {
+      } else {
         for (let i = 0; i < this.reverseDisplay.length; i++) {
-          if (this.reverseDisplay[i].personuuid == row.personuuid){
-            this.reverseDisplay.splice(i,1);
+          if (this.reverseDisplay[i].personuuid == row.personuuid) {
+            this.reverseDisplay.splice(i, 1);
             i--;
           }
         }
@@ -181,22 +182,22 @@ export default {
     /**
      * 全选是将全选人员去重添加到返回人员中，如果取消全选，从返回人员中去除
      */
-    handleSelectionChange2(val){
-      if (val.length == 0){
+    handleSelectionChange2 (val) {
+      if (val.length == 0) {
         for (let i = 0; i < this.reverseDisplay.length; i++) {
           for (let j = 0; j < this.list.length; j++) {
-            if (this.reverseDisplay[i].personuuid == this.list[j].personuuid){
-              this.reverseDisplay.splice(i,1);
+            if (this.reverseDisplay[i].personuuid == this.list[j].personuuid) {
+              this.reverseDisplay.splice(i, 1);
               i--;
             }
           }
         }
-      }else {
+      } else {
         let tempArr = val;
         for (let i = 0; i < this.reverseDisplay.length; i++) {
           for (let j = 0; j < tempArr.length; j++) {
-            if (this.reverseDisplay[i].personuuid == tempArr[j].personuuid){
-              tempArr.splice(j,1);
+            if (this.reverseDisplay[i].personuuid == tempArr[j].personuuid) {
+              tempArr.splice(j, 1);
               j--;
             }
           }
@@ -208,7 +209,7 @@ export default {
      * 返回选中的数据方法
      */
     getSelectValue () {
-      if (this.reverseDisplay == null){
+      if (this.reverseDisplay == null) {
         return this.selectValue;
       }
       return this.reverseDisplay;
@@ -216,13 +217,13 @@ export default {
     /**
      * 手动刷新人员选中数据
      */
-    refreshSelected(){
+    refreshSelected () {
       this.$refs.multipleTable.clearSelection();
     },
     /**
      * 反显数据
      */
-    reverseDisplaySelected(){
+    reverseDisplaySelected () {
       // 数据反显
       if (this.reverseDisplay != null && this.reverseDisplay.length > 0) {
         this.list.forEach(data => {
@@ -250,14 +251,15 @@ export default {
   height: 100%;
 }
 .dlag_conter >>> .el-tree {
-  height: 330px;
+  /* height: 330px; */
 }
 .child_table {
   width: calc(100% - 300px);
   box-sizing: border-box;
 }
-.el-aside,.child_table >>> .el-table {
+/* .el-aside,
+.child_table >>> .el-table {
   height: 350px;
   overflow: auto;
-}
+} */
 </style>

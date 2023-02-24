@@ -1,70 +1,92 @@
 <template>
   <div class="page-container">
-    <div class="filter-container">
-      <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
-    </div>
-    <div style="height: 24px;"></div>
-    <el-table
-      ref="table"
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      :height="autoHeight"
-      highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="selection" width="55" />
-      <el-table-column label="操作用户" width="100px" prop="opUserName" />
-      <el-table-column label="操作IP" width="160px" align="center" prop="opIp" />
-      <el-table-column label="异常类" prop="opClass" />
-      <el-table-column label="异常方法" width="200px" prop="opMethod" />
-      <el-table-column label="异常时间" width="300px" prop="logTime" align="center" />
-      <el-table-column
-        label="异常信息"
-        width="300px"
-        align="center"
-      >
-        <template slot-scope="scope">
-          <a type="text" size="small" class="handreada" @click="handReadError(scope.row)">
-            查看
-          </a>
-          <a type="text" size="small" class="handreada" @click="toExport(scope.row)">
-            导出
-          </a>
-        </template>
-      </el-table-column>
-      <!-- <el-table-column label="异常信息" prop="logContent" /> -->
-    </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-    <el-dialog
-      :append-to-body="true"
-      title="异常信息"
-      :visible.sync="dialogVisible"
-      :close-on-click-modal="false"
-    >
-      <div style="max-height:60vh;overflow:auto">
-        <p class="error-log">{{ logerrortxt }}</p>
+    <div class="pd20">
+
+      <div class="filter-container">
+        <QueryField ref="queryfield"
+                    :form-data="queryFields"
+                    @submit="getList" />
       </div>
-    </el-dialog>
+      <div style="height: 24px;"></div>
+      <el-table ref="table"
+                :key="tableKey"
+                v-loading="listLoading"
+                :data="list"
+                border
+                fit
+                height="calc(100vh - 260px)"
+                highlight-current-row
+                style="width: 100%;"
+                @sort-change="sortChange"
+                @selection-change="handleSelectionChange">
+        <el-table-column type="selection"
+                         width="55" />
+        <el-table-column label="操作用户"
+                         width="100px"
+                         prop="opUserName" />
+        <el-table-column label="操作IP"
+                         width="160px"
+                         align="center"
+                         prop="opIp" />
+        <el-table-column label="异常类"
+                         prop="opClass" />
+        <el-table-column label="异常方法"
+                         width="200px"
+                         prop="opMethod" />
+        <el-table-column label="异常时间"
+                         width="300px"
+                         prop="logTime"
+                         align="center" />
+        <el-table-column label="异常信息"
+                         width="300px"
+                         align="center">
+          <template slot-scope="scope">
+            <a type="text"
+               size="small"
+               class="handreada"
+               @click="handReadError(scope.row)">
+              查看
+            </a>
+            <a type="text"
+               size="small"
+               class="handreada"
+               @click="toExport(scope.row)">
+              导出
+            </a>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column label="异常信息" prop="logContent" /> -->
+      </el-table>
+      <pagination v-show="total>0"
+                  :total="total"
+                  :page.sync="pageQuery.pageNo"
+                  :limit.sync="pageQuery.pageSize"
+                  @pagination="getList" />
+      <el-dialog :append-to-body="true"
+                 title="异常信息"
+                 :visible.sync="dialogVisible"
+                 :close-on-click-modal="false">
+        <div style="max-height:60vh;overflow:auto">
+          <p class="error-log">{{ logerrortxt }}</p>
+        </div>
+      </el-dialog>
+    </div>
   </div>
+
 </template>
 <script>
-import {listByPageErrorLog} from '@/api/base/base'
+import { listByPageErrorLog } from '@/api/base/base'
 import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import axios from "axios";
 import BaseVue from '@/utils/baseVue'
 let baseVue = new BaseVue({
-    targetel: "table",
+  targetel: "table",
 })
 export default {
   components: { Pagination, QueryField },
-  mixins:[baseVue],
-  data() {
+  mixins: [baseVue],
+  data () {
     return {
       logerrortxt: '',
       tableKey: 'errorUuid',
@@ -150,7 +172,7 @@ export default {
   computed: {
 
   },
-  created() {
+  created () {
     this.getList()
   },
   methods: {
@@ -175,7 +197,7 @@ export default {
     //   }
     //   return ''
     // },
-    sortChange(data) {
+    sortChange (data) {
       const { prop, order } = data;
       this.pageQuery.sortBy = order;
       this.pageQuery.sortName = prop;
@@ -184,14 +206,14 @@ export default {
     /**
      * 当多选框改变时触发
      */
-    handleSelectionChange(val) {
+    handleSelectionChange (val) {
       this.selectValue = val
     },
     /**
      * 获取列表
      * @param query 查询对象
      */
-    getList(query) {
+    getList (query) {
       this.listLoading = true
       if (query) {
         this.pageQuery.condition = query
@@ -207,17 +229,19 @@ export default {
      * 导出日志
      * @param rowData
      */
-    toExport(rowData){
+    toExport (rowData) {
       const errorUuid = rowData.errorUuid;
       // window.location.href = "/base/logSysErrorController/export?errorUuid=" + errorUuid;
 
       axios.post("/base/logSysErrorController/export?errorUuid=" + errorUuid,
-          { responseType: 'blob', headers: {
-              'Content-Type': 'application/x-www-form-urlencoded' // 请求的数据类型为form data格式
-            }}
+        {
+          responseType: 'blob', headers: {
+            'Content-Type': 'application/x-www-form-urlencoded' // 请求的数据类型为form data格式
+          }
+        }
       ).then((res) => {
         const filename = decodeURI(
-            res.headers['content-disposition'].split(';')[1].split('=')[1]
+          res.headers['content-disposition'].split(';')[1].split('=')[1]
         )
         const blob = new Blob([res.data], {
           type: 'text/plain'
@@ -234,7 +258,7 @@ export default {
     /**
      * 重置搜索条件
      */
-    resetQuery() {
+    resetQuery () {
       this.query = {
         condition: {
           opUserName: '',
@@ -249,7 +273,7 @@ export default {
     /**
      * 获取详细异常信息
      */
-    handReadError(data) {
+    handReadError (data) {
       this.dialogVisible = true
       this.logerrortxt = data.logContent
     }
@@ -257,17 +281,19 @@ export default {
 }
 </script>
 <style scoped>
-.error-log{
+.error-log {
   margin: 10px;
   line-height: 28px;
   font-size: 18px;
 }
-.handreada{
-    cursor: pointer;
-    padding: 0;
-    font-size: 14px;
-    font-weight: 500;
-    color: #1890ff;
+.handreada {
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1890ff;
 }
-.handreada:hover{text-decoration:underline}
+.handreada:hover {
+  text-decoration: underline;
+}
 </style>

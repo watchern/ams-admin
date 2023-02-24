@@ -467,10 +467,9 @@
                  :visible.sync="resultShareDialogIsSee"
                  width="80%"
                  class="dlag_width">
-        <div class="dlag_conter">
-          <personTree :reverseDisplay="personReverseDisplay"
-                      ref="orgPeopleTree"></personTree>
-        </div>
+        <!-- <div class="dlag_conter"> -->
+        <personTree :reverseDisplay="personReverseDisplay"
+                    ref="orgPeopleTree"></personTree>
         <span slot="footer"
               class="dialog-footer">
           <el-button @click="close_people()">取消</el-button>

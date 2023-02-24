@@ -1,237 +1,275 @@
 <template>
   <div class="page-container">
-    <div class="filter-container">
-      <QueryField ref="queryfield"
-                  :form-data="queryFields"
-                  @submit="getList" />
-    </div>
-    <el-row>
-      <el-col align="right">
-        <el-button type="primary"
-                   class="oper-btn  setting"
-                   :disabled="selections.length !== 1"
-                   @click="setBaseCode" />
-        <el-button type="primary"
-                   class="oper-btn add"
-                   @click="addCode" />
-        <el-button type="primary"
-                   size="mini"
-                   :disabled="selections.length === 0"
-                   class="oper-btn delete"
-                   @click="deleteCode()" />
-        <el-button type="primary"
-                   size="mini"
-                   class="oper-btn edit"
-                   :disabled="selections.length !== 1"
-                   @click="updateCode()" />
-      </el-col>
-    </el-row>
-    <el-table :key="tableKey"
-              v-loading="listLoading"
-              :data="list"
-              border
-              fit
-              style="width: 100%;"
-              @sort-change="sortChange"
-              @selection-change="handleSelectionChange"
-              ref="table"
-              :height="autoHeight">
-      <el-table-column label="选择"
-                       type="selection"
-                       width="55" />
-      <el-table-column label="代码类别名称"
-                       prop="dataSortName" />
-      <el-table-column label="代码类别编码"
-                       width="300px"
-                       align="center"
-                       prop="dataSortValue" />
-      <el-table-column label="代码类别描述"
-                       prop="dataSortDesc" />
-
-      <!-- <el-table-column label="创建时间" width="300px" align="center" prop="createTime" /> -->
-      <el-table-column label="展现形式"
-                       prop="extendTag"
-                       :formatter="formatTag"
-                       align="center" />
-    </el-table>
-    <pagination v-show="total>0"
-                :total="total"
-                :page.sync="pageQuery.pageNo"
-                :limit.sync="pageQuery.pageSize"
-                @pagination="getList" />
-    <!-- 这是第一个弹窗，用来添加基础数据类别 -->
-    <el-dialog :title="textMap[dialogStatus]"
-               :visible.sync="dialogFormVisible"
-               :close-on-click-modal="false"
-               height="70vh">
-      <el-form class="detail-form"
-               ref="dataForm"
-               :rules="rules"
-               :model="temp"
-               label-position="right">
-        <el-form-item label="代码类别名称"
-                      prop="dataSortName">
-          <el-input v-model="temp.dataSortName" />
-        </el-form-item>
-        <el-form-item label="代码类别编码"
-                      prop="dataSortValue">
-          <el-input v-model="temp.dataSortValue" />
-        </el-form-item>
-        <el-form-item label="代码类别描述"
-                      prop="dataSortDesc">
-          <el-input v-model="temp.dataSortDesc" />
-        </el-form-item>
-        <el-form-item label="展现形式"
-                      prop="extendTag">
-          <el-select ref="relTypeSelect"
-                     v-model="temp.extendTag"
-                     style="width:100%"
-                     placeholder="请选择展现形式">
-            <el-option label="列表类"
-                       :value="0" />
-            <el-option label="树形类"
-                       :value="1" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer">
-        <el-button type="primary"
-                   size="mini"
-                   @click="closeDialog()"
-                   style="color:#559ed4;background:#fff;border:none;font-weight:bold;font-size:14px">取消</el-button>
-        <el-button type="primary"
-                   size="mini"
-                   @click="dialogStatus==='create'?createData():updateDataBefore()"
-                   style="color:#c8ff8c;background:#559ed4">保存</el-button>
+    <div class="pd20">
+      <div class="filter-container">
+        <QueryField ref="queryfield"
+                    :form-data="queryFields"
+                    @submit="getList" />
       </div>
-    </el-dialog>
-    <!-- 这是第二个弹窗，用来操作类别下具体的基础数据 -->
-    <el-dialog :title="textMap[dialogSecondStatus]"
-               :visible.sync="dialogFormSecond"
-               :close-on-click-modal="false"
-               top="5vh">
-      <el-form class="detail-form"
-               ref="dataSecondForm"
-               :rules="rulesSecond"
-               :model="tempSecond"
-               label-position="right">
-        <el-form-item label="代码类别"
-                      prop="dataSortUuid"
-                      hidden>
-          <el-input v-model="tempSecond.dataSortUuid" />
-        </el-form-item>
-        <el-form-item label="通用代码名称"
-                      prop="codeName">
-          <el-input v-model="tempSecond.codeName" />
-        </el-form-item>
-        <el-form-item label="通用代码编码"
-                      prop="codeValue">
-          <el-input v-model="tempSecond.codeValue"
-                    @change="numberSecond()" />
-        </el-form-item>
-        <el-form-item label="通用代码描述"
-                      prop="codeDesc">
-          <el-input v-model="tempSecond.codeDesc" />
-        </el-form-item>
-        <el-form-item label="通用代码码值"
-                      prop="codeWorth">
-          <el-input v-model="tempSecond.codeWorth" />
-        </el-form-item>
-        <el-form-item label="代码排序号"
-                      prop="codeIndex">
-          <el-input v-model="tempSecond.codeIndex"
-                    @change="numberIndex()" />
-        </el-form-item>
-        <el-form-item label="状态"
-                      prop="codeState">
-          <el-select ref="relTypeSelect"
-                     v-model="tempSecond.codeState"
-                     style="width:100%"
-                     placeholder="通用代码状态">
-            <el-option label="启用"
-                       :value="0" />
-            <el-option label="禁用"
-                       :value="1" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <el-button type="primary"
-                 class="oper-btn delete"
-                 size="mini"
-                 :disabled="selectionSecond.length === 0"
-                 @click="deleteDataSecond()"
-                 style="float:right;margin:0 15px 0 10px"></el-button>
-      <el-button type="primary"
-                 class="oper-btn edit"
-                 size="mini"
-                 :disabled="selectionSecond.length !== 1"
-                 @click="updateDataSecondBefore()"
-                 style="float:right"></el-button>
-      <el-button type="primary"
-                 class="oper-btn reset"
-                 size="mini"
-                 @click="resetTempSecond()"
-                 style="float:right"></el-button>
-      <el-button type="primary"
-                 class="oper-btn add"
-                 size="mini"
-                 @click="addSecondCode()"
-                 style="float:right"></el-button>
+      <div class="mb10">
+        <el-row>
+          <el-col align="right">
+            <!-- <el-button type="primary"
+                     class="oper-btn  setting"
+                     :disabled="selections.length !== 1"
+                     @click="setBaseCode" /> -->
 
-      <el-table :key="tableSecondKey"
-                v-loading="listLoadingSecond"
-                :data="listSecond"
+            <el-button size="small"
+                       class="oper-btn"
+                       type="primary"
+                       :disabled="selections.length !== 1"
+                       @click="setBaseCode()"><img src="../../../styles/image/setting.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/setting2.png"
+                   class="btn_icon icon2"
+                   alt="">
+              设置</el-button>
+
+            <el-button size="small"
+                       class="oper-btn"
+                       type="primary"
+                       @click="addCode()"><img src="../../../styles/image/add.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/add2.png"
+                   class="btn_icon icon2"
+                   alt="">
+              新增</el-button>
+
+            <el-button size="small"
+                       type="primary"
+                       class="oper-btn"
+                       :disabled="selections.length === 0"
+                       @click="deleteCode()"><img src="../../../styles/image/delete.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/delete2.png"
+                   class="btn_icon icon2"
+                   alt="">删除</el-button>
+
+            <el-button size="small"
+                       type="primary"
+                       class="oper-btn"
+                       :disabled="selections.length !== 1"
+                       @click="updateCode()"><img src="../../../styles/image/edits.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/edits2.png"
+                   class="btn_icon icon2"
+                   alt="">编辑</el-button>
+          </el-col>
+        </el-row>
+      </div>
+
+      <el-table :key="tableKey"
+                v-loading="listLoading"
+                :data="list"
                 border
                 fit
-                highlight-current-row
-                height="300"
+                height="calc(100vh - 280px)"
                 style="width: 100%;"
                 @sort-change="sortChange"
-                @selection-change="handleSelectionChangeSecond">
+                @selection-change="handleSelectionChange"
+                ref="table">
         <el-table-column label="选择"
                          type="selection"
-                         width="55px" />
-        <el-table-column label="通用代码名称"
-                         width="200px"
+                         width="55" />
+        <el-table-column label="代码类别名称"
+                         prop="dataSortName" />
+        <el-table-column label="代码类别编码"
+                         width="300px"
                          align="center"
-                         prop="codeName" />
-        <el-table-column label="通用代码编码"
-                         width="200px"
-                         align="center"
-                         prop="codeValue" />
-        <el-table-column label="通用代码描述"
-                         width="200px"
-                         align="center"
-                         prop="codeDesc" />
-        <el-table-column label="通用代码码值"
-                         width="200px"
-                         align="center"
-                         prop="codeWorth" />
-        <el-table-column label="通用代码排序"
-                         width="150px"
-                         align="center"
-                         prop="codeIndex" />
-        <el-table-column label="状态"
-                         width="100px"
-                         align="center"
-                         prop="codeState"
-                         :formatter="formatState" />
+                         prop="dataSortValue" />
+        <el-table-column label="代码类别描述"
+                         prop="dataSortDesc" />
+
+        <!-- <el-table-column label="创建时间" width="300px" align="center" prop="createTime" /> -->
+        <el-table-column label="展现形式"
+                         prop="extendTag"
+                         :formatter="formatTag"
+                         align="center" />
       </el-table>
-      <pagination v-show="totalSecond>0"
-                  :total="totalSecond"
-                  :page.sync="pageQuerySecond.pageNo"
-                  :limit.sync="pageQuerySecond.pageSize"
-                  @pagination="setBaseCode" />
-    </el-dialog>
-    <!-- 这是第三个弹窗，用来操作类别下具体的基础数据 -->
-    <!-- <el-dialog v-if="dialogTreeVisible" :visible.sync="dialogTreeVisible" :title="editModelTitle">
+      <pagination v-show="total>0"
+                  :total="total"
+                  :page.sync="pageQuery.pageNo"
+                  :limit.sync="pageQuery.pageSize"
+                  @pagination="getList" />
+      <!-- 这是第一个弹窗，用来添加基础数据类别 -->
+      <el-dialog :title="textMap[dialogStatus]"
+                 :visible.sync="dialogFormVisible"
+                 :close-on-click-modal="false"
+                 height="70vh">
+        <el-form class="detail-form"
+                 ref="dataForm"
+                 :rules="rules"
+                 :model="temp"
+                 label-position="right">
+          <el-form-item label="代码类别名称"
+                        prop="dataSortName">
+            <el-input v-model="temp.dataSortName" />
+          </el-form-item>
+          <el-form-item label="代码类别编码"
+                        prop="dataSortValue">
+            <el-input v-model="temp.dataSortValue" />
+          </el-form-item>
+          <el-form-item label="代码类别描述"
+                        prop="dataSortDesc">
+            <el-input v-model="temp.dataSortDesc" />
+          </el-form-item>
+          <el-form-item label="展现形式"
+                        prop="extendTag">
+            <el-select ref="relTypeSelect"
+                       v-model="temp.extendTag"
+                       style="width:100%"
+                       placeholder="请选择展现形式">
+              <el-option label="列表类"
+                         :value="0" />
+              <el-option label="树形类"
+                         :value="1" />
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div slot="footer">
+          <el-button type="primary"
+                     size="mini"
+                     @click="closeDialog()"
+                     style="color:#559ed4;background:#fff;border:none;font-weight:bold;font-size:14px">取消</el-button>
+          <el-button type="primary"
+                     size="mini"
+                     @click="dialogStatus==='create'?createData():updateDataBefore()"
+                     style="color:#c8ff8c;background:#559ed4">保存</el-button>
+        </div>
+      </el-dialog>
+      <!-- 这是第二个弹窗，用来操作类别下具体的基础数据 -->
+      <el-dialog :title="textMap[dialogSecondStatus]"
+                 :visible.sync="dialogFormSecond"
+                 :close-on-click-modal="false"
+                 top="5vh">
+        <el-form class="detail-form"
+                 ref="dataSecondForm"
+                 :rules="rulesSecond"
+                 :model="tempSecond"
+                 label-position="right">
+          <el-form-item label="代码类别"
+                        prop="dataSortUuid"
+                        hidden>
+            <el-input v-model="tempSecond.dataSortUuid" />
+          </el-form-item>
+          <el-form-item label="通用代码名称"
+                        prop="codeName">
+            <el-input v-model="tempSecond.codeName" />
+          </el-form-item>
+          <el-form-item label="通用代码编码"
+                        prop="codeValue">
+            <el-input v-model="tempSecond.codeValue"
+                      @change="numberSecond()" />
+          </el-form-item>
+          <el-form-item label="通用代码描述"
+                        prop="codeDesc">
+            <el-input v-model="tempSecond.codeDesc" />
+          </el-form-item>
+          <el-form-item label="通用代码码值"
+                        prop="codeWorth">
+            <el-input v-model="tempSecond.codeWorth" />
+          </el-form-item>
+          <el-form-item label="代码排序号"
+                        prop="codeIndex">
+            <el-input v-model="tempSecond.codeIndex"
+                      @change="numberIndex()" />
+          </el-form-item>
+          <el-form-item label="状态"
+                        prop="codeState">
+            <el-select ref="relTypeSelect"
+                       v-model="tempSecond.codeState"
+                       style="width:100%"
+                       placeholder="通用代码状态">
+              <el-option label="启用"
+                         :value="0" />
+              <el-option label="禁用"
+                         :value="1" />
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <el-button type="primary"
+                   class="oper-btn delete"
+                   size="mini"
+                   :disabled="selectionSecond.length === 0"
+                   @click="deleteDataSecond()"
+                   style="float:right;margin:0 15px 0 10px"></el-button>
+        <el-button type="primary"
+                   class="oper-btn edit"
+                   size="mini"
+                   :disabled="selectionSecond.length !== 1"
+                   @click="updateDataSecondBefore()"
+                   style="float:right"></el-button>
+        <el-button type="primary"
+                   class="oper-btn reset"
+                   size="mini"
+                   @click="resetTempSecond()"
+                   style="float:right"></el-button>
+        <el-button type="primary"
+                   class="oper-btn add"
+                   size="mini"
+                   @click="addSecondCode()"
+                   style="float:right"></el-button>
+
+        <el-table :key="tableSecondKey"
+                  v-loading="listLoadingSecond"
+                  :data="listSecond"
+                  border
+                  fit
+                  highlight-current-row
+                  height="300"
+                  style="width: 100%;"
+                  @sort-change="sortChange"
+                  @selection-change="handleSelectionChangeSecond">
+          <el-table-column label="选择"
+                           type="selection"
+                           width="55px" />
+          <el-table-column label="通用代码名称"
+                           width="200px"
+                           align="center"
+                           prop="codeName" />
+          <el-table-column label="通用代码编码"
+                           width="200px"
+                           align="center"
+                           prop="codeValue" />
+          <el-table-column label="通用代码描述"
+                           width="200px"
+                           align="center"
+                           prop="codeDesc" />
+          <el-table-column label="通用代码码值"
+                           width="200px"
+                           align="center"
+                           prop="codeWorth" />
+          <el-table-column label="通用代码排序"
+                           width="150px"
+                           align="center"
+                           prop="codeIndex" />
+          <el-table-column label="状态"
+                           width="100px"
+                           align="center"
+                           prop="codeState"
+                           :formatter="formatState" />
+        </el-table>
+        <pagination v-show="totalSecond>0"
+                    :total="totalSecond"
+                    :page.sync="pageQuerySecond.pageNo"
+                    :limit.sync="pageQuerySecond.pageSize"
+                    @pagination="setBaseCode" />
+      </el-dialog>
+      <!-- 这是第三个弹窗，用来操作类别下具体的基础数据 -->
+      <!-- <el-dialog v-if="dialogTreeVisible" :visible.sync="dialogTreeVisible" :title="editModelTitle">
       <BaseCodeTree ref="editModel" />
       <div slot="footer">
         <el-button type="primary" @click="save">保存</el-button>
         <el-button @click="hideEditModal">取消</el-button>
       </div>
     </el-dialog> -->
+    </div>
   </div>
+
 </template>
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
