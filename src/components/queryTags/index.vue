@@ -480,7 +480,7 @@ html {
 /* 搜索 右侧输入框 */
 .inputTag >>> .el-input__inner {
   height: 36px;
-  /* background: none !important; */
+  background: none !important;
   /* background: orange !important; */
 }
 </style>

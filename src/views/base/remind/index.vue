@@ -1,83 +1,111 @@
 <template>
   <div class="page-container">
-    <div class="filter-container">
-      <QueryField
-        ref="queryfield"
-        :form-data="queryFields"
-        @submit="getList"
-      />
+    <div class="pd20">
+
+      <div class="filter-container">
+        <QueryField ref="queryfield"
+                    :form-data="queryFields"
+                    @submit="getList" />
+      </div>
+      <div class="mb10">
+
+        <el-row>
+          <el-col align="right">
+            <!-- <el-button type="primary"
+                       size="mini"
+                       class="oper-btn mark-read btn-width-md"
+                       :disabled="readButStatus"
+                       @click="updateCode()" /> -->
+
+            <el-button size="small"
+                       class="oper-btn"
+                       type="primary"
+                       :disabled="readButStatus"
+                       @click="updateCode()"><img src="../../../styles/image/markRead.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/markRead2.png"
+                   class="btn_icon icon2"
+                   alt="">
+              标记阅读</el-button>
+          </el-col>
+        </el-row>
+      </div>
+
+      <el-table :key="tableKey"
+                v-loading="listLoading"
+                :data="list"
+                border
+                fit
+                height="calc(100vh - 280px)"
+                highlight-current-row
+                style="width: 100%;"
+                @sort-change="sortChange"
+                @selection-change="handleSelectionChange">
+        <el-table-column type="selection"
+                         width="55" />
+        <el-table-column label="标题"
+                         prop="remindTitle">
+          <template slot-scope="scope">
+            <a type="text"
+               size="small"
+               :class="scope.row.readStatus === 1 ?'handreada' :'handreada-no'"
+               @click="handdetails(scope.row)">
+              {{ scope.row.remindTitle }}
+              <span v-if="scope.row.readStatus === 0"
+                    class="notRead"> NEW</span>
+            </a>
+          </template>
+        </el-table-column>
+        <el-table-column label="提醒时间"
+                         align="center"
+                         prop="remindTime" />
+        <el-table-column label="阅读状态"
+                         prop="readStatus"
+                         align="center"
+                         :formatter="readStatusFormatter" />
+      </el-table>
+      <pagination :total="total"
+                  :page.sync="pageQuery.pageNo"
+                  :limit.sync="pageQuery.pageSize"
+                  @pagination="getList" />
+      <el-dialog v-model="temp"
+                 :append-to-body="true"
+                 :visible.sync="dialogFormVisible"
+                 top="10vh"
+                 title="消息详情"
+                 width="50%"
+                 :close-on-click-modal="false">
+        <el-row>
+          <el-col :span="24">
+            <div class="visible-p1">
+              {{ this.temp.remindTitle }}
+            </div>
+          </el-col>
+        </el-row>
+        <el-divider />
+        <el-row>
+          <el-col :span="12">
+            <div class="visible-p2">
+              提醒时间: {{ this.temp.remindTime }}
+            </div>
+          </el-col>
+          <el-col :span="12"
+                  v-if="temp.remindUserName">
+            <div class="visible-p4">
+              发送人：{{ this.temp.remindUserName }}
+            </div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <div class="visible-p3">
+              {{ this.temp.remindContent }}
+            </div>
+          </el-col>
+        </el-row>
+      </el-dialog>
     </div>
-    <el-row>
-      <el-col align="right">
-        <el-button type="primary" size="mini" class="oper-btn mark-read btn-width-md" :disabled="readButStatus" @click="updateCode()" />
-      </el-col>
-    </el-row>
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      height="calc(100vh - 300px)"
-      max-height="calc(100vh - 300px)"
-      highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="selection" width="55" />
-      <el-table-column
-        label="标题"
-        prop="remindTitle"
-      >
-        <template slot-scope="scope">
-          <a
-            type="text"
-            size="small"
-            :class="scope.row.readStatus === 1 ?'handreada' :'handreada-no'"
-            @click="handdetails(scope.row)"
-          >
-            {{ scope.row.remindTitle }}
-            <span
-              v-if="scope.row.readStatus === 0"
-              class="notRead"
-            > NEW</span>
-          </a>
-        </template>
-      </el-table-column>
-      <el-table-column label="提醒时间" align="center" prop="remindTime" />
-      <el-table-column label="阅读状态" prop="readStatus" align="center" :formatter="readStatusFormatter" />
-    </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-    <el-dialog
-      v-model="temp"
-      :append-to-body="true"
-      :visible.sync="dialogFormVisible"
-      top="10vh"
-      title="消息详情"
-      width="50%"
-      :close-on-click-modal="false"
-    >
-      <el-row>
-        <el-col :span="24"><div class="visible-p1">
-          {{ this.temp.remindTitle }}
-        </div></el-col>
-      </el-row>
-      <el-divider />
-      <el-row>
-        <el-col :span="12"><div class="visible-p2">
-          提醒时间: {{ this.temp.remindTime }}
-        </div></el-col>
-        <el-col :span="12" v-if="temp.remindUserName" ><div class="visible-p4">
-          发送人：{{ this.temp.remindUserName }}
-        </div></el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="24"><div class="visible-p3">
-          {{ this.temp.remindContent }}
-        </div></el-col>
-      </el-row>
-    </el-dialog>
   </div>
 </template>
 <script>
@@ -86,7 +114,7 @@ import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 export default {
   components: { Pagination, QueryField },
-  data() {
+  data () {
     return {
       tableKey: 'errorUuid',
       list: null,
@@ -96,8 +124,10 @@ export default {
         { label: '标题', name: 'remindTitle', type: 'text', value: '' },
         // { label: '内容', name: 'remindContent', type: 'fuzzyText' },
         { label: '提醒时间范围', name: 'remindTime', type: 'timePeriod' },
-        { label: '阅读状态', name: 'readStatus', type: 'select',
-          data: [{ name: '未阅', value: '0' }, { name: '已阅', value: '1' }], default: '-1' }
+        {
+          label: '阅读状态', name: 'readStatus', type: 'select',
+          data: [{ name: '未阅', value: '0' }, { name: '已阅', value: '1' }], default: '-1'
+        }
       ],
       // selectedRowVal:0,
       tableOptions: {
@@ -129,9 +159,9 @@ export default {
         pageSize: 20
       }
     }
-  },watch: {
+  }, watch: {
     // 监听selections集合
-    selections() {
+    selections () {
       // 系统提醒已阅按钮 只有选择了未阅读的的消息时才可用
       this.readButStatus = this.selections.filter((r) => r.readStatus === 0).length === 0;
     }
@@ -139,7 +169,7 @@ export default {
   computed: {
 
   },
-  created() {
+  created () {
     this.getList()
   },
   methods: {
@@ -149,7 +179,7 @@ export default {
      * @param column 列数据
      * @returns {string} 返回格式化后的数据
      */
-    readStatusFormatter(row, column) {
+    readStatusFormatter (row, column) {
       var status = row.readStatus
       if (status === 0) {
         return '未阅'
@@ -157,7 +187,7 @@ export default {
         return '已阅'
       }
     },
-    getList(query) {
+    getList (query) {
       this.listLoading = true
       if (query) {
         this.pageQuery.condition = query
@@ -169,20 +199,20 @@ export default {
         this.listLoading = false
       })
     },
-    handleSelectionChange(val) {
+    handleSelectionChange (val) {
       this.selections = val
     },
-    handleFilter() {
+    handleFilter () {
       this.pageQuery.pageNo = 1
       this.getList()
     },
-    sortChange(data) {
+    sortChange (data) {
       const { prop, order } = data
       this.pageQuery.sortBy = order
       this.pageQuery.sortName = prop
       this.handleFilter()
     },
-    resetQuery() {
+    resetQuery () {
       this.query = {
         condition: {
           remindTitle: null,
@@ -192,14 +222,14 @@ export default {
         }
       }
     },
-    selectDetail(data) {
+    selectDetail (data) {
       var remindedType = data.remindedType
       var url = data.modeUrl
       this.$router.push({
         path: url
       })
     },
-    updateCode() {
+    updateCode () {
       var ids = []
       this.selections.forEach((r, i) => {
         ids.push(r.remindUuid)
@@ -212,7 +242,7 @@ export default {
         }
       })
     },
-    handdetails(data) {
+    handdetails (data) {
       var id = data.remindUuid
       if (data.modeUrl == null || data.modeUrl == '') {
         this.temp = data
@@ -235,64 +265,68 @@ export default {
 }
 </script>
 <style scoped>
-.handreada{
-    cursor: pointer;
-    padding: 0;
-    font-size: 14px;
-    font-weight: normal;
-    color: #1890ff;
+.handreada {
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  font-weight: normal;
+  color: #1890ff;
 }
-.handreada-no{
-    cursor: pointer;
-    padding: 0;
-    font-size: 14px;
-    font-weight: bolder;
-    color: #1890ff;
+.handreada-no {
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  font-weight: bolder;
+  color: #1890ff;
 }
-.notRead{
-    text-align: left;
-    padding: 0;
-    font-size: 10px;
-    font-weight: normal;
-    color: red;
+.notRead {
+  text-align: left;
+  padding: 0;
+  font-size: 10px;
+  font-weight: normal;
+  color: red;
 }
-.handreada-no:hover{text-decoration:underline}
-.handreada:hover{text-decoration:underline}
+.handreada-no:hover {
+  text-decoration: underline;
+}
+.handreada:hover {
+  text-decoration: underline;
+}
 /*
   弹窗布局
 */
-.visible-p1{
+.visible-p1 {
   text-align: center;
   width: 95%;
-  margin:.5% 2.5% 0%;
+  margin: 0.5% 2.5% 0%;
   padding: 10px 0px;
   font-size: 25px;
   /* border-radius: 6px;  */
   display: inline-block;
   font-weight: bold;
 }
-.visible-p2{
+.visible-p2 {
   text-align: right;
   width: 95%;
-  margin:.5% 2.5% .5%;
+  margin: 0.5% 2.5% 0.5%;
   padding: 5px;
   font-size: 16px;
   border-radius: 6px;
   display: inline-block;
 }
-.visible-p4{
+.visible-p4 {
   text-align: left;
   width: 95%;
-  margin:.5% 2.5% .5%;
+  margin: 0.5% 2.5% 0.5%;
   padding: 5px;
   font-size: 16px;
   border-radius: 6px;
   display: inline-block;
 }
-.visible-p3{
+.visible-p3 {
   text-indent: 2em;
   width: 95%;
-  margin:.5% 2.5% 2.5%;
+  margin: 0.5% 2.5% 2.5%;
   padding: 10px;
   font-size: 16px;
   border-radius: 6px;
@@ -301,7 +335,7 @@ export default {
   height: 400px;
   overflow: auto;
 }
-.red{
+.red {
   font-weight: bold;
 }
 </style>

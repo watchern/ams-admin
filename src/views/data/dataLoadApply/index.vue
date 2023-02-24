@@ -102,7 +102,7 @@
                   fit
                   highlight-current-row
                   style="width: 100%"
-                  height="calc(100vh - 300px)"
+                  height="calc(100vh - 280px)"
                   @selection-change="handleSelectionChange">
           <el-table-column type="selection"
                            width="55" />
@@ -865,9 +865,9 @@ export default {
         this.$refs.tree_left.loadLeftTreeTypeFun("4");
       })
     },
-    checkHeaderLine(obj){
+    checkHeaderLine (obj) {
       this.tableData.forEach((item) => {
-        if (obj == item.fileName && item.isHeaderLine == "true"){
+        if (obj == item.fileName && item.isHeaderLine == "true") {
           this.$set(item, "selectTableName", "");
         }
       })
