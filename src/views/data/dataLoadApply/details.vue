@@ -74,7 +74,7 @@
                          show-overflow-tooltip>
         </el-table-column>
         <el-table-column prop="fileType"
-                         min-width="100px"
+                         min-width="40px"
                          label="文件类型"
                          align="center"
                          show-overflow-tooltip>
@@ -94,7 +94,7 @@
         <el-table-column prop="isHeaderLine"
                          label="首行是否为标题行"
                          align="center"
-                         min-width="80px">
+                         min-width="40px">
           <template slot-scope="scope">
             <el-checkbox v-model="scope.row.isHeaderLine"
                          :disabled="true"
@@ -102,6 +102,12 @@
                          false-label="false">
             </el-checkbox>
           </template>
+        </el-table-column>
+        <el-table-column prop="selectTableName"
+                         label="补充表名"
+                         align="center"
+                         min-width="100px"
+                         show-overflow-tooltip>
         </el-table-column>
 
       </el-table>
