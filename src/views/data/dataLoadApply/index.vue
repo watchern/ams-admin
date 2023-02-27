@@ -1070,7 +1070,6 @@ export default {
           this.updateShow = true
         }
         if (this.form.operationType == 0) {
-          console.log(res.data.fileList)
           this.tableData = res.data.fileList
           this.tableData.forEach((r) => {
             r.isUpload = true
@@ -1286,7 +1285,6 @@ export default {
           }
           //判断不为标题行时是否选择了文件
           let nums = 0;
-          console.log(this.tableData)
           this.tableData.forEach((item) => {
             if (item.isHeaderLine == "false" && item.selectTableName == "") {
               nums = 1;
