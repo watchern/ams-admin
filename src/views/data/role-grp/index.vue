@@ -77,10 +77,15 @@
           <!--          <el-button type="primary" class="oper-btn edit-period btn-width-max" :disabled="selections.length !== 1" @click="setExpireDate" />-->
           <el-button
             type="primary"
-            class="oper-btn delete"
+            class="oper-btn"
             :disabled="selections.length === 0 || isNoClick"
             @click="removeGrp"
-          />
+          ><img src="../../../styles/image/delete.png"
+                class="btn_icon icon1"
+                alt="">
+            <img src="../../../styles/image/delete2.png"
+                 class="btn_icon icon2"
+                 alt="">删除</el-button>
         </el-col>
         <el-table
           key="colMetaUuid"
