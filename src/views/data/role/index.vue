@@ -197,7 +197,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, save, update, del, getSceneFilter, changeRoleFilter } from '@/api/data/role'
+import {listByPage, save, update, del, getSceneFilter, changeRoleFilter, isApplied} from '@/api/data/role'
 import QueryField from '@/components/public/query-field/index'
 import { getDictList, commonNotify } from '@/utils'
 import { cacheDict } from "@/api/base/sys-dict";
@@ -435,7 +435,34 @@ export default {
     },
     handleDelete () {
       var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.dataRoleUuid) })
+      // 删除列表中是否存在数据申请角色
+      var flag = false;
+      this.selections.forEach((r, i) => {
+        ids.push(r.dataRoleUuid);
+        if (r.authenType == "004001002"){
+          flag = true;
+        }
+      });
+      if (flag){
+        isApplied(ids.join(',')).then((resp) => {
+          if (resp.data){
+            this.$notify({
+              title: '提示',
+              message: '无法删除已经被申请的角色',
+              type: 'warning',
+              duration: 2000,
+              position: 'bottom-right'
+            });
+          }else {
+            this.doDelete(ids);
+          }
+        })
+      }else {
+        this.doDelete(ids);
+      }
+
+    },
+    doDelete(ids){
       this.$confirm('确定删除该角色?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
