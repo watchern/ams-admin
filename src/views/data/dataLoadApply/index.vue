@@ -607,6 +607,7 @@ export default {
         lineSeparator: '',
         columnSeparator: '',
         isHeaderLine: 'true',
+        // 当判断文件类型为txt时，改变disabled属性值为false
         disabled: false,
         selectTableName: '',
       },
@@ -657,6 +658,7 @@ export default {
         filingMove: '',//归档方式
         filingFile: '',//归档文件
         fileType: '',
+        selectTableName: '',//补充表名
       },
       //详情
       Selectval_list: [],//多选的值
@@ -1068,6 +1070,7 @@ export default {
           this.updateShow = true
         }
         if (this.form.operationType == 0) {
+          console.log(res.data.fileList)
           this.tableData = res.data.fileList
           this.tableData.forEach((r) => {
             r.isUpload = true
@@ -1283,6 +1286,7 @@ export default {
           }
           //判断不为标题行时是否选择了文件
           let nums = 0;
+          console.log(this.tableData)
           this.tableData.forEach((item) => {
             if (item.isHeaderLine == "false" && item.selectTableName == "") {
               nums = 1;
