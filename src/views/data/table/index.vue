@@ -13,7 +13,6 @@
     <!-- right_conter -->
     <div class="right_conter">
       <div class="list_style">
-
         <DataResourceDisplay @down_template_cn="DownTemplateCN"
                              @Important_cn="ImportantCn"
                              @Importdata_dictionary="ImportdataDictionary"
@@ -282,7 +281,6 @@
               </el-col>
               <!-- 所属系统 && 文件名-->
               <el-col :span="11">
-
                 <el-form-item label="所属系统："
                               prop="businessSystemId">
                   <el-select v-model="form.businessSystemId"
@@ -298,7 +296,6 @@
               </el-col>
               <el-col :span="11"
                       :offset="2">
-
                 <el-form-item label="文件名：">
                   <el-input type="text"
                             placeholder="请输入文件名称"
@@ -354,7 +351,7 @@
                       <el-input type="textarea"
                                 disabled
                                 style="width: 100%;"
-                                v-model="form.personName_str">
+                                v-model="form.personName">
                       </el-input>
                     </el-col>
                     <el-col :span="2">
@@ -363,7 +360,6 @@
                                  @click="check_people()">选择</el-button>
                     </el-col>
                   </el-form-item>
-
                 </div>
               </el-col>
               <!-- </div> -->
@@ -462,22 +458,13 @@
       </el-dialog>
 
       <!-- 选择责任人 -->
-      <el-dialog title="选择责任人"
-                 :close-on-click-modal="false"
-                 :visible.sync="resultShareDialogIsSee"
-                 width="80%"
-                 class="dlag_width">
-        <div class="dlag_conter">
-          <personTree :reverseDisplay="personReverseDisplay"
-                      ref="orgPeopleTree"></personTree>
-        </div>
-        <span slot="footer"
-              class="dialog-footer">
-          <el-button @click="close_people()">取消</el-button>
-          <el-button type="primary"
-                     @click="modelResultShare()">确定</el-button>
-        </span>
-      </el-dialog>
+      <select-person
+        title="选择责任人"
+        :visible.sync="resultShareDialogIsSee"
+        :close-on-click-modal="false"
+        :has-selected="form.personLiables"
+        @confirm="confrimSelectPeople"
+      ></select-person>
 
       <!-- 选择标签 -->
       <!-- <select-label title="选择标签"
@@ -494,21 +481,14 @@
                  class="dlag_width">
         <div class="dlag_conter">
           <div class="com">
-            <el-form ref="form"
-                     label-width="80px"
-                     :model="Recognition">
-              <el-form-item label="认权人:"
-                            prop="people">
-                <el-input type="text"
-                          disabled
-                          placeholder="请选择认权人"
-                          style="width: 30%;"
-                          v-model="Recognition.personName_str">
-                </el-input>
-                <el-button type="primary"
-                           @click="check_people()">选择</el-button>
-              </el-form-item>
-            </el-form>
+            认权人：
+            <el-input type="text"
+                      disabled
+                      placeholder="请选择认权人"
+                      style="width: 30%;"
+                      v-model="form.personName">
+            </el-input>
+            <el-button type="primary" @click="check_people()">选择</el-button>
           </div>
           <div class="padding10_l">
             <el-table :data="Recognition_check_list"
@@ -526,16 +506,14 @@
                 <template slot-scope="scope">
                   <div>{{scope.row.tableRelationQuery.tableType | getLabel}}</div>
                 </template>
-
               </el-table-column>
             </el-table>
           </div>
         </div>
         <span slot="footer"
               class="dialog-footer">
-          <el-button @click="visible_Recognition = false">取消</el-button>
-          <el-button type="primary"
-                     :loading="save_people_Loading"
+          <el-button @click="close_people">取消</el-button>
+          <el-button type="primary" :loading="save_people_Loading"
                      @click="save_people_change()">确定</el-button>
         </span>
       </el-dialog>
@@ -570,11 +548,6 @@
                      type="primary"
                      :loading="importLoad"
                      v-else>导入</el-button>
-
-          <!-- <el-button type="primary"
-                     @click="upload_title = '数据字典导入' ? importTableDictionary()
-  :upload_title = '汉化信息导入' ? importTablCn()
-   : upload_title = '表关系导入' ? importTableTable() :'' ">导入</el-button> -->
         </span>
       </el-dialog>
     </div>
@@ -595,10 +568,8 @@ import {
   downTemplateDictionary, // 下载资源目录模版
   downTemplateCN, // 下载汉化信息模版
   downTemplateTable, // 下载表关系模版
-  getPersonLiableByTableMetaUuid,// 获取认权人信息
 } from "@/api/data/table-info";
 import QueryField from "@/components/public/query-field/index";
-import personTree from "@/components/publicpersontree/index";
 import DataResourceDisplay from "@/components/directory/dataResourceDisplay.vue";
 import Details from "@/components/directory/details.vue";
 import directoryFileImport from "@/views/data/tableupload"; //导入
@@ -608,12 +579,12 @@ import {
   importTable_table,
 } from "@/api/data/dict";
 import qs from "qs";
+import SelectPerson from "@/components/directory/selectPerson.vue";
 import SelectLabel from "@/components/directory/selectLabel.vue";
 import {
   batchSaveTable_save, //下一步 保存
   getListTree, //注册资源下一步
 } from "@/api/lhg/register.js";
-
 import {
   update_data, //认权人
 } from "@/api/lhg/dataAccreditationManagement.js";
@@ -628,7 +599,7 @@ export default {
     SelectLabel,
     Details,
     directoryFileImport,
-    personTree,
+    SelectPerson,
   },
   data () {
     return {
@@ -678,7 +649,7 @@ export default {
         fileName: [
           { required: true, message: "请输入文件名称", trigger: "change" },
         ],
-        personName_str: [
+        personName: [
           { required: true, message: "请选择资源责任人", trigger: "change" },
         ],
         tableRemarks: [
@@ -703,14 +674,13 @@ export default {
         dataDate: '',//数据日期
         tableSize: '',//表大小:
         rowNum: '',//表数据量
-        personLiables: [],//负责人
-        personName_str: '',//责任人
-        personUuid: '',//资源责任人
+        personLiables: [],//责任人集合
+        personUuid: '',//责任人id
+        personName: "",//责任人
         partitions: '',//表分区
         isSpike: 1,//是否增量
         labelList: [], // 标签列表
         isSentFile: 0, //是否推送文件
-        personName: "",
         check_list: [
           {
             label: "",
@@ -750,9 +720,6 @@ export default {
       isDisable_input: true, //详情禁止输入修改
       visible_Recognition: false, //认权管理
       Recognition_check_list: [], //认权列表
-      Recognition: {
-        personName_str: "",
-      }, // 认权人信息
       save_people_Loading: false, // 认权按钮加载
       dialogVisible_forms: false, //批量注册弹窗显示
       dialogVisible_tag: false, //选择标签弹窗显示
@@ -803,12 +770,11 @@ export default {
     };
   },
   computed: {},
-  created () { },
+  created () {},
   methods: {
     // 查询
     search (serachParams) {
       this.serachParams = serachParams;
-
       let data = this.$refs.tree_left.query;
       this.dataSource = data.dataSource//新增关系树 和注册首页数据源绑定且不可修改
       this.show_details = false; //显示列表
@@ -830,12 +796,6 @@ export default {
         this.list = res.data.records;
       });
     },
-
-    // clearSearch_click (data, datas) {
-    //   this.serachParams = data
-    //   console.log(datas);
-    //   console.log(this.serachParams);
-    // },
     // 返回上一步
     Step () {
       this.show_details = false;
@@ -1055,7 +1015,7 @@ export default {
         if (resp.code == 0) {
           this.$message({
             type: "success",
-            message: "同步成功!",
+            message: "同步成功",
           });
           this.query_list(this.$refs.tree_left.query, false);//刷新列表
         } else {
@@ -1069,58 +1029,16 @@ export default {
     // 认权管理
     recognitionChange (data) {
       this.Recognition_check_list = data;
-      let tableMetaUuidList = [];
-      this.Recognition_check_list.forEach(item => {
-        tableMetaUuidList.push(item.tableMetaUuid)
-      })
-      this.Recognition.personName_str = "";
-      // 获取当前表认权人
-      getPersonLiableByTableMetaUuid(tableMetaUuidList).then(resp => {
-        let personLibaleList = resp.data;
-        let personLibales = [];
-        this.personReverseDisplay = [];
-        personLibaleList.forEach(item => {
-          personLibales.push(item.personName);
-        });
-        this.personReverseDisplay = personLibaleList;
-        this.Recognition.personName_str = personLibales.join("、")
-      });
       this.visible_Recognition = true;
-      if (this.$refs.orgPeopleTree) {
-        if (this.$refs.multipleTable) {
-          this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection(); //清空选择的认权人
-          this.$refs.orgPeopleTree.findOrgTree_data();
-          this.$refs.orgPeopleTree.list = [];
-          this.$refs.orgPeopleTree.total = 0;
-        }
-      }
     },
     // 认权确认
     save_people_change () {
       //请选择认权人
-      if (this.Recognition.personName_str == "") {
+      if (this.form.personName == "") {
         this.$message({ type: "warning", message: "请选择认权人" });
-
       } else {
         this.save_people_Loading = true;
-
-        var personUuids = [];
-        var personNames = [];
-        var arr = [];
-        var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
-        // 清除人员组件选择数据
-        this.$refs.orgPeopleTree.refreshSelected();
-        for (var i = 0; i < selectedNode.length; i++) {
-          personUuids.push(selectedNode[i].personuuid);
-          personNames.push(selectedNode[i].cnname);
-          let obj = {
-            personuuid: selectedNode[i].personuuid,
-            personName: selectedNode[i].cnname,
-          };
-          arr.push(obj);
-        }
-        this.form.personLiables = arr;
-        var tableMetaUuids = [];
+        let tableMetaUuids = [];
         for (var i = 0; i < this.Recognition_check_list.length; i++) {
           tableMetaUuids.push(this.Recognition_check_list[i].tableMetaUuid);
         }
@@ -1131,7 +1049,6 @@ export default {
         // 修改
         update_data(params).then((res) => {
           this.save_people_Loading = false;
-
           if (res.code == 0) {
             this.$message({
               message: "认权成功",
@@ -1140,7 +1057,7 @@ export default {
             });
             this.query_list(this.$refs.tree_left.query, false);//刷新列表
             this.visible_Recognition = false;
-            this.clearcheckbox();
+            this.clear();
           } else {
             this.$message({
               message: res.msg,
@@ -1151,10 +1068,10 @@ export default {
         });
       }
     },
-    // 关闭 选择责任人
+    // 关闭认证管理
     close_people () {
-      this.resultShareDialogIsSee = false;
-      this.$refs.orgPeopleTree.$emit("clear"); //清空组件 值
+      this.visible_Recognition = false;
+      this.clear();
     },
     // 显示基本信息详情
     onDeailsChange (data) {
@@ -1227,9 +1144,6 @@ export default {
         this.list_loading = false; //子组件loading
         this.list_data = resp.data;
         this.list = resp.data.records;
-        // this.$nextTick(() => {
-        // this.$refs.Display.$el.style.border = '1px solid red'
-        // })
       });
     },
     // 注册资源
@@ -1255,29 +1169,39 @@ export default {
     // 清除注册资源第二步的数据
     clear () {
       // 清空
-      this.form.tbName = "";
-      this.form.tableCode = "";
-      this.form.chnName = ''
-      this.form.tableType = "";
-      this.form.tableThemeId = "";
-      this.form.rowNum = '';
-      this.form.tableSize = '';
-      this.form.partitions = '';
-      this.form.tableRemarks = '';
-      this.form.businessSystemId = "";
-      this.form.tableLayeredId = "";
-      this.form.folderUuid = "";
-      this.form.personUuid = "";
-      this.form.tableRemarks = "";
-      this.form.isSpike = 1;
-      this.form.isSentFile = 0;
-      this.form.fileName = '';
-      this.form.check_list.fileName = "";
-      this.form.check_list.pid = "";
-      this.form.check_list.id = "";
-      this.form.check_list.label = "";
-      this.form.dataDate = "";
-      this.form.personName_str = "";
+      this.form = {
+        tbName: '', //表名
+        chnName: '', //表中文名
+        tableRemarks: '',//表说明
+        tableCode: '',// 资源编码
+        tableType: '',// 资源类型
+        tableThemeName: '',//所属主题
+        tableThemeId: '',// 资源主题 id
+        tableLayeredName: '',//资源分层
+        tableLayeredId: '',//资源分层 id
+        businessSystemName: '',//所属系统
+        businessSystemId: '',//所属系统 id
+        folderUuid: '',//目录id
+        fileName: '',//文件名
+        dataDate: '',//数据日期
+        tableSize: '',//表大小:
+        rowNum: '',//表数据量
+        personLiables: [],//责任人集合
+        personUuid: '',//责任人id
+        personName: "",//责任人
+        partitions: '',//表分区
+        isSpike: 1,//是否增量
+        labelList: [], // 标签列表
+        isSentFile: 0, //是否推送文件
+        check_list: [
+          {
+            label: "",
+            fileName: "",
+            pid: "",
+            id: "",
+          },
+        ], // 选择的数据表
+      }
     },
     // 第一步选择的数据库
     nodeClick_table (data, node, tree) {
@@ -1362,7 +1286,6 @@ export default {
           tbName: this.form.check_list[i].label,
           folderUuid: this.form.folderUuid, //目录id
           personLiables: this.form.personLiables, // 资源责任人
-          // increment: this.form.increment,//是否增量
           isSpike: this.form.isSpike, //是否增量
           tableRelationQuery: {
             tableDataSource: this.$refs.tree_left.query.dataSource, //数据源
@@ -1380,27 +1303,19 @@ export default {
         };
         this.chooseTables.push(tableForm);
       }
-
+      // 保存数据
       batchSaveTable_save(this.chooseTables).then((resp) => {
         if (resp.code == 0) {
           this.$message({
             type: "success",
-            message: "新增成功!",
+            message: "新增成功",
           });
           this.btnLoading = false; //保存loadnin
           this.chooseTables = []; //传输的数据
-          // this.post_getBusinessSystemTree(); //系统
-          // this.post_getThemeTree(); //主题
-          // this.post_getLayeredTree(); //分层
-          // this.post_getDataTreeNode();//目录
           this.query_list(this.$refs.tree_left.query, false);
           this.update_tree();//更新左侧树
-          let activeName = this.$refs.tree_left.activeName
-          this.$refs.tree_left.handleClick(activeName)//更新查看sql
-          // this.$nextTick(() => {
-          //   this.$refs.form.resetFields(); //清空添加的值
-          //   this.$refs.form.clearValidate();
-          // })
+          let activeName = this.$refs.tree_left.activeName;
+          this.$refs.tree_left.handleClick(activeName); //更新查看sql
         } else {
           this.btnLoading = false;
           this.$message({
@@ -1412,19 +1327,6 @@ export default {
         this.registTableFlag = false; //关闭上一步
       });
       this.dialogVisible_forms = false; //关闭多选的表单弹窗显示
-    },
-    // 格式化数据，递归将空的children置为undefined
-    formatCascaderData (data) {
-      for (var i = 0; i < data.length; i++) {
-        if (data[i].children.length < 1) {
-          // children若为空数组，则将children设为undefined
-          data[i].children = undefined;
-        } else {
-          // children若不为空数组，则继续 递归调用 本方法
-          this.formatCascaderData(data[i].children);
-        }
-      }
-      return data;
     },
     // 关闭弹窗
     handleClose (form) {
@@ -1488,14 +1390,13 @@ export default {
               };
               this.chooseTables.push(tableForm);
             }
-            //
+            // 保存数据
             batchSaveTable_save(this.chooseTables).then((resp) => {
               if (resp.code == 0) {
                 this.$message({
                   type: "success",
-                  message: "新增成功!",
+                  message: "新增成功",
                 });
-                // this.$message.success("新增成功");
                 this.btnLoading = false; //保存loadnin
                 this.chooseTables = []; //传输的数据
                 this.update_tree();//更新左侧树
@@ -1503,7 +1404,7 @@ export default {
                 this.$nextTick(() => {
                   this.$refs.form.resetFields(); //清空添加的值
                   this.$refs.form.clearValidate();
-                })
+                });
               } else {
                 this.btnLoading = false;
                 this.$message.error(res.msg);
@@ -1512,7 +1413,7 @@ export default {
               this.registTableFlag = false; //关闭上一步
             });
           } else {
-            this.$message({ type: "info", message: "文件名字不可以重复!" });
+            this.$message({ type: "info", message: "文件名字不可以重复" });
           }
         } else {
           this.btnLoading = false; //保存loadnin
@@ -1529,15 +1430,28 @@ export default {
     // 选择责任人
     check_people () {
       this.resultShareDialogIsSee = true;
-      this.form.personLiables = [];
-      this.clearcheckbox();
-      // this.$nextTick(() => {
-      //   if (this.$refs.orgPeopleTree) {
-      //     if (this.$refs.multipleTable) {
-      //       this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection();//清空选择的责任人
-      //     }
-      //   }
-      // })
+    },
+    confrimSelectPeople(val) {
+      if (val == null || val.length == 0) {
+        this.form.personName = "";
+        this.form.personUuid = "";
+        this.form.personLiables = [];
+        return;
+      }
+      let personNames = [];
+      let personUuids = [];
+      let people = [];
+      val.forEach(item => {
+        personNames.push(item.cnname);
+        personUuids.push(item.personuuid);
+        people.push({
+          personUuid: item.personuuid,
+          personName: item.cnname,
+        });
+      });
+      this.form.personName = personNames.join(",");
+      this.form.personUuid = personUuids.join(",");
+      this.form.personLiables = people;
     },
     // 选择标签
     check_tag () {
@@ -1549,55 +1463,6 @@ export default {
     // 删除标签
     handleDeleteLabel (tag) {
       this.form.labelList.splice(this.form.labelList.indexOf(tag), 1);
-    },
-    // 清除多选框
-    clearcheckbox () {
-      this.$nextTick(() => {
-        if (this.$refs.orgPeopleTree.$refs.multipleTable) {
-          this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection(); //清除多选框
-        }
-        if (this.$refs.orgPeopleTree) {
-          if (this.$refs.orgPeopleTree.$refs.multipleTable) {
-            this.$refs.orgPeopleTree.$refs.multipleTable.clearSelection(); //清空选择的认权人
-            this.$refs.orgPeopleTree.findOrgTree_data();
-            this.$refs.orgPeopleTree.list = [];
-            this.$refs.orgPeopleTree.total = 0;
-          }
-        }
-      });
-    },
-    // 确定责任人
-    modelResultShare () {
-      var runTaskRelUuids = [];
-      var personUuids = [];
-      var personNames = [];
-
-      var arr = [];
-      var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
-      if (selectedNode != null && selectedNode.length == 0) {
-        this.form.personName_str = ""
-        this.Recognition.personName_str = ""
-      }
-      for (var i = 0; i < selectedNode.length; i++) {
-        personUuids.push(selectedNode[i].personuuid);
-        personNames.push(selectedNode[i].cnname);
-
-        // this.form.personName_str = personNames.join(",");
-        this.Recognition.personName_str = personNames.join(",");
-        this.form.personName_str = personNames.join(",");
-
-        this.form.personUuid = personUuids;
-        this.form.personName = personNames;
-        // this.form.personName = personNames.toString();
-
-        let obj = {
-          personUuid: selectedNode[i].personuuid,
-          personName: selectedNode[i].cnname,
-        };
-        arr.push(obj);
-      }
-      this.form.personLiables = arr;
-      this.resultShareDialogIsSee = false;
     },
     // 修改
     Edit_list (data) {
@@ -1787,23 +1652,9 @@ export default {
 }
 
 /* 认权人 */
-.com >>> .el-form {
-  /* width: 100%; */
+.com {
+  margin: 10px;
 }
-
-/* .com >>> .el-form-item__content {
-  width: 100%;
-  display: flex;
-  align-items: center;
-}
-
-.com >>> .el-form-item {
-  display: flex;
-}
-
-.com >>> .el-input {
-  width: 300px;
-} */
 
 .com >>> .el-button {
   margin: 0 10px;
