@@ -105,7 +105,7 @@
                 v-loading="loading"
                 border
                 style="width: 100%"
-                height="calc(100vh - 310px)"
+                height="calc(100vh - 300px)"
                 @selection-change="handleSelectionChange">
         <el-table-column type="selection"
                          width="55"> </el-table-column>
@@ -147,16 +147,22 @@
         </el-table-column>
       </el-table>
       <el-row>
-        <el-pagination @size-change="handleSizeChange"
-                       @current-change="handleCurrentChange"
-                       background
-                       :current-page="query.pageNo"
-                       :page-sizes="[5, 10, 15, 20]"
-                       :page-size="query.pageSize"
-                       layout="total, sizes, prev, pager, next, jumper"
-                       :total="dataTotal"
-                       class="pagination">
-        </el-pagination>
+<!--        <el-pagination @size-change="handleSizeChange"-->
+<!--                       @current-change="handleCurrentChange"-->
+<!--                       background-->
+<!--                       :current-page="query.pageNo"-->
+<!--                       :page-sizes="[5, 10, 15, 20]"-->
+<!--                       :page-size="query.pageSize"-->
+<!--                       layout="total, sizes, prev, pager, next, jumper"-->
+<!--                       :total="dataTotal"-->
+<!--                       class="pagination">-->
+
+        <el-pagination layout="total, sizes, prev, pager, next, jumper"
+                     @size-change="handleSizeChange"
+                     @current-change="handleCurrentChange"
+                     :total="total"
+                      ></el-pagination>
+<!--        v-show="total>0"-->
       </el-row>
 
       <!--     添加弹窗-->
@@ -396,8 +402,9 @@ export default {
       query: {
         condition: {},
         pageNo: 1,
-        pageSize: 5,
+        pageSize: 10,
       },
+      total:0,
       flowSet: {
         opinionList: false,
         opinion: false,
@@ -459,7 +466,7 @@ export default {
       queryAllPersonalSpace(this.query).then((res) => {
         this.loading = false;
         this.personalSpaceDataList = res.data.records;
-        this.dataTotal = res.data.total;
+        this.total = res.data.total;
         this.query.pageSize = res.data.size;
         this.query.pageNo = res.data.current;
       });
