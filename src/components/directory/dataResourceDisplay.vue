@@ -98,6 +98,7 @@
     <el-skeleton style="width:100%;float: left;overflow: auto;"
                  :class="isBtn == true ?'is_min_heihgt':'is_heihgt'"
                  animated
+                 class="skeleton"
                  :loading="list_loading"
                  :count="4">
       <template slot="template">
@@ -766,8 +767,13 @@ export default {
   background: transparent !important;
 }
 
-.list_table >>> .el-table th.el-table__cell.is-leaf,
+/* .list_table >>> .el-table th.el-table__cell.is-leaf,
 .list_table >>> .el-table td.el-table__cell {
+  border: none !important;
+} */
+
+.skeleton >>> .el-table th.el-table__cell.is-leaf,
+.skeleton >>> .el-table td.el-table__cell {
   border: none !important;
 }
 </style>

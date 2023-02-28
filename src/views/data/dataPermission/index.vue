@@ -1,94 +1,60 @@
 <template>
   <div class="page-container">
     <div class="pd20">
-      <!-- 搜索 -->
+<!--      查询-->
+      <div class="que-component">
+        <SearchCommon ref="tags"
+                      @search="goQuery"
+                      @clearSearch="clear"
+                      :dropDown="dropDown"
+                      @change="onChange"></SearchCommon>
+      </div>
+      <!-- 之前搜索 -->
       <!-- <div class="searchBlock"> -->
-      <div class="query-field">
-        <el-row>
-          <el-col :span="22">
-            <el-form :inline="true"
-                     :model="dataBaseData"
-                     label-position="bottom">
-              <el-row>
-                <el-form-item label="申请名称："
-                              prop="condition">
-                  <el-input v-model="dataBaseData.condition.permissionApplyName"
-                            size="small"
-                            placeholder="请输入内容"
-                            clearable></el-input>
-                </el-form-item>
-                <el-form-item label="申请人："
-                              prop="condition">
-                  <el-input v-model="dataBaseData.condition.createUserName"
-                            size="small"
-                            placeholder="请输入内容"
-                            clearable></el-input>
-                </el-form-item>
-                <el-form-item label="列表类型："
-                              prop="condition">
-                  <el-select v-model="dataBaseData.condition.workFlowState"
-                             filterable
-                             clearable
-                             placeholder="全部"
-                             size="small">
-                    <el-option v-for="(item, index) in listType"
-                               :key="index"
-                               :label="item.name"
-                               :value="item.id"></el-option>
-                  </el-select>
-                </el-form-item>
-                <el-form-item label="列表类型："
-                              prop="condition">
-                  <el-date-picker v-model="dataBaseData.times"
-                                  type="daterange"
-                                  range-separator="至"
-                                  start-placeholder="开始日期"
-                                  end-placeholder="结束日期">
-                  </el-date-picker>
-                </el-form-item>
-
-                <!--                2.22修改时间查询-->
-                <el-form-item label="申请时间范围："
-                              prop="createTime"
-                              style="display: inline-block;">
-                  <el-date-picker v-model="dataBaseData.condition.permissionApplyStartTime"
-                                  type="datetime"
-                                  placeholder="开始时间"
-                                  value-format="yyyy-MM-dd HH:mm:ss" />
-                  <el-date-picker v-model="dataBaseData.condition.permissionApplyEndTime"
-                                  type="datetime"
-                                  placeholder="结束时间"
-                                  value-format="yyyy-MM-dd HH:mm:ss" />
-                </el-form-item>
-                <el-form-item>
-
-                  <el-button type="primary"
-                             @click="goQuery">查询</el-button>
-                  <el-button type="primary"
-                             @click="reset">重置</el-button>
-                </el-form-item>
-              </el-row>
-            </el-form>
-            <!-- <div class="searchBlock_left"> -->
-
-            <!-- <div class="search">
-              <div class="search-title">申请名称:</div>
-              <div class="search-operation">
-                <el-input v-model="dataBaseData.condition.permissionApplyName"
-                          size="small"
-                          placeholder="请输入内容"
-                          clearable></el-input>
-              </div>
-            </div> -->
-            <!-- <div class="search">
-              <div class="search-title">申请人:</div>
-              <div class="search-operation">
-                <el-input v-model="dataBaseData.condition.createUserName"
-                          size="small"
-                          placeholder="请输入内容"
-                          clearable></el-input>
-              </div>
-            </div> -->
+<!--      <div class="query-field">-->
+<!--        <el-row>-->
+<!--          <el-col :span="22">-->
+<!--            <el-form :inline="true"-->
+<!--                     :model="dataBaseData"-->
+<!--                     label-position="bottom">-->
+<!--              <el-row>-->
+<!--                <el-form-item label="申请名称："-->
+<!--                              prop="condition">-->
+<!--                  <el-input v-model="dataBaseData.condition.permissionApplyName"-->
+<!--                            size="small"-->
+<!--                            placeholder="请输入内容"-->
+<!--                            clearable></el-input>-->
+<!--                </el-form-item>-->
+<!--                <el-form-item label="申请人："-->
+<!--                              prop="condition">-->
+<!--                  <el-input v-model="dataBaseData.condition.createUserName"-->
+<!--                            size="small"-->
+<!--                            placeholder="请输入内容"-->
+<!--                            clearable></el-input>-->
+<!--                </el-form-item>-->
+<!--                <el-form-item label="列表类型："-->
+<!--                              prop="condition">-->
+<!--                  <el-select v-model="dataBaseData.condition.workFlowState"-->
+<!--                             filterable-->
+<!--                             clearable-->
+<!--                             placeholder="全部"-->
+<!--                             size="small">-->
+<!--                    <el-option v-for="(item, index) in listType"-->
+<!--                               :key="index"-->
+<!--                               :label="item.name"-->
+<!--                               :value="item.id"></el-option>-->
+<!--                  </el-select>-->
+<!--                </el-form-item>-->
+<!--                <el-form-item label="申请时间范围："-->
+<!--                              prop="condition">-->
+<!--                  <el-date-picker v-model="dataBaseData.times"-->
+<!--                                  type="daterange"-->
+<!--                                  range-separator="至"-->
+<!--                                  start-placeholder="开始日期"-->
+<!--                                  end-placeholder="结束日期">-->
+<!--                  </el-date-picker>-->
+<!--                </el-form-item>-->
+<!--                <el-form-item>-->
 
             <!-- <div class="search">
               <div class="search-title">列表类型:</div>
@@ -119,9 +85,9 @@
             </div> -->
 
             <!-- </div> -->
-          </el-col>
-        </el-row>
-      </div>
+<!--          </el-col>-->
+<!--        </el-row>-->
+<!--      </div>-->
       <!-- 列表 -->
       <div class="listDisplay">
         <div class="mb10">
@@ -332,6 +298,33 @@ export default {
   props: [],
   data () {
     return {
+      dropDown:[
+        {
+          code: 'permissionApplyName',
+          name: '申请名称',
+          value: []
+        },
+        {
+          code: 'createUserName',
+          name: '申请人',
+          value: []
+        },
+        {
+          code: 'workFlowState',
+          name: '列表类型',
+          value: []
+        },
+        {
+          code: 'startTime',
+          name: '开始创建时间',
+          value: []
+        },
+        {
+          code: 'endTime',
+          name: '结束创建时间',
+          value: []
+        }
+      ],
       listType: [{ name: "草稿", id: "0" }, { name: "办理中", id: "1" }, { name: "办理完成", id: "2" }],
       //新增弹窗是否显示
       showAddDialog: false,
@@ -339,10 +332,7 @@ export default {
       dataBaseData: {
         pageSize: 10,
         pageNo: 1,
-        // times: [],
-        //时间查询范围
-        startTime: '',
-        endTime: '',
+        times: [],
         condition: {
           permissionApplyName: '',
           createUserName: '',

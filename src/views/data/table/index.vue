@@ -619,9 +619,6 @@ export default {
       chooseTables: [],
       dialogVisible_information: false, // 单个注册弹窗显示
       rules: {
-        tableRemarks: [
-          { required: true, message: '请输入资源编码', trigger: 'blur' },
-        ],
         tableCode: [
           { required: true, message: '请输入资源编码', trigger: 'blur' },
         ],

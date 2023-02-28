@@ -102,7 +102,7 @@
                   fit
                   highlight-current-row
                   style="width: 100%"
-                  height="calc(100vh - 300px)"
+                  height="calc(100vh - 280px)"
                   @selection-change="handleSelectionChange">
           <el-table-column type="selection"
                            width="55" />
@@ -607,6 +607,7 @@ export default {
         lineSeparator: '',
         columnSeparator: '',
         isHeaderLine: 'true',
+        // 当判断文件类型为txt时，改变disabled属性值为false
         disabled: false,
         selectTableName: '',
       },
@@ -657,6 +658,7 @@ export default {
         filingMove: '',//归档方式
         filingFile: '',//归档文件
         fileType: '',
+        selectTableName: '',//补充表名
       },
       //详情
       Selectval_list: [],//多选的值
@@ -865,9 +867,9 @@ export default {
         this.$refs.tree_left.loadLeftTreeTypeFun("4");
       })
     },
-    checkHeaderLine(obj){
+    checkHeaderLine (obj) {
       this.tableData.forEach((item) => {
-        if (obj == item.fileName && item.isHeaderLine == "true"){
+        if (obj == item.fileName && item.isHeaderLine == "true") {
           this.$set(item, "selectTableName", "");
         }
       })

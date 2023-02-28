@@ -18,7 +18,7 @@
         </el-row>
       </div>
 
-      <el-table :key="tableKey"
+      <el-table :key="dataExportUuid"
                 v-loading="listLoading"
                 :data="tableData"
                 stripe
@@ -78,7 +78,7 @@
             <el-link v-if="scope.row.status == '待办理' || scope.row.status == '已办理'"
                      :underline="false"
                      type="text"
-                     @click="showFlow()">流程查看
+                     @click="showFlow()">流程跟踪
             </el-link>
             <el-link v-if="scope.row.status == '已办理'"
                      type="text"
@@ -118,11 +118,12 @@
                      @click="dialogFlowItemShow = false">关闭</el-button>
         </span>
       </el-dialog>
-      <el-dialog title="流程跟踪---待开发"
+      <el-dialog title="流程跟踪"
                  :visible.sync="dialogFlowVisible"
                  :close-on-click-modal="false">
         <div>
-          <flowOpinionList></flowOpinionList>
+          <flowOpinionList :applyUuid="applyUuid"
+                           :pageFrom="applyPage"></flowOpinionList>
         </div>
       </el-dialog>
       <el-dialog title="下载"
@@ -162,10 +163,69 @@ import {
 
 } from "@/api/data/table-info";
 import { XmlFactory } from 'ag-grid-community';
+
+import QueryField from '@/components/public/query-field/index'
+import Pagination from '@/components/Pagination'
+import {listByPage} from '@/api/data/exportApproval'
+import flowOpinionList from "@/components/starflow/todowork/flowOpinionList";
+import FlowItem from '@/components/starflow/todowork/flowItem'
 export default {
-  components: { MyElTree },
+  components: { QueryField,Pagination,MyElTree,flowOpinionList,FlowItem },
   data () {
     return {
+      //流程跟踪id
+      applyUuid:'',
+      applyPage: "applyPage", //有这个标识 查询流程的时候会走相对应的方法
+      //查询条件
+      queryFields: [
+        {
+          label: '申请模块名称',
+          name: 'requestModelName',
+          type: 'text',
+          value: ''
+        },
+        {
+          label: '申请人',
+          name: 'requestPersionName',
+          type: 'text',
+          value: ''
+        },
+        {
+          label: '状态',
+          name: 'status',
+          type: 'select',
+          data: [{name: '草稿', value: 0}, {name: '待办理', value: 1}, {name: '已办理', value: 2}],
+        },
+        {
+          label: "申请时间范围",
+          name: "requsetTime",
+          type: "timePeriod"
+        }
+      ],
+      selections: [],
+      dataExportUuid:'',
+      //表单加载
+      listLoading: false,
+      //表单列表
+      tableData:  [],
+      //页面列表分页
+      pageQuery: {
+        condition: null,
+        pageNo: 1,
+        pageSize: 20,
+        sortBy: 'asc',
+        sortName: 'create_time'
+      },
+      total: 0,
+      //列表按钮对应弹框
+      dialogTransactVisible: false,
+      dialogFlowVisible: false,
+      dialogdownLoadVisible: false,
+      dialogFileVisible: false,
+      //文件预览内按钮弹框
+      nextVisible: false,
+      totalVisible: false,
+
       props: {
         label: "label",
         isLeaf: "leaf",
@@ -199,7 +259,7 @@ export default {
       },
       tabclick: false,
       treeLoading: false,
-      tableData: [],
+      // tableData: [],
       chooseTables: [],
       loadLeftTreeType: "", //因为很多模块需要用到这棵树，用此类型来区分不同模块; 1-SQL编辑器 2-数据授权管理-资源绑定 左侧树
       isShowLoadLeftTreeBtn: true, //是否展示树节点操作按钮
@@ -215,6 +275,7 @@ export default {
   },
   mounted () { },
   created () {
+    this.getList()
     this.query.businessSystemId = "";
 
   },
@@ -400,6 +461,78 @@ export default {
       this.$emit("nodeClick", data)
     },
 
+    //复选框操作
+    handleSelectionChange(val) {
+      this.selections = val
+    },
+    //办理
+    handleTransact() {
+      console.log(this.selections,'this.selections')
+      debugger
+      if (this.selections[0].workFlowState == '2') {
+        this.$notify.warning("办理完成的业务不可提交")
+        return
+      }
+      this.dialogTransactVisible = true
+    },
+    //分页
+    sortChange(data) {
+      const {prop, order} = data
+      this.pageQuery.sortBy = order
+      this.pageQuery.sortName = prop
+      this.handleFilter()
+    },
+    handleFilter() {
+      this.pageQuery.pageNo = 1
+      this.getList()
+    },
+
+
+    //流程跟踪
+    showFlow (row) {
+      this.dialogFlowVisible = true,
+      this.applyUuid = row.dataExportUuid;
+    },
+
+    //下载
+    downLoad() {
+      this.dialogdownLoadVisible = true
+    },
+    //文件预览
+    showFile() {
+      this.dialogFileVisible = true
+    },
+    //预览列表下一页
+    nextList() {
+      this.nextVisible = true
+    },
+    //查看全部
+    allList() {
+      this.totalVisible = true
+    },
+
+    //状态转换
+    statusFormat(row, column){
+      let status = {
+        0: "草稿",
+        1: "待办理",
+        2: "已办理",
+      }
+      return status[row.status]
+    },
+    //分页查询
+    getList(query) {
+      if (query) this.pageQuery.condition = query
+      listByPage(this.pageQuery).then(resp => {
+        this.total = resp.data.total
+        this.tableData = resp.data.records
+        this.listLoading = false
+      })
+    },
+    getSortClass: function (key) {
+      const sort = this.pageQuery.sort
+      return sort === `+${key}` ? 'asc' : 'desc'
+    },
 
   }
 };
