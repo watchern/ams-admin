@@ -23,8 +23,8 @@
                      ref="labelTree">
               <span class="custom-label-tree-node"
                     slot-scope="{ node, data }">
-                <div v-if="data.childrenList.length>0">
-                  <i :class="[ node.expanded ? 'el-icon-folder' : 'el-icon-folder-opened', ]"></i>
+                <div v-if="data.childrenList.length > 0">
+                  <i :class="[ node.expanded ? 'el-icon-folder' : 'el-icon-folder-opened' ]"></i>
                   <span v-if="node.label.trim().length < 9">{{ node.label }}</span>
                   <el-tooltip placement="top"
                               v-else>
@@ -34,7 +34,7 @@
                 </div>
                 <div v-else>
                   <i class="el-icon-folder"></i>
-                  <span v-if="node.label.trim().length<9">{{ node.label }}</span>
+                  <span v-if="node.label.trim().length < 9">{{ node.label }}</span>
                   <el-tooltip placement="top"
                               v-else>
                     <div slot="content">{{ node.label }}</div>
@@ -46,7 +46,7 @@
           </div>
           <div class="padding10"
                style="width: 70%;">
-            <el-input placeholder="请输入标签名称"
+            <el-input placeholder="请输入标签名称进行过滤"
                       style="width: 320px;"
                       clearable></el-input>
             <el-table ref="labelTable"
@@ -175,13 +175,13 @@ export default {
     // 查询标签树
     getLabelTree () {
       getLabelTree().then((res) => {
+        this.defaultExpandKeys = [res.data[0].labelLibraryId];
+        this.labelTreeData = res.data;
         this.getLabelList(
           res.data[0].labelLibraryId,
           this.queryLabelInfo.currentPage,
           this.queryLabelInfo.pageSize
         );
-        this.defaultExpandKeys = [res.data[0].labelLibraryId];
-        this.labelTreeData = res.data;
       });
     },
     // 查询标签列表

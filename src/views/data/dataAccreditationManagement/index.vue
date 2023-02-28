@@ -431,7 +431,7 @@ export default {
         personUuids.push(selectedNode[i].personuuid);
         personNames.push(selectedNode[i].cnname);
         let obj = {
-          personuuid: selectedNode[i].personuuid, personName: selectedNode[i].cnname
+          personUuid: selectedNode[i].personuuid, personName: selectedNode[i].cnname
         }
         arr.push(obj)
       }
