@@ -7,10 +7,11 @@
              :class="currentval && dropDown.length > 0 ?'input_is_show':''"
              @click="onclick">
           <!-- 生成的标签 -->
-          <div class="left">
+          <div class="left" ref="leftBox">
+<!--            :style="{maxWidth: maxWidths +'px'}"-->
             <div class="TagsAll_conter"
                  id="list"
-                 :style="{maxWidth: maxWidths +'px'}"
+
                  ref="TagsAll">
               <div v-for="(item, index) in TagsAll"
                    :key="index"
@@ -25,12 +26,18 @@
             <!-- 输入框 -->
             <!-- @keyup.enter="addTags" -->
             <!-- :style="inputStyle" -->
-            <el-input v-model="currentval"
+            <el-input
+                v-model="currentval"
                       @keyup.delete="deleteTags"
                       class="inputTag"
                       ref="inputTag"
-                      :style="{width:this.minWIdth + 'px'}"
-                      type="text" />
+                      id="inputTag"
+                      type="text" >
+              <template slot="prefix">
+                {{ currentval }}
+              </template>
+            </el-input>
+
           </div>
 
           <i class="el-icon-search searchbtn"
@@ -47,7 +54,8 @@
                class="dropDownItem"
                @click="addTags(item)">
             <div class="dropDownTitel">{{ item.name }}:</div>
-            {{ currentval }}
+            <div class="dropDownMsg">{{ currentval }}</div>
+
           </div>
         </div>
       </div>
@@ -93,6 +101,11 @@ export default {
       this.$emit("change", this.serachParams);
     },
     currentval (val) {
+      // if(val!=''){
+      //   let inputWidth=document.getElementById("#inputTag");
+      //   let inputBoxWidth=document.getElementsByClassName(".inputTag");
+      //   console.log(inputWidth,inputBoxWidth)
+      // }
       // 
       // 实时改变input输入框宽度，防止输入内容超出input默认宽度显示不全
       // this.inputLength = this.$refs.inputTag.value.length * 12 + 50;
@@ -116,26 +129,32 @@ export default {
     this.TagsAll = this.parentArr;
     // this.dropDown = this.dropDownData;
 
-    this.watch_width();//监听输入框宽度
+    // this.watch_width();//监听输入框宽度
   },
 
   methods: {
     watch_width () {
-      const elementResizeDetectorMaker = require("element-resize-detector");
-      const erd = elementResizeDetectorMaker()
-      const that = this
-      erd.listenTo(document.querySelector('.TagsAll_conter'), function (element) {
-        that.input_left = element.offsetWidth
-
-        // 如果左侧输入宽度超过395的尺寸 则为左侧最大宽度；minWIdth 为右侧输入框墨人最小宽度
-        if (that.input_left >= 395) {
-          that.maxWidths = 395
-          that.minWIdth = 185
-        } else {
-          // 如果没有 则右侧输入框撑满
-          that.minWIdth = (580 - that.input_left)
-        }
+      this.$nextTick(()=>{
+        let height = this.$refs.TagsAll.scrollWidth;
+        this.$refs.TagsAll.scrollTo(height,0);
       })
+
+
+      // const elementResizeDetectorMaker = require("element-resize-detector");
+      // const erd = elementResizeDetectorMaker()
+      // const that = this
+      // erd.listenTo(document.querySelector('.TagsAll_conter'), function (element) {
+      //   that.input_left = element.offsetWidth
+      //
+      //   // 如果左侧输入宽度超过395的尺寸 则为左侧最大宽度；minWIdth 为右侧输入框墨人最小宽度
+      //   if (that.input_left >= 395) {
+      //     that.maxWidths = 395
+      //     that.minWIdth = 185
+      //   } else {
+      //     // 如果没有 则右侧输入框撑满
+      //     that.minWIdth = (580 - that.input_left)
+      //   }
+      // })
     },
 
 
@@ -170,6 +189,8 @@ export default {
             obj = { name: val.name + ": ", value: this.currentval, code: val.code };
           }
           this.TagsAll.push(obj);
+
+
           for (let i = 0; i < this.dropDown.length; i++) {
             if (this.dropDown[i].code == obj.code) {
 
@@ -183,6 +204,7 @@ export default {
             }
           }
           this.currentval = "";//清空输入的值
+
         }
       } else {
         this.$message({ type: "warning", message: "请选择一条类型" });
@@ -239,7 +261,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 html {
   --font-color: #fff;
   --bg-color: rgba(255, 255, 255, 0.4);
@@ -267,8 +289,6 @@ html {
 /* 隐藏搜索滚动条  */
 .father_box ::-webkit-scrollbar {
   display: none;
-}
-.father_box::-webkit-scrollbar {
   width: 0 !important;
 }
 .father_box {
@@ -281,46 +301,48 @@ html {
 
 .left {
   display: flex;
+  min-width: 0;
   width: 100%;
   height: 100%;
-  float: left;
+  /*float: left;*/
   position: relative;
   border-radius: 25px;
 }
 .TagsAll_conter {
-  position: absolute;
-  left: 0;
-  top: 0px;
+  /*position: absolute;*/
+  /*left: 0;*/
+  /*top: 0px;*/
   height: 36px;
-  float: left;
+  /*float: left;*/
   /* border: 1px solid blue; */
   /* width: auto;
   overflow-x: auto; */
   width: auto;
   white-space: nowrap;
-  overflow: hidden;
-  border-radius: 25px;
+  overflow-x: auto;
+  /*border-radius: 25px;*/
+  max-width: 90%;
 }
 /* .dw {
   width: 0 !important;
 } */
 /* 标签 */
 .spanbox {
-  /* display: inline-block; */
+   display: inline-block;
   font-size: 14px;
   margin: 0px 4px 0px 0;
   background-color: rgb(229, 229, 229);
   /* background: #2c81fd; */
   border: 1px solid rgb(229, 229, 229);
   border-radius: 25px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: auto;
-  float: left;
+  /*display: flex;*/
+  /*align-items: center;*/
+  /*justify-content: center;*/
+  /*width: auto;*/
+  /*float: left;*/
   transition: all 3s;
-  position: relative;
-  overflow: hidden;
+  /*position: relative;*/
+  /*overflow: hidden;*/
   z-index: 1;
 }
 .tagspan {
@@ -370,10 +392,13 @@ html {
   transform: translate3d(-50%, -50%, 0) scale(15, 15);
 }
 /* input */
-.inputTag {
-  position: absolute;
-  right: 0px;
-  top: 0px;
+.TagsAll_conter .el-input{
+  width: auto!important;
+}
+::v-deep .inputTag {
+  /*position: absolute;*/
+  /*right: 0px;*/
+  /*top: 0px;*/
   font-size: 16px;
   border: none;
   box-shadow: none;
@@ -384,7 +409,29 @@ html {
   height: 34px;
   color: #495060;
   line-height: 34px;
-  float: left;
+  min-width: 10%;
+  text-align: start;
+  width: auto;
+  /*float: left;*/
+ .el-input__prefix {
+   display: inline-block;
+   position: relative;
+   box-sizing: border-box;
+   color: transparent;
+   font-size: inherit;
+   height: 40px;
+   line-height: 40px;
+   //padding: 0 30px;
+   padding-left: 50px;
+   left: 0;
+   visibility: hidden;
+  }
+   .el-input__inner {
+    position: absolute;
+     border:none!important;
+     background: transparent!important;
+     //padding-left: 0!important;
+  }
 }
 .inputTag >>> .el-input__inner {
   border: none !important;
@@ -415,7 +462,7 @@ html {
 }
 
 .dropDownItem {
-  height: 30px;
+  min-height: 30px;
   line-height: 30px;
   /* margin-left: 10px; */
   color: #666 !important;
@@ -428,9 +475,15 @@ html {
 }
 .dropDownTitel {
   display: inline-block;
-  width: 110px;
+  width: 20%;
   text-align: right;
   margin-right: 10px;
+  vertical-align: top;
+}
+.dropDownMsg{
+  display: inline-block;
+  white-space: pre-wrap;
+  width: 78%;
 }
 .searchbtn {
   position: absolute;
