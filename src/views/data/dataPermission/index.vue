@@ -5,7 +5,7 @@
       <div class="que-component">
         <SearchCommon ref="tags"
                       @search="goQuery"
-                      @clearSearch="clear"
+                      @clearSearch="reset"
                       :dropDown="dropDown"
                       @change="onChange"></SearchCommon>
       </div>
@@ -54,7 +54,36 @@
 <!--                                  end-placeholder="结束日期">-->
 <!--                  </el-date-picker>-->
 <!--                </el-form-item>-->
-<!--                <el-form-item>-->
+
+<!--                  <el-button-->
+<!--                             type="primary"-->
+<!--                             @click="goQuery">查询</el-button>-->
+<!--                  <el-button-->
+<!--                             type="primary"-->
+<!--                             @click="reset">重置</el-button>-->
+<!--                </el-form-item>-->
+<!--              </el-row>-->
+<!--            </el-form>-->
+            <!-- <div class="searchBlock_left"> -->
+
+            <!-- <div class="search">
+              <div class="search-title">申请名称:</div>
+              <div class="search-operation">
+                <el-input v-model="dataBaseData.condition.permissionApplyName"
+                          size="small"
+                          placeholder="请输入内容"
+                          clearable></el-input>
+              </div>
+            </div> -->
+            <!-- <div class="search">
+              <div class="search-title">申请人:</div>
+              <div class="search-operation">
+                <el-input v-model="dataBaseData.condition.createUserName"
+                          size="small"
+                          placeholder="请输入内容"
+                          clearable></el-input>
+              </div>
+            </div> -->
 
             <!-- <div class="search">
               <div class="search-title">列表类型:</div>
@@ -391,6 +420,7 @@ export default {
   computed: {},
   watch: {},
   mounted () {
+    this.goQuery();
   },
   created () {
     this.goQuery();
@@ -408,19 +438,20 @@ export default {
       this.dataBaseData.pageSize = val
       this.goQuery();
     },
+
+    onChange (serachParams) {
+      this.dataBaseData.condition = serachParams;
+    },
     // 查询
-    goQuery () {
-      // if (this.dataBaseData.times && this.dataBaseData.times.length > 0) {
-      //   let startTime = new Date(this.dataBaseData.times[0]);
-      //   let endTime = new Date(this.dataBaseData.times[1]);
-      //   this.dataBaseData.condition.permissionApplyStartTime = formatDate(startTime);
-      //   this.dataBaseData.condition.permissionApplyEndTime = formatDate(endTime);
-      // }
+    goQuery (query) {
+      query = this.$refs.tags.serachParams
+      this.loading = true;
+      if(query) this.dataBaseData.condition = query
       queryAllOperatePermissionApply(this.dataBaseData).then(resp => {
+        this.loading = false;
         if (resp.data) {
           this.tableData = resp.data.records;
           this.tableData.sort();
-          // console.log(this.tableData)
           this.selected = [];
           this.total = resp.data.total;
         } else {
@@ -429,6 +460,27 @@ export default {
         }
       })
     },
+    // 查询
+    // goQuery () {
+    //   // if (this.dataBaseData.times && this.dataBaseData.times.length > 0) {
+    //   //   let startTime = new Date(this.dataBaseData.times[0]);
+    //   //   let endTime = new Date(this.dataBaseData.times[1]);
+    //   //   this.dataBaseData.condition.permissionApplyStartTime = formatDate(startTime);
+    //   //   this.dataBaseData.condition.permissionApplyEndTime = formatDate(endTime);
+    //   // }
+    //   queryAllOperatePermissionApply(this.dataBaseData).then(resp => {
+    //     if (resp.data) {
+    //       this.tableData = resp.data.records;
+    //       this.tableData.sort();
+    //       // console.log(this.tableData)
+    //       this.selected = [];
+    //       this.total = resp.data.total;
+    //     } else {
+    //       this.tableData = []
+    //       this.tableData.sort();
+    //     }
+    //   })
+    // },
     // 重置
     reset () {
       this.dataBaseData = {

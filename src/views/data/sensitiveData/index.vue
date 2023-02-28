@@ -2,51 +2,55 @@
   <div class="page-container">
     <div class="pd20">
       <div class="filter-container">
-        <div class="query-field">
-          <el-form :inline="true"
-                   :model="query"
-                   label-position="bottom">
-            <el-form-item label="规则名称：">
-              <el-input v-model="dataBaseData.ruleName"
-                        placeholder="请输入内容"
-                        clearable></el-input>
-            </el-form-item>
-
-            <el-form-item label="创建人名称：">
-              <el-input v-model="dataBaseData.createUserName"
-                        placeholder="请输入内容"
-                        clearable></el-input>
-            </el-form-item>
-
-            <!--          <el-form-item label="创建时间：">-->
-            <!--            <el-date-picker v-model="createTime"-->
-            <!--                            type="daterange"-->
-            <!--                            range-separator="-"-->
-            <!--                            start-placeholder="开始日期"-->
-            <!--                            end-placeholder="结束日期"-->
-            <!--                            @change="getTime">-->
-            <!--            </el-date-picker>-->
-            <!--          </el-form-item>-->
-            <el-form-item label="创建时间范围："
-                          prop="createTime"
-                          style="display: inline-block;">
-              <el-date-picker v-model="dataBaseData.startTime"
-                              type="datetime"
-                              placeholder="开始时间"
-                              value-format="yyyy-MM-dd HH:mm:ss" />
-              <el-date-picker v-model="dataBaseData.endTime"
-                              type="datetime"
-                              placeholder="结束时间"
-                              value-format="yyyy-MM-dd HH:mm:ss" />
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary"
-                         @click="goQuery">查询</el-button>
-              <el-button type="primary"
-                         @click="reset">重置</el-button>
-            </el-form-item>
-          </el-form>
+        <div class="que-component">
+          <SearchCommon ref="tags"
+                        @search="goQuery"
+                        :dropDown="dropDown"
+                        @clearSearch="reset"
+                        @change="onChange"
+                       ></SearchCommon>
         </div>
+
+        <!--        之前的查询-->
+<!--        <div class="query-field">-->
+<!--        <el-form :inline="true"-->
+<!--                 :model="query"-->
+<!--                 label-position="bottom">-->
+<!--          <el-form-item label="规则名称：">-->
+<!--            <el-input v-model="dataBaseData.ruleName"-->
+<!--                      placeholder="请输入内容"-->
+<!--                      clearable></el-input>-->
+<!--          </el-form-item>-->
+
+<!--            <el-form-item label="创建人名称：">-->
+<!--              <el-input v-model="dataBaseData.createUserName"-->
+<!--                        placeholder="请输入内容"-->
+<!--                        clearable></el-input>-->
+<!--            </el-form-item>-->
+<!--          <el-form-item label="角色名称：">-->
+<!--            <el-input v-model="dataBaseData.createUserName"-->
+<!--                      placeholder="请输入内容"-->
+<!--                      clearable></el-input>-->
+<!--          </el-form-item>-->
+
+<!--          <el-form-item label="创建时间：">-->
+<!--            <el-date-picker v-model="createTime"-->
+<!--                            type="daterange"-->
+<!--                            range-separator="-"-->
+<!--                            start-placeholder="开始日期"-->
+<!--                            end-placeholder="结束日期"-->
+<!--                            @change="getTime">-->
+<!--            </el-date-picker>-->
+<!--          </el-form-item>-->
+
+<!--          <el-form-item>-->
+<!--            <el-button type="primary"-->
+<!--                       @click="goQuery">查询</el-button>-->
+<!--            <el-button type="primary"-->
+<!--                       @click="reset">重置</el-button>-->
+<!--          </el-form-item>-->
+<!--        </el-form>-->
+<!--      </div>-->
 
         <div class="mb10">
           <el-row>
@@ -91,7 +95,7 @@
                   style="width: 100%"
                   stripe
                   row-key="id"
-                  height="calc(100vh - 300px)"
+                  height="calc(100vh - 310px)"
                   @selection-change="handleSelectionChange">
           <!-- :reserve-selection="true" -->
           <el-table-column type="selection"
@@ -140,7 +144,8 @@
       <el-pagination layout="total, sizes, prev, pager, next, jumper"
                      @size-change="handleSizeChange"
                      @current-change="handleCurrentChange"
-                     :total="dataBaseData.total"></el-pagination>
+                     :total="total"
+                     v-show="total>0" ></el-pagination>
     </div>
 
     <!-- 新增弹窗 -->
@@ -171,6 +176,29 @@ export default {
   props: [],
   data () {
     return {
+      //查询
+      dropDown:[
+        {
+              code: 'ruleName',
+              name: '规则名称',
+              value: []
+        },
+        {
+          code: 'createUserName',
+          name: '创建人',
+          value: []
+        },
+        {
+          code: 'startTime',
+          name: '开始创建时间',
+          value: []
+        },
+        {
+          code: 'endTime',
+          name: '结束创建时间',
+          value: []
+        }
+      ],
       //新增弹窗是否显示
       showAddDialog: false,
       createTime: [],
@@ -180,12 +208,12 @@ export default {
         pageNo: 1,
         pageSize: 20,
       },
+      total: 0,
       dataBaseData: {
         ruleName: "",
         createUserName: "",
         startTime: null,
         endTime: null,
-        total: 0,
       },
       tableData: [],
       multipleSelection: [],
@@ -202,31 +230,47 @@ export default {
     init () {
       this.loading = true;
       this.pageQuery.condition = this.dataBaseData;
-      getList(this.pageQuery).then((res) => {
+      getList(this.dataBaseData).then((res) => {
         this.loading = false;
         this.tableData = res.data.records;
-        this.dataBaseData.total = res.data.total;
+        this.total = res.data.total;
       });
     },
     // getTime (date) {
     //   this.dataBaseData.startTime = date[0];
     //   this.dataBaseData.endTime = date[1];
     // },
+    onChange (serachParams) {
+      this.dataBaseData = serachParams;
+    },
     // 查询
-    goQuery () {
-      this.init();
+    goQuery (query) {
+      query = this.$refs.tags.serachParams
+      this.loading = true;
+      if(query) this.pageQuery.condition =query
+      getList(this.pageQuery).then((res) => {
+        this.loading = false;
+        this.tableData = res.data.records;
+        this.total = res.data.total;
+      });
     },
-    // 重置
-    reset () {
-      this.dataBaseData = {
-        ruleName: "",
-        createUserName: "",
-        startTime: null,
-        endTime: null,
-      };
-      this.createTime = []
-      this.goQuery()
+    reset(data) {
+      this.dataBaseData.ruleName = "",
+      this.dataBaseData.createUserName = "",
+      this.dataBaseData.startTime = null,
+      this.dataBaseData.endTime = null
     },
+    // // 重置
+    // reset () {
+    //   this.dataBaseData = {
+    //     ruleName: "",
+    //     createUserName: "",
+    //     startTime: null,
+    //     endTime: null,
+    //   };
+    //   this.createTime = []
+    //   this.goQuery()
+    // },
     // 添加
     add () {
       this.sensitiveTitle = "新增敏感数据识别规则";

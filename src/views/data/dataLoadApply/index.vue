@@ -4,55 +4,61 @@
     <div class="pd20">
       <div class="filter-container">
         <div class="query-field">
-          <el-form :inline="true"
-                   :model="query"
-                   label-position="bottom">
-            <el-row>
-              <el-col>
-                <el-form-item label="申请名称："
-                              prop="applyName">
-                  <el-input v-model="query.applyName"
-                            style="width: 200px"
-                            clearable />
-                </el-form-item>
-                <el-form-item label="申请人："
-                              prop="applyPerson">
-                  <el-input v-model="query.applyPerson"
-                            clearable />
-                </el-form-item>
-                <el-form-item label="列表类型："
-                              prop="status">
-                  <el-select v-model="query.status"
-                             clearable
-                             placeholder="请选择列表类型">
-                    <el-option v-for="item in statusType"
-                               :key="item.value"
-                               :label="item.label"
-                               :value="item.value" />
-                  </el-select>
-                </el-form-item>
-                <el-form-item label="申请时间范围："
-                              prop="applyTime"
-                              style="display: inline-block;">
-                  <el-date-picker v-model="query.startTime"
-                                  type="datetime"
-                                  placeholder="开始时间"
-                                  value-format="yyyy-MM-dd HH:mm:ss" />
-                  <el-date-picker v-model="query.endTime"
-                                  type="datetime"
-                                  placeholder="结束时间"
-                                  value-format="yyyy-MM-dd HH:mm:ss" />
-                </el-form-item>
-                <el-form-item>
-                  <el-button type="primary"
-                             @keyup.enter.native="search"
-                             @click="search()">查询</el-button>
-                  <el-button type="primary"
-                             @click="clearAll()">重置</el-button>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-form>
+          <SearchCommon ref="tags"
+                        @search="search"
+                        :dropDown="dropDown"
+                        @clearSearch="clearAll"
+                        @change="onChange"
+          ></SearchCommon>
+<!--          <el-form :inline="true"-->
+<!--                   :model="query"-->
+<!--                   label-position="bottom">-->
+<!--            <el-row>-->
+<!--              <el-col>-->
+<!--                <el-form-item label="申请名称："-->
+<!--                              prop="applyName">-->
+<!--                  <el-input v-model="query.applyName"-->
+<!--                            style="width: 200px"-->
+<!--                            clearable />-->
+<!--                </el-form-item>-->
+<!--                <el-form-item label="申请人："-->
+<!--                              prop="applyPerson">-->
+<!--                  <el-input v-model="query.applyPerson"-->
+<!--                            clearable />-->
+<!--                </el-form-item>-->
+<!--                <el-form-item label="列表类型："-->
+<!--                              prop="status">-->
+<!--                  <el-select v-model="query.status"-->
+<!--                             clearable-->
+<!--                             placeholder="请选择列表类型">-->
+<!--                    <el-option v-for="item in statusType"-->
+<!--                               :key="item.value"-->
+<!--                               :label="item.label"-->
+<!--                               :value="item.value" />-->
+<!--                  </el-select>-->
+<!--                </el-form-item>-->
+<!--                <el-form-item label="申请时间范围："-->
+<!--                              prop="applyTime"-->
+<!--                              style="display: inline-block;">-->
+<!--                  <el-date-picker v-model="query.startTime"-->
+<!--                                  type="datetime"-->
+<!--                                  placeholder="开始时间"-->
+<!--                                  value-format="yyyy-MM-dd HH:mm:ss" />-->
+<!--                  <el-date-picker v-model="query.endTime"-->
+<!--                                  type="datetime"-->
+<!--                                  placeholder="结束时间"-->
+<!--                                  value-format="yyyy-MM-dd HH:mm:ss" />-->
+<!--                </el-form-item>-->
+<!--                <el-form-item>-->
+<!--                  <el-button type="primary"-->
+<!--                             @keyup.enter.native="search"-->
+<!--                             @click="search()">查询</el-button>-->
+<!--                  <el-button type="primary"-->
+<!--                             @click="clearAll()">重置</el-button>-->
+<!--                </el-form-item>-->
+<!--              </el-col>-->
+<!--            </el-row>-->
+<!--          </el-form>-->
         </div>
         <div class="right_btn mb10">
           <el-button class="oper-btn"
@@ -98,11 +104,11 @@
           </el-button>
         </div>
         <el-table v-loading="listLoading"
-                  :data="page_list.records"
+                  :data="page_list"
                   fit
                   highlight-current-row
                   style="width: 100%"
-                  height="calc(100vh - 280px)"
+                  height="calc(100vh - 310px)"
                   @selection-change="handleSelectionChange">
           <el-table-column type="selection"
                            width="55" />
@@ -157,9 +163,8 @@
           </el-table-column>
         </el-table>
       </div>
-      <el-pagination v-show="page_list.total>0"
-                     :total="page_list.total"
-                     :current-page="page_list.currentPage"
+      <el-pagination v-show="total>0"
+                     :total="total"
                      @current-change="handleCurrentChange"
                      @size-change="handleSizeChange"
                      layout="total, sizes, prev, pager, next, jumper"></el-pagination>
@@ -574,6 +579,33 @@ export default {
   components: { LeftTrees, FlowItem, Details, flowOpinionList },
   data () {
     return {
+      dropDown:[
+        {
+          code: 'applyName',
+          name: '申请名称',
+          value: []
+        },
+        {
+          code: 'applyPerson',
+          name: '申请人',
+          value: []
+        },
+        {
+          code: 'status',
+          name: '状态',
+          value: []
+        },
+        {
+          code: 'startTime',
+          name: '开始申请时间',
+          value: []
+        },
+        {
+          code: 'endTime',
+          name: '结束申请时间',
+          value: []
+        }
+      ],
       //文件列表存储的数组
       fileList: [],
       //存储文件附带属性的数组
@@ -599,7 +631,6 @@ export default {
         label: "name",
         isLeaf: "leaf",
       },
-
       file: {
         fileName: '',
         displayTableName: '',
@@ -618,6 +649,12 @@ export default {
         status: '',// 列表类型
         startTime: '',//开始时间
         endTime: '',//结束时间
+        // pageNo: 1,
+        // pageSize: 10,
+      },
+      total:0,
+      pageQuery: {
+        condition: null,
         pageNo: 1,
         pageSize: 10,
       },
@@ -1162,11 +1199,18 @@ export default {
       this.query.endTime = ''
     }
     ,
-    search () {
+    search (queryData) {
       this.query.pageNo = 1
-      this.getList();//刷新列表
-    }
-    ,
+      // this.getList();//刷新列表
+      queryData = this.$refs.tags.serachParams
+      this.listLoading = true
+      if (queryData) this.pageQuery.condition = queryData;
+      page_list_data(this.pageQuery).then(res => {
+        this.page_list = res.data.records;
+        this.total = res.data.total;
+        this.listLoading = false
+      })
+    },
     // 刷新列表
     getList () {
       this.listLoading = true
@@ -1178,11 +1222,10 @@ export default {
           startTime: this.query.startTime,
           endTime: this.query.endTime,
         },
-        pageNo: this.query.pageNo,
-        pageSize: this.query.pageSize,
       }
       page_list_data(params).then(res => {
-        this.page_list = res.data;
+        this.page_list = res.data.records;
+        this.total = res.data.total;
         this.listLoading = false
       })
     }
@@ -1214,14 +1257,14 @@ export default {
     ,
     // 分页
     handleCurrentChange (val) {
-      this.query.pageNo = val
-      this.getList()
+      this.pageQuery.pageNo = val
+      this.search()
     }
     ,
     // 每页多少条
     handleSizeChange (val) {
-      this.query.pageSize = val
-      this.getList()
+      this.pageQuery.pageSize = val
+      this.search()
     }
     ,
 
