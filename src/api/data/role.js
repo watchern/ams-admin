@@ -84,3 +84,10 @@ export function getRoleGrp(roleUuid) {
   })
 }
 
+export function isApplied(ids) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/isApplied/${ids}`,
+    method: 'get'
+  })
+}
