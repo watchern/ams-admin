@@ -1222,6 +1222,8 @@ export default {
           startTime: this.query.startTime,
           endTime: this.query.endTime,
         },
+        pageNo: this.pageQuery.pageNo,
+        pageSize: this.pageQuery.pageSize,
       }
       page_list_data(params).then(res => {
         this.page_list = res.data.records;
