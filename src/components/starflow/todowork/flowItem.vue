@@ -407,12 +407,23 @@ export default {
       getDefaultPersonId(this.flowItem.appDataUuid).then(resp => {
         this.activityList[0].personList.pop();
         for (let i = 0; i < resp.data.length; i++) {
-          this.activityList[0].personList.push({
-            orgUuid: null,
-            personName: resp.data[i].personName,
-            personUuid: resp.data[i].personUuid,
-            sysName: null,
-          })
+          // 认权人去重
+          let flag = true;
+          for (let j = 0; j < this.activityList[0].personList.length; j++) {
+            if (this.activityList[0].personList[j].personUuid == resp.data[i].personUuid){
+              flag = false;
+              break;
+            }
+          }
+          // 集合中不存在当前人员才插入
+          if (flag) {
+            this.activityList[0].personList.push({
+              orgUuid: null,
+              personName: resp.data[i].personName,
+              personUuid: resp.data[i].personUuid,
+              sysName: null,
+            });
+          }
           this.perChecked[0].push(resp.data[i].personUuid);
         }
         this.personItem = this.activityList[this.currentChecked].personList;
