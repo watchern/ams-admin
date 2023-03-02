@@ -21,22 +21,33 @@
                 <i class="span_close el-icon-close"
                    @click="removeTag(index, item)"></i>
               </div>
+              <div
+                  ref="inputTag"
+                  class="edit-div"
+                  contenteditable="true"
+                  v-html="currentval"
+                  @focus="inputFocus"
+                  @input="inputValueChange($event)"
+                  @keydown="pushKeyDown($event)"
+                  @compositionstart="onCompositionStart"
+                  @compositionend="onCompositionEnd"
+              ></div>
             </div>
 
             <!-- 输入框 -->
             <!-- @keyup.enter="addTags" -->
             <!-- :style="inputStyle" -->
-            <el-input
-                v-model="currentval"
-                      @keyup.delete="deleteTags"
-                      class="inputTag"
-                      ref="inputTag"
-                      id="inputTag"
-                      type="text" >
-              <template slot="prefix">
-                {{ currentval }}
-              </template>
-            </el-input>
+<!--            <el-input-->
+<!--                v-model="currentval"-->
+<!--                      @keyup.delete="deleteTags"-->
+<!--                      class="inputTag"-->
+<!--                      ref="inputTag"-->
+<!--                      id="inputTag"-->
+<!--                      type="text" >-->
+<!--              <template slot="prefix">-->
+<!--                {{ currentval }}-->
+<!--              </template>-->
+<!--            </el-input>-->
 
           </div>
 
@@ -94,6 +105,7 @@ export default {
       input_left: "",//右侧输入框距离左侧距离
       minWIdth: 580,
       maxWidths: '',
+      lock: false,
     };
   },
   watch: {
@@ -133,6 +145,48 @@ export default {
   },
 
   methods: {
+    inputFocus(){
+
+    },
+    //回车时阻止默认换行行为
+    pushKeyDown(e) {
+      if (e.keyCode == 13) {
+        e.preventDefault();
+      }
+    },
+    inputValueChange(e) {
+      if (!this.lock) {
+        this.currentval = e.target.innerText;
+        this.$nextTick(()=>{
+          this.keepLastIndex(e.target)
+        })
+      }
+    },
+    onCompositionStart() {
+      this.lock = true;
+    },
+    onCompositionEnd(e) {
+      // this.currentval = e.data;
+      this.lock = false;
+      this.currentval = e.target.innerText;
+      this.$nextTick(()=>{
+        this.keepLastIndex(e.target)
+      })
+    },
+    keepLastIndex(obj) {
+      if (window.getSelection) { //ie11 10 9 ff safari
+        obj.focus(); //解决ff不获取焦点无法定位问题
+        let range = window.getSelection(); //创建range
+        range.selectAllChildren(obj); //range 选择obj下所有子内容
+        range.collapseToEnd(); //光标移至最后
+      } else if (document.selection) { //ie10 9 8 7 6 5
+        let range = document.selection.createRange(); //创建选择对象
+        //var range = document.body.createTextRange();
+        range.moveToElementText(obj); //range定位到obj
+        range.collapse(false); //光标移至最后
+        range.select();
+      }
+    },
     watch_width () {
       this.$nextTick(()=>{
         let height = this.$refs.TagsAll.scrollWidth;
@@ -321,7 +375,7 @@ html {
   white-space: nowrap;
   overflow-x: auto;
   /*border-radius: 25px;*/
-  max-width: 90%;
+  max-width: 100%;
 }
 /* .dw {
   width: 0 !important;
@@ -433,6 +487,19 @@ html {
      //padding-left: 0!important;
   }
 }
+.edit-div{
+  height:100%;
+  line-height:34px;
+  width: auto;
+  display: inline-block;
+  min-width: 50px;
+  vertical-align: top;
+  font-size: 16px;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  padding-left: 20px;
+}
 .inputTag >>> .el-input__inner {
   border: none !important;
 }
@@ -483,6 +550,7 @@ html {
 .dropDownMsg{
   display: inline-block;
   white-space: pre-wrap;
+  word-break: break-all;
   width: 78%;
 }
 .searchbtn {

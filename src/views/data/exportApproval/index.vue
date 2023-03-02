@@ -3,9 +3,12 @@
     <div class="pd20">
 
       <div class="filter-container">
-        <QueryField ref="queryfield"
-                    :form-data="queryFields"
-                    @submit="getList" />
+        <SearchCommon ref="tags"
+                      @search="getList"
+                      :dropDown="dropDown"
+                      @clearSearch="reset"
+                      @change="onChange"
+        ></SearchCommon>
       </div>
       <!--        办理按钮-->
       <div class="mb10">
@@ -26,7 +29,7 @@
                 fit
                 highlight-current-row
                 style="width: 100%;"
-                height="calc(100vh - 300px)"
+                height="calc(100vh - 290px)"
                 @sort-change="sortChange"
                 @selection-change="handleSelectionChange">
         <el-table-column type="selection"
@@ -75,18 +78,18 @@
                          width="320px">
           <template slot-scope="scope">
 
-            <el-link v-if="scope.row.status == '待办理' || scope.row.status == '已办理'"
+            <el-link v-if="scope.row.status == '1' || scope.row.status == '2'"
                      :underline="false"
                      type="text"
                      @click="showFlow()">流程跟踪
             </el-link>
-            <el-link v-if="scope.row.status == '已办理'"
+            <el-link v-if="scope.row.status == '1'"
                      type="text"
                      :underline="false"
                      style="width: auto"
                      @click="downLoad()">下载
             </el-link>
-            <el-link v-if="scope.row.status == '待办理' || scope.row.status == '已办理'"
+            <el-link v-if="scope.row.status == '1' || scope.row.status == '2'"
                      type="text"
                      :underline="false"
                      style="width: auto"
@@ -177,31 +180,58 @@ export default {
       applyUuid:'',
       applyPage: "applyPage", //有这个标识 查询流程的时候会走相对应的方法
       //查询条件
-      queryFields: [
+      dropDown:[
         {
-          label: '申请模块名称',
-          name: 'requestModelName',
-          type: 'text',
-          value: ''
+          code: 'requestModelName',
+          name: '申请模块名称',
+          value: []
         },
         {
-          label: '申请人',
-          name: 'requestPersionName',
-          type: 'text',
-          value: ''
+          code: 'requestPersionName',
+          name: '申请人',
+          value: []
         },
         {
-          label: '状态',
-          name: 'status',
-          type: 'select',
-          data: [{name: '草稿', value: 0}, {name: '待办理', value: 1}, {name: '已办理', value: 2}],
+          code: 'status',
+          name: '状态',
+          value: []
         },
         {
-          label: "申请时间范围",
-          name: "requsetTime",
-          type: "timePeriod"
+          code: 'requstTimeStart',
+          name: '开始申请时间',
+          value: []
+        },
+        {
+          code: 'requstTimeEnd',
+          name: '结束申请时间',
+          value: []
         }
       ],
+      // queryFields: [
+      //   {
+      //     label: '申请模块名称',
+      //     name: 'requestModelName',
+      //     type: 'text',
+      //     value: ''
+      //   },
+      //   {
+      //     label: '申请人',
+      //     name: 'requestPersionName',
+      //     type: 'text',
+      //     value: ''
+      //   },
+      //   {
+      //     label: '状态',
+      //     name: 'status',
+      //     type: 'select',
+      //     data: [{name: '草稿', value: 0}, {name: '待办理', value: 1}, {name: '已办理', value: 2}],
+      //   },
+      //   {
+      //     label: "申请时间范围",
+      //     name: "requsetTime",
+      //     type: "timePeriod"
+      //   }
+      // ],
       selections: [],
       dataExportUuid:'',
       //表单加载
@@ -273,7 +303,9 @@ export default {
       this.$refs.tree2.filter(val);
     },
   },
-  mounted () { },
+  mounted () {
+    this.getList();
+  },
   created () {
     this.getList()
     this.query.businessSystemId = "";
@@ -520,8 +552,13 @@ export default {
       }
       return status[row.status]
     },
+    onChange(){},
+    reset(){
+    },
     //分页查询
     getList(query) {
+      query = this.$refs.tags.serachParams;
+      this.listLoading = true;
       if (query) this.pageQuery.condition = query
       listByPage(this.pageQuery).then(resp => {
         this.total = resp.data.total

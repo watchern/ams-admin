@@ -2,10 +2,71 @@
   <div class="page-container">
     <div class="pd20">
       <div class="query-field">
-        <QueryField ref="queryfield"
-                    :form-data="queryFields"
-                    @submit="getList" />
-      </div>
+        <SearchCommon ref="tags"
+                      @search="getList"
+                      :dropDown="dropDown"
+                      @clearSearch="reset"
+                      @change="onChange"
+        ></SearchCommon>
+    </div>
+<!--      <div class="query-field">-->
+<!--        <div>-->
+<!--          <el-col :span="22">-->
+<!--            <el-form :inline="true"-->
+<!--                     :model="query"-->
+<!--                     label-position="bottom">-->
+<!--              <el-row>-->
+<!--                <el-form-item label="申请名称："-->
+<!--                              prop="requestName">-->
+<!--                  <el-input v-model="query.requestName"-->
+<!--                            size="small"-->
+<!--                            placeholder="请输入内容"-->
+<!--                            clearable></el-input>-->
+<!--                </el-form-item>-->
+<!--                <el-form-item label="申请人："-->
+<!--                              prop="requestPersionName">-->
+<!--                  <el-input v-model="query.requestPersionName"-->
+<!--                            size="small"-->
+<!--                            placeholder="请输入内容"-->
+<!--                            clearable></el-input>-->
+<!--                </el-form-item>-->
+<!--                <el-form-item label="数据状态："-->
+<!--                              prop="dataStatus">-->
+<!--                  <el-select v-model="query.dataStatus"-->
+<!--                             filterable-->
+<!--                             clearable-->
+<!--                             placeholder="全部"-->
+<!--                             size="small">-->
+<!--                    <el-option v-for="(item, index) in listStatus"-->
+<!--                               :key="index"-->
+<!--                               :label="item.label"-->
+<!--                               :value="item.value"></el-option>-->
+<!--                  </el-select>-->
+<!--                </el-form-item>-->
+<!--                <el-form-item label="申请时间范围："-->
+<!--                              prop="condition">-->
+<!--                  <el-date-picker v-model="dataBaseData.times"-->
+<!--                                  type="daterange"-->
+<!--                                  range-separator="至"-->
+<!--                                  start-placeholder="开始日期"-->
+<!--                                  end-placeholder="结束日期">-->
+<!--                  </el-date-picker>-->
+<!--                </el-form-item>-->
+<!--                <el-form-item>-->
+
+<!--                  <el-button-->
+<!--                          type="primary"-->
+<!--                          @click="goQuery">查询</el-button>-->
+<!--                  <el-button-->
+<!--                          type="primary"-->
+<!--                          @click="reset">重置</el-button>-->
+<!--                </el-form-item>-->
+<!--              </el-row>-->
+<!--            </el-form>-->
+<!--          </el-col>-->
+<!--        </div>-->
+<!--      </div>-->
+
       <div class="mb10">
         <el-row>
           <el-col align="right">
@@ -59,15 +120,15 @@
       </div>
 
       <el-table :key="tableKey"
-                v-loading="listLoading"
                 :data="tableData"
+                v-loading="listLoading"
                 stripe
                 border
                 fit
                 highlight-current-row
                 @selection-change="handleSelectionChange"
                 style="width: 100%;"
-                height="calc(100vh - 330px)"
+                height="calc(100vh - 280px)"
                 @sort-change="sortChange">
         <el-table-column type="selection"
                          width="55" />
@@ -76,30 +137,24 @@
                          min-width="150px"
                          show-overflow-tooltip />
         <el-table-column label="申请时间"
-                         align="center"
                          prop="requestTime"
                          min-width="100px"
                          show-overflow-tooltip />
         <el-table-column label="当前环节办理人"
-                         align="center"
                          min-width="100px"
                          prop="currentCirPerName" />
         <el-table-column label="申请表名称"
-                         align="center"
                          min-width="100px"
                          prop="requestTableName"
                          show-overflow-tooltip />
         <el-table-column label="数据状态"
-                         align="center"
                          prop="dataStatus"
                          min-width="100px"
                          :formatter="dataStatusFormat" />
         <el-table-column label="申请人"
-                         align="center"
                          min-width="100px"
                          prop="requestPersionName" />
         <el-table-column label="备注"
-                         align="center"
                          prop="remark"
                          min-width="100px"
                          show-overflow-tooltip />
@@ -140,15 +195,32 @@
                          style="float:right">添加一行</el-button>
               <div v-for="(item,index) in requestTableNamelist"
                    :key="item.id"
-                   style="display:flex">
+                   class="addInput"
+                   style="display:flex;">
                 <el-input v-model="item.name" />
                 <div @click="goDelete(index)"
                      style="margin-left: 10px;cursor:pointer">×</div>
               </div>
+<!--              <el-input v-model="requestTableNamelist[0].name" style="width:60%"></el-input>-->
+<!--              <el-button @click="add()"-->
+<!--                         style="float:right">添加一行</el-button>-->
+<!--              <div-->
+<!--                      v-for="(item,index) in requestTableNamelist"-->
+<!--                      :key="item.id"-->
+<!--                      class="addInput">-->
+<!--                <el-input v-if="requestTableNamelist.length > 1"-->
+<!--                          v-model="item.name" />-->
+<!--                <div @click="goDelete(index)"-->
+<!--                     style="margin-left: 10px;cursor:pointer">×</div>-->
+<!--              </div>-->
+
             </el-form-item>
             <el-form-item prop="remark"
                           label="备注">
-              <el-input v-model="temp.remark" />
+              <el-input type="textarea"
+                        v-model="temp.remark"
+                        :autosize="{ minRows:4,maxRows:4 }"
+              />
             </el-form-item>
           </el-form>
         </template>
@@ -185,10 +257,11 @@
                  :close-on-click-modal="false">
         <div>
           <div>待开发</div>
-          <flowOpinionList></flowOpinionList>
+          <flowOpinionList :applyUuid="applyUuid"
+                           :pageFrom="applyPage"></flowOpinionList>
         </div>
       </el-dialog>
-    </div>
+      </div>
   </div>
 
 </template>
@@ -209,43 +282,71 @@ export default {
     return {
       labelPosition: "top",
       //新增/修改弹框申请表名称数组
-      requestTableNamelist: [{
-        id: 0,
-        name: '',
-      }],
-      //查询条件
-      queryFields: [
+      requestTableNamelist: [
+      //可以实现默认一行
+      //         {
+      //     id: 0,
+      //     name: '',
+      // }
+      ],
+
+    // //查询列表
+      dropDown:[
         {
-          label: '申请名称',
-          name: 'requestName',
-          type: 'text',
-          value: ''
+          code: 'requestName',
+          name: '申请名称',
+          value: []
         },
         {
-          label: '申请人',
-          name: 'requestPersionName',
-          type: 'text',
-          value: ''
+          code: 'requestPersionName',
+          name: '申请人',
+          value: []
         },
         {
-          label: '数据状态',
-          name: 'dataStatus',
-          type: 'select',
-          data: [
-            { name: '需求提出', value: 0 },
-            { name: '上游协调', value: 1 },
-            { name: '数据推送', value: 2 },
-            { name: '数据接入', value: 3 },
-            { name: '数据上线', value: 4 }
-          ],
+          code: 'dataStatus',
+          name: '数据状态',
+          value: []
         },
         {
-          label: "申请时间范围",
-          name: "requestTime",
-          type: "timePeriod",
-          data: [],
-          default: "-1",
+          code: 'requstTimeStart',
+          name: '开始申请时间',
+          value: []
+        },
+        {
+          code: 'requstTimeEnd',
+          name: '结束申请时间',
+          value: []
         }
+      ],
+      dataBaseData: {
+        requestName: '',// 申请名称
+        requestPersionName: '',// 申请人
+        dataStatus: '',// 列表类型
+        requstTimeStart: '',//开始时间
+        requstTimeEnd: '',//结束时间
+    },
+      //数据状态选择
+      listStatus:[
+        {
+          value: '0',
+          label: '需求提出'
+        },
+        {
+          value: '1',
+          label: '上游协调'
+        },
+        {
+          value: '2',
+          label: '数据推送'
+        },
+        {
+          value: '3',
+          label: '数据接入'
+        },
+        {
+          value: '4',
+          label: '数据上线'
+        },
       ],
       //页面复选框选中个数
       selections: [],
@@ -308,6 +409,9 @@ export default {
         temp1: "",
       },
     }
+  },
+  mounted () {
+    this.getList()
   },
   created () {
     this.getList()
@@ -582,17 +686,31 @@ export default {
       this.selections = val
     },
     //查看流程
-    showFlow () {
+    showFlow (data) {
+      this.applyUuid = data.
       this.dialogFlowVisible = true
     },
 
+    onChange (serachParams) {
+      this.dataBaseData = serachParams;
+    },
+
+    //重置
+    reset(data) {
+      this.dataBaseData.requestName = '',
+      this.dataBaseData.requestPersionName = '',
+      this.dataBaseData.dataStatus = '',
+      this.dataBaseData.requstTimeStart = '',
+      this.dataBaseData.requstTimeEnd = ''
+    },
     getList (query) {
+      query = this.$refs.tags.serachParams
       this.listLoading = true
       if (query) this.pageQuery.condition = query
       listByPage(this.pageQuery).then(resp => {
-        this.total = resp.data.total
-        this.tableData = resp.data.records
-        this.listLoading = false
+          this.total = resp.data.total
+          this.tableData = resp.data.records
+          this.listLoading = false
       })
     },
     getSortClass: function (key) {
@@ -602,3 +720,17 @@ export default {
   }
 }
 </script>
+<style scoped>
+  .addInput{
+    display:flex;
+  }
+
+  .addInput >>> .el-input{
+    margin-bottom: 15px;
+  }
+
+  .detail-form >>> .el-textarea__inner {
+    resize: none;
+  }
+
+</style>

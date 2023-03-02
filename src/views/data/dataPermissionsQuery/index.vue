@@ -1,6 +1,6 @@
 <template>
   <div class="page-container"
-       style="background-color: none !important;border: none;">
+       style="background-color: none!important;border: none;">
     <div class="left_conter pd10">
       <el-tree :data="treeData"
                :props="defaultProps"
@@ -11,9 +11,15 @@
     <div class="right_conter ">
       <div class="pd20">
         <div class="query-field">
-          <QueryField ref="queryfield"
-                      :form-data="queryFields"
-                      @submit="getList" />
+          <SearchCommon ref="tags"
+                        @search="getList"
+                        @clearSearch="reset"
+                        :dropDown="dropDown"
+                        @change="onChange"></SearchCommon>
+        </div>
+<!--          <QueryField ref="queryfield"-->
+<!--                      :form-data="queryFields"-->
+<!--                      @submit="getList" />-->
         </div>
         <div class="mb10">
           <el-row>
@@ -189,7 +195,6 @@
         </el-dialog>
       </div>
     </div>
-  </div>
 
 </template>
 <script>
@@ -260,28 +265,50 @@ export default {
         children: "children",
         label: "label",
       },
-      //查询条件
-      queryFields: [
+      dropDown:[
         {
-          label: "角色名称",
-          name: "coleName",
-          type: "fuzzyText",
-          value: "",
+          code: 'coleName',
+          name: '角色名称',
+          value: []
         },
         {
-          label: "创建人",
-          name: "auditItemName",
-          type: "fuzzyText",
-          value: "",
+          code: 'createUserName',
+          name: '创建人',
+          value: []
         },
         {
-          label: "执行时间范围",
-          name: "xxxx",
-          type: "timePeriod",
-          data: [],
-          default: "-1",
+          code: 'startTime',
+          name: '开始执行时间',
+          value: []
         },
+        {
+          code: 'endTime',
+          name: '结束执行时间',
+          value: []
+        }
       ],
+      //查询条件
+      // queryFields: [
+      //   {
+      //     label: "角色名称",
+      //     name: "coleName",
+      //     type: "fuzzyText",
+      //     value: "",
+      //   },
+      //   {
+      //     label: "创建人",
+      //     name: "auditItemName",
+      //     type: "fuzzyText",
+      //     value: "",
+      //   },
+      //   {
+      //     label: "执行时间范围",
+      //     name: "xxxx",
+      //     type: "timePeriod",
+      //     data: [],
+      //     default: "-1",
+      //   },
+      // ],
       //  人员清单
       personTable: [],
       //  数据列表
@@ -344,6 +371,9 @@ export default {
       this.showPersonList = false,
         this.showDataList = true
     },
+    onChange(){},
+    //清空
+    reset(){},
     getList () { },
     // 导出按钮：
     showExportList () {
@@ -398,6 +428,9 @@ export default {
 </script>
 
 <style scoped>
+  .page-container{
+    border: none;
+  }
 .min-height {
   overflow: auto;
 }

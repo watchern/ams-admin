@@ -1,49 +1,55 @@
 <template>
   <div class="page-container">
-
     <div class="pd20">
       <div class="header_Filter searchBlock query-field">
-        <el-row>
-          <el-form :inline="true"
-                   :model="personalSpace"
-                   class="demo-form-inline">
-            <el-form-item label="申请名称：">
-              <el-input v-model="personalSpace.personalSpaceName"
-                        placeholder="申请名称"></el-input>
-            </el-form-item>
-            <el-form-item label="申请人:">
-              <el-input v-model="personalSpace.personalSpaceApplication"
-                        placeholder="申请人"></el-input>
-            </el-form-item>
-            <el-form-item label="列表类型：">
-              <el-select v-model="personalSpace.personalSpaceType"
-                         placeholder="状态选择">
-                <el-option label="草稿"
-                           value="草稿"></el-option>
-                <el-option label="办理中"
-                           value="办理中"></el-option>
-                <el-option label="办理完成"
-                           value="办理完成"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="申请时间范围：">
-              <el-date-picker v-model="personalSpace.personalSpaceDate"
-                              type="datetimerange"
-                              format="yyyy-MM-dd"
-                              value-format="yyyy-MM-dd"
-                              range-separator="至"
-                              start-placeholder="开始日期"
-                              end-placeholder="结束日期">
-              </el-date-picker>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary"
-                         @click="initPersonalSpaceData">查询</el-button>
-              <el-button type="primary"
-                         @click="onReInput">重置</el-button>
-            </el-form-item>
-          </el-form>
-        </el-row>
+        <SearchCommon ref="tags"
+                      @search="goQuery"
+                      :dropDown="dropDown"
+                      @clearSearch="onReInput"
+                      @change="onChange"
+        ></SearchCommon>
+<!--        <el-row>-->
+
+<!--          <el-form :inline="true"-->
+<!--                   :model="personalSpace"-->
+<!--                   class="demo-form-inline">-->
+<!--            <el-form-item label="申请名称：">-->
+<!--              <el-input v-model="personalSpace.personalSpaceName"-->
+<!--                        placeholder="申请名称"></el-input>-->
+<!--            </el-form-item>-->
+<!--            <el-form-item label="申请人:">-->
+<!--              <el-input v-model="personalSpace.personalSpaceApplication"-->
+<!--                        placeholder="申请人"></el-input>-->
+<!--            </el-form-item>-->
+<!--            <el-form-item label="列表类型：">-->
+<!--              <el-select v-model="personalSpace.personalSpaceType"-->
+<!--                         placeholder="状态选择">-->
+<!--                <el-option label="草稿"-->
+<!--                           value="草稿"></el-option>-->
+<!--                <el-option label="办理中"-->
+<!--                           value="办理中"></el-option>-->
+<!--                <el-option label="办理完成"-->
+<!--                           value="办理完成"></el-option>-->
+<!--              </el-select>-->
+<!--            </el-form-item>-->
+<!--            <el-form-item label="申请时间范围：">-->
+<!--              <el-date-picker v-model="personalSpace.personalSpaceDate"-->
+<!--                              type="datetimerange"-->
+<!--                              format="yyyy-MM-dd"-->
+<!--                              value-format="yyyy-MM-dd"-->
+<!--                              range-separator="至"-->
+<!--                              start-placeholder="开始日期"-->
+<!--                              end-placeholder="结束日期">-->
+<!--              </el-date-picker>-->
+<!--            </el-form-item>-->
+<!--            <el-form-item>-->
+<!--              <el-button type="primary"-->
+<!--                         @click="initPersonalSpaceData">查询</el-button>-->
+<!--              <el-button type="primary"-->
+<!--                         @click="onReInput">重置</el-button>-->
+<!--            </el-form-item>-->
+<!--          </el-form>-->
+<!--        </el-row>-->
       </div>
       <div class="mb10">
         <el-row>
@@ -96,9 +102,10 @@
         </el-row>
       </div>
       <el-table :data="personalSpaceDataList"
+                v-loading="loading"
                 border
                 style="width: 100%"
-                height="calc(100vh - 300px)"
+                height="calc(100vh - 310px)"
                 @selection-change="handleSelectionChange">
         <el-table-column type="selection"
                          width="55"> </el-table-column>
@@ -328,6 +335,35 @@ export default {
   },
   data () {
     return {
+      loading:false,
+      //查询
+      dropDown:[
+        {
+          code: 'personalSpaceName',
+          name: '申请名称',
+          value: []
+        },
+        {
+          code: 'personalSpaceApplication',
+          name: '申请人',
+          value: []
+        },
+        {
+          code: 'personalSpaceType',
+          name: '列表类型',
+          value: []
+        },
+        {
+          code: 'personalSpaceDateStart',
+          name: '开始创建时间',
+          value: []
+        },
+        {
+          code: 'personalSpaceDateEnd',
+          name: '结束创建时间',
+          value: []
+        }
+      ],
       labelPosition: "top",
       personalSpace: {
         personalSpaceName: "", //个人空间申请名称
@@ -335,6 +371,9 @@ export default {
         personalSpaceType: "", //业务所处状态
         personalSpaceDate: "", //申请日期
         personalSpaceCapacity: "", //申请的容量
+        //修改查询组件添加查询时间字段
+        personalSpaceDateStart:"",//开始申请日期
+        personalSpaceDateEnd:"",//结束申请日期
         // personalSpaceStatus:'',//根据原型画过来的 暂时没用到捏
         // personalSpaceApproving:'',
       },
@@ -405,24 +444,41 @@ export default {
 
   },
   mounted () {
-    this.initPersonalSpaceData();
+    // this.initPersonalSpaceData();
+    this.goQuery();
   },
   methods: {
-    initPersonalSpaceData () {
-      var date1 = "";
-      date1 = this.personalSpace.personalSpaceDate.toString();
-      this.personalSpace.personalSpaceDate = date1;
-      this.query.condition = this.personalSpace;
-      queryAllPersonalSpace(this.query)
-        .then((res) => {
-          this.personalSpaceDataList = res.data.records;
-          this.dataTotal = res.data.total;
-          this.query.pageSize = res.data.size;
-          this.query.pageNo = res.data.current;
-          this.clearParams();
-        })
-        .catch((err) => { });
+    onChange (serachParams) {
+      this.personalSpaceData = serachParams;
     },
+
+    goQuery(query){
+      this.loading = true;
+      query = this.$refs.tags.serachParams
+      if(query)this.query.condition = this.personalSpace;
+      queryAllPersonalSpace(this.query).then((res) => {
+        this.loading = false;
+        this.personalSpaceDataList = res.data.records;
+        this.dataTotal = res.data.total;
+        this.query.pageSize = res.data.size;
+        this.query.pageNo = res.data.current;
+      });
+    },
+    // initPersonalSpaceData () {
+    //   var date1 = "";
+    //   date1 = this.personalSpace.personalSpaceDate.toString();
+    //   this.personalSpace.personalSpaceDate = date1;
+    //   this.query.condition = this.personalSpace;
+    //   queryAllPersonalSpace(this.query)
+    //     .then((res) => {
+    //       this.personalSpaceDataList = res.data.records;
+    //       this.dataTotal = res.data.total;
+    //       this.query.pageSize = res.data.size;
+    //       this.query.pageNo = res.data.current;
+    //       this.clearParams();
+    //     })
+    //     .catch((err) => { });
+    // },
     exportAllData () {
       if (
         this.personalSpaceUuidList.length == 0 ||
@@ -565,6 +621,8 @@ export default {
         personalSpaceType: "",
         personalSpaceDate: "",
         personalSpaceCapacity: "",
+        personalSpaceDateStart:"",//开始申请日期
+        personalSpaceDateEnd:"",//结束申请日期
         // personalSpaceStatus:'',
         // personalSpaceApproving:'',
       };
