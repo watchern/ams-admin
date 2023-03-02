@@ -1308,6 +1308,8 @@ export default {
             message: "新增成功",
           });
           this.btnLoading = false; //保存loadnin
+          this.dialogVisible_forms = false; //关闭多选的表单弹窗显示
+          this.registTableFlag = false; //关闭上一步
           this.chooseTables = []; //传输的数据
           this.query_list(this.$refs.tree_left.query, false);
           this.update_tree();//更新左侧树
@@ -1320,10 +1322,7 @@ export default {
             message: res.msg,
           });
         }
-        this.dialogVisible_information = false;
-        this.registTableFlag = false; //关闭上一步
       });
-      this.dialogVisible_forms = false; //关闭多选的表单弹窗显示
     },
     // 关闭弹窗
     handleClose (form) {
