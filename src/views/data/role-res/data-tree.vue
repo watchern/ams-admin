@@ -482,6 +482,9 @@ export default {
         this.treeData1.forEach(item => {
           if (item.children.length == 0) {
             item.leaf = true
+            if (item.type == 'table'){
+              item.leaf = false
+            }
           }
         })
         return resolve(this.treeData1)
