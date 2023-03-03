@@ -141,7 +141,7 @@
            :class="isBtn == true ?'is_min_heihgt':'is_heihgt'">
         <el-table ref="multipleTable"
                   :data="list"
-                  style="width: 100%"
+                  style="width: 100%;overflow:auto"
                   :show-overflow-tooltip='true'
                   :header-cell-class-name="headerCellClass"
                   :header-cell-style="tableHeaderColor"
