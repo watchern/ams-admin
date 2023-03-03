@@ -29,6 +29,7 @@
     "@ag-grid-community/vue": "26.2.0",
     "@ag-grid-enterprise/all-modules": "26.2.1",
     "@ag-grid-enterprise/core": "26.2.0",
+    "@antv/g6": "^4.8.7",
     "@antv/x6-vue-shape": "^2.0.6",
     "@babel/polyfill": "^7.12.1",
     "@jiaminghi/data-view": "^2.10.0",
