@@ -391,6 +391,7 @@
             数据血缘影响分析
           </h2>
           <div class="padding20">
+            <dataConsanguinity></dataConsanguinity>
             <!-- <LineMap></LineMap> -->
             <!-- <EditMap></EditMap> -->
           </div>
@@ -650,6 +651,7 @@
 <script>
 import dataTree from "@/views/data/role-res/data-tree";
 import ProcessTree from "@/components/directory/processTree.vue";
+import dataConsanguinity from "@/components/directory/dataConsanguinity.vue";
 import LineMap from "@/components/directory/lineMap.vue";
 import EditMap from "@/components/directory/editMap.vue";
 import { save_data_query } from "@/api/data/tablerelation";
@@ -676,6 +678,7 @@ export default {
     EditMap,
     SelectLabel,
     SelectPerson,
+    dataConsanguinity
   },
   props: {
     tableMetaUuid: {
@@ -1572,4 +1575,5 @@ export default {
   right: 40px;
   z-index: 9;
 }
+
 </style>
