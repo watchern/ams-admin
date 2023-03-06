@@ -390,6 +390,7 @@ export function commonNotify(options) {
 * */
 export function getDictList(code) {
   var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
+  if(sysDict===null) return null
   var parent = sysDict.filter(obj => { return obj.dataSortValue === code })
   if (parent.length === 0) {
     return parent

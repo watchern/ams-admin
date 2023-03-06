@@ -156,6 +156,11 @@ var isUpdate = false
  */
 var isFirst = 0
 
+/**
+ * SQL编辑器左侧数据表树 右键选中对象
+ */
+var sqlEditorLeftTreeObj=[]
+
 let sqlEditorVue = null
 let settingVue = null
 export const sendSettingVue = ( (_this) => {
@@ -280,7 +285,7 @@ export function initDragAndDrop() {
     var overWidth = document.getElementById('container').clientWidth - 229
     if (tree_shuju == false && tree_canshu == false && tree_sql == false && tree_bj == false) {
       $('#leftPart').stop(true).animate({ 'width': 203 }, 300)
-      $('#vertical').delay(300).fadeIn(100).css('left', 11.5 + '%')
+      $('#vertical').delay(300).fadeIn(100).css('left', 13.8 + '%')
       $('#rightPart').stop(true).animate({ 'width': overWidth + 'px', 'left': 0 }, 300)
       $('#sidebar').css('border-right', 1 + 'px' + ' solid' + ' rgb(206,208,212)')
     }
@@ -407,9 +412,13 @@ export function initDragAndDrop() {
       iT < 0 && (iT = 0)
       iT > maxT && (iT = maxT)
       var cmWrap = $('.CodeMirror-wrap')[0]
-      horizontal.style.top = topPart.style.height = iT + 'px'
-      cmWrap.style.height = iT - 37 + 'px'
-      bottomPart.style.height = rightPart.clientHeight - iT - 11 + 'px'
+      //控制上下拖拽范围
+      if(rightPart.clientHeight - iT - 11>10 && iT>65){
+        horizontal.style.top = iT + 'px'
+        topPart.style.height = iT - 5 + 'px'
+        cmWrap.style.height = iT - 37 + 'px'
+        bottomPart.style.height = rightPart.clientHeight - iT - 11 + 'px'
+      }
       if (grids) {
         grids.style.height = rightPart.clientHeight - iT - 197 + 'px'
       }
@@ -874,6 +883,129 @@ export function initTableTree(result,dataSource) {
   zTreeObj = $.fn.zTree.init($('#dataTree'), setting, result.data)
   // })
 }
+
+/**
+ * 获取表字段
+ */
+export async function getTableField(node,dataSource,treeType,strLevel){
+  // 处理拿回来的数据 处理成列表
+  const columns = []
+  var nodeList = []
+  var tableName = node.data.label
+  var tableMetaUuid = node.data.id
+  await request({
+    baseURL: dataUrl,
+    url: '/tableMeta/getCols',
+    method: 'post',
+    params: { 
+      tableMetaUuid: tableMetaUuid, isEnclose:"1" ,dataSource: dataSource,
+      businessType: strLevel, treeType:treeType
+    }
+  }).then(result => {
+    if (result.data == null) {
+      this.$message({
+        message: '错误' + e.message + 'error',
+      });
+      // alert('错误' + e.message + 'error')
+    } else {
+      for (let i = 0; i < result.data.length; i++) {
+        if (result.data[i].chnName === '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
+          columns.push(result.data[i].colName)
+          var node = {
+            'id': result.data[i].colMetaUuid,
+            'name': result.data[i].colName,
+            'label': result.data[i].colName,
+            'displayName': result.data[i].colName,
+            'pid': tableMetaUuid,
+            'isParent': false,
+            'open': false,
+            'type': 'column',
+            'leaf': true,
+            'icon': columnIconPath,
+            'enName': result.data[i].colName
+          }
+          nodeList.push(node)
+        } else {
+          //如果有汉化字段则用中文加汉化字段
+          let columnName = result.data[i].colName + "(" + result.data[i].chnName + ")"
+          columns.push(result.data[i].colName)
+          var node = {
+            'id': result.data[i].colMetaUuid,
+            'name': columnName,
+            'label': columnName,
+            'displayName': columnName,
+            'pid': tableMetaUuid,
+            'isParent': false,
+            'open': false,
+            'type': 'column',
+            'leaf': true,
+            'icon': columnIconPath,
+            'enName': result.data[i].colName
+          }
+          nodeList.push(node)
+          if(treeType === '1'){
+            editorObj.options.hintOptions.tablesTitle[result.data[i].colName] = result.data[i].chnName
+          }
+        }
+      }
+      if (columns.length > 0 && treeType ==='1') {
+        CodeMirror.tableColMapping[tableName] = columns
+        editorObj.options.hintOptions.tables[tableName] = columns
+        // zTreeObj.addNodes(treeNode, nodeList)
+        
+      }
+    }
+  })
+  return nodeList;
+}
+
+/**
+ * 智能提示
+ */
+export function initSQLEditorTips(treeList){ 
+  if(treeList!=null){
+    treeList.forEach(function(item,index){
+      if(item.type!= "table" && item.children.length>0){
+        screenChildrenTree(item.children)
+      }else{
+        if(item.type === "table"){
+          CodeMirror.tableColMapping[item.label] = []
+          editorObj.options.hintOptions.tables[item.label] = []
+        }
+      }
+    })
+  }
+}
+  
+//递归筛选children数据
+function screenChildrenTree(datas){
+  datas.forEach(function(item,index){
+    if(item.type!= "table" && item.children.length>0){
+      screenChildrenTree(item.children)
+    }else{
+      if(item.type === "table"){
+        CodeMirror.tableColMapping[item.label] = []
+        editorObj.options.hintOptions.tables[item.label] = []
+      }
+    }
+  })
+}
+
+/**
+ * 数据表树节点拖拽方法
+ */
+export function addDragEvent(dragNodeName){
+  var width = $('.CodeMirror').width()
+  var height = $('#sqlEditorDiv').height()+150
+  var offLeft = $('.leftCon').width()
+  var offTop = $('.table-view-caption').height()
+  /* if ((mouseX < (offLeft + 30) || (mouseX > (offLeft + width)) || (mouseY < offTop) || (mouseY > height))) {
+    return
+  } */
+  var cursor = editorObj.getCursor()
+  dragOne(dragNodeName + " ", cursor, cursor)
+}
+
 /**
  * 执行create语句后刷新左侧树
  */
@@ -1059,14 +1191,27 @@ export function refushTableTree(treeNodes, dataSource) {
 }
 
 /**
+ * 执行create语句后刷新左侧树
+ */
+export function refushTableTree2(treeNodes, dataSource) {
+  for (var i = 0; i < treeNodes.length; i++) {
+    // 添加sql编辑器智能提示
+    CodeMirror.tableColMapping[treeNodes[i].name] = []
+    // 重新加载表与列的关系
+    editorObj.options.hintOptions.tables[treeNodes[i].name] = []
+  }
+}
+
+/**
  * 删除表或试图后删除左侧树
  * @param dropTableArr 删除的表
  */
 export function dropTable(dropTableArr) {
   if (dropTableArr != undefined && dropTableArr.length > 0) {
     for (var k = 0; k < dropTableArr.length; k++) {
-      var dropedNode = zTreeObj.getNodesByParam('name', dropTableArr[k], null)[0]
-      zTreeObj.removeNode(dropedNode)
+      //旧数据树已经废弃
+      /* var dropedNode = zTreeObj.getNodesByParam('name', dropTableArr[k], null)[0]
+      zTreeObj.removeNode(dropedNode) */
       // 删除智能提示
       delete CodeMirror.tableColMapping[dropTableArr[k]]
       // 清除表与列的关系
@@ -1342,7 +1487,7 @@ export function initParamTreeNew(modelFolderPath) {
         if (!treeNode) {
           return false
         }
-        zTreeObj.selectNode(treeNode)
+        // zTreeObj.selectNode(treeNode)
         var menuId = ''
         var numm = $(document).height() - event.clientY
         if (treeNode.type === 'folder') {
@@ -1360,7 +1505,7 @@ export function initParamTreeNew(modelFolderPath) {
       },
       onExpand: function (event, treeId, treeNode) {
         $('#paramfolderdatabox').val(treeNode)
-        console.log(treeNode)
+        // console.log(treeNode)
         /*        if (!treeNode.children || treeNode.children.length === 0) {
                   loadParamChildrenNodes(treeNode)
                 }*/
@@ -1541,7 +1686,7 @@ function onDrop(event, treeId, treeNodes) {
 export function initTableTip(dataUserId, scenecode, dataSource) {
   var dataUserId1 = ''
   var sceneCode1 = ''
-  if (dataUserId != undefined && scenecode != undefined) {
+  if (dataUserId != undefined && dataUserId !="" && scenecode != undefined && scenecode !="") {
     dataUserId1 = dataUserId
     sceneCode1 = scenecode
   } else {
@@ -1559,24 +1704,95 @@ export function initTableTip(dataUserId, scenecode, dataSource) {
 }
 
 /**
+ * 初始化智能提示的数据表-获取个人空间页签树 返回结果集字段变化
+ * @returns 
+ */
+export function getPersonSpaceTree(dataUserId, scenecode, dataSource, treeType) {
+  var dataUserId1 = ''
+  var sceneCode1 = ''
+  if (dataUserId != undefined && dataUserId !="" && scenecode != undefined && scenecode !="") {
+    dataUserId1 = dataUserId
+    sceneCode1 = scenecode
+  } else {
+    dataUserId1 = store.getters.datauserid
+    sceneCode1 = store.getters.scenecode
+  }
+  const params = { sceneCode: sceneCode1, dataUserId: dataUserId1, dataSource: dataSource, treeType: treeType }
+  // 调用后台获取数据表数据
+  return request({
+    baseURL: dataUrl,
+    url: '/tableMeta/getResTreePersonSpace',
+    method: 'post',
+    params: params
+  })
+}
+
+//获取当前登陆人是否有个人空间管理员角色
+export function getLoginUserAdminRole() {
+  return request({
+    baseURL: dataUrl,
+    url: '/tableMeta/getLoginUserAdminRole',
+    method: 'post',
+    params: {}
+  })
+}
+
+//保存文件夹
+export function saveAllSpaceFolder(params) {
+  return request({
+    baseURL: dataUrl,
+    url: '/folder/save',
+    method: 'post',
+    data:params
+  })
+}
+
+//删除文件夹
+export function deleteAllSpaceFolder(ids) {
+  return request({
+    baseURL: dataUrl,
+    url: `/folder/delete/${ids}`,
+    method: 'delete',
+  })
+}
+
+//修改文件夹
+export function editAllSpaceFolder(params) {
+  return request({
+    baseURL: dataUrl,
+    url: '/folder/update',
+    method: 'put',
+    data:params
+  })
+}
+
+
+/**
  * 节点右键事件
  * @param type 类型
  * @param containerId 点击编号
  * @param menuId 菜单编号
  * @param x x坐标
  * @param y y坐标
+ * @param data SQL编辑器数据表树右键选中对象
  */
-function showRMenu(type, containerId, menuId, x, y) {
-  var height = $('#' + containerId).height()
-  var offsetTop = $('#' + containerId).offset().top
-  var h_ = height - (event.clientY - offsetTop)
-  var w_ = $('#' + containerId).width() - event.clientX
-  if (h_ < $('#' + menuId).height()) {
-    y = y - $('#' + menuId).height()
+export function showRMenu(type, containerId, menuId, x, y, data) {
+  if(!type=='sqlEditorLeftTree'){
+    var height = $('#' + containerId).height()
+    var offsetTop = $('#' + containerId).offset().top
+    var h_ = height - (event.clientY - offsetTop)
+    var w_ = $('#' + containerId).width() - event.clientX
+    if (h_ < $('#' + menuId).height()) {
+      y = y - $('#' + menuId).height()
+    }
+    /* if (w_ < $('#' + menuId).width()) {
+       x = $('#' + containerId).width() - $('#' + menuId).width()
+     }*/
   }
-  /* if (w_ < $('#' + menuId).width()) {
-     x = $('#' + containerId).width() - $('#' + menuId).width()
-   }*/
+  //先清空 再重新赋值
+  sqlEditorLeftTreeObj = [];
+  sqlEditorLeftTreeObj.push(data);
+  
   $('#' + menuId + ' ul').show()
   $('#' + menuId).css({ 'top': y + 'px', 'left': x + 'px', 'visibility': 'visible' })
   $('body').bind('mousedown', { 'menuId': menuId }, onBodyMouseDown)
@@ -1808,9 +2024,9 @@ function funOnDrop(event, treeId, treeNodes) {
   var height = $('#sqlEditorDiv').height()
   var offLeft = $('.leftCon').width()
   var offTop = $('.table-view-caption').height()
-  if ((mouseX < (offLeft + 30) || (mouseX > (offLeft + width)) || (mouseY < offTop) || (mouseY > height))) {
+  /* if ((mouseX < (offLeft + 30) || (mouseX > (offLeft + width)) || (mouseY < offTop) || (mouseY > height))) {
     return
-  }
+  } */
   var cursor = editorObj.getCursor()
   var funContent = treeNodes[0].content || treeNodes[0].name
   dragOne(funContent, cursor, cursor)
@@ -2459,11 +2675,19 @@ export function getSaveInfo() {
  * 生成select语句
  * @param menuId 菜单编号
  */
-export function getSelectSql(menuId,dataSource) {
+export function getSelectSql(menuId,dataSource,strLevel) {
   hideRMenu(menuId)
-  var nodes = zTreeObj.getSelectedNodes()
+  //使用新的树对象 旧树已经废弃
+  /* var nodes = zTreeObj.getSelectedNodes()
+  if(nodes.length==0){
+    nodes = sqlEditorLeftTreeObj
+  } */
+  var nodes = sqlEditorLeftTreeObj
   if (nodes.length > 0) {
     var tableName = nodes[0].enName
+    if(tableName==undefined){
+      tableName = nodes[0].extMap.tableName
+    }
     var tableMetaUuid = nodes[0].id
     var columns = CodeMirror.tableColMapping[tableName]
     var oldSql = editorObj.getValue()
@@ -2472,7 +2696,10 @@ export function getSelectSql(menuId,dataSource) {
         baseURL: dataUrl,
         url: '/tableMeta/getCols',
         method: 'post',
-        params: { tableMetaUuid: tableMetaUuid, isEnclose:"1", dataSource: dataSource }
+        params: { 
+          tableMetaUuid: tableMetaUuid, isEnclose:"1", dataSource: dataSource, 
+          businessType: strLevel, treeType:"1"
+        }
       }).then(result => {
         if (result.data == undefined || result.data == null) {
           return
@@ -2713,7 +2940,7 @@ export function startExecuteSql(data) {
  * 获取执行任务
  * @param {*} data 要执行的数据
  */
-export function getExecuteTask(data,dataUserId,sceneCode, dataSource) {
+export function getExecuteTask(data,dataUserId,sceneCode, dataSource,treeType) {
   var dataUserId1 = ''
   var sceneCode1 = ''
   if (dataUserId != undefined && sceneCode != undefined) {
@@ -2726,6 +2953,7 @@ export function getExecuteTask(data,dataUserId,sceneCode, dataSource) {
   data.userId = dataUserId1;
   data.sceneCode = sceneCode1;
   data.dataSource = dataSource;
+  data.treeType = treeType;
   return request({
     baseURL: analysisUrl,
     url: '/SQLEditorController/getExecuteTask',
@@ -2849,6 +3077,9 @@ export async function getGraphSaveInfo(dataSource){
  */
 export function getZtreeSelectNode() {
   var nodes = zTreeObj.getSelectedNodes()
+  if(nodes.length==0){
+    return sqlEditorLeftTreeObj
+  }
   return nodes
 }
 

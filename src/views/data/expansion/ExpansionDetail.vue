@@ -50,6 +50,7 @@
         ,queryByPersonalSpaceUuid
         ,batchUpdateForBackApplicationHandle
     } from "@/api/data/personalSpace";
+    import {incrementPersonalSpaceManage} from "@/api/data/personalSpaceManage"
     export default {
         name: "expansionDetail",
         data(){
@@ -87,6 +88,15 @@
                 var relParam = []
                 relParam.push(personalSpace)
                 batchUpdateForFinishHandle(relParam)
+                .then((res)=>{
+                  //查询这次办理完成的 空间容量
+                  queryByPersonalSpaceUuid(value)
+                      .then((res)=>{
+                        var param = res.data.personalSpaceCapacity
+                        //调用个人空间管理的扩容方法 对 已经办理完成的空间进行扩容
+                        incrementPersonalSpaceManage(param)
+                      })
+                })
             },
             updateApplyStatusBecauseBackApplication(value){
                 //以后可能会出现扩展 这边先自己拼装一个 实体类 传到后台
@@ -119,7 +129,7 @@
         ::v-deep .el-form-item__label {
             text-align: right;
             vertical-align: middle;
-            float: left !important;
+            //float: left !important;
         }
     }
 </style>

@@ -5,12 +5,18 @@
       <div class="top-open flex flex-row a-center">
         <div class="logo-wrap flex a-center j-center flex-row"
              style="cursor: pointer">
-          <div class="logo-Words"
+          <!-- <div class="logo-Words"
                @click="selectMenuIn()">
             {{ projectname }}
+          </div> -->
+          <!-- <img src="../style/images/color-n.png" class="logo-text" /> -->
+
+          <div class="logo-Words"
+               @click="selectMenuIn()">
+            <img src="../style/images/logo_icon.png"
+                 class="logo-text" />
           </div>
-          <img src="../style/images/color-n.png"
-               class="logo-text" />
+
         </div>
         <div class="menu flex a-center j-between flex-row"
              style="position: relative">
@@ -570,31 +576,30 @@ export default {
 
 <style lang="scss" scoped>
 .left-menu {
-  height: 60px;
+  height: 70px;
+  min-width: 1366px;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  // background-image: url("../style/images/headerbag.png");
+  // background-repeat: no-repeat;
+  // box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
+  // backdrop-filter: blur(15.22237854003906px);
   .top-open {
     float: left;
-    .logo-text {
-      width: 65px;
-      height: 11px;
-      position: absolute;
-      top: 36px;
-      left: 20px;
-    }
+    height: 100%;
+    display: flex;
+    align-items: center;
     .logo-Words {
-      color: #303030;
-      font-size: 24px;
-      margin-left: 30px;
-      font-weight: bold;
-      min-width: 120px;
-      /*width: 320px;*/
+      margin-left: 20px;
+      width: 190px;
+      height: 43px;
       margin-right: 20px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      img {
+        width: 100%;
+        height: 100%;
+      }
     }
     .logo-wrap {
       // margin-right: 200px;
@@ -633,15 +638,15 @@ export default {
             margin-bottom: 8px;
           }
           .name {
-            font-family: PingFangSC-Regular;
             font-size: 16px;
+            font-family: MicrosoftYaHei;
+            color: #333333;
             letter-spacing: 0.3px;
             text-align: center;
-            font-weight: bold;
           }
           &-active {
             background: transparent;
-            color: #3dabdf;
+            color: #4893fd;
           }
         }
       }
@@ -847,9 +852,11 @@ export default {
     background-size: 100% 100%;
   }
   .label-word {
-    font-family: PingFangSC-Semibold;
+    // font-family: PingFangSC-Semibold;
     font-size: 16px;
-    color: #303030;
+    // color: #303030;
+    font-family: MicrosoftYaHei;
+    color: #333333;
     display: inline-block;
     text-align: center;
     line-height: 34px;

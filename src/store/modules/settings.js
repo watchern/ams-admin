@@ -1,4 +1,6 @@
-import variables from '@/styles/element-variables.scss'
+// import variables from '@/styles/element-variables.scss'
+import variables from '@/styles/element-variables-new.scss'
+
 import defaultSettings from '@/settings'
 
 const { showSettings, tagsView, fixedHeader, sidebarLogo, supportPinyinSearch } = defaultSettings
@@ -21,7 +23,7 @@ const mutations = {
 }
 
 const actions = {
-  changeSetting({ commit }, data) {
+  changeSetting ({ commit }, data) {
     commit('CHANGE_SETTING', data)
   }
 }

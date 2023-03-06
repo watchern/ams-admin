@@ -1,19 +1,19 @@
 <template>
   <div class="admin_right_main">
-    <el-tabs v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane label="待办列表" name="todoList">
+    <el-tabs v-model="activeName"
+             @tab-click="handleClick">
+      <el-tab-pane label="待办列表"
+                   name="todoList">
         <!-- <div class="filter-container">
           <QueryField ref="queryfield" :form-data="queryFields" @submit="queryTodo" />
         </div> -->
         <div class="table_template">
-          <div
-            class="table_header"
-            v-if="
+          <div class="table_header"
+               v-if="
               tableOption.isShowHeader != undefined
                 ? tableOption.isShowHeader
                 : true
-            "
-          >
+            ">
             <div class="table_header_default">
               <div class="table_header_default_title">
                 <div class="marginR40">
@@ -22,131 +22,104 @@
               </div>
             </div>
           </div>
-          <el-table
-            ref="todoTable"
-            :data="todoData"
-            border
-            :max-height="tableHeight"
-            style="width: 100%"
-            @selection-change="handleSelectionChange"
-            :height="
+          <el-table ref="todoTable"
+                    :data="todoData"
+                    border
+                    :max-height="tableHeight"
+                    style="width: 100%"
+                    @selection-change="handleSelectionChange"
+                    :height="
               disp == true
                 ? screenHeight - 360 + 'px'
                 : screenHeight - 198 + 'px'
-            "
-          >
+            ">
             <el-table-column type="selection"></el-table-column>
-            <el-table-column label="序号" type="index"></el-table-column>
-            <el-table-column
-              :show-overflow-tooltip="true"
-              prop="applyTitle"
-              label="标题"
-              width
-            >
+            <el-table-column label="序号"
+                             type="index"></el-table-column>
+            <el-table-column :show-overflow-tooltip="true"
+                             prop="applyTitle"
+                             label="标题"
+                             width>
               <template slot-scope="scope">
-                <el-link
-                  @click="todo(scope.row)"
-                  v-model="scope.row.applyTitle"
-                  type="primary"
-                  :underline="false"
-                  class="linkClass"
-                  >{{ scope.row.applyTitle }}</el-link
-                >
+                <el-link @click="todo(scope.row)"
+                         v-model="scope.row.applyTitle"
+                         type="primary"
+                         :underline="false"
+                         class="linkClass">{{ scope.row.applyTitle }}</el-link>
               </template>
             </el-table-column>
-            <el-table-column
-              prop="applyTypeName"
-              label="审批类型"
-              show-overflow-tooltip
-              width
-            ></el-table-column>
-            <el-table-column
-              prop="createPersonName"
-              label="申请人"
-              show-overflow-tooltip
-              width
-            ></el-table-column>
-            <el-table-column
-              prop="applyTime"
-              label="申请时间"
-              show-overflow-tooltip
-              width
-            ></el-table-column>
-            <el-table-column
-              prop="fromDate"
-              label="到达时间"
-              show-overflow-tooltip
-            ></el-table-column>
-            <el-table-column
-              prop="viewProcess"
-              label="流程跟踪"
-              show-overflow-tooltip
-              width
-            >
+            <el-table-column prop="applyTypeName"
+                             label="审批类型"
+                             show-overflow-tooltip
+                             width></el-table-column>
+            <el-table-column prop="createPersonName"
+                             label="申请人"
+                             show-overflow-tooltip
+                             width></el-table-column>
+            <el-table-column prop="applyTime"
+                             label="申请时间"
+                             show-overflow-tooltip
+                             width></el-table-column>
+            <el-table-column prop="fromDate"
+                             label="到达时间"
+                             show-overflow-tooltip></el-table-column>
+            <el-table-column prop="viewProcess"
+                             label="流程跟踪"
+                             show-overflow-tooltip
+                             width>
               <template slot-scope="scope">
-                <el-link
-                  @click="todoOpinionList(scope.row)"
-                  type="primary"
-                  :underline="false"
-                  class="linkClass"
-                  >流程跟踪</el-link
-                >
+                <el-link @click="todoOpinionList(scope.row)"
+                         type="primary"
+                         :underline="false"
+                         class="linkClass">流程跟踪</el-link>
               </template>
             </el-table-column>
           </el-table>
 
           <div class="table_page">
-            <el-pagination
-              @size-change="handleSizeChange"
-              :page-sizes="pageArr"
-              @current-change="todoCurChange"
-              :current-page="todoCurPage"
-              :page-size="todoPageSize"
-              layout="total,sizes, prev, pager, next, jumper"
-              style="
+            <el-pagination @size-change="handleSizeChange"
+                           :page-sizes="pageArr"
+                           @current-change="todoCurChange"
+                           :current-page="todoCurPage"
+                           :page-size="todoPageSize"
+                           layout="total,sizes, prev, pager, next, jumper"
+                           style="
                 width: 100%;
                 position: relative;
                 display: flex;
                 justify-content: flex-end;
                 padding: 0 20px;
               "
-              :total="todoTotal"
-            ></el-pagination>
+                           :total="todoTotal"></el-pagination>
           </div>
         </div>
-        <el-dialog
-          title="流程跟踪"
-          :visible.sync="todoFlow"
-          v-if="todoFlow"
-          width="80%"
-        >
+        <el-dialog title="流程跟踪"
+                   :visible.sync="todoFlow"
+                   v-if="todoFlow"
+                   width="80%">
           <div>
             <flowOpinionList :applyUuid="applyUuid"></flowOpinionList>
           </div>
           <span slot="footer">
-            <el-button
-              size="mini"
-              type="info"
-              class="table_header_btn"
-              @click="todoFlow = false"
-              >关闭</el-button
-            >
+            <el-button size="mini"
+                       type="info"
+                       class="table_header_btn"
+                       @click="todoFlow = false">关闭</el-button>
           </span>
         </el-dialog>
       </el-tab-pane>
-      <el-tab-pane label="已办列表" name="doneList">
+      <el-tab-pane label="已办列表"
+                   name="doneList">
         <!-- <div class="filter-container">
           <QueryField ref="queryfield" :form-data="queryFields" @submit="queryDone" />
         </div> -->
         <div class="table_template">
-          <div
-            class="table_header"
-            v-if="
+          <div class="table_header"
+               v-if="
               tableOption.isShowHeader != undefined
                 ? tableOption.isShowHeader
                 : true
-            "
-          >
+            ">
             <div class="table_header_default">
               <div class="table_header_default_title">
                 <div class="marginR40">
@@ -155,150 +128,115 @@
               </div>
             </div>
           </div>
-          <el-table
-            ref="doneTable"
-            :data="doneData"
-            border
-            :max-height="tableHeight"
-            style="width: 100%"
-            @selection-change="handleSelectionChange"
-            :height="
+          <el-table ref="doneTable"
+                    :data="doneData"
+                    border
+                    :max-height="tableHeight"
+                    style="width: 100%"
+                    @selection-change="handleSelectionChange"
+                    :height="
               disp == true
                 ? screenHeight - 360 + 'px'
                 : screenHeight - 198 + 'px'
-            "
-          >
+            ">
             <el-table-column type="selection"></el-table-column>
-            <el-table-column label="序号" type="index"></el-table-column>
-            <el-table-column
-              :show-overflow-tooltip="true"
-              prop="applyTitle"
-              label="标题"
-              width
-            >
+            <el-table-column label="序号"
+                             type="index"></el-table-column>
+            <el-table-column :show-overflow-tooltip="true"
+                             prop="applyTitle"
+                             label="标题"
+                             width>
               <template slot-scope="scope">
-                <el-link
-                  @click="done(scope.row)"
-                  v-model="scope.row.applyTitle"
-                  type="primary"
-                  :underline="false"
-                  class="linkClass"
-                  >{{ scope.row.applyTitle }}</el-link
-                >
+                <el-link @click="done(scope.row)"
+                         v-model="scope.row.applyTitle"
+                         type="primary"
+                         :underline="false"
+                         class="linkClass">{{ scope.row.applyTitle }}</el-link>
               </template>
             </el-table-column>
-            <el-table-column
-              prop="applyTypeName"
-              label="审批类型"
-              show-overflow-tooltip
-              width
-            ></el-table-column>
-            <el-table-column
-              prop="createPersonName"
-              label="申请人"
-              show-overflow-tooltip
-              width
-            ></el-table-column>
-            <el-table-column
-              prop="applyTime"
-              label="申请时间"
-              show-overflow-tooltip
-              width
-            ></el-table-column>
-            <el-table-column
-              prop="fromDate"
-              label="到达时间"
-              show-overflow-tooltip
-            ></el-table-column>
-            <el-table-column
-              prop="thruDate"
-              label="完成时间"
-              show-overflow-tooltip
-            ></el-table-column>
-            <el-table-column
-              prop="applyState"
-              label="处理结果"
-              show-overflow-tooltip
-            >
+            <el-table-column prop="applyTypeName"
+                             label="审批类型"
+                             show-overflow-tooltip
+                             width></el-table-column>
+            <el-table-column prop="createPersonName"
+                             label="申请人"
+                             show-overflow-tooltip
+                             width></el-table-column>
+            <el-table-column prop="applyTime"
+                             label="申请时间"
+                             show-overflow-tooltip
+                             width></el-table-column>
+            <el-table-column prop="fromDate"
+                             label="到达时间"
+                             show-overflow-tooltip></el-table-column>
+            <el-table-column prop="thruDate"
+                             label="完成时间"
+                             show-overflow-tooltip></el-table-column>
+            <el-table-column prop="applyState"
+                             label="处理结果"
+                             show-overflow-tooltip>
               <template slot-scope="scope">
                 <span>{{
                   dict.toName("auditStatus", scope.row.applyState)
                 }}</span>
               </template>
             </el-table-column>
-            <el-table-column
-              prop="flowTrack"
-              label="流程跟踪"
-              show-overflow-tooltip
-              width
-            >
+            <el-table-column prop="flowTrack"
+                             label="流程跟踪"
+                             show-overflow-tooltip
+                             width>
               <template slot-scope="scope">
-                <el-link
-                  @click="doneOpinionList(scope.row)"
-                  type="primary"
-                  :underline="false"
-                  class="linkClass"
-                  >流程跟踪</el-link
-                >
+                <el-link @click="doneOpinionList(scope.row)"
+                         type="primary"
+                         :underline="false"
+                         class="linkClass">流程跟踪</el-link>
               </template>
             </el-table-column>
           </el-table>
 
           <div class="table_page">
-            <el-pagination
-              @size-change="donehandleSizeChange"
-              :page-sizes="donepageArr"
-              @current-change="doneCurChange"
-              :current-page="doneCurPage"
-              :page-size="donePageSize"
-              layout="total,sizes, prev, pager, next, jumper"
-              style="
+            <el-pagination @size-change="donehandleSizeChange"
+                           :page-sizes="donepageArr"
+                           @current-change="doneCurChange"
+                           :current-page="doneCurPage"
+                           :page-size="donePageSize"
+                           layout="total,sizes, prev, pager, next, jumper"
+                           style="
                 width: 100%;
                 position: relative;
                 display: flex;
                 justify-content: flex-end;
                 padding: 0 20px;
               "
-              :total="doneTotal"
-            ></el-pagination>
+                           :total="doneTotal"></el-pagination>
           </div>
         </div>
-        <el-dialog
-          title="详细跟踪【未完成】"
-          :visible.sync="viewAppInfo"
-          v-if="viewAppInfo"
-          width="80%"
-        >
+        <el-dialog title="详细跟踪【未完成】"
+                   :visible.sync="viewAppInfo"
+                   v-if="viewAppInfo"
+                   width="80%">
           <div>
             <todoDetail :applyUuid="applyUuid"></todoDetail>
           </div>
           <span slot="footer">
-            <el-button
-              size="mini"
-              type="info"
-              class="table_header_btn"
-              @click="doneFlow = false"
-              >关闭</el-button
-            >
+            <el-button size="mini"
+                       type="info"
+                       class="table_header_btn"
+                       @click="doneFlow = false">关闭</el-button>
           </span>
         </el-dialog>
-        <el-dialog
-          title="流程跟踪"
-          :visible.sync="doneFlow"
-          v-if="doneFlow"
-          width="80%"
-        >
+        <el-dialog title="流程跟踪"
+                   :visible.sync="doneFlow"
+                   v-if="doneFlow"
+                   width="80%">
           <div>
             <flowOpinionList :applyUuid="applyUuid"></flowOpinionList>
           </div>
           <span slot="footer">
-            <el-button
-              size="mini"
-              type="info"
-              class="table_header_btn"
-              @click="doneFlow = false"
-              >关闭</el-button
-            >
+            <el-button size="mini"
+                       type="info"
+                       class="table_header_btn"
+                       @click="doneFlow = false">关闭</el-button>
           </span>
         </el-dialog>
       </el-tab-pane>
@@ -310,7 +248,7 @@ import { mapGetters } from "vuex";
 const coutPx = 158 + 44 + 48 + 20 + 20 + 60;
 import flowOpinionList from "../todowork/flowOpinionList";
 import todoDetail from "./todoDetail";
-import { auditDataList,updateToAccepted } from "@/api/starflow";
+import { auditDataList, updateToAccepted } from "@/api/starflow";
 // import QueryField from '@/components/public/query-field/index'
 // import {dict} from "@/static/inc/dict.js" //注意路径
 
@@ -321,7 +259,7 @@ export default {
     // QueryField,
   },
   watch: {
-    lessionChange() {
+    lessionChange () {
       this.init();
     },
   },
@@ -334,7 +272,7 @@ export default {
 
     this.init();
   },
-  data() {
+  data () {
     return {
       //查询条件
       projectStatus: "",
@@ -430,7 +368,7 @@ export default {
   },
   computed: {
     ...mapGetters(["innerHeight"]),
-    tableHeight() {
+    tableHeight () {
       //计算页面表格的距离顶部高低
       let height = "auto";
       if (!this.tableOption.height) {
@@ -439,30 +377,32 @@ export default {
       } else {
         height = this.tableOption.height;
       }
-      console.log(height);
+
       return height;
     },
     //监控待办已办的激活事件
-    lessionChange() {
+    lessionChange () {
       return this.todoTag;
     },
   },
   methods: {
-    test() {
+    test () {
       this.disp = !this.disp;
     },
-    init() {
+    init () {
       if (this.todoTag) {
         this.listLoading = true;
         var obj = {
           applyTitle: this.queryTodoForm.applyTitle,
           applyTypeName: this.queryTodoForm.applyTypeName,
+            // 流程为未完成状态
+          applyState: 1,
           pageNo: this.todoCurPage,
           pageSize: this.todoPageSize,
         };
         auditDataList(obj).then((resp) => {
-          console.log(123);
-          console.log(resp);
+
+
           this.todoData = resp.data.entities;
           this.todoTotal = resp.data.count;
           this.changePageArr();
@@ -477,15 +417,15 @@ export default {
           pageSize: this.donePageSize,
         };
         auditDataList(obj).then((resp) => {
-          console.log(123);
-          console.log(resp);
+
+
           this.doneData = resp.data.entities;
           this.doneTotal = resp.data.count;
           this.donechangePageArr();
         });
       }
     },
-    handleClick(tab) {
+    handleClick (tab) {
       if (tab.paneName == "doneList") {
         this.todoTag = false;
       } else {
@@ -493,34 +433,34 @@ export default {
       }
     },
     //待办
-    todoCurChange(val) {
+    todoCurChange (val) {
       this.todoCurPage = val;
       this.init();
     },
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.todoPageSize = val;
       this.init();
     },
-    changePageArr() {
+    changePageArr () {
       this.pageArr = this.common.changePageArr(this.todoTotal);
     },
     //已办
-    doneCurChange(val) {
+    doneCurChange (val) {
       this.doneCurPage = val;
       this.init();
     },
-    donehandleSizeChange(val) {
+    donehandleSizeChange (val) {
       this.donePageSize = val;
       this.init();
     },
-    donechangePageArr() {
+    donechangePageArr () {
       this.donepageArr = this.common.changePageArr(this.doneTotal);
     },
-    handleSelectionChange(val) {
+    handleSelectionChange (val) {
       this.multipleSelection = val;
     },
-    todo(row) {
-      console.log(row,"row")
+    todo (row) {
+
       if (row.currentState == "CAL_SENT") {
         this.updateToAccepted(row);
         if (!this.partyAssignment) {
@@ -552,7 +492,7 @@ export default {
       this.flowItem.detailUuids = row.detailUuids;
       //用来区分主子项目
       this.flowItem.planTag = row.temp2;
-      console.log(this.applyDetail.type);
+
       this.flowItem.workEffortId = row.workEffortId;
       this.flowItem.temp1 = row.temp1;
       this.flowItem.wftype = this.dict.flowValueFun(row.applyType);
@@ -568,7 +508,7 @@ export default {
         },
       });
     },
-    done(row) {
+    done (row) {
       //   return;
       this.applyInfo.appDataUuid = row.appDataUuid;
       this.applyInfo.versionUuid = row.versionUuid;
@@ -595,7 +535,7 @@ export default {
       this.flowItem.appDataUuid = row.appDataUuid;
       this.flowItem.versionUuid = row.versionUuid;
       this.flowItem.detailUuids = row.detailUuids;
-      // console.log(this.applyDetail.type)
+      // 
       this.flowItem.workEffortId = row.workEffortId;
       //用来区分主子项目
       this.flowItem.planTag = row.temp2;
@@ -613,36 +553,36 @@ export default {
         },
       });
     },
-    todoOpinionList(row) {
+    todoOpinionList (row) {
       this.applyUuid = row.applyUuid;
       this.todoFlow = true;
     },
-    doneOpinionList(row) {
+    doneOpinionList (row) {
       this.applyUuid = row.applyUuid;
       this.doneFlow = true;
     },
-    queryTodo(query) {
+    queryTodo (query) {
       this.queryTodoForm.applyTitle = query.applyTitle;
       this.queryTodoForm.applyTypeName = query.applyTypeName;
       this.todoCurPage = 1;
       this.init();
     },
-    queryDone(query) {
+    queryDone (query) {
       this.queryTodoForm.applyTitle = query.applyTitle;
       this.queryTodoForm.applyTypeName = query.applyTypeName;
       this.doneCurPage = 1;
       this.init();
     },
-    reset() {
+    reset () {
       this.queryTodoForm = {};
     },
-    resetDone() {
+    resetDone () {
       this.queryDoneForm = {};
     },
     //更新we_party_Assignment 表中的 CURRENT_STATE  工作项改为已受理
 
-    updateToAccepted(row) {
-      console.log("进入到updateToAccepted方法")
+    updateToAccepted (row) {
+
       // 因为下面方法暂时不好用 没有权限 先写死
       this.partyAssignment = true;
       // updateToAccepted(row).then((resp) => {

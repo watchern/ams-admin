@@ -7,7 +7,9 @@ import { getToken } from '@/utils/auth'
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 120000 // request timeout
+  timeout: 600000, // request timeout
+  // 原生axios调用的时候可以传一个不同的值，response可以直接获取response不过滤信息
+  reqType: 'base'
 })
 
 //接口错误信息是否保留
@@ -22,7 +24,7 @@ service.interceptors.request.use(
     let userToken = store.state.user.token
     let url= config.url;
     //判断请求路径中是否存在问号
-    let symbol = url.indexOf("?") == -1 ? "?" : "&"; 
+    let symbol = url.indexOf("?") == -1 ? "?" : "&";
     url = url + symbol + "result=login&LTPAToken="+ userToken +"&maxInerval=14400"
     config.url = url
     if (store.getters.token) {
@@ -53,6 +55,9 @@ service.interceptors.response.use(
    * You can also judge the status by HTTP Status Code
    */
   response => {
+    if (response.config.reqType !== 'base' || response.config.responseType === 'blob'){
+      return response
+    }
     const res = response.data
 
     // if the custom code is not 0, it is judged as an error.
@@ -80,7 +85,7 @@ service.interceptors.response.use(
           location.reload()
         })
       }
-    //code==1993为biz
+      //code==1993为biz
       if(res.code == 1993){
         Message({
           dangerouslyUseHTMLString: true,
@@ -92,6 +97,8 @@ service.interceptors.response.use(
         })
         return Promise.reject()
       } else if (res.head && res.head.status == 20) {
+        return res
+      } else if (res.code == 200) {
         return res
       } else {
         Message({

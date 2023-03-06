@@ -1,16 +1,16 @@
 <template>
   <div class="new-ag-grid-wrap h100">
-    <div id="myGrid" class="ag-theme-balham w100 new-ag-grid" />
-    <div v-if="gridOptions.isPagination" class="new-pagination flex a-center j-start w100">
-      <el-pagination
-        :current-page="pageNum"
-        :page-sizes="[10, 20, 30, 40]"
-        :page-size="pageSize"
-        layout="total, prev, pager, next, jumper"
-        :total="total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+    <div id="myGrid"
+         class="ag-theme-balham w100 new-ag-grid" />
+    <div v-if="gridOptions.isPagination"
+         class="new-pagination flex a-center j-start w100">
+      <el-pagination :current-page="pageNum"
+                     :page-sizes="[10, 20, 30, 40]"
+                     :page-size="pageSize"
+                     layout="total, prev, pager, next, jumper"
+                     :total="total"
+                     @size-change="handleSizeChange"
+                     @current-change="handleCurrentChange" />
     </div>
   </div>
 </template>
@@ -42,7 +42,7 @@ export default {
       default: 0
     }
   },
-  data() {
+  data () {
     return {
       gridOptions: {
         rowHeight: 52,
@@ -58,7 +58,7 @@ export default {
   },
   watch: {
     rowData: {
-      handler: function(newVal, oldVal) {
+      handler: function (newVal, oldVal) {
         this.gridOptions.rowData = newVal
         this.gridOptions.api &&
           this.gridOptions.api.setRowData &&
@@ -68,58 +68,58 @@ export default {
       immediate: true
     },
     tableOptions: {
-      handler: function(newVal, oldVal) {
+      handler: function (newVal, oldVal) {
         this.gridOptions = Object.assign({}, this.gridOptions, newVal)
       },
       deep: true,
       immediate: true
     }
   },
-  mounted() {
+  mounted () {
     this.$nextTick(() => {
       this.initTable()
     })
   },
   methods: {
-    initTable() {
+    initTable () {
       const eGridDiv = document.querySelector('#myGrid')
       console.log(this.gridOptions)
       new Grid(eGridDiv, this.gridOptions)
       this.getSelectRows()
     },
-    getSelectRows() {
+    getSelectRows () {
       var rows = this.gridOptions && this.gridOptions.api && this.gridOptions.api.getSelectedRows()
       return rows
     },
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.$emit('handleSizeChange', val)
     },
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.$emit('handleCurrentChange', val)
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-.new-ag-grid-wrap{
-  .new-ag-grid{
+.new-ag-grid-wrap {
+  .new-ag-grid {
     height: calc(100% - 50px);
   }
-  .new-pagination{
+  .new-pagination {
     height: 50px;
     overflow: hidden;
     position: relative;
-    &::after{
+    &::after {
       content: "";
       position: absolute;
       display: inline-block;
       left: 20px;
       right: 20px;
       height: 2px;
-background: rgba(0,0,0,0.07);
+      background: rgba(0, 0, 0, 0.07);
       top: 0;
     }
-    >>>.el-pagination{
+    >>> .el-pagination {
       height: 100%;
       display: flex;
       justify-content: flex-start;
@@ -130,18 +130,18 @@ background: rgba(0,0,0,0.07);
 }
 </style>
 <style scoped>
-.new-pagination >>>.number.active{
+.new-pagination >>> .number.active {
   border-radius: 50%;
-  background:  #343942 !important;
+  background: #343942 !important;
   color: white;
   min-width: 28px !important;
 }
-.new-pagination >>> .el-pager li,.new-pagination >>> .el-pagination button:disabled{
+/* .new-pagination >>> .el-pager li,.new-pagination >>> .el-pagination button:disabled{
   background: #EDF1F5 !important;
 }
 .new-pagination >>> .el-pagination .btn-prev,.new-pagination >>> .el-pagination .btn-next{
   background: #EDF1F5 !important;
-}
+} */
 .new-ag-grid >>> .ag-header,
 .new-ag-grid >>> .ag-header-row,
 .new-ag-grid >>> .ag-header-cell {
@@ -160,23 +160,27 @@ background: rgba(0,0,0,0.07);
   letter-spacing: 0.39px;
 }
 
-.new-ag-grid  >>> .ag-row,.new-ag-grid >>> .ag-header,.new-ag-grid  >>> .ag-cell-last-left-pinned,.new-ag-grid  >>> .ag-theme-balham .ag-cell,.new-ag-grid  >>> .ag-header-row{
+.new-ag-grid >>> .ag-row,
+.new-ag-grid >>> .ag-header,
+.new-ag-grid >>> .ag-cell-last-left-pinned,
+.new-ag-grid >>> .ag-theme-balham .ag-cell,
+.new-ag-grid >>> .ag-header-row {
   border: none !important;
 }
-.new-ag-grid  >>>  .ag-cell{
+.new-ag-grid >>> .ag-cell {
   line-height: 52px;
   opacity: 0.9;
   font-family: PingFangSC-Regular;
   font-size: 14px;
-  color: rgba(53,58,67,0.95);
+  color: rgba(53, 58, 67, 0.95);
   letter-spacing: -0.16px;
-  background: #EDF1F5  ;
+  background: #edf1f5;
 }
-.new-ag-grid  >>> .ag-row-hover{
-  background: #B7BCBC !important;
+.new-ag-grid >>> .ag-row-hover {
+  background: #b7bcbc !important;
 }
-.new-ag-grid  >>> .ag-root{
+.new-ag-grid >>> .ag-root {
   border: none !important;
-  background: #EDF1F5 !important;
+  background: #edf1f5 !important;
 }
 </style>

@@ -8,11 +8,11 @@
 }
 .left_conter {
   /* border: 1px solid red; */
-  width: 280px;
+  /* width: 280px; */
 }
 .right_conter {
-  flex: 1;
-  min-width: 800px;
+  /* flex: 1; */
+  /* min-width: 800px; */
   /* border: 1px solid red; */
 }
 ul {
@@ -42,6 +42,12 @@ ul {
 
 .padding10 {
   padding: 10px;
+  box-sizing: border-box;
+
+}
+
+.padding7 {
+  padding: 7px;
   box-sizing: border-box;
 
 }
@@ -116,4 +122,10 @@ ul {
 }
 .loading span img {
   width: 100%;
+}
+
+/* 弹窗 内部滚动 */
+.dlag_conter{
+  height: 400px;
+  overflow: auto;
 }

@@ -1,206 +1,224 @@
 <template>
   <!--数据资源管理 业务系统管理 -->
   <div class="page-container">
-    <div class="filter-container">
-      <div class="query-field">
-        <el-form :inline="true"
-                 :model="query"
-                 label-position="bottom">
-          <el-form-item label="系统名称：">
-            <el-input v-model="query.businessSystemName"
-                      clearable />
-          </el-form-item>
+    <div class="pd20">
+      <div class="filter-container">
+        <div class="query-field">
+          <el-form :inline="true"
+                   :model="query"
+                   label-position="bottom">
+            <el-form-item label="系统名称：">
+              <el-input v-model="query.businessSystemName"
+                        clearable />
+            </el-form-item>
 
-          <el-form-item label="系统代码：">
-            <el-input v-model="query.businessSystemCode"
-                      clearable />
-          </el-form-item>
+            <el-form-item label="系统代码：">
+              <el-input v-model="query.businessSystemCode"
+                        clearable />
+            </el-form-item>
 
-          <el-form-item label="创建人：">
-            <el-input v-model="query.createUserName"
-                      clearable />
-          </el-form-item>
+            <el-form-item label="创建人：">
+              <el-input v-model="query.createUserName"
+                        clearable />
+            </el-form-item>
 
-          <el-form-item>
-            <el-button type="primary"
-                       @keyup.enter.native="search"
-                       @click="search()">查询</el-button>
-            <el-button type="primary"
-                       @click="clearAll()">清空</el-button>
+            <el-form-item>
+              <el-button type="primary"
+                         @keyup.enter.native="search"
+                         @click="search()">查询</el-button>
+              <el-button type="primary"
+                         @click="clearAll()">清空</el-button>
 
-          </el-form-item>
+            </el-form-item>
+
+          </el-form>
+
+        </div>
+        <div class="mb10">
+
+          <el-row>
+            <el-col align="right">
+              <el-button type="primary"
+                         class="oper-btn"
+                         @click="add()">
+                <img src="../../../styles/image/add.png"
+                     class="btn_icon icon1"
+                     alt="">
+                <img src="../../../styles/image/add2.png"
+                     class="btn_icon icon2"
+                     alt="">
+                新增
+              </el-button>
+            </el-col>
+          </el-row>
+        </div>
+        <el-table v-loading="listLoading"
+                  :data="page_list.records"
+                  height="calc(100vh - 300px)"
+                  border
+                  fit
+                  highlight-current-row
+                  @selection-change="handleSelectionChange">
+          <!-- <el-table-column type="selection"
+                         width="55" /> -->
+          <el-table-column label="系统名称"
+                           prop="businessSystemName">
+            <template slot-scope="scope">
+              <el-link type="text"
+                       prop="displayTbName"
+                       :underline="false"
+                       @click="details(scope.row.businessSystemUuid)">{{scope.row.businessSystemName}}</el-link>
+            </template>
+          </el-table-column>
+          <el-table-column label="系统代码"
+                           prop="businessSystemCode" />
+          <el-table-column label="创建时间"
+                           align="center"
+                           :formatter="formatCreateTime"
+                           prop="createTime" />
+          <el-table-column label="创建人"
+                           align="center"
+                           prop="createUserName" />
+          <el-table-column label="操作"
+                           align="center">
+            <template slot-scope="scope">
+              <el-link type="text"
+                       :underline="false"
+                       @click="edit_table(scope.row.businessSystemUuid)">修改</el-link>
+              <el-link type="text"
+                       :underline="false"
+                       @click="delete_table(scope.row.businessSystemUuid)">删除
+              </el-link>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <el-pagination v-show="page_list.total>0"
+                     :total="page_list.total"
+                     :current-page="page_list.currentPage"
+                     @current-change="handleCurrentChange"
+                     @size-change="handleSizeChange"
+                     layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+
+      <!-- 新增编辑 -->
+      <el-dialog :title="title"
+                 :visible.sync="dialogVisible"
+                 @close="handleClose('form')"
+                 class="dialog">
+        <el-form :rules="rules"
+                 label-position="top"
+                 ref="form"
+                 :model="form"
+                 :inline="false"
+                 label-width="140px"
+                 class="detail-form">
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="系统名称:"
+                            prop="businessSystemName">
+                <el-input type="text"
+                          style="width: 90%"
+                          v-model="form.businessSystemName"
+                          :readonly="title == '查看业务系统'"
+                          :rows="3">
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+
+              <el-form-item label="执行时间间隔:"
+                            prop="businessSystemEtldate">
+                <!-- <el-date-picker v-model="form.businessSystemEtldate"
+                              type="date"
+                              :disabled="title == '查看业务系统'"
+                              format="yyyy-MM-dd"
+                              value-format="yyyy-MM-dd"
+                              placeholder="选择日期"> -->
+                <el-input type="input"
+                          style="width: 90%"
+                          :readonly="title == '查看业务系统'"
+                          v-model.number="form.businessSystemEtldate"></el-input>
+                <!-- </el-date-picker> -->
+
+              </el-form-item>
+
+            </el-col>
+          </el-row>
+          <el-row>
+
+            <el-col :span="12">
+              <el-form-item label="系统代码:"
+                            prop="businessSystemCode">
+                <el-input style="width: 90%;resize: none"
+                          type="textarea"
+                          :rows="3"
+                          :readonly="title == '查看业务系统'"
+                          v-model="form.businessSystemCode"></el-input>
+              </el-form-item>
+
+            </el-col>
+            <!-- <el-form-item label="创建人:"
+                          prop="createUserName">
+              <el-input type="textarea"
+                        style="width: 80%;"
+                        :rows="4"
+                        :disabled="title == '查看业务系统'"
+                        v-model="form.createUserName">
+              </el-input>
+            </el-form-item> -->
+            <el-col :span="12">
+              <el-form-item label="文件推送路径:"
+                            prop="filePushPath">
+                <el-input type="textarea"
+                          :rows="3"
+                          style="width: 90%;resize: none"
+                          :readonly="title == '查看业务系统'"
+                          v-model="form.filePushPath">
+                </el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+
+            <el-col :span="12">
+
+              <el-form-item label="数据备份路径:"
+                            prop="dataBackupPath">
+                <el-input type="textarea"
+                          :rows="3"
+                          style="width: 90%;resize: none"
+                          :readonly="title == '查看业务系统'"
+                          v-model="form.dataBackupPath">
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="数据移动目录:"
+                            prop="dataMoveDir">
+                <el-input type="textarea"
+                          :rows="3"
+                          style="width: 90%;resize: none"
+                          :readonly="title == '查看业务系统'"
+                          v-model="form.dataMoveDir">
+                </el-input>
+              </el-form-item>
+            </el-col>
+
+          </el-row>
 
         </el-form>
 
-      </div>
-      <div class="padding10">
-        <el-row>
-          <el-col align="right">
-            <el-button type="primary"
-                       class="oper-btn add btn-width-md"
-                       @click="add()" />
-            <!-- <el-button type="primary"
-                   class="oper-btn edit"
-                   @click="edit()" />
-
-        <el-button type="primary"
-                   class="oper-btn delete"
-                   @click="delete_data()" /> -->
-          </el-col>
-        </el-row>
-      </div>
-
-      <el-table v-loading="listLoading"
-                :data="page_list.records"
-                height="400px"
-                border
-                fit
-                highlight-current-row
-                style="width: 100%;height:calc(100% - 140px);overflow: auto;"
-                @selection-change="handleSelectionChange">
-        <!-- <el-table-column type="selection"
-                         width="55" /> -->
-        <el-table-column label="系统名称"
-                         prop="businessSystemName">
-          <template slot-scope="scope">
-            <el-button type="text"
-                       size="mini"
-                       prop="displayTbName"
-                       style="background: none;"
-                       @click="details(scope.row.businessSystemUuid)">{{scope.row.businessSystemName}}</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column label="系统代码"
-                         prop="businessSystemCode" />
-        <el-table-column label="创建时间"
-                         align="center"
-                         :formatter="formatCreateTime"
-                         prop="createTime" />
-        <el-table-column label="创建人"
-                         align="center"
-                         prop="createUserName" />
-        <el-table-column label="操作"
-                         align="center">
-          <template slot-scope="scope">
-            <el-button type="primary"
-                       class="oper-btn edit"
-                       title="修改"
-                       size="mini"
-                       @click="edit_table(scope.row.businessSystemUuid)" />
-            <el-button type="primary"
-                       class="oper-btn delete"
-                       title="删除"
-                       size="mini"
-                       @click="delete_table(scope.row.businessSystemUuid)" />
-          </template>
-        </el-table-column>
-      </el-table>
+        <span slot="footer"
+              class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary"
+                     :readonly="isDisable"
+                     v-if="title !== '查看业务系统'"
+                     @click="save('form')">保存</el-button>
+        </span>
+      </el-dialog>
     </div>
-    <el-pagination v-show="page_list.total>0"
-                   :total="page_list.total"
-                   :current-page="page_list.currentPage"
-                   background
-                   @current-change="handleCurrentChange"
-                   @size-change="handleSizeChange"
-                   layout="total, sizes, prev, pager, next, jumper"></el-pagination>
-
-    <!-- 新增编辑 -->
-    <el-dialog :title="title"
-               class="data_res"
-               :visible.sync="dialogVisible"
-               @close="handleClose('form')"
-               width="40%">
-      <el-form :rules="rules"
-               ref="form"
-               label-width="130px"
-               :model="form"
-               :inline="false">
-
-        <el-form-item label="系统名称:"
-                      prop="businessSystemName">
-          <el-input type="text"
-                    v-model="form.businessSystemName"
-                    style="width: 80%;"
-                    :disabled="title == '查看业务系统'"
-                    :rows="4">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="系统代码:"
-                      prop="businessSystemCode">
-          <el-input style="width: 80%;"
-                    type="textarea"
-                    :disabled="title == '查看业务系统'"
-                    v-model="form.businessSystemCode"></el-input>
-        </el-form-item>
-        <el-form-item label="执行时间间隔:"
-                      prop="businessSystemEtldate">
-          <!-- <el-date-picker v-model="form.businessSystemEtldate"
-                            type="date"
-                            :disabled="title == '查看业务系统'"
-                            format="yyyy-MM-dd"
-                            value-format="yyyy-MM-dd"
-                            placeholder="选择日期"> -->
-
-          <el-input style="width: 80%;"
-                    type="input"
-                    :disabled="title == '查看业务系统'"
-                    v-model.number="form.businessSystemEtldate"></el-input>
-
-          <!-- </el-date-picker> -->
-
-        </el-form-item>
-        <!-- <el-form-item label="创建人:"
-                        prop="createUserName">
-            <el-input type="textarea"
-                      style="width: 80%;"
-                      :rows="4"
-                      :disabled="title == '查看业务系统'"
-                      v-model="form.createUserName">
-            </el-input>
-          </el-form-item> -->
-
-        <el-form-item label="文件推送路径:"
-                      prop="filePushPath">
-          <el-input type="textarea"
-                    style="width: 80%;"
-                    :rows="4"
-                    :disabled="title == '查看业务系统'"
-                    v-model="form.filePushPath">
-          </el-input>
-        </el-form-item>
-
-        <el-form-item label="数据备份路径:"
-                      prop="dataBackupPath">
-          <el-input type="textarea"
-                    style="width: 80%;"
-                    :rows="4"
-                    :disabled="title == '查看业务系统'"
-                    v-model="form.dataBackupPath">
-          </el-input>
-        </el-form-item>
-
-        <el-form-item label="数据移动目录:"
-                      prop="dataMoveDir">
-          <el-input type="textarea"
-                    style="width: 80%;"
-                    :rows="4"
-                    :disabled="title == '查看业务系统'"
-                    v-model="form.dataMoveDir">
-          </el-input>
-        </el-form-item>
-      </el-form>
-
-      <span slot="footer"
-            class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary"
-                   :disabled="isDisable"
-                   v-if="title !== '查看业务系统'"
-                   @click="save('form')">保存</el-button>
-
-      </span>
-    </el-dialog>
-
   </div>
 
 </template>
@@ -489,20 +507,7 @@ export default {
 <style scoped >
 @import url("./../../../assets/css/common.css");
 
-.data_res >>> .el-form-item {
-  margin-top: 25px !important;
-  display: flex;
-}
-.data_res >>> .el-form-item--medium .el-form-item__label {
-  text-align: right;
-  float: left !important;
-}
-.data_res >>> .el-form-item__content {
-  flex: 1;
-  margin-left: 0 !important;
-  float: left;
-}
-.data_res >>> .el-textarea .el-textarea__inner {
+.dialog >>> .el-textarea__inner {
   resize: none;
 }
 </style>

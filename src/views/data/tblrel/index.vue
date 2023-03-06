@@ -1,161 +1,189 @@
 <template>
   <div class="page-container">
-    <div class="filter-container">
-      <QueryField ref="queryfield"
-                  :form-data="queryFields"
-                  @submit="getList" />
-    </div>
-    <el-row>
-      <el-col align="right">
-        <el-button type="primary"
-                   class="oper-btn add"
-                   @click="add" />
-        <el-button type="primary"
-                   class="oper-btn edit"
-                   :disabled="selections.length !== 1"
-                   @click="update" />
-        <el-button type="primary"
-                   class="oper-btn delete"
-                   :disabled="selections.length === 0"
-                   @click="deleteRel" />
-      </el-col>
-    </el-row>
-    <el-table :key="tableKey"
-              v-loading="listLoading"
-              :data="list"
-              border
-              fit
-              highlight-current-row
-              style="width: 100%"
-              @sort-change="sortChange"
-              @selection-change="handleSelectionChange">
-      <el-table-column type="selection"
-                       width="55" />
-      <el-table-column label="表名称"
-                       prop="tbName"
-                       min-width="100px"
-                       show-overflow-tooltip />
-      <el-table-column label="字段名称"
-                       prop="colName"
-                       align="center"
-                       min-width="120px"
-                       show-overflow-tooltip />
-      <el-table-column label="从表名称"
-                       prop="relationTableName"
-                       align="center"
-                       min-width="100px"
-                       show-overflow-tooltip />
-      <el-table-column label="从表字段"
-                       prop="relationCol"
-                       align="center"
-                       min-width="120px"
-                       show-overflow-tooltip />
-      <el-table-column label="关联关系"
-                       align="center"
-                       prop="sqlGenJoinType"
-                       min-width="120px"
-                       show-overflow-tooltip
-                       :formatter="formatSqlGenJoinType" />
-    </el-table>
-    <pagination v-show="total > 0"
-                :total="total"
-                :page.sync="pageQuery.pageNo"
-                :limit.sync="pageQuery.pageSize"
-                @pagination="getList" />
+    <div class="pd20">
 
-    <el-dialog :title="textMap[dialogStatus]"
-               :visible.sync="dialogFormVisible">
-      <template>
-        <el-form ref="dataForm"
-                 :rules="rules"
-                 :model="temp"
-                 label-position="right"
-                 width="80%"
-                 class="detail-form">
-          <el-form-item prop="tableMetaUuid"
-                        label="表名称">
-            <el-input v-model="temp.tbName"
-                      :disabled="true" />
-            <el-input v-model="temp.tableMetaUuid"
-                      :disabled="true"
-                      style="display: none" />
-          </el-form-item>
-          <el-form-item prop="colMetaUuid"
-                        label="字段名称">
-            <el-row>
-              <el-col :span="22">
-                <el-input v-model="temp.colName"
-                          :disabled="true" />
-                <el-input v-model="temp.colMetaUuid"
-                          :disabled="true"
+      <div class="query-field">
+        <QueryField ref="queryfield"
+                    :form-data="queryFields"
+                    @submit="getList" />
+      </div>
+      <div class="mb10">
+        <el-row>
+          <el-col align="right">
+            <el-button type="primary"
+                       class="oper-btn add"
+                       @click="add">
+              <img src="../../../styles/image/add.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/add2.png"
+                   class="btn_icon icon2"
+                   alt="">
+              新增
+            </el-button>
+            <el-button type="primary"
+                       class="oper-btn edit"
+                       :disabled="selections.length !== 1"
+                       @click="update"><img src="../../../styles/image/edits.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/edits2.png"
+                   class="btn_icon icon2"
+                   alt="">编辑</el-button>
+            <el-button type="primary"
+                       class="oper-btn"
+                       :disabled="selections.length === 0"
+                       @click="deleteRel"><img src="../../../styles/image/delete.png"
+                   class="btn_icon icon1"
+                   alt="">
+              <img src="../../../styles/image/delete2.png"
+                   class="btn_icon icon2"
+                   alt="">删除</el-button>
+          </el-col>
+        </el-row>
+      </div>
+      <el-table :key="tableKey"
+                v-loading="listLoading"
+                :data="list"
+                highlight-current-row
+                style="width: 100%"
+                height="calc(100vh - 300px)"
+                @sort-change="sortChange"
+                @selection-change="handleSelectionChange">
+        <el-table-column type="selection"
+                         width="55" />
+        <el-table-column label="表名称"
+                         prop="tbName"
+                         min-width="150px"
+                         show-overflow-tooltip />
+        <el-table-column label="字段名称"
+                         prop="colName"
+                         min-width="150px"
+                         show-overflow-tooltip />
+        <el-table-column label="从表名称"
+                         prop="relationTableName"
+                         min-width="150px"
+                         show-overflow-tooltip />
+        <el-table-column label="从表字段"
+                         prop="relationCol"
+                         min-width="150px"
+                         show-overflow-tooltip />
+        <el-table-column label="关联关系"
+                         prop="sqlGenJoinType"
+                         min-width="100px"
+                         show-overflow-tooltip
+                         :formatter="formatSqlGenJoinType" />
+      </el-table>
+      <pagination v-show="total > 0"
+                  :total="total"
+                  :page.sync="pageQuery.pageNo"
+                  :limit.sync="pageQuery.pageSize"
+                  @pagination="getList" />
+
+      <el-dialog :title="textMap[dialogStatus]"
+                 :visible.sync="dialogFormVisible">
+        <template>
+          <el-form ref="dataForm"
+                   :rules="rules"
+                   :model="temp"
+                   label-position="right"
+                   width="90%"
+                   label-width="80px"
+                   class="detail-form">
+            <el-form-item prop="tableMetaUuid"
+                          label="表名称">
+              <el-col :span="24">
+                <el-input v-model="temp.tbName"
+                          readonly />
+                <!--              :disabled="true"-->
+                <el-input v-model="temp.tableMetaUuid"
+                          readonly
                           style="display: none" />
               </el-col>
-              <el-col :span="2">
-                <el-button @click="showDataTree(1)">选择</el-button>
+            </el-form-item>
+            <el-form-item prop="colMetaUuid"
+                          label="字段名称">
+              <el-row>
+                <el-col :span="22">
+                  <el-input v-model="temp.colName"
+                            readonly />
+                  <el-input v-model="temp.colMetaUuid"
+                            readonly
+                            style="display: none" />
+                </el-col>
+                <el-col :span="2">
+                  <el-button @click="showDataTree(1)"
+                             type="primary">选择</el-button>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item prop="relTableMeataUuid"
+                          label="从表名称">
+              <el-col :span="24">
+                <el-input v-model="temp.relationTableName"
+                          readonly />
+                <el-input v-model="temp.relTableMetaUuid"
+                          readonly
+                          style="display: none" />
               </el-col>
-            </el-row>
-          </el-form-item>
-          <el-form-item prop="relTableMeataUuid"
-                        label="从表名称">
-            <el-input v-model="temp.relationTableName"
-                      :disabled="true" />
-            <el-input v-model="temp.relTableMetaUuid"
-                      :disabled="true"
-                      style="display: none" />
-          </el-form-item>
-          <el-form-item prop="relColMetaUuid"
-                        label="从表字段">
-            <el-row>
-              <el-col :span="22">
-                <el-input v-model="temp.relationCol"
-                          :disabled="true" />
-                <el-input v-model="temp.relColMetaUuid"
-                          style="display: none"
-                          hidden
-                          :disabled="true" />
+            </el-form-item>
+            <el-form-item prop="relColMetaUuid"
+                          label="从表字段">
+              <el-row>
+                <el-col :span="22">
+                  <el-input v-model="temp.relationCol"
+                            readonly />
+                  <el-input v-model="temp.relColMetaUuid"
+                            style="display: none"
+                            hidden
+                            readonly />
+                </el-col>
+                <el-col :span="2">
+                  <el-button type="primary"
+                             @click="showDataTree(2)">选择</el-button>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item prop="sqlGenJoinType"
+                          label="关联关系">
+              <el-col :span="24">
+                <el-select v-model="temp.sqlGenJoinType"
+                           filterable
+                           placeholder="请选择关联关系"
+                           style="width: 100%">
+                  <el-option v-for="item in sqlJoinCols"
+                             :key="item.sqlGenJoinType"
+                             :label="item.sqlGenJoinName"
+                             :value="item.sqlGenJoinType"
+                             :disabled="item.disabled" />
+                </el-select>
               </el-col>
-              <el-col :span="2">
-                <el-button @click="showDataTree(2)">选择</el-button>
-              </el-col>
-            </el-row>
-          </el-form-item>
-          <el-form-item prop="sqlGenJoinType"
-                        label="关联关系">
-            <el-select v-model="temp.sqlGenJoinType"
-                       filterable
-                       placeholder="请选择关联关系"
-                       style="width: 100%">
-              <el-option v-for="item in sqlJoinCols"
-                         :key="item.sqlGenJoinType"
-                         :label="item.sqlGenJoinName"
-                         :value="item.sqlGenJoinType"
-                         :disabled="item.disabled" />
-            </el-select>
-          </el-form-item>
-        </el-form>
-      </template>
-      <div slot="footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary"
-                   @click="dialogStatus === 'create' ? createData() : updateData()">保存</el-button>
-      </div>
-      <el-dialog v-if="dataTableTree"
-                 class="abow_dialog"
-                 :destroy-on-close="true"
-                 :append-to-body="true"
-                 :visible.sync="dataTableTree"
-                 title="请选择数据表"
-                 width="600px">
-        <dataTree ref="dataTableTree"
-                  :data-user-id="dataUserId"
-                  :scene-code="sceneCode" />
+            </el-form-item>
+          </el-form>
+        </template>
         <div slot="footer">
-          <el-button @click="dataTableTree = false">取消</el-button>
+          <el-button @click="dialogFormVisible = false">取消</el-button>
           <el-button type="primary"
-                     @click="getDataTable">确定</el-button>
+                     @click="dialogStatus === 'create' ? createData() : updateData()">保存</el-button>
         </div>
+        <el-dialog v-if="dataTableTree"
+                   class="abow_dialog"
+                   :destroy-on-close="true"
+                   :append-to-body="true"
+                   :visible.sync="dataTableTree"
+                   title="请选择数据表"
+                   width="600px">
+          <dataTree ref="dataTableTree"
+                    :data-user-id="dataUserId"
+                    :scene-code="sceneCode" />
+          <div slot="footer">
+            <el-button @click="dataTableTree = false">取消</el-button>
+            <el-button type="primary"
+                       @click="getDataTable">确定</el-button>
+          </div>
+        </el-dialog>
       </el-dialog>
-    </el-dialog>
+    </div>
   </div>
 </template>
 

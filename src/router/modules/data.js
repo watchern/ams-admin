@@ -165,7 +165,7 @@ const dataRouter = {
     {
       path: "roleRes/:roleUuid",
       name: "数据角色维护-角色资源绑定",
-      component: () => import("@/views/data/role-res/index"),
+      component: () => import("@/views/data/role-res/indexnew"),
     },
     {
       path: "roleGrp/:roleUuid/:sceneCode",
@@ -196,6 +196,14 @@ const dataRouter = {
       },
     },
     {
+      path: "personalSpaceManage",
+      name: "扩容",
+      component: () => import("@/views/data/personalSpaceManage/index"),
+      meta: {
+        title: "数据管理-管理",
+      },
+    },
+    {
       path: 'dataOamResource',
       name: '数据质量规则管理维护',
       component: () => import('@/views/data/dataOamResource/index'),
@@ -204,34 +212,30 @@ const dataRouter = {
       }
     },
     {
-      path: 'dataPermissionsQuery',
+      path: 'datapermissionsquery',
       name: '数据权限查询',
       component: () => import('@/views/data/dataPermissionsQuery/index')
     },
-
-    // {
-    //   path: 'data_permission_request',
-    //   name: '数据权限申请',
-    //   component: () => import('@/views/data/data_permission_request/index')
-    // },
-
-    // {
-    //   path: 'data_permission_request_already',
-    //   name: '数据权限申请已办列表',
-    //   component: () => import('@/views/data/data_permission_request_already/index')
-    // },
     {
-      path: 'exportApproval',
+      path: 'exportapproval',
       name: '导出数据审批流程',
       component: () => import('@/views/data/exportApproval/index')
     },
     {
-      path: 'dataAccessRequest',
+      path: 'dataaccessrequest',
       name: '数据接入申请',
       component: () => import('@/views/data/dataAccessRequest/index')
     },
-
-
+    {
+      path: 'databrowsing',
+      name: '数据资源浏览',
+      component: () => import('@/views/data/dataBrowsing/index')
+    },
+    {
+      path: 'databromanage',
+      name: '数据资源管理',
+      component: () => import('@/views/data/dataBroManage/index')
+    },
   ],
 };
 export default dataRouter;

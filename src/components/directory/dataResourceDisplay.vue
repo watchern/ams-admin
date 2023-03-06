@@ -2,98 +2,108 @@
   <div class="preview_conter padding10_l">
     <!-- 查询 -->
     <div class="header_search">
-      <p>查询条件：</p>
-      <div class="input_blue"
-           @click="onclick()">
-        <div v-for="(item,index) in TagsAll"
-             :key="index"
-             class="spanbox22">
-          <span class="tagspan">{{item}}</span>
-          <i class="span_close"
-             @click="removeTag(index,item)"></i>
-        </div>
-        <!-- 输入框 -->
-        <input placeholder="请输入，按<回车>以分隔"
-               v-model="search_name"
-               @keyup.enter="addTags"
-               @keyup.delete="deleteTags"
-               :style="inputStyle"
-               class="inputTag"
-               ref="inputTag"
-               type="text" />
-      </div>
-      <el-button size="mini"
-                 type="primary"
-                 @click="search()">查询</el-button>
-      <el-button size="mini"
-                 type="info"
-                 @click="clear_search()">重置</el-button>
+      <!-- <query-tags ref="tags"
+                  @search="search"
+                  @clearSearch="clear"
+                  :dropDown="dropDown"
+                  @change="onChange"></query-tags> -->
+      <SearchCommon ref="tags"
+                    @search="search"
+                    @clearSearch="clear"
+                    :dropDown="dropDown"
+                    @change="onChange"></SearchCommon>
     </div>
     <!-- 查询 end-->
 
     <!-- 是否显示按钮 数据注册显示 -->
-    <div class="common_btn "
+    <div class="common_btn"
          v-if="isBtn == true">
       <div class="click_btn">
-        <el-button type="primary">数据资源导入导出</el-button>
+        <el-button type="primary"
+                   class="oper-btn"
+                   size="small">数据资源导入导出</el-button>
         <div class="show_btn">
           <el-button type="primary"
+                     class="oper-btn"
+                     size="small"
                      @click="down_template_dictionary()">模版下载</el-button>
           <el-button type="primary"
+                     size="small"
+                     class="oper-btn"
                      @click="Importdata_dictionary()">导入数据资源</el-button>
         </div>
       </div>
-
       <div class="click_btn">
-        <el-button type="primary">汉化信息导入导出</el-button>
+        <el-button type="primary"
+                   class="oper-btn"
+                   size="small">汉化信息导入导出</el-button>
         <div class="show_btn">
           <el-button type="primary"
+                     size="small"
+                     class="oper-btn"
                      @click="down_template_cn()">模版下载</el-button>
           <el-button type="primary"
+                     size="small"
+                     class="oper-btn"
                      @click="Important_cn()">导入汉化信息</el-button>
         </div>
       </div>
-
       <div class="click_btn">
-        <el-button type="primary">表关系导入导出</el-button>
+        <el-button type="primary"
+                   class="oper-btn"
+                   size="small">表关系导入导出</el-button>
         <div class="show_btn">
           <el-button type="primary"
+                     size="small"
+                     class="oper-btn"
                      @click="down_template_table()">模版下载</el-button>
           <el-button type="primary"
+                     size="small"
+                     class="oper-btn"
                      @click="Important_table()">导入表关系</el-button>
         </div>
       </div>
-
       <div class="click_btn">
         <el-button type="primary"
+                   class="oper-btn"
+                   size="small"
                    @click="sync_data()">同步数据结构</el-button>
       </div>
-
       <div class="click_btn">
         <el-button type="primary"
-                   @click="Recognition()">任权管理</el-button>
+                   class="oper-btn"
+                   size="small"
+                   @click="Recognition()">认权管理</el-button>
       </div>
-
       <div class="click_btn">
         <el-button type="primary"
-                   @click="on_register()">注册资产</el-button>
+                   size="small"
+                   class="oper-btn"
+                   @click="on_register()">注册资源</el-button>
       </div>
-
       <div class="click_btn">
         <el-button type="primary"
-                   @click="edit_list()">修改</el-button>
+                   size="small"
+                   class="oper-btn"
+                   @click="edit_list()"><img src="../../../src/styles/image/edits.png"
+               class="btn_icon icon1"
+               alt="">
+          <img src="../../../src/styles/image/edits2.png"
+               class="btn_icon icon2"
+               alt="">
+          修改</el-button>
       </div>
-
     </div>
 
-    <el-skeleton style="width:100%;float: left;height: calc(100vh - 280px)"
+    <el-skeleton style="width:100%;float: left;overflow: auto;"
+                 :class="isBtn == true ?'is_min_heihgt':'is_heihgt'"
                  animated
+                 class="skeleton"
                  :loading="list_loading"
                  :count="4">
       <template slot="template">
         <div class="box_ard">
           <div class="conter_list">
-
             <div class="box_ard_header">
               <el-skeleton-item variant="h3"
                                 style="width: 30%;" />
@@ -123,17 +133,18 @@
                 <el-skeleton-item variant="text"
                                   style="width: 10%;" />
               </div>
-
             </div>
           </div>
         </div>
       </template>
       <div class="list_table"
-           style="height: calc(100vh - 280px);overflow: auto;">
+           :class="isBtn == true ?'is_min_heihgt':'is_heihgt'">
         <el-table ref="multipleTable"
                   :data="list"
-                  style="width: 100%"
+                  style="width: 100%;overflow:auto"
+                  :show-overflow-tooltip='true'
                   :header-cell-class-name="headerCellClass"
+                  :header-cell-style="tableHeaderColor"
                   @selection-change="handleSelectionChange">
           <el-table-column type="selection"
                            v-if="isBtn == true"
@@ -145,257 +156,153 @@
                 <div class="conter_list">
                   <div class="box_ard_header _width"
                        @click="on_deails(scope.row)">
-                    <p class="new_num">{{scope.row.tbName}}</p>
-                    <p class="new_title">{{scope.row.chnName}}</p>
+                    <p class="new_num">{{ scope.row.tbName }}</p>
+                    <p class="new_title">{{ scope.row.chnName }}</p>
                     <span class="new_type"
-                          v-if="scope.row.tableRelationQuery">{{scope.row.tableRelationQuery.tableThemeName}}</span>
+                          v-if="scope.row.tableRelationQuery.tableThemeName">{{ scope.row.tableRelationQuery.tableThemeName }}</span>
                   </div>
-
-                  <div class="new_left padding10">
+                  <div class="new_left padding7">
                     <div class="cover">
-                      <!-- <img src="../../assets/img/msq.png"
-                           alt=""> -->
-                      <h2>{{scope.row.tableRelationQuery.tableLayeredName}}</h2>
-                      <span class="_title">{{scope.row.tableRelationQuery.businessSystemName}}</span>
+                      <h2 :class="scope.row.tableRelationQuery.businessSystemName ? 'is_title':''">
+                        {{ scope.row.tableRelationQuery.tableLayeredName }}</h2>
+                      <span class="_title"
+                            v-if="scope.row.tableRelationQuery.businessSystemName">{{ scope.row.tableRelationQuery.businessSystemName }}</span>
                     </div>
-
                   </div>
-
                   <div class="new_right">
                     <div class="table_type">
-                      <div class="one tt">表关联数量：<span
-                              v-if="scope.row.relations">{{scope.row.relations.length}}</span>
+                      <div class="one tt">表关联数量：<span v-if="scope.row.relations">{{ scope.row.relations.length }}</span>
                         <el-card class="show_tips"
-                                 v-if="scope.row.relations.length!==0">
-                          <p v-for="(its,index_relations) in scope.row.relations"
-                             :key="index_relations">{{its.relationTableName}}</p>
+                                 v-if="scope.row.relations.length !== 0">
+                          <p v-for="(its, index_relations) in scope.row.relations"
+                             :key="index_relations">
+                            {{ its.relationTableName == scope.row.tbName ? its.tbName : its.relationTableName }}</p>
                         </el-card>
-
                       </div>
-                      <div class="two tt">使用此表模型数：<span>{{scope.row.models.length}}</span>
+                      <div class="two tt">使用此表模型数：<span>{{ scope.row.models.length }}</span>
                         <el-card class="show_tips"
-                                 v-if="scope.row.models.length!==0">
-                          <p v-for="(it,index_model) in scope.row.models"
-                             :key="index_model">{{it.MODEL_NAME}}</p>
+                                 v-if="scope.row.models.length !== 0">
+                          <p v-for="(it, index_model) in scope.row.models"
+                             :key="index_model">{{ it.MODEL_NAME }}</p>
                         </el-card>
                       </div>
                     </div>
-                    <p class="text"
-                       v-if="scope.row.tableRelationQuery">描述：{{scope.row.tableRelationQuery.tableRemarks}}</p>
-                    <p class="text"
+                    <p class="text vertical"
+                       :title="scope.row.tableRelationQuery.tableRemarks"
+                       v-if="scope.row.tableRelationQuery.tableRemarks">
+                      描述：{{ scope.row.tableRelationQuery.tableRemarks }}
+                    </p>
+                    <p class="text "
                        v-else>描述：暂无</p>
-                    <p class="text"
-                       v-if="scope.row.colMeta">字段：{{scope.row.colMeta}}</p>
+                    <p class="text vertical"
+                       :title="scope.row.colMeta"
+                       v-if="scope.row.colMeta">字段：{{ scope.row.colMeta }}</p>
                     <p class="text"
                        v-else>字段：暂无</p>
-
                     <div class="data_list">
                       <!-- {{scope.row.tableRelationQuery}} -->
                       <span class="data_time"
-                            v-if="scope.row.tableRelationQuery.dataDate!=null">数据日期：{{scope.row.tableRelationQuery.dataDate}}</span>
+                            v-if="scope.row.tableRelationQuery.dataDate != null">数据日期：{{ scope.row.tableRelationQuery.dataDate }}</span>
                       <span class="data_time"
                             v-else>数据日期：暂无</span>
-                      <span class="data_number">数据量 {{scope.row.rowNum}} 条</span>
+                      <span class="data_number">数据量 {{ scope.row.rowNum }} 条</span>
                     </div>
                   </div>
                 </div>
-
               </div>
             </template>
           </el-table-column>
         </el-table>
       </div>
-
-      <div class="padding10">
-        <el-pagination @size-change="handleSizeChange"
-                       @current-change="handleCurrentChange"
-                       :page-size="this.list_data.size"
-                       background
-                       :current-page-sync="this.list_data.current"
-                       layout="total, sizes, prev, pager, next, jumper"
-                       :total="this.list_data.total"></el-pagination>
-      </div>
-
     </el-skeleton>
-
-    <!-- <el-dialog :title="title"
-               :visible.sync="common_dialog"
-               width="30%">
-
-
-      <div>
-
-      </div>
-      <span slot="footer"
-            class="dialog-footer">
-        <el-button @click="common_dialog = false">取 消</el-button>
-        <el-button type="primary"
-                   @click="common_dialog = false">确 定</el-button>
-      </span>
-    </el-dialog> -->
+    <div class="padding10_l fl _width">
+      <el-pagination @size-change="handleSizeChange"
+                     @current-change="handleCurrentChange"
+                     :page-size="list_data.size"
+                     :current-page-sync="list_data.current"
+                     layout="total, sizes, prev, pager, next, jumper"
+                     :total="list_data.total"></el-pagination>
+    </div>
 
   </div>
 </template>
 
 <script>
-// import { title } from 'process';
+// import queryTags from "@/components/queryTags";
 
 export default {
-  components: {},
+  // components: { queryTags },
   props: {
-    itemsArr: {
-      type: Array,
-      default () {
-        return []
-      }
-    },
-    limit: {
-      // 最多生成标签数量
-      type: Number,
-
-    },
     list: {
       type: Array,
       default () {
-        return []
-      }
+        return [];
+      },
     },
     list_data: {
       type: Object,
-      default: () => ({})
+      default () {
+        return {};
+      },
+    },
+    dropDown: {
+      type: Array,
+      default () {
+        return [];
+      },
     },
     isBtn: Boolean,
     list_loading: Boolean,
-
   },
-
   data () {
     return {
-      // list_loading: false,
-      form: {
-        title: '',
-      },
-      search_name: '',
-      TagsAll: [],
-      inputLength: '',
-      // common_dialog: false,//导入数据源
-      title: '',//弹窗共用标题
-      check_list: [],//多选批量的数量
+      check_list: [], //多选批量的数量
+      serachParams: [],
     };
   },
-  created () {
-    // if (this.list && this.list.length == 0) {
-    //   this.list_loading = true;
-    // } else {
-    //   this.list_loading = false;
-
-    // }
-    // this.setLoading();
-  },
-
-  watch: {
-    TagsAll () {
-      this.$emit('on-change', this.TagsAll)
-    },
-    search_name (val) {
-
-      this.inputLength = this.$refs.inputTag.value.length * 12 + 50;
-
-    },
-    itemsArr () {
-      this.TagsAll = this.itemsArr.length ? this.itemsArr : []
-    }
-  },
-  computed: {
-    inputStyle () {
-      let style = {};
-      style.width = `${this.inputLength}px`;
-      return style;
-    },
-    finall () {
-      return this.TagsAll.join(',')
-    }
-  },
-  mounted () {
-    this.TagsAll = this.itemsArr;
-  },
+  created () { },
+  watch: {},
+  computed: {},
+  mounted () { },
   methods: {
-
-    // setLoading () {
-    //   this.list_loading = true
-    //   setTimeout(() => (this.list_loading = false), 2000)
-    // },
-
-
-    // 删除标签
-    removeTag (index, item) {
-
-      this.TagsAll.splice(index, 1)
-    },
-
-    //生成标签
-    addTags () {
-      if (this.search_name) {
-        this.TagsAll.push(this.search_name);
-        this.search_name = '';
-      }
-
-    },
-    // 重置
-    clear_search () {
-      this.TagsAll = []
+    onChange (serachParams) {
+      this.serachParams = serachParams;
     },
     // 查询
     search () {
-
+      this.$emit("search", this.serachParams);
     },
-    //键盘删除键删除tag
-    deleteTags () {
-      this.TagsAll.pop()
-    },
-    onclick () {
-      this.$nextTick(() => {
-        this.$refs.inputTag.focus();
-      })
+    // 重置
+    clear (data) {
+      this.serachParams = data
     },
     // 数据字典下载模版
     down_template_dictionary () {
-      // if (this.check_list.length !== 0) {
-      this.$emit("down_template_dictionary", this.check_list)
-      // } else {
-      //   this.$message({ type: "warning", message: "请选择一条数据进行下载" });
-      // }
+      this.$emit("down_template_dictionary", this.check_list);
     },
     // 汉化模版下载
     down_template_cn () {
       if (this.check_list.length !== 0) {
-        this.$emit("down_template_cn", this.check_list)
+        this.$emit("down_template_cn", this.check_list);
       } else {
         this.$message({ type: "warning", message: "请选择一条数据进行下载" });
       }
     },
-
     // 表关系下载模版
     down_template_table () {
-      //  if (this.check_list.length !== 0) {
-      this.$emit("down_template_table", this.check_list)
-      // } else {
-      //   this.$message({ type: "warning", message: "请选择一条数据进行下载" });
-      // }
+      this.$emit("down_template_table", this.check_list);
     },
-
-    // 导入数据字典
+    // 导入数据资源
     Importdata_dictionary () {
-      // this.common_dialog = true;
-      this.$emit("Importdata_dictionary", '导入数据字典')
+      this.$emit("Importdata_dictionary", "导入数据资源");
     },
     // 导入汉化信息
     Important_cn () {
-      this.$emit("Important_cn", '导入汉化信息')
+      this.$emit("Important_cn", "导入汉化信息");
     },
     //导入 表关系
     Important_table () {
-      this.$emit("Important_table", '导入表关系')
+      this.$emit("Important_table", "导入表关系");
     },
     // 同步数据机构
     sync_data () {
@@ -410,10 +317,13 @@ export default {
       if (this.check_list.length !== 0) {
         this.$emit("Recognition", this.check_list);
       } else {
-        this.$message({ type: "warning", message: "请至少选择一条数据进行认权" });
+        this.$message({
+          type: "warning",
+          message: "请至少选择一条数据进行认权",
+        });
       }
     },
-    // 注册资产
+    // 注册资源
     on_register () {
       this.$emit("on_register", this.check_list);
     },
@@ -428,15 +338,15 @@ export default {
     // 设置条件隐藏多选
     headerCellClass (row) {
       if (row.columnIndex === 0) {
-        return 'DisableSelection'
+        return "DisableSelection";
       }
     },
-
+    // 如果list 没数据就隐藏全选
+    tableHeaderColor ({ row, column, rowIndex, columnIndex }) { },
     // 查看基本信息详情
     on_deails (data) {
       this.$emit("on_deails", data);
     },
-
     // 分页
     handleCurrentChange (val) {
       this.$emit("handleCurrentChange", val);
@@ -447,33 +357,48 @@ export default {
     },
     // 全选
     handleSelectionChange (val) {
-
-      this.check_list = val
+      this.check_list = val;
     },
-
-  }
-}
+  },
+};
 </script>
- 
 <style scoped>
+/* 有按钮 */
+.is_min_heihgt {
+  height: calc(100vh - 290px);
+}
+/* 没有按钮 */
+.is_heihgt {
+  height: calc(100vh - 260px);
+}
 /* 操作btn */
 .common_btn {
   box-sizing: border-box;
   float: left;
-  display: block;
+  display: flex;
+  justify-content: flex-end;
   width: 100%;
+  width: 100%;
+  padding-right: 20px;
+  box-sizing: border-box;
 }
+
 .common_btn >>> .el-button--medium {
   padding: 10px !important;
 }
+
 .click_btn {
-  margin: 0 10px 10px;
+  margin: 0 10px 0 0;
   float: left;
+}
+.common_btn .click_btn:last-child {
+  margin: 0 !important;
 }
 
 .click_btn {
   position: relative;
 }
+
 .show_btn {
   border-radius: 10px;
   padding: 10px;
@@ -494,6 +419,7 @@ export default {
   z-index: 99;
   transition: all 0.35s;
 }
+
 .click_btn:hover .show_btn {
   top: 65px;
   zoom: 1;
@@ -503,80 +429,11 @@ export default {
   transform: translate(-50%, -50%);
 }
 
-.preview_conter {
-}
 /* 搜索  */
 .header_search {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
-}
-.input_blue {
-  /* width: 300px; */
-  margin-right: 20px;
-  flex: 1;
-  box-sizing: border-box;
-  background-color: white;
-  border: 1px solid #dcdee2;
-  border-radius: 4px;
-  font-size: 12px;
-  text-align: left;
-  padding-left: 5px;
-  word-wrap: break-word;
-  overflow: hidden;
-}
-.spanbox22 {
-  display: inline-block;
-  font-size: 14px;
-  margin: 3px 0px 3px 4px;
-  background-color: rgb(229, 229, 229);
-  border: 1px solid #e8eaec;
-  border-radius: 3px;
-}
-.tagspan {
-  height: 24px;
-  line-height: 22px;
-  max-width: 99%;
-  position: relative;
-  display: inline-block;
-  padding-left: 8px;
-  color: #495060;
-  font-size: 14px;
-  cursor: pointer;
-  opacity: 1;
-  vertical-align: middle;
-  overflow: hidden;
-  transition: 0.25s linear;
-  color: rgb(26, 26, 26, 0.5);
-}
-.span_close {
-  padding: 0 4px 0 4px;
-  opacity: 1;
-  -webkit-filter: none;
-  filter: none;
-  color: rgb(26, 26, 26, 0.5);
-  font-weight: 200;
-}
-.span_close:after {
-  content: "\00D7";
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  /* line-height: 27px; */
-  transition: 0.3s, color 0s;
-}
-.inputTag {
-  font-size: 16px;
-  border: none;
-  box-shadow: none;
-  outline: none;
-  background-color: transitems;
-  padding: 0;
-  width: auto;
-  min-width: 250px;
-  vertical-align: top;
-  height: 32px;
-  color: #495060;
-  line-height: 32px;
 }
 /* 搜索  end*/
 
@@ -590,10 +447,11 @@ export default {
   border-radius: 15px;
   padding: 10px;
   box-sizing: border-box;
-  border: 1px solid #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   transition: 0.3s;
-  margin: 10px 0;
+  margin: 7px 0;
 }
+
 .box_ard:hover {
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 5px 12px 0 rgb(0 0 0 / 10%);
@@ -606,14 +464,17 @@ export default {
   align-items: center;
   box-sizing: border-box;
 }
+
 .conter_list {
   /* width: calc(100% - 40px); */
   width: 100%;
   box-sizing: border-box;
 }
+
 .box_ard_header {
   display: flex;
-  padding: 10px 0;
+  /* padding: 10px 0; */
+  margin-bottom: 7px;
   box-sizing: border-box;
   align-items: center;
 }
@@ -623,6 +484,7 @@ export default {
   font-size: 18px;
   cursor: pointer;
 }
+
 .new_num:hover,
 .new_title:hover {
   text-decoration: underline;
@@ -635,6 +497,7 @@ export default {
   transition: color 0.3s;
   cursor: pointer;
 }
+
 .new_title:hover {
   color: rgba(0, 0, 0, 1);
 }
@@ -650,9 +513,10 @@ export default {
 .new_left {
   float: left;
 }
+
 .new_left .cover {
-  width: 130px;
-  height: 130px;
+  width: 100px;
+  height: 100px;
   float: left;
   border-radius: 15px;
   overflow: hidden;
@@ -660,6 +524,7 @@ export default {
   position: relative;
   color: #fff;
 }
+
 /* .new_left img {
   width: 100%;
   height: 100%;
@@ -671,12 +536,16 @@ export default {
   width: 100%;
   height: 100%;
   display: flex;
-  align-items: flex-start;
   text-align: center;
+  align-items: center;
+  padding: 0 5px 0;
   justify-content: center;
-  padding: 30px 5px 0;
   font-weight: bold;
   font-size: 40px;
+}
+.is_title {
+  padding: 10px 5px 0 !important;
+  align-items: flex-start !important;
 }
 .new_left ._title {
   font-size: 16px;
@@ -701,6 +570,7 @@ export default {
   overflow: hidden;
   color: rgba(0, 0, 0, 0.5);
 }
+
 .new_left ._title:hover {
   display: flex;
   justify-content: center;
@@ -713,34 +583,46 @@ export default {
   /* background-color: rgba(255, 255, 255, 0.7); */
   box-sizing: border-box;
 }
+
 .new_right {
   width: calc(100% - 150px);
-  min-height: 140px;
+  min-height: 130px;
   float: left;
   padding: 0 20px;
   box-sizing: border-box;
 }
+
 .new_right .text {
   color: #7f7f7f;
-  margin-bottom: 10px;
-  font-size: 16px;
+  margin-bottom: 7px;
+  font-size: 14px;
 }
+.vertical {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+
 .table_type {
   display: flex;
-  line-height: 30px;
-  height: 30px;
-  margin-bottom: 15px;
+  /* line-height: 30px;
+  height: 30px; */
+  margin-bottom: 7px;
 }
+
 .table_type .tt {
   margin-right: 60px;
   position: relative;
   color: #7f7f7f;
   font-size: 16px;
 }
+
 .table_type span {
   color: #727273;
   font-weight: 700;
 }
+
 .show_tips {
   position: absolute;
   /* top: 25px; */
@@ -754,23 +636,28 @@ export default {
   -webkit-transform: scale(0);
   transform-origin: left top;
   overflow: auto;
-  height: 140px;
+  height: 115px;
   padding: 10px !important;
 }
+
 .one .show_tips {
   left: 90px;
 }
+
 .two .show_tips {
   left: 120px;
 }
+
 .show_tips >>> .el-card__body {
   padding: 0 !important;
 }
+
 .show_tips >>> .el-card__body p {
   margin-bottom: 5px;
   color: #7f7f7f;
   font-size: 16px;
 }
+
 /* 显示更多数量，模型数 */
 .table_type .tt:hover .show_tips {
   zoom: 1;
@@ -782,29 +669,35 @@ export default {
   -webkit-backdrop-filter: blur(10px);
   background-color: rgba(255, 255, 255, 0.5);
 }
+
 .table_type .show_tips p {
   transition: 0.3s;
 }
+
 .table_type .show_tips p:hover {
   color: rgba(0, 0, 0, 0.9);
   cursor: pointer;
   /* border-bottom: 1px solid #333; */
   text-decoration: underline;
 }
+
 .data_list {
 }
+
 .data_list span {
   height: 30px;
   line-height: 30px;
   padding: 4px 7px;
   box-sizing: border-box;
   margin-right: 10px;
-  font-size: 16px;
+  font-size: 14px;
 }
+
 .data_list .data_time {
   background: #d6f2ff;
   color: #63b4da;
 }
+
 .data_list .data_number {
   background: #e9ebef;
   color: #727273;
@@ -815,18 +708,27 @@ export default {
   padding: 10px;
   margin-bottom: 10px;
 }
+
+.preview_conter >>> .el-table {
+  height: 100%;
+  background: transparent !important;
+}
+
 .preview_conter >>> .el-table tbody tr:hover > td,
 .preview_conter >>> table tr:nth-child(odd) {
   background-color: transparent !important;
 }
+
 .preview_conter >>> .el-table .el-table__cell {
   padding: 0 !important;
 }
+
 .preview_conter >>> .el-table__header {
   border-top: none !important;
   margin-top: 0 !important;
   background-color: #fff;
 }
+
 .preview_conter
   >>> .el-table__header
   .el-table-column--selection
@@ -837,16 +739,41 @@ export default {
   font-size: 14px;
   margin-left: 12px;
 }
+
 /* 隐藏全选 */
 .DisableSelection {
   display: none !important;
 }
-.list_table {
-  height: calc(100vh - 300px);
-  background: #fff;
+
+.list_table >>> .el-table {
+  /* height: calc(100vh - 255px); */
+  /* background: #fff; */
+  /* border: 1px solid; */
+  /* overflow: auto; */
 }
 
+/* table 暂无数据 */
 .list_table >>> .el-table__empty-block {
-  /* height: 400px !important; */
+  /* min-height: 400px !important; */
+  height: calc(100vh - 300px) !important;
+  box-sizing: border-box;
+}
+/* 隐藏列表的多选框 */
+.list_table >>> .el-table__header-wrapper {
+  display: none;
+}
+
+.list_table >>> .el-table tr {
+  background: transparent !important;
+}
+
+/* .list_table >>> .el-table th.el-table__cell.is-leaf,
+.list_table >>> .el-table td.el-table__cell {
+  border: none !important;
+} */
+
+.skeleton >>> .el-table th.el-table__cell.is-leaf,
+.skeleton >>> .el-table td.el-table__cell {
+  border: none !important;
 }
 </style>

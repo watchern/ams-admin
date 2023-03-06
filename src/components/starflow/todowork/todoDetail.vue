@@ -309,6 +309,15 @@
                      v-if="!isRemingMessage"
              >返回</el-button
              >
+             <!--数据授权试用申请 start-->
+             <el-button
+                 class="btn_editor"
+                 type="primary"
+                 @click="giveBack"
+                 v-if="!flowSetup.done && wftype === 'dtOperatePermissionApply' && !isLast"
+             >退回</el-button
+             >
+             <!--数据授权试用申请 end-->
              <el-button
                      class="btn_editor"
                      type="primary"
@@ -452,7 +461,8 @@
         //动态组件相关
         activePage: "", // 变量
         bottomPanel: null, // 定义组件
-        selectPersonUuidList: [] //被选中的人员的id集合
+        selectPersonUuidList: [], //被选中的人员的id集合
+        wftype: "",  //工作流id，目前使用在数据使用授权申请业务上
       };
     },
     destroyed() {
@@ -706,6 +716,7 @@
           //初始化审核列表数据
           if (resp.data) {
             this.isBpm =resp.data.isBpm;
+            this.wftype = resp.data.noteMap.wftype;
             this.isLast =resp.data.noteMap.isLast;
             this.actionIdList =resp.data.noteMap.actionIdList;
             this.displayBus = true;
@@ -964,7 +975,8 @@
                   this.personItem[0].personUuid != null
           ) {
             if (!this.isLast) {
-              this.$confirm(this.textShare.submitForLastPerson(), "提示", {
+              // this.$confirm(this.textShare.submitForLastPerson(), "提示", {
+                this.$confirm("是否提交", "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 type: "warning",
@@ -1056,22 +1068,22 @@
             //预留返回主审人修改 回调方法 修改对应业务状态为草稿 使用时放开即可
             //这个地方 是 进入了返回主审修改的地方 如果返回主审人是申请人 那么就更新业务状态为草稿
             //业务页面 不写方法虽然不会影响程序正常执行 但是控制台会爆红
-            // var createPersonUuid = this.$route.params.approvalData.createPersonUuid
-            // if(this.isAllAssignment == 'checkbox'){
-            //   this.personItem.forEach((value,index)=>{
-            //     if(value.persoUuid == createPersonUuid){
-            //       var templateParam = this.$route.params.approvalData.appDataUuid
-            //       this.$refs.applyPage.updateApplyStatusBecauseBackApplication(templateParam)
-            //     }
-            //   })
-            // }else{
-            //   this.personItem.forEach((value,index)=>{
-            //     if(value.personUuid == createPersonUuid){
-            //       var templateParam = this.$route.params.approvalData.appDataUuid
-            //       this.$refs.applyPage.updateApplyStatusBecauseBackApplication(templateParam)
-            //     }
-            //   })
-            // }
+            var createPersonUuid = this.$route.params.approvalData.createPersonUuid
+            if(this.isAllAssignment == 'checkbox'){
+              this.personItem.forEach((value,index)=>{
+                if(value.persoUuid == createPersonUuid){
+                  var templateParam = this.$route.params.approvalData.appDataUuid
+                  this.$refs.applyPage.updateApplyStatusBecauseBackApplication(templateParam)
+                }
+              })
+            }else{
+              this.personItem.forEach((value,index)=>{
+                if(value.personUuid == createPersonUuid){
+                  var templateParam = this.$route.params.approvalData.appDataUuid
+                  this.$refs.applyPage.updateApplyStatusBecauseBackApplication(templateParam)
+                }
+              })
+            }
           }
         }
         // setTimeout(() => {
@@ -1481,6 +1493,38 @@
       checkedPersonList(value){
         this.selectPersonUuidList = []
         this.selectPersonUuidList.push(value)
+      },
+        //数据授权申请特殊情况下退回方法
+      giveBack(){
+
+          const h = this.$createElement
+          this.$confirm("提示", {
+              title:"提示",
+              message:h('div',[h('p','是否退回申请人?'),h('p','申请人:' + this.personItem[0].personName)]),
+              confirmButtonText: "是",
+              cancelButtonText: "否",
+              type: "warning",
+          })
+              .then(() => {
+                  this.common.startLoading();
+                  for (let i = 0; i < this.activityList.length; i++) {
+                      if (this.activityList[i].customizedType == 'isdrafter'){
+                          this.personform.activityId = this.activityList[i].activityId;
+                          this.personform.customizedType = this.activityList[i].customizedType;
+                          this.personform.transactor = this.activityList[i].personList[0].personUuid;
+                          this.personform.transitionId = this.activityList[i].transitionId;
+                      }
+                  }
+                  this.$store.dispatch("applyInfo/setStatus", "3");
+                  var templateParam = this.$route.params.approvalData.appDataUuid
+                  this.$refs.applyPage.updateApplyStatusBecauseBackApplication(templateParam);
+                  debugger;
+                  this.flowItemParam.wftype = this.wftype;
+                  this.isLast = true;
+                  this.submitFlow();
+                  this.isLast = false;
+              })
+              .catch(() => {});
       }
     },
   };
@@ -1489,7 +1533,7 @@
 </style>
 <style src="../css/form.css">
 </style>
-<style scoped >
+<style scoped>
   .admin_right_main{
     height: calc(100vh - 100px);
     overflow: auto;
@@ -1500,7 +1544,7 @@
   }
 
   .todoDetail  >>>.el-form-item__label {
-    float: left !important;
+    /*float: left !important;*/
   }
 
   .todoDetail .form_item_one >>>.el-form-item__content {

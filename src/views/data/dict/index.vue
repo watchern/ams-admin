@@ -18,7 +18,7 @@
     <el-table :key="tableKey"
               v-loading="listLoading"
               :data="list"
-              height="calc(100% - 160px)"
+              height="calc(100vh - 330px)"
               border
               fit
               highlight-current-row
@@ -32,24 +32,22 @@
                        prop="folderName"
                        show-overflow-tooltip />
       <el-table-column label="数据表名称"
-                       align="center"
                        min-width="150px"
                        prop="displayTbName"
                        show-overflow-tooltip />
       <el-table-column label="汉化表名称"
-                       align="center"
                        prop="chnName"
                        min-width="150px"
                        show-overflow-tooltip />
       <el-table-column label="创建时间"
-                       min-width="200px"
+                       width="300px"
                        align="center"
                        :formatter="formatCreateTime"
                        prop="createTime"
                        show-overflow-tooltip />
       <el-table-column label="操作"
                        align="center"
-                       min-width="150px">
+                       width="200px">
         <template slot-scope="scope">
           <el-button type="primary"
                      class="oper-btn preview"
@@ -100,18 +98,22 @@
                     style="width: 100%;overflow: auto;">
             <el-table-column label="字段名称"
                              width="250px"
-                             prop="colName" />
+                             prop="colName"
+                             show-overflow-tooltip />
             <el-table-column label="字段汉化名称"
                              width="250px"
-                             prop="chnName" />
+                             prop="chnName"
+                             show-overflow-tooltip />
             <el-table-column label="字段类型"
                              width="150px"
                              align="center"
-                             prop="dataType" />
+                             prop="dataType"
+                             show-overflow-tooltip />
             <el-table-column label="字段长度"
                              width="150px"
                              align="center"
-                             prop="dataLength" />
+                             prop="dataLength"
+                             show-overflow-tooltip />
           </el-table>
         </div>
       </template>

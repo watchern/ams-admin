@@ -1,23 +1,34 @@
 <template>
   <div class="home flex a-start flex-column j-start w100">
-    <div class="home-top flex-shrink w100" v-show="showMenu" >
+    <div class="home-top flex-shrink w100"
+         v-show="showMenu">
       <LeftMenu />
     </div>
     <div class="home-right flex1 flex a-start j-start flex-column">
       <div class="home-right-content flex1 w100 skin-home-rc">
         <router-view />
-        <el-tooltip content="系统帮助" placement="top" effect="light">
-          <i class="el-icon-question seat" @click="getHelp()" style="color:rgb(90,195,235)"></i>
+        <el-tooltip content="系统帮助"
+                    placement="top"
+                    effect="light">
+          <i class="el-icon-question seat"
+             @click="getHelp()"
+             style="color:rgb(90,195,235)"></i>
         </el-tooltip>
       </div>
-      <div v-if="isShowRightFooter" class="home-right-footer flex-shrink w100">
+      <div v-if="isShowRightFooter"
+           class="home-right-footer flex-shrink w100">
         <RightFooter />
       </div>
     </div>
-    <div class="readonlyTo" v-if="showHelpHeight" v-loading="loading">
-      <div class="readonlyChild" id="readonlyChild"></div>
-      <div @click="showHelpHeight = false" class="readonlyToX">X</div>
-      <div class="readonlyClose" @click="showHelpHeight = false"></div>
+    <div class="readonlyTo"
+         v-if="showHelpHeight"
+         v-loading="loading">
+      <div class="readonlyChild"
+           id="readonlyChild"></div>
+      <div @click="showHelpHeight = false"
+           class="readonlyToX">X</div>
+      <div class="readonlyClose"
+           @click="showHelpHeight = false"></div>
     </div>
   </div>
 </template>
@@ -39,7 +50,7 @@ export default {
     }
   },
   computed: {
-    isShowRightFooter() {
+    isShowRightFooter () {
       // const result = this.$route.meta && this.$route.meta.isShowRightFooter
       // return result || false
       if (this.$store.state.aceState.rightFooterTags.length > 0) {
@@ -49,7 +60,7 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     if (sessionStorage.getItem('store')) {
       this.$store.replaceState(Object.assign({}, this.$store.state, JSON.parse(sessionStorage.getItem('store'))))
     }
@@ -66,14 +77,14 @@ export default {
       this.loading = true
       this.showHelpHeight = true
       getHelpByMenuPath(saveData[0]).then(resp => {
-        if(resp.code === 0 && resp.data !== null){
+        if (resp.code === 0 && resp.data !== null) {
           if (resp.data.helpDocument !== '') {
             document.getElementById('readonlyChild').innerHTML = resp.data.helpDocument
           } else {
             document.getElementById('readonlyChild').innerHTML = '<p>暂无新手引导</p>'
           }
           this.loading = false
-        } else if (resp.code === 0 && resp.data === null){
+        } else if (resp.code === 0 && resp.data === null) {
           document.getElementById('readonlyChild').innerHTML = '<p>暂无新手引导</p>'
           this.loading = false
         }
@@ -84,36 +95,36 @@ export default {
 </script>
 
 <style lang="scss" scoped >
-.home{
+.home {
   height: 100vh;
-  background: #fff url('style/images/bg.png') no-repeat left center fixed;
+  background: #fff url("style/images/bg.png") no-repeat left center fixed;
   background-size: 100% 100%;
-  &-left{
+  &-left {
     height: 100vh;
   }
-  &-right{
-    height: calc(100vh - 62px);f
-    &-content{
+  &-right {
+    height: calc(100vh - 62px);
+    f &-content {
       height: calc(100% - 95px);
     }
-    &-footer{
+    &-footer {
       height: 30px;
     }
   }
 }
-.home-top{
+.home-top {
   //z-index:20201111;
-  z-index: 1999
+  z-index: 1999;
 }
-.home-right{
-  background: #eaeaea url('style/images/bg.png') no-repeat left center fixed;
+.home-right {
+  // background: #eaeaea url('style/images/bg.png') no-repeat left center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
   width: 100vw;
 }
-.home-right-content{
+.home-right-content {
   overflow: hidden;
   width: calc(100% - 24px);
   height: calc(100% - 32px);
@@ -121,7 +132,7 @@ export default {
   margin: 16px 10px;
   background: #ffffff;
 }
-.seat{
+.seat {
   position: absolute;
   right: 4px;
   bottom: 4px;
@@ -130,7 +141,7 @@ export default {
   border-radius: 100%;
   cursor: pointer;
 }
-.readonlyTo{
+.readonlyTo {
   width: 100%;
   height: 100%;
   top: 0;
@@ -139,10 +150,10 @@ export default {
   z-index: 10001;
   animation: whiteIn 0.8s forwards;
 }
-.readonlyChild{
+.readonlyChild {
   position: absolute;
   top: 0;
-  right:0;
+  right: 0;
   width: 50vw;
   height: 100%;
   background-color: #fff;
@@ -152,18 +163,22 @@ export default {
   z-index: 100;
 }
 @keyframes whiteIn {
-  0%{width:0}
-  100%{width:50vw}
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 50vw;
+  }
 }
-.readonlyClose{
+.readonlyClose {
   position: fixed;
   top: 0;
   right: 0;
   width: 100vw;
   height: 100%;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.5);
 }
-.readonlyToX{
+.readonlyToX {
   position: absolute;
   top: 10px;
   right: 10px;

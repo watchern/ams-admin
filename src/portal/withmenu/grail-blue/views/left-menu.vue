@@ -21,7 +21,7 @@
 
           <div class="top-open flex flex-row a-center">
             <div class="logo-wrap flex a-center j-center flex-row">
-              <div class="logo-Words">
+              <div class="logo-Words ">
                 {{ projectname }}
               </div>
               <!-- <img src="../style/images/color-n.png" class="logo-text" /> -->

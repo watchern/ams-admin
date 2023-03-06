@@ -15,7 +15,7 @@ export function listByPage (data) {
 export function save (data) {
   return request({
     baseURL: baseURL,
-    url: `/${controllerName}/save`,
+    url: `/${controllerName}/saveOne`,
     method: 'post',
     data
   })

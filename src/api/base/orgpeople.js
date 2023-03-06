@@ -24,3 +24,12 @@ export function findPeopleByOrgId(orgUuid) {
     params:{orgUuid:orgUuid}
   })
 }
+
+export function findPeopleByPage(param) {
+  return request({
+    baseURL: baseURL,
+    url: '/personController/findPeopleByPage',
+    method: 'get',
+    params: param
+  })
+}

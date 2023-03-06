@@ -24,6 +24,7 @@
         style="height: 62vh; overflow: auto"
         :rules="rules"
         ref="ruleForm"
+        :disabled="isDetail"
       >
         <input type="hidden" id="paramUuid" />
         <input id="inputTypeStr" type="hidden" />
@@ -488,6 +489,7 @@
             <el-button
               type="primary"
               plain
+              :disabled="isDetail"
               @click.stop="
                 data.relation == 'and'
                   ? (data.relation = 'or')
@@ -498,23 +500,27 @@
             <el-button
               type="primary"
               plain
+              :disabled="isDetail"
               size="small"
               @click.stop="addrelevancetreenode(data, node)"
               >添加组</el-button
             >
             <span
               class="relationaddicon"
+              :disabled="true"
               @click.stop="remrelevancetreenode(data, node)"
               ><i class="el-icon-error"></i
             ></span>
             <span
               class="relationaddicon"
+              :disabled="true"
               @click.stop="addrelevancetreechild(data, node)"
               ><i class="el-icon-circle-plus"></i
             ></span>
           </span>
           <span v-else>
             <el-select
+              :disabled="isDetail"
               v-model="data.value.relationFiled"
               placeholder="请选择关联字段"
             >
@@ -527,6 +533,7 @@
               </el-option>
             </el-select>
             <el-select
+              :disabled="isDetail"
               v-model="data.value.relationLogic"
               placeholder="请选择关联关系"
             >
@@ -574,11 +581,13 @@
               style="cursor: pointer !important; display: inline-block"
             >
               <el-input
+                :disabled="isDetail"
                 v-model="data.value.relationParamName"
                 placeholder="请选择被关联参数名称"
               ></el-input>
             </div>
             <span
+              :disable="true"
               class="relationaddicon"
               @click.stop="remrelevancetreenode(data, node)"
               ><i class="el-icon-error"></i
@@ -792,6 +801,7 @@ export default {
       },
       sqlRuleVisible1: true, // 控制SQL规则Popover1显隐
       sqlRuleVisible2: true, // 控制SQL规则Popover2显隐
+      isDetail:false,//详情页面不可编辑
     };
   },
   watch: {
@@ -836,6 +846,10 @@ export default {
       //反显参数数据
       this.displayParamData();
     }
+    //查看详情页面
+    if(this.operationObj.isDetail===true){
+      this.isDetail = true
+    } 
   },
   methods: {
     loadNewData2(){
@@ -1466,6 +1480,13 @@ export default {
       } else {
         //type==2
         sql = $("#optionsSql").val();
+      }
+      if(sql.trim()===""){
+        this.$message({
+          type: "info",
+          message: "请输入SQL语句",
+        });
+        return false
       }
       this.seeDataSql = sql;
       this.seeSqlDataDialog = true;
