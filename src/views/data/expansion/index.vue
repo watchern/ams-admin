@@ -490,24 +490,46 @@ export default {
               .catch((err) => { });
     },
     exportAllData () {
-      if (
-        this.personalSpaceUuidList.length == 0 ||
-        this.personalSpaceUuidList.length == undefined
-      ) {
-        this.$confirm("未选择指定数据将导出全部?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        }).then(() => {
-          exportAllPersonalSpace();
-        });
-      } else {
-        setPersonalSpaceSession(this.personalSpaceUuidList).then((res) => {
-          if (res.msg == "成功") {
-            exportAllPersonalSpace();
-          }
-        });
-      }
+      // if (
+      //   this.personalSpaceUuidList.length == 0 ||
+      //   this.personalSpaceUuidList.length == undefined
+      // ) {
+      //   this.$confirm("未选择指定数据将导出全部?", "提示", {
+      //     confirmButtonText: "确定",
+      //     cancelButtonText: "取消",
+      //     type: "warning",
+      //   }).then(() => {
+      //     exportAllPersonalSpace();
+      //   });
+      // } else {
+      //   setPersonalSpaceSession(this.personalSpaceUuidList).then((res) => {
+      //     if (res.msg == "成功") {
+      //       exportAllPersonalSpace();
+      //     }
+      //   });
+      // }
+      this.$axios
+              .post("/data/personalSpace/exportAllPersonalSpace", null, {
+                responseType: "blob",
+                headers: {
+                  "ContentType": 'application/x-www-form-urlencoded'
+                }
+              })
+              .then((res) => {
+                const filename = decodeURI(
+                        res.headers["content-disposition"].split(";")[1].split("=")[1]
+                );
+                const blob = new Blob([res.data], {
+                  type: "application/octet-stream",
+                });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.style.display = "none";
+                link.href = url;
+                link.setAttribute("download", filename);
+                document.body.appendChild(link);
+                link.click();
+              });
     },
     handleSelectionChange (val) {
       this.personalSpaceUuidList = [];
