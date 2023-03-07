@@ -16,6 +16,7 @@
                         prop="permissionApplyName"
                         class=" ">
             <el-input v-model="operatePermissionApply.permissionApplyName"
+                      placeholder="请输入申请名称"
                       style="width: 100%"
                       :disabled="addOrUpdate == 2"></el-input>
           </el-form-item>
@@ -43,6 +44,7 @@
                         class=" ">
             <div class="select">
               <el-input v-model="operatePermissionApply.permissionApplyUserName"
+                        placeholder="请选择"
                         style="width: 90%;"
                         disabled></el-input>
               <el-button type="primary"
@@ -58,6 +60,7 @@
                         class=" ">
             <div class="select">
               <el-input v-model="operatePermissionApply.dataSet"
+                        placeholder="请选择"
                         disabled
                         style="width: 90%;"></el-input>
               <el-button type="primary"
@@ -94,6 +97,8 @@
 
     <el-dialog title="数据使用人"
                :visible.sync="dialogVisible"
+               :close-on-click-modal="false"
+               :close-on-press-escape="false"
                width="50%"
                append-to-body
                center>
@@ -109,6 +114,8 @@
 
     <el-dialog title="数据集"
                :visible.sync="dialogVisible2"
+               :close-on-click-modal="false"
+               :close-on-press-escape="false"
                width="50%"
                append-to-body
                center>
@@ -464,14 +471,16 @@ export default {
     },
     //获取数据集
     getList (query) {
+      this.list=[];
+      this.total = 0;
       this.authenTypeJson = getDictList('004001')
       this.listLoading = true
       if (query) this.pageQuery.condition = query
       listByPage(this.pageQuery).then(resp => {
-        this.total = resp.data.total
         resp.data.records.forEach(item => {
           if (item.authenType === '004001002') {
             this.list.push(item);
+            this.total++;
           }
         })
         // this.list = resp.data.records
