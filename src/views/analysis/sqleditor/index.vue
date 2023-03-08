@@ -196,7 +196,7 @@
                   <el-button
                     type="primary"
                     size="small"
-                    class="oper-btn maintain btn-width-md"
+                    class="oper-btn maintain"
                   />
                 </el-tooltip>
                 <el-dropdown-menu slot="dropdown">
