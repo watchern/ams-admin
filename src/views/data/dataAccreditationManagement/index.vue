@@ -165,7 +165,7 @@
     <el-dialog title="选择责任人"
                :visible.sync="resultShareDialogIsSee"
                :before-close="close_people"
-               width="50%">
+               width="80%">
       <personTree ref="orgPeopleTree"></personTree>
       <span slot="footer"
             class="dialog-footer">

@@ -39,7 +39,7 @@
                 <el-button type="primary" @click="initPreviewGraph=false">关闭</el-button>
             </div>
         </el-dialog>
-        <el-dialog v-if="personTreeDialogVisible" title="请选择分享人员" :visible.sync="personTreeDialogVisible" :close-on-press-escape="false" :close-on-click-modal="false" width="800px">
+        <el-dialog v-if="personTreeDialogVisible" title="请选择分享人员" :visible.sync="personTreeDialogVisible" :close-on-press-escape="false" :close-on-click-modal="false" width="80%">
             <PersonTree ref="personTree" />
             <div slot="footer" class="dialog-footer">
                 <el-button @click="personTreeDialogVisible = false">取消</el-button>

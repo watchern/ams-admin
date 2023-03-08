@@ -404,7 +404,7 @@
     </el-dialog>
     <el-dialog title="请选择人员"
                :visible.sync="personDialog"
-               width="45%"
+               width="80%"
                :append-to-body="true"
                :close-on-click-modal="false">
       <personTree ref="personTree" />
