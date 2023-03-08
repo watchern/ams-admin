@@ -105,7 +105,7 @@
                 v-loading="loading"
                 border
                 style="width: 100%"
-                height="calc(100vh - 310px)"
+                height="calc(100vh - 300px)"
                 @selection-change="handleSelectionChange">
         <el-table-column type="selection"
                          width="55"> </el-table-column>
@@ -147,16 +147,22 @@
         </el-table-column>
       </el-table>
       <el-row>
-        <el-pagination @size-change="handleSizeChange"
-                       @current-change="handleCurrentChange"
-                       background
-                       :current-page="query.pageNo"
-                       :page-sizes="[5, 10, 15, 20]"
-                       :page-size="query.pageSize"
-                       layout="total, sizes, prev, pager, next, jumper"
-                       :total="dataTotal"
-                       class="pagination">
-        </el-pagination>
+<!--        <el-pagination @size-change="handleSizeChange"-->
+<!--                       @current-change="handleCurrentChange"-->
+<!--                       background-->
+<!--                       :current-page="query.pageNo"-->
+<!--                       :page-sizes="[5, 10, 15, 20]"-->
+<!--                       :page-size="query.pageSize"-->
+<!--                       layout="total, sizes, prev, pager, next, jumper"-->
+<!--                       :total="dataTotal"-->
+<!--                       class="pagination">-->
+
+        <el-pagination layout="total, sizes, prev, pager, next, jumper"
+                     @size-change="handleSizeChange"
+                     @current-change="handleCurrentChange"
+                     :total="total"
+                      ></el-pagination>
+<!--        v-show="total>0"-->
       </el-row>
 
       <!--     添加弹窗-->
@@ -394,10 +400,11 @@ export default {
       personalSpaceSelectionList: [], //被选中的数据的集合
       dialogFlowItemShow: false, //流程弹窗
       query: {
-        condition: {},
+        condition: null,
         pageNo: 1,
-        pageSize: 5,
+        pageSize: 10,
       },
+      total:0,
       flowSet: {
         opinionList: false,
         opinion: false,
@@ -444,8 +451,8 @@ export default {
 
   },
   mounted () {
-    // this.initPersonalSpaceData();
-    this.goQuery();
+    this.initPersonalSpaceData();
+    // this.goQuery();
   },
   methods: {
     onChange (serachParams) {
@@ -455,49 +462,74 @@ export default {
     goQuery(query){
       this.loading = true;
       query = this.$refs.tags.serachParams
-      if(query)this.query.condition = this.personalSpace;
+      if(query) this.query.condition = query
       queryAllPersonalSpace(this.query).then((res) => {
         this.loading = false;
+        this.total = res.data.total;
         this.personalSpaceDataList = res.data.records;
-        this.dataTotal = res.data.total;
         this.query.pageSize = res.data.size;
         this.query.pageNo = res.data.current;
+        this.clearParams();
       });
     },
-    // initPersonalSpaceData () {
-    //   var date1 = "";
-    //   date1 = this.personalSpace.personalSpaceDate.toString();
-    //   this.personalSpace.personalSpaceDate = date1;
-    //   this.query.condition = this.personalSpace;
-    //   queryAllPersonalSpace(this.query)
-    //     .then((res) => {
-    //       this.personalSpaceDataList = res.data.records;
-    //       this.dataTotal = res.data.total;
-    //       this.query.pageSize = res.data.size;
-    //       this.query.pageNo = res.data.current;
-    //       this.clearParams();
-    //     })
-    //     .catch((err) => { });
-    // },
+
+    initPersonalSpaceData () {
+      // var date1 = "";
+      // date1 = this.personalSpace.personalSpaceDate.toString();
+      // this.personalSpace.personalSpaceDate = date1;
+      this.query.condition = this.personalSpace;
+      queryAllPersonalSpace(this.query)
+              .then((res) => {
+                this.loading = false;
+                this.personalSpaceDataList = res.data.records;
+                this.total = res.data.total;
+                this.query.pageSize = res.data.size;
+                this.query.pageNo = res.data.current;
+                this.clearParams();
+              })
+              .catch((err) => { });
+    },
     exportAllData () {
-      if (
-        this.personalSpaceUuidList.length == 0 ||
-        this.personalSpaceUuidList.length == undefined
-      ) {
-        this.$confirm("未选择指定数据将导出全部?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        }).then(() => {
-          exportAllPersonalSpace();
-        });
-      } else {
-        setPersonalSpaceSession(this.personalSpaceUuidList).then((res) => {
-          if (res.msg == "成功") {
-            exportAllPersonalSpace();
-          }
-        });
-      }
+      // if (
+      //   this.personalSpaceUuidList.length == 0 ||
+      //   this.personalSpaceUuidList.length == undefined
+      // ) {
+      //   this.$confirm("未选择指定数据将导出全部?", "提示", {
+      //     confirmButtonText: "确定",
+      //     cancelButtonText: "取消",
+      //     type: "warning",
+      //   }).then(() => {
+      //     exportAllPersonalSpace();
+      //   });
+      // } else {
+      //   setPersonalSpaceSession(this.personalSpaceUuidList).then((res) => {
+      //     if (res.msg == "成功") {
+      //       exportAllPersonalSpace();
+      //     }
+      //   });
+      // }
+      this.$axios
+              .post("/data/personalSpace/exportAllPersonalSpace", null, {
+                responseType: "blob",
+                headers: {
+                  "ContentType": 'application/x-www-form-urlencoded'
+                }
+              })
+              .then((res) => {
+                const filename = decodeURI(
+                        res.headers["content-disposition"].split(";")[1].split("=")[1]
+                );
+                const blob = new Blob([res.data], {
+                  type: "application/octet-stream",
+                });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.style.display = "none";
+                link.href = url;
+                link.setAttribute("download", filename);
+                document.body.appendChild(link);
+                link.click();
+              });
     },
     handleSelectionChange (val) {
       this.personalSpaceUuidList = [];
@@ -565,7 +597,9 @@ export default {
             this.openInsertDialog = false;
             this.clearParams();
           }
-          this.initPersonalSpaceData();
+          // this.initPersonalSpaceData();
+          this.goQuery();
+
         })
         .catch((err) => {
           this.$notify.error("添加失败");
@@ -598,7 +632,8 @@ export default {
         }).then(() => {
           deletePersonalSpace(params).then((res) => {
             this.$notify.success("删除成功");
-            this.initPersonalSpaceData();
+            // this.initPersonalSpaceData();
+            this.goQuery();
           });
         });
       }
@@ -606,12 +641,14 @@ export default {
     //分页组件的页大小change事件
     handleSizeChange (val) {
       this.query.pageSize = val;
-      this.initPersonalSpaceData();
+      // this.initPersonalSpaceData();
+      this.goQuery();
     },
     //分页组件当前页change事件
     handleCurrentChange (val) {
       this.query.pageNo = val;
-      this.initPersonalSpaceData();
+      // this.initPersonalSpaceData();
+      this.goQuery();
     },
     //清空数据
     clearParams () {
@@ -685,7 +722,8 @@ export default {
         .then((res) => {
           this.$notify.success("修改成功");
           this.openUpdateDialog = false;
-          this.initPersonalSpaceData();
+          // this.initPersonalSpaceData();
+          this.goQuery();
         })
         .catch((err) => {
           this.$notify.error("修改失败");
@@ -722,7 +760,8 @@ export default {
     },
     batchUpdateForSubmit () {
       batchUpdateForHandle(this.personalSpaceSelectionList).then((res) => {
-        this.initPersonalSpaceData();
+        // this.initPersonalSpaceData();
+        this.goQuery();
       });
     }
   },

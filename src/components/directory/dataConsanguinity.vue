@@ -1207,7 +1207,7 @@ export default {
   },
   mounted() {
     getDataConsanguinity().then((resp)=>{
-      console.log(resp)
+      // console.log(resp)
       this.handleData(JSON.parse(resp.data));
     })
 
@@ -1219,6 +1219,6 @@ export default {
 .data-consanguinity{
   border: 1px solid #999;
   width: 100%;
-  height: 100%
+  height: 900px;
 }
 </style>

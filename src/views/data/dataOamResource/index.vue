@@ -69,39 +69,44 @@
     <div class="right_conter">
       <div class="pd20">
         <div class="query-field">
-          <el-form :inline="true"
-                   :model="query"
-                   label-position="bottom">
-            <el-form-item label="校验名称：">
-              <el-input v-model="query.checkName"
-                        clearable />
-            </el-form-item>
+          <SearchCommon ref="tags"
+                        @search="search"
+                        @clearSearch="clearAll"
+                        :dropDown="dropDown"
+                        @change="onChange"></SearchCommon>
+<!--          <el-form :inline="true"-->
+<!--                   :model="query"-->
+<!--                   label-position="bottom">-->
+<!--            <el-form-item label="校验名称：">-->
+<!--              <el-input v-model="query.checkName"-->
+<!--                        clearable />-->
+<!--            </el-form-item>-->
 
-            <el-form-item label="校验SQL：">
-              <el-input v-model="query.serviceDescription"
-                        clearable />
-            </el-form-item>
+<!--            <el-form-item label="校验SQL：">-->
+<!--              <el-input v-model="query.serviceDescription"-->
+<!--                        clearable />-->
+<!--            </el-form-item>-->
 
-            <el-form-item label="规则类型：">
-              <el-select v-model="query.ruleType"
-                         clearable
-                         @change="selectdata_type"
-                         placeholder="请选择规则类型">
-                <el-option v-for="item in options_type_list"
-                           :key="item.value"
-                           :label="item.label"
-                           :value="item.value" />
-              </el-select>
-            </el-form-item>
+<!--            <el-form-item label="规则类型：">-->
+<!--              <el-select v-model="query.ruleType"-->
+<!--                         clearable-->
+<!--                         @change="selectdata_type"-->
+<!--                         placeholder="请选择规则类型">-->
+<!--                <el-option v-for="item in options_type_list"-->
+<!--                           :key="item.value"-->
+<!--                           :label="item.label"-->
+<!--                           :value="item.value" />-->
+<!--              </el-select>-->
+<!--            </el-form-item>-->
 
-            <el-form-item>
-              <el-button type="primary"
-                         @keyup.enter.native="search"
-                         @click="search()">查询</el-button>
-              <el-button type="primary"
-                         @click="clearAll()">清空</el-button>
-            </el-form-item>
-          </el-form>
+<!--            <el-form-item>-->
+<!--              <el-button type="primary"-->
+<!--                         @keyup.enter.native="search"-->
+<!--                         @click="search()">查询</el-button>-->
+<!--              <el-button type="primary"-->
+<!--                         @click="clearAll()">清空</el-button>-->
+<!--            </el-form-item>-->
+<!--          </el-form>-->
         </div>
         <div class="mb10">
           <el-row>
@@ -120,12 +125,12 @@
         </div>
 
         <el-table v-loading="listLoading"
-                  :data="page_list.records"
+                  :data="page_list"
                   border
                   fit
                   highlight-current-row
                   style="width: 100%; overflow: auto"
-                  height="calc(100vh - 300px)"
+                  height="calc(100vh - 280px)"
                   @selection-change="handleSelectionChange">
           <!-- <el-table-column type="selection"
                          width="55" /> -->
@@ -197,9 +202,8 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination v-show="page_list.total > 0"
-                       :total="page_list.total"
-                       :current-page="page_list.currentPage"
+        <el-pagination v-show="total > 0"
+                       :total="total"
                        @current-change="handleCurrentChange"
                        @size-change="handleSizeChange"
                        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
@@ -315,12 +319,35 @@ export default {
   /*树end*/
   data () {
     return {
+    dropDown:[
+        {
+          code: 'checkName',
+          name: '校验名称',
+          value: []
+        },
+        {
+          code: 'serviceDescription',
+          name: '校验SQL',
+          value: []
+        },
+        {
+          code: 'ruleType',
+          name: '规则类型',
+          value: []
+        }
+      ],
       labelPosition:"top",
       query: {
         checkName: "", // 规则名称
         serviceDescription: "", // 业务描述
         ruleType: "",
         parentUuid: "", //父节点id
+        // pageNo: 1,
+        // pageSize: 10,
+      },
+      total:0,
+      pageQuery: {
+        condition: null,
         pageNo: 1,
         pageSize: 10,
       },
@@ -424,10 +451,79 @@ export default {
       this.query.implementationLogic = "";
       this.query.ruleType = "";
     },
-    search () {
-      this.query.pageNo = 1;
-      this.getList(); //刷新列表
+
+    search (queryData) {
+      queryData = this.$refs.tags.serachParams;
+      // this.listLoading = true;
+      if (queryData) this.query = queryData;
+      this.getList();
+
+      // page_list_data(this.pageQuery).then((res) => {
+      //   this.page_list = res.data.records;
+      //   this.listLoading = false;
+      //   this.total = res.data.total;
+      // });
+
+
+      // this.listLoading = true;
+      // let params = {
+      //   condition: {
+      //     checkName: "", //校验名称
+      //     serviceDescription: "", //校验SQL
+      //     ruleType: "", //规则类型
+      //   },
+      //   // pageNo: this.query.pageNo,
+      //   // pageSize: this.query.pageSize,
+      // };
+      // page_list_data(params).then((res) => {
+      //   this.page_list.records = res.data;
+      //   this.listLoading = false;
+      // });
+      // console.log(queryData,"sadadasdasdasd")
+      // this.query.pageNo = 1;
+      // this.getList(); //刷新列表
+      // condition: {
+      //   checkName: this.query.checkName, //校验名称
+      //           serviceDescription: this.query.serviceDescription, //校验SQL
+      //           ruleType: this.query.ruleType, //规则类型
+      //           parentUuid: this.query.parentUuid, //父节点id
+      // },
+      // //
+      // // var checkNameList = []
+      // // var serviceDescriptionList = []
+      // // var ruleTypeList = []
+      // // debugger;
+      // // queryData.forEach((searchParams,index)=>{
+      // //   if(searchParams.code == 'checkName'){
+      // //     checkNameList.push(searchParams.value)
+      // //   }
+      // //   if(searchParams.code == 'serviceDescription'){
+      // //     serviceDescriptionList.push(searchParams.value)
+      // //   }
+      // //   if(searchParams.code == 'ruleType'){
+      // //     ruleTypeList.push(searchParams.value)
+      // //   }
+      // // })
+      // // console.log(checkNameList)
+      // // console.log(serviceDescriptionList)
+      // // console.log(ruleTypeList)
+      // // let params = {
+      // //   condition: {
+      // //     checkName: checkNameList.length >= 2 ? checkNameList.join(',') : checkNameList[0], //校验名称
+      // //     serviceDescription: serviceDescriptionList.length >= 2 ? serviceDescriptionList.join(',') :serviceDescriptionList[0] , //校验SQL
+      // //     ruleType: ruleTypeList.length >=2 ? ruleTypeList.join(',') : ruleTypeList[0], //规则类型
+      // //   },
+      // //   pageNo: this.query.pageNo,
+      // //   pageSize: this.query.pageSize,
+      // // };
+      // this.listLoading = true;
+      // page_list_data(params).then((res) => {
+      //   this.page_list = res.data;
+      //   this.listLoading = false;
+      // });
+
     },
+
     // 刷新列表
     getList () {
       this.listLoading = true;
@@ -438,11 +534,12 @@ export default {
           ruleType: this.query.ruleType, //规则类型
           parentUuid: this.query.parentUuid, //父节点id
         },
-        pageNo: this.query.pageNo,
-        pageSize: this.query.pageSize,
+        pageNo: this.pageQuery.pageNo,
+        pageSize: this.pageQuery.pageSize,
       };
       page_list_data(params).then((res) => {
-        this.page_list = res.data;
+        this.page_list = res.data.records;
+        this.total = res.data.total;
         this.listLoading = false;
       });
     },
@@ -452,12 +549,12 @@ export default {
     },
     // 分页
     handleCurrentChange (val) {
-      this.query.pageNo = val;
+      this.pageQuery.pageNo = val;
       this.getList();
     },
     // 每页多少条
     handleSizeChange (val) {
-      this.query.pageSize = val;
+      this.pageQuery.pageSize = val;
       this.getList();
     },
     // 详情

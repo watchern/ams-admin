@@ -1055,7 +1055,7 @@ export default {
               this.$emit("query_data"); //刷新页面
               this.table_list(this.tableMetaUuid);
               //资源目录修改同步修改授权资源目录
-              moveFolder4Authority(this.tableMetaUuid, this.dataSource);
+              // moveFolder4Authority(this.tableMetaUuid, this.dataSource);
             } else {
               this.$message({
                 type: "error",

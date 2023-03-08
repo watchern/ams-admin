@@ -223,15 +223,11 @@
                      layout="total, sizes, prev, pager, next, jumper"
                      :total="list_data.total"></el-pagination>
     </div>
-
   </div>
 </template>
 
 <script>
-// import queryTags from "@/components/queryTags";
-
 export default {
-  // components: { queryTags },
   props: {
     list: {
       type: Array,
