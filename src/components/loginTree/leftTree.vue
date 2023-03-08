@@ -16,10 +16,10 @@
                    :disabled="tabclick"
                    v-if="isShowXTZTFC"
                    name="2"></el-tab-pane>
-      <el-tab-pane label="个人空间"
+      <!-- <el-tab-pane label="个人空间"
                    :disabled="tabclick"
                    v-if="isShowPersonSpaceTab"
-                   name="3"></el-tab-pane>
+                   name="3"></el-tab-pane> -->
     </el-tabs>
     <div class="padding10">
       <el-input v-model="filterText2"
@@ -1205,7 +1205,7 @@ export default {
 }
 
 .left_tree_style >>> .el-tabs__item {
-  width: 25%;
+  /* width: 25%; */
   text-align: center;
 }
 

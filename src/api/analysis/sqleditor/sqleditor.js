@@ -282,10 +282,10 @@ export function initDragAndDrop() {
 
   // 单击侧边按钮收起左边栏
   function tree_zy_zhan() {
-    var overWidth = document.getElementById('container').clientWidth - 229
+    var overWidth = document.getElementById('container').clientWidth - 270
     if (tree_shuju == false && tree_canshu == false && tree_sql == false && tree_bj == false) {
-      $('#leftPart').stop(true).animate({ 'width': 203 }, 300)
-      $('#vertical').delay(300).fadeIn(100).css('left', 13.8 + '%')
+      $('#leftPart').stop(true).animate({ 'width': 250 }, 300)
+      $('#vertical').delay(300).fadeIn(100).css('left', 18 + '%')
       $('#rightPart').stop(true).animate({ 'width': overWidth + 'px', 'left': 0 }, 300)
       $('#sidebar').css('border-right', 1 + 'px' + ' solid' + ' rgb(206,208,212)')
     }
