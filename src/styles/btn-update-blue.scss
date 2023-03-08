@@ -284,7 +284,7 @@
   content:'\e608  启用'!important;
 }
 .oper-btn.start:after{
-  content:'\e608  运行'!important;
+  content:'\e608 '!important;
 }
 .oper-btn.start-failed:after{
   content:'\e608  运行失败任务'!important;
@@ -346,7 +346,7 @@
 }
 
 .oper-btn.maintain:after {
-  content: '\e69f  工具' !important;
+  content: '\e69f ' !important;
 }
 
 .oper-btn.auth:after {
@@ -365,7 +365,7 @@
 }
 
 .oper-btn.draft:after {
-  content: '\e67e  草稿' !important;
+  content: '\e67e ' !important;
 }
 
 .oper-btn.draft-none:after {
@@ -383,11 +383,11 @@
   content:'\e665  自定义字段'!important;
 }
 .oper-btn.sqlcheck:after{
-  content:'\e613  校验'!important;
+  content:'\e613 '!important;
 }
 
 .oper-btn.format:after{
-  content:'\e600  格式化'!important;
+  content:'\e600  '!important;
 }
 
 .oper-btn.commit:after{
