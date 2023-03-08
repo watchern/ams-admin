@@ -20,11 +20,8 @@
 
       <div class="rightList">
         <!-- 基本信息 -->
-        <div class="information rightList_child"
-             id="id0">
-          <h2 :class="{
-              isActive: navgatorIndex == 0,
-            }">
+        <div class="information rightList_child" id="id0">
+          <h2 :class="{ isActive: navgatorIndex == 0 }">
             基本信息
           </h2>
           <div class="information_form padding10">
@@ -43,9 +40,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="24">
-                  <div :class="
-                  isDisable_input == true ? 'is_disabled' : 'yes_disabled'
-                ">
+                  <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
                     <el-form-item label="表中文名："
                                   prop="chnName">
                       <el-input v-model="form.chnName"
@@ -76,9 +71,7 @@
                   </div>
                 </el-col>
                 <el-col :span="11" :offset="2">
-                  <div :class="
-                    isDisable_input == true ? 'is_disabled' : 'yes_disabled'
-                  ">
+                  <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
                     <el-form-item label="资源类型："
                                   prop="tableType">
                       <el-select v-model="form.tableType"
@@ -93,7 +86,6 @@
                     </el-form-item>
                   </div>
                 </el-col>
-
                 <el-col :span="11">
                   <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
                     <el-form-item label="资源主题："
@@ -111,7 +103,6 @@
                     </el-form-item>
                   </div>
                 </el-col>
-
                 <el-col :span="11" :offset="2">
                   <el-form-item label="资源分层："
                                 prop="tableLayeredId">
@@ -154,7 +145,6 @@
                     </el-select>
                   </el-form-item>
                 </el-col>
-
                 <el-col :span="11">
                   <el-form-item label="数据日期：">
                     <el-date-picker format="yyyy-MM-dd"
@@ -190,8 +180,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="11" :offset="2">
-                  <div class="son_people is_disabled"
-                       :class="isDisable_input == true ? 'is_width':''">
+                  <div class="son_people is_disabled" :class="isDisable_input == true ? 'is_width':''">
                     <el-form-item label="负责人：">
                       <el-input type="textarea"
                                 :disabled="disabled"
@@ -208,7 +197,6 @@
                     </el-form-item>
                   </div>
                 </el-col>
-
                 <el-col :span="11">
                   <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
                     <el-form-item label="表分区："
@@ -259,8 +247,7 @@
                 <el-col :span="24">
                   <el-form-item label="表热度：">
                     <ul class="Heat_ul _width">
-                      <li v-for="(it, i) in Heat"
-                          :key="i">
+                      <li v-for="(it, i) in Heat" :key="i">
                         <p>
                           {{ it.name }}
                         </p>
