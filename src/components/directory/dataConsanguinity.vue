@@ -1207,7 +1207,7 @@ export default {
   },
   mounted() {
     getDataConsanguinity().then((resp)=>{
-      console.log(resp)
+      // console.log(resp)
       this.handleData(JSON.parse(resp.data));
     })
 
