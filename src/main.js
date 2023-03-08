@@ -50,7 +50,7 @@ Vue.use(components)
 // Ace end
 
 
-// require(`@/styles/index-${process.env.VUE_APP_BASE_SKIN}.scss`);
+require(`@/styles/index-${process.env.VUE_APP_BASE_SKIN}.scss`);
 import './styles/element-variables-new.scss'//新修改皮肤
 import App from './App'
 import store from './store'

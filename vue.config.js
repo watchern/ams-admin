@@ -137,6 +137,14 @@ module.exports = {
           '^/nlp/': '/'
         },
       },
+      '/applydatasource/': {
+        timeout: 1800000,
+        target: process.env.AMS_APPLYDATASOURCE,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/applydatasource/': '/'
+        },
+      },
       // ,
       // '/sess': {
       //   timeout: 1800000,
