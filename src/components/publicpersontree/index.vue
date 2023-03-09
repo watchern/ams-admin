@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-container class="app-container">
-      <el-aside class="tree-side">
+      <el-aside class="tree-side" style="height: 515px; overflow: auto;">
         <el-input v-model="filterText"
                   placeholder="输入关键字进行过滤"
                   class="tree-search" />
@@ -14,7 +14,7 @@
       <div class="padding10_l child_table">
         <el-table v-loading="listLoading"
                   ref="multipleTable"
-                  height="calc(100vh - 400px)"
+                  height="480px"
                   style="width: 100%;"
                   :data="list"
                   border
@@ -243,12 +243,13 @@ export default {
   /* height: 330px; */
 }
 .child_table {
-  width: calc(100% - 300px);
+  /*width: calc(100% - 300px);*/
+  flex:1;
   box-sizing: border-box;
 }
-/* .el-aside,
-.child_table >>> .el-table {
-  height: 350px;
-  overflow: auto;
-} */
+/*.tree-side,*/
+/*.child_table >>> .el-table {*/
+/*  height: 350px;*/
+/*  overflow: auto;*/
+/*}*/
 </style>

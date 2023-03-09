@@ -194,7 +194,7 @@
     <div>
       <el-dialog title="人员选择"
                  :visible.sync="openDataShareDialog"
-                 width="60%">
+                 width="80%">
         <!--                下面是表信息-->
         <personTree ref="personTreePage"></personTree>
         <el-row type="flex"

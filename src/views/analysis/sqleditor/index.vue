@@ -13,7 +13,7 @@
           <img :src="canshu" /><span>参数</span>
         </div>
         <div class="unfold-sql"><img :src="sql" /><span>函数</span></div>
-        <div class="unfold-draft"><img :src="draft" /><span>SQL草稿</span></div>
+        <!-- <div class="unfold-draft"><img :src="draft" /><span>SQL草稿</span></div> -->
         <!-- <div class="unfold-bj">
           <img :src="sql" /><span>标记</span>
         </div> -->
@@ -89,8 +89,8 @@
       <div id="rightPart" style="height: 100%">
         <div id="sqlEditorDiv" class="sql-editor-div">
           <el-row type="flex" class="row-bg">
-            <el-col>
-              <span>数据量：</span>
+            <el-col style="display: flex">
+              <!-- <span>数据量：</span> -->
               <el-select
                 v-model="resultDataMaxCount"
                 style="font-weight: bolder; width: 100px"
@@ -129,28 +129,41 @@
                   @click="executeSQL"
                 />
               </el-tooltip>
-
-              <el-button
-                type="primary"
-                size="small"
-                class="oper-btn"
-                @click="openSqlDraftList"
-                style="width: 120px"
-                >SQL草稿管理</el-button
+              <el-tooltip
+                class="item"
+                effect="dark"
+                content="打开sql草稿"
+                placement="top"
               >
+                <el-button
+                  type="primary"
+                  size="small"
+                  class="oper-btn"
+                  @click="openSqlDraftList"
+                  style="width: 120px"
+                  ><i class="el-icon-document-copy"></i
+                ></el-button>
+              </el-tooltip>
               <!-- <el-button type="primary"
                          size="small"
                          class="oper-btn"
                          @click="assistSqlEditor"
                          style="width: 120px">辅助SQL编辑器</el-button> -->
-              <el-button
-                type="primary"
-                size="small"
-                class="oper-btn"
-                @click="openNewEditor"
-                style="width: 150px"
-                >打开新SQL编辑器</el-button
+              <el-tooltip
+                class="item"
+                effect="dark"
+                content="打开新SQL编辑器"
+                placement="top"
               >
+                <el-button
+                  type="primary"
+                  size="small"
+                  class="oper-btn"
+                  @click="openNewEditor"
+                >
+                  <i class="el-icon-s-open"></i
+                ></el-button>
+              </el-tooltip>
               <el-tooltip
                 class="item"
                 effect="dark"
@@ -2154,7 +2167,7 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 #tableSearchImg,
 #paramSearchImg,
 #funSearchImg {
@@ -2273,7 +2286,7 @@ export default {
 
 #horizontal {
   position: absolute;
-  top: 40%;
+  top: 70%;
   right: 0;
   /* width: 100vh; */
   width: 100%;
@@ -2321,7 +2334,7 @@ export default {
 .sql-editor-div {
   padding: 0px;
   width: 100%;
-  height: 37%;
+  height: 70%;
 }
 
 .data-show {
@@ -2412,14 +2425,20 @@ div.rightMenu ul li:hover {
   overflow-x: hidden;
 }
 .pointOutBox {
-  position: relative;
+  position: absolute;
+  right: 10px;
   display: inline-block;
+  margin-top: 10px;
 }
 .pointOutTitle {
   position: absolute;
   right: 0;
   width: 900px;
-  height: 200px;
+  height: 250px;
   z-index: 20;
+  overflow: auto;
+}
+::v-deep .oper-btn span {
+  display: inline-block !important;
 }
 </style>

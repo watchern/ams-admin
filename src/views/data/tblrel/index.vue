@@ -175,7 +175,8 @@
                    width="600px">
           <dataTree ref="dataTableTree"
                     :data-user-id="dataUserId"
-                    :scene-code="sceneCode" />
+                    :scene-code="sceneCode"
+                    :is_progress="isProcess"/>
           <div slot="footer">
             <el-button @click="dataTableTree = false">取消</el-button>
             <el-button type="primary"
@@ -223,6 +224,7 @@ export default {
         relColMetaUuid: "",
       },
       sceneCode: "auditor",
+      isProcess: false,
       dataUserId: this.$store.getters.personcode,
       selections: [],
       dataTableTree: false,

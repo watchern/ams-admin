@@ -99,7 +99,7 @@
                :visible.sync="dialogVisible"
                :close-on-click-modal="false"
                :close-on-press-escape="false"
-               width="50%"
+               width="80%"
                append-to-body
                center>
       <person-tree ref="personTree"></person-tree>

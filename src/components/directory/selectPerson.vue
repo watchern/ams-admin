@@ -3,7 +3,7 @@
     <el-dialog v-bind="$attrs" v-on="$listeners" width="60%" top="5vh" @opened="onOpen" @close="onClose">
       <div>
         <div class="flex" style="overflow: hidden;">
-          <div class="padding10" style="width: 25%;">
+          <div class="padding10" style="width: 25%;height: 580px;overflow: auto;">
             <el-tree style="height: calc(70hv);overflow-y: auto;" :data="data" :props="defaultProps" @node-click="handleNodeClick" :default-expanded-keys="defaultExpandKeys" node-key="id" :expand-on-click-node="false" :highlight-current="true" ref="orgTree">
               <span class="custom-label-tree-node" slot-scope="{node, data}">
                 <div v-if="data.children.length > 0">
@@ -30,7 +30,7 @@
               <el-input placeholder="请输入姓名进行过滤" v-model="queryPeopleInfo.name" style="width: 320px; margin-bottom: 10px;" clearable></el-input>
               <el-button class="select-btn" size="small" type="primary" @click="filterData">查询</el-button>
             </div>
-            <el-table v-loading="tableLoading" ref="peopleTable" :data="dataList" style="width: 100%;" height="calc(55vh)" row-key="personUuid" @selection-change="handleSelectPeople">
+            <el-table v-loading="tableLoading" ref="peopleTable" :data="dataList" style="width: 100%;" height="480px" row-key="personUuid" @selection-change="handleSelectPeople">
               <el-table-column type="selection" :reserve-selection="true" width="50" align="center"></el-table-column>
               <el-table-column label="序号" type="index" width="50" align="center"></el-table-column>
               <el-table-column label="人员名称" align="center" prop="cnname"></el-table-column>
