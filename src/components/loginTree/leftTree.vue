@@ -28,7 +28,7 @@
     </div>
     <!-- 数据源 -->
     <div class="padding10 dataSource"
-         v-if="this.loadLeftTreeType != '4' && this.loadLeftTreeType != '3'">
+         v-if="this.loadLeftTreeType != '4' && this.loadLeftTreeType != '3' && this.loadLeftTreeType != '1'">
       <el-form :inline="true"
                :model="query"
                label-position="bottom">
