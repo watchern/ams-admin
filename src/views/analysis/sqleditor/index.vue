@@ -141,11 +141,8 @@
                   class="oper-btn"
                   @click="openSqlDraftList"
                   style="width: 120px"
-                  ><img
-                    src="../../../assets/img/roughDraft.png"
-                    style="margin: auto; display: "
-                    alt=""
-                /></el-button>
+                  ><i class="el-icon-document-copy"></i
+                ></el-button>
               </el-tooltip>
               <!-- <el-button type="primary"
                          size="small"
@@ -163,12 +160,9 @@
                   size="small"
                   class="oper-btn"
                   @click="openNewEditor"
-                  style="width: 150px"
-                  ><img
-                    src="../../../assets/img/open.png"
-                    style="margin: auto; display: "
-                    alt=""
-                /></el-button>
+                >
+                  <i class="el-icon-s-open"></i
+                ></el-button>
               </el-tooltip>
               <el-tooltip
                 class="item"
@@ -2173,7 +2167,7 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 #tableSearchImg,
 #paramSearchImg,
 #funSearchImg {
@@ -2292,7 +2286,7 @@ export default {
 
 #horizontal {
   position: absolute;
-  top: 40%;
+  top: 70%;
   right: 0;
   /* width: 100vh; */
   width: 100%;
@@ -2340,7 +2334,7 @@ export default {
 .sql-editor-div {
   padding: 0px;
   width: 100%;
-  height: 37%;
+  height: 70%;
 }
 
 .data-show {
@@ -2431,16 +2425,20 @@ div.rightMenu ul li:hover {
   overflow-x: hidden;
 }
 .pointOutBox {
-  position: relative;
+  position: absolute;
+  right: 10px;
   display: inline-block;
-  margin-top:10px
+  margin-top: 10px;
 }
 .pointOutTitle {
   position: absolute;
   right: 0;
-  width: 700px;
-  height: 200px;
+  width: 900px;
+  height: 250px;
   z-index: 20;
   overflow: auto;
+}
+::v-deep .oper-btn span {
+  display: inline-block !important;
 }
 </style>
