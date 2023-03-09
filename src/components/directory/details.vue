@@ -982,6 +982,9 @@ export default {
         this.form.tableRelationQueryUuid = _data.tableRelationQuery.tableRelationQueryUuid;
         this.table_visible_form.tableMetaUuid = _data.tableMetaUuid//主表从表新增用
         this.$refs.tableLines.init(1); // 初始化表关联关系
+        this.$nextTick(()=>{
+          this.$refs.form.clearValidate();
+        })
       });
     },
     // 选择标签

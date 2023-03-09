@@ -102,36 +102,80 @@
                  :loading="list_loading"
                  :count="4">
       <template slot="template">
-        <div class="box_ard">
-          <div class="conter_list">
-            <div class="box_ard_header">
-              <el-skeleton-item variant="h3"
-                                style="width: 30%;" />
+<!--        <div class="box_ard">-->
+<!--          <div class="conter_list">-->
+<!--            <div class="box_ard_header">-->
+<!--              <el-skeleton-item variant="h3"-->
+<!--                                style="width: 30%;" />-->
+<!--            </div>-->
+<!--            <div class="new_left">-->
+<!--              <el-skeleton-item variant="image"-->
+<!--                                style="width: 130px; height: 130px;" />-->
+<!--            </div>-->
+<!--            <div class="new_right">-->
+<!--              <div class="table_type">-->
+<!--                <el-skeleton-item variant="h3"-->
+<!--                                  style="width: 10%;margin-right: 60px;" />-->
+<!--                <el-skeleton-item variant="h3"-->
+<!--                                  style="width: 10%;" />-->
+<!--              </div>-->
+<!--              <div class="text">-->
+<!--                <el-skeleton-item variant="h3"-->
+<!--                                  style="width: 30%;" />-->
+<!--                <el-skeleton-item variant="text"-->
+<!--                                  style="margin-right: 16px;" />-->
+<!--                <el-skeleton-item variant="text"-->
+<!--                                  style="width: 30%;" />-->
+<!--              </div>-->
+<!--              <div class="data_list">-->
+<!--                <el-skeleton-item variant="text"-->
+<!--                                  style="width: 10%;margin-right:20px" />-->
+<!--                <el-skeleton-item variant="text"-->
+<!--                                  style="width: 10%;" />-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+        <div class="table-list-new">
+          <div class="tln-header">
+            <div class="tlnh-type">
+              <el-skeleton-item
+                  variant="image"
+                  style="width: 40px; height: 40px;"
+              />
             </div>
-            <div class="new_left">
-              <el-skeleton-item variant="image"
-                                style="width: 130px; height: 130px;" />
+            <div class="tlnh-title">
+              <el-skeleton-item variant="h3" style="width: 150px" />
             </div>
-            <div class="new_right">
-              <div class="table_type">
+          </div>
+          <div class="tln-msg">
+            <div class="tlnh-type"></div>
+            <div  class="tlnm-right">
+              <div class="tln-top">
+                <p class="new_num">
+                    <el-skeleton-item variant="h3"
+                                      style="width: 130px;margin-right: 10px;" />
+                </p>
+                <p class="new_title">
+                  <el-skeleton-item variant="h3"
+                                    style="width: 130px;margin-right: 10px;" />
+                </p>
                 <el-skeleton-item variant="h3"
-                                  style="width: 10%;margin-right: 60px;" />
-                <el-skeleton-item variant="h3"
-                                  style="width: 10%;" />
+                                  style="width: 40px;" />
               </div>
-              <div class="text">
-                <el-skeleton-item variant="h3"
-                                  style="width: 30%;" />
-                <el-skeleton-item variant="text"
-                                  style="margin-right: 16px;" />
-                <el-skeleton-item variant="text"
-                                  style="width: 30%;" />
-              </div>
-              <div class="data_list">
-                <el-skeleton-item variant="text"
-                                  style="width: 10%;margin-right:20px" />
-                <el-skeleton-item variant="text"
-                                  style="width: 10%;" />
+              <div class="tln-middle">
+                <div class="text">
+                  <el-skeleton-item variant="p"
+                                    style="width: 100%" />
+                </div>
+                <div class="text">
+                  <el-skeleton-item variant="p"
+                                    style="width: 100%" />
+                </div>
+                <div class="text">
+                  <el-skeleton-item variant="p"
+                                    style="width: 100%" />
+                </div>
               </div>
             </div>
           </div>
@@ -139,7 +183,7 @@
       </template>
       <div class="list_table"
            :class="isBtn == true ?'is_min_heihgt':'is_heihgt'">
-          <div class="table-list-new" v-for="(item,index) in list">
+        <div class="table-list-new" v-for="item in list">
           <div class="tln-header">
             <div class="tlnh-type">{{ item.tableRelationQuery.tableLayeredName||'null'}}</div>
             <div class="tlnh-title" @click="on_deails(item)">{{ item.tableRelationQuery.businessSystemName||'null' }}</div>
