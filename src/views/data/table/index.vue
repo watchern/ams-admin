@@ -4,8 +4,8 @@
     <!-- left_conter -->
     <div class="left_conter">
       <LeftTrees ref="tree_left"
-                 @details='Details'
-                 @queryList='query_list'
+                 @details="Details"
+                 @queryList="query_list"
                  @edit_list="Edit_list"
                  @delete_list="delete_list"></LeftTrees>
     </div>

@@ -87,34 +87,34 @@
     >
       <!-- 系统 主题 分层  目录-->
       <div class="tree-containerall">
-        <MyElTree
-          ref="tree2"
-          :props="props"
-          :data="tree_list"
-          :filter-node-method="filterNode"
-          :default-expanded-keys="defaultExpandedKeys"
-          class="filter-tree"
-          highlight-current="true"
-          node-key="id"
-          :load="loadNode"
-          :lazy="isLazyTree"
-          @node-click="nodeClick"
-          @node-contextmenu="nodeContextmenu"
-          @node-drag-start="handleDragStart"
-          @node-drag-enter="handleDragEnter"
-          @node-drag-leave="handleDragLeave"
-          @node-drag-over="handleDragOver"
-          @node-drag-end="handleDragEnd"
-          @node-drop="handleDrop"
-          :draggable="draggable"
-          :show-checkbox="showCheckbox"
-          :allow-drop="returnFalse"
-          @check="setCheckedNodes"
-        >
-          <span slot-scope="{ node, data }" class="custom-tree-node">
-            <i v-if="data.id === 'ROOT'" :class="data.icon" />
-            <i
-              v-if="
+        <MyElTree ref="tree2"
+                  :props="props"
+                  :data="tree_list"
+                  :filter-node-method="filterNode"
+                  :default-expanded-keys="defaultExpandedKeys"
+                  class="filter-tree"
+                  highlight-current="true"
+                  node-key="id"
+                  :load="loadNode"
+                  :lazy="isLazyTree"
+                  @node-click="nodeClick"
+                  @node-contextmenu="nodeContextmenu"
+                  @node-drag-start="handleDragStart"
+                  @node-drag-enter="handleDragEnter"
+                  @node-drag-leave="handleDragLeave"
+                  @node-drag-over="handleDragOver"
+                  @node-drag-end="handleDragEnd"
+                  @node-drop="handleDrop"
+                  :draggable="draggable"
+                  :expand-on-click-node="expandOnClickNode"
+                  :show-checkbox="showCheckbox"
+                  :allow-drop="returnFalse"
+                  @check="setCheckedNodes">
+          <span slot-scope="{ node, data }"
+                class="custom-tree-node">
+            <i v-if="data.id === 'ROOT'"
+               :class="data.icon" />
+            <i v-if="
                 data.type === 'folder' ||
                 data.type === 'system' ||
                 data.type === 'layered' ||
@@ -349,7 +349,8 @@ export default {
       },
       allSpaceFormType: "", //判断修改还是新增
       allSpaceDialogFormVisible: false,
-      isLazyTree: true, //树是否懒加载
+      isLazyTree: true,//树是否懒加载
+      expandOnClickNode:false,
     };
   },
   computed: {},
@@ -433,6 +434,17 @@ export default {
       if (this.treeNodeSelectedObj.length > 0) {
         for (var i = 0; i < this.treeNodeSelectedObj.length; i++) {
           if (this.treeNodeSelectedObj[i].strLevel === strLevel) {
+            //将字段与where条件重新插入
+            for(var k=0; k< this.treeNodeSelectedObj[i].data.length; k++){
+              for(var m = 0;m< isChecked.checkedNodes.length; m++){
+                if(this.treeNodeSelectedObj[i].data[k].id === isChecked.checkedNodes[m].id){
+                  isChecked.checkedNodes[m].cols = this.treeNodeSelectedObj[i].data[k].cols
+                  isChecked.checkedNodes[m].whereStr = this.treeNodeSelectedObj[i].data[k].whereStr
+                  break
+                }
+              }
+            }
+
             this.treeNodeSelectedObj[i].data = isChecked.checkedNodes;
             isRepeat = false;
             break;
@@ -534,6 +546,7 @@ export default {
           this.isShowLoadLeftTreeBtn = false;
           this.isShowPersonSpaceTab = true;
           this.draggable = true;
+          this.expandOnClickNode = true
         }
         //数据授权管理-资源绑定 左侧树
         if (this.loadLeftTreeType == "2") {
