@@ -490,26 +490,30 @@ export default {
               .catch((err) => { });
     },
     exportAllData () {
-      // if (
-      //   this.personalSpaceUuidList.length == 0 ||
-      //   this.personalSpaceUuidList.length == undefined
-      // ) {
-      //   this.$confirm("未选择指定数据将导出全部?", "提示", {
-      //     confirmButtonText: "确定",
-      //     cancelButtonText: "取消",
-      //     type: "warning",
-      //   }).then(() => {
-      //     exportAllPersonalSpace();
-      //   });
-      // } else {
-      //   setPersonalSpaceSession(this.personalSpaceUuidList).then((res) => {
-      //     if (res.msg == "成功") {
-      //       exportAllPersonalSpace();
-      //     }
-      //   });
-      // }
+      if (
+        this.personalSpaceUuidList.length == 0 ||
+        this.personalSpaceUuidList.length == undefined
+      ) {
+        this.$confirm("未选择指定数据将导出全部?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }).then(() => {
+          this.exportData();
+        }).catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
+      }else {
+        this.exportData();
+      }
+
+    },
+    exportData(){
       this.$axios
-              .post("/data/personalSpace/exportAllPersonalSpace", null, {
+              .post("/data/personalSpace/exportAllPersonalSpace", this.personalSpaceUuidList, {
                 responseType: "blob",
                 headers: {
                   "ContentType": 'application/x-www-form-urlencoded'

@@ -8,7 +8,6 @@
                         @search="search"
                         :dropDown="dropDown"
                         @clearSearch="clearAll"
-                        @change="onChange"
           ></SearchCommon>
 <!--          <el-form :inline="true"-->
 <!--                   :model="query"-->
