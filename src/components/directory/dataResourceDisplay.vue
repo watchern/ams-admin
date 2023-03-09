@@ -202,23 +202,23 @@
                       v-if="item.tableRelationQuery.tableThemeName">{{ item.tableRelationQuery.tableThemeName }}</span>
               </div>
               <div class="tln-middle">
-                <div class="table_type">
-                  <div class="one tt"><div class="gray-name-n">表关联数量：</div><span v-if="item.relations">{{ item.relations.length }}</span>
-                    <el-card class="show_tips"
-                             v-if="item.relations.length !== 0">
-                      <p v-for="(its, index_relations) in item.relations"
-                         :key="index_relations">
-                        {{ its.relationTableName == item.tbName ? its.tbName : its.relationTableName }}</p>
-                    </el-card>
-                  </div>
-                  <div class="two tt"><div class="gray-name-n">使用此表模型数：</div><span>{{ item.models.length }}</span>
-                    <el-card class="show_tips"
-                             v-if="item.models.length !== 0">
-                      <p v-for="(it, index_model) in item.models"
-                         :key="index_model">{{ it.MODEL_NAME }}</p>
-                    </el-card>
-                  </div>
-                </div>
+<!--                <div class="table_type">-->
+<!--                  <div class="one tt"><div class="gray-name-n">表关联数量：</div><span v-if="item.relations">{{ item.relations.length }}</span>-->
+<!--                    <el-card class="show_tips"-->
+<!--                             v-if="item.relations.length !== 0">-->
+<!--                      <p v-for="(its, index_relations) in item.relations"-->
+<!--                         :key="index_relations">-->
+<!--                        {{ its.relationTableName == item.tbName ? its.tbName : its.relationTableName }}</p>-->
+<!--                    </el-card>-->
+<!--                  </div>-->
+<!--                  <div class="two tt"><div class="gray-name-n">使用此表模型数：</div><span>{{ item.models.length }}</span>-->
+<!--                    <el-card class="show_tips"-->
+<!--                             v-if="item.models.length !== 0">-->
+<!--                      <p v-for="(it, index_model) in item.models"-->
+<!--                         :key="index_model">{{ it.MODEL_NAME }}</p>-->
+<!--                    </el-card>-->
+<!--                  </div>-->
+<!--                </div>-->
                 <div class="text vertical"
                    :title="item.tableRelationQuery.tableRemarks"
                    v-if="item.tableRelationQuery.tableRemarks">
@@ -236,6 +236,27 @@
                 <div class="inline-block" v-if="item.tableRelationQuery.dataDate != null"><div class="blue-name">数据日期：</div>{{ item.tableRelationQuery.dataDate }}</div>
                 <div class="inline-block" v-else><div class="blue-name">数据日期：</div>暂无</div>
                 <div class="inline-block"><div class="blue-name">数据量：</div> {{ item.rowNum }} 条</div>
+                <div class="inline-block tlnf-num one tt">
+                  <img src="../../assets/img/relationTabel.png" alt="">
+                  <span v-if="item.relations">{{ item.relations.length }}</span>
+                  <el-card class="show_tips"
+                           v-if="item.relations.length !== 0">
+                    <div>表关联列表：</div>
+                    <p v-for="(its, index_relations) in item.relations"
+                       :key="index_relations">
+                      {{ its.relationTableName == item.tbName ? its.tbName : its.relationTableName }}</p>
+                  </el-card>
+                </div>
+                <div class="inline-block tlnf-num two tt">
+                  <img src="../../assets/img/useModel.png" style="width: 15px;" alt="">
+                  <span v-if="item.models">{{ item.models.length }}</span>
+                  <el-card class="show_tips"
+                           v-if="item.models.length !== 0">
+                    <div>使用此表模型列表：</div>
+                    <p v-for="(it, index_model) in item.models"
+                       :key="index_model">{{ it.MODEL_NAME }}</p>
+                  </el-card>
+                </div>
               </div>
             </div>
 
@@ -769,7 +790,7 @@ export default {
 }
 
 /* 显示更多数量，模型数 */
-.table_type .tt:hover .show_tips {
+.table_type .tt:hover .show_tips,.tln-footer .tt:hover .show_tips{
   zoom: 1;
   -moz-transform: scale(1);
   -webkit-transform: scale(1);
@@ -891,7 +912,7 @@ export default {
 .table-list-new{
   display: inline-block;
   width: 48%;
-  height: 200px;
+  height: 180px;
   border: 1px solid rgba(0,0,0,.09);
   margin: 1%;
   border-radius: 2px;
@@ -970,13 +991,26 @@ export default {
     margin-bottom: 5px;
   }
   .tln-footer{
-    width: 60%;
+    width: 80%;
     font-size: 13px;
     display: flex;
     justify-content: space-between;
     .blue-name{
       display: inline-block;
       color: #63b4da;
+    }
+    .tlnf-num{
+      position: relative;
+      cursor: pointer;
+      .show_tips{
+        left: 0;
+      }
+    }
+    .tlnf-num>img{
+      width:18px;
+      height: auto;
+      margin-right: 3px;
+      vertical-align: middle;
     }
   }
 }
