@@ -139,80 +139,138 @@
       </template>
       <div class="list_table"
            :class="isBtn == true ?'is_min_heihgt':'is_heihgt'">
-        <el-table ref="multipleTable"
-                  :data="list"
-                  style="width: 100%;overflow:auto"
-                  :show-overflow-tooltip='true'
-                  :header-cell-class-name="headerCellClass"
-                  :header-cell-style="tableHeaderColor"
-                  @selection-change="handleSelectionChange">
-          <el-table-column type="selection"
-                           v-if="isBtn == true"
-                           width="30">
-          </el-table-column>
-          <el-table-column>
-            <template slot-scope="scope">
-              <div class="box_ard">
-                <div class="conter_list">
-                  <div class="box_ard_header _width"
-                       @click="on_deails(scope.row)">
-                    <p class="new_num">{{ scope.row.tbName }}</p>
-                    <p class="new_title">{{ scope.row.chnName }}</p>
-                    <span class="new_type"
-                          v-if="scope.row.tableRelationQuery.tableThemeName">{{ scope.row.tableRelationQuery.tableThemeName }}</span>
+        <div class="table-list-new" v-for="(item,index) in list">
+          <div class="tln-header">
+            <div class="tlnh-type">{{ item.tableRelationQuery.tableLayeredName||'null'}}</div>
+            <div class="tlnh-title" @click="on_deails(item)">{{ item.tableRelationQuery.businessSystemName||'null' }}</div>
+            <div class="inline-block tlnh-checkbox" >
+              <el-checkbox v-model="item.checked" @change="checkItem"></el-checkbox>
+            </div>
+
+          </div>
+          <div class="tln-msg" @click="on_deails(item)">
+            <div class="tlnh-type"></div>
+            <div class="tlnm-right">
+              <div class="tln-top">
+                <p class="new_num">{{ item.tbName }}</p>
+                <p class="new_title">{{ item.chnName }}</p>
+                <span class="new_type"
+                      v-if="item.tableRelationQuery.tableThemeName">{{ item.tableRelationQuery.tableThemeName }}</span>
+              </div>
+              <div class="tln-middle">
+                <div class="table_type">
+                  <div class="one tt"><div class="gray-name-n">表关联数量：</div><span v-if="item.relations">{{ item.relations.length }}</span>
+                    <el-card class="show_tips"
+                             v-if="item.relations.length !== 0">
+                      <p v-for="(its, index_relations) in item.relations"
+                         :key="index_relations">
+                        {{ its.relationTableName == item.tbName ? its.tbName : its.relationTableName }}</p>
+                    </el-card>
                   </div>
-                  <div class="new_left padding7">
-                    <div class="cover">
-                      <h2 :class="scope.row.tableRelationQuery.businessSystemName ? 'is_title':''">
-                        {{ scope.row.tableRelationQuery.tableLayeredName }}</h2>
-                      <span class="_title"
-                            v-if="scope.row.tableRelationQuery.businessSystemName">{{ scope.row.tableRelationQuery.businessSystemName }}</span>
-                    </div>
-                  </div>
-                  <div class="new_right">
-                    <div class="table_type">
-                      <div class="one tt">表关联数量：<span v-if="scope.row.relations">{{ scope.row.relations.length }}</span>
-                        <el-card class="show_tips"
-                                 v-if="scope.row.relations.length !== 0">
-                          <p v-for="(its, index_relations) in scope.row.relations"
-                             :key="index_relations">
-                            {{ its.relationTableName == scope.row.tbName ? its.tbName : its.relationTableName }}</p>
-                        </el-card>
-                      </div>
-                      <div class="two tt">使用此表模型数：<span>{{ scope.row.models.length }}</span>
-                        <el-card class="show_tips"
-                                 v-if="scope.row.models.length !== 0">
-                          <p v-for="(it, index_model) in scope.row.models"
-                             :key="index_model">{{ it.MODEL_NAME }}</p>
-                        </el-card>
-                      </div>
-                    </div>
-                    <p class="text vertical"
-                       :title="scope.row.tableRelationQuery.tableRemarks"
-                       v-if="scope.row.tableRelationQuery.tableRemarks">
-                      描述：{{ scope.row.tableRelationQuery.tableRemarks }}
-                    </p>
-                    <p class="text "
-                       v-else>描述：暂无</p>
-                    <p class="text vertical"
-                       :title="scope.row.colMeta"
-                       v-if="scope.row.colMeta">字段：{{ scope.row.colMeta }}</p>
-                    <p class="text"
-                       v-else>字段：暂无</p>
-                    <div class="data_list">
-                      <!-- {{scope.row.tableRelationQuery}} -->
-                      <span class="data_time"
-                            v-if="scope.row.tableRelationQuery.dataDate != null">数据日期：{{ scope.row.tableRelationQuery.dataDate }}</span>
-                      <span class="data_time"
-                            v-else>数据日期：暂无</span>
-                      <span class="data_number">数据量 {{ scope.row.rowNum }} 条</span>
-                    </div>
+                  <div class="two tt"><div class="gray-name-n">使用此表模型数：</div><span>{{ item.models.length }}</span>
+                    <el-card class="show_tips"
+                             v-if="item.models.length !== 0">
+                      <p v-for="(it, index_model) in item.models"
+                         :key="index_model">{{ it.MODEL_NAME }}</p>
+                    </el-card>
                   </div>
                 </div>
+                <div class="text vertical"
+                   :title="item.tableRelationQuery.tableRemarks"
+                   v-if="item.tableRelationQuery.tableRemarks">
+                <div class="gray-name-n">描述：</div>{{ item.tableRelationQuery.tableRemarks }}
+                </div>
+                <div class="text "
+                   v-else><div class="gray-name-n">描述：</div>暂无</div>
+                <div class="text vertical"
+                   :title="item.colMeta"
+                   v-if="item.colMeta"><div class="gray-name-n">字段：</div>{{ item.colMeta }}</div>
+                <div class="text"
+                   v-else><div class="gray-name-n">字段：</div>暂无</div>
               </div>
-            </template>
-          </el-table-column>
-        </el-table>
+              <div class="tln-footer">
+                <div class="inline-block" v-if="item.tableRelationQuery.dataDate != null"><div class="blue-name">数据日期：</div>{{ item.tableRelationQuery.dataDate }}</div>
+                <div class="inline-block" v-else><div class="blue-name">数据日期：</div>暂无</div>
+                <div class="inline-block"><div class="blue-name">数据量：</div> {{ item.rowNum }} 条</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+<!--        <el-table ref="multipleTable"-->
+<!--                  :data="list"-->
+<!--                  style="width: 100%;overflow:auto"-->
+<!--                  :show-overflow-tooltip='true'-->
+<!--                  :header-cell-class-name="headerCellClass"-->
+<!--                  :header-cell-style="tableHeaderColor"-->
+<!--                  @selection-change="handleSelectionChange">-->
+<!--          <el-table-column type="selection"-->
+<!--                           v-if="isBtn == true"-->
+<!--                           width="30">-->
+<!--          </el-table-column>-->
+<!--          <el-table-column>-->
+<!--            <template slot-scope="scope">-->
+<!--              <div class="box_ard">-->
+<!--                <div class="conter_list">-->
+<!--                  <div class="box_ard_header _width"-->
+<!--                       @click="on_deails(scope.row)">-->
+<!--                    <p class="new_num">{{ scope.row.tbName }}</p>-->
+<!--                    <p class="new_title">{{ scope.row.chnName }}</p>-->
+<!--                    <span class="new_type"-->
+<!--                          v-if="scope.row.tableRelationQuery.tableThemeName">{{ scope.row.tableRelationQuery.tableThemeName }}</span>-->
+<!--                  </div>-->
+<!--                  <div class="new_left padding7">-->
+<!--                    <div class="cover">-->
+<!--                      <h2 :class="scope.row.tableRelationQuery.businessSystemName ? 'is_title':''">-->
+<!--                        {{ scope.row.tableRelationQuery.tableLayeredName }}</h2>-->
+<!--                      <span class="_title"-->
+<!--                            v-if="scope.row.tableRelationQuery.businessSystemName">{{ scope.row.tableRelationQuery.businessSystemName }}</span>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                  <div class="new_right">-->
+<!--                    <div class="table_type">-->
+<!--                      <div class="one tt">表关联数量：<span v-if="scope.row.relations">{{ scope.row.relations.length }}</span>-->
+<!--                        <el-card class="show_tips"-->
+<!--                                 v-if="scope.row.relations.length !== 0">-->
+<!--                          <p v-for="(its, index_relations) in scope.row.relations"-->
+<!--                             :key="index_relations">-->
+<!--                            {{ its.relationTableName == scope.row.tbName ? its.tbName : its.relationTableName }}</p>-->
+<!--                        </el-card>-->
+<!--                      </div>-->
+<!--                      <div class="two tt">使用此表模型数：<span>{{ scope.row.models.length }}</span>-->
+<!--                        <el-card class="show_tips"-->
+<!--                                 v-if="scope.row.models.length !== 0">-->
+<!--                          <p v-for="(it, index_model) in scope.row.models"-->
+<!--                             :key="index_model">{{ it.MODEL_NAME }}</p>-->
+<!--                        </el-card>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <p class="text vertical"-->
+<!--                       :title="scope.row.tableRelationQuery.tableRemarks"-->
+<!--                       v-if="scope.row.tableRelationQuery.tableRemarks">-->
+<!--                      描述：{{ scope.row.tableRelationQuery.tableRemarks }}-->
+<!--                    </p>-->
+<!--                    <p class="text "-->
+<!--                       v-else>描述：暂无</p>-->
+<!--                    <p class="text vertical"-->
+<!--                       :title="scope.row.colMeta"-->
+<!--                       v-if="scope.row.colMeta">字段：{{ scope.row.colMeta }}</p>-->
+<!--                    <p class="text"-->
+<!--                       v-else>字段：暂无</p>-->
+<!--                    <div class="data_list">-->
+<!--                      &lt;!&ndash; {{scope.row.tableRelationQuery}} &ndash;&gt;-->
+<!--                      <span class="data_time"-->
+<!--                            v-if="scope.row.tableRelationQuery.dataDate != null">数据日期：{{ scope.row.tableRelationQuery.dataDate }}</span>-->
+<!--                      <span class="data_time"-->
+<!--                            v-else>数据日期：暂无</span>-->
+<!--                      <span class="data_number">数据量 {{ scope.row.rowNum }} 条</span>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </template>-->
+<!--          </el-table-column>-->
+<!--        </el-table>-->
       </div>
     </el-skeleton>
     <div class="padding10_l fl _width">
@@ -354,6 +412,18 @@ export default {
     // 全选
     handleSelectionChange (val) {
       this.check_list = val;
+    },
+    checkItem(){
+      this.$nextTick(()=>{
+        let _ls=[];
+        this.list.forEach((item)=>{
+          if(item.checked===true){
+            _ls.push(item);
+          }
+        });
+        this.check_list=_ls;
+      })
+
     },
   },
 };
@@ -771,5 +841,102 @@ export default {
 .skeleton >>> .el-table th.el-table__cell.is-leaf,
 .skeleton >>> .el-table td.el-table__cell {
   border: none !important;
+}
+</style>
+<style scoped lang="scss">
+.table-list-new{
+  display: inline-block;
+  width: 48%;
+  height: 200px;
+  border: 1px solid rgba(0,0,0,.09);
+  margin: 1%;
+  border-radius: 2px;
+  //cursor: pointer;
+  box-sizing: border-box;
+  vertical-align: top;
+  padding: 20px;
+  .tlnh-checkbox{
+    float: right;
+  }
+  .tlnh-type{
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    font-size:18px;
+    font-weight: bold;
+    line-height: 40px;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 10px;
+    background-color: rgb(65,202,254);
+    border-color: rgb(65,202,254);
+    color: #fff;
+  }
+  .tlnh-title{
+    font-size: 16px;
+    display: inline-block;
+    margin-left: 5px;
+  }
+  .tln-msg{
+    .tlnh-type{
+      opacity: 0;
+      margin-right: 5px;
+    }
+    .tlnm-right{
+      display: inline-block;
+      width: 85%;
+    }
+  }
+  .tln-top{
+    .new_num,.new_title{
+      display: inline-block;
+      font-size: 16px;
+      font-weight: normal;
+      max-width:30%;
+      overflow:hidden;
+      width-space:nowrap;
+      text-overflow: ellipsis;
+    }
+    .new_type{
+      font-size: 13px;
+      padding:3px 8px;
+      vertical-align: top;
+    }
+  }
+  .tln-middle{
+    font-size: 13px;
+    margin-top:10px;
+    .tt{
+      font-size: 13px;
+      font-weight: 400;
+      color:inherit;
+    }
+    .text{
+      width:100%;
+      overflow:hidden;
+      width-space:nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+  .gray-name-n{
+    display: inline-block;
+    color: rgba(0,0,0,.45);
+  }
+  .tln-middle>div{
+    margin-bottom: 5px;
+  }
+  .tln-footer{
+    width: 60%;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    .blue-name{
+      display: inline-block;
+      color: #63b4da;
+    }
+  }
+}
+.table-list-new:hover{
+  box-shadow:4px 4px 7px #999;
 }
 </style>
