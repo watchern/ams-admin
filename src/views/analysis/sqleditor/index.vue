@@ -13,7 +13,7 @@
           <img :src="canshu" /><span>参数</span>
         </div>
         <div class="unfold-sql"><img :src="sql" /><span>函数</span></div>
-        <div class="unfold-draft"><img :src="draft" /><span>SQL草稿</span></div>
+        <!-- <div class="unfold-draft"><img :src="draft" /><span>SQL草稿</span></div> -->
         <!-- <div class="unfold-bj">
           <img :src="sql" /><span>标记</span>
         </div> -->
@@ -90,7 +90,7 @@
         <div id="sqlEditorDiv" class="sql-editor-div">
           <el-row type="flex" class="row-bg">
             <el-col>
-              <span>数据量：</span>
+              <!-- <span>数据量：</span> -->
               <el-select
                 v-model="resultDataMaxCount"
                 style="font-weight: bolder; width: 100px"
