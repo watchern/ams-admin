@@ -1,5 +1,13 @@
 <template>
-  <div id="container" class="data-consanguinity"></div>
+  <div style="position: relative;height: 900px">
+    <div id="container" class="data-consanguinity"></div>
+    <div class="data-legend">
+      <div v-for="item in legendData">
+        <div class="inline-block l-icon" :style="{background:getColor(item)}"></div>
+        <div class="inline-block">{{getText(item)}}</div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -11,6 +19,7 @@ export default {
   name: "dataConsanguinity",
   data(){
     return{
+      legendData:["table","insert-select","select_list","select_union","view","function"],
       g6Data:{
         // 点集
         nodes: [
@@ -36,7 +45,60 @@ export default {
     }
   },
   methods:{
+    getColor(str){
+      let color='';
+      switch (str) {
+        case "table":
+          color ="#91c051";
+          break;
+        case "insert-select":
+          color ="#b24b78";
+          break;
+        case "select_list":
+          color ="#d26b58";
+          break;
+        case "select_union":
+          color ="#357e7e";
+          break;
+        case "view":
+          color ="#ff843f";
+          break;
+        case "function":
+          color ="#c678dd";
+          break;
+        default:
+          color="#096DD9";
+      }
+      return color;
+    },
+    getText(str){
+      let text='';
+      switch (str) {
+        case "table":
+          text ="表";
+          break;
+        case "insert-select":
+          text ="插入结果集";
+          break;
+        case "select_list":
+          text ="查询结果集";
+          break;
+        case "select_union":
+          text ="结果并集";
+          break;
+        case "view":
+          text ="视图";
+          break;
+        case "function":
+          text ="函数";
+          break;
+        default:
+          text="";
+      }
+      return text;
+    },
     init(list){
+      let that=this;
       const {
         Util,
         registerBehavior,
@@ -761,28 +823,8 @@ export default {
           const width = 250;
           const height =cfg.attrs.length*20+30+16;
           const itemCount = cfg.attrs.length+1;
-          function getColor(str){
-            let color='';
-            switch (str) {
-              case "table":
-                color ="#91c051";
-                break;
-              case "insert-select":
-                color ="#b24b78";
-                break;
-              case "select_list":
-                color ="#d26b58";
-                break;
-              case "select_union":
-                color ="#357e7e";
-                break;
-              default:
-                color="#096DD9";
-            }
-            return color;
-          }
           const boxStyle = {
-            stroke: getColor(cfg.showType),
+            stroke: that.getColor(cfg.showType),
             radius: 4,
           };
           const {
@@ -1220,5 +1262,26 @@ export default {
   border: 1px solid #999;
   width: 100%;
   height: 900px;
+}
+.data-legend{
+  width: 150px;
+  height: auto;
+  max-height: 100%;
+  overflow: auto;
+  position: absolute;
+  bottom:0;
+  left:0;
+  float: right;
+  z-index: 999999999999;
+  padding: 20px;
+}
+.data-legend>div{
+  margin-bottom: 10px;
+}
+.l-icon{
+  width: 30px;
+  height:20px;
+  border-radius: 4px;
+  vertical-align: middle;
 }
 </style>
