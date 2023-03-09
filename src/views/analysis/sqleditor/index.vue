@@ -41,16 +41,23 @@
             style="margin-top: 5px"
             v-model="paramSearchInput"
             placeholder="输入关键字进行过滤"
-            @change="paramTreeSearch"
-            suffix-icon="el-icon-search"
+            @input="paramTreeSearch"
           />
-          <div style="height: 30px; padding: 5px 10px 5px 0">
-            <el-button
-              type="primary"
-              size="mini"
-              @click="refshParamList()"
-              style="float: right"
-              >刷新</el-button
+          <div style="margin:5px;">
+            <el-tooltip
+                class="item"
+                effect="dark"
+                content="刷新"
+                placement="top"
+              >
+              <el-button
+                type="primary"
+                size="mini"
+                @click="refshParamList()"
+                style="float: right"
+                icon="el-icon-refresh"
+                />
+              </el-tooltip
             >
           </div>
           <ul id="paramTree" class="ztree" style="margin-top: 5px" />
@@ -61,8 +68,7 @@
             style="margin-top: 5px"
             v-model="functionInput"
             placeholder="输入关键字进行过滤"
-            @change="functionTreeSearch"
-            suffix-icon="el-icon-search"
+            @input="functionTreeSearch"
           />
           <ul id="sqlFunTree" class="ztree" style="margin-top: 5px" />
         </div>
@@ -2167,7 +2173,7 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped>
+<style scoped>
 #tableSearchImg,
 #paramSearchImg,
 #funSearchImg {

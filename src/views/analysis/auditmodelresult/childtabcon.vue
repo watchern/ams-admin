@@ -18,7 +18,7 @@
     <div style="margin-left:10px" v-if="useType == 'sqlEditor' && !chartSwitching && isSee" class="overTabconBox">
       <span class="overTabconItem">共{{total}}条</span>
       <el-button
-              class="oper-btn btn-width-md overTabconItem"
+              class="oper-btn overTabconItem"
               type="primary"
               @click="executeSqlView"
       >查看执行sql
