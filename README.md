@@ -1,5 +1,10 @@
 # ams-admin
 
+## npm源设置
+````
+npm config set registry http://139.159.246.94:1057/repository/npm-group/
+````
+
 ## 前端依赖下载
 ```
 npm install
@@ -39,3 +44,7 @@ VUE_APP_BASE_SKIN = 'update-blue'
 VUE_APP_INDEX_PAGE = 'first'
 ```
 
+# 获取token配置 login和redis两种方式
+```
+VUE_APP_TOKEN_GET_TYPE = 'login'
+```
