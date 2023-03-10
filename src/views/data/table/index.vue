@@ -768,7 +768,7 @@ export default {
         tableLayeredId: data.tableLayeredId, //分层
         folderUuid: data.folderUuid, //目录
         dataSource: data.dataSource, //数据源
-        pageNo: data.pageNo,
+        pageNo: 1,
         pageSize: data.pageSize,
         tbName: data.tbName,
         param: this.serachParams,

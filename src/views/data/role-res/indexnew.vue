@@ -1,13 +1,13 @@
 <template>
-  <div class="page-container" style="overflow: auto">
-    <div slot="footer" style="height:50px;display:inline-block;float:right;">
-      <div>
-        <el-button @click="goBack">返回</el-button>
-        <el-button type="primary" @click="save">保存</el-button>
-      </div>
-    </div>
+  <div class="page-container" style="">
+<!--    <div slot="footer" style="height:50px;display:inline-block;float:right;">-->
+<!--      <div>-->
+<!--        <el-button @click="goBack">返回</el-button>-->
+<!--        <el-button type="primary" @click="save">保存</el-button>-->
+<!--      </div>-->
+<!--    </div>-->
     
-    <el-row style="display: flex; height: 100%" :gutter="20">
+    <el-row style="display: flex; height: 100%;" :gutter="20">
       <!-- @原始数据表树@ -->
       <el-col :span="6">
         <LeftTrees ref="tree_left"
@@ -44,9 +44,14 @@
       <!-- @表及表字段选择@ -->
       <el-col :span="11">
        
-        <el-form v-if="currentData !== null" ref="rightForm" label-width="80px">
-          <el-form-item label="资源名称" >
+        <el-form v-if="currentData !== null" ref="rightForm" label-width="80px" class="in-form">
+          <div class="inline-block" style="float: right;margin-top: 10px">
+            <el-button @click="goBack">返回</el-button>
+            <el-button type="primary" @click="save">保存</el-button>
+          </div>
+          <el-form-item label="资源名称" class="in-search">
             <el-input v-model="currentData.label" :disabled="true" />
+
           </el-form-item>
          
           <el-form-item
@@ -56,7 +61,10 @@
           >
             <el-button @click="selectedAllTable">全选</el-button>
             <el-button @click="selectedNoAllTable">取消全选</el-button>
-            <el-table
+
+          </el-form-item>
+          <el-table
+              v-if="currentData.type === 'table'"
               key="colMetaUuid"
               v-loading="listLoading"
               :data="currentData.cols"
@@ -64,45 +72,44 @@
               fit
               highlight-current-row
               style="width: 100%"
-              max-height="300"
-            >
-              <el-table-column width="55">
-                <template slot-scope="scope">
-                  <el-checkbox v-model="scope.row.selected" />
-                </template>
-              </el-table-column>
-              <el-table-column
+              height="350px"
+          >
+            <el-table-column width="55">
+              <template slot-scope="scope">
+                <el-checkbox v-model="scope.row.selected" />
+              </template>
+            </el-table-column>
+            <el-table-column
                 label="列名"
                 min-width="200px"
                 align="center"
                 prop="colName"
                 show-overflow-tooltip
-              />
-              <el-table-column
+            />
+            <el-table-column
                 label="别名"
                 min-width="200px"
                 align="center"
                 prop="chnName"
                 show-overflow-tooltip
-              />
-              <!-- <el-table-column
-                label="是否脱敏"
-                min-width="100px"
-                align="center"
-                prop="chnName"
-              /> -->
-            </el-table>
-            <div style="margin: 8px;display: flex;align-items: center">
-              <el-input
+            />
+            <!-- <el-table-column
+              label="是否脱敏"
+              min-width="100px"
+              align="center"
+              prop="chnName"
+            /> -->
+          </el-table>
+          <div style="margin: 8px;display: flex;align-items: center" v-if="currentData.type === 'table'">
+            <el-input
                 v-model="whereStr"
                 type="textarea"
                 :rows="2"
                 v-on:input="whereStrFun"
                 placeholder="请输入筛选语句，如： name='张三' and age=19 "
-              />
-                <el-button style="height: 40px;margin-left: 20px" type="primary" @click="showSelect = true">选择条件</el-button>
-            </div>
-          </el-form-item>
+            />
+            <el-button style="height: 40px;margin-left: 20px" type="primary" @click="showSelect = true">选择条件</el-button>
+          </div>
         </el-form>
       </el-col>
     </el-row>
@@ -856,7 +863,7 @@ export default {
 }
 </style>
 
-<style lang="scss">
+<style scoped lang="scss">
 .page-container .tree-container {
   height: 95%;
   overflow: auto;
@@ -897,6 +904,20 @@ export default {
   color: #1890ff;
 }
 .el-form-item__content {
-  margin-left: 0 !important;
+  //margin-left: 0 !important;
+}
+.in-search::before{
+  clear: both;
+}
+::v-deep .in-search{
+  //float: left;
+  //margin-top: 10px;
+  .el-form-item__content{
+    width: 60%;
+  }
+}
+.in-form{
+  padding-right: 10px;
+  box-sizing: border-box;
 }
 </style>

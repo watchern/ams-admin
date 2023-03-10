@@ -70,10 +70,8 @@
       <el-table :key="tableKey"
                 v-loading="listLoading"
                 :data="list"
-                stripe
                 border
                 fit
-                highlight-current-row
                 style="width: 100%;"
                 height="calc(100vh - 300px)"
                 @sort-change="sortChange"
@@ -529,3 +527,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+  >>>table tr:nth-child(odd){
+    background: none!important;
+  }
+</style>

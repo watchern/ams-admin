@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <el-row :gutter="5">
-      <el-col :span="8">
+      <el-col :span="6">
         <el-select
           v-model="currentSceneUuid"
           placeholder="请选择"
@@ -72,8 +72,8 @@
         </div>
       </el-col>
 
-      <el-col :span="15">
-        <el-col align="right" style="padding-top: 4px; padding-right: 50px">
+      <el-col :span="17">
+        <el-col align="right" style="padding-top: 10px;">
           <!--          <el-button type="primary" class="oper-btn edit-period btn-width-max" :disabled="selections.length !== 1" @click="setExpireDate" />-->
           <el-button
             type="primary"
@@ -86,6 +86,8 @@
             <img src="../../../styles/image/delete2.png"
                  class="btn_icon icon2"
                  alt="">删除</el-button>
+          <el-button type="primary" :disabled="isNoClick" @click="saveRoleGrp">保存</el-button>
+          <el-button @click="goBack">返回</el-button>
         </el-col>
         <el-table
           key="colMetaUuid"
@@ -160,10 +162,7 @@
         </el-table>
       </el-col>
     </el-row>
-    <div class="bottom-btn">
-      <el-button @click="goBack">返回</el-button>
-      <el-button type="primary" :disabled="isNoClick" @click="saveRoleGrp">保存</el-button>
-    </div>
+
     <!-- 选择授权时间 -->
     <el-dialog :append-to-body="false"
                :close-on-click-modal="false"
@@ -485,6 +484,8 @@ export default {
 .org-box {
   width: 100%;
   height: 70vh;
+  padding:0 10px;
+  box-sizing:border-box;
 }
 .orgTree-box {
   width: 100%;
@@ -516,7 +517,7 @@ export default {
   padding-right: 100px;
 }
 .serviceLife{
-  color: blue;
+  color: #409EFF;
   cursor:pointer;
 }
 </style>

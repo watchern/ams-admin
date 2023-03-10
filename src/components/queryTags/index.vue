@@ -229,6 +229,18 @@ export default {
       // this.$emit("clearSearch_click", this.TagsAll, this.serachParams);
     },
 
+    //改变参数
+    changeParams(){
+      let obj={};
+      this.TagsAll.forEach((item)=>{
+        if(obj[item.code]){
+          obj[item.code]=obj[item.code]+","+item.value;
+        }else{
+          obj[item.code]=item.value;
+        }
+      })
+      this.serachParams=obj;
+    },
     //回车-- 增加tag
     addTags (val) {
       //新增函数中可以加一些你所需要的校验规则。比如只能是数子，或者不能输入‘，’等
@@ -245,18 +257,7 @@ export default {
           this.TagsAll.push(obj);
 
 
-          for (let i = 0; i < this.dropDown.length; i++) {
-            if (this.dropDown[i].code == obj.code) {
-
-              for (let t = 0; t < this.TagsAll.length; t++) {
-
-                if (this.dropDown[i].code === this.TagsAll[t].code) {
-                  arrarys.push(this.TagsAll[t].value)
-                  this.serachParams[this.dropDown[i].code] = arrarys.join(',')
-                }
-              }
-            }
-          }
+          this.changeParams();
           this.currentval = "";//清空输入的值
 
         }
@@ -267,21 +268,9 @@ export default {
     },
     // 点击删除
     removeTag (index, item) {
-
       this.TagsAll.splice(index, 1);
-      this.serachParams = {}
-      let arrs = []
 
-      for (let a = 0; a < this.TagsAll.length; a++) {
-        for (let b = 0; b < this.dropDown.length; b++) {
-          if (this.TagsAll[a].code == this.dropDown[b].code) {
-            // let removedArr = this.dropDown[a].value.filter((x) => x !== item.value);
-            // 
-            arrs.push(this.TagsAll[a].value)
-            this.serachParams[this.TagsAll[a].code] = arrs.join(',')
-          }
-        }
-      }
+      this.changeParams();
       // 如果内容清空后 返回默认位置
       if (this.TagsAll == []) {
         this.left_wid = '';
@@ -293,17 +282,7 @@ export default {
     deleteTags () {
       if (this.currentval === "") {
         this.TagsAll.pop();
-        this.serachParams = {}
-        let arr = []
-        for (let a = 0; a < this.dropDown.length; a++) {
-          for (let b = 0; b < this.TagsAll.length; b++) {
-            if (this.dropDown[a].code == this.TagsAll[b].code) {
-              arr.push(this.TagsAll[b].value)
-              this.serachParams[this.TagsAll[b].code] = arr.join(',')
-            }
-          }
-        }
-
+        this.changeParams();
       }
     },
     onclick () {
