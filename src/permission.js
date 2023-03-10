@@ -47,7 +47,6 @@ router.beforeEach(async(to, from, next) =>
    }
 
   if (tokenGetType == 'login'){
-    console.log("process.env.VUE_APP_TOKEN_GET_TYPE",process.env.VUE_APP_TOKEN_GET_TYPE)
     if (hasToken) {
       if (to.path === '/login') {
         next({ path: '/' })
@@ -76,7 +75,6 @@ router.beforeEach(async(to, from, next) =>
   }
 
   if ( tokenGetType == 'redis') {
-    console.log("process.env.VUE_APP_TOKEN_GET_TYPE",process.env.VUE_APP_TOKEN_GET_TYPE)
     if (hasToken) {
       if (to.path === '/') {
         // if is logged in, redirect to the home page

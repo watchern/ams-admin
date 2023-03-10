@@ -39,3 +39,7 @@ VUE_APP_BASE_SKIN = 'update-blue'
 VUE_APP_INDEX_PAGE = 'first'
 ```
 
+# 获取token配置 login和redis两种方式
+```
+VUE_APP_TOKEN_GET_TYPE = 'login'
+```
