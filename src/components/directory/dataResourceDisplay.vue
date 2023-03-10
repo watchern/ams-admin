@@ -84,14 +84,8 @@
       <div class="click_btn">
         <el-button type="primary"
                    size="small"
-                   class="oper-btn"
-                   @click="edit_list()"><img src="../../../src/styles/image/edits.png"
-               class="btn_icon icon1"
-               alt="">
-          <img src="../../../src/styles/image/edits2.png"
-               class="btn_icon icon2"
-               alt="">
-          修改</el-button>
+                   class="oper-btn dr-eidt"
+                   @click="edit_list()">修改</el-button>
       </div>
     </div>
 
@@ -907,6 +901,9 @@ export default {
 .skeleton >>> .el-table td.el-table__cell {
   border: none !important;
 }
+>>>.dr-eidt span{
+  display: inline-block!important;
+}
 </style>
 <style scoped lang="scss">
 .table-list-new{
@@ -1017,4 +1014,5 @@ export default {
 .table-list-new:hover{
   box-shadow:4px 4px 7px #999;
 }
+
 </style>
