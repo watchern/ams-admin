@@ -13,6 +13,10 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
 
+const tokenGetType =  process.env.VUE_APP_TOKEN_GET_TYPE || 'login'
+// 改为redies使用redis的获取方式
+// const tokenGetType = 'redis'
+
 router.beforeEach(async(to, from, next) =>
 {
   // start progress bar
@@ -42,43 +46,60 @@ router.beforeEach(async(to, from, next) =>
      });
    }
 
-  if (hasToken) {
-    if (to.path === '/') {
-      // if is logged in, redirect to the home page
-      next({ path: '/' })
-      NProgress.done() // hack: https://github.com/PanJiaChen/vue-element-admin/pull/2939
+  if (tokenGetType == 'login'){
+    console.log("process.env.VUE_APP_TOKEN_GET_TYPE",process.env.VUE_APP_TOKEN_GET_TYPE)
+    if (hasToken) {
+      if (to.path === '/login') {
+        next({ path: '/' })
+        NProgress.done() // hack: https://github.com/PanJiaChen/vue-element-admin/pull/2939
+      } else {
+        await store.dispatch('user/getInfo')
+        // determine whether the user has obtained his permission roles through getInfo
+        next();
+      }
     } else {
-      await store.dispatch('user/getInfo')
-      // determine whether the user has obtained his permission roles through getInfo
-      next();
+      /* has no token*/
+
+      if (whiteList.indexOf(to.path) !== -1) {
+        // in the free login whitelist, go directly
+        next()
+      } else {
+        // other pages that do not have permission to access are redirected to the login page.
+        if (`/` === to.path) {
+          next(`/login`)
+        } else {
+          next(`/login?redirect=${to.path}`)
+        }
+        NProgress.done()
+      }
     }
-  } else {
-    /* has no token*/
-    // 获取到redis里的token
-    await redisGetToken().then(resp => {
-      // token = resp.data
-      // 把获取到的token存到cookie和store里
-      store.dispatch('user/setRedisToken', resp.data)
-    })
-    next()
-    // console.log('store.state.user.token',store.state.user.token)
-    // next()
-
-    // if (whiteList.indexOf(to.path) !== -1) {
-    //   // in the free login whitelist, go directly
-    //   next()
-    // } else {
-    //   // other pages that do not have permission to access are redirected to the login page.
-    //   // if (`/` === to.path) {
-    //   //   next(`/login`)
-    //   // } else {
-    //   //   next(`/login?redirect=${to.path}`)
-    //   // }
-    //   NProgress.done()
-    // }
   }
-})
 
+  if ( tokenGetType == 'redis') {
+    console.log("process.env.VUE_APP_TOKEN_GET_TYPE",process.env.VUE_APP_TOKEN_GET_TYPE)
+    if (hasToken) {
+      if (to.path === '/') {
+        // if is logged in, redirect to the home page
+        next({ path: '/' })
+        NProgress.done() // hack: https://github.com/PanJiaChen/vue-element-admin/pull/2939
+      } else {
+        await store.dispatch('user/getInfo')
+        // determine whether the user has obtained his permission roles through getInfo
+        next();
+      }
+    } else {
+      /* has no token*/
+      // 获取到redis里的token
+      await redisGetToken().then(resp => {
+        // token = resp.data
+        // 把获取到的token存到cookie和store里
+        store.dispatch('user/setRedisToken', resp.data)
+      })
+      next()
+    }
+  }
+
+})
 router.afterEach(() => {
   // finish progress bar
   NProgress.done()

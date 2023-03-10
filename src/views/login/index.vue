@@ -552,7 +552,7 @@ $cursor: #fff;
               position: absolute;
             }
           }
-          
+
           .el-button {
             background: #529ED4;
             border-radius: 19px;
@@ -567,7 +567,7 @@ $cursor: #fff;
           }
         }
       }
-     
+
     }
     .copyright-text {
       margin-top: 30px;

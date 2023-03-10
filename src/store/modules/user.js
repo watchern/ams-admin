@@ -68,38 +68,60 @@ const mutations = {
   }
 }
 const actions = {
+
   // user login
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
       login({ userid: username.trim(), password: password }).then(response => {
         const { data } = response
-        commit('SET_ID', data.personUuid)
-        commit('SET_NAME', data.username)
-        commit('SET_CODE', data.personCode)
+        commit('SET_TOKEN', data.token)
+        setToken(data.token)
         var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
         if (sysDict == null) {
           cacheDict().then(resp => {
             sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
           })
         }
-        /*登录时设置场景编码和实例*/
-        var sceneCode = 'auditor'
-        var dataUserId = data.userid
-        getSceneInst(sceneCode, dataUserId).then(resp => {
-          var dataUserName = resp.data.dataUserName
-          var sceneName = resp.data.sceneName
-          commit('SET_SCENECODE', sceneCode)
-          commit('SET_SCENENAME', sceneName)
-          commit('SET_DATAUSERID', dataUserId)
-          commit('SET_DATAUSERNAME', dataUserName)
+        getUserInfo().then(response => {
+          const { data } = response
+          commit('SET_ID', data.id)
+          commit('SET_NAME', data.name)
+          commit('SET_CODE', data.personcode)
+          var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
+          if (sysDict == null) {
+            cacheDict().then(resp => {
+              sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
+            })
+          }
+          /*登录时设置场景编码和实例*/
+          var sceneCode = 'auditor'
+          var dataUserId = data.userId
+          getSceneInst(sceneCode, dataUserId).then(resp => {
+            var dataUserName = resp.data.dataUserName
+            var sceneName = resp.data.sceneName
+            commit('SET_SCENECODE', sceneCode)
+            commit('SET_SCENENAME', sceneName)
+            commit('SET_DATAUSERID', dataUserId)
+            commit('SET_DATAUSERNAME', dataUserName)
+          })
+          var user =  {
+            userId:data.id,
+            userName:data.name,
+            userLoginName:data.userid
+          }
+          Cookies.set('user', user)
+          resolve()
+        }).catch(error => {
+          console.log(error)
+          // let repstr = error.toString().split(':')[1];
+          // Message({
+          //   message: repstr,
+          //   type: 'error',
+          //   duration: 5 * 1000
+          // })
+          reject(error)
         })
-        var user =  {
-          userId:data.personUuid,
-          userName:data.username,
-          userLoginName:data.userid
-        }
-        Cookies.set('user', user)
         resolve()
       }).catch(error => {
         console.log(error)
@@ -116,6 +138,54 @@ const actions = {
       // });
     })
   },
+  // user login
+  // login({ commit }, userInfo) {
+  //   const { username, password } = userInfo
+  //   return new Promise((resolve, reject) => {
+  //     login({ userid: username.trim(), password: password }).then(response => {
+  //       const { data } = response
+  //       commit('SET_ID', data.personUuid)
+  //       commit('SET_NAME', data.username)
+  //       commit('SET_CODE', data.personCode)
+  //       var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
+  //       if (sysDict == null) {
+  //         cacheDict().then(resp => {
+  //           sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
+  //         })
+  //       }
+  //       /*登录时设置场景编码和实例*/
+  //       var sceneCode = 'auditor'
+  //       var dataUserId = data.userid
+  //       getSceneInst(sceneCode, dataUserId).then(resp => {
+  //         var dataUserName = resp.data.dataUserName
+  //         var sceneName = resp.data.sceneName
+  //         commit('SET_SCENECODE', sceneCode)
+  //         commit('SET_SCENENAME', sceneName)
+  //         commit('SET_DATAUSERID', dataUserId)
+  //         commit('SET_DATAUSERNAME', dataUserName)
+  //       })
+  //       var user =  {
+  //         userId:data.personUuid,
+  //         userName:data.username,
+  //         userLoginName:data.userid
+  //       }
+  //       Cookies.set('user', user)
+  //       resolve()
+  //     }).catch(error => {
+  //       console.log(error)
+  //       // let repstr = error.toString().split(':')[1];
+  //       // Message({
+  //       //   message: repstr,
+  //       //   type: 'error',
+  //       //   duration: 5 * 1000
+  //       // })
+  //       reject(error)
+  //     })
+  //     // getEncloseBy().then(res =>{
+  //     //   sessionStorage.setItem("encloseBy", JSON.stringify(res.data));
+  //     // });
+  //   })
+  // },
 
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
