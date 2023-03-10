@@ -1,61 +1,90 @@
 <template>
   <div class="left_tree_style">
-    <el-tabs v-model="activeName"
-             type="card"
-             v-if="this.loadLeftTreeType != '4'"
-             @tab-click="handleClick">
-      <el-tab-pane label="系统"
-                   :disabled="tabclick"
-                   v-if="isShowXTZTFC"
-                   name="0"></el-tab-pane>
-      <el-tab-pane label="主题"
-                   :disabled="tabclick"
-                   v-if="isShowXTZTFC"
-                   name="1"></el-tab-pane>
-      <el-tab-pane label="分层"
-                   :disabled="tabclick"
-                   v-if="isShowXTZTFC"
-                   name="2"></el-tab-pane>
-      <el-tab-pane label="个人空间"
+    <el-tabs
+      v-model="activeName"
+      type="card"
+      v-if="this.loadLeftTreeType != '4'"
+      @tab-click="handleClick"
+    >
+      <el-tab-pane
+        label="系统"
+        :disabled="tabclick"
+        v-if="isShowXTZTFC"
+        name="0"
+      >
+        <span slot="label"
+          ><el-tooltip class="item" effect="dark" content="系统" placement="top"
+            ><i class="el-icon-setting"></i></el-tooltip></span
+      ></el-tab-pane>
+      <el-tab-pane
+        label="主题"
+        :disabled="tabclick"
+        v-if="isShowXTZTFC"
+        name="1"
+        ><span slot="label"
+          ><el-tooltip class="item" effect="dark" content="主题" placement="top"
+            ><i class="el-icon-s-operation"></i></el-tooltip
+        ></span>
+      </el-tab-pane>
+      <el-tab-pane
+        label="分层"
+        :disabled="tabclick"
+        v-if="isShowXTZTFC"
+        name="2"
+        ><span slot="label"
+          ><el-tooltip class="item" effect="dark" content="分层" placement="top"
+            ><i class="el-icon-coin"></i></el-tooltip
+        ></span>
+      </el-tab-pane>
+      <!-- <el-tab-pane label="个人空间"
                    :disabled="tabclick"
                    v-if="isShowPersonSpaceTab"
-                   name="3"></el-tab-pane>
+                   name="3"></el-tab-pane> -->
     </el-tabs>
     <div class="padding10">
-      <el-input v-model="filterText2"
-                :disabled="tabclick"
-                placeholder="输入关键字进行过滤" />
+      <el-input
+        v-model="filterText2"
+        :disabled="tabclick"
+        placeholder="输入关键字进行过滤"
+      />
     </div>
     <!-- 数据源 -->
-    <div class="padding10 dataSource"
-         v-if="this.loadLeftTreeType != '4' && this.loadLeftTreeType != '3'">
-      <el-form :inline="true"
-               :model="query"
-               label-position="bottom">
-        <el-form-item label="数据源："
-                      label-width="90px">
-          <el-select v-model="query.dataSource"
-                     :disabled="tabclick"
-                     @change="selectdata"
-                     placeholder="请选择数据源">
-            <el-option v-for="item in options"
-                       :key="item.value"
-                       :label="item.label"
-                       :value="item.value" />
+    <div
+      class="padding10 dataSource"
+      v-if="
+        this.loadLeftTreeType != '4' &&
+        this.loadLeftTreeType != '3' &&
+        this.loadLeftTreeType != '1'
+      "
+    >
+      <el-form :inline="true" :model="query" label-position="bottom">
+        <el-form-item label="数据源：" label-width="90px">
+          <el-select
+            v-model="query.dataSource"
+            :disabled="tabclick"
+            @change="selectdata"
+            placeholder="请选择数据源"
+          >
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
           </el-select>
         </el-form-item>
       </el-form>
     </div>
-    <div v-if="loading == true"
-         class="loadings">
+    <div v-if="loading == true" class="loadings">
       <div class="conter_loadings">
-        <span><img src="@/assets/img/loading.gif"
-               alt="" /></span>
+        <span><img src="@/assets/img/loading.gif" alt="" /></span>
       </div>
     </div>
-    <div v-else
-         class="conter_vh"
-         :class="isSize == true ? 'conter_vh_size':'' ">
+    <div
+      v-else
+      class="conter_vh"
+      :class="isSize == true ? 'conter_vh_size' : ''"
+    >
       <!-- 系统 主题 分层  目录-->
       <div class="tree-containerall">
         <MyElTree ref="tree2"
@@ -77,6 +106,7 @@
                   @node-drag-end="handleDragEnd"
                   @node-drop="handleDrop"
                   :draggable="draggable"
+                  :expand-on-click-node="expandOnClickNode"
                   :show-checkbox="showCheckbox"
                   :allow-drop="returnFalse"
                   @check="setCheckedNodes">
@@ -89,7 +119,8 @@
                 data.type === 'system' ||
                 data.type === 'layered' ||
                 data.type === 'theme'
-              ">
+              "
+            >
               <span class="agreeicon0"></span>
             </i>
             <i v-if="data.type === 'table'">
@@ -98,59 +129,96 @@
             <i v-if="data.type === 'view'">
               <span class="icon iconfont agreeicon4"></span>
             </i>
-            <i v-if="data.type === 'column'"
-               class="el-icon-c-scale-to-original" />
+            <i
+              v-if="data.type === 'column'"
+              class="el-icon-c-scale-to-original"
+            />
             <span>{{ node.label }}</span>
             <span style="margin-left: 10px">
-              <el-button v-if="loadLeftTreeType==='3' && isPersonSpaceAdminRole && data.type==='folder' &&
-                        data.sceneInstUuid==='allBankSpaceFolder'"
-                         title="添加文件夹"
-                         type="text"
-                         size="mini"
-                         class="tree-line-btn"
-                         @click.stop="() => handCreateAllSpaceFolder(node, data)">
+              <el-button
+                v-if="
+                  loadLeftTreeType === '3' &&
+                  isPersonSpaceAdminRole &&
+                  data.type === 'folder' &&
+                  data.sceneInstUuid === 'allBankSpaceFolder'
+                "
+                title="添加文件夹"
+                type="text"
+                size="mini"
+                class="tree-line-btn"
+                @click.stop="() => handCreateAllSpaceFolder(node, data)"
+              >
                 <svg-icon icon-class="icon-add-1" />
               </el-button>
-              <el-button v-if="loadLeftTreeType==='3' && isPersonSpaceAdminRole && data.type==='folder' &&
-                        data.sceneInstUuid==='allBankSpaceFolder' && data.id != 'allBankSpaceFolder'"
-                         title="修改文件夹"
-                         type="text"
-                         size="mini"
-                         class="tree-line-btn"
-                         @click.stop="() => handEditAllSpaceFolder(node, data)">
+              <el-button
+                v-if="
+                  loadLeftTreeType === '3' &&
+                  isPersonSpaceAdminRole &&
+                  data.type === 'folder' &&
+                  data.sceneInstUuid === 'allBankSpaceFolder' &&
+                  data.id != 'allBankSpaceFolder'
+                "
+                title="修改文件夹"
+                type="text"
+                size="mini"
+                class="tree-line-btn"
+                @click.stop="() => handEditAllSpaceFolder(node, data)"
+              >
                 <svg-icon icon-class="icon-edit-1" />
               </el-button>
-              <el-button v-if="loadLeftTreeType==='3' && isPersonSpaceAdminRole && data.type==='folder' &&
-                        data.sceneInstUuid==='allBankSpaceFolder' && data.id != 'allBankSpaceFolder'"
-                         title="删除文件夹"
-                         type="text"
-                         size="mini"
-                         class="tree-line-btn"
-                         @click.stop="() => handDeleteAllSpaceFolder(node, data)">
+              <el-button
+                v-if="
+                  loadLeftTreeType === '3' &&
+                  isPersonSpaceAdminRole &&
+                  data.type === 'folder' &&
+                  data.sceneInstUuid === 'allBankSpaceFolder' &&
+                  data.id != 'allBankSpaceFolder'
+                "
+                title="删除文件夹"
+                type="text"
+                size="mini"
+                class="tree-line-btn"
+                @click.stop="() => handDeleteAllSpaceFolder(node, data)"
+              >
                 <svg-icon icon-class="icon-delete-1" />
               </el-button>
 
-              <el-button v-if="data.id === 'ROOT' || (data.extMap && data.extMap.folder_type === 'maintained')"
-                         type="text"
-                         size="mini"
-                         v-show="isShowLoadLeftTreeBtn"
-                         @click.stop="() => handleCreateFolder(node, data)">
+              <el-button
+                v-if="
+                  data.id === 'ROOT' ||
+                  (data.extMap && data.extMap.folder_type === 'maintained')
+                "
+                type="text"
+                size="mini"
+                v-show="isShowLoadLeftTreeBtn"
+                @click.stop="() => handleCreateFolder(node, data)"
+              >
                 <i class="el-icon-circle-plus" />
               </el-button>
-              <el-button v-if="(data.extMap && data.extMap.folder_type === 'maintained') ||
-                         data.type === 'table' || data.type === 'view'"
-                         type="text"
-                         size="mini"
-                         v-show="isShowLoadLeftTreeBtn"
-                         @click.stop="() => handleUpdateFolder(node, data)">
+              <el-button
+                v-if="
+                  (data.extMap && data.extMap.folder_type === 'maintained') ||
+                  data.type === 'table' ||
+                  data.type === 'view'
+                "
+                type="text"
+                size="mini"
+                v-show="isShowLoadLeftTreeBtn"
+                @click.stop="() => handleUpdateFolder(node, data)"
+              >
                 <i class="el-icon-edit" />
               </el-button>
-              <el-button v-if="(data.extMap && data.extMap.folder_type === 'maintained') ||
-                         data.type === 'table' || data.type === 'view'"
-                         type="text"
-                         size="mini"
-                         v-show="isShowLoadLeftTreeBtn"
-                         @click.stop="() => handleRemove(node, data)">
+              <el-button
+                v-if="
+                  (data.extMap && data.extMap.folder_type === 'maintained') ||
+                  data.type === 'table' ||
+                  data.type === 'view'
+                "
+                type="text"
+                size="mini"
+                v-show="isShowLoadLeftTreeBtn"
+                @click.stop="() => handleRemove(node, data)"
+              >
                 <i class="el-icon-delete" />
               </el-button>
             </span>
@@ -159,48 +227,50 @@
       </div>
       <!-- 目录 -->
     </div>
-    <el-dialog v-if="allSpaceDialogFormVisible"
-               title="请填写文件夹名称"
-               :visible.sync="allSpaceDialogFormVisible"
-               :append-to-body="true">
-      <el-form ref="allSpaceForm"
-               :model="allSpaceForm"
-               :rules="allSpaceFormRules">
-        <el-form-item label="文件夹名称"
-                      prop="folderName">
-          <el-input v-model="allSpaceForm.folderName"
-                    autocomplete="off" />
+    <el-dialog
+      v-if="allSpaceDialogFormVisible"
+      title="请填写文件夹名称"
+      :visible.sync="allSpaceDialogFormVisible"
+      :append-to-body="true"
+    >
+      <el-form
+        ref="allSpaceForm"
+        :model="allSpaceForm"
+        :rules="allSpaceFormRules"
+      >
+        <el-form-item label="文件夹名称" prop="folderName">
+          <el-input v-model="allSpaceForm.folderName" autocomplete="off" />
         </el-form-item>
       </el-form>
-      <div slot="footer"
-           class="dialog-footer">
+      <div slot="footer" class="dialog-footer">
         <el-button @click="allSpaceDialogFormVisible = false">取 消</el-button>
-        <el-button type="primary"
-                   @click="choosePath()">确 定</el-button>
+        <el-button type="primary" @click="choosePath()">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { commonNotify } from '@/utils'
+import { commonNotify } from "@/utils";
 import MyElTree from "@/components/public/tree/src/tree.vue";
 import {
   getBusinessSystemTree, //系统
   getThemeTree, //主题
   getLayeredTree, //分层
-  delTable, delByTableMetaUuid, moveFolder4Authority,
+  delTable,
+  delByTableMetaUuid,
+  moveFolder4Authority,
 } from "@/api/data/table-info";
 import {
   getPersonSpaceTree, //个人空间
   showRMenu, //节点右键事件
   getTableField, //加载表字段
   addDragEvent, //树节点拖拽方法
-  initSQLEditorTips,// 初始化SQL编辑器智能提示问题
-  getLoginUserAdminRole,//获取当前登陆人是否有个人空间管理员角色
-  saveAllSpaceFolder,//保存文件夹
-  deleteAllSpaceFolder,//删除文件夹
-  editAllSpaceFolder,//修改文件夹
+  initSQLEditorTips, // 初始化SQL编辑器智能提示问题
+  getLoginUserAdminRole, //获取当前登陆人是否有个人空间管理员角色
+  saveAllSpaceFolder, //保存文件夹
+  deleteAllSpaceFolder, //删除文件夹
+  editAllSpaceFolder, //修改文件夹
 } from "@/api/analysis/sqleditor/sqleditor";
 import { init } from "leancloud-storage";
 export default {
@@ -208,12 +278,11 @@ export default {
   props: {
     form: {
       type: Object,
-      default: () => ({})
+      default: () => ({}),
     },
     isSize: Boolean,
-
   },
-  data () {
+  data() {
     return {
       props: {
         label: "label",
@@ -222,7 +291,7 @@ export default {
       },
       activeName: "0", //tab切换
       filterText2: null,
-      tableMetaUuid: '',
+      tableMetaUuid: "",
       options: [
         {
           value: "Postgre",
@@ -251,16 +320,16 @@ export default {
       tableData: [],
       chooseTables: [],
       //1-SQL编辑器 2-数据授权管理-资源绑定-左侧树 3-个人空间 4-数据装载与下线 5-数据资源目录
-      loadLeftTreeType: "", //因为很多模块需要用到这棵树，用此类型来区分不同模块; 
+      loadLeftTreeType: "", //因为很多模块需要用到这棵树，用此类型来区分不同模块;
       isShowLoadLeftTreeBtn: true, //是否展示树节点操作按钮
       isShowPersonSpaceTab: false, //是否展示个人空间页签
-      isShowXTZTFC: true,//是否展示系统、主题、分层页签
+      isShowXTZTFC: true, //是否展示系统、主题、分层页签
       draggable: false, //是否开启树节点拖拽
       showCheckbox: false, //是否开启树多选框
       elTabsName: "", //选中的页签名称
       treeNodeSelectedObj: [], //树节点勾选对象
       defaultExpandedKeys: ["ROOT"], //默认展开节点的数组
-      isPersonSpaceAdminRole: false,//是否个人空间管理员
+      isPersonSpaceAdminRole: false, //是否个人空间管理员
       allSpaceFormRules: {
         folderName: [
           {
@@ -276,21 +345,22 @@ export default {
         folderName: "",
         fullPath: "",
         parentFolderUuid: "",
-        sceneInstUuid: "allBankSpaceFolder"//个人空间全行数据
+        sceneInstUuid: "allBankSpaceFolder", //个人空间全行数据
       },
-      allSpaceFormType: "",//判断修改还是新增
+      allSpaceFormType: "", //判断修改还是新增
       allSpaceDialogFormVisible: false,
       isLazyTree: true,//树是否懒加载
+      expandOnClickNode:false,
     };
   },
   computed: {},
   watch: {
-    filterText2 (val) {
+    filterText2(val) {
       this.$refs.tree2.filter(val);
     },
   },
-  mounted () { },
-  created () {
+  mounted() {},
+  created() {
     this.query.businessSystemId = "";
     // this.show_details = false; //显示列表
     this.$nextTick(() => {
@@ -300,18 +370,18 @@ export default {
     this.post_getLoginUserAdminRole();
   },
   methods: {
-    switchTabAccreditLeft(index){
-      this.activeName = index
+    switchTabAccreditLeft(index) {
+      this.activeName = index;
       if (index == "0") {
         this.post_getBusinessSystemTree(); //系统
       } else if (index == "1") {
         this.post_getThemeTree(); //主题
       } else if (index == "2") {
         this.post_getLayeredTree(); //分层
-      } 
+      }
     },
-    switchDataSourceAccreditLeft(val){
-      this.query.dataSource = val
+    switchDataSourceAccreditLeft(val) {
+      this.query.dataSource = val;
       if (this.activeName == "0") {
         // 系统
         this.post_getBusinessSystemTree(); //系统
@@ -323,19 +393,19 @@ export default {
         this.post_getLayeredTree(); //分层
       }
     },
-    getCheckedNodes(){
-      var leftTreeCheckedNodes = this.$refs.tree2.getCheckedNodes(false,true)
-      return leftTreeCheckedNodes
+    getCheckedNodes() {
+      var leftTreeCheckedNodes = this.$refs.tree2.getCheckedNodes(false, true);
+      return leftTreeCheckedNodes;
     },
-    post_getLoginUserAdminRole () {
+    post_getLoginUserAdminRole() {
       this.loading = true;
       getLoginUserAdminRole().then((resp) => {
-        this.isPersonSpaceAdminRole = resp.data
+        this.isPersonSpaceAdminRole = resp.data;
         this.loading = false;
       });
     },
     //树节点选择
-    setCheckedNodes (node, isChecked) {
+    setCheckedNodes(node, isChecked) {
       var _this = this;
       var strLevel = this.query.dataSource;
       var isRepeat = true;
@@ -364,6 +434,17 @@ export default {
       if (this.treeNodeSelectedObj.length > 0) {
         for (var i = 0; i < this.treeNodeSelectedObj.length; i++) {
           if (this.treeNodeSelectedObj[i].strLevel === strLevel) {
+            //将字段与where条件重新插入
+            for(var k=0; k< this.treeNodeSelectedObj[i].data.length; k++){
+              for(var m = 0;m< isChecked.checkedNodes.length; m++){
+                if(this.treeNodeSelectedObj[i].data[k].id === isChecked.checkedNodes[m].id){
+                  isChecked.checkedNodes[m].cols = this.treeNodeSelectedObj[i].data[k].cols
+                  isChecked.checkedNodes[m].whereStr = this.treeNodeSelectedObj[i].data[k].whereStr
+                  break
+                }
+              }
+            }
+
             this.treeNodeSelectedObj[i].data = isChecked.checkedNodes;
             isRepeat = false;
             break;
@@ -375,31 +456,31 @@ export default {
       } else {
         this.treeNodeSelectedObj.push(obj);
       }
-      console.log(this.treeNodeSelectedObj)
+      console.log(this.treeNodeSelectedObj);
     },
 
     // 树内不可拖拽
-    returnFalse () {
+    returnFalse() {
       return false;
     },
     //节点开始拖拽时触发的事件
-    handleDragStart (node, ev) {
-      // 
+    handleDragStart(node, ev) {
+      //
     },
     //拖拽进入其他节点时触发的事件
-    handleDragEnter (draggingNode, dropNode, ev) {
-      // 
+    handleDragEnter(draggingNode, dropNode, ev) {
+      //
     },
     //拖拽离开某个节点时触发的事件
-    handleDragLeave (draggingNode, dropNode, ev) {
-      // 
+    handleDragLeave(draggingNode, dropNode, ev) {
+      //
     },
     //在拖拽节点时触发的事件（类似浏览器的 mouseover 事件）
-    handleDragOver (draggingNode, dropNode, ev) {
-      // 
+    handleDragOver(draggingNode, dropNode, ev) {
+      //
     },
     //拖拽结束时（可能未成功）触发的事件
-    handleDragEnd (draggingNode, dropNode, dropType, ev) {
+    handleDragEnd(draggingNode, dropNode, dropType, ev) {
       // 只有表和字段能拖拽
       if (
         draggingNode.data.type === "table" ||
@@ -410,23 +491,34 @@ export default {
       }
     },
     // 拖拽成功完成时
-    handleDrop (draggingNode, dropNode, dropType, ev) {
-      // 
+    handleDrop(draggingNode, dropNode, dropType, ev) {
+      //
     },
     // 懒加载表字段
-    async loadNode (node, resolve) {
+    async loadNode(node, resolve) {
       if (node.level === 0) {
         return resolve(node.data);
       } else if (node.level >= 1) {
         //SQL编辑器、数据注册的表才需要展示字段
-        if (node.data.type === "table" && (this.loadLeftTreeType === "1" || this.loadLeftTreeType==="")) {
+        if (
+          node.data.type === "table" &&
+          (this.loadLeftTreeType === "1" || this.loadLeftTreeType === "")
+        ) {
           //个人空间下的表查询字段不需要权限
-          var strLevel = this.activeName
-          var nodeList = getTableField(node, this.query.dataSource, this.loadLeftTreeType, strLevel);
+          var strLevel = this.activeName;
+          var nodeList = getTableField(
+            node,
+            this.query.dataSource,
+            this.loadLeftTreeType,
+            strLevel
+          );
           Promise.all([nodeList]).then((res) => {
             resolve(res[0]);
           });
-        } else if (node.data.type === "table" && (this.loadLeftTreeType != "1" || this.loadLeftTreeType != "")) {
+        } else if (
+          node.data.type === "table" &&
+          (this.loadLeftTreeType != "1" || this.loadLeftTreeType != "")
+        ) {
           //去掉表加载字段
           resolve([]);
         } else {
@@ -446,7 +538,7 @@ export default {
       } */
     },
     // 区分不同模块
-    loadLeftTreeTypeFun (data) {
+    loadLeftTreeTypeFun(data) {
       if (data) {
         this.loadLeftTreeType = data;
         //SQL编辑器
@@ -454,29 +546,30 @@ export default {
           this.isShowLoadLeftTreeBtn = false;
           this.isShowPersonSpaceTab = true;
           this.draggable = true;
+          this.expandOnClickNode = true
         }
         //数据授权管理-资源绑定 左侧树
         if (this.loadLeftTreeType == "2") {
           this.isShowLoadLeftTreeBtn = false;
           this.draggable = false;
           this.showCheckbox = true;
-          this.isLazyTree = false
+          this.isLazyTree = false;
         }
         //个人空间
         if (this.loadLeftTreeType == "3") {
           this.isShowLoadLeftTreeBtn = false;
           this.isShowPersonSpaceTab = true;
-          this.isShowXTZTFC = false
-          this.activeName = "3"
+          this.isShowXTZTFC = false;
+          this.activeName = "3";
           this.post_getPersonSpaceTree(); //个人空间
         }
         //数据装载与下线
         if (this.loadLeftTreeType == "4") {
           this.isShowLoadLeftTreeBtn = false;
           this.isShowPersonSpaceTab = true;
-          this.isShowXTZTFC = false
+          this.isShowXTZTFC = false;
           this.showCheckbox = true;
-          this.activeName = "3"
+          this.activeName = "3";
           this.post_getPersonSpaceTree(); //个人空间
         }
         //数据资源目录
@@ -487,26 +580,23 @@ export default {
       }
     },
     // 选择数据源
-    selectdata (val) {
+    selectdata(val) {
       this.query.dataSource = val;
-      this.query.businessSystemId = ''
-      this.query.tableThemeId = ''
-      this.query.tableLayeredId = ''
+      this.query.businessSystemId = "";
+      this.query.tableThemeId = "";
+      this.query.tableLayeredId = "";
       if (this.activeName == "0") {
         // 系统
         this.post_getBusinessSystemTree(); //系统
-        this.$emit("queryList", this.query, this.show_details = false)
-
+        this.$emit("queryList", this.query, (this.show_details = false));
       } else if (this.activeName == "1") {
         // 主题
         this.post_getThemeTree(); //主题
-        this.$emit("queryList", this.query, this.show_details = false)
-
+        this.$emit("queryList", this.query, (this.show_details = false));
       } else if (this.activeName == "2") {
         // 分层
         this.post_getLayeredTree(); //分层
-        this.$emit("queryList", this.query, this.show_details = false)
-
+        this.$emit("queryList", this.query, (this.show_details = false));
       } else if (this.activeName == "3") {
         // 个人空间
         this.post_getPersonSpaceTree(); //个人空间
@@ -516,26 +606,31 @@ export default {
       //   this.post_getDataTreeNode(); //目录
       // }
       //数据授权-资源绑定-切换数据源
-      this.$emit("switchDataSourceAccredit", val)
+      this.$emit("switchDataSourceAccredit", val);
     },
     // 系统
-    post_getBusinessSystemTree () {
+    post_getBusinessSystemTree() {
       this.loading = true;
       this.tabclick = true;
       this.elTabsName = "系统";
-      getBusinessSystemTree(true, this.query.dataSource, true, this.loadLeftTreeType).then((resp) => {
-        if (this.activeName === '0') {
+      getBusinessSystemTree(
+        true,
+        this.query.dataSource,
+        true,
+        this.loadLeftTreeType
+      ).then((resp) => {
+        if (this.activeName === "0") {
           this.tree_list = resp.data;
-          if (this.loadLeftTreeType === '1') {
+          if (this.loadLeftTreeType === "1") {
             //如果SQL编辑器需要加载智能提示
-            initSQLEditorTips(this.tree_list)
+            initSQLEditorTips(this.tree_list);
           }
-          this.tree_list.forEach(item => {
+          this.tree_list.forEach((item) => {
             //SQL编辑器中，如果是表 需要展示字段不能去掉
-            if (item.type != 'table' && item.children.length == 0) {
-              item.leaf = true
+            if (item.type != "table" && item.children.length == 0) {
+              item.leaf = true;
             }
-          })
+          });
         }
         this.loading = false;
         this.tabclick = false;
@@ -543,80 +638,94 @@ export default {
         this.$nextTick(() => {
           this.inverse();
           //数据授权-资源绑定-联动效果
-          this.$emit("addRoleCheck")
+          this.$emit("addRoleCheck");
         });
-        
       });
     },
     // 主题
-    post_getThemeTree () {
+    post_getThemeTree() {
       this.loading = true;
       this.tabclick = true;
-      getThemeTree(true, this.query.dataSource, true, this.loadLeftTreeType).then((resp) => {
+      getThemeTree(
+        true,
+        this.query.dataSource,
+        true,
+        this.loadLeftTreeType
+      ).then((resp) => {
         this.tree_list = resp.data;
-        if (this.loadLeftTreeType === '1') {
+        if (this.loadLeftTreeType === "1") {
           //如果SQL编辑器需要加载智能提示
-          initSQLEditorTips(this.tree_list)
+          initSQLEditorTips(this.tree_list);
         }
-        this.tree_list.forEach(item => {
+        this.tree_list.forEach((item) => {
           //SQL编辑器中，如果是表 需要展示字段不能去掉
-          if (item.type != 'table' && item.children.length == 0) {
-            item.leaf = true
+          if (item.type != "table" && item.children.length == 0) {
+            item.leaf = true;
           }
-        })
+        });
         this.loading = false;
         this.tabclick = false;
         //加载勾选数据
         this.$nextTick(() => {
           this.inverse();
           //数据授权-资源绑定-联动效果
-          this.$emit("addRoleCheck")
+          this.$emit("addRoleCheck");
         });
       });
     },
     // 分层
-    post_getLayeredTree () {
+    post_getLayeredTree() {
       this.loading = true;
       this.tabclick = true;
-      getLayeredTree(true, this.query.dataSource, true, this.loadLeftTreeType).then((resp) => {
+      getLayeredTree(
+        true,
+        this.query.dataSource,
+        true,
+        this.loadLeftTreeType
+      ).then((resp) => {
         this.tree_list = resp.data;
-        if (this.loadLeftTreeType === '1') {
+        if (this.loadLeftTreeType === "1") {
           //如果SQL编辑器需要加载智能提示
-          initSQLEditorTips(this.tree_list)
+          initSQLEditorTips(this.tree_list);
         }
-        this.tree_list.forEach(item => {
+        this.tree_list.forEach((item) => {
           //SQL编辑器中，如果是表 需要展示字段不能去掉
-          if (item.type != 'table' && item.children.length == 0) {
-            item.leaf = true
+          if (item.type != "table" && item.children.length == 0) {
+            item.leaf = true;
           }
-        })
+        });
         this.loading = false;
         this.tabclick = false;
         //加载勾选数据
         this.$nextTick(() => {
           this.inverse();
           //数据授权-资源绑定-联动效果
-          this.$emit("addRoleCheck")
+          this.$emit("addRoleCheck");
         });
       });
     },
     //个人空间
-    post_getPersonSpaceTree () {
+    post_getPersonSpaceTree() {
       this.loading = true;
       this.tabclick = true;
-      getPersonSpaceTree("", "", this.query.dataSource, this.loadLeftTreeType).then((resp) => {
-        if (this.activeName === '3') {
+      getPersonSpaceTree(
+        "",
+        "",
+        this.query.dataSource,
+        this.loadLeftTreeType
+      ).then((resp) => {
+        if (this.activeName === "3") {
           this.tree_list = resp.data;
-          if (this.loadLeftTreeType === '1') {
+          if (this.loadLeftTreeType === "1") {
             //如果SQL编辑器需要加载智能提示
-            initSQLEditorTips(this.tree_list)
+            initSQLEditorTips(this.tree_list);
           }
-          this.tree_list.forEach(item => {
+          this.tree_list.forEach((item) => {
             //SQL编辑器中，如果是表 需要展示字段不能去掉
-            if (item.type != 'table' && item.children.length == 0) {
-              item.leaf = true
+            if (item.type != "table" && item.children.length == 0) {
+              item.leaf = true;
             }
-          })
+          });
         }
         this.loading = false;
         this.tabclick = false;
@@ -636,64 +745,64 @@ export default {
     //   });
     // },
     //删除表之后刷新树
-    refreshTreeList (dropTableNameList, type) {
-      var activeName = this.activeName
-      if (type === '1') {
-        if (activeName === '0') {
-          this.post_getBusinessSystemTree()
+    refreshTreeList(dropTableNameList, type) {
+      var activeName = this.activeName;
+      if (type === "1") {
+        if (activeName === "0") {
+          this.post_getBusinessSystemTree();
         }
-        if (activeName === '1') {
-          this.post_getThemeTree()
+        if (activeName === "1") {
+          this.post_getThemeTree();
         }
-        if (activeName === '2') {
-          this.post_getLayeredTree()
+        if (activeName === "2") {
+          this.post_getLayeredTree();
         }
-        if (activeName === '3') {
+        if (activeName === "3") {
           this.post_getPersonSpaceTree();
         }
       }
-      if (type === '2') {
+      if (type === "2") {
         var tree_list2 = [];
         var _this = this;
         this.tree_list.forEach(function (item, index) {
           if (item.type != "table" && item.children.length > 0) {
-            _this.screenChildrenTree(item.children, dropTableNameList)
-            tree_list2.push(item)
+            _this.screenChildrenTree(item.children, dropTableNameList);
+            tree_list2.push(item);
           } else {
             var isEqual = true;
             for (var k = 0; k < dropTableNameList.length; k++) {
               if (item.label === dropTableNameList[k]) {
-                isEqual = false
-                break
+                isEqual = false;
+                break;
               }
             }
             if (isEqual) {
-              tree_list2.push(item)
+              tree_list2.push(item);
             }
           }
-        })
+        });
         this.tree_list = [];
         this.tree_list = tree_list2;
       }
     },
     //递归筛选children数据
-    screenChildrenTree (datas, dropTableNameList) {
+    screenChildrenTree(datas, dropTableNameList) {
       var _this = this;
       datas.forEach(function (item, index) {
         if (item.type != "table" && item.children.length > 0) {
-          _this.screenChildrenTree(item.children, dropTableNameList)
+          _this.screenChildrenTree(item.children, dropTableNameList);
         } else {
           for (var k = 0; k < dropTableNameList.length; k++) {
             if (item.label === dropTableNameList[k]) {
-              datas.splice(index, 1)
-              break
+              datas.splice(index, 1);
+              break;
             }
           }
         }
-      })
+      });
     },
     // 反选
-    inverse () {
+    inverse() {
       var strLevel = this.query.dataSource;
       if (this.treeNodeSelectedObj.length > 0) {
         for (var i = 0; i < this.treeNodeSelectedObj.length; i++) {
@@ -705,24 +814,28 @@ export default {
       }
     },
     // 反选时处理方法
-    batchSelect (seletedDatas) {
+    batchSelect(seletedDatas) {
       if (typeof seletedDatas != "undefined") {
-        var checkedKeys = []
-        this.defaultExpandedKeys=["ROOT"]
+        var checkedKeys = [];
+        this.defaultExpandedKeys = ["ROOT"];
         seletedDatas.forEach((node) => {
           if (node.type === "table" || node.type === "view") {
             //设置默认展开的节点 如果不展开节点 默认选中不生效
-            if(this.activeName==='0'){
+            if (this.activeName === "0") {
               this.defaultExpandedKeys.push(node.businessSystemId);
             }
-            if(this.activeName==='1'){
+            if (this.activeName === "1") {
               this.defaultExpandedKeys.push(node.themeId);
             }
-            if(this.activeName==='2'){
+            if (this.activeName === "2") {
               this.defaultExpandedKeys.push(node.layeredId);
             }
           }
-          if (node.id != null && node.type != "noNeedCheck" && node.type === "table") {
+          if (
+            node.id != null &&
+            node.type != "noNeedCheck" &&
+            node.type === "table"
+          ) {
             // this.$refs.tree2.setChecked(node.id, true);
             checkedKeys.push(node.id);
           }
@@ -731,14 +844,14 @@ export default {
       }
     },
     //反勾选树节点
-    uncheckTreeNode (data) {
-      this.treeNodeSelectedObj = data
+    uncheckTreeNode(data) {
+      this.treeNodeSelectedObj = data;
     },
     //取消树节点勾选状态
-    unLeftTreeSelected (id) {
+    unLeftTreeSelected(id) {
       this.$refs.tree2.setChecked(id, false, false);
     },
-    handleClick (tab, event) {
+    handleClick(tab, event) {
       this.elTabsName = tab.label;
       if (tab.name == "0") {
         // this.tabclick = true
@@ -756,15 +869,15 @@ export default {
       // else {
       //   this.post_getDataTreeNode(this.query.dataSource);//目录
       // }
-      this.query.businessSystemId = ''
-      this.query.tableThemeId = ''
-      this.query.tableLayeredId = ''
-      this.$emit("queryList", this.query, this.show_details = false)//查询全部注册表
+      this.query.businessSystemId = "";
+      this.query.tableThemeId = "";
+      this.query.tableLayeredId = "";
+      this.$emit("queryList", this.query, (this.show_details = false)); //查询全部注册表
       //数据授权-资源绑定-联动效果
-      this.$emit("switchTabAccredit", tab.name)
-      this.$emit("addRoleCheck")
+      this.$emit("switchTabAccredit", tab.name);
+      this.$emit("addRoleCheck");
     },
-    filterNode (value, data, node) {
+    filterNode(value, data, node) {
       // if (!value) return true;
       // return data.label.indexOf(value) !== -1;
 
@@ -773,7 +886,7 @@ export default {
         return true;
       }
       let level = node.level;
-      let _array = [];//这里使用数组存储 只是为了存储值。
+      let _array = []; //这里使用数组存储 只是为了存储值。
       this.getReturnNode(node, _array, value);
       let result = false;
       _array.forEach((item) => {
@@ -783,16 +896,17 @@ export default {
     },
 
     // 处理过滤后显示二级++
-    getReturnNode (node, _array, value) {
-      let isPass = node.data && node.data.label && node.data.label.indexOf(value) !== -1;
-      isPass ? _array.push(isPass) : '';
+    getReturnNode(node, _array, value) {
+      let isPass =
+        node.data && node.data.label && node.data.label.indexOf(value) !== -1;
+      isPass ? _array.push(isPass) : "";
       this.index++;
 
       if (!isPass && node.level != 1 && node.parent) {
         this.getReturnNode(node.parent, _array, value);
       }
     },
-    nodeClick (data, node, tree) {
+    nodeClick(data, node, tree) {
       this.tableMetaUuid = "";
       this.show_details = false; //显示列表
       // 个人空间模块
@@ -832,11 +946,16 @@ export default {
           this.tableMetaUuid = node.data.id;
           this.show_details = true;
           this.isDisable_input = true;
-          this.$emit("details", this.tableMetaUuid, this.show_details, this.isDisable_input);
+          this.$emit(
+            "details",
+            this.tableMetaUuid,
+            this.show_details,
+            this.isDisable_input
+          );
         }
       } else {
-        if (data.type === 'column') {
-          return false
+        if (data.type === "column") {
+          return false;
         }
         //数据资源目录
         if (data.type === "folder") {
@@ -846,17 +965,22 @@ export default {
           this.query.folderUuid = node.data.id;
           this.query.tbName = "";
           this.$emit("queryList", this.query, this.show_details);
-          return false
+          return false;
         }
         // 进入详情
         this.tableMetaUuid = node.data.id;
         this.show_details = true;
         this.isDisable_input = true;
-        this.$emit("details", this.tableMetaUuid, this.show_details, this.isDisable_input);
+        this.$emit(
+          "details",
+          this.tableMetaUuid,
+          this.show_details,
+          this.isDisable_input
+        );
       }
     },
     //鼠标右键事件
-    nodeContextmenu (event, data, node, e) {
+    nodeContextmenu(event, data, node, e) {
       var menuId = "";
       var numm = $(document).height() - event.clientY;
       if (
@@ -896,13 +1020,13 @@ export default {
           event.clientY,
           data
         );
-        this.$emit("nodeContextmenuSQLEditor", data)
+        this.$emit("nodeContextmenuSQLEditor", data);
       } else {
         return false;
       }
     },
     // 第一步选择的数据库
-    nodeClick_table (data, node, tree) {
+    nodeClick_table(data, node, tree) {
       //获取所有选中的节点 start
       let res = this.$refs.tree1.getCheckedNodes();
       var check_list = [];
@@ -924,7 +1048,7 @@ export default {
         this.is_next = false;
       }
     },
-    handleCreateFolder (node, data) {
+    handleCreateFolder(node, data) {
       this.resetFolderForm();
       this.parentNode = node;
       this.dialogStatus = "create";
@@ -938,14 +1062,14 @@ export default {
       this.folderForm.fullPath = fullPath.join("/");
       this.folderFormVisible = true;
     },
-    handleUpdateFolder (node, data) {
+    handleUpdateFolder(node, data) {
       let check_list = [];
       check_list.push({
-        tableMetaUuid: data.id
+        tableMetaUuid: data.id,
       });
       this.$emit("edit_list", check_list);
     },
-    handleRemove (node, data) {
+    handleRemove(node, data) {
       this.$confirm("是否删除？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -993,11 +1117,10 @@ export default {
               }
             });
           }
-
         })
-        .catch(() => { });
+        .catch(() => {});
     },
-    createFolder () {
+    createFolder() {
       if (
         this.folderForm.folderName == null ||
         this.folderForm.folderName.trim().length == 0
@@ -1023,7 +1146,7 @@ export default {
         this.folderFormVisible = false;
       });
     },
-    updateFolder () {
+    updateFolder() {
       if (
         this.folderForm.folderName == null ||
         this.folderForm.folderName.trim().length == 0
@@ -1045,8 +1168,8 @@ export default {
         this.refreshNodeBy("ROOT");
       });
     },
-    handleSelectChange (val) { },
-    removeTable () {
+    handleSelectChange(val) {},
+    removeTable() {
       var ids = this.$refs.tree2.getCheckedKeys();
       delTable(ids.join(",")).then((resp) => {
         this.$notify(
@@ -1061,24 +1184,24 @@ export default {
       });
     },
     //个人空间模块-全行空间文件夹下创建文件夹
-    handCreateAllSpaceFolder (node, data) {
-      this.allSpaceForm.parentFolderUuid = data.id
-      this.allSpaceForm.fullPath = data.label
-      this.allSpaceDialogFormVisible = true
-      this.allSpaceFormType = "add"
+    handCreateAllSpaceFolder(node, data) {
+      this.allSpaceForm.parentFolderUuid = data.id;
+      this.allSpaceForm.fullPath = data.label;
+      this.allSpaceDialogFormVisible = true;
+      this.allSpaceFormType = "add";
     },
     //个人空间模块-全行空间文件夹下修改文件夹
-    handEditAllSpaceFolder (node, data) {
-      this.allSpaceDialogFormVisible = true
+    handEditAllSpaceFolder(node, data) {
+      this.allSpaceDialogFormVisible = true;
 
-      this.allSpaceForm.folderUuid = data.id
-      this.allSpaceForm.folderName = data.label
-      this.allSpaceForm.fullPath = data.path
-      this.allSpaceForm.parentFolderUuid = data.pid
-      this.allSpaceFormType = "edit"
+      this.allSpaceForm.folderUuid = data.id;
+      this.allSpaceForm.folderName = data.label;
+      this.allSpaceForm.fullPath = data.path;
+      this.allSpaceForm.parentFolderUuid = data.pid;
+      this.allSpaceFormType = "edit";
     },
     //个人空间模块-全行空间文件夹下删除文件夹
-    handDeleteAllSpaceFolder (node, data) {
+    handDeleteAllSpaceFolder(node, data) {
       if (data.children.length > 0) {
         this.$notify(
           commonNotify({
@@ -1086,7 +1209,7 @@ export default {
             message: `当前文件夹下存在子集，不能删除`,
           })
         );
-        return false
+        return false;
       }
       this.loading = true;
       deleteAllSpaceFolder(data.id).then((resp) => {
@@ -1098,20 +1221,18 @@ export default {
           })
         );
         this.post_getPersonSpaceTree();
-
       });
-
     },
-    choosePath () {
-      if (this.allSpaceForm.folderName.trim() === '') {
-        return false
+    choosePath() {
+      if (this.allSpaceForm.folderName.trim() === "") {
+        return false;
       }
-      this.allSpaceDialogFormVisible = false
+      this.allSpaceDialogFormVisible = false;
       this.loading = true;
       if (this.allSpaceFormType === "add") {
         saveAllSpaceFolder(this.allSpaceForm).then((resp) => {
           this.loading = false;
-          this.allSpaceForm.folderName = ""
+          this.allSpaceForm.folderName = "";
 
           this.$notify(
             commonNotify({
@@ -1120,12 +1241,11 @@ export default {
             })
           );
           this.post_getPersonSpaceTree();
-
         });
       } else {
         editAllSpaceFolder(this.allSpaceForm).then((resp) => {
           this.loading = false;
-          this.allSpaceForm.folderName = ""
+          this.allSpaceForm.folderName = "";
 
           this.$notify(
             commonNotify({
@@ -1134,15 +1254,14 @@ export default {
             })
           );
           this.post_getPersonSpaceTree();
-
         });
       }
-    }
+    },
   },
 };
 </script>
 
-<style scoped >
+<style scoped>
 .left_tree_style {
   height: 100%;
   /* overflow: auto; */
@@ -1205,7 +1324,7 @@ export default {
 }
 
 .left_tree_style >>> .el-tabs__item {
-  width: 25%;
+  /* width: 25%; */
   text-align: center;
 }
 

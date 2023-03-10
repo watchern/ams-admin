@@ -20,11 +20,8 @@
 
       <div class="rightList">
         <!-- 基本信息 -->
-        <div class="information rightList_child"
-             id="id0">
-          <h2 :class="{
-              isActive: navgatorIndex == 0,
-            }">
+        <div class="information rightList_child" id="id0">
+          <h2 :class="{ isActive: navgatorIndex == 0 }">
             基本信息
           </h2>
           <div class="information_form padding10">
@@ -43,9 +40,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="24">
-                  <div :class="
-                  isDisable_input == true ? 'is_disabled' : 'yes_disabled'
-                ">
+                  <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
                     <el-form-item label="表中文名："
                                   prop="chnName">
                       <el-input v-model="form.chnName"
@@ -63,7 +58,6 @@
                   </div>
                 </el-col>
                 <el-col :span="11">
-                  <!-- <div class="son"> -->
                   <div class="is_disabled">
                     <el-form-item label="资源编码："
                                   prop="tableCode">
@@ -76,11 +70,8 @@
                     </el-form-item>
                   </div>
                 </el-col>
-                <el-col :span="11"
-                        :offset="2">
-                  <div :class="
-                    isDisable_input == true ? 'is_disabled' : 'yes_disabled'
-                  ">
+                <el-col :span="11" :offset="2">
+                  <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
                     <el-form-item label="资源类型："
                                   prop="tableType">
                       <el-select v-model="form.tableType"
@@ -95,10 +86,8 @@
                     </el-form-item>
                   </div>
                 </el-col>
-
                 <el-col :span="11">
                   <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
-                    <!-- <div class="son"> -->
                     <el-form-item label="资源主题："
                                   prop="tableThemeId">
                       <el-select v-model="form.tableThemeId"
@@ -114,9 +103,7 @@
                     </el-form-item>
                   </div>
                 </el-col>
-
-                <el-col :span="11"
-                        :offset="2">
+                <el-col :span="11" :offset="2">
                   <el-form-item label="资源分层："
                                 prop="tableLayeredId">
                     <el-select v-model="form.tableLayeredId"
@@ -129,10 +116,8 @@
                                  :value="item.codeUuid" />
                     </el-select>
                   </el-form-item>
-                  <!-- </div> -->
                 </el-col>
                 <el-col :span="11">
-                  <!-- <div class="son"> -->
                   <el-form-item label="所属系统："
                                 prop="businessSystemId">
                     <el-select v-model="form.businessSystemId"
@@ -147,19 +132,19 @@
                     </el-select>
                   </el-form-item>
                 </el-col>
-                <el-col :span="11"
-                        :offset="2">
-                  <el-form-item label="文件名：">
-                    <el-input :disabled="isDisable_input"
-                              @input="change($event)"
-                              style="width: 100%;"
-                              v-model="form.fileName"
-                              :rows="4"></el-input>
+                <el-col :span="11" :offset="2">
+                  <el-form-item label="增全量：">
+                    <el-select v-model="form.isSpike"
+                               @input="change($event)"
+                               style="width: 100%;"
+                               :disabled="isDisable_input">
+                      <el-option v-for="item in option_isSpike"
+                                 :key="item.value"
+                                 :label="item.label"
+                                 :value="item.value" />
+                    </el-select>
                   </el-form-item>
-                  <!-- </div> -->
                 </el-col>
-
-                <!-- <div class="son"> -->
                 <el-col :span="11">
                   <el-form-item label="数据日期：">
                     <el-date-picker format="yyyy-MM-dd"
@@ -173,8 +158,7 @@
                                     v-model="form.dataDate" />
                   </el-form-item>
                 </el-col>
-                <el-col :span="11"
-                        :offset="2">
+                <el-col :span="11" :offset="2">
                   <div class="is_disabled">
                     <el-form-item label="表大小：">
                       <el-input placeholder="请输入表大小"
@@ -195,10 +179,8 @@
                               :rows="4"></el-input>
                   </el-form-item>
                 </el-col>
-                <el-col :span="11"
-                        :offset="2">
-                  <div class="son_people is_disabled"
-                       :class="isDisable_input == true ? 'is_width':''">
+                <el-col :span="11" :offset="2">
+                  <div class="son_people is_disabled" :class="isDisable_input == true ? 'is_width':''">
                     <el-form-item label="负责人：">
                       <el-input type="textarea"
                                 :disabled="disabled"
@@ -215,11 +197,8 @@
                     </el-form-item>
                   </div>
                 </el-col>
-                <!-- </div> -->
-
                 <el-col :span="11">
                   <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
-                    <!-- <div class="son"> -->
                     <el-form-item label="表分区："
                                   :disabled="disabled"
                                   prop="partitions">
@@ -237,20 +216,15 @@
                     </el-form-item>
                   </div>
                 </el-col>
-                <el-col :span="11" :offset="2">
-                  <el-form-item label="增全量：">
-                    <el-select v-model="form.isSpike"
-                               @input="change($event)"
-                               style="width: 100%;"
-                               :disabled="isDisable_input">
-                      <el-option v-for="item in option_isSpike"
-                                 :key="item.value"
-                                 :label="item.label"
-                                 :value="item.value" />
-                    </el-select>
+                <!-- <el-col :span="11" :offset="2">
+                  <el-form-item label="文件名：">
+                    <el-input :disabled="isDisable_input"
+                              @input="change($event)"
+                              style="width: 100%;"
+                              v-model="form.fileName"
+                              :rows="4"></el-input>
                   </el-form-item>
-                </el-col>
-                <!-- </div> -->
+                </el-col> -->
 
                 <!-- <div class="son_check">
                   <el-form-item label="数据标签：">
@@ -273,8 +247,7 @@
                 <el-col :span="24">
                   <el-form-item label="表热度：">
                     <ul class="Heat_ul _width">
-                      <li v-for="(it, i) in Heat"
-                          :key="i">
+                      <li v-for="(it, i) in Heat" :key="i">
                         <p>
                           {{ it.name }}
                         </p>
@@ -1009,6 +982,9 @@ export default {
         this.form.tableRelationQueryUuid = _data.tableRelationQuery.tableRelationQueryUuid;
         this.table_visible_form.tableMetaUuid = _data.tableMetaUuid//主表从表新增用
         this.$refs.tableLines.init(1); // 初始化表关联关系
+        this.$nextTick(()=>{
+          this.$refs.form.clearValidate();
+        })
       });
     },
     // 选择标签
@@ -1055,7 +1031,7 @@ export default {
               this.$emit("query_data"); //刷新页面
               this.table_list(this.tableMetaUuid);
               //资源目录修改同步修改授权资源目录
-              moveFolder4Authority(this.tableMetaUuid, this.dataSource);
+              // moveFolder4Authority(this.tableMetaUuid, this.dataSource);
             } else {
               this.$message({
                 type: "error",

@@ -18,7 +18,7 @@
     <div style="margin-left:10px" v-if="useType == 'sqlEditor' && !chartSwitching && isSee" class="overTabconBox">
       <span class="overTabconItem">共{{total}}条</span>
       <el-button
-              class="oper-btn btn-width-md overTabconItem"
+              class="oper-btn overTabconItem"
               type="primary"
               @click="executeSqlView"
       >查看执行sql
@@ -856,7 +856,7 @@
     <el-dialog
       title="请选择要分享的人员"
       :visible.sync="resultShareDialogIsSee"
-      width="50%"
+      width="80%"
     >
       <personTree ref="orgPeopleTree"></personTree>
       <span slot="footer" class="dialog-footer">

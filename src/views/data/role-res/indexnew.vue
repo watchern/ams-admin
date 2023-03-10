@@ -52,7 +52,7 @@
           <el-form-item
             v-if="currentData.type === 'table'"
             label="表行列筛选设置"
-            label-width="100px"
+            label-width="120px"
           >
             <el-button @click="selectedAllTable">全选</el-button>
             <el-button @click="selectedNoAllTable">取消全选</el-button>

@@ -68,7 +68,7 @@ export function getPersonIp() {
 }
 
 export function redisGetToken() {
-  console.log('cans',cans())
+  // console.log('cans',cans())
   return request({
     baseURL: baseURL,
     url: `/redisGetToken`,

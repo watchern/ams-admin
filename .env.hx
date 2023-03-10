@@ -26,6 +26,11 @@ VUE_APP_INDICATOR_WEB_SOCKET = 'ws://139.159.246.94:99/websocket?'
 VUE_APP_BASE_SKIN = 'update-blue'
 # VUE_APP_BASE_SKIN = 'haian-blue'
 
+################   TOKEN获取方式 login登录获取 redis无登录页，直接从库里获取  ###############
+VUE_APP_TOKEN_GET_TYPE = 'login'
+#VUE_APP_TOKEN_GET_TYPE = 'redis'
+####################################################################
+
 ################   菜单   ##########################################
 VUE_APP_BASE_MENU = 'withmenu'
 #VUE_APP_BASE_MENU = 'withoutmenu'

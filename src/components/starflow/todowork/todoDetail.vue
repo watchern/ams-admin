@@ -319,6 +319,13 @@
              >
              <!--数据授权试用申请 end-->
              <el-button
+               class="btn_editor"
+               type="primary"
+               @click="dialogShow = true"
+               v-if="!flowSetup.done && customizedType && customizedType == 'canBack'"
+             >任意退回</el-button
+             >
+             <el-button
                      class="btn_editor"
                      type="primary"
                      @click="saveNew"
@@ -349,8 +356,101 @@
 
        </div>
 <!--    </div>-->
+    <el-dialog
+      v-if="dialogShow"
+      :close-on-click-modal="false"
+      :visible.sync="dialogShow"
+      title="任意退回"
+      width="50%"
+    >
+      <template v-if="flowSetup.nextStep && this.isLast">
+        <div class="person_template">
+          <div class="content">
+            <div class>
+              <el-form
+                ref="form"
+                :model="backPersonform"
+                label-width="128px"
+                size="mini"
+              >
+                <el-row :gutter="20">
+                  <el-col :span="12">
+                    <el-form-item label="流程节点" class="form_item">
+                      <el-radio-group
+                        v-model="backPersonform.activity"
+                        @change="backHandleChange"
+                      >
+                        <el-radio
+                          v-for="(item, index) in backActivity"
+                          :key="index"
+                          :label="item.activityId"
+                        >{{ item.activityName }}</el-radio
+                        >
+                      </el-radio-group>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="20">
+                  <el-col :span="24">
+                    <el-form-item label="办理人" class="form_item">
+                      <el-checkbox-group
+                        v-model="backCheckedPerList"
+                        v-if="this.isAllAssignment == 'checkbox'"
+                      >
+                        <el-row :gutter="20">
+                          <el-col :span="12">
+                            <el-checkbox
+                              v-for="item in backPersonItem"
+                              :key="item.personUuid"
+                              :label="item.personUuid"
+                            >{{ item.personName }}</el-checkbox
+                            >
+                          </el-col>
+                        </el-row>
+                      </el-checkbox-group>
 
-
+                      <el-radio-group
+                        @change="checkedPersonList"
+                        v-model="backPersonform.transactor"
+                        v-if="this.isAllAssignment == 'radio'"
+                      >
+                        <el-row :gutter="20">
+                          <el-col
+                            :span="12"
+                            v-for="(item, index) in backPersonItem"
+                            :key="index"
+                          >
+                            <el-radio :label="item.personUuid">{{
+                                item.personName
+                              }}</el-radio>
+                          </el-col>
+                        </el-row>
+                      </el-radio-group>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </el-form>
+            </div>
+          </div>
+        </div>
+      </template>
+      <span class="sess-flowitem" slot="footer">
+        <el-button
+          size="mini"
+          type="primary"
+          class="table_header_btn"
+          @click="goBackAtWill"
+        >提交</el-button
+        >
+        <el-button
+          size="mini"
+          type="primary"
+          class="table_header_btn"
+          @click="dialogShow = false"
+        >关闭</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -426,6 +526,12 @@
           transitionId: "",
           agreeTag: "true",
         },
+        backPersonform: {// 退回人员表单
+          activity: "",
+          transactor: "",
+          transitionId: "",
+          agreeTag: "true",
+        },
         applyTitleform: {
           applyTitle: "",
           applyTypeName: "",
@@ -463,6 +569,12 @@
         bottomPanel: null, // 定义组件
         selectPersonUuidList: [], //被选中的人员的id集合
         wftype: "",  //工作流id，目前使用在数据使用授权申请业务上
+        dialogShow: false, //显示退回节点弹窗
+        sequence: "", //节点序号
+        backActivity: [], //退回节点
+        backPersonItem: [], //退回人
+        backCheckedPerList: [], //多选退回人
+        customizedType: "", //节点类型，允许退回时值为canBack
       };
     },
     destroyed() {
@@ -717,6 +829,8 @@
           if (resp.data) {
             this.isBpm =resp.data.isBpm;
             this.wftype = resp.data.noteMap.wftype;
+            this.sequence = resp.data.sequence;
+            this.customizedType = resp.data.customizedType;
             this.isLast =resp.data.noteMap.isLast;
             this.actionIdList =resp.data.noteMap.actionIdList;
             this.displayBus = true;
@@ -780,6 +894,28 @@
 
             //初始化参数流程，人员参数
             this.activityList = this.agreeTagList[0].agreeTagList;
+            d
+            if (this.customizedType && this.customizedType == 'canBack'){
+              for (let i = 0; i <this.activityList.length; i++) {
+                if (this.activityList[i].sequence == null || this.sequence > this.activityList[i].sequence) {
+                  this.backActivity.push(this.activityList.splice(i, 1)[0]);
+                  i--;
+                }
+              }
+              if (this.backActivity.length > 0){
+                this.backPersonItem = this.backActivity[0].personList;
+                this.backPersonform.agreeTag = this.backActivity[0].agreeTag;
+                this.backPersonform.activity = this.backActivity[0].activityId;
+                this.backPersonform.transitionId = this.backActivity[0].transitionId;
+                this.backPersonform.transactor = this.backPersonItem[0].personUuid;
+                if (this.backActivity[0].customizedType) {
+                  this.backPersonform.customizedType =
+                    this.backActivity[0].customizedType;
+                } else {
+                  this.backPersonform.customizedType = "";
+                }
+              }
+            }
             this.personItem = this.activityList[0].personList;
             this.isAllAssignment = this.activityList[0].isAllAssignment;
             this.personform.agreeTag = this.activityList[0].agreeTag;
@@ -960,7 +1096,30 @@
           }
         });
       },
-
+      backHandleChange(val) {
+        this.checkedPerList = [];
+        this.backActivity.forEach((item) => {
+          if (val == item.activityId) {
+            this.isAllAssignment = item.isAllAssignment;
+            this.backPersonItem = item.personList;
+            this.backPersonform.activity = item.activityId;
+            this.backPersonform.transitionId = item.transitionId;
+            this.backPersonform.transactor = this.backPersonItem[0].personUuid;
+            if (item.customizedType) {
+              this.backPersonform.customizedType = item.customizedType;
+            } else {
+              this.backPersonform.customizedType = "";
+            }
+            //处理流程结束节点，如果是结束节点，设置人员的名称为无
+            this.backPersonItem.forEach((item) => {
+              if (item.personUuid == "flowEnd") {
+                item.personName = "无";
+              }
+            });
+            return;
+          }
+        });
+      },
       //处理流程结束节点，如果是结束节点，设置人员的名称为无
       saveNew() {
         if (this.opinionform.opinion == "") {
@@ -1102,8 +1261,14 @@
         this.submitFlow();
       },
       submitFlow() {
+        if (this.dialogShow){
+          this.personform = this.backPersonform;
+        }
         if (this.isAllAssignment == "checkbox") {
           this.formData.personUuId = this.checkedPerList.join(",");
+          if (this.dialogShow){
+            this.formData.personUuid = this.backCheckedPerList.join(",");
+          }
         } else {
           this.formData.personUuId = this.personform.transactor;
         }
@@ -1244,6 +1409,7 @@
           //   });
         }
         // this.common.endLoading();
+        this.dialogShow = false;
       },
       // 返回待办已办
       back() {
@@ -1525,7 +1691,67 @@
                   this.isLast = false;
               })
               .catch(() => {});
-      }
+      },
+      goBackAtWill() {
+        if (this.opinionform.opinion == "") {
+          this.common.alertMsg(2, "请填写意见后再提交流程");
+          return;
+        }
+        if(this.backPersonform) {
+          this.$confirm("确定要退回吗？", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          })
+            .then(() => {
+              if (
+                this.backPersonform.customizedType &&
+                this.backPersonform.customizedType == "isdrafter"
+              ) {
+                //上面判断错误 原来写的是 idDrafter 但是传过来的却是 isdrafter
+                //修改业务审核状态
+                this.$store.dispatch("applyInfo/setStatus", "3");
+                //预留返回主审人修改 回调方法 修改对应业务状态为草稿 使用时放开即可
+                //这个地方 是 进入了返回主审修改的地方 如果返回主审人是申请人 那么就更新业务状态为草稿
+                //业务页面 不写方法虽然不会影响程序正常执行 但是控制台会爆红
+                var createPersonUuid = this.$route.params.approvalData.createPersonUuid
+                if (this.isAllAssignment == 'checkbox') {
+                  this.backPersonItem.forEach((value, index) => {
+                    if (value.persoUuid == createPersonUuid) {
+                      var templateParam = this.$route.params.approvalData.appDataUuid
+                      this.$refs.applyPage.updateApplyStatusBecauseBackApplication(templateParam)
+                    }
+                  })
+                } else {
+                  this.backPersonItem.forEach((value, index) => {
+                    if (value.personUuid == createPersonUuid) {
+                      var templateParam = this.$route.params.approvalData.appDataUuid
+                      this.$refs.applyPage.updateApplyStatusBecauseBackApplication(templateParam)
+                    }
+                  })
+                }
+                this.common.startLoading();
+                this.submitFlow();
+                return;
+              }
+              this.common.startLoading();
+              this.submitFlow();
+            })
+            .catch(() => {
+            });
+          // this.save();
+        } else {
+          //非结束点
+          this.common.alertMsg(2, "请选择退回人员");
+        }
+        // showNext(val){
+        //   if (val && val > this.sequence){
+        //     return true;
+        //   }else {
+        //     return false;
+        //   }
+        // }
+      },
     },
   };
 </script>

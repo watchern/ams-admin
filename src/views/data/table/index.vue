@@ -4,8 +4,8 @@
     <!-- left_conter -->
     <div class="left_conter">
       <LeftTrees ref="tree_left"
-                 @details='Details'
-                 @queryList='query_list'
+                 @details="Details"
+                 @queryList="query_list"
                  @edit_list="Edit_list"
                  @delete_list="delete_list"></LeftTrees>
     </div>
@@ -80,15 +80,13 @@
                      @click="getTables">查询</el-button>
         </div>
         <div class="dlag_conter containerselect padding10">
-          <MyElTree ref="tree1"
+          <MyElTree ref="sourceTree"
                     v-loading="treeLoading"
                     :props="props"
                     :data="tableData"
                     class="filter-tree"
                     show-checkbox
-                    :filter-node-method="filterNode"
                     @check-change="nodeClick_table"
-                    @node-click="nodeClick_table"
                     default-expand-all>
             <span slot-scope="{ node, data }"
                   class="custom-tree-node">
@@ -167,6 +165,7 @@
               class="dialog-footer">
           <el-button @click="dialogVisible_forms = false">关闭</el-button>
           <el-button type="primary"
+                     :loading="btnLoading"
                      @click="next_save()">确定</el-button>
         </span>
       </el-dialog>
@@ -279,7 +278,7 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <!-- 所属系统 && 文件名-->
+              <!-- 所属系统 && 增全量-->
               <el-col :span="11">
                 <el-form-item label="所属系统："
                               prop="businessSystemId">
@@ -296,13 +295,17 @@
               </el-col>
               <el-col :span="11"
                       :offset="2">
-                <el-form-item label="文件名：">
-                  <el-input type="text"
-                            placeholder="请输入文件名称"
-                            style="width: 100%;"
-                            v-model="form.fileName"
-                            :rows="4">
-                  </el-input>
+                <el-form-item label="增全量："
+                              prop="isSpike">
+                  <el-select v-model="form.isSpike"
+                             style="width: 100%;"
+                             :rows="4"
+                             placeholder="请选择是否增量">
+                    <el-option v-for="item in option_isSpike"
+                               :key="item.value"
+                               :label="item.label"
+                               :value="item.value" />
+                  </el-select>
                 </el-form-item>
               </el-col>
               <!-- 数据日期 && 表大小-->
@@ -362,10 +365,7 @@
                   </el-form-item>
                 </div>
               </el-col>
-              <!-- </div> -->
-              <!-- </div> -->
-              <!--表分区 && 增全量 -->
-              <!-- <div class="son"> -->
+              <!--表分区 && 文件名 -->
               <el-col :span="11">
                 <el-form-item label="表分区："
                               prop="partitions">
@@ -382,22 +382,17 @@
                   </div>
                 </el-form-item>
               </el-col>
-              <el-col :span="11"
+              <!-- <el-col :span="11"
                       :offset="2">
-                <el-form-item label="增全量："
-                              prop="isSpike">
-                  <el-select v-model="form.isSpike"
-                             style="width: 100%;"
-                             :rows="4"
-                             placeholder="请选择是否增量">
-                    <el-option v-for="item in option_isSpike"
-                               :key="item.value"
-                               :label="item.label"
-                               :value="item.value" />
-                  </el-select>
+                <el-form-item label="文件名：">
+                  <el-input type="text"
+                            placeholder="请输入文件名称"
+                            style="width: 100%;"
+                            v-model="form.fileName"
+                            :rows="4">
+                  </el-input>
                 </el-form-item>
-              </el-col>
-              <!-- </div> -->
+              </el-col> -->
               <!-- 数据标签 -->
               <!-- <div class="son">
               <div class="son_check">
@@ -678,14 +673,6 @@ export default {
         isSpike: 1,//是否增量
         labelList: [], // 标签列表
         isSentFile: 0, //是否推送文件
-        check_list: [
-          {
-            label: "",
-            fileName: "",
-            pid: "",
-            id: "",
-          },
-        ], // 选择的数据表
       }, // 单个注册表单数据
       option_isSpike: [
         {
@@ -701,7 +688,6 @@ export default {
       resultShareDialogIsSee: false, // 选择责任人弹窗显示
       next_data: [], // 系统、主题、分层数据
       is_next: false, //是否显示下一步
-      ischeck_data: {}, //第一步选择的数据库
       data_type: [
         {
           value: "1",
@@ -1116,7 +1102,6 @@ export default {
       this.show_details = show_details;
       this.isDisable_input = isDisable_input;
       this.$nextTick(() => {
-        this.$refs.Details_ref.$refs.tableLines.init(1)//刷新列表 更新关系树
         this.$refs.Details_ref.post_sql_data()//更新查看sql
         this.$refs.Details_ref.table_list(this.tableMetaUuid)//更新列信息
       })
@@ -1125,7 +1110,6 @@ export default {
     query_list (data, show_details) {
       this.dataSource = data.dataSource//新增关系树 和注册首页数据源绑定且不可修改
       this.show_details = show_details; //显示列表
-      // this.query = data;
       this.list_loading = true; //子组件loading
       let params = {
         businessSystemId: data.businessSystemId, //id主键
@@ -1149,16 +1133,11 @@ export default {
       this.tableNameFilter = "";
       this.getSchemas();
     },
-    // 选择注册表 筛选
-    filterNode (value, data) {
-      if (!value) return true;
-      return data.label.indexOf(value) !== -1;
-    },
     // 上一步
     step_data (form) {
       this.$nextTick(() => {
-        this.$refs['form'].resetFields(); //清空添加的值
-        this.$refs["form"].clearValidate();
+        this.$refs[form].resetFields(); //清空添加的值
+        this.$refs[form].clearValidate();
       });
       this.dialogVisible_information = false; //关闭基本信息
       this.clear();
@@ -1190,35 +1169,12 @@ export default {
         isSpike: 1,//是否增量
         labelList: [], // 标签列表
         isSentFile: 0, //是否推送文件
-        check_list: [
-          {
-            label: "",
-            fileName: "",
-            pid: "",
-            id: "",
-          },
-        ], // 选择的数据表
       }
     },
     // 第一步选择的数据库
-    nodeClick_table (data, node, tree) {
-      //获取所有选中的节点 start
-      let res = this.$refs.tree1.getCheckedNodes();
-      var check_list = [];
-      for (var i = 0; i < res.length; i++) {
-        let obj = {
-          label: res[i].label,
-          fileName: "",
-          pid: res[i].pid,
-          id: res[i].id,
-        };
-        check_list.push(obj);
-      }
-      this.form.check_list = check_list;
-      if (this.form.check_list.length !== 0) {
-        // 显示保存按钮
+    nodeClick_table () {
+      if (this.$refs.sourceTree.getCheckedNodes().length > 0) {
         this.is_next = true;
-        this.ischeck_data = data;
       } else {
         this.is_next = false;
       }
@@ -1227,7 +1183,8 @@ export default {
     next () {
       let dbName = []; // 选中的模式 唯一
       let tbList = []; // 选中的表
-      this.form.check_list.forEach(item => {
+      let checkedNodes = this.$refs.sourceTree.getCheckedNodes();
+      checkedNodes.forEach(item => {
         if (item.pid != 'ROOT') {
           if (dbName.indexOf(item.pid) == -1) {
             dbName.push(item.pid);
@@ -1275,12 +1232,14 @@ export default {
     },
     // 选择多个的情况  下一步的确认 批量多个注册
     next_save () {
-      for (var i = 0; i < this.form.check_list.length; i++) {
+      this.btnLoading = true;
+      let checkedNodes = this.$refs.sourceTree.getCheckedNodes();
+      for (var i = 0; i < checkedNodes.length; i++) {
         const tableForm = {
-          tableMetaUuid: this.form.check_list[i].id,
-          displayTbName: this.form.check_list[i].label,
-          dbName: this.form.check_list[i].pid,
-          tbName: this.form.check_list[i].label,
+          tableMetaUuid: checkedNodes[i].id,
+          displayTbName: checkedNodes[i].label,
+          dbName: checkedNodes[i].pid,
+          tbName: checkedNodes[i].label,
           folderUuid: this.form.folderUuid, //目录id
           personLiables: this.form.personLiables, // 资源责任人
           isSpike: this.form.isSpike, //是否增量
@@ -1289,7 +1248,7 @@ export default {
             businessSystemId: '0', //id主键
             tableCode: '', //资源编码
             tableLayeredId: '0', //资源分层主键
-            tableMetaUuid: this.form.check_list[i].id, //资源主键
+            tableMetaUuid: checkedNodes[i].id, //资源主键
             tableRemarks: "", //资源备注
             tableThemeId: "0", //资源主题主键
             tableType: "1", //资源类型
@@ -1342,9 +1301,8 @@ export default {
       this.chooseTables = []; //传输的数据
       this.$nextTick(() => {
         this.$refs[form].resetFields(); //清空添加的值
-        this.$refs["form"].clearValidate();
+        this.$refs[form].clearValidate();
       });
-      this.clear();
     },
     // 下一步的保存
     save (form) {
@@ -1355,62 +1313,57 @@ export default {
       }, 2000);
       this.$refs[form].validate((valid) => {
         if (valid) {
-          let names = this.form.check_list.map((item) => item["fileName"]);
-          let nameSet = new Set(names);
-          if (nameSet.size == names.length) {
-            for (var i = 0; i < this.form.check_list.length; i++) {
-              const tableForm = {
-                chnName: this.form.chnName,
-                tableMetaUuid: this.form.check_list[i].id,
-                displayTbName: this.form.check_list[i].label,
-                dbName: this.form.check_list[i].pid,
-                tbName: this.form.check_list[i].label,
-                folderUuid: this.form.folderUuid, //目录id
-                personLiables: this.form.personLiables, // 资源责任人
+          let checkedNodes = this.$refs.sourceTree.getCheckedNodes();
+          for (var i = 0; i < checkedNodes.length; i++) {
+            const tableForm = {
+              chnName: this.form.chnName,
+              tableMetaUuid: checkedNodes[i].id,
+              displayTbName: checkedNodes[i].label,
+              dbName: checkedNodes[i].pid,
+              tbName: checkedNodes[i].label,
+              folderUuid: this.form.folderUuid, //目录id
+              personLiables: this.form.personLiables, // 资源责任人
+              isSpike: this.form.isSpike, //是否增量
+              labelList: this.form.labelList,
+              tableRelationQuery: {
+                tableDataSource: this.$refs.tree_left.query.dataSource, //数据源
+                businessSystemId: this.form.businessSystemId, //id主键
+                tableCode: this.form.tableCode, //资源编码
+                tableLayeredId: this.form.tableLayeredId, //资源分层主键
+                tableMetaUuid: checkedNodes[i].id, //资源主键
+                tableRemarks: this.form.tableRemarks, //资源备注
+                tableThemeId: this.form.tableThemeId, //资源主题主键
+                tableType: this.form.tableType, //资源类型
                 isSpike: this.form.isSpike, //是否增量
-                labelList: this.form.labelList,
-                tableRelationQuery: {
-                  tableDataSource: this.$refs.tree_left.query.dataSource, //数据源
-                  businessSystemId: this.form.businessSystemId, //id主键
-                  tableCode: this.form.tableCode, //资源编码
-                  tableLayeredId: this.form.tableLayeredId, //资源分层主键
-                  tableMetaUuid: this.form.check_list[i].id, //资源主键
-                  tableRemarks: this.form.tableRemarks, //资源备注
-                  tableThemeId: this.form.tableThemeId, //资源主题主键
-                  tableType: this.form.tableType, //资源类型
-                  isSpike: this.form.isSpike, //是否增量
-                  isSentFile: this.form.isSentFile, //是否推送文件
-                  fileName: this.form.fileName, //文件名称
-                  dataDate: this.form.dataDate, //时间
-                },
-              };
-              this.chooseTables.push(tableForm);
-            }
-            // 保存数据
-            batchSaveTable_save(this.chooseTables).then((resp) => {
-              if (resp.code == 0) {
-                this.$message({
-                  type: "success",
-                  message: "新增成功",
-                });
-                this.btnLoading = false; //保存loadnin
-                this.chooseTables = []; //传输的数据
-                this.update_tree();//更新左侧树
-                this.query_list(this.$refs.tree_left.query, false);//刷新列表
-                this.$nextTick(() => {
-                  this.$refs.form.resetFields(); //清空添加的值
-                  this.$refs.form.clearValidate();
-                });
-              } else {
-                this.btnLoading = false;
-                this.$message.error(res.msg);
-              }
-              this.dialogVisible_information = false;//关闭注册资源
-              this.registTableFlag = false; //关闭上一步
-            });
-          } else {
-            this.$message({ type: "info", message: "文件名字不可以重复" });
+                isSentFile: this.form.isSentFile, //是否推送文件
+                fileName: this.form.fileName, //文件名称
+                dataDate: this.form.dataDate, //时间
+              },
+            };
+            this.chooseTables.push(tableForm);
           }
+          // 保存数据
+          batchSaveTable_save(this.chooseTables).then((resp) => {
+            if (resp.code == 0) {
+              this.$message({
+                type: "success",
+                message: "新增成功",
+              });
+              this.btnLoading = false; //保存loadnin
+              this.chooseTables = []; //传输的数据
+              this.update_tree();//更新左侧树
+              this.query_list(this.$refs.tree_left.query, false);//刷新列表
+              this.$nextTick(() => {
+                this.$refs.form.resetFields(); //清空添加的值
+                this.$refs.form.clearValidate();
+              });
+            } else {
+              this.btnLoading = false;
+              this.$message.error(res.msg);
+            }
+            this.dialogVisible_information = false;//关闭注册资源
+            this.registTableFlag = false; //关闭上一步
+          });
         } else {
           this.btnLoading = false; //保存loadnin
           this.$message({
@@ -1478,7 +1431,6 @@ export default {
     },
     // 分页
     handleCurrent (val) {
-
       this.$refs.tree_left.query.pageNo = val;
       this.query_list(this.$refs.tree_left.query, false);
     },
