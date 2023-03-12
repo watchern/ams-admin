@@ -251,6 +251,16 @@
                   </el-select>
                 </el-form-item>
               </el-col>
+              <el-col :span="24" v-if="form.tableType == 3">
+                <el-form-item label="表SQL：" prop="tableSql">
+                  <el-input
+                    v-model="form.tableSql" 
+                    type="textarea" 
+                    style="width: 100%;" 
+                    :rows="4"
+                  ></el-input>
+                </el-form-item>
+              </el-col>
               <!-- </div> -->
               <!-- 资源主题 && 资源分层 -->
               <el-col :span="24">
@@ -697,6 +707,10 @@ export default {
           value: "2",
           label: "视图",
         },
+        {
+          value: "3",
+          label: "宽表",
+        },
       ], // 资源类型
       show_details: false, //显示基本信息详情
       isBtn: true, //是否显示按钮
@@ -923,6 +937,8 @@ export default {
               message: res.data.msg,
             });
           }
+        }).catch(e => {
+          this.importLoad = false;
         });
       }
     },
@@ -1338,6 +1354,7 @@ export default {
                 isSentFile: this.form.isSentFile, //是否推送文件
                 fileName: this.form.fileName, //文件名称
                 dataDate: this.form.dataDate, //时间
+                tableSql: this.form.tableSql, //资源sql
               },
             };
             this.chooseTables.push(tableForm);
