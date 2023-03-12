@@ -782,7 +782,7 @@ export default {
         tableLayeredId: data.tableLayeredId, //分层
         folderUuid: data.folderUuid, //目录
         dataSource: data.dataSource, //数据源
-        pageNo: data.pageNo,
+        pageNo: 1,
         pageSize: data.pageSize,
         tbName: data.tbName,
         param: this.serachParams,
@@ -981,11 +981,11 @@ export default {
         });
       } else {
         importTable_table(this.importtemp).then((res) => {
-          if (res.data.code === "200") {
+          if (res.code == "0") {
             this.importVisible = false;
             this.$notify({
               title: "成功",
-              message: res.data.msg,
+              message: res.data,
               type: "success",
               duration: 2000,
               position: "bottom-right",
@@ -1513,7 +1513,7 @@ export default {
 .data_res >>> .el-form-item {
   /* margin-bottom: 0 !important; */
 }
-/* 
+/*
 .dlag_width >>> .el-dialog {
   min-width: 600px !important;
 }
