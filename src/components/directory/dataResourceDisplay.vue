@@ -11,6 +11,7 @@
                     @search="search"
                     @clearSearch="clear"
                     :dropDown="dropDown"
+                    :key="serachKey"
                     @change="onChange"></SearchCommon>
     </div>
     <!-- 查询 end-->
@@ -190,8 +191,13 @@
             <div class="tlnh-type"></div>
             <div class="tlnm-right">
               <div class="tln-top">
-                <p class="new_num">{{ item.tbName }}</p>
-                <p class="new_title">{{ item.chnName }}</p>
+                <el-tooltip class="item" effect="light" :content="item.tbName" placement="top">
+                  <p class="new_num">{{ item.tbName }}</p>
+                </el-tooltip>
+                <el-tooltip class="item" effect="light" :content="item.chnName" placement="top">
+                  <p class="new_title">{{ item.chnName }}</p>
+                </el-tooltip>
+
                 <span class="new_type"
                       v-if="item.tableRelationQuery.tableThemeName">{{ item.tableRelationQuery.tableThemeName }}</span>
               </div>
@@ -216,13 +222,16 @@
                 <div class="text vertical"
                    :title="item.tableRelationQuery.tableRemarks"
                    v-if="item.tableRelationQuery.tableRemarks">
-                <div class="gray-name-n">描述：</div>{{ item.tableRelationQuery.tableRemarks }}
+                <div class="gray-name-n">描述：</div>
+                  <span class="inline-block">{{ item.tableRelationQuery.tableRemarks }}</span>
                 </div>
                 <div class="text "
                    v-else><div class="gray-name-n">描述：</div>暂无</div>
                 <div class="text vertical"
                    :title="item.colMeta"
-                   v-if="item.colMeta"><div class="gray-name-n">字段：</div>{{ item.colMeta }}</div>
+                   v-if="item.colMeta"><div class="gray-name-n">字段：</div>
+                  <span class="inline-block"> {{ item.colMeta }}</span>
+                </div>
                 <div class="text"
                    v-else><div class="gray-name-n">字段：</div>暂无</div>
               </div>
@@ -369,6 +378,7 @@ export default {
   },
   data () {
     return {
+      serachKey:1,
       check_list: [], //多选批量的数量
       serachParams: [],
     };
@@ -378,6 +388,9 @@ export default {
   computed: {},
   mounted () { },
   methods: {
+    refreshSearchKey(){
+      this.serachKey=Math.random();
+    },
     onChange (serachParams) {
       this.serachParams = serachParams;
     },
@@ -977,11 +990,12 @@ export default {
       font-weight: 400;
       color:inherit;
     }
-    .text{
-      width:100%;
+    .text>span{
+      width:88%;
       overflow:hidden;
       white-space:nowrap;
       text-overflow: ellipsis;
+      vertical-align: top;
     }
   }
   .gray-name-n{

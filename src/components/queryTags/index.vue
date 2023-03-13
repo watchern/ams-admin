@@ -110,7 +110,7 @@ export default {
   },
   watch: {
     TagsAll () {
-      this.$emit("change", this.serachParams);
+      // this.$emit("change", this.serachParams);
     },
     currentval (val) {
       // if(val!=''){
@@ -220,9 +220,11 @@ export default {
     // 重置
     clear_search () {
       this.TagsAll = [];
+      this.$forceUpdate();
       this.serachParams = {}
       // 如果内容清空后 返回默认位置
-      console.log(this.TagsAll.length);
+      this.changeParams();
+      this.search();
       if (this.TagsAll.length == 0) {
         this.input_left = 0;
       }
@@ -240,6 +242,7 @@ export default {
         }
       })
       this.serachParams=obj;
+      this.$emit("change", this.serachParams);
     },
     //回车-- 增加tag
     addTags (val) {
@@ -269,8 +272,9 @@ export default {
     // 点击删除
     removeTag (index, item) {
       this.TagsAll.splice(index, 1);
-
+      this.$forceUpdate();
       this.changeParams();
+      this.search();
       // 如果内容清空后 返回默认位置
       if (this.TagsAll == []) {
         this.left_wid = '';

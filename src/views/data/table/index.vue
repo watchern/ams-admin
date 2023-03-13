@@ -1136,6 +1136,7 @@ export default {
         pageNo: data.pageNo,
         pageSize: data.pageSize,
         tbName: data.tbName,
+        param: this.serachParams,
       };
       listByTreePage(params).then((resp) => {
         this.list_loading = false; //子组件loading
@@ -1373,6 +1374,7 @@ export default {
               this.$nextTick(() => {
                 this.$refs.form.resetFields(); //清空添加的值
                 this.$refs.form.clearValidate();
+                this.$refs.Display.refreshSearchKey();
               });
             } else {
               this.btnLoading = false;

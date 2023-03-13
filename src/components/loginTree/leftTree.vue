@@ -639,6 +639,7 @@ export default {
           this.inverse();
           //数据授权-资源绑定-联动效果
           this.$emit("addRoleCheck");
+          this.$refs.tree2.filter(this.filterText2);
         });
       });
     },
@@ -670,6 +671,7 @@ export default {
           this.inverse();
           //数据授权-资源绑定-联动效果
           this.$emit("addRoleCheck");
+          this.$refs.tree2.filter(this.filterText2);
         });
       });
     },
@@ -701,6 +703,7 @@ export default {
           this.inverse();
           //数据授权-资源绑定-联动效果
           this.$emit("addRoleCheck");
+          this.$refs.tree2.filter(this.filterText2);
         });
       });
     },
@@ -729,6 +732,7 @@ export default {
         }
         this.loading = false;
         this.tabclick = false;
+        this.$refs.tree2.filter(this.filterText2);
       });
     },
     // 点击注册资源的 数据库列表
@@ -876,6 +880,7 @@ export default {
       //数据授权-资源绑定-联动效果
       this.$emit("switchTabAccredit", tab.name);
       this.$emit("addRoleCheck");
+      this.$refs.tree2.filter(this.filterText2);
     },
     filterNode(value, data, node) {
       // if (!value) return true;
