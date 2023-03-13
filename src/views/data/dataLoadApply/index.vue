@@ -856,7 +856,7 @@ export default {
       //工作流相关
       flowItem: {
         //动态赋值
-        wftype: "auditNotice2",
+        wftype: "auditNotice",
         applyUuid: "",
         detailUuids: "",
         applyTitle: "",
