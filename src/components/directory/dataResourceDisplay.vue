@@ -956,13 +956,17 @@ export default {
       font-weight: normal;
       max-width:30%;
       overflow:hidden;
-      width-space:nowrap;
+      white-space:nowrap;
       text-overflow: ellipsis;
     }
     .new_type{
       font-size: 13px;
       padding:3px 8px;
       vertical-align: top;
+      max-width:30%;
+      overflow:hidden;
+      white-space:nowrap;
+      text-overflow: ellipsis;
     }
   }
   .tln-middle{
@@ -976,7 +980,7 @@ export default {
     .text{
       width:100%;
       overflow:hidden;
-      width-space:nowrap;
+      white-space:nowrap;
       text-overflow: ellipsis;
     }
   }

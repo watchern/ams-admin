@@ -86,6 +86,18 @@
                     </el-form-item>
                   </div>
                 </el-col>
+                <el-col :span="24" v-if="form.tableType == 3">
+                  <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
+                    <el-form-item label="表SQL：" prop="tableSql">
+                      <el-input 
+                        v-model="form.tableSql" 
+                        type="textarea" 
+                        style="width: 100%;" 
+                        :rows="4"
+                      ></el-input>
+                    </el-form-item>
+                  </div>
+                </el-col>
                 <el-col :span="11">
                   <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
                     <el-form-item label="资源主题："
@@ -364,7 +376,7 @@
             数据血缘影响分析
           </h2>
           <div class="padding20">
-            <dataConsanguinity></dataConsanguinity>
+            <dataConsanguinity :sql="form.tableSql" v-if="form.tableSql"></dataConsanguinity>
             <!-- <LineMap></LineMap> -->
             <!-- <EditMap></EditMap> -->
           </div>
@@ -708,6 +720,7 @@ export default {
         tableRemarks: "", //表说明
         tableCode: "", // 资源编码
         tableType: "", // 资源类型
+        tableSql: "", // 资源sql
         tableThemeName: "", //所属主题name
         tableThemeId: "", // 资源主题 id
         tableLayeredName: "", //资源分层
@@ -772,6 +785,14 @@ export default {
           value: "2",
           label: "视图",
         },
+        {
+          value: "3",
+          label: "宽表",
+        },
+        // {
+        //   value: "4",
+        //   label: "模型",
+        // },
       ],
       dialogVisible_tag: false, //选择标签
       Heat: [
@@ -794,9 +815,6 @@ export default {
       visibleTableList: [],
       is_main_table: true, //是否是主表
       cong_table_list: [], // 从表列表
-      select_data: {
-        tableType: '',//
-      }, //选择的字段
       //新增的表关系信息
       table_visible_form: {
         tbName: "", // 表名称：
@@ -957,6 +975,7 @@ export default {
         this.form.tableRemarks = _data.tableRelationQuery.tableRemarks; //表说明
         this.form.tableCode = _data.tableRelationQuery.tableCode.substring(0, resp.data.tableRelationQuery.tableCode.lastIndexOf(">"));//资源编码
         this.form.tableType = _data.tableRelationQuery.tableType;//资源类型
+        this.form.tableSql = _data.tableRelationQuery.tableSql;//资源sql
         this.form.tableThemeId = _data.tableRelationQuery.tableThemeId; //资源主题
         this.form.tableThemeName = _data.tableRelationQuery.tableThemeName; //资源主题 name
         this.form.tableLayeredId = _data.tableRelationQuery.tableLayeredId; //资源分层
@@ -1011,6 +1030,7 @@ export default {
               tableMetaUuid: this.tableMetaUuid,
               tableCode: this.form.tableCode,
               tableType: this.form.tableType,
+              tableSql: this.form.tableSql,
               businessSystemId: this.form.businessSystemId,
               tableThemeId: this.form.tableThemeId,
               tableLayeredId: this.form.tableLayeredId,
