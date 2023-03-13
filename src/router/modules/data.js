@@ -27,6 +27,14 @@ const dataRouter = {
       },
     },
     {
+      path: "table/detail",
+      name: "表详情",
+      component: () => import("@/views/data/table/detailfores"),
+      meta: {
+        title: "数据管理-数据准备-数据表管理",
+      },
+    },
+    {
       path: "datapermission",
       name: "数据使用权限申请",
       component: () => import("@/views/data/dataPermission/index"),
