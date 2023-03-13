@@ -53,6 +53,7 @@
             v-if="executeSqlViewDialog"
             :visible.sync="executeSqlViewDialog"
             width="60%"
+            z-index="1000000"
             :append-to-body="true"
     >
       <span style="margin: 20px">{{executeSqlViewData}}</span>
