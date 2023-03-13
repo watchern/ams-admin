@@ -413,7 +413,7 @@ export default {
       },
       flowItem: {
         //动态赋值
-        wftype: "auditNotice", //当前业务所属的流程的id
+        wftype: "personalSpace", //当前业务所属的流程的id
         applyUuid: "", //申请单主键id
         detailUuids: "",
         applyTitle: "", //请求的标题

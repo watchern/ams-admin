@@ -1824,7 +1824,7 @@ export default {
         //     .catch((result) => {
         //       this.executeLoading = false;
         //     });
-        $(".sql-editor-div").css("height", "50%")
+        $(".sql-editor-div").css("height", "50%");
         if (!obj.isExistParam) {
           // this.executeLoading = true
           _this.loadText = "正在获取SQL信息...";
@@ -2470,5 +2470,8 @@ div.rightMenu ul li:hover {
 }
 ::v-deep .oper-btn span {
   display: inline-block !important;
+}
+::v-deep .CodeMirror-scroll {
+  padding-top: 15px !important;
 }
 </style>
