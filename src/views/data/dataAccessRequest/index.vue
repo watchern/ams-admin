@@ -104,6 +104,7 @@
                    alt="">
               <img src="../../../styles/image/ban2.png"
                    class="btn_icon icon2"
+                   :disabled="selections.length != 1"
                    alt="">办理</el-button>
             <el-button type="primary"
                        class="oper-btn "
@@ -231,19 +232,45 @@
           </el-button>
         </div>
       </el-dialog>
-      <el-dialog title="办理"
-                 :visible.sync="dialogTransactVisible"
-                 :close-on-click-modal="false">
-        <div>
-          <div>待开发</div>
-          <FlowItem ref="flowItem">
+      <!--      <el-dialog title="办理"-->
+      <!--                 :visible.sync="dialogTransactVisible"-->
+      <!--                 :close-on-click-modal="false">-->
+      <!--        <div>-->
+      <!--          <FlowItem ref="flowItem">-->
 
-          </FlowItem>
+      <!--          </FlowItem>-->
+      <!--        </div>-->
+      <!--        <span class="sess-flowitem"-->
+      <!--              slot="footer">-->
+      <!--          <el-button size="mini"-->
+      <!--                     @click="dialogFlowItemShow = false">关闭</el-button>-->
+      <!--          <el-button size="mini"-->
+      <!--                     type="primary"-->
+      <!--                     class="table_header_btn"-->
+      <!--                     @click="saveOpinion">提交</el-button>-->
+
+      <!--        </span>-->
+      <!--      </el-dialog>-->
+      <el-dialog v-if="dialogTransactVisible"
+                 :close-on-click-modal="false"
+                 :visible.sync="dialogTransactVisible"
+                 title="流程提交"
+                 width="50%">
+        <div>
+          <FlowItem ref="flowItem"
+                    :flowSet="flowSet"
+                    :flowItem="flowItem"
+                    :flow-param="flowParam"
+                    :columnDefs="columnDefs"
+                    :submitData="submitData"
+                    @closeModal="closeFlowItem"
+                    @delectData="delectData"
+                    @UpdateBecauseSubmit="batchUpdateForSubmit"></FlowItem>
         </div>
         <span class="sess-flowitem"
               slot="footer">
           <el-button size="mini"
-                     @click="dialogFlowItemShow = false">关闭</el-button>
+                     @click="dialogTransactVisible = false">关闭</el-button>
           <el-button size="mini"
                      type="primary"
                      class="table_header_btn"
@@ -255,10 +282,15 @@
                  :visible.sync="dialogFlowVisible"
                  :close-on-click-modal="false">
         <div>
-          <div>待开发</div>
           <flowOpinionList :applyUuid="applyUuid"
                            :pageFrom="applyPage"></flowOpinionList>
         </div>
+        <span slot="footer">
+          <el-button size="mini"
+                     type="info"
+                     class="table_header_btn"
+                     @click="dialogFlowVisible = false">关闭</el-button>
+        </span>
       </el-dialog>
     </div>
   </div>
@@ -288,8 +320,7 @@ export default {
         //     name: '',
         // }
       ],
-
-      // //查询列表
+      //查询列表
       dropDown: [
         {
           code: 'requestName',
@@ -380,6 +411,30 @@ export default {
         requestPersionName: "",
         remark: "",
         requestTableNamelist: []
+      },
+      flowParam: 0,
+      columnDefs: [],
+      //工作流 相关
+      submitData: {
+        versionUuid: "tlLuwUhC",
+        busTableName: "", //表名
+        busDatabaseName: "warehouse", //数据库名
+        busDatabaseType: "", //
+        status: "1", //预警数据状态
+        busdatas: [],
+      },
+      //工作流相关
+      flowSet: {
+        opinionList: false,
+        opinion: false,
+        nextStep: true,
+        isSecond: false,
+      },
+      //工作流相关
+      tempFlow: {
+        sceneUuid: undefined,
+        sceneName: '',
+        sceneCode: ''
       },
       rules: {
         requestName: [
@@ -571,10 +626,35 @@ export default {
         })
       })
     },
-
+    //工作流相关
+    closeFlowItem (val) {
+      this.dialogTransactVisible = val;
+      this.flowParam = 0;
+    },
+    //工作流相关
+    delectData (val) {
+      this.dialogVisible = val;
+    },
+    //工作流相关  更改办理状态
+    batchUpdateForSubmit () { },
     //办理
     handleTransact () {
+      this.tempFlow = Object.assign({}, this.selections[0])
+      //业务主键
+      this.flowItem.appDataUuid = this.tempFlow.dataAccessReqUuid;
+      //版本id 随机生成
+      this.flowItem.versionUuid = this.common.randomString4Len(8);
+      // this.flowItem.applyTitle="场景详情流程";
+      //申请业务的名字（待办标题）
+      this.flowItem.applyTitle = this.tempFlow.requestName;
       this.dialogTransactVisible = true
+    },
+    saveOpinion () {
+      //保存业务数据成功后
+      setTimeout(() => {
+        this.$refs["flowItem"].submitFlow();
+        //将状态修改为办理中
+      }, 20);
     },
     //导出按钮
     // handleExport() {
@@ -686,8 +766,8 @@ export default {
     },
     //查看流程
     showFlow (data) {
-      this.applyUuid = data.
-        this.dialogFlowVisible = true
+      this.applyUuid = data.dataAccessReqUuid;
+      this.dialogFlowVisible = true
     },
 
     onChange (serachParams) {

@@ -18,6 +18,7 @@
     <div style="margin-left:10px" v-if="useType == 'sqlEditor' && !chartSwitching && isSee" class="overTabconBox">
       <span class="overTabconItem">共{{total}}条</span>
       <el-button
+              v-if="tableType == 'big'"
               class="oper-btn overTabconItem"
               type="primary"
               @click="executeSqlView"
@@ -53,6 +54,7 @@
             v-if="executeSqlViewDialog"
             :visible.sync="executeSqlViewDialog"
             width="60%"
+            z-index="1000000"
             :append-to-body="true"
     >
       <span style="margin: 20px">{{executeSqlViewData}}</span>

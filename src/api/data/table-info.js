@@ -521,11 +521,13 @@ export function getPersonLiableByTableMetaUuid(data){
 }
 
 //获取血缘关系图数据
-export function getDataConsanguinity() {
+export function getDataConsanguinity(sql) {
   return request({
     baseURL: baseURL,
     url: `/tableMeta/transferToJson`,
-    params: {},
+    params: {
+      content: sql
+    },
     method: 'get',
   })
 }

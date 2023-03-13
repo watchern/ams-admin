@@ -17,6 +17,7 @@ import {
 } from "@/api/data/table-info.js";
 export default {
   name: "dataConsanguinity",
+  props: ["sql"],
   data(){
     return{
       legendData:["table","insert-select","select_list","select_union","view","function"],
@@ -1248,11 +1249,11 @@ export default {
     }
   },
   mounted() {
-    getDataConsanguinity().then((resp)=>{
+    console.log("SQL:", this.sql);
+    getDataConsanguinity(this.sql).then((resp)=>{
       // console.log(resp)
       this.handleData(JSON.parse(resp.data));
     })
-
   }
 }
 </script>
