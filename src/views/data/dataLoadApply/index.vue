@@ -7,57 +7,56 @@
           <SearchCommon ref="tags"
                         @search="search"
                         :dropDown="dropDown"
-                        @clearSearch="clearAll"
-          ></SearchCommon>
-<!--          <el-form :inline="true"-->
-<!--                   :model="query"-->
-<!--                   label-position="bottom">-->
-<!--            <el-row>-->
-<!--              <el-col>-->
-<!--                <el-form-item label="申请名称："-->
-<!--                              prop="applyName">-->
-<!--                  <el-input v-model="query.applyName"-->
-<!--                            style="width: 200px"-->
-<!--                            clearable />-->
-<!--                </el-form-item>-->
-<!--                <el-form-item label="申请人："-->
-<!--                              prop="applyPerson">-->
-<!--                  <el-input v-model="query.applyPerson"-->
-<!--                            clearable />-->
-<!--                </el-form-item>-->
-<!--                <el-form-item label="列表类型："-->
-<!--                              prop="status">-->
-<!--                  <el-select v-model="query.status"-->
-<!--                             clearable-->
-<!--                             placeholder="请选择列表类型">-->
-<!--                    <el-option v-for="item in statusType"-->
-<!--                               :key="item.value"-->
-<!--                               :label="item.label"-->
-<!--                               :value="item.value" />-->
-<!--                  </el-select>-->
-<!--                </el-form-item>-->
-<!--                <el-form-item label="申请时间范围："-->
-<!--                              prop="applyTime"-->
-<!--                              style="display: inline-block;">-->
-<!--                  <el-date-picker v-model="query.startTime"-->
-<!--                                  type="datetime"-->
-<!--                                  placeholder="开始时间"-->
-<!--                                  value-format="yyyy-MM-dd HH:mm:ss" />-->
-<!--                  <el-date-picker v-model="query.endTime"-->
-<!--                                  type="datetime"-->
-<!--                                  placeholder="结束时间"-->
-<!--                                  value-format="yyyy-MM-dd HH:mm:ss" />-->
-<!--                </el-form-item>-->
-<!--                <el-form-item>-->
-<!--                  <el-button type="primary"-->
-<!--                             @keyup.enter.native="search"-->
-<!--                             @click="search()">查询</el-button>-->
-<!--                  <el-button type="primary"-->
-<!--                             @click="clearAll()">重置</el-button>-->
-<!--                </el-form-item>-->
-<!--              </el-col>-->
-<!--            </el-row>-->
-<!--          </el-form>-->
+                        @clearSearch="clearAll"></SearchCommon>
+          <!--          <el-form :inline="true"-->
+          <!--                   :model="query"-->
+          <!--                   label-position="bottom">-->
+          <!--            <el-row>-->
+          <!--              <el-col>-->
+          <!--                <el-form-item label="申请名称："-->
+          <!--                              prop="applyName">-->
+          <!--                  <el-input v-model="query.applyName"-->
+          <!--                            style="width: 200px"-->
+          <!--                            clearable />-->
+          <!--                </el-form-item>-->
+          <!--                <el-form-item label="申请人："-->
+          <!--                              prop="applyPerson">-->
+          <!--                  <el-input v-model="query.applyPerson"-->
+          <!--                            clearable />-->
+          <!--                </el-form-item>-->
+          <!--                <el-form-item label="列表类型："-->
+          <!--                              prop="status">-->
+          <!--                  <el-select v-model="query.status"-->
+          <!--                             clearable-->
+          <!--                             placeholder="请选择列表类型">-->
+          <!--                    <el-option v-for="item in statusType"-->
+          <!--                               :key="item.value"-->
+          <!--                               :label="item.label"-->
+          <!--                               :value="item.value" />-->
+          <!--                  </el-select>-->
+          <!--                </el-form-item>-->
+          <!--                <el-form-item label="申请时间范围："-->
+          <!--                              prop="applyTime"-->
+          <!--                              style="display: inline-block;">-->
+          <!--                  <el-date-picker v-model="query.startTime"-->
+          <!--                                  type="datetime"-->
+          <!--                                  placeholder="开始时间"-->
+          <!--                                  value-format="yyyy-MM-dd HH:mm:ss" />-->
+          <!--                  <el-date-picker v-model="query.endTime"-->
+          <!--                                  type="datetime"-->
+          <!--                                  placeholder="结束时间"-->
+          <!--                                  value-format="yyyy-MM-dd HH:mm:ss" />-->
+          <!--                </el-form-item>-->
+          <!--                <el-form-item>-->
+          <!--                  <el-button type="primary"-->
+          <!--                             @keyup.enter.native="search"-->
+          <!--                             @click="search()">查询</el-button>-->
+          <!--                  <el-button type="primary"-->
+          <!--                             @click="clearAll()">重置</el-button>-->
+          <!--                </el-form-item>-->
+          <!--              </el-col>-->
+          <!--            </el-row>-->
+          <!--          </el-form>-->
         </div>
         <div class="right_btn mb10">
           <el-button class="oper-btn"
@@ -506,13 +505,20 @@
           <Details ref="detailsUuid"
                    :detailsUuid='detailsUuid'></Details>
         </div>
-        <div style="text-align: right;">
-          <el-button size="mini"
-                     type="primary"
+
+        <span class="sess-flowitem"
+              slot="footer">
+          <el-button size="small"
+                     class="table_header_btn"
+                     @click="dialogDetailVisible = false">关闭</el-button>
+        </span>
+
+        <!-- <div style="text-align: right;">
+          <el-button size="small"
                      class="table_header_btn"
                      @click="dialogDetailVisible = false">关闭
           </el-button>
-        </div>
+        </div> -->
 
       </el-dialog>
 
@@ -578,7 +584,7 @@ export default {
   components: { LeftTrees, FlowItem, Details, flowOpinionList },
   data () {
     return {
-      dropDown:[
+      dropDown: [
         {
           code: 'applyName',
           name: '申请名称',
@@ -651,7 +657,7 @@ export default {
         // pageNo: 1,
         // pageSize: 10,
       },
-      total:0,
+      total: 0,
       pageQuery: {
         condition: null,
         pageNo: 1,

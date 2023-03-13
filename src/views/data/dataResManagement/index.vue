@@ -54,7 +54,7 @@
         </div>
         <el-table v-loading="listLoading"
                   :data="page_list.records"
-                  height="calc(100vh - 300px)"
+                  height="calc(100vh - 280px)"
                   border
                   fit
                   highlight-current-row
@@ -136,7 +136,7 @@
                               value-format="yyyy-MM-dd"
                               placeholder="选择日期"> -->
                 <el-input type="input"
-                          style="width: 90%"
+                          style="width: 100%"
                           :readonly="title == '查看业务系统'"
                           v-model.number="form.businessSystemEtldate"></el-input>
                 <!-- </el-date-picker> -->
@@ -172,7 +172,7 @@
                             prop="filePushPath">
                 <el-input type="textarea"
                           :rows="3"
-                          style="width: 90%;resize: none"
+                          style="width: 100%;resize: none"
                           :readonly="title == '查看业务系统'"
                           v-model="form.filePushPath">
                 </el-input>
@@ -198,7 +198,7 @@
                             prop="dataMoveDir">
                 <el-input type="textarea"
                           :rows="3"
-                          style="width: 90%;resize: none"
+                          style="width: 100%;resize: none"
                           :readonly="title == '查看业务系统'"
                           v-model="form.dataMoveDir">
                 </el-input>

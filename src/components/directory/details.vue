@@ -20,7 +20,8 @@
 
       <div class="rightList">
         <!-- 基本信息 -->
-        <div class="information rightList_child" id="id0">
+        <div class="information rightList_child"
+             id="id0">
           <h2 :class="{ isActive: navgatorIndex == 0 }">
             基本信息
           </h2>
@@ -70,7 +71,8 @@
                     </el-form-item>
                   </div>
                 </el-col>
-                <el-col :span="11" :offset="2">
+                <el-col :span="11"
+                        :offset="2">
                   <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
                     <el-form-item label="资源类型："
                                   prop="tableType">
@@ -103,7 +105,8 @@
                     </el-form-item>
                   </div>
                 </el-col>
-                <el-col :span="11" :offset="2">
+                <el-col :span="11"
+                        :offset="2">
                   <el-form-item label="资源分层："
                                 prop="tableLayeredId">
                     <el-select v-model="form.tableLayeredId"
@@ -132,7 +135,8 @@
                     </el-select>
                   </el-form-item>
                 </el-col>
-                <el-col :span="11" :offset="2">
+                <el-col :span="11"
+                        :offset="2">
                   <el-form-item label="增全量：">
                     <el-select v-model="form.isSpike"
                                @input="change($event)"
@@ -158,7 +162,8 @@
                                     v-model="form.dataDate" />
                   </el-form-item>
                 </el-col>
-                <el-col :span="11" :offset="2">
+                <el-col :span="11"
+                        :offset="2">
                   <div class="is_disabled">
                     <el-form-item label="表大小：">
                       <el-input placeholder="请输入表大小"
@@ -179,8 +184,10 @@
                               :rows="4"></el-input>
                   </el-form-item>
                 </el-col>
-                <el-col :span="11" :offset="2">
-                  <div class="son_people is_disabled" :class="isDisable_input == true ? 'is_width':''">
+                <el-col :span="11"
+                        :offset="2">
+                  <div class="son_people is_disabled"
+                       :class="isDisable_input == true ? 'is_width':''">
                     <el-form-item label="负责人：">
                       <el-input type="textarea"
                                 :disabled="disabled"
@@ -247,7 +254,8 @@
                 <el-col :span="24">
                   <el-form-item label="表热度：">
                     <ul class="Heat_ul _width">
-                      <li v-for="(it, i) in Heat" :key="i">
+                      <li v-for="(it, i) in Heat"
+                          :key="i">
                         <p>
                           {{ it.name }}
                         </p>
@@ -259,7 +267,8 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="24">
-                  <el-button type="primary" @click="previewSql()">
+                  <el-button type="primary"
+                             @click="previewSql()">
                     查看SQL语句
                   </el-button>
                 </el-col>
@@ -268,7 +277,8 @@
           </div>
         </div>
         <!-- 列信息 -->
-        <div class="rightList_child" id="id1">
+        <div class="rightList_child"
+             id="id1">
           <h2 :class="{ isActive: navgatorIndex == 1 }">
             列信息
           </h2>
@@ -295,7 +305,8 @@
           </div>
         </div>
         <!-- 索引信息 -->
-        <div class="rightList_child" id="id2">
+        <div class="rightList_child"
+             id="id2">
           <h2 :class="{ isActive: navgatorIndex == 2 }">
             索引信息
           </h2>
@@ -606,18 +617,17 @@
       </div>
       <div slot="footer">
         <el-button @click="dataTableTree = false">取消</el-button>
-        <el-button type="primary" @click="getDataTable()">确定</el-button>
+        <el-button type="primary"
+                   @click="getDataTable()">确定</el-button>
       </div>
     </el-dialog>
 
     <!-- 选择责任人 -->
-    <select-person
-      title="选择责任人"
-      :visible.sync="resultShareDialogIsSee"
-      :close-on-click-modal="false"
-      :has-selected="form.personLiables"
-      @confirm="confrimSelectPeople"
-    ></select-person>
+    <select-person title="选择责任人"
+                   :visible.sync="resultShareDialogIsSee"
+                   :close-on-click-modal="false"
+                   :has-selected="form.personLiables"
+                   @confirm="confrimSelectPeople"></select-person>
   </div>
 </template>
 
@@ -982,9 +992,6 @@ export default {
         this.form.tableRelationQueryUuid = _data.tableRelationQuery.tableRelationQueryUuid;
         this.table_visible_form.tableMetaUuid = _data.tableMetaUuid//主表从表新增用
         this.$refs.tableLines.init(1); // 初始化表关联关系
-        this.$nextTick(()=>{
-          this.$refs.form.clearValidate();
-        })
       });
     },
     // 选择标签
@@ -1551,5 +1558,4 @@ export default {
   right: 40px;
   z-index: 9;
 }
-
 </style>
