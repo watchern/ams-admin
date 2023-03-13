@@ -376,7 +376,7 @@
             数据血缘影响分析
           </h2>
           <div class="padding20">
-            <dataConsanguinity :sql="form.tableSql"></dataConsanguinity>
+            <dataConsanguinity :sql="form.tableSql" v-if="form.tableSql"></dataConsanguinity>
             <!-- <LineMap></LineMap> -->
             <!-- <EditMap></EditMap> -->
           </div>
