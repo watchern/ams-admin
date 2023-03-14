@@ -28,10 +28,10 @@
                       content="分层"
                       placement="top"><i class="el-icon-coin"></i></el-tooltip></span>
       </el-tab-pane>
-      <!-- <el-tab-pane label="个人空间"
+      <el-tab-pane label="个人空间"
                    :disabled="tabclick"
                    v-if="isShowPersonSpaceTab"
-                   name="3"></el-tab-pane> -->
+                   name="3"></el-tab-pane>
     </el-tabs>
     <div class="padding10">
       <el-input v-model="filterText2"
@@ -516,7 +516,7 @@ export default {
         //SQL编辑器
         if (this.loadLeftTreeType == "1") {
           this.isShowLoadLeftTreeBtn = false;
-          this.isShowPersonSpaceTab = true;
+          // this.isShowPersonSpaceTab = true;
           this.draggable = true;
           this.expandOnClickNode = true
         }
