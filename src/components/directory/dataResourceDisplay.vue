@@ -243,7 +243,8 @@
                   <img src="../../assets/img/relationTabel.png" alt="">
                   <span v-if="item.relations">{{ item.relations.length }}</span>
                   <el-card class="show_tips"
-                           v-if="item.relations.length !== 0">
+                           >
+<!--                    v-if="item.relations.length !== 0"-->
                     <div>表关联列表：</div>
                     <p v-for="(its, index_relations) in item.relations"
                        :key="index_relations">
@@ -254,7 +255,8 @@
                   <img src="../../assets/img/useModel.png" style="width: 15px;" alt="">
                   <span v-if="item.models">{{ item.models.length }}</span>
                   <el-card class="show_tips"
-                           v-if="item.models.length !== 0">
+                           >
+<!--                    v-if="item.models.length !== 0"-->
                     <div>使用此表模型列表：</div>
                     <p v-for="(it, index_model) in item.models"
                        :key="index_model">{{ it.MODEL_NAME }}</p>
