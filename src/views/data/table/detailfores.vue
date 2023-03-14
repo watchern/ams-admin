@@ -1,5 +1,5 @@
 <template>
-    <Details ref="Details_ref"
+    <Details ref="Details_ref" v-if="isShow"
              :dataSource = "dataSource"
              :tableMetaUuid = "tableMetaUuid"
              :isDisable_input = true
@@ -13,6 +13,7 @@ export default {
         return {
             dataSource: '',
             tableMetaUuid: '',
+            isShow: false
         }
     },
     mounted() {
@@ -22,6 +23,7 @@ export default {
         init(){
             this.dataSource = this.$route.query.dataSource
             this.tableMetaUuid = this.$route.query.tableMetaUuid
+            this.isShow = true
         },
         queryData(){
 
