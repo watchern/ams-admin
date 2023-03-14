@@ -658,7 +658,7 @@
                     :key="index"
                     style="height: 100%; width: 100%; overflow: auto"
                 >
-                  <div v-if="afterResult" style="height: 350px">
+                  <div v-if="afterResult" style="height: 350px" :key="thechartdead">
                     <div>
                       <img
                           src="./imgs/change.png"
@@ -678,6 +678,7 @@
                       />
                     </div>
                     <mtEditor
+                        v-if="afterResult"
                         style="height: 100%"
                         v-loading="chartLoading"
                         :key="index"
@@ -727,7 +728,8 @@
                 />
               </div>
               <mtEditor
-                  style="height: 100%"
+                v-if="afterResult"
+                style="height: 100%"
                 v-loading="chartLoading"
                 :key="index"
                 ref="chart1"
@@ -1759,10 +1761,9 @@ export default {
       $('#bottomPart').show();
     },
     zoomChange(type){
-
       if(type=="normal"){
         this.gridLayKey=Math.random();
-        this.chartReflexion(this.documentClientHeight);
+        this.chartReflexion(this.documentClientHeight,true);
       }
      this.tableType=type;
      this.tableShowHeight=parseInt(this.documentClientHeight/30)-9;
@@ -3330,7 +3331,7 @@ export default {
       //判断颜色等信息
        if (params.data) {
         return handleDataSingleValue(params.data, modelThresholdValues);
-      } 
+      }
     },
     /**
      * 渲染表格，将颜色渲染上去
@@ -4076,12 +4077,13 @@ export default {
         this.chartConfigs.chart.splice(indexzz, 1, chartJson);
       }
       this.chartShowIsSee = false;
+      this.afterResult = true
       $('#bottomPart').show();
     },
     /**
      * 获取参数返显的数据
      */
-    chartReflexion(documentClientHeight) {
+    chartReflexion(documentClientHeight,isZoom) {
       let _h=parseInt(documentClientHeight/60),_minus=0;
       if(documentClientHeight<=768) {
         _minus =5;
@@ -4096,6 +4098,8 @@ export default {
       if(documentClientHeight == "" && this.useType == "previewTable"){
         _minus=-12;
       }
+      // 缩小操作不清空图表
+      if (isZoom) return
       this.chartConfigs = {
         chart: [],
         layout: [{ x: 0, y: 0, w: 12, h: _h-_minus, i: "0" }],
@@ -4223,6 +4227,8 @@ export default {
     openEditChartDialog(index) {
       this.nowChartJson = this.chartConfigs.chart[index];
       this.chartIndex = index;
+      // 图表编辑之后的重新加载
+      this.afterResult = false
       this.chartShowIsSee = true;
       $('#bottomPart').hide();
     },
@@ -4230,7 +4236,8 @@ export default {
      * 删除图标
      */
     deleteChart(index) {
-      let indexzz = this.chartIndex;
+      // let indexzz = this.chartIndex;
+      let indexzz = index;
       if (this.modelChartSetups.length != 0) {
         var modelChartSetupUuid = {};
         for (var i = 0; i < this.modelChartSetups.length; i++) {
