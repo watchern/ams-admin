@@ -180,8 +180,8 @@
            :class="isBtn == true ?'is_min_heihgt':'is_heihgt'">
         <div class="table-list-new" v-for="item in list">
           <div class="tln-header">
-            <div class="tlnh-type">{{ item.tableRelationQuery.tableLayeredName||'null'}}</div>
-            <div class="tlnh-title" @click="on_deails(item)">{{ item.tableRelationQuery.businessSystemName||'null' }}</div>
+            <div class="tlnh-type">{{ item.tableRelationQuery.tableLayeredName}}</div>
+            <div class="tlnh-title" @click="on_deails(item)">{{ item.tableRelationQuery.businessSystemName }}</div>
             <div class="inline-block tlnh-checkbox" >
               <el-checkbox v-model="item.checked" @change="checkItem"></el-checkbox>
             </div>

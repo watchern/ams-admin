@@ -285,17 +285,31 @@
                 content="缓冲大小"
                 placement="top"
               >
-                <el-select
-                  v-model="resultDataMaxCount"
-                  style="font-weight: bolder; width: 100px; margin-left: 10px"
-                >
-                  <el-option
-                    v-for="item in resultDataMaxCountList"
-                    :key="item"
-                    :label="item"
-                    :value="item"
-                  />
-                </el-select>
+                <div class="inline-block hc-div">
+<!--                  <el-select-->
+<!--                      v-model="resultDataMaxCount"-->
+<!--                  >-->
+<!--                    <el-option-->
+<!--                        v-for="item in resultDataMaxCountList"-->
+<!--                        :key="item"-->
+<!--                        :label="item"-->
+<!--                        :value="item"-->
+<!--                    />-->
+<!--                  </el-select>-->
+                  <el-autocomplete
+                      ref="hcInput"
+                    popper-class="my-autocomplete"
+                    v-model="resultDataMaxCount"
+                    :fetch-suggestions="querySearch"
+                    placeholder="请输入内容">
+                  <i
+                      class="el-icon-arrow-down el-input__icon"
+                      slot="suffix"
+                      @click="handleIconClick">
+                  </i>
+                </el-autocomplete>
+                </div>
+
               </el-tooltip>
             </el-col>
           </el-row>
@@ -870,8 +884,17 @@ export default {
     });
     loadResultDataMaxCountList().then((res) => {
       if (res.data.length > 0) {
-        this.resultDataMaxCountList = res.data;
-        this.resultDataMaxCount = res.data[0];
+        this.resultDataMaxCountList =res.data;
+        let list=[];
+        this.resultDataMaxCountList.forEach((item)=>{
+          let v={
+            value:item,
+            name:item
+          }
+          list.push(v);
+        })
+        this.resultDataMaxCountList2=list;
+        this.resultDataMaxCount = String(res.data[0]);
       }
     });
   },
@@ -884,7 +907,13 @@ export default {
       remindMessage:
         "注意事项：\n（1）【' ' as xx】字段时,空列必须要空格,\n      例如【select ' ' as a from dual】\n（2）where条件中使用参数时，in(参数)无需加单引号,\n      例如【select a from dual where a in (参数名称)】\n（3）where条件中使用参数时，使用非in(参数)时需加单引号,\n      例如【select a from dual where a =‘参数名称’\n（4）注释：/*注释内容*/写法即可完成，注释里面不要包含系统中的参数\n（5）开发模型时，SQL必须全部执行后才可保存\n（6）编写模型语句时，DROP语句需放在最后\n（7）当前SQL将使用最后一个select语句结果集进行输出结果定义配置\n（8）编写含有参数的SQL条件语句并符合以下条件时，需特殊处理：\n  ① in条件语句，括号内不能出现空格，例：where name in (参数XX)\n  ② 存在于括号内的条件，条件应与括号之间存在空格，\n    例：where ( name='参数X' and type='参数2' ) or type='参数3'",
       resultDataMaxCountList: [200, 500, 1000, 10000, 100000],
-      resultDataMaxCount: 200,
+      resultDataMaxCountList2: [
+          {value:200,name:200},
+        {value:500,name:500},
+        {value:1000,name:1000},
+        {value:10000,name:10000},
+        {value:100000,name:100000}],
+      resultDataMaxCount: "200",
       dataSource: "Postgre",
       dataSourceList: [
         {
@@ -1089,6 +1118,20 @@ export default {
     this.$refs.maxSize.style.display = "none";
   },
   methods: {
+    querySearch(queryString, cb) {
+      var restaurants = this.resultDataMaxCountList2;
+      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    createFilter(queryString) {
+      return (restaurant) => {
+        return queryString?(restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0):'';
+      };
+    },
+    handleIconClick() {
+      this.$refs.hcInput.focus();
+    },
     //辅助sql编辑器
     assistSqlEditor() {
       this.assistSqlEditorDialogFormVisible = true;
@@ -2473,5 +2516,18 @@ div.rightMenu ul li:hover {
 }
 ::v-deep .CodeMirror-scroll {
   padding-top: 15px !important;
+}
+.hc-div{
+  font-weight: bolder;
+  width: 100px;
+  margin-left: 10px;
+  /*position: relative;*/
+}
+::v-deep .hc-input{
+  /*width: calc(100% - 30px)!important;*/
+  border: none!important;
+  /*position: absolute;*/
+  /*top:0;*/
+  /*left:0;*/
 }
 </style>
