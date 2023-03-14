@@ -1208,8 +1208,9 @@ export default {
       this.query.pageNo = 1
       // this.getList();//刷新列表
       queryData = this.$refs.tags.serachParams
-      this.listLoading = true
+      this.listLoading = true;
       if (queryData) this.pageQuery.condition = queryData;
+      this.pageQuery.pageNo=1;
       page_list_data(this.pageQuery).then(res => {
         this.page_list = res.data.records;
         this.total = res.data.total;
