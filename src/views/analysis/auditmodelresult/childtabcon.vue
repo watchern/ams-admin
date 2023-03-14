@@ -15,19 +15,22 @@
       </span>
     </el-dialog>
     <!--    页签上面的box1- 为sql编辑器执行结果 且 不是图表 且 没报错时显示-->
-    <div style="margin-left:10px" v-if="useType == 'sqlEditor' && !chartSwitching && isSee" class="overTabconBox">
+    <div style="margin-left:10px;height: 40px;line-height: 40px;" v-if="useType == 'sqlEditor' && !chartSwitching && isSee" class="overTabconBox">
       <span class="overTabconItem">共{{total}}条</span>
       <el-button
+              v-if="tableType == 'big'"
               class="oper-btn overTabconItem"
               type="primary"
               @click="executeSqlView"
+              style="float:right"
       >查看执行sql
       </el-button>
 
         <el-button
                 type="primary"
                 @click="beforeModelResultExport1"
-                class="oper-btn btn-width-md"
+                class="oper-btn overTabconItem"
+                style="float:right"
         >导出结果
         </el-button>
 

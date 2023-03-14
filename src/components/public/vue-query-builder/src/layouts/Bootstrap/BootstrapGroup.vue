@@ -155,3 +155,8 @@ export default {
     height: 60px;
   }
 </style>
+<style scoped>
+.oper-btn{
+  padding:9px 30px !important
+}
+</style>

@@ -11,7 +11,7 @@
         <el-row>
           <el-col align="right">
             <el-button type="primary"
-                       class="oper-btn add"
+                       class="oper-btn"
                        @click="add">
               <img src="../../../styles/image/add.png"
                    class="btn_icon icon1"
@@ -22,7 +22,7 @@
               新增
             </el-button>
             <el-button type="primary"
-                       class="oper-btn edit"
+                       class="oper-btn "
                        :disabled="selections.length !== 1"
                        @click="update"><img src="../../../styles/image/edits.png"
                    class="btn_icon icon1"
@@ -176,7 +176,7 @@
           <dataTree ref="dataTableTree"
                     :data-user-id="dataUserId"
                     :scene-code="sceneCode"
-                    :is_progress="isProcess"/>
+                    :is_progress="isProcess" />
           <div slot="footer">
             <el-button @click="dataTableTree = false">取消</el-button>
             <el-button type="primary"

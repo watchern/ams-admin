@@ -176,7 +176,7 @@
       </el-autocomplete>
 
       <!-- Remove rule button -->
-      <span data-toggle="tooltip" title="删除" class="oper-btn scheduledelete" style="margin-left:25px;" @click="remove"
+      <span data-toggle="tooltip" title="删除" class="oper-btn scheduledelete" style="margin-left:25px;display: inline-block;" @click="remove"
         ></span>
     </div>
   </div>
@@ -189,3 +189,8 @@ export default {
   extends: QueryBuilderRule
 }
 </script>
+<style scoped>
+.oper-btn{
+  padding:9px 30px !important
+}
+</style>
