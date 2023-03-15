@@ -1139,9 +1139,17 @@ export default {
     //删除
     apply_deletes () {
       let applyUuids = [];
+      let deletelogs = [];
       this.Selectval_list.forEach((r) => {
+        if(r.status !== '草稿'){
+          deletelogs.push(r.applyUuid)
+        }
         applyUuids.push(r.applyUuid);
       });
+      if(deletelogs.length > 0){
+        this.$notify.warning("只有草稿状态可删除")
+        return
+      }
       this.$confirm("确定删除所选申请?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
