@@ -6,66 +6,65 @@
                       @search="getList"
                       :dropDown="dropDown"
                       @clearSearch="reset"
-                      @change="onChange"
-        ></SearchCommon>
-    </div>
-<!--      <div class="query-field">-->
-<!--        <div>-->
-<!--          <el-col :span="22">-->
-<!--            <el-form :inline="true"-->
-<!--                     :model="query"-->
-<!--                     label-position="bottom">-->
-<!--              <el-row>-->
-<!--                <el-form-item label="申请名称："-->
-<!--                              prop="requestName">-->
-<!--                  <el-input v-model="query.requestName"-->
-<!--                            size="small"-->
-<!--                            placeholder="请输入内容"-->
-<!--                            clearable></el-input>-->
-<!--                </el-form-item>-->
-<!--                <el-form-item label="申请人："-->
-<!--                              prop="requestPersionName">-->
-<!--                  <el-input v-model="query.requestPersionName"-->
-<!--                            size="small"-->
-<!--                            placeholder="请输入内容"-->
-<!--                            clearable></el-input>-->
-<!--                </el-form-item>-->
-<!--                <el-form-item label="数据状态："-->
-<!--                              prop="dataStatus">-->
-<!--                  <el-select v-model="query.dataStatus"-->
-<!--                             filterable-->
-<!--                             clearable-->
-<!--                             placeholder="全部"-->
-<!--                             size="small">-->
-<!--                    <el-option v-for="(item, index) in listStatus"-->
-<!--                               :key="index"-->
-<!--                               :label="item.label"-->
-<!--                               :value="item.value"></el-option>-->
-<!--                  </el-select>-->
-<!--                </el-form-item>-->
-<!--                <el-form-item label="申请时间范围："-->
-<!--                              prop="condition">-->
-<!--                  <el-date-picker v-model="dataBaseData.times"-->
-<!--                                  type="daterange"-->
-<!--                                  range-separator="至"-->
-<!--                                  start-placeholder="开始日期"-->
-<!--                                  end-placeholder="结束日期">-->
-<!--                  </el-date-picker>-->
-<!--                </el-form-item>-->
-<!--                <el-form-item>-->
+                      @change="onChange"></SearchCommon>
+      </div>
+      <!--      <div class="query-field">-->
+      <!--        <div>-->
+      <!--          <el-col :span="22">-->
+      <!--            <el-form :inline="true"-->
+      <!--                     :model="query"-->
+      <!--                     label-position="bottom">-->
+      <!--              <el-row>-->
+      <!--                <el-form-item label="申请名称："-->
+      <!--                              prop="requestName">-->
+      <!--                  <el-input v-model="query.requestName"-->
+      <!--                            size="small"-->
+      <!--                            placeholder="请输入内容"-->
+      <!--                            clearable></el-input>-->
+      <!--                </el-form-item>-->
+      <!--                <el-form-item label="申请人："-->
+      <!--                              prop="requestPersionName">-->
+      <!--                  <el-input v-model="query.requestPersionName"-->
+      <!--                            size="small"-->
+      <!--                            placeholder="请输入内容"-->
+      <!--                            clearable></el-input>-->
+      <!--                </el-form-item>-->
+      <!--                <el-form-item label="数据状态："-->
+      <!--                              prop="dataStatus">-->
+      <!--                  <el-select v-model="query.dataStatus"-->
+      <!--                             filterable-->
+      <!--                             clearable-->
+      <!--                             placeholder="全部"-->
+      <!--                             size="small">-->
+      <!--                    <el-option v-for="(item, index) in listStatus"-->
+      <!--                               :key="index"-->
+      <!--                               :label="item.label"-->
+      <!--                               :value="item.value"></el-option>-->
+      <!--                  </el-select>-->
+      <!--                </el-form-item>-->
+      <!--                <el-form-item label="申请时间范围："-->
+      <!--                              prop="condition">-->
+      <!--                  <el-date-picker v-model="dataBaseData.times"-->
+      <!--                                  type="daterange"-->
+      <!--                                  range-separator="至"-->
+      <!--                                  start-placeholder="开始日期"-->
+      <!--                                  end-placeholder="结束日期">-->
+      <!--                  </el-date-picker>-->
+      <!--                </el-form-item>-->
+      <!--                <el-form-item>-->
 
-<!--                  <el-button-->
-<!--                          type="primary"-->
-<!--                          @click="goQuery">查询</el-button>-->
-<!--                  <el-button-->
-<!--                          type="primary"-->
-<!--                          @click="reset">重置</el-button>-->
-<!--                </el-form-item>-->
-<!--              </el-row>-->
-<!--            </el-form>-->
-<!--          </el-col>-->
-<!--        </div>-->
-<!--      </div>-->
+      <!--                  <el-button-->
+      <!--                          type="primary"-->
+      <!--                          @click="goQuery">查询</el-button>-->
+      <!--                  <el-button-->
+      <!--                          type="primary"-->
+      <!--                          @click="reset">重置</el-button>-->
+      <!--                </el-form-item>-->
+      <!--              </el-row>-->
+      <!--            </el-form>-->
+      <!--          </el-col>-->
+      <!--        </div>-->
+      <!--      </div>-->
 
       <div class="mb10">
         <el-row>
@@ -105,6 +104,7 @@
                    alt="">
               <img src="../../../styles/image/ban2.png"
                    class="btn_icon icon2"
+                   :disabled="selections.length != 1"
                    alt="">办理</el-button>
             <el-button type="primary"
                        class="oper-btn "
@@ -193,34 +193,34 @@
                           label="申请表名称">
               <el-button @click="add()"
                          style="float:right">添加一行</el-button>
+              <!-- :key="item.id" -->
               <div v-for="(item,index) in requestTableNamelist"
-                   :key="item.id"
+                   :key="'key'+index"
                    class="addInput"
                    style="display:flex;">
                 <el-input v-model="item.name" />
                 <div @click="goDelete(index)"
                      style="margin-left: 10px;cursor:pointer">×</div>
               </div>
-<!--              <el-input v-model="requestTableNamelist[0].name" style="width:60%"></el-input>-->
-<!--              <el-button @click="add()"-->
-<!--                         style="float:right">添加一行</el-button>-->
-<!--              <div-->
-<!--                      v-for="(item,index) in requestTableNamelist"-->
-<!--                      :key="item.id"-->
-<!--                      class="addInput">-->
-<!--                <el-input v-if="requestTableNamelist.length > 1"-->
-<!--                          v-model="item.name" />-->
-<!--                <div @click="goDelete(index)"-->
-<!--                     style="margin-left: 10px;cursor:pointer">×</div>-->
-<!--              </div>-->
+              <!--              <el-input v-model="requestTableNamelist[0].name" style="width:60%"></el-input>-->
+              <!--              <el-button @click="add()"-->
+              <!--                         style="float:right">添加一行</el-button>-->
+              <!--              <div-->
+              <!--                      v-for="(item,index) in requestTableNamelist"-->
+              <!--                      :key="item.id"-->
+              <!--                      class="addInput">-->
+              <!--                <el-input v-if="requestTableNamelist.length > 1"-->
+              <!--                          v-model="item.name" />-->
+              <!--                <div @click="goDelete(index)"-->
+              <!--                     style="margin-left: 10px;cursor:pointer">×</div>-->
+              <!--              </div>-->
 
             </el-form-item>
             <el-form-item prop="remark"
                           label="备注">
               <el-input type="textarea"
                         v-model="temp.remark"
-                        :autosize="{ minRows:4,maxRows:4 }"
-              />
+                        :autosize="{ minRows:4,maxRows:4 }" />
             </el-form-item>
           </el-form>
         </template>
@@ -232,19 +232,45 @@
           </el-button>
         </div>
       </el-dialog>
-      <el-dialog title="办理"
-                 :visible.sync="dialogTransactVisible"
-                 :close-on-click-modal="false">
-        <div>
-          <div>待开发</div>
-          <FlowItem ref="flowItem">
+      <!--      <el-dialog title="办理"-->
+      <!--                 :visible.sync="dialogTransactVisible"-->
+      <!--                 :close-on-click-modal="false">-->
+      <!--        <div>-->
+      <!--          <FlowItem ref="flowItem">-->
 
-          </FlowItem>
+      <!--          </FlowItem>-->
+      <!--        </div>-->
+      <!--        <span class="sess-flowitem"-->
+      <!--              slot="footer">-->
+      <!--          <el-button size="mini"-->
+      <!--                     @click="dialogFlowItemShow = false">关闭</el-button>-->
+      <!--          <el-button size="mini"-->
+      <!--                     type="primary"-->
+      <!--                     class="table_header_btn"-->
+      <!--                     @click="saveOpinion">提交</el-button>-->
+
+      <!--        </span>-->
+      <!--      </el-dialog>-->
+      <el-dialog v-if="dialogTransactVisible"
+                 :close-on-click-modal="false"
+                 :visible.sync="dialogTransactVisible"
+                 title="流程提交"
+                 width="50%">
+        <div>
+          <FlowItem ref="flowItem"
+                    :flowSet="flowSet"
+                    :flowItem="flowItem"
+                    :flow-param="flowParam"
+                    :columnDefs="columnDefs"
+                    :submitData="submitData"
+                    @closeModal="closeFlowItem"
+                    @delectData="delectData"
+                    @UpdateBecauseSubmit="batchUpdateForSubmit"></FlowItem>
         </div>
         <span class="sess-flowitem"
               slot="footer">
           <el-button size="mini"
-                     @click="dialogFlowItemShow = false">关闭</el-button>
+                     @click="dialogTransactVisible = false">关闭</el-button>
           <el-button size="mini"
                      type="primary"
                      class="table_header_btn"
@@ -256,12 +282,17 @@
                  :visible.sync="dialogFlowVisible"
                  :close-on-click-modal="false">
         <div>
-          <div>待开发</div>
           <flowOpinionList :applyUuid="applyUuid"
                            :pageFrom="applyPage"></flowOpinionList>
         </div>
+        <span slot="footer">
+          <el-button size="mini"
+                     type="info"
+                     class="table_header_btn"
+                     @click="dialogFlowVisible = false">关闭</el-button>
+        </span>
       </el-dialog>
-      </div>
+    </div>
   </div>
 
 </template>
@@ -283,15 +314,14 @@ export default {
       labelPosition: "top",
       //新增/修改弹框申请表名称数组
       requestTableNamelist: [
-      //可以实现默认一行
-      //         {
-      //     id: 0,
-      //     name: '',
-      // }
+        //可以实现默认一行
+        //         {
+        //     id: 0,
+        //     name: '',
+        // }
       ],
-
-    // //查询列表
-      dropDown:[
+      //查询列表
+      dropDown: [
         {
           code: 'requestName',
           name: '申请名称',
@@ -324,9 +354,9 @@ export default {
         dataStatus: '',// 列表类型
         requstTimeStart: '',//开始时间
         requstTimeEnd: '',//结束时间
-    },
+      },
       //数据状态选择
-      listStatus:[
+      listStatus: [
         {
           value: '0',
           label: '需求提出'
@@ -381,6 +411,30 @@ export default {
         requestPersionName: "",
         remark: "",
         requestTableNamelist: []
+      },
+      flowParam: 0,
+      columnDefs: [],
+      //工作流 相关
+      submitData: {
+        versionUuid: "tlLuwUhC",
+        busTableName: "", //表名
+        busDatabaseName: "warehouse", //数据库名
+        busDatabaseType: "", //
+        status: "1", //预警数据状态
+        busdatas: [],
+      },
+      //工作流相关
+      flowSet: {
+        opinionList: false,
+        opinion: false,
+        nextStep: true,
+        isSecond: false,
+      },
+      //工作流相关
+      tempFlow: {
+        sceneUuid: undefined,
+        sceneName: '',
+        sceneCode: ''
       },
       rules: {
         requestName: [
@@ -572,10 +626,35 @@ export default {
         })
       })
     },
-
+    //工作流相关
+    closeFlowItem (val) {
+      this.dialogTransactVisible = val;
+      this.flowParam = 0;
+    },
+    //工作流相关
+    delectData (val) {
+      this.dialogVisible = val;
+    },
+    //工作流相关  更改办理状态
+    batchUpdateForSubmit () { },
     //办理
     handleTransact () {
+      this.tempFlow = Object.assign({}, this.selections[0])
+      //业务主键
+      this.flowItem.appDataUuid = this.tempFlow.dataAccessReqUuid;
+      //版本id 随机生成
+      this.flowItem.versionUuid = this.common.randomString4Len(8);
+      // this.flowItem.applyTitle="场景详情流程";
+      //申请业务的名字（待办标题）
+      this.flowItem.applyTitle = this.tempFlow.requestName;
       this.dialogTransactVisible = true
+    },
+    saveOpinion () {
+      //保存业务数据成功后
+      setTimeout(() => {
+        this.$refs["flowItem"].submitFlow();
+        //将状态修改为办理中
+      }, 20);
     },
     //导出按钮
     // handleExport() {
@@ -687,7 +766,7 @@ export default {
     },
     //查看流程
     showFlow (data) {
-      this.applyUuid = data.
+      this.applyUuid = data.dataAccessReqUuid;
       this.dialogFlowVisible = true
     },
 
@@ -696,21 +775,21 @@ export default {
     },
 
     //重置
-    reset(data) {
+    reset (data) {
       this.dataBaseData.requestName = '',
-      this.dataBaseData.requestPersionName = '',
-      this.dataBaseData.dataStatus = '',
-      this.dataBaseData.requstTimeStart = '',
-      this.dataBaseData.requstTimeEnd = ''
+        this.dataBaseData.requestPersionName = '',
+        this.dataBaseData.dataStatus = '',
+        this.dataBaseData.requstTimeStart = '',
+        this.dataBaseData.requstTimeEnd = ''
     },
     getList (query) {
       query = this.$refs.tags.serachParams
       this.listLoading = true
       if (query) this.pageQuery.condition = query
       listByPage(this.pageQuery).then(resp => {
-          this.total = resp.data.total
-          this.tableData = resp.data.records
-          this.listLoading = false
+        this.total = resp.data.total
+        this.tableData = resp.data.records
+        this.listLoading = false
       })
     },
     getSortClass: function (key) {
@@ -721,16 +800,15 @@ export default {
 }
 </script>
 <style scoped>
-  .addInput{
-    display:flex;
-  }
+.addInput {
+  display: flex;
+}
 
-  .addInput >>> .el-input{
-    margin-bottom: 15px;
-  }
+.addInput >>> .el-input {
+  margin-bottom: 15px;
+}
 
-  .detail-form >>> .el-textarea__inner {
-    resize: none;
-  }
-
+.detail-form >>> .el-textarea__inner {
+  resize: none;
+}
 </style>

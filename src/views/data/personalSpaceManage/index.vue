@@ -1,7 +1,8 @@
 <template>
   <div>
     <div style="display: flex;">
-      <div style="overflow: auto;height: calc( 100vh - 120px);width: 280px  ">
+      <div class="left_conter"
+           style="height: calc( 100vh - 150px);    overflow: hidden; ">
         <!--                <el-col :span="6">-->
         <!--                <el-tree-->
         <!--                        :data="data"-->
@@ -16,34 +17,37 @@
                    @personalSpacePageQueryByTreeNode="personalSpaceQueryByTreeNode"></LeftTrees>
         <!--              </el-col>-->
       </div>
-      <div style="width: calc( 100% - 280px);padding: 10px; box-sizing: border-box;">
-        <el-row>
-          <el-form :inline="true"
-                   :model="tableMetaDetail"
-                   class="demo-form-inline">
-            <el-form-item label="表名称:">
-              <el-input v-model="tableMetaDetail.displayTbName"
-                        placeholder="表名称"></el-input>
-            </el-form-item>
-            <el-form-item label="表类型:">
-              <el-select v-model="tableMetaDetail.tblType"
-                         placeholder="表类型">
-                <el-option label="表"
-                           value="T"></el-option>
-                <el-option label="视图"
-                           value="V"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary"
-                         @click="initPersonalSpaceManageData">查询</el-button>
-              <el-button type="primary"
-                         @click="onReInput">重置</el-button>
-            </el-form-item>
-          </el-form>
-        </el-row>
-        <div style="padding: 10px  10px 0;box-sizing: border-box;">
+      <div class="right_conter"
+           style="width: calc( 100% - 280px);padding: 10px; box-sizing: border-box;">
+        <div style="padding: 0 10px;box-sizing: border-box;">
           <el-row>
+            <el-form :inline="true"
+                     :model="tableMetaDetail"
+                     class="demo-form-inline">
+              <el-form-item label="表名称:">
+                <el-input v-model="tableMetaDetail.displayTbName"
+                          placeholder="表名称"></el-input>
+              </el-form-item>
+              <el-form-item label="表类型:">
+                <el-select v-model="tableMetaDetail.tblType"
+                           placeholder="表类型">
+                  <el-option label="表"
+                             value="T"></el-option>
+                  <el-option label="视图"
+                             value="V"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary"
+                           @click="initPersonalSpaceManageData">查询</el-button>
+                <el-button type="primary"
+                           @click="onReInput">重置</el-button>
+              </el-form-item>
+            </el-form>
+          </el-row>
+
+          <div class="person">
+            <!-- <el-row> -->
             <!--                            <span>您的个人空间一共{{personHoldedSpace}},已使用{{personUsedSpace}},未使用20G,使用率5%</span>-->
             <p class="text">您的个人空间一共
               <span>{{personHoldedSpace}}</span>,已使用<span>{{personUsedSpace}}</span>,使用率<span>{{spaceUsedPercent}}</span>
@@ -57,7 +61,7 @@
             <!--                                       @click="onDelete">删除表</el-button>-->
             <!--                            <el-button type="primary"-->
             <!--                            >数据导入</el-button>-->
-            <div style="float: right">
+            <div style="width: 200px;">
               <el-button type="primary"
                          @click="onExportData"
                          size="mini">导出数据</el-button>
@@ -65,13 +69,18 @@
                          @click="joinDataShareDialog"
                          size="mini">数据共享</el-button>
             </div>
-            <!--        <el-button type="primary"-->
-            <!--                   @click="backToUpPage">关闭</el-button>-->
-          </el-row>
+          </div>
+        </div>
+
+        <div style="padding: 10px  10px 0;box-sizing: border-box;">
+
+          <!--        <el-button type="primary"-->
+          <!--                   @click="backToUpPage">关闭</el-button>-->
+          <!-- </el-row> -->
           <el-table :data="tableMetaDataList"
                     border
                     style="width: 100%"
-                    height="calc(100vh - 265px)"
+                    height="calc(100vh - 300px)"
                     @selection-change="handleSelectionChange">
             <el-table-column type="selection"
                              width="55">
@@ -610,6 +619,7 @@ export default {
 .text span {
   font-weight: 600;
   margin: 0 3px;
+  width: 100%;
 }
 
 .my_span_style {
@@ -628,5 +638,13 @@ export default {
   text-decoration-color: #6cb2dd;
   color: #6cb2dd;
   font-weight: 600;
+}
+.query >>> .el-form-item {
+  margin-bottom: 0 !important;
+}
+.person {
+  display: flex;
+  justify-content: space-between;
+  margin: bottom 10px;
 }
 </style>

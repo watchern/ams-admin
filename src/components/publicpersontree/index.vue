@@ -70,6 +70,7 @@ export default {
     reverseDisplay: { // 反显数据，传递人员对象集合
       type: Array,
       required: false,
+      default:() => [],
     }
   },
   watch: {
@@ -173,8 +174,8 @@ export default {
      */
     handleSelectionChange2 (val) {
       if (val.length == 0) {
-        for (let i = 0; i < this.reverseDisplay.length; i++) {
-          for (let j = 0; j < this.list.length; j++) {
+        for (let i = 0; i >= 0 && i < this.reverseDisplay.length; i++) {
+          for (let j = 0; i >= 0 && j < this.list.length; j++) {
             if (this.reverseDisplay[i].personuuid == this.list[j].personuuid) {
               this.reverseDisplay.splice(i, 1);
               i--;
@@ -183,8 +184,8 @@ export default {
         }
       } else {
         let tempArr = val;
-        for (let i = 0; i < this.reverseDisplay.length; i++) {
-          for (let j = 0; j < tempArr.length; j++) {
+        for (let i = 0; i >= 0 && i < this.reverseDisplay.length; i++) {
+          for (let j = 0; i >= 0 && j < tempArr.length; j++) {
             if (this.reverseDisplay[i].personuuid == tempArr[j].personuuid) {
               tempArr.splice(j, 1);
               j--;

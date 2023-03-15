@@ -3,60 +3,70 @@
     <div class="top flex a-center j-between flex-row flex1 flex-shrink">
       <div class="right flex a-end j-center flex-column">
         <div class="bottom-card a-center j-between flex-row">
-          <!--  <div class="top-card flex j-start flex-row skin-shadow daiban">
+          <div
+            class="top-card flex j-start flex-row skin-shadow"
+            :class="{
+              backgroundColor:
+                index === 0 ? 'skin-wbgColor-1' : 'skin-wbgColor-2',
+            }"
+          >
             <div
-              class="
-                top-card-left
-                flex-shrink
-                skin-bgColor
-                flex
-                a-center
-                j-center
-              "
+              class="top-card-left flex-shrink skin-bgColor flex a-center j-center"
             >
               <img src="../../../../styles/image/c3.png" class="img" />
             </div>
             <div class="top-card-right">
               <div class="title">待办事项</div>
               <div v-for="(text, index) in todoData" :key="index" class="line">
-                <span @click="toDoJumpFlow(text,index)" class="notes-text">{{
+                <span @click="toDoJumpFlow(text, index)" class="notes-text">{{
                   text.applyTitle
                 }}</span>
-                &lt;!&ndash; <span v-if="text.icon" :style="{color:text.iconColor,width:text.width}" class="icon">{{ text.icon }}</span> &ndash;&gt;
+                &lt;!&ndash;
+                <span
+                  v-if="text.icon"
+                  :style="{ color: text.iconColor, width: text.width }"
+                  class="icon"
+                  >{{ text.icon }}</span
+                >
+                &ndash;&gt;
               </div>
               <span class="card-more" @click="gotodowork()">更多</span>
             </div>
-          </div>-->
+          </div>
           <!--          <div class="top-card-box">-->
-          <div v-for="(item, index) in cardList"
-               :key="index"
-               class="top-card flex j-start flex-row skin-shadow"
-               :class="{
-                backgroundColor:
-                  index === 0 ? 'skin-wbgColor-1' : 'skin-wbgColor-2',
-              }">
-            <div class="top-card-left flex-shrink skin-bgColor flex a-center j-center">
-              <img :src="item.img"
-                   class="img" />
+          <div
+            v-for="(item, index) in cardList"
+            :key="index"
+            class="top-card flex j-start flex-row skin-shadow"
+            :class="{
+              backgroundColor:
+                index === 0 ? 'skin-wbgColor-1' : 'skin-wbgColor-2',
+            }"
+          >
+            <div
+              class="top-card-left flex-shrink skin-bgColor flex a-center j-center"
+            >
+              <img :src="item.img" class="img" />
             </div>
             <div class="top-card-right">
               <div class="title">{{ item.title }}</div>
-              <div v-for="(text, i) in item.des"
-                   :key="i"
-                   class="line">
-                <span @click="toDoJump(text.index,index)"
-                      class="notes-text">{{
-                    text.text
-                  }}</span>
-                <span v-if="text.icon"
-                      :style="{ color: text.iconColor, width: text.width }"
-                      class="icon">{{ text.icon }}</span>
-                <i v-if="text.iconStatus"
-                   :class="text.iconStatus"
-                   :style="{ color: text.iconColor }"></i>
+              <div v-for="(text, i) in item.des" :key="i" class="line">
+                <span @click="toDoJump(text.index, index)" class="notes-text">{{
+                  text.text
+                }}</span>
+                <span
+                  v-if="text.icon"
+                  :style="{ color: text.iconColor, width: text.width }"
+                  class="icon"
+                  >{{ text.icon }}</span
+                >
+                <i
+                  v-if="text.iconStatus"
+                  :class="text.iconStatus"
+                  :style="{ color: text.iconColor }"
+                ></i>
               </div>
-              <span class="card-more"
-                    @click="moreJump(item)">更多</span>
+              <span class="card-more" @click="moreJump(item)">更多</span>
             </div>
           </div>
           <!--          </div>-->
@@ -66,12 +76,14 @@
         <toolsTemplateIndex />
       </div>
     </div>
-    <el-dialog :visible.sync="dialogFormVisible"
-               top="10vh"
-               title="消息详情"
-               width="50%"
-               v-model="this.PopUpContent"
-               :close-on-click-modal="false">
+    <el-dialog
+      :visible.sync="dialogFormVisible"
+      top="10vh"
+      title="消息详情"
+      width="50%"
+      v-model="this.PopUpContent"
+      :close-on-click-modal="false"
+    >
       <span class="visible-span">消息标题</span>
       <p class="visible-p1">{{ this.PopUpContent[0].text }}</p>
       <span class="visible-span">消息内容</span>
@@ -84,12 +96,13 @@
 import { getRemindByDescTime, updateRemind } from "@/api/base/base";
 import { getRunTaskRelByPage } from "@/api/analysis/auditmodelresult";
 import toolsTemplateIndex from "@/components/public/base/tools-template-index.vue";
-import dayjs from 'dayjs'
+import { auditDataList } from "@/api/starflow";
+import dayjs from "dayjs";
 export default {
   components: {
-    toolsTemplateIndex
+    toolsTemplateIndex,
   },
-  data () {
+  data() {
     return {
       resultSpiltObjects: {},
       work: [
@@ -143,7 +156,7 @@ export default {
           content: "",
         },
       ],
-      todoData: [{ applyTitle: '暂无' }],//待办工作流
+      todoData: [], //待办工作流
       //审核信息的状态
       applyInfo: {
         //业务主键
@@ -187,7 +200,7 @@ export default {
       projectStatus: "",
     };
   },
-  mounted () {
+  mounted() {
     getRemindByDescTime().then((resp) => {
       this.cardList[0].des = [];
       for (let i = 0; i < 5; i++) {
@@ -214,47 +227,52 @@ export default {
         this.cardList[1].des = [];
         for (let i = 0; i < 5; i++) {
           this.cardList[1].des.push({
-            text: resp.data.records[i].model.modelName + '—' + dayjs(resp.data.records[i].runStartTime).format('YYYY-MM-DD HH:mm:ss'),
+            text:
+              resp.data.records[i].model.modelName +
+              "—" +
+              dayjs(resp.data.records[i].runStartTime).format(
+                "YYYY-MM-DD HH:mm:ss"
+              ),
             url: `/analysis/warningresult/${resp.data.records[i].runTaskUuid}`,
             content: resp.data.records[i].remindContent,
             index: i,
             Uuid: resp.data.records[i].runTaskUuid,
           });
           if (resp.data.records[i].runStatus == 1) {
-            this.cardList[1].des[i].iconStatus = "el-icon-video-play"
-            this.cardList[1].des[i].iconColor = "blue"
+            this.cardList[1].des[i].iconStatus = "el-icon-video-play";
+            this.cardList[1].des[i].iconColor = "blue";
           } else if (resp.data.records[i].runStatus == 2) {
-            this.cardList[1].des[i].iconStatus = "el-icon-loading"
-            this.cardList[1].des[i].iconColor = "#666666"
+            this.cardList[1].des[i].iconStatus = "el-icon-loading";
+            this.cardList[1].des[i].iconColor = "#666666";
           } else if (resp.data.records[i].runStatus == 3) {
-            this.cardList[1].des[i].iconStatus = "el-icon-success"
-            this.cardList[1].des[i].iconColor = "green"
+            this.cardList[1].des[i].iconStatus = "el-icon-success";
+            this.cardList[1].des[i].iconColor = "green";
           } else if (resp.data.records[i].runStatus == 5) {
-            this.cardList[1].des[i].iconStatus = "el-icon-circle-close"
-            this.cardList[1].des[i].iconColor = "#ff0000"
+            this.cardList[1].des[i].iconStatus = "el-icon-circle-close";
+            this.cardList[1].des[i].iconColor = "#ff0000";
           } else {
-            this.cardList[1].des[i].iconStatus = "el-icon-error"
-            this.cardList[1].des[i].iconColor = "red"
+            this.cardList[1].des[i].iconStatus = "el-icon-error";
+            this.cardList[1].des[i].iconColor = "red";
           }
         }
       }
     );
-    this.gettodowork()
+    this.gettodowork();
   },
   methods: {
-    formatter (num) {
+    formatter(num) {
       return num < 10 ? "0" + num.toFixed(0) : num.toFixed(0);
     },
-    formatter1 (num) {
+    formatter1(num) {
       return num.toFixed(1);
     },
-    activeTags (item) {
+    activeTags(item) {
       this.$store.commit("aceState/setRightFooterTags", {
         type: item.type,
         val: item.val,
       });
     },
-    toDoJumpFlow (row, index) {
+    toDoJumpFlow(row, index) {
       if (row.currentState == "CAL_SENT") {
         this.updateToAccepted(row);
         if (!this.partyAssignment) {
@@ -301,10 +319,13 @@ export default {
         },
       });
     },
-    toDoJump (data, index) {
+    toDoJump(data, index) {
       if (index == 0) {
         // 判断条件增加空判断
-        if (this.cardList[0].des[data].url === "" || this.cardList[0].des[data].url == null) {
+        if (
+          this.cardList[0].des[data].url === "" ||
+          this.cardList[0].des[data].url == null
+        ) {
           this.dialogFormVisible = true;
           this.PopUpContent = [];
           this.PopUpContent.push({
@@ -316,19 +337,19 @@ export default {
         } else {
           this.$router.push({ path: this.cardList[0].des[data].url });
         }
-        updateRemind(this.cardList[0].des[data].Uuid).then(result => {
+        updateRemind(this.cardList[0].des[data].Uuid).then((result) => {
           if (result.code === 0) {
-            this.getList()
+            this.getList();
           } else {
-            this.$notify({ success: '失败', message: '标记已阅失败' })
+            this.$notify({ success: "失败", message: "标记已阅失败" });
           }
-        })
+        });
       } else {
-        console.log(this.cardList[1].des[data].url)
+        console.log(this.cardList[1].des[data].url);
         this.$router.push({ path: this.cardList[1].des[data].url });
       }
     },
-    getList () {
+    getList() {
       // 刷新提醒事项
       getRemindByDescTime().then((resp) => {
         this.cardList[0].des = [];
@@ -348,31 +369,41 @@ export default {
         }
       });
     },
-    gettodowork () {
-      this.$axios
-        .get("/starflow/applyMes/sf/apply/auditDataList", {
-          params: {
-            applyTitle: '',
-            applyTypeName: '',
-            pageNo: 1,
-            pageSize: 5,
-          },
-        })
-        .then((response) => {
-          console.log(response);
-          this.todoData = response.data.data.entities;
-          // this.todoTotal = response.data.data.count;
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+    gettodowork() {
+      let params = {
+        applyTitle: "",
+        applyTypeName: "",
+        pageNo: 1,
+        pageSize: 5,
+      };
+      auditDataList(params).then((res) => {
+        console.log(res, "ress");
+        // this.todoData = response.data.data.entities;
+      });
+      // this.$axios
+      //   .get("/starflow/applyMes/sf/apply/auditDataList", {
+      //     params: {
+      //       applyTitle: '',
+      //       applyTypeName: '',
+      //       pageNo: 1,
+      //       pageSize: 5,
+      //     },
+      //   })
+      //   .then((response) => {
+      //     console.log(response,"222");
+      //     this.todoData = response.data.data.entities;
+      //     // this.todoTotal = response.data.data.count;
+      //   })
+      //   .catch(function (error) {
+      //     console.log(error);
+      //   });
     },
-    gotodowork () {
+    gotodowork() {
       this.$router.push({
         path: "/todowork",
       });
     },
-    moreJump (data) {
+    moreJump(data) {
       if (data.title === "提醒事项") {
         this.$router.push({ path: "/base/remind" });
         this.$store.commit("aceState/setRightFooterTags", {
@@ -393,19 +424,19 @@ export default {
         });
       }
     },
-    toDoSomeJump () {
+    toDoSomeJump() {
       this.$router.push({
         path: "/base/frameto?url=psbcaudit/todoInfo/todoInfoList",
       });
     },
-    displayItem (data) {
+    displayItem(data) {
       let thisItem = document.getElementsByClassName("bottom");
       for (let i = 0; i < thisItem.length; i++) {
         thisItem[i].style.zIndex = 1;
       }
       thisItem[data].style.zIndex = 10;
     },
-    action (data, index) {
+    action(data, index) {
       if (data === "before") {
         if (index + 1 === 4) {
           index = -1;
