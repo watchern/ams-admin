@@ -504,7 +504,7 @@ export default {
     //从dialog取出选中的数据使用人
     changeLoginname (flag) {
       if (flag) {
-        this.usersSelect = this.$refs.personTree.selectValue
+        this.usersSelect = this.$refs.personTree.getSelectValue();
       }
       let selectVal = this.usersSelect;
       if (selectVal && selectVal.length > 0) {
@@ -512,6 +512,8 @@ export default {
         for (let i = 1; i < selectVal.length; i++) {
           this.operatePermissionApply.permissionApplyUserName += '、' + selectVal[i].cnname;
         }
+      }else {
+        this.operatePermissionApply.permissionApplyUserName = '';
       }
       this.dialogVisible = false;
     },

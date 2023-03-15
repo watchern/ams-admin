@@ -91,10 +91,10 @@
                 <el-col :span="24" v-if="form.tableType == 3">
                   <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
                     <el-form-item label="表SQL：" prop="tableSql">
-                      <el-input 
-                        v-model="form.tableSql" 
-                        type="textarea" 
-                        style="width: 100%;" 
+                      <el-input
+                        v-model="form.tableSql"
+                        type="textarea"
+                        style="width: 100%;"
                         :rows="4"
                       ></el-input>
                     </el-form-item>
@@ -995,7 +995,7 @@ export default {
         this.form.fileName = _data.tableRelationQuery.fileName; //文件名
         this.form.dataDate = _data.tableRelationQuery.dataDate; //数据日期
         this.form.tableSize = _data.tableSize == null || _data.tableSize == "" ? 0 : _data.tableSize; //表大小
-        this.form.rowNum = _data.rowNum; //表数据量        
+        this.form.rowNum = _data.rowNum; //表数据量
         this.form.personLiables = _data.personLiables; //负责人
         let personNames = [];
         let personUuids = [];
@@ -1292,7 +1292,7 @@ export default {
           if (resp.code == 0) {
             this.$message({
               type: "success",
-              message: "新增表关系成功",
+              message: resp.msg,
             });
             // this.$emit("update_details", this.table_visible_form.tableMetaUuid)
             this.$refs.tableLines.init(1); //刷新列表

@@ -476,6 +476,7 @@
           <FlowItem ref="flowItem"
                     :flowSet="flowSet"
                     :flowItem="flowItem"
+                    :fatherPrams="fatherPrams"
                     :flow-param="flowParam"
                     :columnDefs="columnDefs"
                     :submitData="submitData"
@@ -854,6 +855,15 @@ export default {
         isSecond: false,
       },
       //工作流相关
+      //此变量专门用来业务和工作流页面之间存储数据
+      workFlowWftype:{ //装载下线 对个人还是全行空间流程id 在这配置
+        personalSpace:'auditNotice1',
+        allBankSpace:'auditNotice2'
+      },
+      fatherPrams:{
+        fatherPageSymbol:'dataLoadApply',
+        dataLoadApplyType:''//里面标识 装载数据的类型
+      },
       flowItem: {
         //动态赋值
         wftype: "auditNotice",
@@ -1208,8 +1218,9 @@ export default {
       this.query.pageNo = 1
       // this.getList();//刷新列表
       queryData = this.$refs.tags.serachParams
-      this.listLoading = true
+      this.listLoading = true;
       if (queryData) this.pageQuery.condition = queryData;
+      this.pageQuery.pageNo=1;
       page_list_data(this.pageQuery).then(res => {
         this.page_list = res.data.records;
         this.total = res.data.total;
@@ -1256,6 +1267,14 @@ export default {
     // 多选
     handleSelectionChange (val) {
       this.applySelectionList = []
+      this.fatherPrams.dataLoadApplyType = ''
+      this.fatherPrams.dataLoadApplyType = val[0].loadType
+      var param1 = '个人空间';
+      var param2 = '全行空间';
+      if(this.fatherPrams.dataLoadApplyType == param1){
+        this.flowItem.wftype = this.workFlowWftype.personalSpace //此处随便写的流程id 该时候应该自己配置一下
+      }
+      this.flowItem.wftype = this.workFlowWftype.allBankSpace
       this.Selectval_list = val;
       val.forEach((value) => {
         this.applySelectionList.push(value)
