@@ -18,16 +18,30 @@
           </el-form-item>
           <el-form-item label="新密码" prop="pass">
             <el-input
-              type="password"
+              @keyup.enter.native="handleSubmit('1')"
+              :type="pwType"
+              @input="pwInput"
               v-model="ruleForm.pass"
               autocomplete="off"
+              ><i
+                slot="suffix"
+                class="el-icon-view"
+                @click="switchType('1')"
+              ></i
             ></el-input>
           </el-form-item>
           <el-form-item label="确认新密码" prop="checkPass">
             <el-input
-              type="password"
+              @keyup.enter.native="handleSubmit('2')"
+              :type="pwType1"
+              @input="pwInput1"
               v-model="ruleForm.checkPass"
               autocomplete="off"
+              ><i
+                slot="suffix"
+                class="el-icon-view"
+                @click="switchType('2')"
+              ></i
             ></el-input>
           </el-form-item>
 
@@ -55,7 +69,8 @@ export default {
       }
     };
     var validatePass = (rule, value, callback) => {
-      let FloatRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>,.\/]).{8,20}/;
+      let FloatRegex =
+        /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>,.\/]).{8,20}/;
       if (value === "") {
         callback(new Error("请输入密码"));
       } else {
@@ -79,6 +94,8 @@ export default {
       }
     };
     return {
+      pwType: "text", // 密码input默认属性
+      pwType1: "text", // 密码input默认属性
       ruleForm: {
         pass: "",
         checkPass: "",
@@ -92,6 +109,50 @@ export default {
     };
   },
   methods: {
+    // 修改input输入框的type属性
+    pwInput(e) {
+      if (e) {
+        this.pwType = "password";
+      } else {
+        this.pwKey++;
+        this.pwType = "text";
+      }
+    },
+    pwInput1(e) {
+      if (e) {
+        this.pwType1 = "password";
+      } else {
+        this.pwKey++;
+        this.pwType1 = "text";
+      }
+    },
+    // 按钮：确认
+    handleSubmit(type) {
+      if (type == "1") {
+        this.$nextTick(() => {
+          this.pwInput();
+        }, 100);
+      } else {
+        this.$nextTick(() => {
+          this.pwInput1();
+        }, 100);
+      }
+    },
+    switchType(type) {
+      if (type == "1") {
+        if (this.pwType === "text") {
+          this.pwType = "password";
+        } else {
+          this.pwType = "text";
+        }
+      } else {
+        if (this.pwType1 === "text") {
+          this.pwType1 = "password";
+        } else {
+          this.pwType1 = "text";
+        }
+      }
+    },
     gologin() {
       this.$router.push({ path: "/login" });
     },
