@@ -251,7 +251,7 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :span="24" v-if="form.tableType == 3">
+              <el-col :span="24" v-if="form.tableType == 3 || form.tableType == 2">
                 <el-form-item label="表SQL：" prop="tableSql">
                   <el-input
                     v-model="form.tableSql" 

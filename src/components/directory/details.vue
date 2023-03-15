@@ -88,7 +88,7 @@
                     </el-form-item>
                   </div>
                 </el-col>
-                <el-col :span="24" v-if="form.tableType == 3">
+                <el-col :span="24" v-if="form.tableType == 3 || form.tableType == 2">
                   <div :class="isDisable_input == true ? 'is_disabled' : 'yes_disabled'">
                     <el-form-item label="表SQL：" prop="tableSql">
                       <el-input
