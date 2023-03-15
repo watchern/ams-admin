@@ -1290,9 +1290,10 @@ export default {
 
         save_data_query(tableRelations).then((resp) => {
           if (resp.code == 0) {
+            console.log(resp)
             this.$message({
               type: "success",
-              message: resp.msg,
+              message: resp.data,
             });
             // this.$emit("update_details", this.table_visible_form.tableMetaUuid)
             this.$refs.tableLines.init(1); //刷新列表
