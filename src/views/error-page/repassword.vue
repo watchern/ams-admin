@@ -104,6 +104,7 @@ export default {
           }).then((response) => {
             if (response.code == 0) {
               this.$message.success("修改密码成功!");
+              this.$store.dispatch("user/logout");
               window.setTimeout(this.gologin, 2000);
             } else {
               this.$message.error(response.msg);
