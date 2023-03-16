@@ -209,11 +209,11 @@ export default {
           name: "帮助",
           method: this.showHelp,
         },
-        {
-          icon: "",
-          name: "修改密码",
-          method: this.goresetpassword,
-        },
+        // {
+        //   icon: "",
+        //   name: "修改密码",
+        //   method: this.goresetpassword,
+        // },
         {
           icon: "",
           name: "退出",
