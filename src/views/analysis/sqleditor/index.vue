@@ -1395,6 +1395,7 @@ export default {
      * 刷新参数列表
      */
     refshParamList() {
+      this.paramSearchInput=""
       initParamTreeNew();
       this.addParamDialog = false;
     },
