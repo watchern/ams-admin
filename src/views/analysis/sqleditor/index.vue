@@ -2362,7 +2362,7 @@ export default {
 
 #horizontal {
   position: absolute;
-  top: 70%;
+  top: 50%;
   right: 0;
   /* width: 100vh; */
   width: 100%;
