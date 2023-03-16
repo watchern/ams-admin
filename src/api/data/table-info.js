@@ -414,6 +414,15 @@ export function getTableZipperList (tableMetaUuid) {
   })
 }
 
+export function getTableHeatMsg (tableMetaUuid) {
+  return request({
+    baseURL: baseURL,
+    url: '/tableHeat/selectHeatByTable',
+    method: 'post',
+    params: { tableMetaUuid: tableMetaUuid }
+  })
+}
+
 // 选择从表字段数据
 export function cong_table_list_data (tableMetaUuid) {
   return request({

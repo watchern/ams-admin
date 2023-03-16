@@ -248,6 +248,9 @@ export default {
     },
     //取消左侧树节点勾选状态
     unLeftTreeSelected(data){
+      if(this.currentData!=null && this.currentData.id === data.id){
+        this.currentData ={}
+      }
       this.$refs.tree_left.unLeftTreeSelected(data)
       this.treeNodeSelectedObj.forEach(function(item,k){
         if(data.strLevel === item.strLevel){
