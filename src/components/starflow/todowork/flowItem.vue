@@ -290,6 +290,16 @@ export default {
       this.$store.dispatch("applyInfo/setStatus", "1");
     },
     submitFlow () {
+      if (this.flowItem.wftype === 'dtOperatePermissionApply') {
+        if (this.perChecked[0].length == 0 && this.perChecked[1].length == 0 && this.perChecked[2].length == 0) {
+          this.$notify({
+            title: '警告',
+            message: '请选择至少一个办理人',
+            type: 'warning'
+          });
+          return;
+        }
+      }
       if (this.isAllAssignment == "checkbox") {
         this.formData.personUuId = this.checkedPerList.join(",");
       } else {
@@ -463,6 +473,10 @@ export default {
       }
       if (!hasAdministrator) {
         this.perChecked.splice(1, 1);
+      }
+      if (this.perChecked[0].length == null){
+        this.activityChecked.splice(0,1);
+        this.perChecked.splice(0,1);
       }
       this.formData.activityId = activityId.join(",");
       for (let i = 0; i < this.perChecked.length; i++) {
