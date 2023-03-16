@@ -163,6 +163,8 @@ export default {
     },
     switchDataSourceAccredit(val){
       this.query.dataSource = val
+      //刷新树
+      this.loadLeftTreeTypeFun(this.centreTreeNodeSelectedObj)
     },
     //删除节点
     removeNode(node,data){
@@ -191,6 +193,7 @@ export default {
       }
       //刷新树
       this.loadLeftTreeTypeFun(this.centreTreeNodeSelectedObj)
+      console.log(this.centreTreeNodeSelectedObj);
       //去掉左侧树的勾选状态
       data.strLevel = this.query.dataSource
       this.$emit("unLeftTreeSelected",data)
