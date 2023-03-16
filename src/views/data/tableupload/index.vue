@@ -28,6 +28,7 @@
 
 <script>
 import SparkMD5 from "spark-md5";
+import { getToken } from '@/utils/auth'
 
 export default {
   data() {
@@ -35,7 +36,7 @@ export default {
       // chunkSize: 10 * 1024 * 1024,
       uploader_key: new Date().getTime(),
       options: {
-        target: "/base/file/uploadFile?result=login&LTPAToken="+ this.$store.state.user.token +"&maxInerval=14400",
+        target: "/base/file/uploadFile?result=login&LTPAToken="+ getToken() +"&maxInerval=14400",
         testChunks: false,
         singleFile: true, // 启用单个文件上传。上传一个文件后，第二个文件将超过现有文件，第一个文件将被取消
         query: { path: "E:\\0" },
