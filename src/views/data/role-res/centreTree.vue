@@ -178,22 +178,24 @@ export default {
         })
       }
       if(node.level>1){
+        //只删除表
+        this.centreTreeNodeSelectedObj.forEach(function(item,k){
+          if(item.id===data.id){
+            _this.centreTreeNodeSelectedObj.splice(k, 1);
+          }
+        })
         //如果文件夹下只有一张表则连同文件夹一起删除
-        if(node.parent.childNodes.length>1){
-          //只删除表
+        if(node.parent.childNodes.length===1){
+          //删除文件夹
           this.centreTreeNodeSelectedObj.forEach(function(item,k){
-            if(item.id===data.id){
+            if(item.id===node.parent.data.id){
               _this.centreTreeNodeSelectedObj.splice(k, 1);
             }
           })
-        }else{
-          //删除文件夹和表
-          this.centreTreeNodeSelectedObj=[]
         }
       }
       //刷新树
       this.loadLeftTreeTypeFun(this.centreTreeNodeSelectedObj)
-      console.log(this.centreTreeNodeSelectedObj);
       //去掉左侧树的勾选状态
       data.strLevel = this.query.dataSource
       this.$emit("unLeftTreeSelected",data)

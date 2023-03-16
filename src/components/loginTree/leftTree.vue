@@ -500,7 +500,8 @@ export default {
       // 只有表和字段能拖拽
       if (
         draggingNode.data.type === "table" ||
-        draggingNode.data.type === "column"
+        draggingNode.data.type === "column" ||
+        draggingNode.data.type === "view"
       ) {
         var dragNodeName = draggingNode.data.label;
         addDragEvent(dragNodeName);
@@ -854,7 +855,7 @@ export default {
           if (
             node.id != null &&
             node.type != "noNeedCheck" &&
-            node.type === "table"
+            (node.type === "table" || node.type === "view")
           ) {
             // this.$refs.tree2.setChecked(node.id, true);
             checkedKeys.push(node.id);
