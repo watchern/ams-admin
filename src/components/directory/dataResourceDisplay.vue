@@ -434,11 +434,11 @@ export default {
     },
     // 导入数据资源（简）
     Importdata_dictionary () {
-      this.$emit("Importdata_dictionary", "导入数据资源（按模版）");
+      this.$emit("Importdata_dictionary", "导入数据资源（简约）");
     },
     // 导入数据资源（繁）
     Importdata_temp () {
-      this.$emit("Importdata_temp", "导入数据资源");
+      this.$emit("Importdata_temp", "导入数据资源（复杂）");
     },
     // 导入汉化信息
     Important_cn () {

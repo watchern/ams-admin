@@ -544,12 +544,12 @@
                      size="small"
                      type="primary"
                      :loading="importLoad"
-                     v-if="upload_title == '导入数据资源（按模版）'">导入</el-button>
+                     v-if="upload_title == '导入数据资源（简约）'">导入</el-button>
           <el-button @click="importTableTemp()"
                      size="small"
                      type="primary"
                      :loading="importLoad"
-                     v-if="upload_title == '导入数据资源'">导入</el-button>           
+                     v-else-if="upload_title == '导入数据资源（复杂）'">导入</el-button>           
           <el-button @click="importTablCn()"
                      size="small"
                      type="primary"
