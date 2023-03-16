@@ -130,10 +130,10 @@ export default {
           return {
             ...item,
             personUuid: item.personuuid,
+            personName: item.cnname,
           };
         });
         this.queryPeopleInfo.total = res.data.total;
-
         this.tableLoading = false;
       });
     },

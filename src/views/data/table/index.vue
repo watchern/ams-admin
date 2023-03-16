@@ -1471,11 +1471,11 @@ export default {
       let personUuids = [];
       let people = [];
       val.forEach(item => {
-        personNames.push(item.cnname);
-        personUuids.push(item.personuuid);
+        personNames.push(item.personName);
+        personUuids.push(item.personUuid);
         people.push({
-          personUuid: item.personuuid,
-          personName: item.cnname,
+          personUuid: item.personUuid,
+          personName: item.personName,
         });
       });
       this.form.personName = personNames.join(",");
