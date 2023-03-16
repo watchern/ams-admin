@@ -483,7 +483,9 @@
                   ? "right join"
                   : scope.row.sqlGenJoinType == 3
                   ? "full join"
-                  : "inner join"
+                  : scope.row.sqlGenJoinType == 4
+                  ? "inner join"
+                  : ""
               }}
             </template>
           </el-table-column>
@@ -665,6 +667,7 @@ import {
   createSql, //查看sql
   selectIndexInfo, //查询索引信息
   getTableZipperList, //查询数据字典
+  getTableHeatMsg, //查询表热度
   cong_table_list_data, //从表字段
   moveFolder4Authority, //授权资源目录同步
 } from "@/api/data/table-info";
@@ -821,16 +824,7 @@ export default {
         // },
       ],
       dialogVisible_tag: false, //选择标签
-      Heat: [
-        {
-          name: "python工具引用次数",
-          num: "99",
-        },
-        {
-          name: "python工具引用次数",
-          num: "99",
-        },
-      ], //表热度
+      Heat: [], //表热度
       // 列信息
       Column_tableData: [],
       // 查看sql
@@ -922,6 +916,7 @@ export default {
     this.getListTree_data(); //下拉框默认值
     this.getIndexInfo(this.tableMetaUuid);
     this.getDictInfo(this.tableMetaUuid);
+    this.getTableHeat(this.tableMetaUuid);
     this.qost_cong_table_list_data(this.tableMetaUuid); //获取从表字段
     window.addEventListener("scroll", this.handleScroll, true);
   },
@@ -1103,6 +1098,12 @@ export default {
     getDictInfo (tableId) {
       getTableZipperList(tableId).then((res) => {
         this.Column_tableData_dict = res.data;
+      });
+    },
+    //表热度
+    getTableHeat (tableId) {
+      getTableHeatMsg(tableId).then((res) => {
+        this.Heat = res.data;
       });
     },
     //  列信息
@@ -1443,7 +1444,7 @@ export default {
   box-sizing: border-box;
   height: 40px;
   line-height: 40px;
-  width: 20%;
+  width: 32%;
 }
 
 .Heat_ul li p {
