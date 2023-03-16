@@ -777,6 +777,9 @@ export default {
   },
   computed: {},
   created () {},
+  mounted() {
+    console.log(this.$route)
+  },
   methods: {
     // 查询
     search (serachParams) {

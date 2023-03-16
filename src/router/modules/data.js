@@ -54,7 +54,8 @@ const dataRouter = {
     {
       path: "directory",
       name: "数据资源目录",
-      component: () => import("@/views/data/directory/index"),
+      // component: () => import("@/views/data/directory/index"),
+      component: () => import("@/views/data/table/index"),
       meta: {
         title: "数据管理-数据字典",
       },

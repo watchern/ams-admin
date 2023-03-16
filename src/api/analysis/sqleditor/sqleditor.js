@@ -2199,22 +2199,46 @@ export function draftTreeSearch() {
     draftZtree.refresh()
   }
 }
-
+function setSearchPid(list,id){
+  function ssp(list2,id){
+    list2.forEach((item)=>{
+      item.searchId=id;
+      if(item.children){
+        ssp(item.children,id)
+      }
+    })
+  }
+  ssp(list,id);
+  return list;
+}
 /**
  * 对指定树节点隐藏
  * @param flag true或false
  * @param treeObj 树对象
  */
-function isHiddenNodes(flag, treeObj) {
-  var allNodeList = treeObj.transformToArray(treeObj.getNodes())
+function isHiddenNodes(flag, treeObj,nodeList) {
+  let showPathList=[];
+  if(nodeList){
+    nodeList.forEach((item)=>{
+      item.searchId=item.id;
+      showPathList.push(item.id)
+      if(item.children){
+        setSearchPid(item.children,item.id)
+      }
+    })
+  }
+
+  let allNodeList = treeObj.transformToArray(treeObj.getNodes());
   if (flag) {
-    for (var i = 0; i < allNodeList.length; i++) {
-      if (allNodeList[i].pid != null) {		// 过滤掉最根节点
+    for (let i = 0; i < allNodeList.length; i++) {
+      let item=allNodeList[i];
+      // console.log(showPathList,item.searchId,showPathList.indexOf(item.searchId),item.name)
+      if (allNodeList[i].pid != null&&showPathList.indexOf(item.searchId)==-1) {		// 过滤掉最根节点
         treeObj.hideNode(allNodeList[i])
       }
     }
   } else {
-    for (var i = 0; i < allNodeList.length; i++) {
+    for (let i = 0; i < allNodeList.length; i++) {
       if (allNodeList[i].isHidden === true) {
         allNodeList[i].isHidden = false
         treeObj.updateNode(allNodeList[i])
@@ -2257,7 +2281,7 @@ function expandNodes(nodes, treeObj) {
  * @param treeObj 树对象
  */
 function hiddenNodes(nodeList, treeObj) {
-  isHiddenNodes(true, treeObj)
+  isHiddenNodes(true, treeObj,nodeList)
   for (var i = 0; i < nodeList.length; i++) {
     nodeList[i].isHidden = false
     treeObj.updateNode(nodeList[i])
@@ -2382,7 +2406,6 @@ function getIndexArr(text, str, index, indexArr) {
   }
   return indexArr
 }
-
 /**
  * 格式化SQL语句
  */
@@ -2392,6 +2415,7 @@ export function sqlFormat(dataSource) {
   }
   var selected = true// 是否选中内容
   var text = editorObj.getSelection()
+
   if (text.length === 0) {
     text = editorObj.getValue()
     selected = false
@@ -2422,6 +2446,8 @@ export function sqlFormat(dataSource) {
           newVal = newVal.replace(arr[i].name + '_rpm_JL', arr[i].id)
         }
       }
+      // console.log(arr,newVal);
+      newVal=newVal.replace("selfend",'');
       if (selected) {
         editorObj.replaceSelection(newVal)
       } else {

@@ -907,23 +907,36 @@ export default {
       this.$emit("addRoleCheck");
       this.$refs.tree2.filter(this.filterText2);
     },
-    filterNode(value, data, node) {
-      // if (!value) return true;
-      // return data.label.indexOf(value) !== -1;
+    // filterNode(value, data, node) {
+    //   // if (!value) return true;
+    //   // return data.label.indexOf(value) !== -1;
+    //
+    //   // 过滤后显示子级
+    //   if (!value) {
+    //     return true;
+    //   }
+    //   let level = node.level;
+    //   let _array = []; //这里使用数组存储 只是为了存储值。
+    //   this.getReturnNode(node, _array, value);
+    //   let result = false;
+    //   _array.forEach((item) => {
+    //     result = result || item;
+    //   });
+    //   return result;
+    // },
 
-      // 过滤后显示子级
-      if (!value) {
-        return true;
+    //筛选节点
+    filterNode(value, data,node) {
+      if (!value) return true
+      let parentNode = node.parent, labels = [node.label], level = 1
+      while (level < node.level) {
+        labels = [...labels, parentNode.label]
+        parentNode = parentNode.parent
+        level++
       }
-      let level = node.level;
-      let _array = []; //这里使用数组存储 只是为了存储值。
-      this.getReturnNode(node, _array, value);
-      let result = false;
-      _array.forEach((item) => {
-        result = result || item;
-      });
-      return result;
+      return labels.some(label => label.indexOf(value) !== -1)
     },
+
 
     // 处理过滤后显示二级++
     getReturnNode(node, _array, value) {

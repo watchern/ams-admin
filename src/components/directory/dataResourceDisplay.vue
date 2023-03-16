@@ -18,7 +18,7 @@
 
     <!-- 是否显示按钮 数据注册显示 -->
     <div class="common_btn"
-         v-if="isBtn == true">
+         v-if="isBtn == true&&$route.path=='/data/table'">
       <div class="click_btn">
         <el-button type="primary"
                    class="oper-btn"
