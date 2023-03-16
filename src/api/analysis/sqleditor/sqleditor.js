@@ -3095,3 +3095,17 @@ export function getDraftById(id){
     method: 'get'
   })
 }
+
+/**
+ * SQL编辑器参数 获取类型
+ * @param code
+ * @returns {AxiosPromise}
+ */
+export function getSQLParamJsonSelectValue(code){
+  return request({
+    baseURL: analysisUrl,
+    url: '/paramController/loadDict',
+    method: 'get',
+    params: { codeType: code }
+  })
+}

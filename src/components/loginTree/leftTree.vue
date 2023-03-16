@@ -516,7 +516,7 @@ export default {
         //SQL编辑器
         if (this.loadLeftTreeType == "1") {
           this.isShowLoadLeftTreeBtn = false;
-          // this.isShowPersonSpaceTab = true;
+          this.isShowPersonSpaceTab = true;
           this.draggable = true;
           this.expandOnClickNode = true
         }
@@ -824,8 +824,18 @@ export default {
       this.treeNodeSelectedObj = data;
     },
     //取消树节点勾选状态
-    unLeftTreeSelected (id) {
-      this.$refs.tree2.setChecked(id, false, false);
+    unLeftTreeSelected (data) {
+      this.$refs.tree2.setChecked(data.id, false, false);
+      this.treeNodeSelectedObj.forEach(function(item,k){
+        if(data.strLevel === item.strLevel){
+          item.data.forEach(function(t,k){
+            if(data.id === t.id){
+              item.data.splice(k, 1);
+            }
+            
+          })
+        }
+      })
     },
     handleClick (tab, event) {
       this.elTabsName = tab.label;

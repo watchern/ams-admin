@@ -646,6 +646,7 @@
 import $ from "jquery";
 import seeSqlData from "@/views/analysis/modelparam/paramManager/seesqldata";
 import { getUuid } from "@/api/analysis/common";
+import { getSQLParamJsonSelectValue }  from "@/api/analysis/sqleditor/sqleditor";
 import request from "@/utils/request";
 export default {
   props: ["selectTreeNode", "operationObj"],
@@ -736,6 +737,8 @@ export default {
         description: "",
         example: "",
         folderId: "",
+        timeFormat:"",
+        customizeFormat:"",
         paramChoice: {
           optionsSql: "",
           optionsSqlLine: "",
@@ -827,18 +830,16 @@ export default {
     //初始化文件夹编号
     this.form.folderId = this.selectTreeNode.id;
     this.maxIntervalUnits = this.setJsonSelectValue(
-      "maxIntervalUnit",
-      "/paramController/loadDict?codeType=maxIntervalUnit"
+      "maxIntervalUnit",1
+      // "/paramController/loadDict?codeType=maxIntervalUnit"
     );
     this.dataTypes = this.setJsonSelectValue(
-      "dataType",
-      "/paramController/loadDict?codeType=dataType"
+      "dataType",2
+      // "/paramController/loadDict?codeType=dataType"
     );
     this.inputTypeValueStr = this.setJsonSelectValue(
-      "inputType",
-      "/paramController/loadDict?codeType=inputType",
-      "",
-      ""
+      "inputType",3
+      // "/paramController/loadDict?codeType=inputType",
     );
   },
   mounted() {
@@ -1024,6 +1025,7 @@ export default {
             that.form.description = data.description;
             if (data.paramTimes) {
               $("#timesUuid").val(data.paramTimes.ammParamTimesUuid);
+              console.log(data.paramTimes)
               that.form.timeFormat = data.paramTimes.timeFormat;
               if (that.form.timeFormat == "other") {
                 that.isShowElement.customizeFormatTag = true;
@@ -1098,8 +1100,21 @@ export default {
       }
       return rep;
     },
-    setJsonSelectValue(selectId, url) {
-      let result;
+    setJsonSelectValue(code,index) {
+      getSQLParamJsonSelectValue(code).then(res =>{
+        if(index===1){
+          this.maxIntervalUnits = JSON.parse(res.data);
+        }
+        if(index===2){
+          this.dataTypes = JSON.parse(res.data);
+        }
+        if(index===3){
+          this.inputTypeValueStr = JSON.parse(res.data);
+        }
+        
+      })
+
+      /* let result;
       let that = this;
       var data;
       $.ajax({
@@ -1123,8 +1138,8 @@ export default {
             "error"
           );
         },
-      });
-      return result;
+      }); */
+      // return result;
     },
     // optionsSqllineplaceholders_1(){
     //   return "格式：SELECT A,B FROM 模式.C\n" +
@@ -1197,6 +1212,7 @@ export default {
       } else {
         this.isShowElement.customizeFormatTag = false;
       }
+      this.form.timeFormat = dataTypeValue
     },
     tabsigntree() {
       if (this.activeName === "SQL") {

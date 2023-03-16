@@ -119,7 +119,11 @@ export default {
     getList(query) {
       this.listLoading = true
       if(query && query.draftTitle !=null && query.draftTitle !=""){
-        this.pageQuery.condition.draftTitle = query.draftTitle
+        if(this.pageQuery.condition===null){
+          this.pageQuery.condition = query
+        }else{
+          this.pageQuery.condition.draftTitle = query.draftTitle
+        }
       }else if (query) {
         this.pageQuery.condition = query
         this.queryFields = [

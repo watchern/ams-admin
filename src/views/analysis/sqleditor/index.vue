@@ -494,9 +494,8 @@
         openType="save"
       />
       <div slot="footer" class="dialog-footer">
-        <el-button @click="sqlDraftFolderDialogFormVisible = false"
-          >取 消</el-button
-        >
+        <el-button @click="sqlDrafListRecover()">返回上一步</el-button>
+        <el-button @click="sqlDraftFolderDialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="saveSqlDialog()">确 定</el-button>
       </div>
     </el-dialog>
@@ -1146,6 +1145,10 @@ export default {
           this.sqlDraftFolderDialogFormVisible = true;
         }
       });
+    },
+    sqlDrafListRecover(){
+      this.sqlDraftDialogFormVisible = true;
+      this.sqlDraftFolderDialogFormVisible = false;
     },
     refreshDraftList(data) {
       let query = {};
