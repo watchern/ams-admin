@@ -186,28 +186,29 @@
       </template>
       <div class="list_table"
            :class="isBtn == true ?'is_min_heihgt':'is_heihgt'">
-        <div class="table-list-new" v-for="item in list">
+        <div class="table-list-new" v-for="(item, index) in list" :key="index">
           <div class="tln-header">
-            <div class="tlnh-type">{{ item.tableRelationQuery.tableLayeredName}}</div>
-            <div class="tlnh-title" @click="on_deails(item)">{{ item.tableRelationQuery.businessSystemName }}</div>
+            <div class="tlnh-type">{{ item.tableRelationQuery.businessSystemCode}}</div>
+            <el-tooltip v-if="item.chnName" class="item" effect="light" :content="item.chnName" placement="top">
+              <div class="tlnh-title" @click="on_deails(item)">{{ item.chnName }}</div>
+            </el-tooltip>
+            <el-tooltip class="item" effect="light" :content="item.tbName" placement="top">
+              <div class="tlnh-title" @click="on_deails(item)">{{ item.tbName }}</div>
+            </el-tooltip>
             <div class="inline-block tlnh-checkbox" >
               <el-checkbox v-model="item.checked" @change="checkItem"></el-checkbox>
             </div>
-
           </div>
           <div class="tln-msg" @click="on_deails(item)">
             <div class="tlnh-type"></div>
             <div class="tlnm-right">
               <div class="tln-top">
-                <el-tooltip class="item" effect="light" :content="item.tbName" placement="top">
-                  <p class="new_num">{{ item.tbName }}</p>
-                </el-tooltip>
-                <el-tooltip class="item" effect="light" :content="item.chnName" placement="top">
-                  <p class="new_title">{{ item.chnName }}</p>
-                </el-tooltip>
-
+                <span class="new_type"
+                      v-if="item.tableRelationQuery.businessSystemName">{{ item.tableRelationQuery.businessSystemName }}</span>
                 <span class="new_type"
                       v-if="item.tableRelationQuery.tableThemeName">{{ item.tableRelationQuery.tableThemeName }}</span>
+                <span class="new_type"
+                      v-if="item.tableRelationQuery.tableLayeredName">{{ item.tableRelationQuery.tableLayeredName }}</span>
               </div>
               <div class="tln-middle">
 <!--                <div class="table_type">-->
@@ -662,7 +663,7 @@ export default {
   font-size: 16px;
   background: #e7ecff;
   color: #677ccd;
-  margin: 0 10px;
+  margin-right: 10px;
   padding: 4px 10px;
 }
 
@@ -955,7 +956,6 @@ export default {
     display: inline-block;
     width: 40px;
     height: 40px;
-    font-size:18px;
     font-weight: bold;
     line-height: 40px;
     text-align: center;
@@ -964,11 +964,18 @@ export default {
     background-color: rgb(65,202,254);
     border-color: rgb(65,202,254);
     color: #fff;
+    word-break: break-all;
+    white-space: normal;
   }
   .tlnh-title{
     font-size: 16px;
     display: inline-block;
     margin-left: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+  }
+  .tlnh-title:hover {
+    text-decoration: underline;
   }
   .tln-msg{
     .tlnh-type{
@@ -993,7 +1000,7 @@ export default {
     .new_type{
       font-size: 13px;
       padding:3px 8px;
-      vertical-align: top;
+      // vertical-align: top;
       max-width:30%;
       overflow:hidden;
       white-space:nowrap;
