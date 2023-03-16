@@ -27,11 +27,19 @@
           <el-button type="primary"
                      class="oper-btn"
                      size="small"
-                     @click="down_template_dictionary()">模版下载</el-button>
+                     @click="down_template_dictionary()">简约模版下载</el-button>
           <el-button type="primary"
                      size="small"
                      class="oper-btn"
-                     @click="Importdata_dictionary()">导入数据资源</el-button>
+                     @click="Importdata_dictionary()">导入数据资源（简约）</el-button>
+          <el-button type="primary"
+                     class="oper-btn"
+                     size="small"
+                     @click="down_template_data()">复杂模版下载</el-button>
+          <el-button type="primary"
+                     size="small"
+                     class="oper-btn"
+                     @click="Importdata_temp()">导入数据资源（复杂）</el-button>
         </div>
       </div>
       <div class="click_btn">
@@ -404,9 +412,13 @@ export default {
     clear (data) {
       this.serachParams = data
     },
-    // 数据字典下载模版
+    // 数据资源（简约）模版下载
     down_template_dictionary () {
       this.$emit("down_template_dictionary", this.check_list);
+    },
+    // 数据资源（复杂）模版下载
+    down_template_data () {
+      this.$emit("down_template_data");
     },
     // 汉化模版下载
     down_template_cn () {
@@ -420,9 +432,13 @@ export default {
     down_template_table () {
       this.$emit("down_template_table", this.check_list);
     },
-    // 导入数据资源
+    // 导入数据资源（简）
     Importdata_dictionary () {
-      this.$emit("Importdata_dictionary", "导入数据资源");
+      this.$emit("Importdata_dictionary", "导入数据资源（按模版）");
+    },
+    // 导入数据资源（繁）
+    Importdata_temp () {
+      this.$emit("Importdata_temp", "导入数据资源");
     },
     // 导入汉化信息
     Important_cn () {

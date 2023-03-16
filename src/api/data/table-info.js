@@ -453,11 +453,24 @@ export function getLabelList(labelLibraryId, pageNo, pageSize, labelName) {
   })
 }
 
-// 下载数据资源模版
+// 下载数据资源（简单）模版
 export function downTemplateDictionary() {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/exportTableFile`,
+    responseType: "blob",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式
+    },
+    method: 'post',
+  })
+}
+
+// 下载数据资源（复杂）模版
+export function downTemplateData() {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/exportTableFileForMore`,
     responseType: "blob",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded", // 请求的数据类型为form data格式

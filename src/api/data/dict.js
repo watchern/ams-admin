@@ -37,11 +37,21 @@ export function del (ids) {
     method: 'delete'
   })
 }
-// 数据字典
+// 数据资源（简约）模版
 export function import_dictionary (data) {
   return request({
     baseURL: baseURL,
     url: `/tableMeta/importTableInfo`,
+    method: 'post',
+    data
+  })
+}
+
+// 数据资源（复杂）模版
+export function import_dictionary_temp (data) {
+  return request({
+    baseURL: baseURL,
+    url: `/tableMeta/importTableInfoForMore`,
     method: 'post',
     data
   })

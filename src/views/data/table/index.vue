@@ -16,7 +16,9 @@
         <DataResourceDisplay @down_template_cn="DownTemplateCN"
                              @Important_cn="ImportantCn"
                              @Importdata_dictionary="ImportdataDictionary"
+                             @Importdata_temp="ImportdataTemp"
                              @down_template_dictionary="DownTemplateDictionary"
+                             @down_template_data="DownTemplateData"
                              @Important_table="ImportantTable"
                              @down_template_table="DownTemplateTable"
                              @on_deails="onDeailsChange"
@@ -542,7 +544,12 @@
                      size="small"
                      type="primary"
                      :loading="importLoad"
-                     v-if="upload_title == '导入数据资源'">导入</el-button>
+                     v-if="upload_title == '导入数据资源（按模版）'">导入</el-button>
+          <el-button @click="importTableTemp()"
+                     size="small"
+                     type="primary"
+                     :loading="importLoad"
+                     v-if="upload_title == '导入数据资源'">导入</el-button>           
           <el-button @click="importTablCn()"
                      size="small"
                      type="primary"
@@ -570,7 +577,8 @@ import {
   getColsInfoByTableName, //获取列信息
   synDataStructure, //同步数据
   listSchemas, //获取模式名
-  downTemplateDictionary, // 下载资源目录模版
+  downTemplateDictionary, // 下载资源（简单）模版
+  downTemplateData, // 下载资源（复杂）模版
   downTemplateCN, // 下载汉化信息模版
   downTemplateTable, // 下载表关系模版
 } from "@/api/data/table-info";
@@ -581,6 +589,7 @@ import directoryFileImport from "@/views/data/tableupload"; //导入
 import {
   importTable,
   import_dictionary,
+  import_dictionary_temp,
   importTable_table,
 } from "@/api/data/dict";
 import qs from "qs";
@@ -826,8 +835,14 @@ export default {
       this.show_details = false;
       this.query_list(this.$refs.tree_left.query, false);
     },
-    // 数据字典导入
+    // 数据资源导入（按模版）
     ImportdataDictionary (data) {
+      this.upload_title = data;
+      this.importVisible = true;
+      this.importtemp.tableFileName = '';
+    },
+    // 数据资源导入
+    ImportdataTemp (data) {
       this.upload_title = data;
       this.importVisible = true;
       this.importtemp.tableFileName = '';
@@ -844,11 +859,27 @@ export default {
       this.importVisible = true;
       this.importtemp.tableFileName = '';
     },
-    // 数据字典下载
+    // 数据资源（简单）模版下载
     DownTemplateDictionary () {
-      // 导出表信息作为模板
-      // this.$message({ type: 'info', message: '无选择表,失败!' })
       downTemplateDictionary().then((res) => {
+        const filename = decodeURI(
+          res.headers["content-disposition"].split(";")[1].split("=")[1]
+        );
+        const blob = new Blob([res.data], {
+          type: "application/octet-stream",
+        });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.style.display = "none";
+        link.href = url;
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+      });
+    },
+    // 数据资源（复杂）模版下载
+    DownTemplateData() {
+      downTemplateData().then((res) => {
         const filename = decodeURI(
           res.headers["content-disposition"].split(";")[1].split("=")[1]
         );
@@ -907,7 +938,7 @@ export default {
     fileuploadname (data) {
       this.importtemp.tableFileName = data;
     },
-    // 字典确认导入
+    // 数据资源导入（按模版）
     importTableDictionary () {
       let importtemp = JSON.parse(JSON.stringify(this.importtemp))
       if (importtemp.tableFileName == '') {
@@ -925,8 +956,39 @@ export default {
               title: "成功",
               message: res.data.msg,
               type: "success",
-              duration: 2000,
-              position: "bottom-right",
+            });
+            this.update_tree();//更新左侧树
+            this.query_list(this.$refs.tree_left.query, false);
+          } else {
+            this.importLoad = false;
+            this.$message({
+              type: "error",
+              message: res.data.msg,
+            });
+          }
+        }).catch(e => {
+          this.importLoad = false;
+        });
+      }
+    },
+    // 数据资源导入
+    importTableTemp() {
+      let importtemp = JSON.parse(JSON.stringify(this.importtemp))
+      if (importtemp.tableFileName == '') {
+        this.$message({
+          type: "warning",
+          message: '请先上传文件',
+        });
+      } else {
+        this.importLoad = true;
+        import_dictionary_temp(this.importtemp).then((res) => {
+          if (res.data.code === "200") {
+            this.importVisible = false;
+            this.importLoad = false;
+            this.$notify({
+              title: "成功",
+              message: res.data.msg,
+              type: "success",
             });
             this.update_tree();//更新左侧树
             this.query_list(this.$refs.tree_left.query, false);
@@ -958,8 +1020,6 @@ export default {
               title: "成功",
               message: res.data.msg,
               type: "success",
-              duration: 2000,
-              position: "bottom-right",
             });
             this.query_list(this.$refs.tree_left.query, false);
           } else {
@@ -987,8 +1047,6 @@ export default {
               title: "成功",
               message: res.data,
               type: "success",
-              duration: 2000,
-              position: "bottom-right",
             });
             this.query_list(this.$refs.tree_left.query, false);
           } else {
