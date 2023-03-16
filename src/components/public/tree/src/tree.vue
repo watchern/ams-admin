@@ -493,3 +493,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+.flow-tree{
+  overflow-x: auto;
+}
+</style>

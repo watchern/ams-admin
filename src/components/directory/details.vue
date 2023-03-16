@@ -1,19 +1,26 @@
 <template>
   <div class="_width resources">
     <!-- 基本信息详情 -->
-    <div class="top_tag">
-      <ul>
-        <li class="navgatorLi"
-            v-for="(item, index) in tag"
-            :key="item"
-            :class="{
-            isActive: index === navgatorIndex,
-          }"
-            @click="handleLeft(index)">
-          {{ item }}
-        </li>
-      </ul>
+    <div class="top-tag-new">
+      <div class="inline-block ttn-div" v-for="(item,index) in tag2" :key="index" @click="handleLeft(index)">
+        <img :src="actTag==item.code?item.imgAct:item.img" alt="">
+        <span :class="actTag==item.code?'ttn-act':''">{{item.value}}</span>
+        <div v-if="index<tag2.length-1" class="ttn-border inline-block"></div>
+      </div>
     </div>
+<!--    <div class="top_tag">-->
+<!--      <ul>-->
+<!--        <li class="navgatorLi"-->
+<!--            v-for="(item, index) in tag"-->
+<!--            :key="item"-->
+<!--            :class="{-->
+<!--            isActive: index === navgatorIndex,-->
+<!--          }"-->
+<!--            @click="handleLeft(index)">-->
+<!--          {{ item }}-->
+<!--        </li>-->
+<!--      </ul>-->
+<!--    </div>-->
     <div class="right_details"
          id="right_details"
          ref="element">
@@ -210,6 +217,7 @@
                                  v-if="isDisable_input == false"
                                  :disabled="isDisable_input"
                                  class="oper-btn"
+                                 style="margin-top: 9px"
                                  @click="check_people()">
                         选择
                       </el-button>
@@ -378,7 +386,7 @@
                  v-if="isDisable_input == true"></div>
           </div>
         </div>
-        <!-- 数据表关联关系 -->
+        <!-- 数据血缘影响分析 -->
         <div class="rightList_child"
              id="id4">
           <h2 :class="{
@@ -720,6 +728,14 @@ export default {
         "数据表关联关系",
         "数据血缘影响分析",
       ],
+      tag2:[
+        {value:"基本信息",code:1,img:require('../../assets/img/baseMsg.png'),imgAct:require('../../assets/img/baseMsgAct.png')},
+        {value:"列信息",code:2,img:require('../../assets/img/list.png'),imgAct:require('../../assets/img/listAct.png')},
+        {value:"索引信息",code:3,img:require('../../assets/img/key.png'),imgAct:require('../../assets/img/keyAct.png')},
+        {value:"数据表关联关系",code:4,img:require('../../assets/img/tableRalation.png'),imgAct:require('../../assets/img/tableRalationAct.png')},
+        {value:"数据血缘影响分析",code:5,img:require('../../assets/img/consanguinity.png'),imgAct:require('../../assets/img/consanguinityAct.png')},
+      ],
+      actTag:"1",
       list_details: {}, //基本信息
       // 基本信息
       form: {
@@ -933,6 +949,7 @@ export default {
     // 点击导航菜单，页面滚动到指定位置
     handleLeft (index) {
       this.navgatorIndex = index;
+      this.actTag = index+1;
       this.$el.querySelector(`#id${index}`).scrollIntoView({
         behavior: "smooth", // 平滑过渡
         block: "start", // 上边框与视窗顶部平齐。默认值
@@ -1324,6 +1341,7 @@ export default {
   display: flex;
   position: relative;
   height: calc(100vh - 180px);
+  padding-top: 70px;
 }
 
 .top_tag {
@@ -1351,9 +1369,11 @@ export default {
 }
 
 .right_details {
-  width: calc(100% - 160px);
+  /*width: calc(100% - 160px);*/
   /* height: 900px; */
   overflow-y: auto;
+  width: 100%;
+  padding: 0 20px;
 }
 
 .rightList .rightList_child {
@@ -1578,5 +1598,43 @@ export default {
   bottom: 60px;
   right: 40px;
   z-index: 9;
+}
+.top-tag-new{
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  background: rgba(255,255,255,0.8);
+  position: absolute;
+  top:0;
+  left: 0;
+  z-index: 999;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  box-shadow: 0 4px 6px 0 rgba(0,0,0,.09);
+  text-align: center;
+}
+.top-tag-new img{
+  width: 28px;
+  height: auto;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+.ttn-div{
+  cursor: pointer;
+  vertical-align: middle;
+  margin: 0 20px;
+  height: auto;
+  position: relative;
+}
+.ttn-border{
+  height: 30px;
+  width: 1px;
+  background: #ddd;
+  margin-top: 10px;
+  position: absolute;
+  margin-left: 15px;
+}
+.ttn-act{
+  color:#1296db;
 }
 </style>

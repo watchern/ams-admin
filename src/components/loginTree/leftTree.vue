@@ -1,112 +1,137 @@
 <template>
   <div class="left_tree_style">
-    <el-tabs v-model="activeName"
-             type="card"
-             v-if="this.loadLeftTreeType != '4'"
-             @tab-click="handleClick">
-      <el-tab-pane label="系统"
-                   :disabled="tabclick"
-                   v-if="isShowXTZTFC"
-                   name="0">
-        <span slot="label"><el-tooltip class="item"
-                      effect="dark"
-                      content="系统"
-                      placement="top"><i class="el-icon-setting"></i></el-tooltip></span></el-tab-pane>
-      <el-tab-pane label="主题"
-                   :disabled="tabclick"
-                   v-if="isShowXTZTFC"
-                   name="1"><span slot="label"><el-tooltip class="item"
-                      effect="dark"
-                      content="主题"
-                      placement="top"><i class="el-icon-s-operation"></i></el-tooltip></span>
+    <el-tabs
+      v-model="activeName"
+      type="card"
+      v-if="this.loadLeftTreeType != '4'"
+      @tab-click="handleClick"
+    >
+      <el-tab-pane
+        label="系统"
+        :disabled="tabclick"
+        v-if="isShowXTZTFC"
+        name="0"
+      >
+        <span slot="label"
+          ><el-tooltip class="item" effect="dark" content="系统" placement="top"
+            ><i class="el-icon-setting"></i></el-tooltip></span
+      ></el-tab-pane>
+      <el-tab-pane
+        label="主题"
+        :disabled="tabclick"
+        v-if="isShowXTZTFC"
+        name="1"
+        ><span slot="label"
+          ><el-tooltip class="item" effect="dark" content="主题" placement="top"
+            ><i class="el-icon-s-operation"></i></el-tooltip
+        ></span>
       </el-tab-pane>
-      <el-tab-pane label="分层"
-                   :disabled="tabclick"
-                   v-if="isShowXTZTFC"
-                   name="2"><span slot="label"><el-tooltip class="item"
-                      effect="dark"
-                      content="分层"
-                      placement="top"><i class="el-icon-coin"></i></el-tooltip></span>
+      <el-tab-pane
+        label="分层"
+        :disabled="tabclick"
+        v-if="isShowXTZTFC"
+        name="2"
+        ><span slot="label"
+          ><el-tooltip class="item" effect="dark" content="分层" placement="top"
+            ><i class="el-icon-coin"></i></el-tooltip
+        ></span>
       </el-tab-pane>
-      <el-tab-pane label="个人空间"
-                   :disabled="tabclick"
-                   v-if="isShowPersonSpaceTab"
-                   name="3"></el-tab-pane>
+
+      <el-tab-pane
+        label="个人空间"
+        :disabled="tabclick"
+        v-if="isShowPersonSpaceTab"
+        name="3"
+        ><span slot="label"
+          ><el-tooltip
+            class="item"
+            effect="dark"
+            content="个人空间"
+            placement="top"
+            ><i class="el-icon-user"></i></el-tooltip></span
+      ></el-tab-pane>
     </el-tabs>
     <div class="padding10">
-      <el-input v-model="filterText2"
-                :disabled="tabclick"
-                placeholder="输入关键字进行过滤" />
+      <el-input
+        v-model="filterText2"
+        :disabled="tabclick"
+        placeholder="输入关键字进行过滤"
+      />
     </div>
     <!-- 数据源 -->
-    <div class="padding10 dataSource"
-         v-if="
+    <div
+      class="padding10 dataSource"
+      v-if="
         this.loadLeftTreeType != '4' &&
         this.loadLeftTreeType != '3' &&
         this.loadLeftTreeType != '1'
-      ">
-      <el-form :inline="true"
-               :model="query"
-               label-position="bottom">
-        <el-form-item label="数据源："
-                      label-width="90px">
-          <el-select v-model="query.dataSource"
-                     :disabled="tabclick"
-                     @change="selectdata"
-                     placeholder="请选择数据源">
-            <el-option v-for="item in options"
-                       :key="item.value"
-                       :label="item.label"
-                       :value="item.value" />
+      "
+    >
+      <el-form :inline="true" :model="query" label-position="bottom">
+        <el-form-item label="数据源：" label-width="90px">
+          <el-select
+            v-model="query.dataSource"
+            :disabled="tabclick"
+            @change="selectdata"
+            placeholder="请选择数据源"
+          >
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
           </el-select>
         </el-form-item>
       </el-form>
     </div>
-    <div v-if="loading == true"
-         class="loadings">
+    <div v-if="loading == true" class="loadings">
       <div class="conter_loadings">
-        <span><img src="@/assets/img/loading.gif"
-               alt="" /></span>
+        <span><img src="@/assets/img/loading.gif" alt="" /></span>
       </div>
     </div>
-    <div v-else
-         class="conter_vh"
-         :class="isSize == true ? 'conter_vh_size' : ''">
+    <div
+      v-else
+      class="conter_vh"
+      :class="isSize == true ? 'conter_vh_size' : ''"
+    >
       <!-- 系统 主题 分层  目录-->
       <div class="tree-containerall">
-        <MyElTree ref="tree2"
-                  :props="props"
-                  :data="tree_list"
-                  :filter-node-method="filterNode"
-                  :default-expanded-keys="defaultExpandedKeys"
-                  class="filter-tree"
-                  highlight-current="true"
-                  node-key="id"
-                  :load="loadNode"
-                  :lazy="isLazyTree"
-                  @node-click="nodeClick"
-                  @node-contextmenu="nodeContextmenu"
-                  @node-drag-start="handleDragStart"
-                  @node-drag-enter="handleDragEnter"
-                  @node-drag-leave="handleDragLeave"
-                  @node-drag-over="handleDragOver"
-                  @node-drag-end="handleDragEnd"
-                  @node-drop="handleDrop"
-                  :draggable="draggable"
-                  :expand-on-click-node="expandOnClickNode"
-                  :show-checkbox="showCheckbox"
-                  :allow-drop="returnFalse"
-                  @check="setCheckedNodes">
-          <span slot-scope="{ node, data }"
-                class="custom-tree-node">
-            <i v-if="data.id === 'ROOT'"
-               :class="data.icon" />
-            <i v-if="
+        <MyElTree
+          ref="tree2"
+          :props="props"
+          :data="tree_list"
+          :filter-node-method="filterNode"
+          :default-expanded-keys="defaultExpandedKeys"
+          class="filter-tree"
+          highlight-current="true"
+          node-key="id"
+          :load="loadNode"
+          :lazy="isLazyTree"
+          @node-click="nodeClick"
+          @node-contextmenu="nodeContextmenu"
+          @node-drag-start="handleDragStart"
+          @node-drag-enter="handleDragEnter"
+          @node-drag-leave="handleDragLeave"
+          @node-drag-over="handleDragOver"
+          @node-drag-end="handleDragEnd"
+          @node-drop="handleDrop"
+          :draggable="draggable"
+          :expand-on-click-node="expandOnClickNode"
+          :show-checkbox="showCheckbox"
+          :allow-drop="returnFalse"
+          @check="setCheckedNodes"
+        >
+          <span slot-scope="{ node, data }" class="custom-tree-node">
+            <i v-if="data.id === 'ROOT'" :class="data.icon" />
+            <i
+              v-if="
                 data.type === 'folder' ||
                 data.type === 'system' ||
                 data.type === 'layered' ||
                 data.type === 'theme'
-              ">
+              "
+            >
               <span class="agreeicon0"></span>
             </i>
             <i v-if="data.type === 'table'">
@@ -115,82 +140,96 @@
             <i v-if="data.type === 'view'">
               <span class="icon iconfont agreeicon4"></span>
             </i>
-            <i v-if="data.type === 'column'"
-               class="el-icon-c-scale-to-original" />
+            <i
+              v-if="data.type === 'column'"
+              class="el-icon-c-scale-to-original"
+            />
             <span>{{ node.label }}</span>
             <span style="margin-left: 10px">
-              <el-button v-if="
+              <el-button
+                v-if="
                   loadLeftTreeType === '3' &&
                   isPersonSpaceAdminRole &&
                   data.type === 'folder' &&
                   data.sceneInstUuid === 'allBankSpaceFolder'
                 "
-                         title="添加文件夹"
-                         type="text"
-                         size="mini"
-                         class="tree-line-btn"
-                         @click.stop="() => handCreateAllSpaceFolder(node, data)">
+                title="添加文件夹"
+                type="text"
+                size="mini"
+                class="tree-line-btn"
+                @click.stop="() => handCreateAllSpaceFolder(node, data)"
+              >
                 <svg-icon icon-class="icon-add-1" />
               </el-button>
-              <el-button v-if="
+              <el-button
+                v-if="
                   loadLeftTreeType === '3' &&
                   isPersonSpaceAdminRole &&
                   data.type === 'folder' &&
                   data.sceneInstUuid === 'allBankSpaceFolder' &&
                   data.id != 'allBankSpaceFolder'
                 "
-                         title="修改文件夹"
-                         type="text"
-                         size="mini"
-                         class="tree-line-btn"
-                         @click.stop="() => handEditAllSpaceFolder(node, data)">
+                title="修改文件夹"
+                type="text"
+                size="mini"
+                class="tree-line-btn"
+                @click.stop="() => handEditAllSpaceFolder(node, data)"
+              >
                 <svg-icon icon-class="icon-edit-1" />
               </el-button>
-              <el-button v-if="
+              <el-button
+                v-if="
                   loadLeftTreeType === '3' &&
                   isPersonSpaceAdminRole &&
                   data.type === 'folder' &&
                   data.sceneInstUuid === 'allBankSpaceFolder' &&
                   data.id != 'allBankSpaceFolder'
                 "
-                         title="删除文件夹"
-                         type="text"
-                         size="mini"
-                         class="tree-line-btn"
-                         @click.stop="() => handDeleteAllSpaceFolder(node, data)">
+                title="删除文件夹"
+                type="text"
+                size="mini"
+                class="tree-line-btn"
+                @click.stop="() => handDeleteAllSpaceFolder(node, data)"
+              >
                 <svg-icon icon-class="icon-delete-1" />
               </el-button>
 
-              <el-button v-if="
+              <el-button
+                v-if="
                   data.id === 'ROOT' ||
                   (data.extMap && data.extMap.folder_type === 'maintained')
                 "
-                         type="text"
-                         size="mini"
-                         v-show="isShowLoadLeftTreeBtn"
-                         @click.stop="() => handleCreateFolder(node, data)">
+                type="text"
+                size="mini"
+                v-show="isShowLoadLeftTreeBtn"
+                @click.stop="() => handleCreateFolder(node, data)"
+              >
                 <i class="el-icon-circle-plus" />
               </el-button>
-              <el-button v-if="
+              <el-button
+                v-if="
                   (data.extMap && data.extMap.folder_type === 'maintained') ||
                   data.type === 'table' ||
                   data.type === 'view'
                 "
-                         type="text"
-                         size="mini"
-                         v-show="isShowLoadLeftTreeBtn"
-                         @click.stop="() => handleUpdateFolder(node, data)">
+                type="text"
+                size="mini"
+                v-show="isShowLoadLeftTreeBtn"
+                @click.stop="() => handleUpdateFolder(node, data)"
+              >
                 <i class="el-icon-edit" />
               </el-button>
-              <el-button v-if="
+              <el-button
+                v-if="
                   (data.extMap && data.extMap.folder_type === 'maintained') ||
                   data.type === 'table' ||
                   data.type === 'view'
                 "
-                         type="text"
-                         size="mini"
-                         v-show="isShowLoadLeftTreeBtn"
-                         @click.stop="() => handleRemove(node, data)">
+                type="text"
+                size="mini"
+                v-show="isShowLoadLeftTreeBtn"
+                @click.stop="() => handleRemove(node, data)"
+              >
                 <i class="el-icon-delete" />
               </el-button>
             </span>
@@ -199,24 +238,24 @@
       </div>
       <!-- 目录 -->
     </div>
-    <el-dialog v-if="allSpaceDialogFormVisible"
-               title="请填写文件夹名称"
-               :visible.sync="allSpaceDialogFormVisible"
-               :append-to-body="true">
-      <el-form ref="allSpaceForm"
-               :model="allSpaceForm"
-               :rules="allSpaceFormRules">
-        <el-form-item label="文件夹名称"
-                      prop="folderName">
-          <el-input v-model="allSpaceForm.folderName"
-                    autocomplete="off" />
+    <el-dialog
+      v-if="allSpaceDialogFormVisible"
+      title="请填写文件夹名称"
+      :visible.sync="allSpaceDialogFormVisible"
+      :append-to-body="true"
+    >
+      <el-form
+        ref="allSpaceForm"
+        :model="allSpaceForm"
+        :rules="allSpaceFormRules"
+      >
+        <el-form-item label="文件夹名称" prop="folderName">
+          <el-input v-model="allSpaceForm.folderName" autocomplete="off" />
         </el-form-item>
       </el-form>
-      <div slot="footer"
-           class="dialog-footer">
+      <div slot="footer" class="dialog-footer">
         <el-button @click="allSpaceDialogFormVisible = false">取 消</el-button>
-        <el-button type="primary"
-                   @click="choosePath()">确 定</el-button>
+        <el-button type="primary" @click="choosePath()">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -254,7 +293,7 @@ export default {
     },
     isSize: Boolean,
   },
-  data () {
+  data() {
     return {
       props: {
         label: "label",
@@ -321,18 +360,18 @@ export default {
       },
       allSpaceFormType: "", //判断修改还是新增
       allSpaceDialogFormVisible: false,
-      isLazyTree: true,//树是否懒加载
+      isLazyTree: true, //树是否懒加载
       expandOnClickNode: false,
     };
   },
   computed: {},
   watch: {
-    filterText2 (val) {
+    filterText2(val) {
       this.$refs.tree2.filter(val);
     },
   },
-  mounted () { },
-  created () {
+  mounted() {},
+  created() {
     this.query.businessSystemId = "";
     // this.show_details = false; //显示列表
     this.$nextTick(() => {
@@ -342,7 +381,7 @@ export default {
     this.post_getLoginUserAdminRole();
   },
   methods: {
-    switchTabAccreditLeft (index) {
+    switchTabAccreditLeft(index) {
       this.activeName = index;
       if (index == "0") {
         this.post_getBusinessSystemTree(); //系统
@@ -352,7 +391,7 @@ export default {
         this.post_getLayeredTree(); //分层
       }
     },
-    switchDataSourceAccreditLeft (val) {
+    switchDataSourceAccreditLeft(val) {
       this.query.dataSource = val;
       if (this.activeName == "0") {
         // 系统
@@ -365,11 +404,11 @@ export default {
         this.post_getLayeredTree(); //分层
       }
     },
-    getCheckedNodes () {
+    getCheckedNodes() {
       var leftTreeCheckedNodes = this.$refs.tree2.getCheckedNodes(false, true);
       return leftTreeCheckedNodes;
     },
-    post_getLoginUserAdminRole () {
+    post_getLoginUserAdminRole() {
       this.loading = true;
       getLoginUserAdminRole().then((resp) => {
         this.isPersonSpaceAdminRole = resp.data;
@@ -377,7 +416,7 @@ export default {
       });
     },
     //树节点选择
-    setCheckedNodes (node, isChecked) {
+    setCheckedNodes(node, isChecked) {
       var _this = this;
       var strLevel = this.query.dataSource;
       var isRepeat = true;
@@ -409,10 +448,15 @@ export default {
             //将字段与where条件重新插入
             for (var k = 0; k < this.treeNodeSelectedObj[i].data.length; k++) {
               for (var m = 0; m < isChecked.checkedNodes.length; m++) {
-                if (this.treeNodeSelectedObj[i].data[k].id === isChecked.checkedNodes[m].id) {
-                  isChecked.checkedNodes[m].cols = this.treeNodeSelectedObj[i].data[k].cols
-                  isChecked.checkedNodes[m].whereStr = this.treeNodeSelectedObj[i].data[k].whereStr
-                  break
+                if (
+                  this.treeNodeSelectedObj[i].data[k].id ===
+                  isChecked.checkedNodes[m].id
+                ) {
+                  isChecked.checkedNodes[m].cols =
+                    this.treeNodeSelectedObj[i].data[k].cols;
+                  isChecked.checkedNodes[m].whereStr =
+                    this.treeNodeSelectedObj[i].data[k].whereStr;
+                  break;
                 }
               }
             }
@@ -432,27 +476,27 @@ export default {
     },
 
     // 树内不可拖拽
-    returnFalse () {
+    returnFalse() {
       return false;
     },
     //节点开始拖拽时触发的事件
-    handleDragStart (node, ev) {
+    handleDragStart(node, ev) {
       //
     },
     //拖拽进入其他节点时触发的事件
-    handleDragEnter (draggingNode, dropNode, ev) {
+    handleDragEnter(draggingNode, dropNode, ev) {
       //
     },
     //拖拽离开某个节点时触发的事件
-    handleDragLeave (draggingNode, dropNode, ev) {
+    handleDragLeave(draggingNode, dropNode, ev) {
       //
     },
     //在拖拽节点时触发的事件（类似浏览器的 mouseover 事件）
-    handleDragOver (draggingNode, dropNode, ev) {
+    handleDragOver(draggingNode, dropNode, ev) {
       //
     },
     //拖拽结束时（可能未成功）触发的事件
-    handleDragEnd (draggingNode, dropNode, dropType, ev) {
+    handleDragEnd(draggingNode, dropNode, dropType, ev) {
       // 只有表和字段能拖拽
       if (
         draggingNode.data.type === "table" ||
@@ -463,11 +507,11 @@ export default {
       }
     },
     // 拖拽成功完成时
-    handleDrop (draggingNode, dropNode, dropType, ev) {
+    handleDrop(draggingNode, dropNode, dropType, ev) {
       //
     },
     // 懒加载表字段
-    async loadNode (node, resolve) {
+    async loadNode(node, resolve) {
       if (node.level === 0) {
         return resolve(node.data);
       } else if (node.level >= 1) {
@@ -510,7 +554,7 @@ export default {
       } */
     },
     // 区分不同模块
-    loadLeftTreeTypeFun (data) {
+    loadLeftTreeTypeFun(data) {
       if (data) {
         this.loadLeftTreeType = data;
         //SQL编辑器
@@ -518,7 +562,7 @@ export default {
           this.isShowLoadLeftTreeBtn = false;
           this.isShowPersonSpaceTab = true;
           this.draggable = true;
-          this.expandOnClickNode = true
+          this.expandOnClickNode = true;
         }
         //数据授权管理-资源绑定 左侧树
         if (this.loadLeftTreeType == "2") {
@@ -552,7 +596,7 @@ export default {
       }
     },
     // 选择数据源
-    selectdata (val) {
+    selectdata(val) {
       this.query.dataSource = val;
       this.query.businessSystemId = "";
       this.query.tableThemeId = "";
@@ -581,7 +625,7 @@ export default {
       this.$emit("switchDataSourceAccredit", val);
     },
     // 系统
-    post_getBusinessSystemTree () {
+    post_getBusinessSystemTree() {
       this.loading = true;
       this.tabclick = true;
       this.elTabsName = "系统";
@@ -616,7 +660,7 @@ export default {
       });
     },
     // 主题
-    post_getThemeTree () {
+    post_getThemeTree() {
       this.loading = true;
       this.tabclick = true;
       getThemeTree(
@@ -648,7 +692,7 @@ export default {
       });
     },
     // 分层
-    post_getLayeredTree () {
+    post_getLayeredTree() {
       this.loading = true;
       this.tabclick = true;
       getLayeredTree(
@@ -680,7 +724,7 @@ export default {
       });
     },
     //个人空间
-    post_getPersonSpaceTree () {
+    post_getPersonSpaceTree() {
       this.loading = true;
       this.tabclick = true;
       getPersonSpaceTree(
@@ -721,7 +765,7 @@ export default {
     //   });
     // },
     //删除表之后刷新树
-    refreshTreeList (dropTableNameList, type) {
+    refreshTreeList(dropTableNameList, type) {
       var activeName = this.activeName;
       if (type === "1") {
         if (activeName === "0") {
@@ -762,7 +806,7 @@ export default {
       }
     },
     //递归筛选children数据
-    screenChildrenTree (datas, dropTableNameList) {
+    screenChildrenTree(datas, dropTableNameList) {
       var _this = this;
       datas.forEach(function (item, index) {
         if (item.type != "table" && item.children.length > 0) {
@@ -778,7 +822,7 @@ export default {
       });
     },
     // 反选
-    inverse () {
+    inverse() {
       var strLevel = this.query.dataSource;
       if (this.treeNodeSelectedObj.length > 0) {
         for (var i = 0; i < this.treeNodeSelectedObj.length; i++) {
@@ -790,7 +834,7 @@ export default {
       }
     },
     // 反选时处理方法
-    batchSelect (seletedDatas) {
+    batchSelect(seletedDatas) {
       if (typeof seletedDatas != "undefined") {
         var checkedKeys = [];
         this.defaultExpandedKeys = ["ROOT"];
@@ -820,24 +864,23 @@ export default {
       }
     },
     //反勾选树节点
-    uncheckTreeNode (data) {
+    uncheckTreeNode(data) {
       this.treeNodeSelectedObj = data;
     },
     //取消树节点勾选状态
-    unLeftTreeSelected (data) {
+    unLeftTreeSelected(data) {
       this.$refs.tree2.setChecked(data.id, false, false);
-      this.treeNodeSelectedObj.forEach(function(item,k){
-        if(data.strLevel === item.strLevel){
-          item.data.forEach(function(t,k){
-            if(data.id === t.id){
+      this.treeNodeSelectedObj.forEach(function (item, k) {
+        if (data.strLevel === item.strLevel) {
+          item.data.forEach(function (t, k) {
+            if (data.id === t.id) {
               item.data.splice(k, 1);
             }
-            
-          })
+          });
         }
-      })
+      });
     },
-    handleClick (tab, event) {
+    handleClick(tab, event) {
       this.elTabsName = tab.label;
       if (tab.name == "0") {
         // this.tabclick = true
@@ -864,26 +907,39 @@ export default {
       this.$emit("addRoleCheck");
       this.$refs.tree2.filter(this.filterText2);
     },
-    filterNode (value, data, node) {
-      // if (!value) return true;
-      // return data.label.indexOf(value) !== -1;
+    // filterNode(value, data, node) {
+    //   // if (!value) return true;
+    //   // return data.label.indexOf(value) !== -1;
+    //
+    //   // 过滤后显示子级
+    //   if (!value) {
+    //     return true;
+    //   }
+    //   let level = node.level;
+    //   let _array = []; //这里使用数组存储 只是为了存储值。
+    //   this.getReturnNode(node, _array, value);
+    //   let result = false;
+    //   _array.forEach((item) => {
+    //     result = result || item;
+    //   });
+    //   return result;
+    // },
 
-      // 过滤后显示子级
-      if (!value) {
-        return true;
+    //筛选节点
+    filterNode(value, data,node) {
+      if (!value) return true
+      let parentNode = node.parent, labels = [node.label], level = 1
+      while (level < node.level) {
+        labels = [...labels, parentNode.label]
+        parentNode = parentNode.parent
+        level++
       }
-      let level = node.level;
-      let _array = []; //这里使用数组存储 只是为了存储值。
-      this.getReturnNode(node, _array, value);
-      let result = false;
-      _array.forEach((item) => {
-        result = result || item;
-      });
-      return result;
+      return labels.some(label => label.indexOf(value) !== -1)
     },
 
+
     // 处理过滤后显示二级++
-    getReturnNode (node, _array, value) {
+    getReturnNode(node, _array, value) {
       let isPass =
         node.data && node.data.label && node.data.label.indexOf(value) !== -1;
       isPass ? _array.push(isPass) : "";
@@ -893,7 +949,7 @@ export default {
         this.getReturnNode(node.parent, _array, value);
       }
     },
-    nodeClick (data, node, tree) {
+    nodeClick(data, node, tree) {
       this.tableMetaUuid = "";
       this.show_details = false; //显示列表
       // 个人空间模块
@@ -967,7 +1023,7 @@ export default {
       }
     },
     //鼠标右键事件
-    nodeContextmenu (event, data, node, e) {
+    nodeContextmenu(event, data, node, e) {
       var menuId = "";
       var numm = $(document).height() - event.clientY;
       if (
@@ -1013,7 +1069,7 @@ export default {
       }
     },
     // 第一步选择的数据库
-    nodeClick_table (data, node, tree) {
+    nodeClick_table(data, node, tree) {
       //获取所有选中的节点 start
       let res = this.$refs.tree1.getCheckedNodes();
       var check_list = [];
@@ -1035,7 +1091,7 @@ export default {
         this.is_next = false;
       }
     },
-    handleCreateFolder (node, data) {
+    handleCreateFolder(node, data) {
       this.resetFolderForm();
       this.parentNode = node;
       this.dialogStatus = "create";
@@ -1049,14 +1105,14 @@ export default {
       this.folderForm.fullPath = fullPath.join("/");
       this.folderFormVisible = true;
     },
-    handleUpdateFolder (node, data) {
+    handleUpdateFolder(node, data) {
       let check_list = [];
       check_list.push({
         tableMetaUuid: data.id,
       });
       this.$emit("edit_list", check_list);
     },
-    handleRemove (node, data) {
+    handleRemove(node, data) {
       this.$confirm("是否删除？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -1105,9 +1161,9 @@ export default {
             });
           }
         })
-        .catch(() => { });
+        .catch(() => {});
     },
-    createFolder () {
+    createFolder() {
       if (
         this.folderForm.folderName == null ||
         this.folderForm.folderName.trim().length == 0
@@ -1133,7 +1189,7 @@ export default {
         this.folderFormVisible = false;
       });
     },
-    updateFolder () {
+    updateFolder() {
       if (
         this.folderForm.folderName == null ||
         this.folderForm.folderName.trim().length == 0
@@ -1155,8 +1211,8 @@ export default {
         this.refreshNodeBy("ROOT");
       });
     },
-    handleSelectChange (val) { },
-    removeTable () {
+    handleSelectChange(val) {},
+    removeTable() {
       var ids = this.$refs.tree2.getCheckedKeys();
       delTable(ids.join(",")).then((resp) => {
         this.$notify(
@@ -1171,14 +1227,14 @@ export default {
       });
     },
     //个人空间模块-全行空间文件夹下创建文件夹
-    handCreateAllSpaceFolder (node, data) {
+    handCreateAllSpaceFolder(node, data) {
       this.allSpaceForm.parentFolderUuid = data.id;
       this.allSpaceForm.fullPath = data.label;
       this.allSpaceDialogFormVisible = true;
       this.allSpaceFormType = "add";
     },
     //个人空间模块-全行空间文件夹下修改文件夹
-    handEditAllSpaceFolder (node, data) {
+    handEditAllSpaceFolder(node, data) {
       this.allSpaceDialogFormVisible = true;
 
       this.allSpaceForm.folderUuid = data.id;
@@ -1188,7 +1244,7 @@ export default {
       this.allSpaceFormType = "edit";
     },
     //个人空间模块-全行空间文件夹下删除文件夹
-    handDeleteAllSpaceFolder (node, data) {
+    handDeleteAllSpaceFolder(node, data) {
       if (data.children.length > 0) {
         this.$notify(
           commonNotify({
@@ -1210,7 +1266,7 @@ export default {
         this.post_getPersonSpaceTree();
       });
     },
-    choosePath () {
+    choosePath() {
       if (this.allSpaceForm.folderName.trim() === "") {
         return false;
       }
