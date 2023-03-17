@@ -138,6 +138,7 @@ export default {
       });
     },
     filterData() {
+      this.queryPeopleInfo.currentPage = 1;
       this.initData(this.queryPeopleInfo);
     },
     // 当每页数量改变
