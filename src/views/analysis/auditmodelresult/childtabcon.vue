@@ -245,6 +245,7 @@
           :total="total"
           :page.sync="pageQuery.pageNo"
           :limit.sync="pageQuery.pageSize"
+          :pageSizes="pageSizes"
           @pagination="initData(nowSql)"
         />
         <el-row>
@@ -609,6 +610,7 @@
                 <pagination
                     v-show="total > 0"
                     :total="total"
+                    :pageSizes="pageSizes"
                     :page.sync="pageQuery.pageNo"
                     :limit.sync="pageQuery.pageSize"
                     @pagination="paginationQuery()"
@@ -1219,6 +1221,8 @@ export default {
   ],
   data() {
     return {
+      //每页显示条数数组
+      pageSizes:[15,30,50,100,300,500,1000,2000,4000,6000,8000,10000],
       // 保存执行结果为数据表时输入表名的弹窗遮罩
       saveTableNameDialogLoading: false,
       // 保存执行结果为数据表时输入的表单数据
