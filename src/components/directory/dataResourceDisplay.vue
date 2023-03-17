@@ -190,10 +190,10 @@
           <div class="tln-header">
             <div class="tlnh-type">{{ item.tableRelationQuery.businessSystemCode}}</div>
             <el-tooltip v-if="item.chnName" class="item" effect="light" :content="item.chnName" placement="top">
-              <div class="tlnh-title" @click="on_deails(item)">{{ item.chnName }}</div>
+              <div class="tlnh-title tlnh-title-new" @click="on_deails(item)">{{ item.chnName }}</div>
             </el-tooltip>
             <el-tooltip class="item" effect="light" :content="item.tbName" placement="top">
-              <div class="tlnh-title" @click="on_deails(item)">{{ item.tbName }}</div>
+              <div class="tlnh-title tlnh-title-new" @click="on_deails(item)">{{ item.tbName }}</div>
             </el-tooltip>
             <div class="inline-block tlnh-checkbox" >
               <el-checkbox v-model="item.checked" @change="checkItem"></el-checkbox>
@@ -986,6 +986,13 @@ export default {
       display: inline-block;
       width: 85%;
     }
+  }
+  .tlnh-title-new{
+    display: inline-block;
+    max-width:40%;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow: ellipsis;
   }
   .tln-top{
     .new_num,.new_title{
