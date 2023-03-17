@@ -70,6 +70,7 @@
             :visible.sync="modelResultExportNumDialog"
             width="30%"
             :append-to-body="true"
+            :close-on-click-modal="false"
     >
       <el-input  type="text" style="margin-top: 20px"  v-model="modelResultExportNum"/>
       <span style="color:red !important" v-show="modelResultExportMsgShow">{{modelResultExportMsg}}</span>
