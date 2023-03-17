@@ -1476,7 +1476,7 @@ export default {
         enablePivot: true,
         sortable: true,
         filter: true,
-        floatingFilter: true, //列头过滤器 启动
+        // floatingFilter: true, //列头过滤器 启动
       },
       sideBar: {
         toolPanels: [

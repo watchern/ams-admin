@@ -1217,7 +1217,7 @@ export default {
           this.$message({ type: "info", message: "不允许删除根节点" });
           return false;
         }
-        if (this.pfd.children != undefined) {
+        if (this.pfd.children != undefined && this.pfd.children.length>0) {
           this.$message({ type: "info", message: "存在子节点,不允许删除" });
           return false;
         }
@@ -1395,6 +1395,7 @@ export default {
      * 刷新参数列表
      */
     refshParamList() {
+      this.paramSearchInput=""
       initParamTreeNew();
       this.addParamDialog = false;
     },

@@ -248,8 +248,8 @@ export default {
       downloadLoading: false,
       filterVisible: false,
       currentRoleUuid: '',
-      allFilters: []
-
+      allFilters: [],
+      authenTypeTemp: '',// 临时授权类型
     }
   },
   computed: {
@@ -371,6 +371,7 @@ export default {
     },
     handleUpdate () {
       this.temp = Object.assign({}, this.selections[0]) // copy obj
+      this.authenTypeTemp = this.temp.authenType;
       // var startTime = new Date(this.temp.startTime)
       // this.temp.startTime = startTime.getFullYear() + '-' + (startTime.getMonth() + 1) + '-' + startTime.getDate() + ' ' + startTime.getHours() + ':' + startTime.getMinutes() + ':' + startTime.getSeconds()
       // var endTime = new Date(this.temp.endTime)
@@ -416,19 +417,38 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          update(tempData).then(() => {
-            const index = this.list.findIndex(v => v.dataRoleUuid === this.temp.dataRoleUuid)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: '成功',
-              message: '更新成功',
-              type: 'success',
-              duration: 2000,
-              position: 'bottom-right'
+          if (this.authenTypeTemp != tempData.authenType){
+            isApplied(tempData.dataRoleUuid).then((resp) => {
+              if (resp.data){
+                this.$notify({
+                  title: '提示',
+                  message: '无法修改已被用户拥有的角色授权方式',
+                  type: 'warning',
+                  duration: 2000,
+                  position: 'bottom-right'
+                });
+                return;
+              }
+              this.doUpdate(tempData);
             })
-          })
+          }else {
+            this.doUpdate(tempData);
+          }
         }
+      })
+    },
+    doUpdate(tempData){
+      update(tempData).then(() => {
+        const index = this.list.findIndex(v => v.dataRoleUuid === this.temp.dataRoleUuid)
+        this.list.splice(index, 1, this.temp)
+        this.dialogFormVisible = false
+        this.$notify({
+          title: '成功',
+          message: '更新成功',
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
       })
     },
     handleDelete () {
