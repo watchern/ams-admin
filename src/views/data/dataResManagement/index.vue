@@ -272,24 +272,24 @@ export default {
           { required: true, message: '请输入系统代码', trigger: 'change' },
         ],
         businessSystemEtldate: [
-          { required: true, message: '请输入时间', trigger: 'change' },
+          // { required: true, message: '请输入时间', trigger: 'change' },
           { type: 'number', message: '时间必须为数字值' },
         ],
-        beforSemantics: [
-          { required: true, message: '请输入创建人', trigger: 'blue' },
-        ],
+        // beforSemantics: [
+        //   { required: true, message: '请输入创建人', trigger: 'blue' },
+        // ],
 
-        filePushPath: [
-          { required: true, message: '请输入文件推送路径', trigger: 'blur' },
-        ],
+        // filePushPath: [
+        //   { required: true, message: '请输入文件推送路径', trigger: 'blur' },
+        // ],
 
-        dataBackupPath: [
-          { required: true, message: '请输入数据备份路径', trigger: 'blur' },
-        ],
+        // dataBackupPath: [
+        //   { required: true, message: '请输入数据备份路径', trigger: 'blur' },
+        // ],
 
-        dataMoveDir: [
-          { required: true, message: '请输入数据移动目录', trigger: 'blur' },
-        ],
+        // dataMoveDir: [
+        //   { required: true, message: '请输入数据移动目录', trigger: 'blur' },
+        // ],
 
       }
     };
