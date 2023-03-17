@@ -32,12 +32,53 @@ export default class TreeStore {
 
   filter(value) {
     const filterNodeMethod = this.filterNodeMethod
-    const lazy = this.lazy
+    const lazy = this.lazy;
+
+    //解决未展开过滤不出来结果 by yanwen 2023 3-16
+    const filterChildLable=function(list,val){
+      let hasVal=false;
+      if(!hasVal){
+        for(let i=0,len=list.length;i<len;i++){
+          let item=list[i];
+          if(item.label.indexOf(val)!=-1){
+            hasVal=true;
+            break;
+          }else{
+            if(item.children){
+              filterChildLable(item.children,val)
+            }
+          }
+        }
+      }
+      return hasVal;
+    }
+    //解决搜索父级不显示子级 by yanwen 2023-3-17
+    const setParentVisible=function(list,visible){
+      function spv(list2){
+        list2.forEach((item)=>{
+          item.parentVisible=visible;
+          item.visible=visible;
+          if(item.childNodes){
+            spv(item.childNodes);
+          }
+        })
+      }
+      spv(list);
+    }
+
     const traverse = function(node) {
       const childNodes = node.root ? node.root.childNodes : node.childNodes
 
       childNodes.forEach((child) => {
-        child.visible = filterNodeMethod.call(child, value, child.data, child)
+        child.visible = child.parentVisible||filterNodeMethod.call(child, value, child.data, child)
+
+        //解决未展开过滤不出来结果 by yanwen 2023 3-16
+        if(!child.visible&&((child.childNodes.length==0&&child.data.children.length!=0)||child.childNodes.length>0)){
+          child.visible=child.childNodes.length>0?filterChildLable(child.childNodes,value):filterChildLable(child.data.children,value);
+          child.expand()
+        }
+        //解决搜索父级不显示子级 by yanwen 2023-3-17
+        setParentVisible(child.childNodes,child.visible);
 
         traverse(child)
       })

@@ -55,7 +55,7 @@ export default {
     },
     renderAfterExpand: {
       type: Boolean,
-      default: true
+      default: false
     },
     nodeKey: String,
     checkStrictly: Boolean,

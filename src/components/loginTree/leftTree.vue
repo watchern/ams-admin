@@ -108,6 +108,7 @@
           node-key="id"
           :load="loadNode"
           :lazy="isLazyTree"
+          :render-after-expand="false"
           @node-click="nodeClick"
           @node-contextmenu="nodeContextmenu"
           @node-drag-start="handleDragStart"

@@ -370,7 +370,7 @@ export default {
       this.$refs.treeRole.filter(val);
     },
   },
-  created () {
+  mounted () {
     this.tree1Loading = true;
     this.tree2Loading = true;
     // getResELTree({ dataUserId: "master", sceneCode: "" }).then((resp) => {
